@@ -1,0 +1,8270 @@
+{
+ "schema": "b77/q1_baseline/v1",
+ "disc_sha256": "5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f",
+ "add": 4,
+ "cap": 99,
+ "files": [
+  {
+   "outer_index": 5,
+   "name_id": 1245141021,
+   "name": "main.ROST",
+   "size": 593792,
+   "sha256": "b3dd88e2b51824b368e78f99f17d7aea7d64b26316c60fee5c0767f31261f501",
+   "sha256_after": "0b2820a97dab28d8588de3598de3403d257b8e07540bc37684557b94cdcaabfb",
+   "qb_count": 110,
+   "bytes_changed": 109,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Jacoby",
+     "last": "Brissett",
+     "group": "team",
+     "offset": 47996,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Gardner",
+     "last": "Minshew",
+     "group": "team",
+     "offset": 48080,
+     "value": 42
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Carson",
+     "last": "Beck",
+     "group": "team",
+     "offset": 48164,
+     "value": 68
+    },
+    {
+     "pool": "primary",
+     "index": 58,
+     "first": "Jack",
+     "last": "Strand",
+     "group": "team",
+     "offset": 49928,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 88,
+     "first": "Michael",
+     "last": "Penix",
+     "group": "team",
+     "offset": 52448,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 89,
+     "first": "Tua",
+     "last": "Tagovailoa",
+     "group": "team",
+     "offset": 52532,
+     "value": 53
+    },
+    {
+     "pool": "primary",
+     "index": 90,
+     "first": "Cooper",
+     "last": "Rush",
+     "group": "team",
+     "offset": 52616,
+     "value": 50
+    },
+    {
+     "pool": "primary",
+     "index": 137,
+     "first": "Lamar",
+     "last": "Jackson",
+     "group": "team",
+     "offset": 56564,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 138,
+     "first": "Tyler",
+     "last": "Huntley",
+     "group": "team",
+     "offset": 56648,
+     "value": 48
+    },
+    {
+     "pool": "primary",
+     "index": 139,
+     "first": "Joe",
+     "last": "Fagnano",
+     "group": "team",
+     "offset": 56732,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 190,
+     "first": "Josh",
+     "last": "Allen",
+     "group": "team",
+     "offset": 61016,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 191,
+     "first": "Kyle",
+     "last": "Allen",
+     "group": "team",
+     "offset": 61100,
+     "value": 62
+    },
+    {
+     "pool": "primary",
+     "index": 248,
+     "first": "Bryce",
+     "last": "Young",
+     "group": "team",
+     "offset": 65888,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 249,
+     "first": "Kenny",
+     "last": "Pickett",
+     "group": "team",
+     "offset": 65972,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 250,
+     "first": "Haynes",
+     "last": "King",
+     "group": "team",
+     "offset": 66056,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 299,
+     "first": "Caleb",
+     "last": "Williams",
+     "group": "team",
+     "offset": 70172,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 300,
+     "first": "Tyson",
+     "last": "Bagent",
+     "group": "team",
+     "offset": 70256,
+     "value": 59
+    },
+    {
+     "pool": "primary",
+     "index": 301,
+     "first": "Case",
+     "last": "Keenum",
+     "group": "team",
+     "offset": 70340,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 350,
+     "first": "Joe",
+     "last": "Burrow",
+     "group": "team",
+     "offset": 74456,
+     "value": 91
+    },
+    {
+     "pool": "primary",
+     "index": 351,
+     "first": "Joe",
+     "last": "Flacco",
+     "group": "team",
+     "offset": 74540,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 401,
+     "first": "Dak",
+     "last": "Prescott",
+     "group": "team",
+     "offset": 78740,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 402,
+     "first": "Sam",
+     "last": "Howell",
+     "group": "team",
+     "offset": 78824,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 457,
+     "first": "Bo",
+     "last": "Nix",
+     "group": "team",
+     "offset": 83444,
+     "value": 91
+    },
+    {
+     "pool": "primary",
+     "index": 458,
+     "first": "Jarrett",
+     "last": "Stidham",
+     "group": "team",
+     "offset": 83528,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 459,
+     "first": "Sam",
+     "last": "Ehlinger",
+     "group": "team",
+     "offset": 83612,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 512,
+     "first": "Jared",
+     "last": "Goff",
+     "group": "team",
+     "offset": 88064,
+     "value": 91
+    },
+    {
+     "pool": "primary",
+     "index": 513,
+     "first": "Joshua",
+     "last": "Dobbs",
+     "group": "team",
+     "offset": 88148,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 565,
+     "first": "Jordan",
+     "last": "Love",
+     "group": "team",
+     "offset": 92516,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 566,
+     "first": "Tyrod",
+     "last": "Taylor",
+     "group": "team",
+     "offset": 92600,
+     "value": 51
+    },
+    {
+     "pool": "primary",
+     "index": 615,
+     "first": "Daniel",
+     "last": "Jones",
+     "group": "team",
+     "offset": 96716,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 616,
+     "first": "Anthony",
+     "last": "Richardson",
+     "group": "team",
+     "offset": 96800,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 617,
+     "first": "Riley",
+     "last": "Leonard",
+     "group": "team",
+     "offset": 96884,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 669,
+     "first": "Trevor",
+     "last": "Lawrence",
+     "group": "team",
+     "offset": 101252,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 670,
+     "first": "Quinn",
+     "last": "Ewers",
+     "group": "team",
+     "offset": 101336,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 722,
+     "first": "Patrick",
+     "last": "Mahomes",
+     "group": "team",
+     "offset": 105704,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 723,
+     "first": "Justin",
+     "last": "Fields",
+     "group": "team",
+     "offset": 105788,
+     "value": 61
+    },
+    {
+     "pool": "primary",
+     "index": 724,
+     "first": "Garrett",
+     "last": "Nussmeier",
+     "group": "team",
+     "offset": 105872,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 775,
+     "first": "Malik",
+     "last": "Willis",
+     "group": "team",
+     "offset": 110156,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 776,
+     "first": "Kyle",
+     "last": "McCord",
+     "group": "team",
+     "offset": 110240,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 777,
+     "first": "Brady",
+     "last": "Cook",
+     "group": "team",
+     "offset": 110324,
+     "value": 37
+    },
+    {
+     "pool": "primary",
+     "index": 829,
+     "first": "Kyler",
+     "last": "Murray",
+     "group": "team",
+     "offset": 114692,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 830,
+     "first": "Carson",
+     "last": "Wentz",
+     "group": "team",
+     "offset": 114776,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 831,
+     "first": "J.J.",
+     "last": "McCarthy",
+     "group": "team",
+     "offset": 114860,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 881,
+     "first": "Drake",
+     "last": "Maye",
+     "group": "team",
+     "offset": 119060,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 882,
+     "first": "Tommy",
+     "last": "DeVito",
+     "group": "team",
+     "offset": 119144,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 883,
+     "first": "Behren",
+     "last": "Morton",
+     "group": "team",
+     "offset": 119228,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 936,
+     "first": "Tyler",
+     "last": "Shough",
+     "group": "team",
+     "offset": 123680,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 937,
+     "first": "Spencer",
+     "last": "Rattler",
+     "group": "team",
+     "offset": 123764,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 938,
+     "first": "Zach",
+     "last": "Wilson",
+     "group": "team",
+     "offset": 123848,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 987,
+     "first": "Jaxson",
+     "last": "Dart",
+     "group": "team",
+     "offset": 127964,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 988,
+     "first": "Jameis",
+     "last": "Winston",
+     "group": "team",
+     "offset": 128048,
+     "value": 87
+    },
+    {
+     "pool": "primary",
+     "index": 1042,
+     "first": "Geno",
+     "last": "Smith",
+     "group": "team",
+     "offset": 132584,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1043,
+     "first": "Cade",
+     "last": "Klubnik",
+     "group": "team",
+     "offset": 132668,
+     "value": 64
+    },
+    {
+     "pool": "primary",
+     "index": 1093,
+     "first": "Kirk",
+     "last": "Cousins",
+     "group": "team",
+     "offset": 136868,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 1094,
+     "first": "Fernando",
+     "last": "Mendoza",
+     "group": "team",
+     "offset": 136952,
+     "value": 76
+    },
+    {
+     "pool": "primary",
+     "index": 1095,
+     "first": "Aidan",
+     "last": "O'Connell",
+     "group": "team",
+     "offset": 137036,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 1146,
+     "first": "Jalen",
+     "last": "Hurts",
+     "group": "team",
+     "offset": 141320,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1147,
+     "first": "Andy",
+     "last": "Dalton",
+     "group": "team",
+     "offset": 141404,
+     "value": 76
+    },
+    {
+     "pool": "primary",
+     "index": 1148,
+     "first": "Tanner",
+     "last": "McKee",
+     "group": "team",
+     "offset": 141488,
+     "value": 56
+    },
+    {
+     "pool": "primary",
+     "index": 1149,
+     "first": "Cole",
+     "last": "Payton",
+     "group": "team",
+     "offset": 141572,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 1197,
+     "first": "Aaron",
+     "last": "Rodgers",
+     "group": "team",
+     "offset": 145604,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1198,
+     "first": "Mason",
+     "last": "Rudolph",
+     "group": "team",
+     "offset": 145688,
+     "value": 37
+    },
+    {
+     "pool": "primary",
+     "index": 1199,
+     "first": "Will",
+     "last": "Howard",
+     "group": "team",
+     "offset": 145772,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 1200,
+     "first": "Drew",
+     "last": "Allar",
+     "group": "team",
+     "offset": 145856,
+     "value": 68
+    },
+    {
+     "pool": "primary",
+     "index": 1254,
+     "first": "Matthew",
+     "last": "Stafford",
+     "group": "team",
+     "offset": 150392,
+     "value": 97
+    },
+    {
+     "pool": "primary",
+     "index": 1255,
+     "first": "Stetson",
+     "last": "Bennett",
+     "group": "team",
+     "offset": 150476,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 1256,
+     "first": "Ty",
+     "last": "Simpson",
+     "group": "team",
+     "offset": 150560,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 1305,
+     "first": "Justin",
+     "last": "Herbert",
+     "group": "team",
+     "offset": 154676,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 1306,
+     "first": "Trey",
+     "last": "Lance",
+     "group": "team",
+     "offset": 154760,
+     "value": 52
+    },
+    {
+     "pool": "primary",
+     "index": 1357,
+     "first": "Brock",
+     "last": "Purdy",
+     "group": "team",
+     "offset": 159044,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1358,
+     "first": "Mac",
+     "last": "Jones",
+     "group": "team",
+     "offset": 159128,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 1359,
+     "first": "Kurtis",
+     "last": "Rourke",
+     "group": "team",
+     "offset": 159212,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 1411,
+     "first": "Sam",
+     "last": "Darnold",
+     "group": "team",
+     "offset": 163580,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 1412,
+     "first": "Drew",
+     "last": "Lock",
+     "group": "team",
+     "offset": 163664,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 1413,
+     "first": "Jalen",
+     "last": "Milroe",
+     "group": "team",
+     "offset": 163748,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 1463,
+     "first": "Baker",
+     "last": "Mayfield",
+     "group": "team",
+     "offset": 167948,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1464,
+     "first": "Jalon",
+     "last": "Daniels",
+     "group": "team",
+     "offset": 168032,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 1519,
+     "first": "Cam",
+     "last": "Ward",
+     "group": "team",
+     "offset": 172652,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1520,
+     "first": "Mitchell",
+     "last": "Trubisky",
+     "group": "team",
+     "offset": 172736,
+     "value": 55
+    },
+    {
+     "pool": "primary",
+     "index": 1567,
+     "first": "Jayden",
+     "last": "Daniels",
+     "group": "team",
+     "offset": 176684,
+     "value": 91
+    },
+    {
+     "pool": "primary",
+     "index": 1568,
+     "first": "Marcus",
+     "last": "Mariota",
+     "group": "team",
+     "offset": 176768,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1569,
+     "first": "Athan",
+     "last": "Kaliakmanis",
+     "group": "team",
+     "offset": 176852,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 1624,
+     "first": "Deshaun",
+     "last": "Watson",
+     "group": "team",
+     "offset": 181472,
+     "value": 71
+    },
+    {
+     "pool": "primary",
+     "index": 1625,
+     "first": "Shedeur",
+     "last": "Sanders",
+     "group": "team",
+     "offset": 181556,
+     "value": 53
+    },
+    {
+     "pool": "primary",
+     "index": 1626,
+     "first": "Taylen",
+     "last": "Green",
+     "group": "team",
+     "offset": 181640,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 1677,
+     "first": "C.J.",
+     "last": "Stroud",
+     "group": "team",
+     "offset": 185924,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1678,
+     "first": "Davis",
+     "last": "Mills",
+     "group": "team",
+     "offset": 186008,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 1697,
+     "first": "Bailey",
+     "last": "Zappe",
+     "group": "free_agent",
+     "offset": 187604,
+     "value": 62
+    },
+    {
+     "pool": "primary",
+     "index": 1711,
+     "first": "Adrian",
+     "last": "Martinez",
+     "group": "free_agent",
+     "offset": 188780,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 1779,
+     "first": "Jake",
+     "last": "Haener",
+     "group": "free_agent",
+     "offset": 194492,
+     "value": 66
+    },
+    {
+     "pool": "primary",
+     "index": 1802,
+     "first": "Austin",
+     "last": "Reed",
+     "group": "free_agent",
+     "offset": 196424,
+     "value": 60
+    },
+    {
+     "pool": "primary",
+     "index": 1843,
+     "first": "Cam",
+     "last": "Miller",
+     "group": "free_agent",
+     "offset": 199868,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 1895,
+     "first": "Connor",
+     "last": "Bazelak",
+     "group": "free_agent",
+     "offset": 204236,
+     "value": 16
+    },
+    {
+     "pool": "primary",
+     "index": 1907,
+     "first": "Hunter",
+     "last": "Dekkers",
+     "group": "free_agent",
+     "offset": 205244,
+     "value": 67
+    },
+    {
+     "pool": "primary",
+     "index": 1927,
+     "first": "Mark",
+     "last": "Gronowski",
+     "group": "free_agent",
+     "offset": 206924,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 1939,
+     "first": "Chris",
+     "last": "Berman",
+     "group": "pool",
+     "offset": 207932,
+     "value": 99
+    },
+    {
+     "pool": "primary",
+     "index": 2324,
+     "first": "Jimmy",
+     "last": "Garoppolo",
+     "group": "free_agent",
+     "offset": 240272,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2325,
+     "first": "Jake",
+     "last": "Browning",
+     "group": "free_agent",
+     "offset": 240356,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2326,
+     "first": "Brandon",
+     "last": "Allen",
+     "group": "free_agent",
+     "offset": 240440,
+     "value": 52
+    },
+    {
+     "pool": "primary",
+     "index": 2327,
+     "first": "Kyle",
+     "last": "Trask",
+     "group": "free_agent",
+     "offset": 240524,
+     "value": 60
+    },
+    {
+     "pool": "primary",
+     "index": 2328,
+     "first": "Clayton",
+     "last": "Tune",
+     "group": "free_agent",
+     "offset": 240608,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 2456,
+     "first": "Jeff",
+     "last": "Driskel",
+     "group": "free_agent",
+     "offset": 251360,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2457,
+     "first": "John",
+     "last": "Wolford",
+     "group": "free_agent",
+     "offset": 251444,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2458,
+     "first": "Desmond",
+     "last": "Ridder",
+     "group": "free_agent",
+     "offset": 251528,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 2459,
+     "first": "Blaine",
+     "last": "Gabbert",
+     "group": "free_agent",
+     "offset": 251612,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2460,
+     "first": "Matt",
+     "last": "Barkley",
+     "group": "free_agent",
+     "offset": 251696,
+     "value": 70
+    },
+    {
+     "pool": "secondary",
+     "index": 0,
+     "first": "",
+     "last": "",
+     "group": "pool",
+     "offset": 265052,
+     "value": 95
+    },
+    {
+     "pool": "secondary",
+     "index": 1,
+     "first": "",
+     "last": "",
+     "group": "pool",
+     "offset": 265136,
+     "value": 96
+    },
+    {
+     "pool": "secondary",
+     "index": 2,
+     "first": "",
+     "last": "",
+     "group": "pool",
+     "offset": 265220,
+     "value": 53
+    },
+    {
+     "pool": "secondary",
+     "index": 3,
+     "first": "",
+     "last": "",
+     "group": "pool",
+     "offset": 265304,
+     "value": 50
+    }
+   ]
+  },
+  {
+   "outer_index": 113,
+   "name_id": 2678311155,
+   "name": "outer_0113.ROST",
+   "size": 7712,
+   "sha256": "bc31532b1a026d3b914be119c92cd429f47a29231d884decd1d40ef7a9c3d954",
+   "sha256_after": "a42e91278b8b98cf178e11cd92455c3bde4709d95539e6e84e5825d55a47fad3",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Neil",
+     "last": "Lomax",
+     "group": "team",
+     "offset": 4336,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Shawn",
+     "last": "Halloran",
+     "group": "team",
+     "offset": 4420,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 114,
+   "name_id": 3715623257,
+   "name": "outer_0114.ROST",
+   "size": 7520,
+   "sha256": "8ab6c9cd7f8018ab3d8dd4593ba24f46ba1510fb9016ec256bd071e899e69bf6",
+   "sha256_after": "a72a263c8e09e5550aba0d2f852a85e155f4c75ee04f3c2d88b9fccf3f1ff593",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Falcons",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 41,
+     "first": "Falcons",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4504,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 115,
+   "name_id": 4127713675,
+   "name": "outer_0115.ROST",
+   "size": 7392,
+   "sha256": "3614bab91ce4f900b75ab7d98adc367f93353b1dd2ee0da0a2efcf73328f4ff0",
+   "sha256_after": "6456722d3eb279186fb7481e182991ea83364b8e53996d394f55e239e243fe80",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Chris",
+     "last": "Chandler",
+     "group": "team",
+     "offset": 4000,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Falcons",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Falcons",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 116,
+   "name_id": 3187322786,
+   "name": "outer_0116.ROST",
+   "size": 7424,
+   "sha256": "74b645269ac2652d55d2ce4416d5ddd0c88b2a4b0d04e40b7dd5b5ae6ceb5163",
+   "sha256_after": "12f5f84ec7fa30b7f90e97ae98effb6692e0c6b8488be08137e2d78f3394f117",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Trent",
+     "last": "Dilfer",
+     "group": "team",
+     "offset": 3832,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Chris",
+     "last": "Redman",
+     "group": "team",
+     "offset": 3916,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Tony",
+     "last": "Banks",
+     "group": "team",
+     "offset": 4000,
+     "value": 58
+    }
+   ]
+  },
+  {
+   "outer_index": 117,
+   "name_id": 548297887,
+   "name": "outer_0117.ROST",
+   "size": 7328,
+   "sha256": "089c6ffab89bd265b6f0f34575698af5693f43bf3924abd4c8e691ff217330f9",
+   "sha256_after": "9fd87d0955d6abad4fe32981bf549b92e6f5c059e365ac8cc5360671dc33dec5",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bills",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Bills",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Bills",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 118,
+   "name_id": 3853851326,
+   "name": "outer_0118.ROST",
+   "size": 7296,
+   "sha256": "b0b4f6598dffd0f048f60a587090e607cf8fcd1a8f9c905369d084b832cf130f",
+   "sha256_after": "c3b8f7b12483d56c97b46a700fe750413f186d1104f684198ce93073ca410099",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Jim",
+     "last": "Kelly",
+     "group": "team",
+     "offset": 4084,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Frank",
+     "last": "Reich",
+     "group": "team",
+     "offset": 4168,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Gale",
+     "last": "Gilbert",
+     "group": "team",
+     "offset": 4252,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 119,
+   "name_id": 1752829327,
+   "name": "outer_0119.ROST",
+   "size": 7648,
+   "sha256": "82d2e5c6efd852ab3463928b399bf0a85888b5e7b2f8c1e94c27761708d2c844",
+   "sha256_after": "fd75993df2775b966a80334e5afaa064a8143006d3418e20f2eeedb33a9e594c",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Kerry",
+     "last": "Collins",
+     "group": "team",
+     "offset": 4252,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Steve",
+     "last": "Beuerlein",
+     "group": "team",
+     "offset": 4336,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 120,
+   "name_id": 1949418026,
+   "name": "outer_0120.ROST",
+   "size": 7232,
+   "sha256": "bd99a7c58be849a77d493f7723232940a4df3cd2db2609d31289aad5cb42a109",
+   "sha256_after": "e3e8659fef84f854d47557bb9dab2a6914a1c7cd25985ab1b6025b7965c744c5",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Jake",
+     "last": "Delhomme",
+     "group": "team",
+     "offset": 4084,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Rodney",
+     "last": "Peete",
+     "group": "team",
+     "offset": 4168,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Chris",
+     "last": "Weinke",
+     "group": "team",
+     "offset": 4252,
+     "value": 66
+    }
+   ]
+  },
+  {
+   "outer_index": 121,
+   "name_id": 834412852,
+   "name": "outer_0121.ROST",
+   "size": 7296,
+   "sha256": "cc39cb8e685c831ff86c84f57e3cceaf3213d7ed1364dc613d8a2d91d87b7e59",
+   "sha256_after": "b2eb2c6d3fa977e534ac3548d8aa1bd501a7e0b41e669aad610b2d5ff257a87e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 122,
+   "name_id": 3980828960,
+   "name": "outer_0122.ROST",
+   "size": 7264,
+   "sha256": "126f91810b3e61aee4671470c2b6c9955a2049490c3f93c560e67148d0595dda",
+   "sha256_after": "c76125c601ae4ff002b62085519b3a3971ff87b93510fcd3321b21a37158c12a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 3832,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 3916,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Bears",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 123,
+   "name_id": 1146421197,
+   "name": "outer_0123.ROST",
+   "size": 7712,
+   "sha256": "8eed2cdff1962b8638417eb712b36e7d6b28ce7bf7ec0aca86b9daa263b9a8fc",
+   "sha256_after": "29020565aa11436baaf9eccd8714d671edf7fbbdbcae14475c74b2ad3c1c81e1",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Bengals",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bengals",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Bengals",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 124,
+   "name_id": 1078067908,
+   "name": "outer_0124.ROST",
+   "size": 7712,
+   "sha256": "c2015ab0e7f6cc0776439b18197ec0cdc15ecb95b3ee1a82edb06b948477a145",
+   "sha256_after": "69ca4e7510d4706efc9dfce56306a1a1588a05a3894c45c4fdfa945a4d3e16b6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Boomer",
+     "last": "Esiason",
+     "group": "team",
+     "offset": 4084,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Turk",
+     "last": "Schonert",
+     "group": "team",
+     "offset": 4168,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Mike",
+     "last": "Norseth",
+     "group": "team",
+     "offset": 4252,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 125,
+   "name_id": 332857270,
+   "name": "outer_0125.ROST",
+   "size": 7616,
+   "sha256": "a00d0d5a608817ea4bec89af3c8167ed9ac8f9f562631f94e4aa72067413c63f",
+   "sha256_after": "cdebc59dd8fe7d743b9c64f470cf8f07eed77cc1ea3e1e25e1f49c1577dd0863",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Don",
+     "last": "Meredith",
+     "group": "team",
+     "offset": 4168,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Craig",
+     "last": "Morton",
+     "group": "team",
+     "offset": 4252,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Jerry",
+     "last": "Rhome",
+     "group": "team",
+     "offset": 4336,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 126,
+   "name_id": 2018029311,
+   "name": "outer_0126.ROST",
+   "size": 7648,
+   "sha256": "17fabad0f37940d3c58b2c69fc8f77ef88022a632a4035f47f4c9699918bc6a0",
+   "sha256_after": "91447c55b59922f9bf9a7b50f3197e8deb6c3d2d1e0a5f6f1c7a51423cd3514d",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Roger",
+     "last": "Staubach",
+     "group": "team",
+     "offset": 3832,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Glenn",
+     "last": "Carano",
+     "group": "team",
+     "offset": 3916,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Gary",
+     "last": "Hogeboom",
+     "group": "team",
+     "offset": 4000,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Brad",
+     "last": "Wright",
+     "group": "team",
+     "offset": 4084,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 127,
+   "name_id": 4029843842,
+   "name": "outer_0127.ROST",
+   "size": 7584,
+   "sha256": "b8849dccc2957323ef2195d4fdde19d40792d7ea560f1e3b60b813ce0dd1e8a7",
+   "sha256_after": "263f7c8a48523333779c2cb32ff66039041a7ba3fd9cad2881480b1a2cad368e",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Cowboys",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Steve",
+     "last": "Beuerlein",
+     "group": "team",
+     "offset": 4336,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 128,
+   "name_id": 3746682591,
+   "name": "outer_0128.ROST",
+   "size": 7616,
+   "sha256": "77157f223eb2649e2c0476292fb611fb77d51798774f6cb8d260621f8d01dc7f",
+   "sha256_after": "342a5af15f0657111ec18495be95ec85583178ac6bd1d0c4c3e8170bc090af3f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Broncos",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Broncos",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Broncos",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 129,
+   "name_id": 1401399317,
+   "name": "outer_0129.ROST",
+   "size": 7616,
+   "sha256": "5894056730dccc3e7c9c999f166e83d77d56128c299376c3757b68e34c4ba63b",
+   "sha256_after": "fd418de53a1e4139bdf2f598580355c3369ff3e4073d6129cebfc82afb59567a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "John",
+     "last": "Elway",
+     "group": "team",
+     "offset": 4084,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Gary",
+     "last": "Kubiak",
+     "group": "team",
+     "offset": 4168,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Scott",
+     "last": "Stankavage",
+     "group": "team",
+     "offset": 4252,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 130,
+   "name_id": 4239102640,
+   "name": "outer_0130.ROST",
+   "size": 7456,
+   "sha256": "04c324c852049c870eac1d0e46ade608692d35c8363a17070837fafd08bbd340",
+   "sha256_after": "444837527bafd4314bcd2d2d76fe828ceba979a0fb5fc0669158606f53a40ea6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "John",
+     "last": "Elway",
+     "group": "team",
+     "offset": 4084,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Jeff",
+     "last": "Lewis",
+     "group": "team",
+     "offset": 4168,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Bubby",
+     "last": "Brister",
+     "group": "team",
+     "offset": 4252,
+     "value": 78
+    }
+   ]
+  },
+  {
+   "outer_index": 131,
+   "name_id": 852873572,
+   "name": "outer_0131.ROST",
+   "size": 7424,
+   "sha256": "cd4ce6936fbccc58b629a3d3992b6703b592a8f3dbf6b8cbb1969b55a17c8462",
+   "sha256_after": "2c0c4c587fde2fbe5c6c86aaeeb602119b352af94cf20e71d69167c01f7b211a",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Lions",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Lions",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 132,
+   "name_id": 3402517971,
+   "name": "outer_0132.ROST",
+   "size": 7424,
+   "sha256": "70c0ecc3591ba358df32c666d99358b13db6099616fb02334eb855b6afcefbf0",
+   "sha256_after": "8b676fc381af4f30c6b6c8c4fbe373cb815d5cdb4df7abb8ce05bd3c485a2558",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Lions",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Rodney",
+     "last": "Peete",
+     "group": "team",
+     "offset": 4084,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Lions",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 133,
+   "name_id": 2440510733,
+   "name": "outer_0133.ROST",
+   "size": 7680,
+   "sha256": "92dd5bd45126083f39ffcac712a4f4e3eb7126b26d559f82f28f586a66c79059",
+   "sha256_after": "a2734670919f4f12740f678faf904c6f263ed7e5ce83123c1ce379d6b9fd4807",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Bart",
+     "last": "Starr",
+     "group": "team",
+     "offset": 4000,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Zeke",
+     "last": "Bratkowski",
+     "group": "team",
+     "offset": 4084,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 134,
+   "name_id": 624193778,
+   "name": "outer_0134.ROST",
+   "size": 7584,
+   "sha256": "b87007ebd019b81c730669e869fbce4937a906a7fefb1c8e2d18816b48a91869",
+   "sha256_after": "aff8e23c7b6873e51f3fd2799af41e2871cc1aea26d2e64da4a2efd15017169d",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Brett",
+     "last": "Favre",
+     "group": "team",
+     "offset": 3832,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Steve",
+     "last": "Bono",
+     "group": "team",
+     "offset": 3916,
+     "value": 64
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Doug",
+     "last": "Pederson",
+     "group": "team",
+     "offset": 4000,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Jim",
+     "last": "McMahon",
+     "group": "team",
+     "offset": 4084,
+     "value": 59
+    }
+   ]
+  },
+  {
+   "outer_index": 135,
+   "name_id": 4107268632,
+   "name": "outer_0135.ROST",
+   "size": 7328,
+   "sha256": "522ee7228eed16755b5954b14dd7996cdaeb5f2c238308b3f6deadb2e46eec1f",
+   "sha256_after": "52b3ba4f9b54e0e9713d17978f111ceaa594108b83e4ff288b7728401a5fa935",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Brett",
+     "last": "Favre",
+     "group": "team",
+     "offset": 4000,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Doug",
+     "last": "Pederson",
+     "group": "team",
+     "offset": 4084,
+     "value": 59
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Craig",
+     "last": "Nall",
+     "group": "team",
+     "offset": 4168,
+     "value": 58
+    }
+   ]
+  },
+  {
+   "outer_index": 136,
+   "name_id": 1969089836,
+   "name": "outer_0136.ROST",
+   "size": 7424,
+   "sha256": "0f887ec2caf4525bd391b32e2be10c009d3b05ff4e0a875105945b233a6c44e3",
+   "sha256_after": "0c3e18b08dacb2a31162f20e4c741e0fc352ed9e28d4e0936707fe4af91f0c8d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Jim",
+     "last": "Harbaugh",
+     "group": "team",
+     "offset": 4000,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Paul",
+     "last": "Justin",
+     "group": "team",
+     "offset": 4084,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Kelly",
+     "last": "Holcomb",
+     "group": "team",
+     "offset": 4168,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 137,
+   "name_id": 2192164840,
+   "name": "outer_0137.ROST",
+   "size": 7392,
+   "sha256": "9592da0029a021aeb8d7e51246a715d77ae7d89897023a3420af3609a9c2e779",
+   "sha256_after": "0e0f4e7ee0a87b58f7893a5523065768082be18ce8103c3270db22f8fd64bd95",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Mark",
+     "last": "Brunell",
+     "group": "team",
+     "offset": 4168,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Jay",
+     "last": "Fiedler",
+     "group": "team",
+     "offset": 4252,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 138,
+   "name_id": 1924277468,
+   "name": "outer_0138.ROST",
+   "size": 7456,
+   "sha256": "d9d7fa0e3859eabfc952df56af10c7e0a6a1a2e5226ad301851b17eec7cec453",
+   "sha256_after": "d5be208ec4f05d7fc6818d72307927004d03da650b04f2d6820b8259983f89cd",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Texans",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Texans",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Texans",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 139,
+   "name_id": 3550667149,
+   "name": "outer_0139.ROST",
+   "size": 7488,
+   "sha256": "9f0af2028d00d9c0cfaa0d5c87f4eec8d7ac1d67c9c6420bfebad449d540267b",
+   "sha256_after": "fbcc68c5593764fc74817d92fe1783aa0d06915b58214fb7032650922deab15b",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Len",
+     "last": "Dawson",
+     "group": "team",
+     "offset": 4168,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Mike",
+     "last": "Livingston",
+     "group": "team",
+     "offset": 4252,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "John",
+     "last": "Huarte",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Dean",
+     "last": "Carlson",
+     "group": "team",
+     "offset": 4420,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 140,
+   "name_id": 1563178017,
+   "name": "outer_0140.ROST",
+   "size": 7488,
+   "sha256": "b4e45df13eb9e6a2d6c604fddd5ab915b3d54fde29d2316e5f7fa4acb8233d0e",
+   "sha256_after": "2e4072a62727bb2bbaa1e5f779495ef903893556963cd0e913b3cb620f6ec27d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Dave",
+     "last": "Krieg",
+     "group": "team",
+     "offset": 3916,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Mark",
+     "last": "Vlasic",
+     "group": "team",
+     "offset": 4000,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Matt",
+     "last": "Blundin",
+     "group": "team",
+     "offset": 4084,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 141,
+   "name_id": 1585877820,
+   "name": "outer_0141.ROST",
+   "size": 7744,
+   "sha256": "049fcff67e974f15b75fa73a672a6ef4146f1167888b203d95e51aec83685e45",
+   "sha256_after": "d360de1378ec3317b322672d51eff08b991ed123e51ed4da84cc1e8ace930ac8",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bob",
+     "last": "Griese",
+     "group": "team",
+     "offset": 4168,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "George",
+     "last": "Mira",
+     "group": "team",
+     "offset": 4252,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Billy",
+     "last": "Lothridge",
+     "group": "team",
+     "offset": 4336,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 142,
+   "name_id": 4126779145,
+   "name": "outer_0142.ROST",
+   "size": 7776,
+   "sha256": "8ff293fd37165e854c53f30ca072c2baee0377814c1a90d7dfd0b1d358dfd1ed",
+   "sha256_after": "f3453653e3693ac52a1a3a42c0ef884e8c380504cfaaf8c980464eca0d5998c7",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "David",
+     "last": "Woodley",
+     "group": "team",
+     "offset": 4000,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Don",
+     "last": "Strock",
+     "group": "team",
+     "offset": 4084,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 143,
+   "name_id": 2127389104,
+   "name": "outer_0143.ROST",
+   "size": 7648,
+   "sha256": "21d857365161bb52e53360a3ec84d70852bbe863d5a87181f0698ef9ac48d369",
+   "sha256_after": "ae0110edd535605aa3db6ab4dc51dd0ebd2d31dbbf381b50a7d3fcdf9f7e4511",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 144,
+   "name_id": 763144050,
+   "name": "outer_0144.ROST",
+   "size": 7648,
+   "sha256": "9ebd735c525c912ece6d3e0ff84ff1ccd1885c7698f8d871938c996685cf92df",
+   "sha256_after": "a275e16870d86d76e653539dc529f23a0b6b4afcbff887b25e34c5167f0d7103",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 145,
+   "name_id": 281478147,
+   "name": "outer_0145.ROST",
+   "size": 7488,
+   "sha256": "8173d63b021a80accbec8b1bf9d913e2d49e190c679e604ff34f2f7b61ff76b8",
+   "sha256_after": "5f676e95375a856e9551263379cbde1962785130f2d370a94016b76f1abcf0af",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Vikings",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 3916,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Brad",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 4000,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Jay",
+     "last": "Fiedler",
+     "group": "team",
+     "offset": 4084,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 146,
+   "name_id": 502890914,
+   "name": "outer_0146.ROST",
+   "size": 7744,
+   "sha256": "9816f2d9c0ebb5b6697821e3efa9464d1ce3d3a2cde1152114f3d1b49a742170",
+   "sha256_after": "bdea61db3a2f48373eb22032163fac92252df3007625af8dc71153ec56b59e04",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Patriots",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Patriots",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Patriots",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 147,
+   "name_id": 3707878113,
+   "name": "outer_0147.ROST",
+   "size": 7392,
+   "sha256": "a1acbedd39e052bf7cea01d7ff260ff7f9ee1a90149df33e08f4b9cc811019e4",
+   "sha256_after": "e58278860810a06370b6aa554e546f5725059d5855557d7f9a8ffd0c07c41082",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 4168,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Drew",
+     "last": "Bledsoe",
+     "group": "team",
+     "offset": 4252,
+     "value": 96
+    }
+   ]
+  },
+  {
+   "outer_index": 148,
+   "name_id": 3854874612,
+   "name": "outer_0148.ROST",
+   "size": 7232,
+   "sha256": "e78740618ebce6cafe92ef3982cd0ddf2d65836ac4551e052db5ea292b2afbbc",
+   "sha256_after": "4844813183c0b84ed18ad7e37fa800c9f6dd3076a1e564442efe3af7a7157599",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 4000,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Damon",
+     "last": "Huard",
+     "group": "team",
+     "offset": 4084,
+     "value": 62
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Rohan",
+     "last": "Davey",
+     "group": "team",
+     "offset": 4168,
+     "value": 56
+    }
+   ]
+  },
+  {
+   "outer_index": 149,
+   "name_id": 1169757817,
+   "name": "outer_0149.ROST",
+   "size": 7552,
+   "sha256": "b6a3523bdc328b44b951889617d16f2664882e93c695e9fd7dd2def4453c8166",
+   "sha256_after": "127f2ec88ca9c77746ea09c795f5cbea97cf45062f6857e94d358c1f5a9bbef1",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Archie",
+     "last": "Manning",
+     "group": "team",
+     "offset": 4084,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bobby",
+     "last": "Scott",
+     "group": "team",
+     "offset": 4168,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Ed",
+     "last": "Burns",
+     "group": "team",
+     "offset": 4252,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 150,
+   "name_id": 843883662,
+   "name": "outer_0150.ROST",
+   "size": 7424,
+   "sha256": "0967d1af1b46c779ed3bb895d479a3ebd296c896ed21a5d312e193770afd096d",
+   "sha256_after": "17ac56d61e2b209ef203439286d4598631305effe618caf0ee9cc4f59022ed7a",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Aaron",
+     "last": "Brooks",
+     "group": "team",
+     "offset": 4252,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Jeff",
+     "last": "Blake",
+     "group": "team",
+     "offset": 4336,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 151,
+   "name_id": 528265564,
+   "name": "outer_0151.ROST",
+   "size": 7392,
+   "sha256": "902e733029e7f188d63f81b6db90c87f3eabe8d243a9468fff983a8c492b3fb9",
+   "sha256_after": "491c9d348e1c59a0ba7b549f9ea4ea451cce288a6693cc2a1d8c82f43f96cbee",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 152,
+   "name_id": 3808583695,
+   "name": "outer_0152.ROST",
+   "size": 7392,
+   "sha256": "867d4c702737c393aac394983221ddc41c96b40825f17d4ba8e4d863fef6e699",
+   "sha256_after": "ac4c9715f8a335f697ee18cb7aa4e9cc81ccdf0cacf1dcc408999bf6a8fd0f9a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Giants",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 153,
+   "name_id": 3672018249,
+   "name": "outer_0153.ROST",
+   "size": 7392,
+   "sha256": "5af748034a2b553d094dd35e059d57b753d2ec46b4a5ab79a343f93d3d97e0dd",
+   "sha256_after": "82ec7a0a9aae660036f2e73e98c5ed057342f0f74ab10e0dd8bbbebe1a23f683",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Jeff",
+     "last": "Hostetler",
+     "group": "team",
+     "offset": 4000,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Phil",
+     "last": "Simms",
+     "group": "team",
+     "offset": 4084,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 154,
+   "name_id": 2813027838,
+   "name": "outer_0154.ROST",
+   "size": 7200,
+   "sha256": "8ba04088c3e019b1fdba3bf2dd50feda71e5187ccb42aa6fa2e7babf1a09f0a2",
+   "sha256_after": "8a5d26e0b89a6d74554984a0bdd4ff7c78d9cc42c6fef25b7e22f7eac1249c92",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Kerry",
+     "last": "Collins",
+     "group": "team",
+     "offset": 4000,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Jesse",
+     "last": "Palmer",
+     "group": "team",
+     "offset": 4084,
+     "value": 56
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Jason",
+     "last": "Garrett",
+     "group": "team",
+     "offset": 4168,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 155,
+   "name_id": 1498979441,
+   "name": "outer_0155.ROST",
+   "size": 7328,
+   "sha256": "20c30b98abf839ab0cedabc60e26591e15015c762fc690f9cc3522dcc6d372d7",
+   "sha256_after": "0cc5a842e175b8a1918adfd78b7ea9d0a26adc5aba5c3c15bb20d1342d186489",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Joe",
+     "last": "Namath",
+     "group": "team",
+     "offset": 4168,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Babe",
+     "last": "Parilli",
+     "group": "team",
+     "offset": 4252,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Al",
+     "last": "Woodall",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 156,
+   "name_id": 3713624721,
+   "name": "outer_0156.ROST",
+   "size": 7264,
+   "sha256": "599c886b530ceee6e4ac7a182cea5994dbe6c400fb0f7c19f1c96e772eb6f72a",
+   "sha256_after": "dc382a16688fa8d381e71c2fc3cffa5573b3985edf0d620b12adfeb08caadde6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Vinny",
+     "last": "Testaverde",
+     "group": "team",
+     "offset": 4252,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Jets",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Jets",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 157,
+   "name_id": 1864323461,
+   "name": "outer_0157.ROST",
+   "size": 7520,
+   "sha256": "562c9a5d5de42158513470b45e37d36ca01dc1024dd12ebeb91f3851d8aa923f",
+   "sha256_after": "ef8c6bb84e30b08b03e83e4ef7a3e5ae09a5f7af379379264b8ab155b7acf648",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 32,
+     "first": "Daryle",
+     "last": "Lamonica",
+     "group": "team",
+     "offset": 3748,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "George",
+     "last": "Blanda",
+     "group": "team",
+     "offset": 3832,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Cotton",
+     "last": "Davidson",
+     "group": "team",
+     "offset": 3916,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 158,
+   "name_id": 1298652185,
+   "name": "outer_0158.ROST",
+   "size": 7552,
+   "sha256": "f9e4c59820dfba70ec34d65710fc126ee8eb66a029675c64f5d362a31d6a0e48",
+   "sha256_after": "0e4872bb96f93280fbd92aa11125b3dfb6c0d529ef0eb5ba5110f8c7eb0ef08c",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Ken",
+     "last": "Stabler",
+     "group": "team",
+     "offset": 4168,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Larry",
+     "last": "Lawrence",
+     "group": "team",
+     "offset": 4252,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "George",
+     "last": "Blanda",
+     "group": "team",
+     "offset": 4336,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 159,
+   "name_id": 3674576368,
+   "name": "outer_0159.ROST",
+   "size": 7520,
+   "sha256": "ed0eeafb04aa63675b0d2381587a76859c3e534db188225ca25fa93956236fae",
+   "sha256_after": "f1c2d5460ddbf31e359f9fbdacf3b5ceb78f66cf83031504cb11578e168912cd",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Jim",
+     "last": "Plunkett",
+     "group": "team",
+     "offset": 4168,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Marc",
+     "last": "Wilson",
+     "group": "team",
+     "offset": 4252,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "David",
+     "last": "Humm",
+     "group": "team",
+     "offset": 4336,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 160,
+   "name_id": 4181569043,
+   "name": "outer_0160.ROST",
+   "size": 7616,
+   "sha256": "87b555ed82928692613321e99d7c1218ff9acbd11c7ae5019e3bd69b0c9e877e",
+   "sha256_after": "6f6e611fcea64eba453aca015b45e063d1b005f252b461fff383e245708ea1cd",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Eagles",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Eagles",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Eagles",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 161,
+   "name_id": 3187110290,
+   "name": "outer_0161.ROST",
+   "size": 7616,
+   "sha256": "ed0fa45227f0503803eed07b3970977b80af2afc699cb6f4fc062153a83bc05c",
+   "sha256_after": "3583c050cc1e89d35d9a3ffaec249c74b811dc691c08095728713a1679d8fdf1",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Eagles",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Eagles",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 75
+    }
+   ]
+  },
+  {
+   "outer_index": 162,
+   "name_id": 439849479,
+   "name": "outer_0162.ROST",
+   "size": 7296,
+   "sha256": "9e143619d333d5b89c987d87906dd23068745f6ee394888f1eb19ef6582cd90b",
+   "sha256_after": "3c5666d2b04ffd964bb2b70055fe5241143643a37edb8a5a8fa41af9df736edb",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Donovan",
+     "last": "McNabb",
+     "group": "team",
+     "offset": 4000,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Koy",
+     "last": "Detmer",
+     "group": "team",
+     "offset": 4084,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "A.J.",
+     "last": "Feeley",
+     "group": "team",
+     "offset": 4168,
+     "value": 75
+    }
+   ]
+  },
+  {
+   "outer_index": 163,
+   "name_id": 3188209167,
+   "name": "outer_0163.ROST",
+   "size": 7744,
+   "sha256": "b1dbaef2caecaa94cd7dd02e5ab7cb7f68fb13e60b22adc00b8b37b662398aff",
+   "sha256_after": "bc0ecee8dc2ad0b6f0e6730d19b9e312faf05e1c244301cfd81d3e267f3a1c8a",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Terry",
+     "last": "Bradshaw",
+     "group": "team",
+     "offset": 3916,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Terry",
+     "last": "Hanratty",
+     "group": "team",
+     "offset": 4000,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Joe",
+     "last": "Gilliam",
+     "group": "team",
+     "offset": 4084,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Bob",
+     "last": "Leahy",
+     "group": "team",
+     "offset": 4168,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 164,
+   "name_id": 3712753115,
+   "name": "outer_0164.ROST",
+   "size": 7712,
+   "sha256": "c9b5ebf36bcf9de8b337ec3a8311b24db329588491bef04700196931368a5598",
+   "sha256_after": "78fcac3eafb38f56e3019924e32e5de51eea8b85a83973ec72a41d310db1a6a4",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Steelers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Steelers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 165,
+   "name_id": 1973695604,
+   "name": "outer_0165.ROST",
+   "size": 7680,
+   "sha256": "7bb605eea3899cd18f3088bf41754efa814185b6f9bb09b9472308e497f79fdf",
+   "sha256_after": "81cbb5f6b1defbfce830efa1f85ec8eebf52341ca9f3365d34081a234e1cfdb3",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Steelers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Steelers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Kordell",
+     "last": "Stewart",
+     "group": "team",
+     "offset": 4252,
+     "value": 89
+    }
+   ]
+  },
+  {
+   "outer_index": 166,
+   "name_id": 2685309811,
+   "name": "outer_0166.ROST",
+   "size": 7360,
+   "sha256": "e9172b8ca1758f1fd9491b8f5ca3b0ede69fc71b8375fa30435dc8067bf6d1a8",
+   "sha256_after": "d6c6abaae217361227d173d7da2116570cfdbe70b53c4cb74f080ff0f77f3d52",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Rams",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Rams",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Rams",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Rams",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 167,
+   "name_id": 3353809721,
+   "name": "outer_0167.ROST",
+   "size": 7328,
+   "sha256": "169e416683b77b53c81dec59940c193dd7893355c68d4759b3699e93df915412",
+   "sha256_after": "55e4511056f4c1137001d73914010079f2bbb535d63bed942c8bb88ace8b41a4",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Kurt",
+     "last": "Warner",
+     "group": "team",
+     "offset": 4084,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Paul",
+     "last": "Justin",
+     "group": "team",
+     "offset": 4168,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Joe",
+     "last": "Germaine",
+     "group": "team",
+     "offset": 4252,
+     "value": 56
+    }
+   ]
+  },
+  {
+   "outer_index": 168,
+   "name_id": 105713094,
+   "name": "outer_0168.ROST",
+   "size": 7840,
+   "sha256": "019bc054588ff5387197fee80a42b88eb6ac5a4e28145285ad434d3a8aed3b02",
+   "sha256_after": "2554876fe2f687da1b0c22159c2d7a8bcfcd2f15e664e20e6ae50da3a5a8d20a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Chargers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Chargers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Chargers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 169,
+   "name_id": 4043345074,
+   "name": "outer_0169.ROST",
+   "size": 7840,
+   "sha256": "faec0dfd698b6ab0ef8e3bf957179db9dbc7f751645a444014c33c197e1b1ac4",
+   "sha256_after": "909aa7aafdd34e0600ae83bbaef2edef2f977ca7f046b086c63f85d316bca48e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Dan",
+     "last": "Fouts",
+     "group": "team",
+     "offset": 4336,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Ed",
+     "last": "Luther",
+     "group": "team",
+     "offset": 4420,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 41,
+     "first": "James",
+     "last": "Harris",
+     "group": "team",
+     "offset": 4504,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 170,
+   "name_id": 2917361620,
+   "name": "outer_0170.ROST",
+   "size": 7776,
+   "sha256": "a3513d7e3c60665ac63d42e17e492666420e00fdb22eda99a1c4056044d863fb",
+   "sha256_after": "f1dfc0a9db3ad2835820ed8afdd30ba4b90023d2cf254b9684a9ba47446c7e4b",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Chargers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Chargers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 73
+    }
+   ]
+  },
+  {
+   "outer_index": 171,
+   "name_id": 2378959446,
+   "name": "outer_0171.ROST",
+   "size": 7456,
+   "sha256": "b13d6e19755f5d5def111957c9b58423c45914754f84788e59832e700b2b3c69",
+   "sha256_after": "6724df0ad57a9edc076ade43e95dcfe26b52bc71ca20777872f5fb5efd6ef523",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Joe",
+     "last": "Montana",
+     "group": "team",
+     "offset": 4420,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 41,
+     "first": "Guy",
+     "last": "Benjamin",
+     "group": "team",
+     "offset": 4504,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 172,
+   "name_id": 3638896618,
+   "name": "outer_0172.ROST",
+   "size": 7424,
+   "sha256": "26143510b09be6692b575aa7815c56b9708e7eec374fc1d238dc74df57a59f45",
+   "sha256_after": "153fa663f8fe0a68a12008f2ccb4783d5cf784e3259968a6a6bcd216f9875339",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Joe",
+     "last": "Montana",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Steve",
+     "last": "Young",
+     "group": "team",
+     "offset": 4252,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "John",
+     "last": "Paye",
+     "group": "team",
+     "offset": 4336,
+     "value": 83
+    }
+   ]
+  },
+  {
+   "outer_index": 173,
+   "name_id": 2922556476,
+   "name": "outer_0173.ROST",
+   "size": 7392,
+   "sha256": "298141f17eec52f7701fa05713848ed8f9c5f896b9666e4750dae1df8900ba64",
+   "sha256_after": "eaf3f7bbc0d671a35f56fa7b16c27f1c2e4c85a1bb6de27f241faabb84042b9c",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "49ers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "49ers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 174,
+   "name_id": 3004688228,
+   "name": "outer_0174.ROST",
+   "size": 7264,
+   "sha256": "84a2821b193af11955084977681351c5d0962b52ea85414081210f7ce000ad56",
+   "sha256_after": "5c9405509cfaad92c7827df2158e753457ac10a99e46522b228a53da354c24f8",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Jeff",
+     "last": "Garcia",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Tim",
+     "last": "Rattay",
+     "group": "team",
+     "offset": 4252,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Brandon",
+     "last": "Doman",
+     "group": "team",
+     "offset": 4336,
+     "value": 61
+    }
+   ]
+  },
+  {
+   "outer_index": 175,
+   "name_id": 3602031019,
+   "name": "outer_0175.ROST",
+   "size": 7744,
+   "sha256": "f6a71e9d5894153f28d2f41cc700381a52f857bad38b76e8c1207ec25307346b",
+   "sha256_after": "8be9f9d60403243670defd8ba4dcec996497dca6a0cba94f3266a1549576e2c9",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Seahawks",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Seahawks",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 176,
+   "name_id": 2440354633,
+   "name": "outer_0176.ROST",
+   "size": 7520,
+   "sha256": "622265d62d3e5b15717cb7d6cb5831fe38471e025c80a7474b2c7058e66abf33",
+   "sha256_after": "e7fc49c56f58ed6d5bb473d3fe9f7af875390ec3690fb308d4e48ed3e9caa5de",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Jon",
+     "last": "Kitna",
+     "group": "team",
+     "offset": 4000,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Seahawks",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 177,
+   "name_id": 2678594666,
+   "name": "outer_0177.ROST",
+   "size": 8032,
+   "sha256": "a24c3b2180dee19c71d4fdb5c01f7de212723248fe2818dcfcee574928d5b5d7",
+   "sha256_after": "45d792b46a6fd1fc3d13607b3fcf1c86bd28bb5e57defef6d55863b355f39f84",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Steve",
+     "last": "DeBerg",
+     "group": "team",
+     "offset": 4084,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Vinny",
+     "last": "Testaverde",
+     "group": "team",
+     "offset": 4168,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "John",
+     "last": "Reaves",
+     "group": "team",
+     "offset": 4252,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 178,
+   "name_id": 1479433521,
+   "name": "outer_0178.ROST",
+   "size": 7648,
+   "sha256": "ed8e66e337a381291e622a965906cf775efd1bf1c91032e2651eebd33c606c69",
+   "sha256_after": "ebe7f8c6456e3069fadf49fb326e5cd930368649767c60e3840d34ac84c345ac",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Trent",
+     "last": "Dilfer",
+     "group": "team",
+     "offset": 3832,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Shaun",
+     "last": "King",
+     "group": "team",
+     "offset": 3916,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Buccanneers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 179,
+   "name_id": 2609580126,
+   "name": "outer_0179.ROST",
+   "size": 7424,
+   "sha256": "b9c6efd059e5fd10b940e96d312e33335984ce6cca2d225064ca3a53660520e0",
+   "sha256_after": "5eed9337caa54f4d26ae0399d4ad618f05fdbf3883048d2e59095056b803c317",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Brad",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 3916,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Rob",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 4000,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Shaun",
+     "last": "King",
+     "group": "team",
+     "offset": 4084,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 180,
+   "name_id": 1413827589,
+   "name": "outer_0180.ROST",
+   "size": 7552,
+   "sha256": "c7ef5eb8b315ccbc19b9c0025ccc25abe134dda2904fa2aae5edcf01b49f8f0a",
+   "sha256_after": "8a954c74698e662dd0455342ee1e7437606e036e1b79f8ca288d1e14a954340d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Oilers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4000,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Oilers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4084,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Oilers",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 51
+    }
+   ]
+  },
+  {
+   "outer_index": 181,
+   "name_id": 2270583964,
+   "name": "outer_0181.ROST",
+   "size": 7584,
+   "sha256": "2871403921bf034365ef4723225f15a70b8aea21a7202f7388e7bec73eed51df",
+   "sha256_after": "e16f871963fb9935df378411f272ea8c9a09e2362114ed2bd322e02ceb9814c9",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Warren",
+     "last": "Moon",
+     "group": "team",
+     "offset": 3916,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Cody",
+     "last": "Carlson",
+     "group": "team",
+     "offset": 4000,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Reggie",
+     "last": "Slack",
+     "group": "team",
+     "offset": 4084,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 182,
+   "name_id": 4032787964,
+   "name": "outer_0182.ROST",
+   "size": 7424,
+   "sha256": "47035bc8628e68f7797077155fc75af968ab16b33e5697e44b1e8dc66cf95e0c",
+   "sha256_after": "937ae60b0b026d35e74e185f88cd7e78e9bd31ded0d44a8568518dcd7bd0425b",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 33,
+     "first": "Steve",
+     "last": "McNair",
+     "group": "team",
+     "offset": 3832,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 34,
+     "first": "Neil",
+     "last": "O'Donnell",
+     "group": "team",
+     "offset": 3916,
+     "value": 71
+    },
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Kevin",
+     "last": "Daft",
+     "group": "team",
+     "offset": 4000,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 183,
+   "name_id": 1988583413,
+   "name": "outer_0183.ROST",
+   "size": 7616,
+   "sha256": "c6be5d3e8501078b812d0ffd7ca80dc3ca9dde237d2f1a0f2ff033335cec6ada",
+   "sha256_after": "a2e2e02bff1e57c0b3d4cd158bc75930acf77b64de55568f00626324c28ff426",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Joe",
+     "last": "Theismann",
+     "group": "team",
+     "offset": 4252,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Bob",
+     "last": "Holly",
+     "group": "team",
+     "offset": 4336,
+     "value": 80
+    }
+   ]
+  },
+  {
+   "outer_index": 184,
+   "name_id": 4141301877,
+   "name": "outer_0184.ROST",
+   "size": 7616,
+   "sha256": "42d7f20802dd680ca3584ecefc102d5ae054d6d2ea9a1eed9e41f177ac154866",
+   "sha256_after": "787962d03a4fdead2a3f237112ea95a32ff0547568d76e15102d9b0a04c536f6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Redskins",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Redskins",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 40,
+     "first": "Redskins",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4420,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 185,
+   "name_id": 2602174076,
+   "name": "outer_0185.ROST",
+   "size": 7616,
+   "sha256": "62101ec0a7c074ba20b2b7afa2a5a59be9101da6256286302d620d5bfcda8f9f",
+   "sha256_after": "86a9e69c17a1c4d40bee073f3d8f4c8fa1aab5e17a6b5e519b7e3e119ca80863",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Redskins",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Redskins",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 186,
+   "name_id": 2145888004,
+   "name": "outer_0186.ROST",
+   "size": 7616,
+   "sha256": "50f01bd831d4e03d9ab950ff0fe87005a6ff22ddca5fab48088cd5e55d3e7914",
+   "sha256_after": "93eb29845d728a32c4edda842415ca207925cd9b06af02c11e192377b2efdb54",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Browns",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4168,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 38,
+     "first": "Browns",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4252,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 39,
+     "first": "Browns",
+     "last": "Quarterback",
+     "group": "team",
+     "offset": 4336,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 187,
+   "name_id": 646951436,
+   "name": "outer_0187.ROST",
+   "size": 7616,
+   "sha256": "35ead825b6fd51c07abbf1d066a94e0c0d62846d172b436a30a781ffe3ea5c18",
+   "sha256_after": "e3aaf4a66cba65d8147ee6fb48440241358fe0e60ee9e0b38ae467bf233778ab",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 35,
+     "first": "Bernie",
+     "last": "Kosar",
+     "group": "team",
+     "offset": 4000,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 36,
+     "first": "Mike",
+     "last": "Pagel",
+     "group": "team",
+     "offset": 4084,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 37,
+     "first": "Gary",
+     "last": "Danielson",
+     "group": "team",
+     "offset": 4168,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4323,
+   "name_id": 3855657343,
+   "name": "outer_4323.ROST",
+   "size": 8816,
+   "sha256": "377c67621ab7bf6f5543165420f4c0674f9c6e35a4b57d4dcb941a15cb63e15c",
+   "sha256_after": "ce684ee2cad061d17602746c043204d52a9229c87787fd1f96b8e78c03eae2d8",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Chris",
+     "last": "Chandler",
+     "group": "team",
+     "offset": 1060,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Steve",
+     "last": "DeBerg",
+     "group": "team",
+     "offset": 1144,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Tony",
+     "last": "Graziani",
+     "group": "team",
+     "offset": 1228,
+     "value": 62
+    }
+   ]
+  },
+  {
+   "outer_index": 4324,
+   "name_id": 3973197769,
+   "name": "outer_4324.ROST",
+   "size": 8816,
+   "sha256": "044a5c8e55c93df0bbabf80685d8d6d3a92aa8364b397bb119fdff2c575779b1",
+   "sha256_after": "48f6f100c15f0339ef5834f9a7aa6684402d191b30d4510c020c53cfd37a496e",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Randall",
+     "last": "Cunningham",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brad",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 1144,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Todd",
+     "last": "Bouman",
+     "group": "team",
+     "offset": 1228,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 3,
+     "first": "Jay",
+     "last": "Fiedler",
+     "group": "team",
+     "offset": 1312,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 4325,
+   "name_id": 1567210048,
+   "name": "outer_4325.ROST",
+   "size": 8640,
+   "sha256": "82ac4ed7eeba76282f88dfb3a2646b795d61e2325f0221ceb068e8740aa6df22",
+   "sha256_after": "ea04797629b802327f7eab5b3fc3b20cd385d156630937844e944790feb46707",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Eli",
+     "last": "Manning",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Anthony",
+     "last": "Wright",
+     "group": "team",
+     "offset": 1144,
+     "value": 66
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jared",
+     "last": "Lorenzen",
+     "group": "team",
+     "offset": 1228,
+     "value": 67
+    }
+   ]
+  },
+  {
+   "outer_index": 4326,
+   "name_id": 1750828564,
+   "name": "outer_4326.ROST",
+   "size": 8672,
+   "sha256": "07c368415cde80d1bd47cfa822a1c7b9337cadd27ae899fed386ac199b25bdb4",
+   "sha256_after": "7fa3f7f61e388d19c2c3dd7dc9565d5689c730ed92e6afd7cd39fab1339834c0",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Cassel",
+     "group": "team",
+     "offset": 1144,
+     "value": 56
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Matt",
+     "last": "Gutierrez",
+     "group": "team",
+     "offset": 1228,
+     "value": 61
+    }
+   ]
+  },
+  {
+   "outer_index": 4327,
+   "name_id": 2569834353,
+   "name": "outer_4327.ROST",
+   "size": 9104,
+   "sha256": "93127cbb3d8238697892dfe34d4d92873c199ce03169dfaeded4539b4254bca2",
+   "sha256_after": "1e79181fa1acb75147e1ce8bbeddf02d8e5b8e3b340671a86712418db5c6e639",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Ben",
+     "last": "Roethlisberger",
+     "group": "team",
+     "offset": 1060,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Byron",
+     "last": "Leftwich",
+     "group": "team",
+     "offset": 1144,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Dennis",
+     "last": "Dixon",
+     "group": "team",
+     "offset": 1228,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 4328,
+   "name_id": 2374784688,
+   "name": "outer_4328.ROST",
+   "size": 9136,
+   "sha256": "2b46d77d5a4345496267e4813e86b8ca895bec78abc33208570ec8b801482145",
+   "sha256_after": "3b50bf7fd5a5b4d539b8aac2094a619b25bf402983e0ba54ce21305fa7400baa",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kurt",
+     "last": "Warner",
+     "group": "team",
+     "offset": 1060,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Leinart",
+     "group": "team",
+     "offset": 1144,
+     "value": 59
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Brian",
+     "last": "St. Pierre",
+     "group": "team",
+     "offset": 1228,
+     "value": 64
+    }
+   ]
+  },
+  {
+   "outer_index": 4329,
+   "name_id": 1689605894,
+   "name": "outer_4329.ROST",
+   "size": 8656,
+   "sha256": "4b64fdcb4514a75711775bbe23ba952f8a82d59491bf0403d7201bba4a1cf4ab",
+   "sha256_after": "280ac6901ac2606c6f3ae13c225d6195e4ba290f96abfd420a2bb389a8f1363e",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Eli",
+     "last": "Manning",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "David",
+     "last": "Carr",
+     "group": "team",
+     "offset": 1144,
+     "value": 78
+    }
+   ]
+  },
+  {
+   "outer_index": 4330,
+   "name_id": 93765661,
+   "name": "outer_4330.ROST",
+   "size": 8688,
+   "sha256": "df95830d103f8abd6fa09c85c97e053d1b690d5f7a6f0511de692a57ae8b5d5c",
+   "sha256_after": "6350caf09938fe63ffe460161cc468f55630b91af80756d70c64b985cc934ccc",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brian",
+     "last": "Hoyer",
+     "group": "team",
+     "offset": 1144,
+     "value": 59
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Ryan",
+     "last": "Mallett",
+     "group": "team",
+     "offset": 1228,
+     "value": 70
+    }
+   ]
+  },
+  {
+   "outer_index": 4331,
+   "name_id": 3171144328,
+   "name": "outer_4331.ROST",
+   "size": 8672,
+   "sha256": "f4b77c4ba7bb539a14984c39f86e85aa57feefd8b8c8e48529c78364ce369705",
+   "sha256_after": "8a4ea82675486a40c9bebeed83adb3ecc8eb0e711c6a1444170d21958765cddb",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jimmy",
+     "last": "Garoppolo",
+     "group": "team",
+     "offset": 1144,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jacoby",
+     "last": "Brissett",
+     "group": "team",
+     "offset": 1228,
+     "value": 75
+    }
+   ]
+  },
+  {
+   "outer_index": 4332,
+   "name_id": 150039587,
+   "name": "outer_4332.ROST",
+   "size": 8832,
+   "sha256": "efaae81889710d92541cce48f0406e3677070d35a1aa5f7150d74a63acad1781",
+   "sha256_after": "322c9478b5a74adc91979d602bbef95a531ed2d66b53679b616f9f6f7fcfb170",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Matt",
+     "last": "Ryan",
+     "group": "team",
+     "offset": 1060,
+     "value": 97
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Schaub",
+     "group": "team",
+     "offset": 1144,
+     "value": 63
+    }
+   ]
+  },
+  {
+   "outer_index": 4333,
+   "name_id": 963603978,
+   "name": "outer_4333.ROST",
+   "size": 8944,
+   "sha256": "d08c0495759fff8222f3adbfa7dfdb9b1ddec52e594baf2bb17d10fd9ae9e9c6",
+   "sha256_after": "5b2c35ab1d6bed89e80dd391683f4a9b493adc02f95cc482d7d28607daf1b269",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kirk",
+     "last": "Cousins",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Nick",
+     "last": "Mullens",
+     "group": "team",
+     "offset": 1144,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4334,
+   "name_id": 3395792991,
+   "name": "outer_4334.ROST",
+   "size": 8720,
+   "sha256": "b021cb16193c180b1808fc84e981e4dd8cb472d343984e263a5d0b7e95808f29",
+   "sha256_after": "fcffe5411147898a42360e6fe234a040b4140fa8dabd9ab235b6fb7a5cb3d5ba",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Josh",
+     "last": "Allen",
+     "group": "team",
+     "offset": 1060,
+     "value": 97
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Case",
+     "last": "Keenum",
+     "group": "team",
+     "offset": 1144,
+     "value": 52
+    }
+   ]
+  },
+  {
+   "outer_index": 4335,
+   "name_id": 2942397026,
+   "name": "outer_4335.ROST",
+   "size": 8656,
+   "sha256": "c2cf558e54e699f664c76a85caf7d181f3acd96e0b40962c0f33753a6c87db71",
+   "sha256_after": "73bbd06b6ae4dc842f0740b5299e878142d41b34fdb30c890f725db9a1d995f9",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Rob",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Doug",
+     "last": "Flutie",
+     "group": "team",
+     "offset": 1144,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Alex",
+     "last": "Van Pelt",
+     "group": "team",
+     "offset": 1228,
+     "value": 75
+    }
+   ]
+  },
+  {
+   "outer_index": 4336,
+   "name_id": 206200374,
+   "name": "outer_4336.ROST",
+   "size": 8768,
+   "sha256": "5afa49d101442633553d24d99b4fce4b7738690c619041f5fc1baa2fa44c14ed",
+   "sha256_after": "e66b357fc023f3d7e037d2cfe98429daef66cfc5dafbd3108111caa83b8ae909",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Steve",
+     "last": "McNair",
+     "group": "team",
+     "offset": 1060,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Neil",
+     "last": "O'Donnell",
+     "group": "team",
+     "offset": 1144,
+     "value": 71
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Kevin",
+     "last": "Daft",
+     "group": "team",
+     "offset": 1228,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 4337,
+   "name_id": 63236423,
+   "name": "outer_4337.ROST",
+   "size": 9008,
+   "sha256": "6780caef000e98fa83ec983ea0380c082456e3c171c9b6ec9d61ae5b371027b5",
+   "sha256_after": "2c0b511f1d866f4a705cc2c6dc6134d9995bbd2beea0af75e1f8989b96da5c0e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Rich",
+     "last": "Gannon",
+     "group": "team",
+     "offset": 1060,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Marques",
+     "last": "Tuiasosopo",
+     "group": "team",
+     "offset": 1144,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Rodney",
+     "last": "Peete",
+     "group": "team",
+     "offset": 1228,
+     "value": 70
+    }
+   ]
+  },
+  {
+   "outer_index": 4338,
+   "name_id": 554996011,
+   "name": "outer_4338.ROST",
+   "size": 8784,
+   "sha256": "5d1c2fa5b98e3c04730ad14b68aa1afeba9bd5723aba62d10532635a7b617b14",
+   "sha256_after": "0b394ee668c549887d5f454b94814daa190f1fa64e3f8031b8f57ce0cbd4d7ca",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Damon",
+     "last": "Huard",
+     "group": "team",
+     "offset": 1144,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Drew",
+     "last": "Bledsoe",
+     "group": "team",
+     "offset": 1228,
+     "value": 96
+    }
+   ]
+  },
+  {
+   "outer_index": 4339,
+   "name_id": 2284120544,
+   "name": "outer_4339.ROST",
+   "size": 8672,
+   "sha256": "b9cb8ae211c316e68c9e29ea85c8cc57c796ec922a1ee510e848fce36c47c78a",
+   "sha256_after": "64e5f1d25b28a44cd1ee2fc9397a2d9855078eddddff3f19fbc8066ffcdcaec1",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jake",
+     "last": "Delhomme",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Rodney",
+     "last": "Peete",
+     "group": "team",
+     "offset": 1144,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Chris",
+     "last": "Weinke",
+     "group": "team",
+     "offset": 1228,
+     "value": 66
+    }
+   ]
+  },
+  {
+   "outer_index": 4340,
+   "name_id": 433167422,
+   "name": "outer_4340.ROST",
+   "size": 8608,
+   "sha256": "cc349ff9afa9fc5b22f610347d6bd0643814d833dba1c3252d58e99bc914a902",
+   "sha256_after": "144ad13b14f3aab0c086c60069a87bd5660f69b8d62ced4dee2ac024551c96f0",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Damon",
+     "last": "Huard",
+     "group": "team",
+     "offset": 1144,
+     "value": 62
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Rohan",
+     "last": "Davey",
+     "group": "team",
+     "offset": 1228,
+     "value": 56
+    }
+   ]
+  },
+  {
+   "outer_index": 4341,
+   "name_id": 3333835404,
+   "name": "outer_4341.ROST",
+   "size": 8848,
+   "sha256": "ef9f528966ee445bb41e513771a3dab62ce86b8dee9be3413f84ca6f57a44f3d",
+   "sha256_after": "52d558017dbae365c804e80ffca624dfc88b9b053b941cfc9c6248bb237c0bd8",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Drew",
+     "last": "Brees",
+     "group": "team",
+     "offset": 1060,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mark",
+     "last": "Brunell",
+     "group": "team",
+     "offset": 1144,
+     "value": 68
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Chase",
+     "last": "Daniel",
+     "group": "team",
+     "offset": 1228,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 4342,
+   "name_id": 341147756,
+   "name": "outer_4342.ROST",
+   "size": 8848,
+   "sha256": "23b47177b9f6a9a5677a51653375740d6c237830b29b36a5f1967b604cbda092",
+   "sha256_after": "54ab3329d7ef4132ef4636e5bfa4cad347823bed344f5a433e23bd1aa37f3a51",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Peyton",
+     "last": "Manning",
+     "group": "team",
+     "offset": 1060,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Curtis",
+     "last": "Painter",
+     "group": "team",
+     "offset": 1144,
+     "value": 47
+    }
+   ]
+  },
+  {
+   "outer_index": 4343,
+   "name_id": 3700797105,
+   "name": "outer_4343.ROST",
+   "size": 8720,
+   "sha256": "5565d065cd4dc7a8589bc17413f1089475222ac4b4571e29a7e8a3d9e768f051",
+   "sha256_after": "1fe4b2c9b542465e6ec4fa6de5e37e28151f0e7904fcd79cd46689abf8f013fc",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Michael",
+     "last": "Vick",
+     "group": "team",
+     "offset": 1060,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Kevin",
+     "last": "Kolb",
+     "group": "team",
+     "offset": 1144,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Kafka",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4344,
+   "name_id": 1694542363,
+   "name": "outer_4344.ROST",
+   "size": 8624,
+   "sha256": "6c533e5a521f87d20e8833bf05c25f18f08e49ccf68a8bca9671d225809a42f2",
+   "sha256_after": "c4273a0d2b570784cc4f7f30adc24e2c7fcdae28cb3576e0cb15962c9c6b2615",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Eli",
+     "last": "Manning",
+     "group": "team",
+     "offset": 1060,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Sage",
+     "last": "Rosenfels",
+     "group": "team",
+     "offset": 1144,
+     "value": 66
+    }
+   ]
+  },
+  {
+   "outer_index": 4345,
+   "name_id": 4140612721,
+   "name": "outer_4345.ROST",
+   "size": 8880,
+   "sha256": "8ae474ccf4d8d7b0581a1df1eba108767a75258a8e3fa6ea185ddb62f8eea80c",
+   "sha256_after": "a5d855d413360b0ee416d67de5328bfb3ca307a1a689acb9494b32985e14ee3c",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Drew",
+     "last": "Brees",
+     "group": "team",
+     "offset": 1060,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chase",
+     "last": "Daniel",
+     "group": "team",
+     "offset": 1144,
+     "value": 61
+    }
+   ]
+  },
+  {
+   "outer_index": 4346,
+   "name_id": 3342221422,
+   "name": "outer_4346.ROST",
+   "size": 8976,
+   "sha256": "6be0d8565ac139d10733a5a51573fdba0af13288f507e44f6f05d6de51fc5789",
+   "sha256_after": "58c15d35c635c56d879df4bfc6bf019c76f3aa0d906dd8cd9dbf528ba06b4fb8",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Matt",
+     "last": "Hasselbeck",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Charlie",
+     "last": "Whitehurst",
+     "group": "team",
+     "offset": 1144,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "J.P.",
+     "last": "Losman",
+     "group": "team",
+     "offset": 1228,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 4347,
+   "name_id": 4151918956,
+   "name": "outer_4347.ROST",
+   "size": 8912,
+   "sha256": "35922103362af1f8052b2e30c9bc352a120926bae7543aef4c2ae77bfbf19b61",
+   "sha256_after": "6a17d4e48f50148fa77b7f89b37f00cfaaf09ad64b1befedf770a80cda9a9657",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Drew",
+     "last": "Brees",
+     "group": "team",
+     "offset": 1060,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chase",
+     "last": "Daniel",
+     "group": "team",
+     "offset": 1144,
+     "value": 53
+    }
+   ]
+  },
+  {
+   "outer_index": 4348,
+   "name_id": 1543338716,
+   "name": "outer_4348.ROST",
+   "size": 8624,
+   "sha256": "42e73a9b1e44bee198d32e40408a0b12ac8a796e00001c5f1c0fe335cdfcdb88",
+   "sha256_after": "2405ce922e04eb01a70c453adc6ef4559151462a9d49d4e510bd67e2820265b1",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Alex",
+     "last": "Smith",
+     "group": "team",
+     "offset": 1060,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Colin",
+     "last": "Kaepernick",
+     "group": "team",
+     "offset": 1144,
+     "value": 76
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Scott",
+     "last": "Tolzien",
+     "group": "team",
+     "offset": 1228,
+     "value": 70
+    }
+   ]
+  },
+  {
+   "outer_index": 4349,
+   "name_id": 2128911706,
+   "name": "outer_4349.ROST",
+   "size": 8816,
+   "sha256": "4db33fc181381d1f0219dc13aa9633b5101ce181a76ba0930f7f63e2a4ade5d9",
+   "sha256_after": "047194be5eb815b52bfe9c30de517169500c5b31139a54021f45d533c564a13a",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Joe",
+     "last": "Flacco",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Tyrod",
+     "last": "Taylor",
+     "group": "team",
+     "offset": 1144,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4350,
+   "name_id": 471658502,
+   "name": "outer_4350.ROST",
+   "size": 8880,
+   "sha256": "1a8b2e3358996d49b7c1269cafca74bf21bca0e6aa2661f0d584f6c994077f02",
+   "sha256_after": "c3426e6df188c40627c995580009ef613563bf8c6f53cc83c81de6c4a9b14a8f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Peyton",
+     "last": "Manning",
+     "group": "team",
+     "offset": 1060,
+     "value": 94
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brock",
+     "last": "Osweiler",
+     "group": "team",
+     "offset": 1144,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Caleb",
+     "last": "Hanie",
+     "group": "team",
+     "offset": 1228,
+     "value": 67
+    }
+   ]
+  },
+  {
+   "outer_index": 4351,
+   "name_id": 2846529316,
+   "name": "outer_4351.ROST",
+   "size": 8672,
+   "sha256": "06785b85749e2283dc930875009f99aea4ad33d96b914d354120eea91a931278",
+   "sha256_after": "8fa4b232b1c18e8179f6e8aaee42b86e9ece93093bab36673fe829c8650e2e48",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Colin",
+     "last": "Kaepernick",
+     "group": "team",
+     "offset": 1060,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Alex",
+     "last": "Smith",
+     "group": "team",
+     "offset": 1144,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Scott",
+     "last": "Tolzien",
+     "group": "team",
+     "offset": 1228,
+     "value": 67
+    }
+   ]
+  },
+  {
+   "outer_index": 4352,
+   "name_id": 3716524328,
+   "name": "outer_4352.ROST",
+   "size": 9008,
+   "sha256": "af3d7edbc3070ebc6fb7477d4f9ba66252c624567b8ed05409e95b04f7acd671",
+   "sha256_after": "2522fa21f786f75f1289a5964f77fed14818eaed536d262a4dd613c81f68adc4",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tony",
+     "last": "Romo",
+     "group": "team",
+     "offset": 1060,
+     "value": 95
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brandon",
+     "last": "Weeden",
+     "group": "team",
+     "offset": 1144,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Dustin",
+     "last": "Vaughan",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4353,
+   "name_id": 4177583224,
+   "name": "outer_4353.ROST",
+   "size": 8704,
+   "sha256": "c1f6c431b51d5838178d0ca286c4a7296306cbced12c395d87d5033126c43ce2",
+   "sha256_after": "842c24f18f16c5c105bb33eb81a157154ede53fcf84023e97c1b85a8e76b17fd",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Aaron",
+     "last": "Rodgers",
+     "group": "team",
+     "offset": 1060,
+     "value": 98
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Flynn",
+     "group": "team",
+     "offset": 1144,
+     "value": 50
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Scott",
+     "last": "Tolzien",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4354,
+   "name_id": 2244403101,
+   "name": "outer_4354.ROST",
+   "size": 8608,
+   "sha256": "0eb1a6eccd2798799d6daeddb1dc82fe7f49c1f9dd3b489af850e8d198d0eddb",
+   "sha256_after": "daebf6cc1ccc394c7d143bfc04ef7c507b5f58935651234122161162befbd6c9",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jimmy",
+     "last": "Garoppolo",
+     "group": "team",
+     "offset": 1144,
+     "value": 53
+    }
+   ]
+  },
+  {
+   "outer_index": 4355,
+   "name_id": 3065797188,
+   "name": "outer_4355.ROST",
+   "size": 8976,
+   "sha256": "265ba343c849873f0b2cfb341267da2ceb608695d91c920ba897beb33644b5d1",
+   "sha256_after": "1840d44c948a912bf6ebcc6e5337820edd85eb01a928bbdb9a78ebeddf65a818",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Russell",
+     "last": "Wilson",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Tarvaris",
+     "last": "Jackson",
+     "group": "team",
+     "offset": 1144,
+     "value": 66
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "B.J.",
+     "last": "Daniels",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4356,
+   "name_id": 3311419248,
+   "name": "outer_4356.ROST",
+   "size": 8688,
+   "sha256": "0f405a52c03858c9e3dad15043228867dfcc9ba1cba010659c4ad54547a9ea0d",
+   "sha256_after": "0e1cd74cc891b65fdf1b30e93a93733f986816e19abd1f8ca3a2af93e86beea3",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Aaron",
+     "last": "Rodgers",
+     "group": "team",
+     "offset": 1060,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Scott",
+     "last": "Tolzien",
+     "group": "team",
+     "offset": 1144,
+     "value": 53
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Brett",
+     "last": "Hundley",
+     "group": "team",
+     "offset": 1228,
+     "value": 67
+    }
+   ]
+  },
+  {
+   "outer_index": 4357,
+   "name_id": 937318042,
+   "name": "outer_4357.ROST",
+   "size": 8816,
+   "sha256": "b8f186a74b71f22e2c3ac91526213e5007edd04bfb89665019e09d0df6da455d",
+   "sha256_after": "8389ab2bb9651f4646d553d22e6d3c6e47b9f619c521951b741452f26f27608a",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Matthew",
+     "last": "Stafford",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Dan",
+     "last": "Orlovsky",
+     "group": "team",
+     "offset": 1144,
+     "value": 75
+    }
+   ]
+  },
+  {
+   "outer_index": 4358,
+   "name_id": 4073017122,
+   "name": "outer_4358.ROST",
+   "size": 8800,
+   "sha256": "dd8d87b8a4f7754d6df41771c448a33f1c03c976c6763a1827704b3ef47de13e",
+   "sha256_after": "ababafe36ea0350859554bc8525cccd90356865840c2e160b3d2fa21279942e6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Drew",
+     "last": "Brees",
+     "group": "team",
+     "offset": 1060,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chase",
+     "last": "Daniel",
+     "group": "team",
+     "offset": 1144,
+     "value": 63
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Taysom",
+     "last": "Hill",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4359,
+   "name_id": 1033046429,
+   "name": "outer_4359.ROST",
+   "size": 8976,
+   "sha256": "6a74b0ee85b3ab9347c9db4c9e733fde3ab5ed9f3aabff04f6bec6815ceb4034",
+   "sha256_after": "e17b895a02072463c75732044a6b5a001428ffd11d516a49de5061e20c6c29ac",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Case",
+     "last": "Keenum",
+     "group": "team",
+     "offset": 1060,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Sam",
+     "last": "Bradford",
+     "group": "team",
+     "offset": 1144,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Teddy",
+     "last": "Bridgewater",
+     "group": "team",
+     "offset": 1228,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 3,
+     "first": "Kyle",
+     "last": "Sloter",
+     "group": "team",
+     "offset": 1312,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4360,
+   "name_id": 3634126306,
+   "name": "outer_4360.ROST",
+   "size": 8768,
+   "sha256": "5e135f52722b03c595babdafdaf0aa02590ae50e2a355e26f545fcb0778acc0c",
+   "sha256_after": "e82aeec8bf8ea0cfa7ad243649164b45359a03548bcca2cfed8ff86d145c00a0",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Nick",
+     "last": "Foles",
+     "group": "team",
+     "offset": 1060,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Nate",
+     "last": "Sudfeld",
+     "group": "team",
+     "offset": 1144,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 4361,
+   "name_id": 1289344802,
+   "name": "outer_4361.ROST",
+   "size": 8656,
+   "sha256": "66f8beff5d6f6ccc01df5e68a8ef35bfca4556d92c31441adfeafad88475bbdf",
+   "sha256_after": "978d4903d2a0c1127923663bffd1d712ed7134bce78c3f3605a7e8952264ea12",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 1060,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brian",
+     "last": "Hoyer",
+     "group": "team",
+     "offset": 1144,
+     "value": 60
+    }
+   ]
+  },
+  {
+   "outer_index": 4362,
+   "name_id": 248797024,
+   "name": "outer_4362.ROST",
+   "size": 8752,
+   "sha256": "9b3e492e40dae1157978769f035eaf7e41e74085b00ecac2415b34ead4900f3d",
+   "sha256_after": "863aac75aa21b539388b45f4d870d21f3e14c8e3e1a2e5cc7c1623919e6168a3",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jimmy",
+     "last": "Garoppolo",
+     "group": "team",
+     "offset": 1060,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Nick",
+     "last": "Mullens",
+     "group": "team",
+     "offset": 1144,
+     "value": 57
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "C.J.",
+     "last": "Beathard",
+     "group": "team",
+     "offset": 1228,
+     "value": 70
+    }
+   ]
+  },
+  {
+   "outer_index": 4363,
+   "name_id": 3962962337,
+   "name": "outer_4363.ROST",
+   "size": 9056,
+   "sha256": "ccda927f5b7183beb81a9890477cb90cff466e4b52486cb6a0e15c38505e0050",
+   "sha256_after": "096ce8b66a93ec182e833195524aa4f14772e91f318f96e26bed236589199756",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Patrick",
+     "last": "Mahomes",
+     "group": "team",
+     "offset": 1060,
+     "value": 95
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Moore",
+     "group": "team",
+     "offset": 1144,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Chad",
+     "last": "Henne",
+     "group": "team",
+     "offset": 1228,
+     "value": 70
+    }
+   ]
+  },
+  {
+   "outer_index": 4364,
+   "name_id": 942693799,
+   "name": "outer_4364.ROST",
+   "size": 8704,
+   "sha256": "70b3500e2d3bc45157d489b1aa96d7b1a3a0c0db769f20eac29509a1217ad6d0",
+   "sha256_after": "5ee11d66f53242bd6776f6fad98b8c0007788bec9ac2c2482b92f5de41672afa",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Josh",
+     "last": "Allen",
+     "group": "team",
+     "offset": 1060,
+     "value": 95
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mitchell",
+     "last": "Trubisky",
+     "group": "team",
+     "offset": 1144,
+     "value": 57
+    }
+   ]
+  },
+  {
+   "outer_index": 4365,
+   "name_id": 2771962961,
+   "name": "outer_4365.ROST",
+   "size": 9008,
+   "sha256": "753b243aee2f4ec142e76604d745917801445059dda8395deb0c01575182a86a",
+   "sha256_after": "58f1bfeb916d3380954899ceee0614bfb08e2e258f824fb69563b43bb9980856",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Patrick",
+     "last": "Mahomes",
+     "group": "team",
+     "offset": 1060,
+     "value": 98
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chad",
+     "last": "Henne",
+     "group": "team",
+     "offset": 1144,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Shane",
+     "last": "Buechele",
+     "group": "team",
+     "offset": 1228,
+     "value": 68
+    }
+   ]
+  },
+  {
+   "outer_index": 4366,
+   "name_id": 47129817,
+   "name": "outer_4366.ROST",
+   "size": 8816,
+   "sha256": "6d9b945957c2af9dda94014dc0e34ddf135014d3e1abaa4ffde8a949b6e4fa36",
+   "sha256_after": "a077a5831d1db2428d0431d4842ecc71ce9834d1b3034a26adebfa0b54f83d40",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Matthew",
+     "last": "Stafford",
+     "group": "team",
+     "offset": 1060,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "John",
+     "last": "Wolford",
+     "group": "team",
+     "offset": 1144,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Bryce",
+     "last": "Perkins",
+     "group": "team",
+     "offset": 1228,
+     "value": 68
+    }
+   ]
+  },
+  {
+   "outer_index": 4367,
+   "name_id": 861086529,
+   "name": "outer_4367.ROST",
+   "size": 9056,
+   "sha256": "a5b061922f2c5ddc9a687648dae5167131e6b4bd8a95b2d94cb23141f2d8703f",
+   "sha256_after": "c276c502278aa8c25a3695a0769682aa730b331e9478da088066c78dd4dda12f",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Joe",
+     "last": "Burrow",
+     "group": "team",
+     "offset": 1060,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brandon",
+     "last": "Allen",
+     "group": "team",
+     "offset": 1144,
+     "value": 49
+    }
+   ]
+  },
+  {
+   "outer_index": 4368,
+   "name_id": 2957031954,
+   "name": "outer_4368.ROST",
+   "size": 8864,
+   "sha256": "d2d7320023a0f09fceb596d37a5a14f6e5d132c99fab16c61061872238e7df31",
+   "sha256_after": "93f63918e6b018266a14939b0bf93c58ae34d0f567d684aef0007568ba8c801a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Matt",
+     "last": "Ryan",
+     "group": "team",
+     "offset": 1060,
+     "value": 76
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Nick",
+     "last": "Foles",
+     "group": "team",
+     "offset": 1144,
+     "value": 36
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Sam",
+     "last": "Ehlinger",
+     "group": "team",
+     "offset": 1228,
+     "value": 49
+    }
+   ]
+  },
+  {
+   "outer_index": 4369,
+   "name_id": 1281963668,
+   "name": "outer_4369.ROST",
+   "size": 8768,
+   "sha256": "cb8b3b5572dc6285ca1e4c67c128ca09846503d6db3a2ee2aaf40068d2c30765",
+   "sha256_after": "e6433290fbc4a85f6360c1fcba42e64a691af50aecd42b1e1042137ce3746ae9",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Brock",
+     "last": "Purdy",
+     "group": "team",
+     "offset": 1060,
+     "value": 95
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Sam",
+     "last": "Darnold",
+     "group": "team",
+     "offset": 1144,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Brandon",
+     "last": "Allen",
+     "group": "team",
+     "offset": 1228,
+     "value": 71
+    }
+   ]
+  },
+  {
+   "outer_index": 4370,
+   "name_id": 2790471275,
+   "name": "outer_4370.ROST",
+   "size": 10240,
+   "sha256": "408d2d448aeb00e2ca958c25c5ed4d0d68c4ea969b3aa4e799794e4fde111daf",
+   "sha256_after": "acbfb8afe5158910a014e52d79d48ec4286e17d672f6d54fcb13e9eeedf202f8",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Patrick",
+     "last": "Mahomes",
+     "group": "team",
+     "offset": 1060,
+     "value": 87
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Blaine",
+     "last": "Gabbert",
+     "group": "team",
+     "offset": 1144,
+     "value": 55
+    }
+   ]
+  },
+  {
+   "outer_index": 4451,
+   "name_id": 3079387420,
+   "name": "outer_4451.ROST",
+   "size": 12288,
+   "sha256": "615389cd2732dad50c3a591b7edf07e82e7dedb4ec03ccc54160d4394a637475",
+   "sha256_after": "66b7dc35715f92564514733e2d1fd1ba3fb633133b6c01244294e948032060f9",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Guy",
+     "last": "Benjamin",
+     "group": "team",
+     "offset": 7512,
+     "value": 60
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Montana",
+     "group": "team",
+     "offset": 7596,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4452,
+   "name_id": 3802305696,
+   "name": "outer_4452.ROST",
+   "size": 12544,
+   "sha256": "ab498ffc4a6545fa29e83ad6ae77c00510fc2bbe28b32c1f96acc80bf9dd8664",
+   "sha256_after": "0e0d346d7506a34ee03f14b75c7028ef1b333a5a5c2702d80ed49597868ef046",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Steve",
+     "last": "Bono",
+     "group": "team",
+     "offset": 7480,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Montana",
+     "group": "team",
+     "offset": 7564,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Steve",
+     "last": "Young",
+     "group": "team",
+     "offset": 7648,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4453,
+   "name_id": 2490703734,
+   "name": "outer_4453.ROST",
+   "size": 13264,
+   "sha256": "374b5fc0a8a1cb11b3e7864c6d2c3a36d92e4f12fc4525c09bf9eda45c1b9c5e",
+   "sha256_after": "0f23739bc2df0f3d8960b1424c0f637e0724621f134986882f629de0560a2a17",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bill",
+     "last": "Musgrave",
+     "group": "team",
+     "offset": 7448,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Elvis",
+     "last": "Grbac",
+     "group": "team",
+     "offset": 7532,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Steve",
+     "last": "Young",
+     "group": "team",
+     "offset": 7616,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4454,
+   "name_id": 2303743022,
+   "name": "outer_4454.ROST",
+   "size": 13072,
+   "sha256": "68305c1d5d4bf0223b0e066f176dbb84dd3bb65105415130af43016c09e07659",
+   "sha256_after": "eda3f794a580a142865a68a7608d17905453c1c3fde936cf145f5a07bef15854",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jeff",
+     "last": "Garcia",
+     "group": "team",
+     "offset": 7320,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Tim",
+     "last": "Rattay",
+     "group": "team",
+     "offset": 7404,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Ken",
+     "last": "Dorsey",
+     "group": "team",
+     "offset": 7488,
+     "value": 74
+    }
+   ]
+  },
+  {
+   "outer_index": 4455,
+   "name_id": 201036414,
+   "name": "outer_4455.ROST",
+   "size": 11280,
+   "sha256": "51e1c1b15e929881b0d7d26bab3c566e7362a61aecb5f4830d8a3386ceae407b",
+   "sha256_after": "365a1526af89438c7bda44d8facdd943349673ffcfba007bd48d43f0f471c5e0",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Billy",
+     "last": "Wade",
+     "group": "team",
+     "offset": 7352,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Rudy",
+     "last": "Bukich",
+     "group": "team",
+     "offset": 7436,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4456,
+   "name_id": 3607171690,
+   "name": "outer_4456.ROST",
+   "size": 12176,
+   "sha256": "3c60952372548c198b86a3738035c82425a07be3f965d247b80c620d7c80d581",
+   "sha256_after": "8f1b22215cff5ae2dbcfd26440e7c774f38573ff67e09d6411ba6d00b921c206",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jim",
+     "last": "McMahon",
+     "group": "team",
+     "offset": 7320,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mike",
+     "last": "Tomczak",
+     "group": "team",
+     "offset": 7404,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Steve",
+     "last": "Fuller",
+     "group": "team",
+     "offset": 7488,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4457,
+   "name_id": 248580013,
+   "name": "outer_4457.ROST",
+   "size": 12560,
+   "sha256": "33f6142a7795759e9842506af4e18223c1f8f638cff61c53f4fe83861125dc63",
+   "sha256_after": "7515f5918d3dacf6c8ac2838f53519c3483fd24419e9a767568af6fcb777db41",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Turk",
+     "last": "Schonert",
+     "group": "team",
+     "offset": 7768,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jack",
+     "last": "Thompson",
+     "group": "team",
+     "offset": 7852,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Ken",
+     "last": "Anderson",
+     "group": "team",
+     "offset": 7936,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4458,
+   "name_id": 180877988,
+   "name": "outer_4458.ROST",
+   "size": 12768,
+   "sha256": "d1383f81e9375c25c8f04c554adebe575c714ae6cc273f59287c941d2ff13feb",
+   "sha256_after": "f4348fc564fa8d6047800d7b46aa7414e0d66a70bcc0b32ec35839dede47b699",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Boomer",
+     "last": "Esiason",
+     "group": "team",
+     "offset": 7768,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Turk",
+     "last": "Schonert",
+     "group": "team",
+     "offset": 7852,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Norseth",
+     "group": "team",
+     "offset": 7936,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4459,
+   "name_id": 451538901,
+   "name": "outer_4459.ROST",
+   "size": 11040,
+   "sha256": "98b1cfb60275b1b6f954798ede0423247371248eaaa5c2ff5859f7be46388305",
+   "sha256_after": "d44f8d0d651bc38512e97a2ccf0478daea0a419e92229bcda04907aa23c2e0a5",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Daryle",
+     "last": "Lamonica",
+     "group": "team",
+     "offset": 7384,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jack",
+     "last": "Kemp",
+     "group": "team",
+     "offset": 7468,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4460,
+   "name_id": 3757222388,
+   "name": "outer_4460.ROST",
+   "size": 12608,
+   "sha256": "89804cb4b939b0ea1b22cf6ec0127817cc31a3f308ba108634f08cb94007571e",
+   "sha256_after": "f08fb4f30bc8478b1c6d5593e9428664e963a5bf68d37519f9de6d5b55eb9c75",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jim",
+     "last": "Kelly",
+     "group": "team",
+     "offset": 7352,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Gale",
+     "last": "Gilbert",
+     "group": "team",
+     "offset": 7436,
+     "value": 60
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Frank",
+     "last": "Reich",
+     "group": "team",
+     "offset": 7520,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4461,
+   "name_id": 2513710783,
+   "name": "outer_4461.ROST",
+   "size": 12400,
+   "sha256": "298162aca287e938fe0736942bf58e5287409310562092c742f2bfb3d2833ca2",
+   "sha256_after": "7dc63e0b98f41af11806d9c75b0c0534c178c645787b01386a344592b90cda84",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Craig",
+     "last": "Morton",
+     "group": "team",
+     "offset": 7672,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Craig",
+     "last": "Penrose",
+     "group": "team",
+     "offset": 7756,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Norris",
+     "last": "Weese",
+     "group": "team",
+     "offset": 7840,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4462,
+   "name_id": 419582069,
+   "name": "outer_4462.ROST",
+   "size": 12432,
+   "sha256": "69a6bfc05dd1bbbb3dad0b26b43e79775c0f17bc7b1c3808c157dfd33301ab30",
+   "sha256_after": "ae12dcf49a8431cdbda7ccfbdd778d8243720f46d4a43a75b3010dc18647e185",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "John",
+     "last": "Elway",
+     "group": "team",
+     "offset": 7672,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Gary",
+     "last": "Kubiak",
+     "group": "team",
+     "offset": 7756,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4463,
+   "name_id": 3056495312,
+   "name": "outer_4463.ROST",
+   "size": 13232,
+   "sha256": "34b12cb75e66be65cdd4e675ac3c0e14dba72d1595f0d19c817c81fc73a953e4",
+   "sha256_after": "32e66b1d2f6adf81e8ad41745f60b7c08037edf83787a653c458b7a927df0f41",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "John",
+     "last": "Elway",
+     "group": "team",
+     "offset": 7512,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brian",
+     "last": "Griese",
+     "group": "team",
+     "offset": 7596,
+     "value": 78
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Bubby",
+     "last": "Brister",
+     "group": "team",
+     "offset": 7680,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4464,
+   "name_id": 656005370,
+   "name": "outer_4464.ROST",
+   "size": 12016,
+   "sha256": "3d2f6641288ec9428296e6caac86a300a12f59df89541b93bc0fcd072b6ba1f3",
+   "sha256_after": "edf6a288355575dd1fc47483c1036f9721c0a9949c88e0b6f0f5df25e040f38d",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Frank",
+     "last": "Ryan",
+     "group": "team",
+     "offset": 7672,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jim",
+     "last": "Ninowski",
+     "group": "team",
+     "offset": 7756,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4465,
+   "name_id": 2121387506,
+   "name": "outer_4465.ROST",
+   "size": 12528,
+   "sha256": "22c0aca7a32990e06c287d95982a42524f5c1f1d58678f713c423bff9e815294",
+   "sha256_after": "767e73c00b61b976a950835d02cee674427d12e3a48e533aaa88b6039c5b9a7a",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bernie",
+     "last": "Kosar",
+     "group": "team",
+     "offset": 7672,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mike",
+     "last": "Pagel",
+     "group": "team",
+     "offset": 7756,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4466,
+   "name_id": 1217545907,
+   "name": "outer_4466.ROST",
+   "size": 12912,
+   "sha256": "85962d20de21d450b8be8255a9786f24e3c1ad047c19faa32bbce09f279a0444",
+   "sha256_after": "dfd82d08b453f61aff84ac55f6a0fe3c5429184bfa5ce7ebcc19ce377c2e1b8f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Doug",
+     "last": "Williams",
+     "group": "team",
+     "offset": 8088,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chuck",
+     "last": "Fusina",
+     "group": "team",
+     "offset": 8172,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Rae",
+     "group": "team",
+     "offset": 8256,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4467,
+   "name_id": 2400454632,
+   "name": "outer_4467.ROST",
+   "size": 13472,
+   "sha256": "39a472f7d07b57cc4a9b5401abd08098ead55d866f2196972fa3d2a1f7fa970e",
+   "sha256_after": "5d939b5b65e40587e663c7a815769dcc6dde5a2e5c9f41fe83dade0d44d7f05a",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Trent",
+     "last": "Dilfer",
+     "group": "team",
+     "offset": 7704,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Shaun",
+     "last": "King",
+     "group": "team",
+     "offset": 7788,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Eric",
+     "last": "Zeier",
+     "group": "team",
+     "offset": 7872,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 3,
+     "first": "Scott",
+     "last": "Milanovich",
+     "group": "team",
+     "offset": 7956,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4468,
+   "name_id": 1286689415,
+   "name": "outer_4468.ROST",
+   "size": 13248,
+   "sha256": "a0fae17c3998fe00f5a3180fcb5c8bb340e2cc4d6c84f2fbbee257f0de80aa7c",
+   "sha256_after": "13140f1fab0bcf4354d27a5515000d42a674ab2aebc21981e9073ecd3c2d8f7f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Brad",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 7480,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Rob",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 7564,
+     "value": 69
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Shaun",
+     "last": "King",
+     "group": "team",
+     "offset": 7648,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 4469,
+   "name_id": 3484408088,
+   "name": "outer_4469.ROST",
+   "size": 12256,
+   "sha256": "24877a46d46b82c10dfd4001b16b138e30e44059c2e136c457a00ff9441281c5",
+   "sha256_after": "1422fc606454d532a26dbcc7f7ddfd32acc2ff8c1fa330a53f64b02a0cd13e05",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jim",
+     "last": "Hart",
+     "group": "team",
+     "offset": 7768,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Dennis",
+     "last": "Shaw",
+     "group": "team",
+     "offset": 7852,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Gary",
+     "last": "Keithley",
+     "group": "team",
+     "offset": 7936,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4470,
+   "name_id": 3503707850,
+   "name": "outer_4470.ROST",
+   "size": 11488,
+   "sha256": "30f92732cebeaf8e71a902f9b47b4292a28c72eb70be2406ce6e3a5ff917d45d",
+   "sha256_after": "25a1992406e9fea4c8f04a018ab0086bf2d470b366bfc10c79ae8595c2041090",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "John",
+     "last": "Hadl",
+     "group": "team",
+     "offset": 7896,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Tobin",
+     "last": "Rote",
+     "group": "team",
+     "offset": 7980,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4471,
+   "name_id": 664524734,
+   "name": "outer_4471.ROST",
+   "size": 12688,
+   "sha256": "2cb254a35f4c5b66150f6937bf991004faf966a520474c2196bf233c11dc009c",
+   "sha256_after": "5a1bc835920135f267959d46c49d91ea0bcdee4635dc64a7d318e84434017701",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Dan",
+     "last": "Fouts",
+     "group": "team",
+     "offset": 7896,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Ed",
+     "last": "Luther",
+     "group": "team",
+     "offset": 7980,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "James",
+     "last": "Harris",
+     "group": "team",
+     "offset": 8064,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4472,
+   "name_id": 2071477464,
+   "name": "outer_4472.ROST",
+   "size": 13536,
+   "sha256": "89d0bb442216c546ccf028b123206d05b13034d7987f58fa5d83ea0fb141408c",
+   "sha256_after": "02ed2cb4ec3c5d047e6f9e8d231d29ab55a5a7099ac52d06decd58da5f9ed7a9",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Stan",
+     "last": "Humphries",
+     "group": "team",
+     "offset": 7832,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Gale",
+     "last": "Gilbert",
+     "group": "team",
+     "offset": 7916,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jeff",
+     "last": "Brohm",
+     "group": "team",
+     "offset": 8000,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4473,
+   "name_id": 2338102899,
+   "name": "outer_4473.ROST",
+   "size": 11824,
+   "sha256": "f6b9effabc077a572ca1fcf5aaa21b18152b068e96b6eabae9f25a40175f8ff5",
+   "sha256_after": "2c0ed3928c608b05d71f0093f0a7ffd2c5f73b3b996bf88f506335851cb68ca9",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Flores",
+     "group": "team",
+     "offset": 7544,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Len",
+     "last": "Dawson",
+     "group": "team",
+     "offset": 7628,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Livingston",
+     "group": "team",
+     "offset": 7712,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4474,
+   "name_id": 97668063,
+   "name": "outer_4474.ROST",
+   "size": 13200,
+   "sha256": "f65e600aa97483352a98214ea7d4f9505941d36a388d66d72f20d009ceeaa606",
+   "sha256_after": "042c8d504364c581be9f8b9556f584d9071e1adb95a352e6ad686d8a473cac16",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Dave",
+     "last": "Krieg",
+     "group": "team",
+     "offset": 7544,
+     "value": 83
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Montana",
+     "group": "team",
+     "offset": 7628,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Matt",
+     "last": "Blundin",
+     "group": "team",
+     "offset": 7712,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4475,
+   "name_id": 1327128166,
+   "name": "outer_4475.ROST",
+   "size": 11696,
+   "sha256": "999f6a10baac95ac77e398bfffdb8ba7ed8008d4322988e5b58ec32a4204b40b",
+   "sha256_after": "33bb2890df922fb93e52931a768aa2e771892ae8ec6f60f7366128af741eaf87",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Earl",
+     "last": "Morrall",
+     "group": "team",
+     "offset": 7480,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Johnny",
+     "last": "Unitas",
+     "group": "team",
+     "offset": 7564,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4476,
+   "name_id": 1498613718,
+   "name": "outer_4476.ROST",
+   "size": 11952,
+   "sha256": "8f4d8706969add03d2da17703fc09f11b34ef60616066fcf58ea6f3aa09bf5e5",
+   "sha256_after": "29cb6fbb311ee3e982327dc4a7771dbe8014726f1283fa81a534b2006df88a53",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Roger",
+     "last": "Staubach",
+     "group": "team",
+     "offset": 7672,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Craig",
+     "last": "Morton",
+     "group": "team",
+     "offset": 7756,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4477,
+   "name_id": 852317855,
+   "name": "outer_4477.ROST",
+   "size": 12560,
+   "sha256": "ff3f99834ed172d62c10a7a3ba5683d2b83be77c10bdafee3962572fe06adebe",
+   "sha256_after": "658e6e241b0f40388c4a25b4df72b71123940587b9dd56372c4ad46bbe7d5575",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Roger",
+     "last": "Staubach",
+     "group": "team",
+     "offset": 7704,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Glenn",
+     "last": "Carano",
+     "group": "team",
+     "offset": 7788,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4478,
+   "name_id": 3132584418,
+   "name": "outer_4478.ROST",
+   "size": 12800,
+   "sha256": "097d5ae61248ff6a76ab51af3349052795b91f1330f2774641fc8018fb92e00e",
+   "sha256_after": "275481f5c46e50fcc25283679079946496b3635988640597e3568b5b592e929d",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Steve",
+     "last": "Beuerlein",
+     "group": "team",
+     "offset": 7640,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Troy",
+     "last": "Aikman",
+     "group": "team",
+     "offset": 7724,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4479,
+   "name_id": 2283653168,
+   "name": "outer_4479.ROST",
+   "size": 12656,
+   "sha256": "94d23c7ce0e7abb5daaaf16bcdf17488b8a330c621e0402719bf27bbeb3062de",
+   "sha256_after": "eccd5330998eda8d12dedb6ffa463619f65f2b9198f12a849c547aec7e90814d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bob",
+     "last": "Griese",
+     "group": "team",
+     "offset": 7800,
+     "value": 81
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Earl",
+     "last": "Morrall",
+     "group": "team",
+     "offset": 7884,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jim Del",
+     "last": "Gaizo",
+     "group": "team",
+     "offset": 7968,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4480,
+   "name_id": 593689605,
+   "name": "outer_4480.ROST",
+   "size": 13024,
+   "sha256": "142096c26953cb0692c285ef13a6cb1dd2accac7eb79535a4323a42a0d925318",
+   "sha256_after": "6e97ea459a562f7216747be044ab04ae85a49587862c3a7d9d3dc17d80388254",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Dan",
+     "last": "Marino",
+     "group": "team",
+     "offset": 7832,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Don",
+     "last": "Strock",
+     "group": "team",
+     "offset": 7916,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4481,
+   "name_id": 2713965037,
+   "name": "outer_4481.ROST",
+   "size": 11632,
+   "sha256": "daf980ba876598eeffb06c9ec69954c069dc9720a0501482ab7bcab7371ebeca",
+   "sha256_after": "19e6d4f95b32aeb6e99493d98cd50aca89e63747085a86b8ffec085d81bd2237",
+   "qb_count": 1,
+   "bytes_changed": 1,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Sonny",
+     "last": "Jurgensen",
+     "group": "team",
+     "offset": 7672,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4482,
+   "name_id": 3842575980,
+   "name": "outer_4482.ROST",
+   "size": 12592,
+   "sha256": "73c59aac5bda27b1a047bd8112944266a4b1eb3be56aeab43b2dac765d6b6fb7",
+   "sha256_after": "ecf9e66f4fdbe412864214e4fd49626ae0fa6e320362fcf642adc1fef785276e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Ron",
+     "last": "Jaworski",
+     "group": "team",
+     "offset": 7672,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Pisarcik",
+     "group": "team",
+     "offset": 7756,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Rob",
+     "last": "Hertel",
+     "group": "team",
+     "offset": 7840,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4483,
+   "name_id": 1120529913,
+   "name": "outer_4483.ROST",
+   "size": 13072,
+   "sha256": "9abdeaf7588355372ade664b494a174f9a598e66edba5bdc2043c2bd0a5501fd",
+   "sha256_after": "ce7801ba2260ad6e4a9297da45fa7cd2de25c920c666d9e15375c6d3af80965f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Donovan",
+     "last": "McNabb",
+     "group": "team",
+     "offset": 7352,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Koy",
+     "last": "Detmer",
+     "group": "team",
+     "offset": 7436,
+     "value": 54
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jeff",
+     "last": "Blake",
+     "group": "team",
+     "offset": 7520,
+     "value": 74
+    }
+   ]
+  },
+  {
+   "outer_index": 4484,
+   "name_id": 2549223737,
+   "name": "outer_4484.ROST",
+   "size": 12448,
+   "sha256": "3598714dee64ab193b12dbf9d7434d2c8f230264e369f215b6b22dd8ca7217a3",
+   "sha256_after": "0c218184a7ce8a47fa2dad2735ae2c583690928c403d3d7680091132a4c0bf8a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Larry",
+     "last": "Fortner",
+     "group": "team",
+     "offset": 7576,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mike",
+     "last": "Moroski",
+     "group": "team",
+     "offset": 7660,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Steve",
+     "last": "Bartkowski",
+     "group": "team",
+     "offset": 7744,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4485,
+   "name_id": 3162640875,
+   "name": "outer_4485.ROST",
+   "size": 13216,
+   "sha256": "589b2759c78c2394693c55d9a8ed48c66d4dfae28a95922fca342a4cf2cf3837",
+   "sha256_after": "fb38c3ae7d9fbdb60345385891d195ac94667ff5fa90269538d426263b33f5b2",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Chris",
+     "last": "Chandler",
+     "group": "team",
+     "offset": 7448,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Steve",
+     "last": "DeBerg",
+     "group": "team",
+     "offset": 7532,
+     "value": 70
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Tony",
+     "last": "Graziani",
+     "group": "team",
+     "offset": 7616,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4486,
+   "name_id": 1199754914,
+   "name": "outer_4486.ROST",
+   "size": 11280,
+   "sha256": "a095c54e6da9fce1be071cd233d2cead46e09c7d0efb51f1b45e4a8939550e2f",
+   "sha256_after": "658a0b63da20dbfb1cf3b9a55bde2c4a6942e397bed4aa5e601d560d80ff82d7",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Charlie",
+     "last": "Conerly",
+     "group": "team",
+     "offset": 7448,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Bob",
+     "last": "Clatterbuck",
+     "group": "team",
+     "offset": 7532,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Don",
+     "last": "Heinrich",
+     "group": "team",
+     "offset": 7616,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4487,
+   "name_id": 3153862641,
+   "name": "outer_4487.ROST",
+   "size": 12304,
+   "sha256": "34ee8ce3ae4d53d5729069620b1eac4ad7cbd880811979ea6e20c5897ec0f75b",
+   "sha256_after": "7ad427741a2533ffd75d32ca55f84137f26c5742671dd7733ae7a7df1dc9ad4d",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Phil",
+     "last": "Simms",
+     "group": "team",
+     "offset": 7448,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jeff",
+     "last": "Rutledge",
+     "group": "team",
+     "offset": 7532,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4488,
+   "name_id": 2183197367,
+   "name": "outer_4488.ROST",
+   "size": 12512,
+   "sha256": "06b6b26f5422857bc5e8aab198b2e4c99f7dbfcba58d1166d3cfaeb937ee3714",
+   "sha256_after": "73a80750c194fbc06010a8eff3f6c611f13994a3579d3633daace4f0191d6371",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jeff",
+     "last": "Hostetler",
+     "group": "team",
+     "offset": 7448,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Matt",
+     "last": "Cavanaugh",
+     "group": "team",
+     "offset": 7532,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4489,
+   "name_id": 4283767296,
+   "name": "outer_4489.ROST",
+   "size": 13008,
+   "sha256": "c6a5dc6482ef200da7ebd19bc1307059c8ce66bf0d472715953d850a7a90a9b4",
+   "sha256_after": "0ccd741e5a60495fb94dfa812b3e2dcc352ab4c3233b69e8473c32318f1f3c1e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kerry",
+     "last": "Collins",
+     "group": "team",
+     "offset": 7256,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jesse",
+     "last": "Palmer",
+     "group": "team",
+     "offset": 7340,
+     "value": 56
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jason",
+     "last": "Garrett",
+     "group": "team",
+     "offset": 7424,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 4490,
+   "name_id": 3358343048,
+   "name": "outer_4490.ROST",
+   "size": 13152,
+   "sha256": "9070c75ae20535b281a983bb3960d2b384ff7ddf7e0b5dbcedaa6f0e0068dd54",
+   "sha256_after": "a8d76b5ba55a21c87c37638ea868cd52d7560350f5f2dc644ea73108f7098409",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Mark",
+     "last": "Brunell",
+     "group": "team",
+     "offset": 7448,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jay",
+     "last": "Fiedler",
+     "group": "team",
+     "offset": 7532,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jonathan",
+     "last": "Quinn",
+     "group": "team",
+     "offset": 7616,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4491,
+   "name_id": 3655119650,
+   "name": "outer_4491.ROST",
+   "size": 11648,
+   "sha256": "113ea4656d6f65f5a5ff59c8e8bf107176fa852c24aea03bc802ae3240b71777",
+   "sha256_after": "96997f792a4e0b2043093d45a5f641ecc14157831584e4d110976144370cb595",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Joe",
+     "last": "Namath",
+     "group": "team",
+     "offset": 7384,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Babe",
+     "last": "Parilli",
+     "group": "team",
+     "offset": 7468,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4492,
+   "name_id": 1574782402,
+   "name": "outer_4492.ROST",
+   "size": 13024,
+   "sha256": "cb5725686387bea158c2c9a0ec1d6c0c6c86ec50f1456eca0119c136ab287559",
+   "sha256_after": "4948d6eca661502a8dd41601f9ad274ea5454706a96a6cf4e24c4483d6b7e160",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Vinny",
+     "last": "Testaverde",
+     "group": "team",
+     "offset": 7320,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Ray",
+     "last": "Lucas",
+     "group": "team",
+     "offset": 7404,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Glenn",
+     "last": "Foley",
+     "group": "team",
+     "offset": 7488,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4493,
+   "name_id": 143811118,
+   "name": "outer_4493.ROST",
+   "size": 10960,
+   "sha256": "d25c808bd111952943e4a931922ffe0b24cc3df53dd85d196ad5730664ba9143",
+   "sha256_after": "9d69c6eb8d188d35c7fc141dd44d33c56063373f59e3c3cf8e5878c42005bebb",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Dublinski",
+     "group": "team",
+     "offset": 7480,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Bobby",
+     "last": "Layne",
+     "group": "team",
+     "offset": 7564,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4494,
+   "name_id": 4035575449,
+   "name": "outer_4494.ROST",
+   "size": 12560,
+   "sha256": "ea2d4199b37c29d714f0b333a8a124da83942da92efa454e9aae6ff46a50b448",
+   "sha256_after": "9526369e1710b8af3c52075ce969037fe50ba599c55a905635d37e9e767607a7",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Erik",
+     "last": "Kramer",
+     "group": "team",
+     "offset": 7480,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Andre",
+     "last": "Ware",
+     "group": "team",
+     "offset": 7564,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Chuck",
+     "last": "Long",
+     "group": "team",
+     "offset": 7648,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4495,
+   "name_id": 213595131,
+   "name": "outer_4495.ROST",
+   "size": 11328,
+   "sha256": "4b6b3bd7a07f755d1d89be2302d84633d0f6ec2385d7bb062bd8d0fddbc3c391",
+   "sha256_after": "f9cc56b9fa27af7cc282890c245d9875f40d910c2495c2bdccf74f2deb085dff",
+   "qb_count": 1,
+   "bytes_changed": 1,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jacky",
+     "last": "Lee",
+     "group": "team",
+     "offset": 7608,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4496,
+   "name_id": 3752338274,
+   "name": "outer_4496.ROST",
+   "size": 12496,
+   "sha256": "660252de23d1a51dfa9474d25b082286b0fccff0332534f0fdb0bbc2770c0b3d",
+   "sha256_after": "d9b0235369481cc42bb7faeec1a030b1da1927aa93ef402cbdff78c0f8d543c8",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Dan",
+     "last": "Pastorini",
+     "group": "team",
+     "offset": 7640,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Gifford",
+     "last": "Nielsen",
+     "group": "team",
+     "offset": 7724,
+     "value": 72
+    }
+   ]
+  },
+  {
+   "outer_index": 4497,
+   "name_id": 3690120557,
+   "name": "outer_4497.ROST",
+   "size": 11984,
+   "sha256": "28154509c512e1d0431e1e0f0b492bb33659aa44e2023feefe8d960c57a5620b",
+   "sha256_after": "43f29e289feec0b7227ec5392834ede916ddb6af3916d90ec9b95532e769cb3c",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Zeke",
+     "last": "Bratkowski",
+     "group": "team",
+     "offset": 7736,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Bart",
+     "last": "Starr",
+     "group": "team",
+     "offset": 7820,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4498,
+   "name_id": 1873905810,
+   "name": "outer_4498.ROST",
+   "size": 13376,
+   "sha256": "42a984c7e6f0758928572ea523f70cc3365623beea823c70384df43cfdc13ad2",
+   "sha256_after": "04451d081b7af4692fa11a5146315f36d85d897b962f9d68e42a23617a3b2f34",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Brett",
+     "last": "Favre",
+     "group": "team",
+     "offset": 7640,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Doug",
+     "last": "Pederson",
+     "group": "team",
+     "offset": 7724,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jim",
+     "last": "McMahon",
+     "group": "team",
+     "offset": 7808,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4499,
+   "name_id": 3192523384,
+   "name": "outer_4499.ROST",
+   "size": 13392,
+   "sha256": "653975c148a3a2a33f7c87d73b0239cb1c48139faf182f19ca3ef25c045b2b8f",
+   "sha256_after": "423c98433beb9f709b2aa96bf6c528cc7405ce66928389f50d77b6d28714a7b6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Brett",
+     "last": "Favre",
+     "group": "team",
+     "offset": 7384,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Craig",
+     "last": "Nall",
+     "group": "team",
+     "offset": 7468,
+     "value": 58
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "J.T.",
+     "last": "O'Sullivan",
+     "group": "team",
+     "offset": 7552,
+     "value": 74
+    }
+   ]
+  },
+  {
+   "outer_index": 4500,
+   "name_id": 3202438787,
+   "name": "outer_4500.ROST",
+   "size": 13440,
+   "sha256": "60e18f608beb22cf128a166016fb418d2ba190fa6097be1a4802d2960319b409",
+   "sha256_after": "1a1204b624bf28171ec688e9bad91a002fcc6f694ef94bf964c69de5ec2079e0",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kerry",
+     "last": "Collins",
+     "group": "team",
+     "offset": 7704,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Steve",
+     "last": "Beuerlein",
+     "group": "team",
+     "offset": 7788,
+     "value": 72
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jay",
+     "last": "Barker",
+     "group": "team",
+     "offset": 7872,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4501,
+   "name_id": 2729089318,
+   "name": "outer_4501.ROST",
+   "size": 13072,
+   "sha256": "1fd78c5f5014664e3dfbd1bc23d8475ad120cba45d0522b57b1e97fde7ecc02d",
+   "sha256_after": "0504797a78d2ac398ecc9a233013395605fdea87d5fd073ff58cb65e83c8522f",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jake",
+     "last": "Delhomme",
+     "group": "team",
+     "offset": 7288,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Rodney",
+     "last": "Peete",
+     "group": "team",
+     "offset": 7372,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Chris",
+     "last": "Weinke",
+     "group": "team",
+     "offset": 7456,
+     "value": 66
+    }
+   ]
+  },
+  {
+   "outer_index": 4502,
+   "name_id": 3412253358,
+   "name": "outer_4502.ROST",
+   "size": 12624,
+   "sha256": "3bfa9b9b6a2a3ea8e6648b8fea6f0bc99cfb2e93409c5fb4f9d67e60c2bb458c",
+   "sha256_after": "df045ef260b147882cd2d28c4318679c7072f904f3793a415bdb8acb1d6ec6e1",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Ramsey",
+     "group": "team",
+     "offset": 7800,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Tony",
+     "last": "Eason",
+     "group": "team",
+     "offset": 7884,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4503,
+   "name_id": 194699757,
+   "name": "outer_4503.ROST",
+   "size": 13312,
+   "sha256": "2bd41ae43fef7095530e4ec3d9e014092314abbbb62cd51b307cd8fbadcb83a8",
+   "sha256_after": "a508c9aaf12b0ee7c9bbbf1f563eabd6a6ce0696cea7369d2869d48d3880c9da",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 7448,
+     "value": 84
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Drew",
+     "last": "Bledsoe",
+     "group": "team",
+     "offset": 7532,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Damon",
+     "last": "Huard",
+     "group": "team",
+     "offset": 7616,
+     "value": 74
+    }
+   ]
+  },
+  {
+   "outer_index": 4504,
+   "name_id": 861924600,
+   "name": "outer_4504.ROST",
+   "size": 12976,
+   "sha256": "27732c6615ecd10eb80bdfd79fb829420a240b945483afa9f4c5f33fd16a0567",
+   "sha256_after": "9a62f19462c51e9a89b1ec232e777ab418b9597ba3bbe61754112a53c5a3b05d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Tom",
+     "last": "Brady",
+     "group": "team",
+     "offset": 7288,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Damon",
+     "last": "Huard",
+     "group": "team",
+     "offset": 7372,
+     "value": 62
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Rohan",
+     "last": "Davey",
+     "group": "team",
+     "offset": 7456,
+     "value": 56
+    }
+   ]
+  },
+  {
+   "outer_index": 4505,
+   "name_id": 630893029,
+   "name": "outer_4505.ROST",
+   "size": 11840,
+   "sha256": "11439b33456d6bbf21be6d88f22f4059900c6a807e6178100d42d9ddeae64462",
+   "sha256_after": "538c400bf2a133cc506a68c8c8c0752468d7f99a8960a9032b91528709123599",
+   "qb_count": 1,
+   "bytes_changed": 1,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Daryle",
+     "last": "Lamonica",
+     "group": "team",
+     "offset": 7576,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4506,
+   "name_id": 132260985,
+   "name": "outer_4506.ROST",
+   "size": 12224,
+   "sha256": "1618e6d785f14ae2afa38bb78af97c70958ae458474a268a21f83e2432ded023",
+   "sha256_after": "c2f4367b5c8f6553730602cbb7c14844a74bf32bdee59dd2e49f8ce0bc684868",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Ken",
+     "last": "Stabler",
+     "group": "team",
+     "offset": 7608,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "David",
+     "last": "Humm",
+     "group": "team",
+     "offset": 7692,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Rae",
+     "group": "team",
+     "offset": 7776,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4507,
+   "name_id": 2441112976,
+   "name": "outer_4507.ROST",
+   "size": 12832,
+   "sha256": "481a17409ca6b26ac0d4cc195a9461bee9c891d60628d03916b782fa587927bc",
+   "sha256_after": "0846703e28a8d93f03d48679a7780d321c15fb0d44b80623fa627bd76651a273",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jim",
+     "last": "Plunkett",
+     "group": "team",
+     "offset": 7576,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "David",
+     "last": "Humm",
+     "group": "team",
+     "offset": 7660,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4508,
+   "name_id": 545963040,
+   "name": "outer_4508.ROST",
+   "size": 12208,
+   "sha256": "18a339f796b53a07c093b45242211352c4c6bf24bda223f005488da0673061ca",
+   "sha256_after": "f424c9eba03399371b2f3a1a0a186f5aaeb4c654dbffb3d2a682d4ffdd09c28d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bob",
+     "last": "Lee",
+     "group": "team",
+     "offset": 7416,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jeff",
+     "last": "Rutledge",
+     "group": "team",
+     "offset": 7500,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Vince",
+     "last": "Ferragamo",
+     "group": "team",
+     "offset": 7584,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4509,
+   "name_id": 1197685866,
+   "name": "outer_4509.ROST",
+   "size": 13088,
+   "sha256": "2273d87c42dab156812beada4bb5926ccf0444f02f7f4d2e1dde5fe48026d15c",
+   "sha256_after": "9ad6c31ba42c6f1962bdde4e098e0b951ea36bcd88fdf082e53864a3e8f7263d",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kurt",
+     "last": "Warner",
+     "group": "team",
+     "offset": 7384,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Germaine",
+     "group": "team",
+     "offset": 7468,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Paul",
+     "last": "Justin",
+     "group": "team",
+     "offset": 7552,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4510,
+   "name_id": 3842297948,
+   "name": "outer_4510.ROST",
+   "size": 13184,
+   "sha256": "e1af352b3724726ec2e917bf64a25db034ddcce2b5a4d750e4ef4c29f9f5614b",
+   "sha256_after": "f91a0a4b53b4077ba610717a55c67bc9732c50962b70b417e6e34cbe67c84cc7",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Trent",
+     "last": "Dilfer",
+     "group": "team",
+     "offset": 7480,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Chris",
+     "last": "Redman",
+     "group": "team",
+     "offset": 7564,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Tony",
+     "last": "Banks",
+     "group": "team",
+     "offset": 7648,
+     "value": 58
+    }
+   ]
+  },
+  {
+   "outer_index": 4511,
+   "name_id": 2686190841,
+   "name": "outer_4511.ROST",
+   "size": 12896,
+   "sha256": "5fb3c5738ffe1881a9181e64ca7cb76f63a37c7be0659d71be259b3b3687a68d",
+   "sha256_after": "0d32b96ea2fd22b91b26988e1ec3e52134966125cb08e1ff4d569ddf01b6ace6",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Joe",
+     "last": "Theismann",
+     "group": "team",
+     "offset": 7672,
+     "value": 93
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Bob",
+     "last": "Holly",
+     "group": "team",
+     "offset": 7756,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Tom",
+     "last": "Owen",
+     "group": "team",
+     "offset": 7840,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4512,
+   "name_id": 541858681,
+   "name": "outer_4512.ROST",
+   "size": 13040,
+   "sha256": "1a4704e187829715c3ec64dae53ceb61430004146e456c526aaa23ea5693f0c8",
+   "sha256_after": "474145c4ce5622bb72aa23e40c165438d3f4b40399b6ccbf679457693b9cbc4e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Doug",
+     "last": "Williams",
+     "group": "team",
+     "offset": 7672,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jay",
+     "last": "Schroeder",
+     "group": "team",
+     "offset": 7756,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mark",
+     "last": "Rypien",
+     "group": "team",
+     "offset": 7840,
+     "value": 86
+    }
+   ]
+  },
+  {
+   "outer_index": 4513,
+   "name_id": 1300323696,
+   "name": "outer_4513.ROST",
+   "size": 12736,
+   "sha256": "d90e40ebe13c8ecd2356203460c6353e3f04ef94855b29ab598a255b5df883cd",
+   "sha256_after": "c6aaf37fb03342bab9827e36bf1fba7f11f132598d4ec6931ffa206477fc78e5",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jeff",
+     "last": "Rutledge",
+     "group": "team",
+     "offset": 7672,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mark",
+     "last": "Rypien",
+     "group": "team",
+     "offset": 7756,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Stan",
+     "last": "Humphries",
+     "group": "team",
+     "offset": 7840,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4514,
+   "name_id": 491219335,
+   "name": "outer_4514.ROST",
+   "size": 12640,
+   "sha256": "92463e4dbc76ccf96fa82ac98cdd9ae191f3b3d0b35bdb87c7fac85c167afdc6",
+   "sha256_after": "27dcb59ef68a4bdd6ba8c4fb8e6db9c4090903b62fd6dfa1dc351b15b9d41651",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bobby",
+     "last": "Hebert",
+     "group": "team",
+     "offset": 7608,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mike",
+     "last": "Buck",
+     "group": "team",
+     "offset": 7692,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Steve",
+     "last": "Walsh",
+     "group": "team",
+     "offset": 7776,
+     "value": 82
+    }
+   ]
+  },
+  {
+   "outer_index": 4515,
+   "name_id": 1790106480,
+   "name": "outer_4515.ROST",
+   "size": 13120,
+   "sha256": "ab6dac6ecd5632342cb62665f4fc9a601ffe6bf789f6ed824e3e469a91051b49",
+   "sha256_after": "63dc961fd4b7a125e2ded395d51da1291ef33e3736c1e825ba81e5630a4783a1",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Aaron",
+     "last": "Brooks",
+     "group": "team",
+     "offset": 7480,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Billy Joe",
+     "last": "Tolliver",
+     "group": "team",
+     "offset": 7564,
+     "value": 74
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jake",
+     "last": "Delhomme",
+     "group": "team",
+     "offset": 7648,
+     "value": 74
+    }
+   ]
+  },
+  {
+   "outer_index": 4516,
+   "name_id": 2751143,
+   "name": "outer_4516.ROST",
+   "size": 12992,
+   "sha256": "c973db995ff0b1b5701275351b01612542669f5f6c2a3160e4904835a3f9e909",
+   "sha256_after": "adbc0b76e27666524c3564789371dcc8d353fa1cbba9156670f7ba98bc2efa14",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Dave",
+     "last": "Krieg",
+     "group": "team",
+     "offset": 7800,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jim",
+     "last": "Zorn",
+     "group": "team",
+     "offset": 7884,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4517,
+   "name_id": 1206878277,
+   "name": "outer_4517.ROST",
+   "size": 13280,
+   "sha256": "3635980d20edee7122624baa9513a32aa9a45662d5773ce0270e7a96c2a5eab1",
+   "sha256_after": "f17e0584498067cba78935d790ab779aa73013bff0edd91089f1fcafb5b4ce51",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Jon",
+     "last": "Kitna",
+     "group": "team",
+     "offset": 7576,
+     "value": 88
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brock",
+     "last": "Huard",
+     "group": "team",
+     "offset": 7660,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Glenn",
+     "last": "Foley",
+     "group": "team",
+     "offset": 7744,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4518,
+   "name_id": 1754492163,
+   "name": "outer_4518.ROST",
+   "size": 12352,
+   "sha256": "b618806624143c2f12d7076f7d120ab09bcb246312a430f87c5cc1a8b75070f2",
+   "sha256_after": "d209b02bf33d25f7da52e3b7c62d95f46888a16775d7d6a5758aa54ede3244b5",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Terry",
+     "last": "Bradshaw",
+     "group": "team",
+     "offset": 7800,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Gilliam",
+     "group": "team",
+     "offset": 7884,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Terry",
+     "last": "Hanratty",
+     "group": "team",
+     "offset": 7968,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4519,
+   "name_id": 198657751,
+   "name": "outer_4519.ROST",
+   "size": 12544,
+   "sha256": "40fb8a80ccf5e6396696bbad6955f3c2d1b957048e3d141730b813486c26626d",
+   "sha256_after": "32f870cdd31d50d406dc4a14e39736501f77b831956820eb3fb98746bf250e5e",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Terry",
+     "last": "Bradshaw",
+     "group": "team",
+     "offset": 7768,
+     "value": 96
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Cliff",
+     "last": "Stoudt",
+     "group": "team",
+     "offset": 7852,
+     "value": 85
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Kruczek",
+     "group": "team",
+     "offset": 7936,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4520,
+   "name_id": 2738843512,
+   "name": "outer_4520.ROST",
+   "size": 13488,
+   "sha256": "90e78f7ee836ea655cd04c51f9ae83732e56699148b2e64558bbff42e9bebbd0",
+   "sha256_after": "0c28e16a44c03f434f43657ad0f756a44a3cac71b3d7c51a5159fa3c68166305",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Kordell",
+     "last": "Stewart",
+     "group": "team",
+     "offset": 7736,
+     "value": 89
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jim",
+     "last": "Miller",
+     "group": "team",
+     "offset": 7820,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Mike",
+     "last": "Tomczak",
+     "group": "team",
+     "offset": 7904,
+     "value": 79
+    },
+    {
+     "pool": "primary",
+     "index": 3,
+     "first": "Neil",
+     "last": "O'Donnell",
+     "group": "team",
+     "offset": 7988,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4521,
+   "name_id": 709647138,
+   "name": "outer_4521.ROST",
+   "size": 11392,
+   "sha256": "59047ffb9082de4c9af86cc50e4a40ad5fa3f92fdbd9c39cbada8e04152c842f",
+   "sha256_after": "11e96c03581c7221b0e58bc7b3701c72d5042c88ba64c37fac6d2b16a0eecd29",
+   "qb_count": 1,
+   "bytes_changed": 1,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Len",
+     "last": "Dawson",
+     "group": "team",
+     "offset": 7512,
+     "value": 81
+    }
+   ]
+  },
+  {
+   "outer_index": 4522,
+   "name_id": 2829126146,
+   "name": "outer_4522.ROST",
+   "size": 13168,
+   "sha256": "0941d4973a25a676f8e5d6969eab985232c78190221391f9b20b11b214c1ffda",
+   "sha256_after": "ca5864ec5dd8617f9093bbe692808d0d9431154fb23b056a81d123d0965f158a",
+   "qb_count": 3,
+   "bytes_changed": 3,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Steve",
+     "last": "McNair",
+     "group": "team",
+     "offset": 7480,
+     "value": 90
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Neil",
+     "last": "O'Donnell",
+     "group": "team",
+     "offset": 7564,
+     "value": 71
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Kevin",
+     "last": "Daft",
+     "group": "team",
+     "offset": 7648,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4523,
+   "name_id": 877173200,
+   "name": "outer_4523.ROST",
+   "size": 11936,
+   "sha256": "34cb70f29bbb65ea1b27a497e9184241f577b0fa08cb5e7e59c8ad52d65162b6",
+   "sha256_after": "fba5b834f90745a857261cd12e3701418d3b563e13b6d88520d478488c326897",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Gary",
+     "last": "Cuozzo",
+     "group": "team",
+     "offset": 7704,
+     "value": 92
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Joe",
+     "last": "Kapp",
+     "group": "team",
+     "offset": 7788,
+     "value": 92
+    }
+   ]
+  },
+  {
+   "outer_index": 4524,
+   "name_id": 1744396050,
+   "name": "outer_4524.ROST",
+   "size": 11936,
+   "sha256": "6d8dc32dfbe9145cc7bf47c56b0a7e14b4307bfa97b7aa796ac06c0eb728a657",
+   "sha256_after": "d53ac17c0bd4134eb0af87c4685c4f9b72717c39fa164d188104551b0289271e",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Bob",
+     "last": "Berry",
+     "group": "team",
+     "offset": 7704,
+     "value": 73
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Fran",
+     "last": "Tarkenton",
+     "group": "team",
+     "offset": 7788,
+     "value": 85
+    }
+   ]
+  },
+  {
+   "outer_index": 4525,
+   "name_id": 1514339427,
+   "name": "outer_4525.ROST",
+   "size": 13232,
+   "sha256": "064db8ee50b40b28b4928d38de94ca9b1f1b0f0d80d97ebe40653d22aeda74b8",
+   "sha256_after": "12a1504560ab14c618fe8e5ef22223d19b9abc5f7b72a74a41b50bf3ee65c34f",
+   "qb_count": 4,
+   "bytes_changed": 4,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Randall",
+     "last": "Cunningham",
+     "group": "team",
+     "offset": 7544,
+     "value": 86
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Brad",
+     "last": "Johnson",
+     "group": "team",
+     "offset": 7628,
+     "value": 75
+    },
+    {
+     "pool": "primary",
+     "index": 2,
+     "first": "Jay",
+     "last": "Fiedler",
+     "group": "team",
+     "offset": 7712,
+     "value": 77
+    },
+    {
+     "pool": "primary",
+     "index": 3,
+     "first": "Todd",
+     "last": "Bouman",
+     "group": "team",
+     "offset": 7796,
+     "value": 79
+    }
+   ]
+  },
+  {
+   "outer_index": 4527,
+   "name_id": 3010201289,
+   "name": "outer_4527.ROST",
+   "size": 9184,
+   "sha256": "d34cdd76c816df34f53281e457e6af0773e3dbf602137ecf903eec7eff28de05",
+   "sha256_after": "f4e48bfaa0d3cbc04c23440601f9aeac8b2e48e327f95639d504b659c8dfe11e",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Aaron",
+     "last": "Rodgers",
+     "group": "team",
+     "offset": 1060,
+     "value": 82
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Mason",
+     "last": "Rudolph",
+     "group": "team",
+     "offset": 1144,
+     "value": 77
+    }
+   ]
+  },
+  {
+   "outer_index": 4528,
+   "name_id": 3268456289,
+   "name": "outer_4528.ROST",
+   "size": 9136,
+   "sha256": "f07f76d7a361b03e3f824cea5d5ce5595143796af64bb9270f97cd793fc81550",
+   "sha256_after": "600ca6bc2088c395ff15a59c82fe0d6e5043745b9a30fc439ea6fd893fee3a42",
+   "qb_count": 2,
+   "bytes_changed": 2,
+   "quarterbacks": [
+    {
+     "pool": "primary",
+     "index": 0,
+     "first": "Joe",
+     "last": "Flacco",
+     "group": "team",
+     "offset": 1060,
+     "value": 80
+    },
+    {
+     "pool": "primary",
+     "index": 1,
+     "first": "Jake",
+     "last": "Browning",
+     "group": "team",
+     "offset": 1144,
+     "value": 53
+    }
+   ]
+  }
+ ]
+}

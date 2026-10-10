@@ -3,6 +3,14 @@
 No disc build or Xbox boot. Existing fixtures supply rendering/device services
 and entropy; initializer, field edits, text formatting and save codecs execute.
 """
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import calendar as gregorian
 import hashlib
 import struct

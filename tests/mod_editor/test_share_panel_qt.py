@@ -175,6 +175,9 @@ class SharePanelTests(unittest.TestCase):
         self.assertFalse(panel.apply_button.isEnabled())
 
     def test_studio_offers_the_tab(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         from mod_editor.gui.studio_qt import StudioMainWindow
 
         window = StudioMainWindow(eager_pages=True, )

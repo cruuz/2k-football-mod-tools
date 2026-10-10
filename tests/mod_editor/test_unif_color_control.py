@@ -420,6 +420,9 @@ class GuiInteractionTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        report = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not report.exists():
+            self.skipTest(f"Missing asset: {report}")
         self.facade = _ColourFacade()
         self.window = StudioMainWindow(eager_pages=True, facade=self.facade, offer_recovery=False)
         self.facade._source_ready = True

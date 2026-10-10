@@ -7,6 +7,7 @@ beside the build copy only when the in-place move plan is too fragmented.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
 import os
@@ -15,6 +16,7 @@ import shutil
 import stat
 import struct
 import tempfile
+import threading
 import time
 
 from tools import nfl_uniform_color_xiso_direct_patch as xiso
@@ -36,6 +38,20 @@ NFL_ORDER = ("update.xbe", "default.xbe", "dashupdate.xbe") + tuple(
 IN_PLACE_MAX_STEPS = 20_000
 IN_PLACE_MAX_SECONDS = 2.0
 REWRITE_SPARE_BYTES = 64 * 1024 * 1024
+
+# beta 77 (E2): the Build tab shows the LAST progress message until the next one arrives. A "Compacting disc image
+# 90112 of 90112, about 0 s remaining" line that is followed by minutes of unlabelled disk work (the final flush, the
+# read-back, a scanner holding the new image) is indistinguishable from a hang. So every phase reports one running
+# total, and every long call that cannot report for itself says what it is doing and keeps pulsing. Labels are
+# constants: the build's stage timing groups by label text.
+LABEL_PLAN = "Planning the compacted disc layout"
+LABEL_MOVE = "Compacting disc image"
+LABEL_VERIFY = "Verifying disc files"
+LABEL_FLUSH = "Saving the compacted disc to disk"
+LABEL_SWAP = "Putting the compacted disc in place"
+PULSE_SECONDS = 1.0             # a long uninterruptible call repeats its last report this often
+REPLACE_ATTEMPTS = 240          # about a minute at REPLACE_WAIT_SECONDS: a scanner or indexer holding a new 6 GB image
+REPLACE_WAIT_SECONDS = 0.25
 
 
 def require(ok, message):
@@ -65,6 +81,73 @@ def write_at(stream, offset, data):
         count = stream.write(view)
         require(count is not None and count > 0, "short XDVDFS write")
         view = view[count:]
+
+
+@contextmanager
+def _pulse(progress, *report):
+    """Repeat one progress report every PULSE_SECONDS while the body runs on this thread.
+
+    The body is a call the OS will not let us interrupt (an fsync on a slow or busy drive). A helper thread keeps the
+    Build tab informed meanwhile. Cancel still works: if the sink raises (BuildCancelled), the error is held and raised
+    here once the call has returned, never lost inside the helper thread. The caller reports nothing of its own while
+    the body runs, so the sink is never called from two threads at once.
+    """
+    stop, failures = threading.Event(), []
+
+    def beat():
+        while not stop.wait(PULSE_SECONDS):
+            try:
+                progress(*report)
+            except BaseException as exc:  # noqa: BLE001 - handed back to the caller's thread below
+                failures.append(exc)
+                return
+
+    thread = threading.Thread(target=beat, name="compaction-progress", daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        thread.join()
+    if failures:
+        raise failures[0]
+
+
+def _flush(output, progress=None):
+    """Push every written byte to the drive (fsync).
+
+    On a slow, external or scanned drive this is the longest single call once the data is written (the OS may hold
+    gigabytes of it), and it cannot report progress itself. With a progress sink it first says what it is doing, then
+    keeps pulsing until it returns.
+    """
+    output.flush()
+    if progress is None:
+        os.fsync(output.fileno())
+        return
+    progress(LABEL_FLUSH, 0, 0)
+    with _pulse(progress, LABEL_FLUSH, 0, 0):
+        os.fsync(output.fileno())
+
+
+class _Pace:
+    """One phase's progress as ONE running total.
+
+    Reporting each moved fragment as "N of N" (its own size) made every fragment end read as a finished phase and gave
+    the time estimate nothing to work with; the Build tab showed "90112 of 90112, about 0 s remaining" for as long as
+    the next step took. Every byte of a phase is counted once against the phase's whole size instead.
+    """
+
+    def __init__(self, progress, label, total):
+        self.progress, self.label, self.total = progress, label, total
+        self.done = 0
+        self.tick()
+
+    def tick(self):
+        self.progress(self.label, self.done, self.total)
+
+    def wrote(self, count):
+        self.done += count
+        self.tick()
 
 
 @dataclass
@@ -181,17 +264,21 @@ def plan(layout, reference=None):
 
 
 def _hash_files(stream, rows, field, progress):
-    hashes = {}
+    hashes, done, total = {}, 0, sum(row["size"] for row in rows)
+    if total:
+        progress(LABEL_VERIFY, 0, total)
     for row in rows:
         digest = hashlib.sha256()
         for at in range(0, row["size"], BLOCK):
-            digest.update(read_at(stream, row[field] + at, min(BLOCK, row["size"] - at)))
-            progress("Verifying disc files", at + min(BLOCK, row["size"] - at), row["size"])
+            count = min(BLOCK, row["size"] - at)
+            digest.update(read_at(stream, row[field] + at, count))
+            done += count
+            progress(LABEL_VERIFY, done, total)
         hashes[row["path"]] = digest.hexdigest()
     return hashes
 
 
-def _copy(stream, output, source, dest, size, progress, *, backward=False):
+def _copy(stream, output, source, dest, size, progress, *, backward=False, pace=None):
     remaining = size
     while remaining:
         count = min(BLOCK, remaining)
@@ -199,7 +286,10 @@ def _copy(stream, output, source, dest, size, progress, *, backward=False):
         data = read_at(stream, source + delta, count)
         write_at(output, dest + delta, data)
         remaining -= count
-        progress("Compacting disc image", size - remaining, size)
+        if pace is not None:
+            pace.wrote(count)
+        else:
+            progress(LABEL_MOVE, size - remaining, size)
 
 
 @dataclass
@@ -230,6 +320,10 @@ def _move_private(stream, rows, progress, *, budget=None):
     steps = 0
     pending = [Move(r["source_offset"], r["offset"], align(r["size"])) for r in rows
                if r["size"] and r["source_offset"] != r["offset"]]
+    # Every byte below is written exactly once (a saved prefix is read once and written once; the parts of a split
+    # move partition it), so the sum of the pending sizes IS the whole phase.
+    total = sum(m.size for m in pending)
+    pace = _Pace(progress, LABEL_MOVE, total) if total and not dry else None
     peak_saved = 0
     while pending:
         if dry:
@@ -269,6 +363,8 @@ def _move_private(stream, rows, progress, *, budget=None):
             pending.append(Move(move.source, move.dest, count, saved))
             if count < move.size:
                 pending.append(move.part(count, move.size))
+            if pace is not None:
+                pace.tick()  # a cycle break writes nothing, but Cancel and the UI still hear from us
             continue
         index, start, end = choice
         move = pending.pop(index)
@@ -276,9 +372,10 @@ def _move_private(stream, rows, progress, *, budget=None):
             pass
         elif move.saved is not None:
             write_at(stream, move.dest + start, move.saved[start:end])
+            pace.wrote(end - start)
         else:
             _copy(stream, stream, move.source + start, move.dest + start, end - start, progress,
-                  backward=move.dest > move.source)
+                  backward=move.dest > move.source, pace=pace)
         if start:
             pending.append(move.part(0, start))
         if end < move.size:
@@ -297,16 +394,27 @@ def _in_place_fits(rows):
     return True
 
 
-def _replace_image(staged, target):
-    """Replace the build image; Windows may briefly hold a just-closed file open (indexer, antivirus)."""
-    for attempt in range(40):
+def _replace_image(staged, target, progress=None):
+    """Replace the build image; Windows may hold a just-closed file open for a while (indexer, antivirus, sync).
+
+    beta 77: about a minute of patience (a scanner can take that long over a fresh 6 GB image; 76.3 gave it ten
+    seconds), reported as it waits, and a plain refusal if it never lets go.
+    """
+    for attempt in range(REPLACE_ATTEMPTS):
         try:
             os.replace(staged, target)
             return
-        except PermissionError:
-            if os.name != "nt" or attempt == 39:
+        except PermissionError as exc:
+            if os.name != "nt":
                 raise
-            time.sleep(0.25)
+            if attempt == REPLACE_ATTEMPTS - 1:
+                raise ValueError(
+                    "Windows is still holding the new disc image open, so it could not be put in place. Antivirus, "
+                    "the search indexer or a cloud-sync program usually lets go within a minute: pause it for this "
+                    "folder or choose another output folder, then make the disc again. Nothing was published.") from exc
+            if progress is not None:
+                progress(LABEL_SWAP, 0, 0)
+            time.sleep(REPLACE_WAIT_SECONDS)
 
 
 def _rewrite_beside(target, layout, planned, hashes, progress):
@@ -325,21 +433,22 @@ def _rewrite_beside(target, layout, planned, hashes, progress):
     staged = temporary_sibling(target, suffix=".compact")
     try:
         with target.open("rb", buffering=0) as source, staged.open("x+b", buffering=0) as out:
+            pace = _Pace(progress, LABEL_MOVE, sum(row["size"] for row in planned["files"]))
             for row in planned["files"]:
                 for at in range(0, row["size"], BLOCK):
                     count = min(BLOCK, row["size"] - at)
                     write_at(out, row["offset"] + at, read_at(source, row["source_offset"] + at, count))
-                    progress("Compacting disc image", at + count, row["size"])
-            _metadata(out, planned)
+                    pace.wrote(count)
+            _metadata(out, planned, progress)
             receipt = _verify(out, layout, planned, hashes, progress)
-        _replace_image(staged, target)
+        _replace_image(staged, target, progress)
     except BaseException:
         staged.unlink(missing_ok=True)
         raise
     return dict(receipt, scratch_disk_bytes=planned["output_bytes"], peak_cycle_buffer_bytes=0)
 
 
-def _metadata(output, planned):
+def _metadata(output, planned, progress=None):
     write_at(output, 0, bytes(32 * SECTOR))
     write_at(output, 32 * SECTOR, planned["header"])
     for name, data in planned["directories"].items():
@@ -351,8 +460,7 @@ def _metadata(output, planned):
             write_at(output, row["offset"] + row["size"], bytes(align(row["size"]) - row["size"]))
     write_at(output, end, bytes(planned["output_bytes"] - end))
     output.truncate(planned["output_bytes"])
-    output.flush()
-    os.fsync(output.fileno())
+    _flush(output, progress)
 
 
 def _verify(output, layout, planned, hashes, progress):
@@ -384,6 +492,7 @@ def finish_private(target, *, original=None, progress=None):
     progress = progress or (lambda *_: None)
     with target.open("r+b", buffering=0) as stream:
         layout = read_layout(stream)
+        progress(LABEL_PLAN, 0, 0)  # the dry runs below take up to two seconds each; say so instead of going quiet
         # The known retail name order survives rebuilding an already grown 2K5
         # source. Other games retain the caller's original source order.
         nfl = set(NFL_ORDER) <= layout.entries.keys()
@@ -400,7 +509,7 @@ def finish_private(target, *, original=None, progress=None):
             # A final partial source sector has no file bytes in its missing suffix.
             stream.truncate(max(align(layout.size), planned["output_bytes"]))
             peak = _move_private(stream, planned["files"], progress)
-            _metadata(stream, planned)
+            _metadata(stream, planned, progress)
             receipt = _verify(stream, layout, planned, hashes, progress)
             return dict(receipt, scratch_disk_bytes=0, peak_cycle_buffer_bytes=peak)
         planned = candidates[0]

@@ -1,4 +1,12 @@
 """College relabeling preserves referenced schools and bounded UTF-16 storage."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import unittest
 from mod_editor.core import nfl2k5_roster_records as rr
 from tests.nfl2k5_supersim_draft_fixture import retail_roster

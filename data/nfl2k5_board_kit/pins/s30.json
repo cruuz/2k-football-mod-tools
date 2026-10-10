@@ -5,6 +5,15 @@
       "model_sha256": "12c8eafd6f41cdc61ac80e541e866bd231dad2136cb7e78e87101f3dc477d449",
       "name": "s30dd.iff",
       "offset": 511952,
+      "published": {
+        "1e93050cc4ef97800e897a605995ca8e43976a1e1a7268706a8d82a25a65e2bf": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "fc7f110ffd248e6b3eb6f4caf336a702969f6be9356bbaccab1f1831135d77e1",
       "retail_system": 667776,
       "retail_video": 781824,
@@ -19,6 +28,15 @@
       "model_sha256": "636c44af5fbb02e908dc21f1f8cdffa35643aed56b4a2b24198e639be26847fd",
       "name": "s30dr.iff",
       "offset": 499696,
+      "published": {
+        "17701ccf1cce66596edc65b208addfd8c5374ecf470940390ad0ff2cb5b60c0e": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "39c56912aee0676a650145e8f01ea71c7ce2d74d5808d4127179cd76f3d803b7",
       "retail_system": 667008,
       "retail_video": 781824,
@@ -33,6 +51,15 @@
       "model_sha256": "ee99909411ebf808d7053e39aff74f36cc7b4613b6f83b78764191e6e21d45b0",
       "name": "s30ds.iff",
       "offset": 465200,
+      "published": {
+        "bb09e87e5f9da82a2420338fff51853f5daf6bc24ba6302904c6ef91674fca55": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "400d74722246bbd3adee1992b99bd0fc4af35c1f9fccc575ecc02ea7d77790e7",
       "retail_system": 667008,
       "retail_video": 781824,
@@ -47,6 +74,15 @@
       "model_sha256": "e08042084f94e5f3466de9f742f9d86f9fd215430a9af6229656bae9ee16890a",
       "name": "s30ad.iff",
       "offset": 512032,
+      "published": {
+        "97c26d8adb729b8aae818e7278313ab6ab88799356c81dee2331ff992c5f8792": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "5c4b2459402773d0119782affc998c099b6dbdeb971d443c70cafefa308c1b7c",
       "retail_system": 666624,
       "retail_video": 781824,
@@ -61,6 +97,15 @@
       "model_sha256": "f38ff475c86694f246e225ac4ac5bbe7897e4624a6ee0796cfea81fddccc5e23",
       "name": "s30ar.iff",
       "offset": 499776,
+      "published": {
+        "48fe3250b5b889a05abcd4c6110eef61b2e4707f411712462e23bc1d4d96bc81": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "cc0a5e98ca588466fb3d6b4cdb082409a7f9505fcd5db207273259f54609b0b4",
       "retail_system": 666112,
       "retail_video": 781824,
@@ -75,6 +120,15 @@
       "model_sha256": "5fd2910f3d28a9a891a8fd4b097f846355957b4b2880886030997ba7bbc9e016",
       "name": "s30as.iff",
       "offset": 465264,
+      "published": {
+        "97195463336284bbb636ba047a4efba530db285917f430d02e4911f0798a34c7": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "0665f641b65cd2f7559ca53913325da74c9232366d478531ab2838533af36bc8",
       "retail_system": 666112,
       "retail_video": 781824,
@@ -89,6 +143,15 @@
       "model_sha256": "36825edde08d6c302cfafe4a9bb83d58194705299acfde607e7ad9d050b7fc38",
       "name": "s30nd.iff",
       "offset": 512784,
+      "published": {
+        "c242769ee56f67334f4569cfd216c4c62f93a05d4caaf0d24b4179fab139b52b": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "3e29e17724568c4822c1801cea53d916be4433528c3464282cc4413391a0504f",
       "retail_system": 664576,
       "retail_video": 781824,
@@ -103,6 +166,15 @@
       "model_sha256": "e029b514cb894c391adc03d668dfb7ebc56c029197f9b2d9389f17e1abe70142",
       "name": "s30nr.iff",
       "offset": 500896,
+      "published": {
+        "3be15809023136e8814ff046478180bedf226616acf9dead06ce5ca370ecd2a6": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "390fb816281bf5dcacb321e191849b828d4fca279058b8960a9e15d1e4df07da",
       "retail_system": 664576,
       "retail_video": 781824,
@@ -117,6 +189,15 @@
       "model_sha256": "9d513d29cd5a0d64709ea714dcb5665cabbdfbbc72ed83d9c11c6772931ed979",
       "name": "s30ns.iff",
       "offset": 466624,
+      "published": {
+        "0940b08edf25c34f8e4b60d4015d661daf389344a058e3a34165b44253a23dd4": [
+          "SOFTDRINK 2K28 v0.1",
+          "SOFTDRINK 2K28 v0.2",
+          "SOFTDRINK 2K28 v0.3",
+          "SOFTDRINK 2K28 v0.4",
+          "SOFTDRINK 2K28 v0.5"
+        ]
+      },
       "retail_sha256": "7b59e1db2dd4277043909cb4987116976cdfde6dd1cb4459d4879fe9985fc96b",
       "retail_system": 664576,
       "retail_video": 781824,
@@ -128,6 +209,33 @@
     }
   ],
   "label": "EXPERIMENTAL / UNWITNESSED",
+  "published_from": {
+    "SOFTDRINK 2K28 v0.1": {
+      "pack_sha256": "bca264dd1f237f8ef9053c9eacd689a0c4375002a41e27b5d70da87a9eb5e384",
+      "result_sha256": "1fc5e20fd333e0d502f8edcb5d02eee8d4dbbd458f584afa215d46312a748993",
+      "tool": "1.0.0rc105"
+    },
+    "SOFTDRINK 2K28 v0.2": {
+      "pack_sha256": "81436ab1fea2ce6d04d7c7670c272ec68708b756697c69f2391db1a0792756e1",
+      "result_sha256": "305e3884e24c0a1926e1f198c89d80d8ff6c90e7a9ced1848e91dcd51bb71ca7",
+      "tool": "1.0.0rc107"
+    },
+    "SOFTDRINK 2K28 v0.3": {
+      "pack_sha256": "5ad41fb5d4057f422b87a241152d522f589fdf4f79aec2a6c755ce58b97bf83c",
+      "result_sha256": "252b800faa46f61c8afade1b19d524ca041ca08f66e0f16ba7654d888c6edf66",
+      "tool": "1.0.0rc108"
+    },
+    "SOFTDRINK 2K28 v0.4": {
+      "pack_sha256": "75534b8b62e1e17fe32cc3ee95203dac1831e287d7f3b6538198de07a8308ada",
+      "result_sha256": "1702a42277a665d100f2a884c76fe5c42a9eb3ea7c393ce475271cc938f36f0c",
+      "tool": "1.0.0rc109"
+    },
+    "SOFTDRINK 2K28 v0.5": {
+      "pack_sha256": "b393f99bb4390afb4cd0b6237fe8528b94620edb7e357b55d8f0bd6318aa4d59",
+      "result_sha256": "5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f",
+      "tool": "1.0.0rc110"
+    }
+  },
   "schema": "nfl2k5_board_kit_pins/v1",
   "source_note": "renovated from the retail archive",
   "venue": "s30"

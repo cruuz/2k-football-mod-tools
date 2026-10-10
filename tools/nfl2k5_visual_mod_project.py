@@ -749,9 +749,9 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
                 _string(record, "asset_code") and _string(record, "side") and
                 _integer(record, "variant") and _string(record, "clean_png") and
                 (record["mud_png"] is None or _string(record, "mud_png")) and
-                record["mud_mode"] in {"identity", "darken_60"} and
+                record["mud_mode"] in {"identity", "darken_60", "wet_93"} and
                 not (record["mud_png"] is not None and
-                     record["mud_mode"] == "darken_60"),
+                     record["mud_mode"] in {"darken_60", "wet_93"}),
                 f"edit {order} has invalid {kind} fields/types")
     elif kind == "live_helmet":
         require(set(record) == HELMET_FIELDS and

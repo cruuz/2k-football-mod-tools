@@ -78,9 +78,9 @@
             "colour": "battle_red",
             "center": [
               163,
-              94
+              99.8
             ],
-            "width": 42
+            "width": 48
           }
         ]
       },
@@ -4127,9 +4127,9 @@
             "colour": "battle_red",
             "center": [
               163,
-              94
+              103.0
             ],
-            "width": 46
+            "width": 55
           }
         ]
       },
@@ -6799,5 +6799,20 @@
       "Tremon Smith"
     ],
     "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads flag by eye for locs, braids and twists."
-  }
+  },
+ "u2b_b77": {
+  "job": "b77 u2b (sonnet-5.5), 2026-10-08",
+  "checked_against": "houstontexans.com 2026 galleries: week 2 vs CIN (Deep Steel Blue home: #24 frontal), week 1 vs BUF (Liberty White: #7 frontal with the HOUSTON wordmark)",
+  "changes": {
+   "home.torso.word_texans": "TEXANS wordmark 48 px wide at centre y 99.8 (was 42 wide at y 94): about 0.6 front-number heights wide and 0.08 above the number on the week 2 photo (v0.5: 0.54 wide, 0.15 above)",
+   "away.torso.word_houston": "HOUSTON wordmark 55 px wide at centre y 103 (was 46 wide at y 94): about 0.5 number heights wide and 0.05 to 0.09 above the number on the week 1 photo (v0.5: 0.42 wide, 0.2 above)"
+  },
+  "unchanged_because_right": [
+   "navy and white jerseys, white and navy numbers with red outlines",
+   "white pants with navy and red side stripe on both kits (club week 1 and week 2 photos)",
+   "navy and white socks",
+   "navy helmet with the bull",
+   "sleeve caps"
+  ]
+ }
 }

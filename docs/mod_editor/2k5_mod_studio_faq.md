@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 76
+# 2K5 Mod Studio FAQ, beta 77
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.
@@ -154,10 +154,15 @@ included in your installed build.
 
 ## Can the CPU go for it more often on fourth down?
 
-**CPU fourth downs and first downs (experimental)** offers **Retail**, **Modern** and
-**Aggressive** in Build and Gameplay > Game Fixes. Retail is the preset default. It changes
-fourth-down policy and first-down targeting. Offline policy checks pass; in-game outcomes
-remain experimental and unwitnessed for untested situations.
+**CPU fourth downs, two-point tries and overtime (experimental)** offers **Retail**,
+**Modern**, **Aggressive** and **Modern 2** in Build and Gameplay > Game Fixes. Retail is the
+Basic preset default; the Advanced and Experimental presets use Modern 2. Modern changes
+fourth-down policy and first-down targeting. Modern 2 adds a fourth-down table taken from
+published analytics (the ESPN Analytics chart and the nfl4th model) that also reads the score
+and clock, the modern overtime rules (a team behind by a touchdown on its last possession
+never punts or kicks), a modern two-point chart and more varied defensive coverage calls.
+The sources and every threshold are in `nfl2k5_cpu_decisions_modern2_sources.json`. Offline
+policy checks pass; in-game outcomes remain experimental and unwitnessed.
 
 ## Does Slow-QB acceleration make the CPU scramble more often?
 
@@ -168,7 +173,7 @@ help and current changelog for any separate CPU decision control.
 ## What about weather, sunset, coin-toss deferral or conceding the clock?
 
 BigTimeEmpire, maumau78 and CER requested these changes. Read the corresponding controls in
-your installed build and the [beta 76 changelog](2k5_mod_studio_changelog.md) for what has landed
+your installed build and the [beta 77 changelog](2k5_mod_studio_changelog.md) for what has landed
 and its limits. Weather artwork or a stored environment field alone does not provide dynamic
 weather, footprints, franchise weather selection, wind gameplay, or a clock-concession rule.
 Do not infer those features from a texture browser or an unrelated accelerated-clock option.

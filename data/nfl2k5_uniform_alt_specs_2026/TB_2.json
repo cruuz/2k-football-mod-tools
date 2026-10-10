@@ -1,0 +1,20 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "TB",
+ "status": "u3e alternate TB:2 White '76 jersey: the retail 1976-91 road kit (27A3) with the 2026 league marks, built into slot 27H2/27A2",
+ "kits": {},
+ "modernize": [
+  {
+   "selector": "27H2",
+   "donor": "27A3",
+   "swoosh": "#FF7900",
+   "pants_swoosh": "#FF7900"
+  },
+  {
+   "selector": "27A2",
+   "donor": "27A3",
+   "swoosh": "#FF7900",
+   "pants_swoosh": "#FF7900"
+  }
+ ]
+}

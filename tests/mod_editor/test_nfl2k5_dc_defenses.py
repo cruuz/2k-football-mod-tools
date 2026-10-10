@@ -63,6 +63,10 @@ class Books(unittest.TestCase):
     def test_final_rate_receipts_fit_sourced_baselines_within_three_points(self):
         summary=ROOT/'pb/receipts/defense/selector-summary.json'
         if not summary.is_file():self.skipTest('Run composition and sweep first')
+        if not pk.load_pack(ROOT/'data/playbooks/softdrink_kc_defense.2k5book').book.author.startswith('SOFTDRINK / Astra'):
+            # Beta 77 replaced the phase-3 packs with pb/v2/defense; their receipts are pb/v2/defense/out/manifest.json
+            # and tests/mod_editor/test_nfl2k5_defense_v2.py checks them.
+            self.skipTest('phase-3 receipts describe the superseded generator')
         sims=json.loads(summary.read_text())['teams']
         profiles=json.loads((ROOT/'pb/research/defense_profiles.json').read_text())
         real=json.loads((ROOT/'pb/research/defense_tendencies_2025.json').read_text())['teams']

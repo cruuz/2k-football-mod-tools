@@ -1,0 +1,271 @@
+{
+  "schema": "b77/moment_era_kit_plan/v1",
+  "about": "a5 plan with the five colour gaps built by a5k from existing native kit parts. Noah approved the named normal-play trades after the capacity investigation. Refinements remain optional and unbuilt.",
+  "items": [
+    {
+      "id": "G1",
+      "kind": "gap",
+      "priority": 1,
+      "team": "NE",
+      "seasons": "2017 (Super Bowl LII); the same set serves any Patriots game in which the home side wore road whites",
+      "moments": [
+        "philly_special home"
+      ],
+      "look": {
+        "home": "white jersey with navy numerals, navy pants with white-red stripes, navy-and-white striped socks, silver helmet (the road set worn at HOME)"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2017_NE_A2.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2017",
+        "https://www.nfl.com/news/new-england-patriots-to-wear-white-in-super-bowl-lii-0ap3000000909752",
+        "Getty/AP: 'Patriots Eagles Super Bowl LII' sideline and huddle photos (white jersey, navy pants)"
+      ],
+      "nearest_kit": "NE style 12 (the retail 2004 look = the 2000-2019 design), AWAY kit 16a12 (white over navy pants)",
+      "target_slot": "NE style 11 (retail '2004 Alternate 1', free alt, owned by no moment and no historic team); label pair (2017,2017) reads '2017 Uniform'",
+      "method": "copy the 16a12 textures (torso, sleeve, pants, socks, digits, names) into 16h11 and 16a11 (same design in both kits, the u3s 'White Out' idiom); helmets and equipment from 16h12",
+      "effort": "S",
+      "model": "Sonnet 5.5",
+      "needs": "the moment then selects style 11 for the Patriots (a data change in overrides) and the Eagles need G1b",
+      "status": "built",
+      "recipe": "data/nfl2k5_moment_era_kits.json",
+      "normal_play": "approved trade; existing selectable slot and cards relabelled"
+    },
+    {
+      "id": "G1b",
+      "kind": "gap",
+      "priority": 1,
+      "team": "PHI",
+      "seasons": "2017 (Super Bowl LII)",
+      "moments": [
+        "philly_special away"
+      ],
+      "look": {
+        "away": "midnight green jersey with white numerals, white pants with black-white-green stripes, black/white socks, midnight green helmet (the home set worn as the VISITOR)"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2017_PHI_D2.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2017",
+        "https://www.cbsnews.com/philadelphia/news/eagles-to-don-midnight-green"
+      ],
+      "nearest_kit": "PHI style 0 HOME kit 21h0 (2026 midnight green over white) which is the 2017 look in the Nike cut",
+      "target_slot": "PHI style 14 (retail '2004 Alternate 2', free alt, no owner); label pair (2017,2017)",
+      "method": "copy 21h0 into both kits, retaining existing black-white socks from original 21h14; recombine the far-player sock rectangles without quantization",
+      "effort": "S",
+      "model": "Sonnet 5.5",
+      "needs": "the moment selects style 14 for the Eagles; with G1 the colours of Super Bowl LII come out as worn without swapping home and away",
+      "status": "built",
+      "recipe": "data/nfl2k5_moment_era_kits.json",
+      "normal_play": "approved trade; existing selectable slot and cards relabelled"
+    },
+    {
+      "id": "G4",
+      "kind": "gap",
+      "priority": 1,
+      "team": "PIT",
+      "seasons": "2025 (the Unc Bowl, Week 7 Thursday night)",
+      "moments": [
+        "unc_bowl away",
+        "unc_bowl home"
+      ],
+      "look": {
+        "away": "black jersey with gold numerals, gold pants, black socks, black helmet (the home set worn as the VISITOR because the Bengals wore all white)",
+        "home": "the Bengals' all-white White Bengal set: white jersey, white pants with black stripes, white socks, white helmet with black tiger stripes (Bengals style 5, already built)"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2025_PIT_D.png and th/2025_CIN_B.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=2025",
+        "https://news.sportslogos.net/2025/10/14/cincinnati-bengals-to-wear-white-bengal-alternate-uniforms-on-thursday-night-football/football/",
+        "https://www.bengals.com/news/bengals-uniform-combination-week-7-2025-steelers-white-bengal"
+      ],
+      "nearest_kit": "PIT style 0 HOME kit 22h0 (black over gold pants, black helmet), which is the 2025 look",
+      "target_slot": "PIT style 4 (retail '1961 - 1962 Uniform', free era, owned by no moment and no historic team); label pair (2025,2025) reads '2025 Uniform'",
+      "method": "copy 22h0 into both kits and retain existing gold jersey/arm numeral textures from original 22h4; select CIN home style 5",
+      "effort": "S",
+      "model": "Sonnet 5.5",
+      "needs": "then BOTH Unc Bowl sides change in overrides: Bengals home style 5 (White Bengal) and Steelers away style 4; selecting only the Bengals' style 5 would put two white teams on the field",
+      "status": "built",
+      "recipe": "data/nfl2k5_moment_era_kits.json",
+      "normal_play": "approved trade; existing selectable slot and cards relabelled"
+    },
+    {
+      "id": "G2",
+      "kind": "gap",
+      "priority": 2,
+      "team": "NO",
+      "seasons": "2006-2016 road (Super Bowl XLIV 2009, Catch III 2011; the black-pants road look of 2010 and 2017 is style 0)",
+      "moments": [
+        "ambush away",
+        "catch_three away"
+      ],
+      "look": {
+        "away": "white jersey with black numerals trimmed gold, OLD GOLD pants, black socks, gold helmet"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2009_NO_2.png and th/2011_NO_1.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2009",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2011",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV ('road white uniforms with old gold pants')"
+      ],
+      "nearest_kit": "NO style 0 AWAY kit 17a0 (white over black pants) with the pants recoloured to old gold (the gold pants texture exists in retail styles 1, 3, 4 pants)",
+      "target_slot": "NO style 6 (retail '1975 - 1976 Uniform', free era, no owner); label pair (2006,2016) reads '2006 - 2016 Uniform'",
+      "method": "derive from stacked 17a0 with the old-gold pants chunk and atlas rectangle from v0.5 retail 17a1, before the stacked Color Rush replacement",
+      "effort": "S",
+      "model": "Sonnet 5.5",
+      "needs": "the two Saints road sides select style 6 (R0 overrides)",
+      "status": "built",
+      "recipe": "data/nfl2k5_moment_era_kits.json",
+      "normal_play": "approved trade; existing selectable slot and cards relabelled"
+    },
+    {
+      "id": "G3",
+      "kind": "gap",
+      "priority": 2,
+      "team": "BAL",
+      "seasons": "2008-2025 road (Super Bowl XLVII, Mile High Miracle 2012)",
+      "moments": [
+        "mile_high_miracle away",
+        "goal_line_stand away"
+      ],
+      "look": {
+        "away": "white jersey with purple numerals, BLACK pants with purple stripe, black socks, black helmet"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2012_BAL_S.png and th/2012_BAL_A.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII ('white jerseys ... with black-colored pants')"
+      ],
+      "nearest_kit": "BAL style 4 (the retail 2004 look = the 1999-2025 design), AWAY kit 02a4 (white over white pants); the black pants exist in retail BAL 1997-1999 style 1 (02a1)",
+      "target_slot": "BAL style 1 (retail '1997 - 1999 Uniform', free era, no owner); label pair (2008,2025)",
+      "method": "derive from 02a4 with retail 02a1 black pants and the already-built BAL Darkness 02h3 black socks, including each far-player rectangle",
+      "effort": "S",
+      "model": "Sonnet 5.5",
+      "needs": "the two Ravens sides select style 1 instead of the spare",
+      "status": "built",
+      "recipe": "data/nfl2k5_moment_era_kits.json",
+      "normal_play": "approved trade; existing selectable slot and cards relabelled"
+    },
+    {
+      "id": "P4",
+      "kind": "refinement",
+      "priority": 3,
+      "team": "ARI",
+      "seasons": "2005-2022 (Super Bowl XLIII 2008)",
+      "moments": [
+        "toe_tap home"
+      ],
+      "look": {
+        "home": "red jersey with white numerals trimmed black, white pants, red socks, white helmet"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2008_ARZ_4.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ARZ&year=2008",
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Arizona_Cardinals"
+      ],
+      "nearest_kit": "ARI style 9 (retail 2004 look, the 1996-2004 design: same colours, older numerals and trim)",
+      "target_slot": "ARI style 8 (retail '2004 Alternate 1', free alt, owned by no moment); label pair (2005,2022)",
+      "method": "modify: 00h9/00a9 with the 2005-2022 numerals, collar and sleeve trim",
+      "effort": "M",
+      "model": "Sonnet 5.5 with an Opus review of the numerals",
+      "needs": "optional: the colours already read right with the spare"
+    },
+    {
+      "id": "P5",
+      "kind": "refinement",
+      "priority": 3,
+      "team": "NYG",
+      "seasons": "2005-2014 (Super Bowl XLII 2007, XLVI 2011)",
+      "moments": [
+        "helmet_catch away",
+        "manningham away"
+      ],
+      "look": {
+        "away": "white jersey with red-trimmed blue numerals, gray pants, red socks, blue helmet"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2007_NYG_3.png and 2011_NYG_1b.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2007",
+        "https://www.boston.com/sports/new-england-patriots/2012/01/23/patriots_opt_fo/?amp=1"
+      ],
+      "nearest_kit": "NYG style 8 (retail 2004 look, the 2000-2004 road: white over gray, older numerals)",
+      "target_slot": "NYG style 4 (retail '1974 - 1975 Uniform', free era, no owner); label pair (2005,2014)",
+      "method": "modify: 18a8/18h8 numerals and sleeve trim to the 2005 revival",
+      "effort": "M",
+      "model": "Sonnet 5.5",
+      "needs": "optional"
+    },
+    {
+      "id": "P6",
+      "kind": "refinement",
+      "priority": 3,
+      "team": "NE",
+      "seasons": "2012-2019 Nike cut (Super Bowl XLVI 2011 is Reebok; XLIX 2014, LI 2016, LII 2017 are Nike)",
+      "moments": [
+        "butler_goal_line away",
+        "comeback_28_3 away",
+        "philly_special home"
+      ],
+      "look": {
+        "home": "navy over silver as 2000-2011 with the Nike swoosh and the NFL shield at the collar",
+        "away": "white over navy pants, striped socks"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2014_NE_3.png and 2016_NE_1a.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2014",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2016"
+      ],
+      "nearest_kit": "NE style 12 (the same colours and numerals in the Reebok cut)",
+      "target_slot": "NE style 10 (retail '1994 Alternate 1', free alt, no owner); label pair (2012,2019)",
+      "method": "modify: 12H/12A with the Nike swoosh and the collar shield",
+      "effort": "S",
+      "model": "Haiku 5.5 with a Sonnet check",
+      "needs": "optional"
+    },
+    {
+      "id": "P7",
+      "kind": "refinement",
+      "priority": 4,
+      "team": "DEN",
+      "seasons": "2012-2023 (Mile High Miracle 2012)",
+      "moments": [
+        "mile_high_miracle home"
+      ],
+      "look": {
+        "home": "orange jersey with white numerals trimmed navy, white pants with navy-orange stripes, navy socks, navy helmet"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2012_DEN_2.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=2012"
+      ],
+      "nearest_kit": "DEN style 0 HOME kit (2024 redesign: orange over white pants)",
+      "target_slot": "DEN style 4 (retail '1961 - 1962 Uniform', free era, no owner); label pair (2012,2023)",
+      "method": "modify: 08h0 sleeves, numerals and helmet to the 2012 Nike set",
+      "effort": "M",
+      "model": "Sonnet 5.5",
+      "needs": "optional"
+    },
+    {
+      "id": "P10",
+      "kind": "refinement",
+      "priority": 4,
+      "team": "LAR",
+      "seasons": "2021 (Super Bowl LVI)",
+      "moments": [
+        "donald_fourth_down away"
+      ],
+      "look": {
+        "away": "white modern-throwback jersey with royal numerals and gold-royal sleeve horns, yellow pants, royal socks, royal helmet with yellow horns"
+      },
+      "photo_sources": [
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2021_LAR_D2.png (GUD, viewed)",
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=LAR&year=2021",
+        "https://foxla.com/sports/super-bowl-lvi-la-rams-to-wear-popular-throwback-unis-for-big-game"
+      ],
+      "nearest_kit": "LAR style 2 (retail 1998-1999 road: white, gold pants, royal helmet with gold horns)",
+      "target_slot": "LAR style 7 (retail '2000 Alternate 1', free alt, no owner); label pair (2021,2021)",
+      "method": "modify: 23a2 with the 2021 numerals, Nike cut and the Super Bowl LVI patch",
+      "effort": "M",
+      "model": "Sonnet 5.5",
+      "needs": "optional"
+    }
+  ]
+}

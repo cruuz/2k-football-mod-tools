@@ -423,9 +423,9 @@
      "colour": "white",
      "center": [
       161,
-      89.5
+      101.3
      ],
-     "width": 60
+     "width": 84
     },
     "sleeve_swooshes": {
      "colour": "white"
@@ -1176,15 +1176,23 @@
     "stripe": [
      [
       "jersey_red",
-      2
+      5
+     ],
+     [
+      "white",
+      4
      ],
      [
       "silver",
+      12
+     ],
+     [
+      "white",
       4
      ],
      [
       "jersey_red",
-      2
+      5
      ]
     ],
     "swoosh_colour": "black"
@@ -1826,5 +1834,21 @@
     ]
    }
   }
+ },
+ "u2a_b77": {
+  "job": "b77 u2a (sonnet-5.5), 2026-10-08",
+  "checked_against": "azcardinals.com 2026 game galleries: preseason week 2 vs DAL (red kit), week 3 at SF and week 4 at NYG (white kit)",
+  "changes": {
+   "home.torso.chest_mark": "ARIZONA wordmark widened from 60 to 84 px and moved down (centre y 89.5 to 101.3): on the red jersey the wordmark is 1.19 front-number heights wide (photo f_012, #24 frontal, measured against the digit height of the render) and sits about 0.09 of the number height above it; v0.5 had 0.64 and 0.23",
+   "away.pants.stripe": "red-white-silver-white-red 5/4/12/4/5 px (30 px, about 7 cm) instead of red-silver-red 2/4/2 px: the 2026 white pants carry a textured silver band between two red lines with white gaps (rear views, week 3 at SF); measured 22:24:48:16:25 px of 135"
+  },
+  "unchanged_because_right": [
+   "red pants plain",
+   "red and white socks",
+   "sleeve band and stripes of the white jersey",
+   "numbers and nameplates",
+   "helmet shell, logo, back decals and facemask"
+  ],
+  "evidence_scale": "front numbers 8 in = 21.2 cm on the model (u1); back numbers 10 in; torso texel 0.275 x 0.25 cm, pants texel 0.24 cm"
  }
 }

@@ -15,7 +15,7 @@ for path in (ROOT, ROOT / 'tools'):
 from mod_editor.core import nfl2k5_play_rules as rules, nfl2k5_play_library as lib
 from mod_editor.core import nfl2k5_playbook_pack as pk, nfl2k5_playbook_inspector as insp
 from mod_editor.core import nfl2k5_formation_play_writer as writer
-from tests.mod_editor.test_nfl2k5_defense_play import retail_resources
+from tests.mod_editor.test_nfl2k5_defense_play import EXTRACT, retail_resources
 
 
 def qt_app():
@@ -77,6 +77,7 @@ class RetailRulesQtTests(unittest.TestCase):
         raw = self.resources[team]
         book = insp.parse_playbook_resource(raw, asset_id='book:' + team)
         class Host:
+            source_path = EXTRACT / 'default.xbe'
             installed = None
             compiled = None
             def playbook_raw_body(self, _asset):
@@ -85,7 +86,7 @@ class RetailRulesQtTests(unittest.TestCase):
                 return (), ()
             def install_playbook_pack(self, pack, _teams, _progress):
                 self.installed = pk.loads_pack(pack.dumps())
-                self.compiled = pk.apply_pack_to_resource(raw, self.installed)
+                self.compiled = pk.apply_pack_to_resource(raw, self.installed, xbe=self.source_path)
                 return self.compiled
         w = CreatePlayWizard(Host())
         self.addCleanup(w.close)

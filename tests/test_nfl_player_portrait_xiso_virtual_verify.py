@@ -76,6 +76,9 @@ class PortraitVirtualVerifyTests(unittest.TestCase):
         self.assertNotIn("flatpak run", source)
 
     def test_historical_provenance_receipt_reconstructs_exactly(self) -> None:
+        report = ROOT / "reports/assets/nfl2k5_player_portrait_compatibility.json"
+        if not report.exists():
+            self.skipTest(f"Missing asset: {report}")
         payload = (
             ROOT / "reports/assets/nfl2k5_player_portrait_compatibility.json"
         ).read_bytes()

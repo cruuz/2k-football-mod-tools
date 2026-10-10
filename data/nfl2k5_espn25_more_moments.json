@@ -124,7 +124,7 @@
       "time_of_day": "night",
       "temperature": 66,
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -256,8 +256,8 @@
       "time_of_day": "afternoon",
       "temperature": 38,
       "kits": {
-        "away": 0,
-        "home": 4
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season",
@@ -344,7 +344,7 @@
       "time_of_day": "night",
       "temperature": 25,
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -388,7 +388,7 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -432,8 +432,8 @@
       "time_of_day": "night",
       "temperature": 60,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 6,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
@@ -476,7 +476,7 @@
       "time_of_day": "afternoon",
       "temperature": 33,
       "kits": {
-        "away": 0,
+        "away": 10,
         "home": 0
       },
       "sources": [
@@ -519,7 +519,7 @@
       "time_of_day": "afternoon",
       "temperature": 40,
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -563,8 +563,8 @@
       "time_of_day": "night",
       "temperature": 62,
       "kits": {
-        "away": 0,
-        "home": 3
+        "away": 6,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/The_Catch_III",
@@ -607,8 +607,8 @@
       "time_of_day": "night",
       "temperature": 13,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 1,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Mile_High_Miracle",
@@ -651,8 +651,8 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 0,
-        "home": 3
+        "away": 1,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
@@ -695,8 +695,8 @@
       "time_of_day": "afternoon",
       "temperature": 24,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs",
@@ -740,7 +740,7 @@
       "temperature": 70,
       "kits": {
         "away": 0,
-        "home": 0
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
@@ -783,7 +783,7 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -826,8 +826,8 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
@@ -869,8 +869,8 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 14,
+        "home": 11
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Philly_Special",
@@ -914,8 +914,8 @@
       "time_of_day": "night",
       "temperature": 64,
       "kits": {
-        "away": 3,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
@@ -957,8 +957,8 @@
       "time_of_day": "night",
       "temperature": 37,
       "kits": {
-        "away": 4,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/13_seconds_game",
@@ -1001,8 +1001,8 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 4,
-        "home": 0
+        "away": 2,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
@@ -1045,8 +1045,8 @@
       "time_of_day": "day",
       "temperature": 70,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season",
@@ -1089,8 +1089,8 @@
       "time_of_day": "night",
       "temperature": 70,
       "kits": {
-        "away": 3,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
@@ -1133,8 +1133,8 @@
       "time_of_day": "night",
       "temperature": 60,
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 4,
+        "home": 5
       },
       "sources": [
         "https://www.pro-football-reference.com/boxscores/202510160cin.htm",

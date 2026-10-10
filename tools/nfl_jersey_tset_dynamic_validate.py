@@ -248,7 +248,7 @@ def validate_dynamic_import(
         require(mud_png_name is None and mud_png_payload is None,
                 "manifest derives mud but a mud PNG was supplied")
         mode = mud_record.get("mode")
-        require(mode in {"identity", "darken_60"} and
+        require(mode in {"identity", "darken_60", "wet_93"} and
                 mud_record == {"kind": "derived_palette", "mode": mode},
                 "derived mud record mismatch")
         mud_palette = legacy.derive_mud_palette(clean_palette, str(mode))

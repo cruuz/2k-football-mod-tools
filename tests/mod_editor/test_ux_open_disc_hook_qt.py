@@ -60,6 +60,9 @@ class OpenDiscHookTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        required_asset = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         self.tmp = tempfile.TemporaryDirectory()
         self.xbe = Path(self.tmp.name) / "default.xbe"
         self.xbe.write_bytes(_build_synthetic_xbe())

@@ -1,0 +1,642 @@
+{
+ "team": "BUF",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Payton/Brady spread timing",
+ "staff": "Joe Brady / Pete Carmichael",
+ "family": "west_coast",
+ "feature": "HB1",
+ "key_players": "James Cook III; Dalton Kincaid; Josh Allen",
+ "depth_step": 0,
+ "tendencies": {
+  "shotgun_pct": 49.77,
+  "pistol_pct": 1.41,
+  "play_action_pct": 25.63,
+  "motion_pct": 60.28,
+  "personnel": {
+   "12": 121,
+   "22": 122,
+   "11": 663,
+   "21": 82,
+   "13": 50,
+   "other": 17,
+   "02": 4,
+   "23": 3,
+   "03": 1,
+   "01": 1,
+   "14": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Ace Jumbo",
+   "Gun Doubles",
+   "Gun Trips",
+   "Ace Wing",
+   "Singleback Doubles"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Ace Jumbo",
+   "Singleback Wing",
+   "I-Form Twins",
+   "Weak I",
+   "Split Backs",
+   "Gun Ace Wing"
+  ]
+ },
+ "boost": {
+  "Bubble Screen": 1,
+  "Draw": 1,
+  "Drive": 2,
+  "Inside Zone": 2,
+  "Levels": 2,
+  "Mesh": 3,
+  "Outside Zone": 1,
+  "RB Screen": 5,
+  "Slant Flat": 2,
+  "Snag": 2,
+  "Spacing": 2,
+  "Stick": 2,
+  "Texas": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Doubles",
+   "concept": "Slant Flat",
+   "name": "Slant Wheel",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Wheel",
+      2
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Ace Jumbo",
+   "concept": "QB Sneak",
+   "name": "Jumbo Sneak",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Levels",
+   "name": "Levels Seam",
+   "overrides": {
+    "routes": {
+     "S3": [
+      "route",
+      "Seam",
+      16
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "BUF RB Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bubble Screen",
+   "name": "BUF Bubble Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Ace Wing",
+   "concept": "TE Screen",
+   "name": "BUF TE Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "W1": [
+      "route",
+      "Comeback",
+      18.0
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Dagger",
+   "name": "BUF Dagger",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S2",
+     "S1",
+     "B",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Mills",
+   "name": "BUF Mills",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S1",
+     "W1",
+     "S2",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Levels",
+   "name": "BUF Levels",
+   "overrides": {
+    "depth_step": 1.0,
+    "reads": [
+     "S1",
+     "W1",
+     "B",
+     "S2"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.buffalobills.com/news/bills-name-pete-carmichael-as-offensive-coordinator)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.32 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Weak I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "BUF RB Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 11.3% (league 9.1)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Bubble Screen",
+    "name": "BUF Bubble Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 11.3% (league 9.1)"
+   },
+   {
+    "formation": "Ace Wing",
+    "concept": "TE Screen",
+    "name": "BUF TE Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "W1": [
+       "route",
+       "Comeback",
+       18.0
+      ]
+     }
+    },
+    "reason": "targets SCREEN 11.3% (league 9.1)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Dagger",
+    "name": "BUF Dagger",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S2",
+      "S1",
+      "B",
+      "W1"
+     ]
+    },
+    "reason": "targets IN/DIG 10.9% (league 8.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Mills",
+    "name": "BUF Mills",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S1",
+      "W1",
+      "S2",
+      "B"
+     ]
+    },
+    "reason": "targets IN/DIG 10.9% (league 8.8)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Levels",
+    "name": "BUF Levels",
+    "overrides": {
+     "depth_step": 1.0,
+     "reads": [
+      "S1",
+      "W1",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "targets IN/DIG 10.9% (league 8.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 91.6%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   4
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   3,
+   4
+  ],
+  "Gun Trey": [
+   0,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   2,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   3,
+   4
+  ],
+  "Heavy Wing": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   1,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   4
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   3,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "I-Form Twins": [
+   2,
+   1,
+   4
+  ],
+  "Weak I": [
+   2,
+   2,
+   4
+  ],
+  "Split Backs": [
+   2,
+   2,
+   4
+  ],
+  "Gun Ace Wing": [
+   4,
+   0,
+   1
+  ]
+ }
+}

@@ -479,15 +479,22 @@ class BuildWiringTests(unittest.TestCase):
 
     def test_the_owner_is_in_the_dormant_union_and_moves_no_other_owner(self) -> None:
         from mod_editor.core import nfl2k5_xbe_space as space
-        union = space.dormant_union()
+        # b77-v1b: the period goalposts owner is the second late owner (placed after K128); the K128 rule is about the rest
+        union = tuple(r for r in space.dormant_union() if r[0] != "nfl2k5_period_goalposts")
         self.assertIn(k128.REQUESTS[0], union)
         others = tuple(r for r in union if r[0] != k128.OWNER)
+        # b77-f4: K128 is the first late owner; later late owners (letter grades) are placed after it, so they follow
+        # whether it is present. Every other owner stays put.
+        later = set(space.LATE_OWNERS[space.LATE_OWNERS.index(k128.OWNER):])
 
         def placed(requests):
             return {(a["owner"], a["kind"], a.get("owner_offset", 0)): (a["va"], a["size"])
-                    for a in space._scale_allocations(requests) if a["owner"] != k128.OWNER}
+                    for a in space._scale_allocations(requests) if a["owner"] not in later}
 
         self.assertEqual(placed(others), placed(union))
+        # and the second late owner moves nobody, K128 included
+        full = tuple(space.dormant_union())
+        self.assertEqual({k: v for k, v in placed(full).items() if k[0] != "nfl2k5_period_goalposts"}, placed(union))
 
     def test_the_release_lists_carry_the_module(self) -> None:
         allowlist = (REPO / "packaging" / "release-allowlist.txt").read_text(encoding="utf-8").split("\n")

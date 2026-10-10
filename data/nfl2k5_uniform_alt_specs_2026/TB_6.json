@@ -1,0 +1,249 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "TB",
+ "name": "Tampa Bay Buccaneers",
+ "asset_code": "27",
+ "season": 2026,
+ "status": "u3e alternate TB:6 All-pewter Color Rush, authored by tools/b77/u3e_paint.py into slot 27H6/27A6 (2004 Alternate 1)",
+ "sources": {
+  "alternate": "https://www.buccaneers.com/news/bucs-pewter-uniforms-unveiled-week-15-2026 (pewter jersey, matching pants with red and white stripes along the sides, solid pewter socks, red pirate ship logos on each shoulder, red Buccaneers wordmark on the chest); https://news.sportslogos.net/?p=101282 (white numbers with a red outline, contrasting cuffs)"
+ },
+ "albedo": {
+  "jersey_red": "#B21C35",
+  "pewter": "#4B4641",
+  "retail_pewter": "#6D6353",
+  "retail_pants_pewter": "#605448",
+  "retail_red": "#880708",
+  "orange": "#DC4405",
+  "black": "#0E0E0E",
+  "white": "#FFFFFF",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "logo_red": "#A71930",
+  "logo_grey": "#B1BABF",
+  "ez_red": "#A71930"
+ },
+ "marks": {
+  "club_logo": "club_logo.png",
+  "bucs_letters": "bucs_letters.png",
+  "trims_red_sleeve": "trims_red_sleeve.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "27H6",
+   "note": "All-pewter Color Rush (week 15 vs New Orleans): pewter jersey, pants and socks; white numbers with a red outline; red pirate ships and cuffs on the sleeves; red Buccaneers wordmark; red and white stripes on the pants (widths, the shell colour, swoosh colours and the name colour are estimates)",
+   "torso": {
+    "base_colour": "pewter",
+    "neck_donor": "27H6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "bucs_letters",
+      "colour": "jersey_red",
+      "center": [
+       162.5,
+       90.0
+      ],
+      "width": 46.0
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "pewter",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_red_sleeve",
+      "center": [
+       64.0,
+       67.562
+      ],
+      "width": 116.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pewter",
+    "stripe": [
+     [
+      "white",
+      2
+     ],
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "white",
+      2
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "pewter"
+   },
+   "digits": {
+    "glyph_donor": "27H6",
+    "fill": "white",
+    "outline": "jersey_red",
+    "outline_frac": 0.03
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "27H6",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "retail_pewter",
+    "shell": "pewter",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "27H6",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "all",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "pewter",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  },
+  "away": {
+   "selector": "27A6",
+   "note": "All-pewter Color Rush (week 15 vs New Orleans): pewter jersey, pants and socks; white numbers with a red outline; red pirate ships and cuffs on the sleeves; red Buccaneers wordmark; red and white stripes on the pants (widths, the shell colour, swoosh colours and the name colour are estimates)",
+   "torso": {
+    "base_colour": "pewter",
+    "neck_donor": "27A6",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "white"
+    },
+    "decorations": [
+     {
+      "mark": "bucs_letters",
+      "colour": "jersey_red",
+      "center": [
+       162.5,
+       90.0
+      ],
+      "width": 46.0
+     }
+    ]
+   },
+   "sleeve": {
+    "base_colour": "pewter",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "trims_red_sleeve",
+      "center": [
+       64.0,
+       67.562
+      ],
+      "width": 116.5
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pewter",
+    "stripe": [
+     [
+      "white",
+      2
+     ],
+     [
+      "jersey_red",
+      4
+     ],
+     [
+      "white",
+      2
+     ]
+    ],
+    "swoosh_colour": "white"
+   },
+   "socks": {
+    "colour": "pewter"
+   },
+   "digits": {
+    "glyph_donor": "27A6",
+    "fill": "white",
+    "outline": "jersey_red",
+    "outline_frac": 0.03
+   },
+   "helmet_digits": "none",
+   "nameplate": {
+    "glyph_donor": "27A6",
+    "fill": "white"
+   },
+   "helmet": {
+    "shell_from": "retail_pewter",
+    "shell": "pewter",
+    "decal": {
+     "mark": "club_logo",
+     "scale": 1.12
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "27A6",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "retail_pewter",
+      "to": "pewter",
+      "region": "helmet",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_red",
+      "to": "jersey_red",
+      "region": "all",
+      "tolerance": 0.2
+     },
+     {
+      "from": "retail_pants_pewter",
+      "to": "pewter",
+      "region": "pants",
+      "tolerance": 0.2
+     }
+    ],
+    "logo": {
+     "mark": "club_logo",
+     "scale": 1.0
+    }
+   }
+  }
+ }
+}

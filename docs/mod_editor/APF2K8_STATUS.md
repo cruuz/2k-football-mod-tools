@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.106`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.107`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.107: beta 77 (2026-10-09)
+
+Version aligned with beta-77. APF gameplay features are unchanged. Shared release checks follow the current capability registry. The final Windows and hosted CI checks remain pending.
 
 ## 0.1.0-alpha.106 — beta 76.5 (2026-10-06)
 

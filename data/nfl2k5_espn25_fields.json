@@ -48,7 +48,7 @@
       "title": "THE HEIDI BOWL",
       "season": 1968,
       "venue": "Oakland-Alameda County Coliseum",
-      "native_stadium_index": 20,
+      "native_stadium_index": 25,
       "source_prefix": "s20",
       "source_kind": "retail",
       "variant": "ad",
@@ -79,7 +79,9 @@
           "outline": "#a5acaf"
         }
       ],
-      "center": "blank"
+      "center": "blank",
+      "previous_native_stadium_index": 20,
+      "selection_note": "Outdoor grass metadata near Oakland; Allegiant indoor metadata is wrong for the retail Oakland alias."
     },
     {
       "row": 3,
@@ -132,7 +134,7 @@
       "title": "THE IMMACULATE RECEPTION",
       "season": 1972,
       "venue": "Three Rivers Stadium",
-      "native_stadium_index": 22,
+      "native_stadium_index": 2,
       "source_prefix": "s22",
       "source_kind": "retail",
       "variant": "dr",
@@ -167,7 +169,9 @@
         "N": "source/row04_endzone_N.png",
         "S": "source/row04_endzone_S.png"
       },
-      "center_file": "source/row04_center.png"
+      "center_file": "source/row04_center.png",
+      "previous_native_stadium_index": 22,
+      "selection_note": "Outdoor synthetic metadata; Three Rivers had Tartan Turf, not Heinz grass."
     },
     {
       "row": 5,
@@ -175,7 +179,7 @@
       "title": "THE SEA OF HANDS",
       "season": 1974,
       "venue": "Oakland-Alameda County Coliseum",
-      "native_stadium_index": 20,
+      "native_stadium_index": 25,
       "source_prefix": "s20",
       "source_kind": "retail",
       "variant": "dd",
@@ -206,7 +210,9 @@
           "outline": "#a5acaf"
         }
       ],
-      "center": "blank"
+      "center": "blank",
+      "previous_native_stadium_index": 20,
+      "selection_note": "Outdoor grass metadata near Oakland; keep the retail Oakland alias."
     },
     {
       "row": 6,
@@ -214,7 +220,7 @@
       "title": "THE FINAL COMEBACK",
       "season": 1979,
       "venue": "Texas Stadium",
-      "native_stadium_index": 7,
+      "native_stadium_index": 2,
       "source_prefix": "s07",
       "source_kind": "retail",
       "variant": "dd",
@@ -250,7 +256,9 @@
       "endzone_files": {
         "N": "source/row06_endzone_N.png",
         "S": "source/row06_endzone_S.png"
-      }
+      },
+      "previous_native_stadium_index": 7,
+      "selection_note": "Outdoor synthetic metadata for Texas Turf under the open roof hole; keep retail Texas Stadium alias."
     },
     {
       "row": 7,
@@ -460,7 +468,7 @@
       "title": "THE 2-SECOND MISCALCULATION",
       "season": 1987,
       "venue": "Riverfront Stadium",
-      "native_stadium_index": 6,
+      "native_stadium_index": 2,
       "source_prefix": "s06",
       "source_kind": "retail",
       "variant": "dd",
@@ -489,7 +497,9 @@
           "outline": "#ffffff"
         }
       ],
-      "center": "blank"
+      "center": "blank",
+      "previous_native_stadium_index": 6,
+      "selection_note": "Outdoor synthetic metadata for Riverfront AstroTurf; keep existing approximation shell."
     },
     {
       "row": 13,
@@ -497,7 +507,7 @@
       "title": "SAME OLD BUCS",
       "season": 1987,
       "venue": "Busch Memorial Stadium",
-      "native_stadium_index": 20,
+      "native_stadium_index": 2,
       "source_prefix": "s20",
       "source_kind": "retail",
       "variant": "dd",
@@ -528,7 +538,9 @@
           "outline": "#000000"
         }
       ],
-      "center": "blank"
+      "center": "blank",
+      "previous_native_stadium_index": 20,
+      "selection_note": "Outdoor synthetic metadata for Busch AstroTurf; keep retail Oakland approximation alias."
     },
     {
       "row": 14,
@@ -839,7 +851,7 @@
       "title": "SUPER BOWL XXXII",
       "season": 1997,
       "venue": "Qualcomm Stadium",
-      "native_stadium_index": 24,
+      "native_stadium_index": 0,
       "source_prefix": "s24",
       "source_kind": "retail",
       "variant": "nd",
@@ -877,7 +889,9 @@
       "endzone_files": {
         "N": "source/row21_endzone_N.png",
         "S": "source/row21_endzone_S.png"
-      }
+      },
+      "previous_native_stadium_index": 24,
+      "selection_note": "Outdoor grass metadata for Qualcomm; the shared Chargers row now describes indoor synthetic SoFi."
     },
     {
       "row": 22,
@@ -1096,7 +1110,7 @@
       "title": "SUPER BOWL XLII: TYREE",
       "season": 2007,
       "venue": "University of Phoenix Stadium",
-      "native_stadium_index": 0,
+      "native_stadium_index": 20,
       "source_prefix": "s00",
       "source_kind": "built",
       "variant": "nd",
@@ -1133,7 +1147,9 @@
       "endzone_files": {
         "N": "source/row27_endzone_N.png",
         "S": "source/row27_endzone_S.png"
-      }
+      },
+      "previous_native_stadium_index": 0,
+      "selection_note": "Indoor grass metadata for the closed roof at SB XLII; open-roof geometry remains a separate art gap."
     },
     {
       "row": 28,
@@ -1229,7 +1245,7 @@
       "title": "SUPER BOWL LI: 28-3",
       "season": 2016,
       "venue": "NRG Stadium",
-      "native_stadium_index": 31,
+      "native_stadium_index": 17,
       "source_prefix": "s37",
       "source_kind": "retail",
       "variant": "nd",
@@ -1265,7 +1281,9 @@
       "endzone_files": {
         "N": "source/row30_endzone_N.png",
         "S": "source/row30_endzone_S.png"
-      }
+      },
+      "previous_native_stadium_index": 31,
+      "selection_note": "Indoor synthetic metadata for SB LI at NRG; Reliant metadata still describes its 2004 grass."
     },
     {
       "row": 31,
@@ -1481,7 +1499,7 @@
       "title": "NEW MEADOWLANDS MIRACLE",
       "season": 2010,
       "venue": "New Meadowlands Stadium",
-      "native_stadium_index": 18,
+      "native_stadium_index": 2,
       "source_prefix": "s18",
       "source_kind": "built",
       "variant": "ad",
@@ -1511,7 +1529,9 @@
           "outline": "#a71930"
         }
       ],
-      "center": "NFL"
+      "center": "NFL",
+      "previous_native_stadium_index": 18,
+      "selection_note": "Outdoor synthetic metadata for 2010 New Meadowlands; retail Giants row still describes grass."
     },
     {
       "row": 37,
@@ -2113,7 +2133,7 @@
       "title": "THE UNC BOWL",
       "season": 2025,
       "venue": "Paycor Stadium",
-      "native_stadium_index": 6,
+      "native_stadium_index": 2,
       "source_prefix": "s06",
       "source_kind": "built",
       "variant": "nd",
@@ -2145,7 +2165,9 @@
         "https://www.bengals.com/photos/bengals-steelers-game-photos-thursday-night-football-2025"
       ],
       "field_reference": "https://gridiron-uniforms.com/fields/controller/controller.php?action=view-team-rs&city=Cincinnati&name=Bengals&team_id=CIN",
-      "art_status": "Official Week 7 whiteout colours/layout; existing retail Bengals wordmark reused; fine tiger-stripe shapes reconstructed."
+      "art_status": "Official Week 7 whiteout colours/layout; existing retail Bengals wordmark reused; fine tiger-stripe shapes reconstructed.",
+      "previous_native_stadium_index": 6,
+      "selection_note": "Outdoor synthetic metadata for 2025 Paycor; retail Bengals row still describes 2003 grass."
     }
   ]
 }

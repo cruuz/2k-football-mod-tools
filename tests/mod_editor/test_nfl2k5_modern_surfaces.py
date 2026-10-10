@@ -182,11 +182,61 @@ class ColourTests(unittest.TestCase):
         self.assertGreaterEqual(len(measured), 12)
         for prefix, seen in measured.items():
             look = ms.venue_look(prefix)
-            got = ms.venue_target(prefix, look, seen["light"])
-            for a, b in zip(got, seen["rgb"]):
+            aim = ms.venues()[prefix].get("design") or seen     # a design target replaces the measurement (Allegiant)
+            got = ms.venue_target(prefix, look, aim["light"])
+            for a, b in zip(got, aim["rgb"]):
                 self.assertAlmostEqual(a, b, delta=0.01, msg=prefix)
             self.assertIn("frames", seen["source"])
         self.assertEqual(ms.venue_target("s03", "grass_bluegrass", "day"), ms.target_rgb("grass_bluegrass", "day"))
+
+    def test_only_allegiant_has_a_design_target_and_it_is_darker_and_cooler_than_its_broadcast(self):
+        import colorsys
+        designed = {p: row["design"] for p, row in ms.venues().items() if row.get("design")}
+        self.assertEqual(sorted(designed), ["s20"])        # Beta 77 ALG pass 4; every other venue keeps its measurement
+        seen, aim = ms.venues()["s20"]["broadcast"], designed["s20"]
+        self.assertEqual((aim["light"], seen["light"]), ("dome", "dome"))
+        luma = lambda c: 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+        hue = lambda c: colorsys.rgb_to_hsv(*(v / 255 for v in c))[0] * 360
+        self.assertLess(luma(aim["rgb"]), luma(seen["rgb"]) * 0.92)
+        self.assertGreater(hue(aim["rgb"]), hue(seen["rgb"]) + 2)
+        self.assertLess(hue(aim["rgb"]), 100)               # a natural green, not a blue-green
+        # the other lights follow the same per-channel ratio to the look, and every other venue still follows its measurement
+        look = ms.venue_look("s20")
+        for cls in ("day", "afternoon", "night"):
+            got = ms.venue_target("s20", look, cls)
+            want = [t * (m / b) for t, m, b in zip(ms.target_rgb(look, cls), aim["rgb"], ms.target_rgb(look, "dome"))]
+            for a, b in zip(got, want):
+                self.assertAlmostEqual(a, b, delta=0.01)
+        for prefix, row in ms.venues().items():
+            if prefix == "s20":
+                continue
+            look = ms.venue_look(prefix)
+            for cls in ("day", "night", "dome"):
+                base = ms.target_rgb(look, cls)
+                if row.get("broadcast"):
+                    ref = ms.target_rgb(look, row["broadcast"]["light"])
+                    base = tuple(t * (m / b) for t, m, b in zip(base, row["broadcast"]["rgb"], ref))
+                self.assertEqual(tuple(ms.venue_target(prefix, look, cls)), tuple(base), (prefix, cls))
+
+    def test_a_design_target_needs_a_light_an_rgb_and_a_source(self):
+        import tempfile
+        doc = json.loads(ms.VENUES_PATH.read_text(encoding="utf-8"))
+        row = next(r for r in doc["venues"] if r["prefix"] == "s20")
+        good, original = dict(row["design"]), ms.VENUES_PATH
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                for broken in (dict(good, light="midnight"), dict(good, rgb=[1, 2]), dict(good, source="")):
+                    row["design"] = broken
+                    path = Path(tmp) / "venues.json"
+                    path.write_text(json.dumps(doc), encoding="utf-8")
+                    ms.VENUES_PATH = path
+                    ms.venues.cache_clear()
+                    with self.assertRaises(ms.ModernSurfacesError):
+                        ms.venues()
+        finally:
+            ms.VENUES_PATH = original
+            ms.venues.cache_clear()
+        self.assertEqual(ms.venues()["s20"]["design"], good)
 
     def test_maps_stay_green_under_the_warm_retail_rigs(self):
         for look in ms.LOOKS:

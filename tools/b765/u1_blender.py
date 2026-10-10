@@ -49,6 +49,8 @@ for key in ("body", "head"):
 # replacing the glTF's retail ones (their materials are renamed ORIG_*, which set_item never shows)
 rep = job.get("replace_parts")
 if rep:
+    if rep.get("uv_origin", "native_top_left") != "native_top_left":
+        raise ValueError("replacement geometry must use native top-left UVs")
     D = json.load(open(rep["json"]))
     names = list(rep["names"])
     for key, o in objs:

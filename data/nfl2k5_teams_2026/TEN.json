@@ -81,7 +81,7 @@
        161,
        90
       ],
-      "width": 40
+      "width": 55
      }
     ]
    },
@@ -2147,7 +2147,7 @@
        161,
        90
       ],
-      "width": 48
+      "width": 66
      }
     ]
    },
@@ -4780,5 +4780,8 @@
    "Anthony Hill"
   ],
   "note": "2K5 skin tone 0 (lightest) to 5 (darkest), set by eye from the official 2026 headshots (INFERRED); dreads flag by eye for locs, braids and twists."
+ },
+ "u2d_b77": {
+  "both": "chest wordmarks enlarged: TITANS 40 to 55 px (photo week 1 vs NYJ #7: 0.74 number heights wide, v0.5 0.54), TENNESSEE 48 to 66 px (week 4 at BAL #55 and #57: 0.8, v0.5 0.59). Rest of both kits checked against the week 1 and week 4 club photos: unchanged"
  }
 }

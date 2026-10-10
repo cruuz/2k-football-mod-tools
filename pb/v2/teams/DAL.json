@@ -1,0 +1,552 @@
+{
+ "team": "DAL",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Schottenheimer vertical timing",
+ "staff": "Brian Schottenheimer / Klayton Adams",
+ "family": "vertical",
+ "feature": "WR1",
+ "key_players": "CeeDee Lamb; George Pickens",
+ "depth_step": 2,
+ "node_cap_note": "b77 p48o: old-generator defense pack 1,668 nodes + kickoff returns 78 must fit 3,500 after the offense (max 1,754); the shared cap is 1,820",
+ "tendencies": {
+  "shotgun_pct": 62.5,
+  "pistol_pct": 1.91,
+  "play_action_pct": 26.75,
+  "motion_pct": 59.15,
+  "personnel": {
+   "11": 745,
+   "12": 190,
+   "22": 38,
+   "21": 88,
+   "13": 18,
+   "01": 9,
+   "other": 8,
+   "20": 3,
+   "23": 3,
+   "02": 2
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "Gun Doubles Tight",
+   "Gun Bunch"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Empty Y",
+   "Gun Ace Wing"
+  ]
+ },
+ "boost": {
+  "Dagger": 5,
+  "Double Post": 3,
+  "Drive": 2,
+  "Four Verticals": 2,
+  "Inside Zone": 2,
+  "Mills": 3,
+  "Out and Up": 1,
+  "PA Shot": 2,
+  "Post Corner": 1,
+  "Smash": 1,
+  "Y Cross": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Doubles",
+   "concept": "Four Verticals",
+   "name": "Verts Choice",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Hook",
+      9
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Out and Up",
+   "name": "X Out and Up",
+   "overrides": {}
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "PA Dagger",
+   "name": "PA X Dagger",
+   "overrides": {
+    "routes": {
+     "W1": [
+      "route",
+      "Dig",
+      15
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Curl Flat",
+   "name": "DAL Curl Flat",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "W1",
+     "W2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Hank",
+   "name": "DAL Hank",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S1",
+     "B",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Comebacks",
+   "name": "DAL Comebacks",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "B",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Slant Flat",
+   "name": "DAL Slant Flat",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "S2",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Bunch",
+   "concept": "Double Slants",
+   "name": "DAL Double Slants",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S3",
+     "S2",
+     "W1",
+     "S1"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.dallascowboys.com/team/coaches-roster/klayton-adams)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.17 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Y": {
+   "own": "Straight",
+   "mask": [
+    "Straight"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Curl Flat",
+    "name": "DAL Curl Flat",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "W1",
+      "W2",
+      "S1"
+     ]
+    },
+    "reason": "targets HITCH/CURL 21.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Hank",
+    "name": "DAL Hank",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S1",
+      "B",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 21.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Comebacks",
+    "name": "DAL Comebacks",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "B",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "targets HITCH/CURL 21.6% (league 18.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Slant Flat",
+    "name": "DAL Slant Flat",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "S2",
+      "W2"
+     ]
+    },
+    "reason": "targets SLANT 8.2% (league 6.1)"
+   },
+   {
+    "formation": "Gun Bunch",
+    "concept": "Double Slants",
+    "name": "DAL Double Slants",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S3",
+      "S2",
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "targets SLANT 8.2% (league 6.1)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 96.7%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   3,
+   0
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   2,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   3,
+   2
+  ],
+  "Gun Trey": [
+   3,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   3,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   2,
+   2
+  ],
+  "Gun Split Backs": [
+   3,
+   0,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Gun Empty Y": [
+   2,
+   1,
+   1
+  ],
+  "Gun Ace Wing": [
+   2,
+   0,
+   1
+  ]
+ }
+}

@@ -1,0 +1,1386 @@
+{
+  "schema": "2k5_mod_studio_roster_edits/v1",
+  "name": "b77 a2 handedness",
+  "author": "b77 a2",
+  "edits": [
+    {
+      "pool": "primary",
+      "index": 1617,
+      "first": "Andre",
+      "last": "Szmyt",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 876,
+      "first": "Andy",
+      "last": "Borregales",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1755,
+      "first": "Ben",
+      "last": "Sauls",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1035,
+      "first": "Blake",
+      "last": "Grupe",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 396,
+      "first": "Brandon",
+      "last": "Aubrey",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 293,
+      "first": "Cairo",
+      "last": "Santos",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 662,
+      "first": "Cam",
+      "last": "Little",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1300,
+      "first": "Cameron",
+      "last": "Dicker",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 27,
+      "first": "Chad",
+      "last": "Ryland",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1457,
+      "first": "Chase",
+      "last": "McLaughlin",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 929,
+      "first": "Daniel",
+      "last": "Carlson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1351,
+      "first": "Eddy",
+      "last": "Pineiro",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 344,
+      "first": "Evan",
+      "last": "McPherson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 715,
+      "first": "Harrison",
+      "last": "Butker",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1247,
+      "first": "Harrison",
+      "last": "Mevis",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 505,
+      "first": "Jake",
+      "last": "Bates",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1140,
+      "first": "Jake",
+      "last": "Elliott",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1752,
+      "first": "Jake",
+      "last": "Moody",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1405,
+      "first": "Jason",
+      "last": "Myers",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1514,
+      "first": "Joey",
+      "last": "Slye",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1671,
+      "first": "Ka'imi",
+      "last": "Fairbairn",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1087,
+      "first": "Matt",
+      "last": "Gay",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 82,
+      "first": "Nick",
+      "last": "Folk",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 769,
+      "first": "Riley",
+      "last": "Patterson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 241,
+      "first": "Ryan",
+      "last": "Fitzgerald",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 607,
+      "first": "Spencer",
+      "last": "Shrader",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1742,
+      "first": "Tanner",
+      "last": "Brown",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 560,
+      "first": "Trey",
+      "last": "Smack",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 131,
+      "first": "Tyler",
+      "last": "Loop",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 823,
+      "first": "Will",
+      "last": "Reichard",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 34,
+      "first": "Blake",
+      "last": "Gillikin",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1145,
+      "first": "Braden",
+      "last": "Mann",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1356,
+      "first": "Corliss",
+      "last": "Waitman",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 87,
+      "first": "Jake",
+      "last": "Bailey",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1676,
+      "first": "Kai",
+      "last": "Kroeger",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 721,
+      "first": "Matt",
+      "last": "Araiza",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1410,
+      "first": "Michael",
+      "last": "Dickson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 880,
+      "first": "Mitch",
+      "last": "Wishnowsky",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1462,
+      "first": "Riley",
+      "last": "Dixon",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 349,
+      "first": "Ryan",
+      "last": "Rehkow",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 935,
+      "first": "Ryan",
+      "last": "Wright",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 298,
+      "first": "Tory",
+      "last": "Taylor",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1566,
+      "first": "Tress",
+      "last": "Way",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1197,
+      "first": "Aaron",
+      "last": "Rodgers",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1711,
+      "first": "Adrian",
+      "last": "Martinez",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1095,
+      "first": "Aidan",
+      "last": "O'Connell",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1147,
+      "first": "Andy",
+      "last": "Dalton",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 616,
+      "first": "Anthony",
+      "last": "Richardson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1569,
+      "first": "Athan",
+      "last": "Kaliakmanis",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1802,
+      "first": "Austin",
+      "last": "Reed",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1697,
+      "first": "Bailey",
+      "last": "Zappe",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1463,
+      "first": "Baker",
+      "last": "Mayfield",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 883,
+      "first": "Behren",
+      "last": "Morton",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2459,
+      "first": "Blaine",
+      "last": "Gabbert",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 457,
+      "first": "Bo",
+      "last": "Nix",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 777,
+      "first": "Brady",
+      "last": "Cook",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2326,
+      "first": "Brandon",
+      "last": "Allen",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1357,
+      "first": "Brock",
+      "last": "Purdy",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 248,
+      "first": "Bryce",
+      "last": "Young",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1677,
+      "first": "C.J.",
+      "last": "Stroud",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1043,
+      "first": "Cade",
+      "last": "Klubnik",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 299,
+      "first": "Caleb",
+      "last": "Williams",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1843,
+      "first": "Cam",
+      "last": "Miller",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1519,
+      "first": "Cam",
+      "last": "Ward",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 37,
+      "first": "Carson",
+      "last": "Beck",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 830,
+      "first": "Carson",
+      "last": "Wentz",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 301,
+      "first": "Case",
+      "last": "Keenum",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2328,
+      "first": "Clayton",
+      "last": "Tune",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1149,
+      "first": "Cole",
+      "last": "Payton",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1895,
+      "first": "Connor",
+      "last": "Bazelak",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 90,
+      "first": "Cooper",
+      "last": "Rush",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 401,
+      "first": "Dak",
+      "last": "Prescott",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 615,
+      "first": "Daniel",
+      "last": "Jones",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1678,
+      "first": "Davis",
+      "last": "Mills",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1624,
+      "first": "Deshaun",
+      "last": "Watson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2458,
+      "first": "Desmond",
+      "last": "Ridder",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 881,
+      "first": "Drake",
+      "last": "Maye",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1200,
+      "first": "Drew",
+      "last": "Allar",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1412,
+      "first": "Drew",
+      "last": "Lock",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1094,
+      "first": "Fernando",
+      "last": "Mendoza",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 36,
+      "first": "Gardner",
+      "last": "Minshew",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 724,
+      "first": "Garrett",
+      "last": "Nussmeier",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1042,
+      "first": "Geno",
+      "last": "Smith",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 250,
+      "first": "Haynes",
+      "last": "King",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1907,
+      "first": "Hunter",
+      "last": "Dekkers",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 831,
+      "first": "J.J.",
+      "last": "McCarthy",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 58,
+      "first": "Jack",
+      "last": "Strand",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 35,
+      "first": "Jacoby",
+      "last": "Brissett",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2325,
+      "first": "Jake",
+      "last": "Browning",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1779,
+      "first": "Jake",
+      "last": "Haener",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1146,
+      "first": "Jalen",
+      "last": "Hurts",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1413,
+      "first": "Jalen",
+      "last": "Milroe",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1464,
+      "first": "Jalon",
+      "last": "Daniels",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 988,
+      "first": "Jameis",
+      "last": "Winston",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 512,
+      "first": "Jared",
+      "last": "Goff",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 458,
+      "first": "Jarrett",
+      "last": "Stidham",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 987,
+      "first": "Jaxson",
+      "last": "Dart",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1567,
+      "first": "Jayden",
+      "last": "Daniels",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2456,
+      "first": "Jeff",
+      "last": "Driskel",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2324,
+      "first": "Jimmy",
+      "last": "Garoppolo",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 350,
+      "first": "Joe",
+      "last": "Burrow",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 139,
+      "first": "Joe",
+      "last": "Fagnano",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 351,
+      "first": "Joe",
+      "last": "Flacco",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2457,
+      "first": "John",
+      "last": "Wolford",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 565,
+      "first": "Jordan",
+      "last": "Love",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 190,
+      "first": "Josh",
+      "last": "Allen",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 513,
+      "first": "Joshua",
+      "last": "Dobbs",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 723,
+      "first": "Justin",
+      "last": "Fields",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1305,
+      "first": "Justin",
+      "last": "Herbert",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 249,
+      "first": "Kenny",
+      "last": "Pickett",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1093,
+      "first": "Kirk",
+      "last": "Cousins",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1359,
+      "first": "Kurtis",
+      "last": "Rourke",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 191,
+      "first": "Kyle",
+      "last": "Allen",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 776,
+      "first": "Kyle",
+      "last": "McCord",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2327,
+      "first": "Kyle",
+      "last": "Trask",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 829,
+      "first": "Kyler",
+      "last": "Murray",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 137,
+      "first": "Lamar",
+      "last": "Jackson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1358,
+      "first": "Mac",
+      "last": "Jones",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 775,
+      "first": "Malik",
+      "last": "Willis",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1568,
+      "first": "Marcus",
+      "last": "Mariota",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1927,
+      "first": "Mark",
+      "last": "Gronowski",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1198,
+      "first": "Mason",
+      "last": "Rudolph",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 2460,
+      "first": "Matt",
+      "last": "Barkley",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1254,
+      "first": "Matthew",
+      "last": "Stafford",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 88,
+      "first": "Michael",
+      "last": "Penix",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1520,
+      "first": "Mitchell",
+      "last": "Trubisky",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 722,
+      "first": "Patrick",
+      "last": "Mahomes",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 670,
+      "first": "Quinn",
+      "last": "Ewers",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 617,
+      "first": "Riley",
+      "last": "Leonard",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1411,
+      "first": "Sam",
+      "last": "Darnold",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 459,
+      "first": "Sam",
+      "last": "Ehlinger",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 402,
+      "first": "Sam",
+      "last": "Howell",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1625,
+      "first": "Shedeur",
+      "last": "Sanders",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 937,
+      "first": "Spencer",
+      "last": "Rattler",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1255,
+      "first": "Stetson",
+      "last": "Bennett",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1148,
+      "first": "Tanner",
+      "last": "McKee",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1626,
+      "first": "Taylen",
+      "last": "Green",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 882,
+      "first": "Tommy",
+      "last": "DeVito",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 669,
+      "first": "Trevor",
+      "last": "Lawrence",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1306,
+      "first": "Trey",
+      "last": "Lance",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 89,
+      "first": "Tua",
+      "last": "Tagovailoa",
+      "fields": {
+        "hand": 0
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1256,
+      "first": "Ty",
+      "last": "Simpson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 138,
+      "first": "Tyler",
+      "last": "Huntley",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 936,
+      "first": "Tyler",
+      "last": "Shough",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 566,
+      "first": "Tyrod",
+      "last": "Taylor",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 300,
+      "first": "Tyson",
+      "last": "Bagent",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1199,
+      "first": "Will",
+      "last": "Howard",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 938,
+      "first": "Zach",
+      "last": "Wilson",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 1196,
+      "first": "Cameron",
+      "last": "Johnston",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 136,
+      "first": "Ryan",
+      "last": "Eckley",
+      "fields": {
+        "hand": 1
+      }
+    },
+    {
+      "pool": "primary",
+      "index": 456,
+      "first": "Jeremy",
+      "last": "Crawshaw",
+      "fields": {
+        "hand": 1
+      }
+    }
+  ],
+  "handedness_decisions": {
+    "main:primary:1196": {
+      "name": "Cameron Johnston",
+      "hand": "Right",
+      "basis": "noah_default_right",
+      "decision_source": "Noah 2026-10-08"
+    },
+    "main:primary:136": {
+      "name": "Ryan Eckley",
+      "hand": "Right",
+      "basis": "noah_default_right",
+      "decision_source": "Noah 2026-10-08"
+    },
+    "main:primary:456": {
+      "name": "Jeremy Crawshaw",
+      "hand": "Right",
+      "basis": "noah_default_right",
+      "decision_source": "Noah 2026-10-08"
+    }
+  }
+}

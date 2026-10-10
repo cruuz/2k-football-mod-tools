@@ -1,0 +1,3761 @@
+{
+ "schema": "nfl2k5_uniform_alternates_2026/v1",
+ "note": "u3d recipes (jobs MIN NE NO NYG NYJ PHI). Same schema as nfl2k5_uniform_alternates_2026.json; built by tools/b77/u3d_alternates.py, installed by tools/b77/u3d_repair.py. 'spec' patches one of the team's shipped 2026 kits (data/nfl2k5_teams_2026/<TEAM>.json) and runs the 2026 art tool's author on the slot's own textures; 'copy', 'recolour', 'blank', 'unif', 'marks_from' are applied after.",
+ "alternates": {
+  "MIN:5": {
+   "team": "MIN",
+   "code": "15",
+   "style": 5,
+   "set": "Winter Warrior (all-white)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "15A0"
+    },
+    "A": {
+     "donor": "15A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/MIN/marks",
+   "marks_from": "15A0",
+   "albedo": {
+    "gray_m": "#9AA1A8",
+    "helmet_white_m": "#F0F0EE"
+   },
+   "unif": {
+    "facemask": "FF9AA1A8"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "15H5",
+       "sleeve_swooshes": {
+        "colour": "purple"
+       },
+       "decorations": [
+        {
+         "mark": "vikings_chest",
+         "colour": "gray_m",
+         "center": [
+          161,
+          90.5
+         ],
+         "width": 32
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          40,
+          122,
+          43
+         ],
+         "colour": "purple"
+        },
+        {
+         "rect": [
+          8,
+          43,
+          122,
+          46
+         ],
+         "colour": "gray_m"
+        },
+        {
+         "rect": [
+          8,
+          104,
+          122,
+          107
+         ],
+         "colour": "purple"
+        },
+        {
+         "rect": [
+          8,
+          107,
+          122,
+          110
+         ],
+         "colour": "gray_m"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "base_from": "15H0",
+       "stripe": [
+        [
+         "gray_m",
+         5
+        ],
+        [
+         "purple",
+         3
+        ]
+       ],
+       "swoosh_colour": "purple"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "digits": {
+       "outline": "gray_m",
+       "outline_frac": 0.02
+      },
+      "arm_digits": {
+       "glyph_donor": "15H5",
+       "fill": "purple"
+      },
+      "helmet": {
+       "shell": "helmet_white_m",
+       "shell_from": "r_helmet_purple",
+       "stripe": null,
+       "recolour": [
+        {
+         "from": "r_card_gold",
+         "to": "gray_m",
+         "tolerance": 0.3
+        }
+       ],
+       "decorations": [
+        {
+         "rect": [
+          157,
+          0,
+          167,
+          232
+         ],
+         "colour": "gray_m",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "15H5",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "r_atlas_helmet",
+         "to": "helmet_white_m",
+         "region": "helmet",
+         "tolerance": 0.35
+        },
+        {
+         "from": "r_atlas_purple",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "15A5",
+       "sleeve_swooshes": {
+        "colour": "purple"
+       },
+       "decorations": [
+        {
+         "mark": "vikings_chest",
+         "colour": "gray_m",
+         "center": [
+          161,
+          90.5
+         ],
+         "width": 32
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          40,
+          122,
+          43
+         ],
+         "colour": "purple"
+        },
+        {
+         "rect": [
+          8,
+          43,
+          122,
+          46
+         ],
+         "colour": "gray_m"
+        },
+        {
+         "rect": [
+          8,
+          104,
+          122,
+          107
+         ],
+         "colour": "purple"
+        },
+        {
+         "rect": [
+          8,
+          107,
+          122,
+          110
+         ],
+         "colour": "gray_m"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "base_from": "15H0",
+       "stripe": [
+        [
+         "gray_m",
+         5
+        ],
+        [
+         "purple",
+         3
+        ]
+       ],
+       "swoosh_colour": "purple"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "digits": {
+       "outline": "gray_m",
+       "outline_frac": 0.02
+      },
+      "arm_digits": {
+       "glyph_donor": "15A5",
+       "fill": "purple"
+      },
+      "helmet": {
+       "shell": "helmet_white_m",
+       "shell_from": "r_helmet_purple",
+       "stripe": null,
+       "recolour": [
+        {
+         "from": "r_card_gold",
+         "to": "gray_m",
+         "tolerance": 0.3
+        }
+       ],
+       "decorations": [
+        {
+         "rect": [
+          157,
+          0,
+          167,
+          232
+         ],
+         "colour": "gray_m",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "15A5",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "r_atlas_helmet",
+         "to": "helmet_white_m",
+         "region": "helmet",
+         "tolerance": 0.35
+        },
+        {
+         "from": "r_atlas_purple",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://www.vikings.com/news/winter-warrior-alternate-uniforms-2024",
+     "supports": "white jersey, pants and matte white helmet, metallic gray stripe and facemask, SKOL chest wordmark (team text)"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/vikings/smxsstesrvmhwyro3e6m.jpg",
+     "supports": "vikings.com Winter Warrior gallery #06: white jersey, purple numbers, white pants, white helmet (render matched)"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/vikings/e9okopzl4hnfzyk898ij.jpg",
+     "supports": "gallery #12: helmet side with gray-outlined horn and thin purple sleeve stripe"
+    },
+    {
+     "url": "https://www.vikings.com/news/2026-game-themes-us-bank-stadium",
+     "supports": "Week 16 Winter Warrior wording"
+    }
+   ],
+   "estimates": [
+    "numbers use the primary purple (the photos read a bluer violet)",
+    "pants stripe widths (gray 5 px, purple 3 px) and sleeve stripe widths are estimates",
+    "horn outline is the retail crescent recoloured gray"
+   ]
+  },
+  "MIN:6": {
+   "team": "MIN",
+   "code": "15",
+   "style": 6,
+   "set": "Rivalries (deep purple, ivory, gold)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2004,
+    2
+   ],
+   "build_type": "new",
+   "kits": {
+    "H": {
+     "donor": "15H0"
+    },
+    "A": {
+     "donor": "15H0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/MIN/marks",
+   "marks_from": "15H0",
+   "albedo": {
+    "deep_purple": "#33236B",
+    "deep_helmet": "#241B58",
+    "ivory": "#E9E0C9",
+    "metal_gold": "#B79B55"
+   },
+   "unif": {
+    "facemask": "FFB79B55"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "home",
+      "torso": {
+       "base_colour": "deep_purple",
+       "neck_donor": "15H6",
+       "sleeve_swooshes": {
+        "colour": "ivory"
+       },
+       "decorations": [
+        {
+         "mark": "vikings_chest",
+         "colour": "ivory",
+         "center": [
+          161,
+          90.5
+         ],
+         "width": 32
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "deep_purple",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          24,
+          122,
+          26
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          26,
+          122,
+          32
+         ],
+         "colour": "ivory"
+        },
+        {
+         "rect": [
+          8,
+          32,
+          122,
+          34
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          88,
+          122,
+          90
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          90,
+          122,
+          96
+         ],
+         "colour": "ivory"
+        },
+        {
+         "rect": [
+          8,
+          96,
+          122,
+          98
+         ],
+         "colour": "metal_gold"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "deep_purple",
+       "base_from": "15H6",
+       "stripe": [
+        [
+         "metal_gold",
+         2
+        ],
+        [
+         "ivory",
+         4
+        ],
+        [
+         "metal_gold",
+         2
+        ]
+       ],
+       "swoosh_colour": "ivory"
+      },
+      "socks": {
+       "colour": "deep_purple"
+      },
+      "digits": {
+       "fill": "ivory",
+       "outline": "metal_gold",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "15H6",
+       "fill": "ivory"
+      },
+      "nameplate": {
+       "glyph_donor": "15H1",
+       "fill": "ivory"
+      },
+      "helmet_digits": {
+       "glyph_donor": "15H1",
+       "fill": "ivory"
+      },
+      "helmet": {
+       "shell": "deep_helmet",
+       "shell_from": "r_helmet_purple",
+       "stripe": null,
+       "recolour": [
+        {
+         "from": "r_card_gold",
+         "to": "metal_gold",
+         "tolerance": 0.3
+        }
+       ],
+       "decorations": [
+        {
+         "rect": [
+          157,
+          0,
+          167,
+          232
+         ],
+         "colour": "ivory",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "15H0",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "purple",
+         "to": "deep_purple",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "r_atlas_sleeve",
+         "to": "deep_purple",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "r_atlas_helmet",
+         "to": "deep_helmet",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     },
+     "A": {
+      "base": "home",
+      "torso": {
+       "base_colour": "deep_purple",
+       "neck_donor": "15A6",
+       "sleeve_swooshes": {
+        "colour": "ivory"
+       },
+       "decorations": [
+        {
+         "mark": "vikings_chest",
+         "colour": "ivory",
+         "center": [
+          161,
+          90.5
+         ],
+         "width": 32
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "deep_purple",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          24,
+          122,
+          26
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          26,
+          122,
+          32
+         ],
+         "colour": "ivory"
+        },
+        {
+         "rect": [
+          8,
+          32,
+          122,
+          34
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          88,
+          122,
+          90
+         ],
+         "colour": "metal_gold"
+        },
+        {
+         "rect": [
+          8,
+          90,
+          122,
+          96
+         ],
+         "colour": "ivory"
+        },
+        {
+         "rect": [
+          8,
+          96,
+          122,
+          98
+         ],
+         "colour": "metal_gold"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "deep_purple",
+       "base_from": "15A6",
+       "stripe": [
+        [
+         "metal_gold",
+         2
+        ],
+        [
+         "ivory",
+         4
+        ],
+        [
+         "metal_gold",
+         2
+        ]
+       ],
+       "swoosh_colour": "ivory"
+      },
+      "socks": {
+       "colour": "deep_purple"
+      },
+      "digits": {
+       "fill": "ivory",
+       "outline": "metal_gold",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "15A6",
+       "fill": "ivory"
+      },
+      "nameplate": {
+       "glyph_donor": "15H1",
+       "fill": "ivory"
+      },
+      "helmet_digits": {
+       "glyph_donor": "15H1",
+       "fill": "ivory"
+      },
+      "helmet": {
+       "shell": "deep_helmet",
+       "shell_from": "r_helmet_purple",
+       "stripe": null,
+       "recolour": [
+        {
+         "from": "r_card_gold",
+         "to": "metal_gold",
+         "tolerance": 0.3
+        }
+       ],
+       "decorations": [
+        {
+         "rect": [
+          157,
+          0,
+          167,
+          232
+         ],
+         "colour": "ivory",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "15H0",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "purple",
+         "to": "deep_purple",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "r_atlas_sleeve",
+         "to": "deep_purple",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "r_atlas_helmet",
+         "to": "deep_helmet",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked (club Rivalries gallery) with approximated knot work",
+   "sources": [
+    {
+     "url": "https://www.vikings.com/rivalries",
+     "supports": "Deep Purple, Pale Ivory, Metallic Gold; two-tone chiseled numbers; Nordic knot pants stripe; pointed centre stripe"
+    },
+    {
+     "url": "https://www.vikings.com/news/unveiling-new-rivalries-uniform-2026",
+     "supports": "Purple Dynasty colour name; runes inside collar; Dec. 20 debut"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/vikings/ziulj6jswum6njdg0t9e.jpg",
+     "supports": "vikings.com Rivalries unveil image: violet jersey, ivory numbers with gold edge, VIKINGS wordmark"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/vikings/wtr0qfi8avaurhlzbcbe.jpg",
+     "supports": "helmet from behind: dark purple shell, gold facemask, ivory stripe; knot band on the sleeve cap"
+    }
+   ],
+   "estimates": [
+    "the braided knot band on the sleeve cap and the knot pants stripe are drawn as gold-ivory-gold bands (the art tool has no knot mask)",
+    "SKOL runes on the helmet bumper not drawn",
+    "jersey colour #33236B and helmet #241B58 are estimates from photos (the team gives names, not hex)",
+    "socks colour not stated (deep purple used)"
+   ]
+  },
+  "NE:4": {
+   "team": "NE",
+   "code": "16",
+   "style": 4,
+   "set": "Pat Patriot red throwback",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1990,
+    1992
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "16H4"
+    },
+    "A": {
+     "donor": "16H4"
+    }
+   },
+   "donor_all": {
+    "A": "16H4"
+   },
+   "modernize": {
+    "all": {
+     "torso": {
+      "shield": true
+     },
+     "sleeve": {
+      "swoosh": "#FFFFFF"
+     },
+     "pants": {
+      "swoosh": "#FFFFFF",
+      "shield": true
+     }
+    }
+   },
+   "recolour": [
+    {
+     "from": "#A7051F",
+     "to": "#C8102E",
+     "tolerance": 0.22,
+     "components": [
+      "torso",
+      "sleeve",
+      "helmet_helmet02",
+      "helmet_helmet00",
+      "pants",
+      "splayer"
+     ],
+     "why": "the retail 2004 red (167,5,31) lifted to the club red C8102E (the primary 2026 kit's red); shading kept"
+    }
+   ],
+   "keep_slot": [
+    "socks00",
+    "socks00_mud"
+   ],
+   "unif": {
+    "facemask": "FFF2F3F6"
+   },
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2025/07/27/new-england-patriots-to-wear-pat-patriot-throwback-uniforms-twice-this-season/football/",
+     "supports": "red jerseys, white and blue UCLA stripes, white pants, white helmet with vintage logo"
+    },
+    {
+     "url": "https://content.sportslogos.net/news/2025/09/new-england-patriots-pat-patriots-throwback-uniforms.jpg",
+     "supports": "2025 game photo: render matched"
+    },
+    {
+     "url": "https://fantasynerds.com/news/story/2026/09/04/patriots-unveil-themed-home-games-for-2026-season-1615405",
+     "supports": "2026 Week 5 and Week 14 'Pat Patriot' throwbacks (secondary)"
+    }
+   ],
+   "estimates": [
+    "the 2026 kit is assumed equal to the 2025 one (no 2026 photo yet)",
+    "red lifted from the retail 2004 red to C8102E",
+    "striped socks left as the slot's retail art (writer limit)"
+   ]
+  },
+  "NE:9": {
+   "team": "NE",
+   "code": "16",
+   "style": 9,
+   "set": "Nor'easter (Rivalries)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "new",
+   "kits": {
+    "H": {
+     "donor": "16H0"
+    },
+    "A": {
+     "donor": "16A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NE/marks",
+   "marks_from": "16H0",
+   "albedo": {
+    "storm_blue": "#3D5A8C",
+    "helmet_white": "#EFEFEC",
+    "silver_trim": "#B6BDC2"
+   },
+   "marks": {
+    "elvis_nor": "elvis_nor.png"
+   },
+   "derived_marks": {
+    "elvis_nor": {
+     "fill": [
+      "ne_logo_navy.png",
+      "ne_logo_red.png",
+      "ne_logo_silver.png"
+     ],
+     "fill_colour": "#3D5A8C",
+     "ring": [
+      "ne_logo_navy.png",
+      "ne_logo_red.png",
+      "ne_logo_silver.png"
+     ],
+     "ring_colour": "#B6BDC2",
+     "ring_frac": 0.012
+    }
+   },
+   "yoke_bands": {
+    "colours": [
+     "jersey_navy",
+     "white",
+     "jersey_navy"
+    ],
+    "params": {
+     "red_cm": 1.3,
+     "panel_back_cm": 7.0,
+     "panel_front_end_cm": 5.5
+    }
+   },
+   "unif": {
+    "facemask": "FFB0B7BC"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "home",
+      "torso": {
+       "base_colour": "storm_blue",
+       "neck_donor": "16H9",
+       "chest_mark": null,
+       "decorations": [],
+       "sleeve_swooshes": {
+        "colour": "white"
+       }
+      },
+      "sleeve": {
+       "base_colour": "storm_blue",
+       "decorations": []
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "white",
+         25
+        ]
+       ],
+       "swoosh_colour": "red"
+      },
+      "socks": {
+       "colour": "storm_blue"
+      },
+      "digits": {
+       "fill": "white",
+       "outline": "jersey_navy",
+       "outline_frac": 0.03,
+       "outline2": null,
+       "outline2_frac": null,
+       "inline": null
+      },
+      "nameplate": {
+       "fill": "white",
+       "outline2": null,
+       "outline2_frac": null
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "retail_helmet_silver",
+       "recolour": [],
+       "decal": {
+        "mark": "elvis_nor",
+        "scale": 1.0,
+        "erase": "box",
+        "boxes": {
+         "upper": [
+          34,
+          38,
+          138,
+          112
+         ],
+         "lower": [
+          34,
+          134,
+          138,
+          214
+         ]
+        },
+        "facing": "front",
+        "why": "b77 sh1: the real Elvis faces the FRONT on both sides (club helmet photos); the same-image decal left it facing the rear on the left"
+       }
+      },
+      "splayer": {
+       "torso_donor": "16H0",
+       "recolour": [
+        {
+         "from": "retail_atlas_navy",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_grey1",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_grey2",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_red",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.35
+        },
+        {
+         "from": "retail_atlas_grey1",
+         "to": "helmet_white",
+         "region": "helmet",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_navy",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     },
+     "A": {
+      "base": "home",
+      "torso": {
+       "base_colour": "storm_blue",
+       "neck_donor": "16A9",
+       "chest_mark": null,
+       "decorations": [],
+       "sleeve_swooshes": {
+        "colour": "white"
+       }
+      },
+      "sleeve": {
+       "base_colour": "storm_blue",
+       "decorations": []
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "white",
+         25
+        ]
+       ],
+       "swoosh_colour": "red"
+      },
+      "socks": {
+       "colour": "storm_blue"
+      },
+      "digits": {
+       "fill": "white",
+       "outline": "jersey_navy",
+       "outline_frac": 0.03,
+       "outline2": null,
+       "outline2_frac": null,
+       "inline": null
+      },
+      "nameplate": {
+       "fill": "white",
+       "outline2": null,
+       "outline2_frac": null
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "retail_helmet_silver",
+       "recolour": [],
+       "decal": {
+        "mark": "elvis_nor",
+        "scale": 1.0,
+        "erase": "box",
+        "boxes": {
+         "upper": [
+          34,
+          38,
+          138,
+          112
+         ],
+         "lower": [
+          34,
+          134,
+          138,
+          214
+         ]
+        },
+        "facing": "front",
+        "why": "b77 sh1: the real Elvis faces the FRONT on both sides (club helmet photos); the same-image decal left it facing the rear on the left"
+       }
+      },
+      "splayer": {
+       "torso_donor": "16H0",
+       "recolour": [
+        {
+         "from": "retail_atlas_navy",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_grey1",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_grey2",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.25
+        },
+        {
+         "from": "retail_atlas_red",
+         "to": "storm_blue",
+         "region": "torso",
+         "tolerance": 0.35
+        },
+        {
+         "from": "retail_atlas_grey1",
+         "to": "helmet_white",
+         "region": "helmet",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_navy",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "card": {
+       "recolour": []
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked (official @Patriots image) with unbuilt details",
+   "sources": [
+    {
+     "url": "https://patriots.com/news/patriots-unveil-nor-easter-uniforms-for-week-11-rivalry-game-vs-jets",
+     "supports": "Storm Blue, matte white helmet, metallic silver facemask, six stars, NE mark, netting stripes"
+    },
+    {
+     "url": "https://d1hfln2sfez66z.cloudfront.net/11-13-2025/t_1d9975ad86864c1580398520c59a99ae_name_file_1920x1080_5400_v4_.jpg",
+     "supports": "@Patriots official image: storm-blue jersey with white shoulder bars, white pants with red swoosh, storm-blue socks"
+    }
+   ],
+   "estimates": [
+    "Storm Blue #3D5A8C is measured from the official image (shaded 55,70,111, lit about 70,100,145)",
+    "not built: six red stars at the neckline, the NE sleeve mark, netting texture on stripes and numbers, 1990s-style number striping",
+    "helmet Elvis is storm blue with silver trim (Wikipedia: silver-trimmed, no red)"
+   ]
+  },
+  "NO:1": {
+   "team": "NO",
+   "code": "17",
+   "style": 1,
+   "set": "All-white Color Rush with the white helmet",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2001,
+    2002
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "17A0"
+    },
+    "A": {
+     "donor": "17A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NO/marks",
+   "marks_from": "17A0",
+   "albedo": {
+    "cr_gold": "#C9A646",
+    "helmet_white": "#F2F2EF"
+   },
+   "marks": {
+    "logo_cr": "logo_cr.png"
+   },
+   "derived_marks": {
+    "logo_cr": {
+     "fill": "logo_silhouette.png",
+     "fill_colour": "#C9A646",
+     "ring": "logo_silhouette.png",
+     "ring_colour": "#000000",
+     "ring_frac": 0.01,
+     "detail": "logo_black.png"
+    }
+   },
+   "unif": {
+    "facemask": "FFC9A646"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "17H1",
+       "decorations": null,
+       "sleeve_swooshes": {
+        "colour": "black"
+       }
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          24,
+          122,
+          30
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          30,
+          122,
+          36
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          36,
+          122,
+          42
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          42,
+          122,
+          48
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          88,
+          122,
+          94
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          94,
+          122,
+          100
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          100,
+          122,
+          106
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          106,
+          122,
+          112
+         ],
+         "colour": "black"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "black",
+         2
+        ],
+        [
+         "cr_gold",
+         11
+        ],
+        [
+         "black",
+         2
+        ]
+       ],
+       "swoosh_colour": "black",
+       "decorations": [
+        {
+         "mark": "pants_fleurs",
+         "colour": "black",
+         "center": [
+          254.5,
+          41.5
+         ],
+         "width": 251.5
+        }
+       ]
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "nameplate": {
+       "glyph_donor": "17A0",
+       "fill": "black"
+      },
+      "digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold",
+       "outline": "black",
+       "outline_frac": 0.03
+      },
+      "helmet_digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold"
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decorations": [
+        {
+         "rect": [
+          156,
+          0,
+          166,
+          232
+         ],
+         "colour": "cr_gold",
+         "shade": true
+        }
+       ],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17A0",
+       "recolour": [
+        {
+         "from": "retail_gold",
+         "to": "helmet_white",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "17A1",
+       "decorations": null,
+       "sleeve_swooshes": {
+        "colour": "black"
+       }
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "decorations": [
+        {
+         "rect": [
+          8,
+          24,
+          122,
+          30
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          30,
+          122,
+          36
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          36,
+          122,
+          42
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          42,
+          122,
+          48
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          88,
+          122,
+          94
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          94,
+          122,
+          100
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          8,
+          100,
+          122,
+          106
+         ],
+         "colour": "cr_gold"
+        },
+        {
+         "rect": [
+          8,
+          106,
+          122,
+          112
+         ],
+         "colour": "black"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "black",
+         2
+        ],
+        [
+         "cr_gold",
+         11
+        ],
+        [
+         "black",
+         2
+        ]
+       ],
+       "swoosh_colour": "black",
+       "decorations": [
+        {
+         "mark": "pants_fleurs",
+         "colour": "black",
+         "center": [
+          254.5,
+          41.5
+         ],
+         "width": 251.5
+        }
+       ]
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "nameplate": {
+       "glyph_donor": "17A0",
+       "fill": "black"
+      },
+      "digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold",
+       "outline": "black",
+       "outline_frac": 0.03
+      },
+      "helmet_digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold"
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decorations": [
+        {
+         "rect": [
+          156,
+          0,
+          166,
+          232
+         ],
+         "colour": "cr_gold",
+         "shade": true
+        }
+       ],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17A0",
+       "recolour": [
+        {
+         "from": "retail_gold",
+         "to": "helmet_white",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://www.seahawks.com/photos/2025-week-3-seahawks-vs-saints-top-game-action-shots",
+     "supports": "2025 Week 3 photos #01, #03, #05, #11: white jersey, gold numbers with black outline, gold-black-gold-black sleeve bands, gold stripe with black edges on white pants, white helmet with gold fleur, gold mask"
+    },
+    {
+     "url": "https://www.nfl.com/news/saints-reveal-new-white-alternate-helmet-for-2025-season",
+     "supports": "white shell, black flake, wide gold stripe flanked by two black stripes, gold facemask"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "2026: white alternate helmets with Color Rush at NYG Oct 18, CIN Nov 29, ARI Dec 27"
+    }
+   ],
+   "estimates": [
+    "gold #C9A646 matched by eye to the photos (the team gold is paler)",
+    "pants fleur at the hip kept from the primary kit in black",
+    "2026 look assumed equal to 2025"
+   ]
+  },
+  "NO:3": {
+   "team": "NO",
+   "code": "17",
+   "style": 3,
+   "set": "All-black alternate",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    1993,
+    1994
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "17H0"
+    },
+    "A": {
+     "donor": "17H0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NO/marks",
+   "marks_from": "17H0",
+   "albedo": {
+    "cr_gold": "#C9A646",
+    "shell_black": "#0E0E10"
+   },
+   "marks": {
+    "logo_cr": "logo_cr.png"
+   },
+   "derived_marks": {
+    "logo_cr": {
+     "fill": "logo_silhouette.png",
+     "fill_colour": "#C9A646",
+     "ring": "logo_silhouette.png",
+     "ring_colour": "#0E0E10",
+     "ring_frac": 0.01,
+     "detail": "logo_black.png"
+    }
+   },
+   "helmet_fleur_stripe": {
+    "mark": "logo_gold.png",
+    "colour": "#C9A646",
+    "base": "#0E0E10",
+    "x": 162,
+    "y0": 6,
+    "y1": 226,
+    "w0": 26,
+    "w1": 12,
+    "size": 5.4,
+    "pitch": 5.0,
+    "clear": [
+     146,
+     178
+    ]
+   },
+   "unif": {
+    "facemask": "FF0E0E10"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "home",
+      "torso": {
+       "neck_donor": "17H3"
+      },
+      "helmet": {
+       "shell": "shell_black",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17H0",
+       "recolour": [
+        {
+         "from": "retail_gold",
+         "to": "shell_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     },
+     "A": {
+      "base": "home",
+      "torso": {
+       "neck_donor": "17A3"
+      },
+      "helmet": {
+       "shell": "shell_black",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17H0",
+       "recolour": [
+        {
+         "from": "retail_gold",
+         "to": "shell_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     }
+    }
+   },
+   "confidence": "TEXT-ONLY for the uniform; helmet INFERRED",
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "'all-black against the Carolina Panthers on Nov. 15' following 'black alternate helmets with gold jerseys against Cleveland'"
+    },
+    {
+     "url": "https://www.neworleanssaints.com/photos/new-orleans-saints-gameday-gold-uniform-debut-nfl-week-1-arizona-cardinals-photos",
+     "supports": "black alternate helmet photos (gallery #11-#15): glossy black, tapered stripe of tiny gold fleurs, black mask"
+    }
+   ],
+   "estimates": [
+    "no photo of an all-black Saints uniform was found: the jersey is the primary 2026 black home kit (gold numbers outlined white, gold collar) with black pants and the black alternate helmet",
+    "helmet inferred from 'all-black' and SportsLogos: the black helmet was first worn only with the Color Rush set",
+    "the tiny-fleur stripe is a tapering field of small gold fleurs, not the exact pattern"
+   ]
+  },
+  "NO:8": {
+   "team": "NO",
+   "code": "17",
+   "style": 8,
+   "set": "Gameday Gold",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "17A0"
+    },
+    "A": {
+     "donor": "17A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NO/marks",
+   "marks_from": "17A0",
+   "albedo": {
+    "cr_gold": "#C9A646",
+    "shell_black": "#0E0E10"
+   },
+   "marks": {
+    "logo_cr": "logo_cr.png"
+   },
+   "derived_marks": {
+    "logo_cr": {
+     "fill": "logo_silhouette.png",
+     "fill_colour": "#C9A646",
+     "ring": "logo_silhouette.png",
+     "ring_colour": "#0E0E10",
+     "ring_frac": 0.01,
+     "detail": "logo_black.png"
+    }
+   },
+   "helmet_fleur_stripe": {
+    "mark": "logo_gold.png",
+    "colour": "#C9A646",
+    "base": "#0E0E10",
+    "x": 162,
+    "y0": 6,
+    "y1": 226,
+    "w0": 26,
+    "w1": 12,
+    "size": 5.4,
+    "pitch": 5.0,
+    "clear": [
+     146,
+     178
+    ]
+   },
+   "unif": {
+    "facemask": "FF0E0E10"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "base_colour": "gold",
+       "neck_donor": "17H8"
+      },
+      "sleeve": {
+       "base_colour": "gold",
+       "decorations": [
+        {
+         "mark": "trims_17A0_sleeve",
+         "center": [
+          64,
+          55
+         ],
+         "width": 38.5
+        },
+        {
+         "rect": [
+          0,
+          57,
+          128,
+          64
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          0,
+          121,
+          128,
+          128
+         ],
+         "colour": "black"
+        }
+       ]
+      },
+      "digits": {
+       "glyph_donor": "17A0",
+       "fill": "black",
+       "outline": "white",
+       "outline_frac": 0.022
+      },
+      "helmet_digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold"
+      },
+      "helmet": {
+       "shell": "shell_black",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17H8",
+       "recolour": [
+        {
+         "from": "#9C804D",
+         "to": "gold",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "#9C804D",
+         "to": "gold",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_gold",
+         "to": "shell_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "base_colour": "gold",
+       "neck_donor": "17A8"
+      },
+      "sleeve": {
+       "base_colour": "gold",
+       "decorations": [
+        {
+         "mark": "trims_17A0_sleeve",
+         "center": [
+          64,
+          55
+         ],
+         "width": 38.5
+        },
+        {
+         "rect": [
+          0,
+          57,
+          128,
+          64
+         ],
+         "colour": "black"
+        },
+        {
+         "rect": [
+          0,
+          121,
+          128,
+          128
+         ],
+         "colour": "black"
+        }
+       ]
+      },
+      "digits": {
+       "glyph_donor": "17A0",
+       "fill": "black",
+       "outline": "white",
+       "outline_frac": 0.022
+      },
+      "helmet_digits": {
+       "glyph_donor": "17A0",
+       "fill": "cr_gold"
+      },
+      "helmet": {
+       "shell": "shell_black",
+       "shell_from": "retail_gold",
+       "recolour": [],
+       "decal": {
+        "mark": "logo_cr",
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "17A8",
+       "recolour": [
+        {
+         "from": "#9C804D",
+         "to": "gold",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "#9C804D",
+         "to": "gold",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_gold",
+         "to": "shell_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://www.neworleanssaints.com/photos/new-orleans-saints-gameday-gold-uniform-debut-nfl-week-1-arizona-cardinals-photos",
+     "supports": "2025 Week 1 debut gallery #10, #12, #13: pale gold jersey, black numbers with white outline, black collar and cuffs, black pants, black helmet"
+    },
+    {
+     "url": "https://www.nfl.com/news/saints-reveal-gameday-golds-alternate-jersey-for-2025-season",
+     "supports": "black sleeve cuffs, black pants, black helmet with tapered stripe of tiny fleur-de-lis marks"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "2026: Nov 8 vs Cleveland, gold jerseys with the black alternate helmet"
+    }
+   ],
+   "estimates": [
+    "built through the 2026 art tool on the road kit, not the retail 2003 art: the retail gold is darker and has no 2026 marks (plan said modernize)",
+    "jersey gold is the club's old gold D3BC8D"
+   ]
+  },
+  "NYG:7": {
+   "team": "NYG",
+   "code": "18",
+   "style": 7,
+   "set": "Vintage White (Color Rush)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "new",
+   "kits": {
+    "H": {
+     "donor": "18A0"
+    },
+    "A": {
+     "donor": "18A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/art/marks",
+   "marks_from": "18A0",
+   "marks_extra": {
+    "giants_wordmark_white.png": "/media/noah/Storage/.b76-research/u1/metlife_handoff/giants/marks/giants_wordmark_white.png"
+   },
+   "marks": {
+    "wordmark_white": "giants_wordmark_white.png"
+   },
+   "unif": {
+    "facemask": "FFF2F3F6"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "18H7",
+       "collar_trim": [
+        {
+         "colour": "jersey_blue",
+         "width": 2.4
+        },
+        {
+         "colour": "red",
+         "width": 1.4
+        }
+       ],
+       "chest_mark": {
+        "mark": "team_logo_fill",
+        "colour": "jersey_blue",
+        "center": [
+         161,
+         92.5
+        ],
+        "width": 18
+       },
+       "sleeve_swooshes": {
+        "colour": "jersey_blue"
+       }
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "stripes_from": null,
+       "decorations": [
+        {
+         "rect": [
+          8,
+          26,
+          122,
+          30
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          30,
+          122,
+          33
+         ],
+         "colour": "red"
+        },
+        {
+         "rect": [
+          8,
+          33,
+          122,
+          37
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          90,
+          122,
+          94
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          94,
+          122,
+          97
+         ],
+         "colour": "red"
+        },
+        {
+         "rect": [
+          8,
+          97,
+          122,
+          101
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          56,
+          122,
+          61
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          120,
+          122,
+          125
+         ],
+         "colour": "jersey_blue"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "jersey_blue",
+         5
+        ],
+        [
+         "red",
+         4
+        ],
+        [
+         "jersey_blue",
+         5
+        ]
+       ],
+       "swoosh_colour": "jersey_blue"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "nameplate": {
+       "glyph_donor": "18H0",
+       "fill": "jersey_blue"
+      },
+      "digits": {
+       "glyph_donor": "18H0",
+       "fill": "jersey_blue",
+       "outline": "red",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "18H7",
+       "fill": "jersey_blue"
+      },
+      "helmet_digits": {
+       "glyph_donor": "18H0",
+       "fill": "white"
+      },
+      "helmet": {
+       "shell": "helmet_blue",
+       "stripe": "red",
+       "decal": {
+        "mark": "wordmark_white",
+        "sizes": {
+         "upper": [
+          72,
+          27
+         ],
+         "lower": [
+          72,
+          27
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "18A0",
+       "sleeve_from_donor": true
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "base_colour": "white",
+       "neck_donor": "18A7",
+       "collar_trim": [
+        {
+         "colour": "jersey_blue",
+         "width": 2.4
+        },
+        {
+         "colour": "red",
+         "width": 1.4
+        }
+       ],
+       "chest_mark": {
+        "mark": "team_logo_fill",
+        "colour": "jersey_blue",
+        "center": [
+         161,
+         92.5
+        ],
+        "width": 18
+       },
+       "sleeve_swooshes": {
+        "colour": "jersey_blue"
+       }
+      },
+      "sleeve": {
+       "base_colour": "white",
+       "stripes_from": null,
+       "decorations": [
+        {
+         "rect": [
+          8,
+          26,
+          122,
+          30
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          30,
+          122,
+          33
+         ],
+         "colour": "red"
+        },
+        {
+         "rect": [
+          8,
+          33,
+          122,
+          37
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          90,
+          122,
+          94
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          94,
+          122,
+          97
+         ],
+         "colour": "red"
+        },
+        {
+         "rect": [
+          8,
+          97,
+          122,
+          101
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          56,
+          122,
+          61
+         ],
+         "colour": "jersey_blue"
+        },
+        {
+         "rect": [
+          8,
+          120,
+          122,
+          125
+         ],
+         "colour": "jersey_blue"
+        }
+       ]
+      },
+      "pants": {
+       "base_colour": "white",
+       "stripe": [
+        [
+         "jersey_blue",
+         5
+        ],
+        [
+         "red",
+         4
+        ],
+        [
+         "jersey_blue",
+         5
+        ]
+       ],
+       "swoosh_colour": "jersey_blue"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "nameplate": {
+       "glyph_donor": "18H0",
+       "fill": "jersey_blue"
+      },
+      "digits": {
+       "glyph_donor": "18H0",
+       "fill": "jersey_blue",
+       "outline": "red",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "18A7",
+       "fill": "jersey_blue"
+      },
+      "helmet_digits": {
+       "glyph_donor": "18H0",
+       "fill": "white"
+      },
+      "helmet": {
+       "shell": "helmet_blue",
+       "stripe": "red",
+       "decal": {
+        "mark": "wordmark_white",
+        "sizes": {
+         "upper": [
+          72,
+          27
+         ],
+         "lower": [
+          72,
+          27
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "18A0",
+       "sleeve_from_donor": true
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://www.giants.com/news/giants-announce-2026-uniform-schedule-legacy-games-vintage-white",
+     "supports": "Vintage White Week 9 at PHI and Week 10 vs WAS; navy helmet with GIANTS wordmark"
+    },
+    {
+     "url": "https://a.espncdn.com/photo/2025/1105/r1570931_1296x729_16-9.jpg",
+     "supports": "2025 Week 10 photo: white jersey, navy numbers with red outline, navy-red sleeve stripes, navy-red-navy pants stripe, navy helmet with red centre stripe, white facemask"
+    },
+    {
+     "url": "https://content.sportslogos.net/news/2025/11/IMG_7816-1000x1250.jpeg",
+     "supports": "studio image of the same set"
+    }
+   ],
+   "estimates": [
+    "collar trim widths and sleeve stripe widths are estimates",
+    "white socks"
+   ]
+  },
+  "NYJ:2": {
+   "team": "NYJ",
+   "code": "19",
+   "style": 2,
+   "set": "Legacy Black alternate",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1990,
+    1993
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "19H0"
+    },
+    "A": {
+     "donor": "19H0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NYJ/marks",
+   "marks_from": "19H0",
+   "albedo": {
+    "jet_black": "#141414",
+    "matte_black": "#101012"
+   },
+   "marks": {
+    "wordmark_gw": "wordmark_gw.png"
+   },
+   "derived_marks": {
+    "wordmark_gw": {
+     "fill": "jets_wordmark_white.png",
+     "fill_colour": "#115740",
+     "ring": "jets_wordmark_white.png",
+     "ring_colour": "#FFFFFF",
+     "ring_frac": 0.02
+    }
+   },
+   "unif": {
+    "facemask": "FF115740"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "home",
+      "torso": {
+       "base_colour": "jet_black",
+       "neck_donor": "19H2",
+       "collar_trim": [
+        {
+         "colour": "jersey_green",
+         "width": 2.2
+        }
+       ],
+       "sleeve_swooshes": {
+        "colour": "white"
+       }
+      },
+      "sleeve": {
+       "base_colour": "jet_black",
+       "stripes_from": "19H3",
+       "stripe_colour": "jersey_green"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jersey_green",
+         14
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "socks": {
+       "colour": "jet_black"
+      },
+      "nameplate": {
+       "glyph_donor": "19H3",
+       "fill": "white"
+      },
+      "digits": {
+       "glyph_donor": "19H3",
+       "fill": "white",
+       "outline": "jersey_green",
+       "outline_frac": 0.04
+      },
+      "helmet_digits": {
+       "glyph_donor": "19H3",
+       "fill": "white"
+      },
+      "helmet": {
+       "shell": "matte_black",
+       "shell_from": "retail_helmet_green",
+       "recolour": [],
+       "decal": {
+        "mark": "wordmark_gw",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "19H3",
+       "sleeve_from_donor": true,
+       "recolour": [
+        {
+         "from": "retail_atlas_green",
+         "to": "jet_black",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_green",
+         "to": "jet_black",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_white",
+         "to": "matte_black",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_gw",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      }
+     },
+     "A": {
+      "base": "home",
+      "torso": {
+       "base_colour": "jet_black",
+       "neck_donor": "19A2",
+       "collar_trim": [
+        {
+         "colour": "jersey_green",
+         "width": 2.2
+        }
+       ],
+       "sleeve_swooshes": {
+        "colour": "white"
+       }
+      },
+      "sleeve": {
+       "base_colour": "jet_black",
+       "stripes_from": "19H3",
+       "stripe_colour": "jersey_green"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jersey_green",
+         14
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "socks": {
+       "colour": "jet_black"
+      },
+      "nameplate": {
+       "glyph_donor": "19H3",
+       "fill": "white"
+      },
+      "digits": {
+       "glyph_donor": "19H3",
+       "fill": "white",
+       "outline": "jersey_green",
+       "outline_frac": 0.04
+      },
+      "helmet_digits": {
+       "glyph_donor": "19H3",
+       "fill": "white"
+      },
+      "helmet": {
+       "shell": "matte_black",
+       "shell_from": "retail_helmet_green",
+       "recolour": [],
+       "decal": {
+        "mark": "wordmark_gw",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "19H3",
+       "sleeve_from_donor": true,
+       "recolour": [
+        {
+         "from": "retail_atlas_green",
+         "to": "jet_black",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_green",
+         "to": "jet_black",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_white",
+         "to": "matte_black",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_gw",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked (2024 unveil renders), 2026 use not announced",
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2024/04/15/new-york-jets-go-throwback-uniforms-full-time-unveil-new-green-black-versions/football/",
+     "supports": "black alternate: white numbers outlined green, green sleeve stripes and collar, black pants with a single green stripe, black helmet with green wordmark outlined white"
+    },
+    {
+     "url": "https://content.sportslogos.net/news/2024/04/ny-jets-new-uniforms-2024-sportslogosnet.jpg",
+     "supports": "unveil image: matched"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "2026: the Jets have not announced when the all-black alternate will be worn"
+    }
+   ],
+   "estimates": [
+    "socks colour not stated (black used)",
+    "facemask metallic green per Wikipedia (the unveil image shows a dark mask)"
+   ]
+  },
+  "NYJ:6": {
+   "team": "NYJ",
+   "code": "19",
+   "style": 6,
+   "set": "Rivalries 'Gotham City Football Club'",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "new",
+   "kits": {
+    "H": {
+     "donor": "19H0"
+    },
+    "A": {
+     "donor": "19H0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NYJ/marks",
+   "marks_from": "19H0",
+   "retail_override": {
+    "H": {
+     "helmet_helmet02": "19H0",
+     "helmet_helmet00": "19H0"
+    },
+    "A": {
+     "helmet_helmet02": "19H0",
+     "helmet_helmet00": "19H0"
+    }
+   },
+   "albedo": {
+    "gotham_dark": "#17261F",
+    "gotham_cap": "#101A16",
+    "gotham_gray": "#B2B9BC",
+    "gotham_gray_d": "#394446",
+    "gotham_stripe": "#2D3638",
+    "matte_black": "#101012"
+   },
+   "marks": {
+    "wordmark_gs": "wordmark_gs.png"
+   },
+   "derived_marks": {
+    "wordmark_gs": {
+     "fill": "jets_wordmark_white.png",
+     "fill_colour": "#B2B9BC",
+     "ring": "jets_wordmark_white.png",
+     "ring_colour": "#394446",
+     "ring_frac": 0.02
+    }
+   },
+   "unif": {
+    "facemask": "FF101012"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "home",
+      "torso": {
+       "base_colour": "gotham_dark",
+       "neck_donor": "19H6",
+       "collar_trim": [
+        {
+         "colour": "matte_black",
+         "width": 2.0
+        }
+       ],
+       "sleeve_swooshes": {
+        "colour": "gotham_gray"
+       },
+       "decorations": []
+      },
+      "sleeve": {
+       "base_colour": "gotham_cap",
+       "stripes_from": null
+      },
+      "pants": {
+       "base_colour": "gotham_dark",
+       "base_from": "19H6",
+       "stripe": [
+        [
+         "matte_black",
+         5
+        ],
+        [
+         "gotham_gray",
+         3
+        ],
+        [
+         "matte_black",
+         5
+        ]
+       ],
+       "swoosh_colour": "gotham_gray"
+      },
+      "socks": {
+       "colour": "matte_black"
+      },
+      "nameplate": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray"
+      },
+      "digits": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray",
+       "outline": "gotham_gray_d",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "19H6",
+       "fill": "gotham_gray"
+      },
+      "helmet_digits": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray"
+      },
+      "helmet": {
+       "shell": "matte_black",
+       "shell_from": "helmet_green",
+       "recolour": [],
+       "decorations": [
+        {
+         "rect": [
+          156,
+          0,
+          168,
+          232
+         ],
+         "colour": "gotham_stripe",
+         "shade": true
+        }
+       ],
+       "decal": {
+        "mark": "wordmark_gs",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "19H6",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "#104030",
+         "to": "gotham_dark",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "#104030",
+         "to": "gotham_cap",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_white",
+         "to": "matte_black",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_gs",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      }
+     },
+     "A": {
+      "base": "home",
+      "torso": {
+       "base_colour": "gotham_dark",
+       "neck_donor": "19A6",
+       "collar_trim": [
+        {
+         "colour": "matte_black",
+         "width": 2.0
+        }
+       ],
+       "sleeve_swooshes": {
+        "colour": "gotham_gray"
+       },
+       "decorations": []
+      },
+      "sleeve": {
+       "base_colour": "gotham_cap",
+       "stripes_from": null
+      },
+      "pants": {
+       "base_colour": "gotham_dark",
+       "base_from": "19A6",
+       "stripe": [
+        [
+         "matte_black",
+         5
+        ],
+        [
+         "gotham_gray",
+         3
+        ],
+        [
+         "matte_black",
+         5
+        ]
+       ],
+       "swoosh_colour": "gotham_gray"
+      },
+      "socks": {
+       "colour": "matte_black"
+      },
+      "nameplate": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray"
+      },
+      "digits": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray",
+       "outline": "gotham_gray_d",
+       "outline_frac": 0.03
+      },
+      "arm_digits": {
+       "glyph_donor": "19A6",
+       "fill": "gotham_gray"
+      },
+      "helmet_digits": {
+       "glyph_donor": "19H3",
+       "fill": "gotham_gray"
+      },
+      "helmet": {
+       "shell": "matte_black",
+       "shell_from": "helmet_green",
+       "recolour": [],
+       "decorations": [
+        {
+         "rect": [
+          156,
+          0,
+          168,
+          232
+         ],
+         "colour": "gotham_stripe",
+         "shade": true
+        }
+       ],
+       "decal": {
+        "mark": "wordmark_gs",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       }
+      },
+      "splayer": {
+       "torso_donor": "19A6",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "#104030",
+         "to": "gotham_dark",
+         "region": "torso",
+         "tolerance": 0.3
+        },
+        {
+         "from": "#104030",
+         "to": "gotham_cap",
+         "region": "sleeve",
+         "tolerance": 0.3
+        },
+        {
+         "from": "retail_atlas_white",
+         "to": "matte_black",
+         "region": "helmet",
+         "tolerance": 0.35
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_gs",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      }
+     }
+    }
+   },
+   "yoke_bands": {
+    "colours": [
+     "matte_black",
+     "gotham_gray",
+     "matte_black"
+    ],
+    "params": {
+     "red_cm": 1.6,
+     "panel_back_cm": 8.0,
+     "panel_front_end_cm": 6.5
+    }
+   },
+   "confidence": "photo-checked; base colour CONFLICT between sources",
+   "sources": [
+    {
+     "url": "https://www.newyorkjets.com/photos/jets-gotham-city-football-rivalries-uniform-photo-gallery-2025",
+     "supports": "64-photo gallery of the Dec 7 2025 debut: very dark green-black jersey and pants, silver-gray numerals, gray shoulder bars, textured sleeve caps, matte black helmet"
+    },
+    {
+     "url": "https://africa.espn.com/nfl/story/_/id/46091459/nfl-nike-2025-rivalries-uniform-gear-series-unveiling-nfc-west-afc-east",
+     "supports": "'dark Empire Green' with black, green and gray trims; green pants (conflicts with Wikipedia's green-tinted black)"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "2026: Dec 27 vs New England"
+    }
+   ],
+   "estimates": [
+    "jersey and pants #17261F (a dark green-black): ESPN says dark Empire Green, Wikipedia says green-tinted black",
+    "the manhole-cover texture on the sleeve caps and the helmet stripe is not drawn",
+    "chest circle patch not drawn",
+    "gray shoulder bars are the Patriots job's 3D yoke bands (black-gray-black)"
+   ]
+  },
+  "NYJ:7": {
+   "team": "NYJ",
+   "code": "19",
+   "style": 7,
+   "set": "White Out (white helmet, all-white)",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    0,
+    0
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "19A0"
+    },
+    "A": {
+     "donor": "19A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/NYJ/marks",
+   "marks_from": "19A0",
+   "albedo": {
+    "helmet_white": "#F2F2EF"
+   },
+   "marks": {
+    "wordmark_green": "wordmark_green.png"
+   },
+   "derived_marks": {
+    "wordmark_green": {
+     "fill": "jets_wordmark_white.png",
+     "fill_colour": "#115740",
+     "ring": "jets_wordmark_white.png",
+     "ring_colour": "#115740",
+     "ring_frac": 0.002
+    }
+   },
+   "unif": {
+    "facemask": "FFF2F3F6"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "19H7",
+       "collar_trim": [
+        {
+         "colour": "jersey_green",
+         "width": 9.0
+        }
+       ]
+      },
+      "sleeve": {
+       "stripes_from": "19A3"
+      },
+      "pants": {
+       "base_colour": "white",
+       "base_from": "19H0",
+       "stripe": [
+        [
+         "jersey_green",
+         14
+        ]
+       ],
+       "swoosh_colour": "jersey_green"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "helmet_digits": {
+       "glyph_donor": "19A3",
+       "fill": "jersey_green"
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "helmet_white",
+       "recolour": [],
+       "decal": {
+        "mark": "wordmark_green",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       },
+       "decorations": [
+        {
+         "rect": [
+          146,
+          0,
+          180,
+          232
+         ],
+         "fill": "sides"
+        },
+        {
+         "rect": [
+          158,
+          0,
+          166,
+          232
+         ],
+         "colour": "helmet_green",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "19A3",
+       "sleeve_from_donor": true,
+       "recolour": [
+        {
+         "from": "#00322A",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_green",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      },
+      "arm_digits": {
+       "glyph_donor": "19H7",
+       "fill": "jersey_green"
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "19A7",
+       "collar_trim": [
+        {
+         "colour": "jersey_green",
+         "width": 9.0
+        }
+       ]
+      },
+      "sleeve": {
+       "stripes_from": "19A3"
+      },
+      "pants": {
+       "base_colour": "white",
+       "base_from": "19H0",
+       "stripe": [
+        [
+         "jersey_green",
+         14
+        ]
+       ],
+       "swoosh_colour": "jersey_green"
+      },
+      "socks": {
+       "colour": "white"
+      },
+      "helmet_digits": {
+       "glyph_donor": "19A3",
+       "fill": "jersey_green"
+      },
+      "helmet": {
+       "shell": "helmet_white",
+       "shell_from": "helmet_white",
+       "recolour": [],
+       "decal": {
+        "mark": "wordmark_green",
+        "boxes": {
+         "upper": [
+          26,
+          60,
+          126,
+          100
+         ],
+         "lower": [
+          24,
+          154,
+          126,
+          194
+         ]
+        },
+        "scale": 1.0
+       },
+       "decorations": [
+        {
+         "rect": [
+          146,
+          0,
+          180,
+          232
+         ],
+         "fill": "sides"
+        },
+        {
+         "rect": [
+          158,
+          0,
+          166,
+          232
+         ],
+         "colour": "helmet_green",
+         "shade": true
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "19A3",
+       "sleeve_from_donor": true,
+       "recolour": [
+        {
+         "from": "#00322A",
+         "to": "white",
+         "region": "pants",
+         "tolerance": 0.3
+        }
+       ],
+       "logo": {
+        "mark": "wordmark_green",
+        "box": [
+         92,
+         100,
+         128,
+         128
+        ],
+        "centre": [
+         110,
+         112
+        ],
+        "size": [
+         22,
+         9
+        ]
+       }
+      },
+      "card": {
+       "recolour": []
+      },
+      "arm_digits": {
+       "glyph_donor": "19A7",
+       "fill": "jersey_green"
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked (official image)",
+   "sources": [
+    {
+     "url": "https://a.espncdn.com/photo/2026/0721/r1692088_1296x729_16-9.jpg",
+     "supports": "official White Out image: white helmet with one green stripe, green JETS and jet wordmark, white mask, white jersey with wide green V collar and green sleeve stripes, green numbers"
+    },
+    {
+     "url": "https://www.si.com/nfl/grading-jets-new-alternate-uniform-all-white-looks-alright",
+     "supports": "white road jersey with home white pants, new white helmet"
+    },
+    {
+     "url": "https://www.nfl.com/news/jets-alternate-white-out-helmet-2026-season",
+     "supports": "white-on-white shell and facemask, striping replaced with green"
+    }
+   ],
+   "estimates": [
+    "pants stripe not shown in any source (the primary white pants' green stripe used)",
+    "the forehead NY mark and the green 'New York' lettering on the back are not drawn (retail JETS lettering stays)"
+   ]
+  },
+  "PHI:10": {
+   "team": "PHI",
+   "code": "21",
+   "style": 10,
+   "set": "White jersey with midnight green pants",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2000,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "21A0"
+    },
+    "A": {
+     "donor": "21A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/PHI/marks",
+   "marks_from": "21A0",
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "21H10"
+      },
+      "pants": {
+       "base_colour": "midnight_green",
+       "stripe": [
+        [
+         "black",
+         13
+        ],
+        [
+         "silver",
+         8
+        ],
+        [
+         "white",
+         2
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "splayer": {
+       "torso_donor": "21A0",
+       "recolour": [
+        {
+         "from": "#105963",
+         "to": "#0F5A62",
+         "region": "helmet"
+        }
+       ]
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "21A10"
+      },
+      "pants": {
+       "base_colour": "midnight_green",
+       "stripe": [
+        [
+         "black",
+         13
+        ],
+        [
+         "silver",
+         8
+        ],
+        [
+         "white",
+         2
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "splayer": {
+       "torso_donor": "21A0",
+       "recolour": [
+        {
+         "from": "#105963",
+         "to": "#0F5A62",
+         "region": "helmet"
+        }
+       ]
+      }
+     }
+    }
+   },
+   "confidence": "photo-checked (2026 game photos)",
+   "sources": [
+    {
+     "url": "https://www.philadelphiaeagles.com/photos/eagles-at-bears-gameday-photo-gallery-september-28-2026-nfl-week-3-monday-night-football",
+     "supports": "2026 Week 3 at Chicago: white jersey, midnight green numbers, green pants, white socks, green helmet"
+    },
+    {
+     "url": "https://www.nbcsportsbayarea.com/nfl/nfl-week-3-uniforms-helmets-jerseys-pants-games-teams/1965723/",
+     "supports": "Week 3 roundup: green helmets, white jerseys, green pants"
+    }
+   ],
+   "estimates": [
+    "pants stripe (black 13, silver 8, white 2) is an estimate from Wikipedia's description"
+   ]
+  },
+  "PHI:12": {
+   "team": "PHI",
+   "code": "21",
+   "style": 12,
+   "set": "Black helmet with white jersey and black pants",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "21A0"
+    },
+    "A": {
+     "donor": "21A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/PHI/marks",
+   "marks_from": "21A0",
+   "albedo": {
+    "jet_black": "#111113"
+   },
+   "unif": {
+    "facemask": "FF111113"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "21H12"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jet_black",
+         25
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "helmet": {
+       "shell": "jet_black",
+       "shell_from": "#00414A",
+       "recolour": [
+        {
+         "from": "#00606A",
+         "to": "jet_black",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "21A0",
+       "recolour": [
+        {
+         "from": "#005562",
+         "to": "jet_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     },
+     "A": {
+      "base": "away",
+      "torso": {
+       "neck_donor": "21A12"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jet_black",
+         25
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "helmet": {
+       "shell": "jet_black",
+       "shell_from": "#00414A",
+       "recolour": [
+        {
+         "from": "#00606A",
+         "to": "jet_black",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor": "21A0",
+       "recolour": [
+        {
+         "from": "#005562",
+         "to": "jet_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      }
+     }
+    }
+   },
+   "confidence": "TEXT-ONLY; not announced for 2026",
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/Philadelphia_Eagles",
+     "supports": "black helmets with white jerseys, black pants and white socks, worn 2024 Week 1 and 2025 Week 10"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "'wouldn't be a surprise' to see black helmets and pants with the white road jerseys for a third straight season (2026 not announced)"
+    },
+    {
+     "url": "https://www.philadelphiaeagles.com/photos/the-blackout-eagles-unveil-all-black-uniform-for-sunday-night",
+     "supports": "black helmet photos (2022): used for the helmet"
+    }
+   ],
+   "estimates": [
+    "no photo of this exact combination was opened: white jersey of the 2026 road kit, black pants without stripe, the 2022 black helmet",
+    "tier 3 (a combination of the primary set, not an announced game)"
+   ]
+  },
+  "PHI:13": {
+   "team": "PHI",
+   "code": "21",
+   "style": 13,
+   "set": "All-black",
+   "label": [
+    2026,
+    4
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "21H0"
+    },
+    "A": {
+     "donor": "21A0"
+    }
+   },
+   "marks_dir": "/media/noah/Storage/.b76-research/u1/teams/PHI/marks",
+   "albedo": {
+    "jet_black": "#111113",
+    "silver_white": "#E4E8EA"
+   },
+   "spec": {
+    "kits": {
+     "H": {
+      "torso": {
+       "base_colour": "jet_black",
+       "neck_donor": "21H13",
+       "collar_trim": [
+        {
+         "colour": "midnight_green",
+         "width": 12
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "jet_black"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jet_black",
+         25
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "socks": {
+       "colour": "jet_black"
+      },
+      "nameplate": {
+       "fill": "silver_white",
+       "outline": "midnight_green",
+       "outline_frac": 0.042,
+       "glyph_donor": "21H0"
+      },
+      "digits": {
+       "fill": "silver_white",
+       "outline": "midnight_green",
+       "outline_frac": 0.04,
+       "glyph_donor": "21H0"
+      },
+      "helmet": {
+       "shell": "jet_black",
+       "shell_from": "#00414A",
+       "recolour": [
+        {
+         "from": "#00606A",
+         "to": "jet_black",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor_outer": null,
+       "torso_donor": "21H13",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "#005562",
+         "to": "jet_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "base": "home"
+     },
+     "A": {
+      "torso": {
+       "base_colour": "jet_black",
+       "neck_donor": "21H13",
+       "collar_trim": [
+        {
+         "colour": "midnight_green",
+         "width": 12
+        }
+       ]
+      },
+      "sleeve": {
+       "base_colour": "jet_black"
+      },
+      "pants": {
+       "base_colour": "jet_black",
+       "stripe": [
+        [
+         "jet_black",
+         25
+        ]
+       ],
+       "swoosh_colour": "white"
+      },
+      "socks": {
+       "colour": "jet_black"
+      },
+      "nameplate": {
+       "fill": "silver_white",
+       "outline": "midnight_green",
+       "outline_frac": 0.042,
+       "glyph_donor": "21A0"
+      },
+      "digits": {
+       "fill": "silver_white",
+       "outline": "midnight_green",
+       "outline_frac": 0.04,
+       "glyph_donor": "21A0"
+      },
+      "helmet": {
+       "shell": "jet_black",
+       "shell_from": "#00414A",
+       "recolour": [
+        {
+         "from": "#00606A",
+         "to": "jet_black",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "splayer": {
+       "torso_donor_outer": null,
+       "torso_donor": "21A13",
+       "sleeve_from_donor": false,
+       "recolour": [
+        {
+         "from": "#005562",
+         "to": "jet_black",
+         "region": "helmet",
+         "tolerance": 0.3
+        }
+       ]
+      },
+      "base": "home"
+     }
+    }
+   },
+   "unif": {
+    "facemask": "FF111113"
+   },
+   "marks_from": "21H0",
+   "confidence": "photo-checked (2022 all-black gallery); 2026 details unannounced",
+   "sources": [
+    {
+     "url": "https://www.philadelphiaeagles.com/photos/the-blackout-eagles-unveil-all-black-uniform-for-sunday-night",
+     "supports": "2022 all-black gallery: black jersey with midnight green V collar, silver-white numbers with green shadow, black pants, black helmet with white wings, black mask"
+    },
+    {
+     "url": "https://www.philadelphiaeagles.com/news/eagles-announce-kelly-green-and-black-uniform-games-2026-season-giants-seahawks-texans",
+     "supports": "2026: all-black vs Seattle Dec 19"
+    }
+   ],
+   "estimates": [
+    "socks black (2016 Color Rush precedent; not stated for 2026)",
+    "pants without stripe",
+    "numbers silver-white E4E8EA"
+   ]
+  },
+  "PHI:4": {
+   "team": "PHI",
+   "code": "21",
+   "style": 4,
+   "set": "Kelly Green throwback",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1989,
+    1999
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "21H4"
+    },
+    "A": {
+     "donor": "21H4"
+    }
+   },
+   "donor_all": {
+    "A": "21H4"
+   },
+   "modernize": {
+    "all": {
+     "torso": {
+      "shield": true
+     },
+     "sleeve": {
+      "swoosh": "#FFFFFF",
+      "shift_rows": 17
+     },
+     "pants": {
+      "swoosh": "#FFFFFF",
+      "shield": true
+     }
+    }
+   },
+   "recolour": [
+    {
+     "from": "#006B39",
+     "to": "#008C48",
+     "tolerance": 0.22,
+     "components": [
+      "torso",
+      "sleeve",
+      "helmet_helmet02",
+      "helmet_helmet00",
+      "pants",
+      "splayer"
+     ],
+     "why": "the retail 2004 kelly (0,107,57) is darker than the club's 2023-2025 Kelly Green photos (about 0,146,79 in the sleeve close-up, 0,170,92 in the helmet photo); shading kept (ESTIMATE from photos)"
+    }
+   ],
+   "keep_slot": [
+    "socks00",
+    "socks00_mud"
+   ],
+   "confidence": "photo-checked",
+   "sources": [
+    {
+     "url": "https://www.philadelphiaeagles.com/photos/eagles-kelly-green-uniforms-close-up-look",
+     "supports": "2023 close-up gallery: kelly jersey, white numbers with black trim, Nike swoosh, retro eagle on the sleeve, green-black-white pants stripes, helmet with silver wings"
+    },
+    {
+     "url": "https://www.philadelphiaeagles.com/news/eagles-announce-kelly-green-and-black-uniform-games-2026-season-giants-seahawks-texans",
+     "supports": "2026: Nov 8 vs NYG and Dec 24 vs HOU"
+    }
+   ],
+   "estimates": [
+    "kelly green lifted from the retail (0,107,57) to (0,140,72) from the photos",
+    "striped socks left as the slot's retail art (writer limit)"
+   ]
+  }
+ }
+}

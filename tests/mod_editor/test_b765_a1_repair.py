@@ -3,7 +3,14 @@
 Set B765_A1_FIELD_CACHE to an owned cache produced by the repair CLI to run the
 read-only v0.4 integration checks. Synthetic cache checks need no game assets.
 """
+
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import json
 import os
 import struct

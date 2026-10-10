@@ -8,6 +8,7 @@
     apply    copy your own disc image and apply the patch to the copy
              (or --in-place to patch an existing copy)
     extract  write the bundled assets, recipe and manifest to a folder
+    build-sources  run Make my disc with an extracted editable source recipe
 
 Every run is verified against the SHA-256 of the bytes it replaces before
 anything is written; a wrong base is refused, not patched.
@@ -227,6 +228,31 @@ def cmd_extract(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_build_sources(args: argparse.Namespace) -> int:
+    """Use the same source-project builder as the Studio Make my disc button."""
+    from mod_editor.core import modpack_sources
+    from mod_editor.core.errors import ModEditorError
+    recipe = json.loads(Path(args.recipe).read_text(encoding="utf-8"))
+    modpack._require(isinstance(recipe, dict) and recipe.get("schema") == "softdrink_sources/v1"
+                     and all(isinstance(recipe.get(k), str) and recipe[k] for k in ("preset", "project"))
+                     and isinstance(recipe.get("overrides"), dict),
+                     "Choose the materialized SOFTDRINK-build-recipe.json from Extract sources")
+    try:
+        plan = modpack_sources.build_plan(recipe, args.source, args.out)
+    except KeyError as exc:
+        raise modpack.ModpackError(f"Source recipe requires an unsupported Studio preset: {recipe['preset']}") from exc
+    try:
+        receipt = modpack_sources.build_project(plan, recipe["project"], _progress(not args.json))
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    if args.receipt:
+        from mod_editor.core import modpack_files
+        with modpack_files._transaction(args.receipt, (args.recipe, args.source, args.out)) as part:
+            part.write_text(json.dumps(receipt, indent=2, default=str) + "\n", encoding="utf-8", newline="\n")
+    print(json.dumps(receipt, indent=2, default=str))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -294,6 +320,14 @@ def main(argv: list[str] | None = None) -> int:
     extract.add_argument("--customize", action="store_true", help="resolve portable sources into editable Studio recipe/project JSON")
     extract.add_argument("--sources-file", help="matching optional .2k5sources companion")
     extract.set_defaults(run=cmd_extract)
+
+    build = sub.add_parser("build-sources", help="run Studio Make my disc on an extracted source recipe")
+    build.add_argument("--recipe", required=True, help="materialized SOFTDRINK-build-recipe.json")
+    build.add_argument("--source", required=True, help="your unmodified retail image")
+    build.add_argument("--out", required=True, help="new output image")
+    build.add_argument("--receipt", help="new JSON receipt file")
+    build.add_argument("--json", action="store_true")
+    build.set_defaults(run=cmd_build_sources)
 
     args = parser.parse_args(argv)
     try:

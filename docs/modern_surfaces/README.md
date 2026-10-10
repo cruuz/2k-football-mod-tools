@@ -56,7 +56,9 @@ where the fine texture lives.
   map x rig gain x Modern colour's screen factor x the Fldd tint x the grass vertex tint x the game's measured
   response lands on the broadcast target for that bundle's light (day, afternoon, night, dome, rain, snow). The target
   is the look's, or the venue's own measured 2026 broadcast (`broadcast` in the venue table: 16 records, its ratio to
-  the look carried to the venue's other lights). The rig is the retail one, or Modern colour's configured rig from its
+  the look carried to the venue's other lights; a row may also carry a `design` target of the same shape that replaces
+  the measurement, as Allegiant's does since Beta 77 pass 4: the dome grass re-aimed from the broadcast (86, 114, 58) to
+  (75, 106, 49), about 9 percent darker and 3 degrees cooler, halfway to the 2026 Week 1 photos). The rig is the retail one, or Modern colour's configured rig from its
   receipt. Channels are clamped so the map stays a plausible green (red and blue never pass green), and the whole map
   scales down if a channel would pass 238.
 - Fields drawn from a material colour (s02, s06, s09, s26): the colour material borrows the outside-grass texture

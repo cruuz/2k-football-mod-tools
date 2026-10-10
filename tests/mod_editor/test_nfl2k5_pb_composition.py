@@ -1,21 +1,29 @@
 """PROVED OFFLINE: production owner contracts for the 64 authored team packs."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import copy
 from contextlib import nullcontext
 import hashlib
 import json
-from pathlib import Path
 import struct
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from pb.phase4 import ROOT, compile_books, certify_screens
+from pb.phase4 import ROOT, compile_books
 from pb.recipes.compose import compose, KEYS
 from mod_editor.core import nfl2k5_play_intents as intents
 from mod_editor.core import nfl2k5_qb_spy_runtime as spy
 from mod_editor.core import nfl2k5_screen_timing as timing
 from mod_editor.core import nfl2k5_play_library as lib
 from mod_editor.core import nfl2k5_playbook_inspector as ip
+from mod_editor.core import nfl2k5_offense_concepts as concepts
 from mod_editor.core.errors import ValidationError
 from tests.mod_editor.test_nfl2k5_screen_archive import MemoryArchive
 from pb.defense.verify import IMAGE, OuterImage, BOOK_ENTRIES
@@ -51,12 +59,25 @@ class Composition(unittest.TestCase):
         with self.assertRaisesRegex(spy.QbSpyError,'pairing'):
             spy.compile_intent_table([(a.replacement[:-1]+bytes([a.replacement[-1]^1]),a.report)])
 
-    def test_all_authored_screens_are_declared_D_and_owner_idempotent(self):
+    def test_declared_v2_screens_keep_pins_and_owner_idempotence(self):
+        declarations={team:[p for p in off.plays if 'screen' in p.custom_name.casefold()]
+                      for team,off,_,_ in self.rows}
+        self.assertEqual(sum(map(len,declarations.values())),91)
+        self.assertEqual({team for team,plays in declarations.items() if not plays},{'IND','NYG'})
         for team,off,a,b in self.rows:
             with self.subTest(team=team):
-                certify_screens(a.replacement,off)
-                certify_screens(b.replacement,off)
+                # v2/pins.py replaces the v0.5 RB Slip-only certification.
+                # Level D recognizes the shipped signatures of the four v2
+                # screen concepts; their authored timing shapes differ.
+                declared=declarations[team]
+                self.assertTrue(all(concepts.CONCEPTS[p.concept].family=='screen' for p in declared))
+                expected={p.replace_index:p.custom_name for p in declared}
                 for c in (a,b):
+                    book=c.parsed_replacement
+                    self.assertEqual({p.index:p.name for p in book.plays
+                                      if 'screen' in p.name.casefold()},expected)
+                    identity=hashlib.sha256(book.book_name.encode()).hexdigest()
+                    self.assertEqual(timing._signature(book),timing.COMPLETE_OFFENSE_D_PINS[identity])
                     actual,receipt=timing.apply(c.replacement,'D')
                     self.assertEqual(actual,c.replacement)
                     self.assertEqual(receipt['status'],'applied')

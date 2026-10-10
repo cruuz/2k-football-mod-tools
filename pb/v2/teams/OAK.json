@@ -1,0 +1,625 @@
+{
+ "team": "OAK",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Kubiak wide zone",
+ "staff": "Klint Kubiak / Andrew Janocko",
+ "family": "wide_zone",
+ "feature": "TE1",
+ "key_players": "Brock Bowers; Ashton Jeanty",
+ "depth_step": 0,
+ "tendencies": {
+  "shotgun_pct": 66.14,
+  "pistol_pct": 2.97,
+  "play_action_pct": 24.83,
+  "motion_pct": 52.34,
+  "personnel": {
+   "12": 314,
+   "11": 543,
+   "13": 54,
+   "other": 25,
+   "22": 2,
+   "21": 3,
+   "02": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Trey",
+   "Gun Doubles",
+   "Singleback Doubles",
+   "Singleback Ace",
+   "I-Form Pro"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Gun Ace Wing",
+   "Gun Ace",
+   "Ace Jumbo",
+   "Pistol Ace",
+   "Singleback Wing",
+   "Gun Empty Bunch"
+  ]
+ },
+ "boost": {
+  "Counter": 1,
+  "Dagger": 3,
+  "Drive": 4,
+  "Outside Zone": 5,
+  "PA Boot": 3,
+  "PA Boot Leak": 3,
+  "Sail": 1,
+  "Stick": 1,
+  "TE Screen": 1,
+  "Y Cross": 2,
+  "Yankee": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Mesh Wheel",
+   "name": "OAK Mesh Wheel",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "B",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Texas",
+   "name": "OAK Texas",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "B",
+     "S2",
+     "S1",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Quick Outs",
+   "name": "OAK Quick Outs",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "S2",
+     "W1",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Curl Flat",
+   "name": "OAK Curl Flat",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "W1",
+     "W2",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "OAK RB Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.333333333333332
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "Y Cross",
+   "name": "Y Cross Bender",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Seam",
+      16
+     ]
+    },
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S2",
+     "W2",
+     "B",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "Outside Zone",
+   "name": "Stretch Weak",
+   "overrides": {
+    "direction": "weak",
+    "depth_step": 0
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.raiders.com/news/raiders-announce-2026-coaching-staff)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 6.27 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Queens": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Pistol Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Bunch": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Mesh Wheel",
+    "name": "OAK Mesh Wheel",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "B",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "targets SWING 7.8% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Texas",
+    "name": "OAK Texas",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "B",
+      "S2",
+      "S1",
+      "W1"
+     ]
+    },
+    "reason": "targets SWING 7.8% (league 5.3)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Quick Outs",
+    "name": "OAK Quick Outs",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "S2",
+      "W1",
+      "W2"
+     ]
+    },
+    "reason": "targets QUICK OUT 20.7% (league 18.8, small lean)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Curl Flat",
+    "name": "OAK Curl Flat",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "W1",
+      "W2",
+      "S2"
+     ]
+    },
+    "reason": "targets HITCH/CURL 20.1% (league 18.3, small lean)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "OAK RB Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.333333333333332
+      ]
+     }
+    },
+    "reason": "targets SCREEN 9.8% (league 9.1, small lean)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "Y Cross",
+    "name": "Y Cross Bender",
+    "overrides": {
+     "routes": {
+      "S2": [
+       "route",
+       "Seam",
+       16
+      ]
+     },
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S2",
+      "W2",
+      "B",
+      "W1"
+     ]
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   },
+   {
+    "formation": "I-Form Pro",
+    "concept": "Outside Zone",
+    "name": "Stretch Weak",
+    "overrides": {
+     "direction": "weak",
+     "depth_step": 0
+    },
+    "reason": "existing package signature (DESIGN, p48o): keep and make it the team's own"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 71.0%"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 28.0%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   4,
+   0,
+   3
+  ],
+  "Gun Doubles": [
+   2,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   1,
+   4
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   2
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   1
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   2,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   4,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   3
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   2
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Gun Ace Wing": [
+   4,
+   0,
+   1
+  ],
+  "Gun Ace": [
+   1,
+   0,
+   1
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "Pistol Ace": [
+   2,
+   0,
+   2
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "Gun Empty Bunch": [
+   1,
+   1,
+   0
+  ]
+ }
+}

@@ -6,8 +6,10 @@ similar variant in a chunk shares one swizzled mip/index chain and owns only an
 independent 256-entry BGRA palette.  Replacing that shared chain for one name
 would silently reshape every sibling.
 
-Legacy project PNGs retain palette projection. New sock/glove/shoe imports append
-an aligned, coverage-filtered index chain and repoints only its descriptor.
+Legacy project PNGs retain palette projection unless a new banded design cannot
+be represented by the shared indices. Those PNGs and explicit own-texture
+sock/glove/shoe imports append an aligned, coverage-filtered index chain and
+repoint only their descriptors. Explicit palette-only choices stay shared.
 Sibling descriptors, palettes and every shared mip remain exact. The decoded
 video allocation grows, but the recompressed TSET stays inside its original
 file span. EXPERIMENTAL / UNWITNESSED: gameplay residency and rendering need a
@@ -36,6 +38,7 @@ from mod_editor.core.nfl2k5_equipment_lz import (
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_equipment_import_intent import (
     INTENT_CHUNK, OWN_TEXTURE, PALETTE_ONLY, import_mode, import_settings, retail_source,
+    has_import_choice, with_import_mode,
     supports_own_texture,
 )
 
@@ -1069,6 +1072,12 @@ def apply_equipment_span(current: bytes, replacement: bytes,
                          "span_size": len(replacement)}
 
 
+def _palette_rgba(indices: bytes, bgra: bytes) -> bytes:
+    palette = [(bgra[i + 2], bgra[i + 1], bgra[i], bgra[i + 3])
+               for i in range(0, PALETTE_BYTES, 4)]
+    return palette_tools.rgba_from_indices(indices, palette)
+
+
 def _project_palette(
     indices: list[bytes], levels: list[Any], maximum: int
 ) -> tuple[bytes, int]:
@@ -1487,6 +1496,15 @@ def _compile_group(
                                               written)
                     else:
                         palette, actual_entries = _project_palette(indices, levels, maximum)
+                        # A projection equal to the retail base is a no-op,
+                        # including edits whose small rounding differences map
+                        # back to retail. Keep unused entries and distance mips.
+                        texture = textures[reference]
+                        original = texture_to_rgba(decoded, chunk, texture)
+                        projected = _palette_rgba(indices[0], palette)
+                        if projected == original:
+                            start = chunk.system_bytes + target.palette_offset
+                            palette = decoded[start:start + PALETTE_BYTES]
                     entries[reference] = actual_entries
                     start = chunk.system_bytes + target.palette_offset
                     candidate[start:start + PALETTE_BYTES] = palette
@@ -1635,8 +1653,6 @@ def _compile_group(
             if reference not in independent else "to fit the 256-colour P8 palette"
         )
         selected_quality[reference] = measured
-        _require(before != after or reference in independent or reference in retail,
-                 f"Replacement equals retail for {target.asset_id}")
         preview = encode_rgba_png(texture.width, texture.height, after)
         previews[reference] = preview
         edit_templates[reference] = {
@@ -1805,20 +1821,49 @@ def build_unified_uniform_equipment_imports(
 
     authored: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]] = {}
     independent: set[int] = set()
+    automatic_bands: set[int] = set()
+    # b77-i2: the ordinary (no import choice) PNG as read, for the shared-palette fallback below.
+    shared_fallback: dict[int, tuple[EquipmentTarget, bytes, bytes, list[Any]]] = {}
     input_rows: list[dict[str, Any]] = []
     signature: list[tuple[Any, ...]] = []
+    routing_layout = None
     for target, path in selected:
         payload, rgba, levels = _read_png(path, target, compile_cache)
-        authored[target.reference_index] = (target, payload, rgba, levels)
+        input_sha256 = _digest(payload)
         mode, scale = import_settings(payload, target.asset_id, rgba)
+        if (mode == PALETTE_ONLY and not has_import_choice(payload)
+                and supports_own_texture(target.asset_id)
+                and _striped_art(rgba, target.width, target.height)):
+            # The palette-only path cannot add spatial bands: pixels sharing
+            # one retail index must keep one colour. Promote only ordinary
+            # banded PNGs whose quantized base that path cannot reproduce.
+            # Existing exact recolours and explicit UI choices keep their path.
+            if routing_layout is None:
+                routing_decoded, _ = decode_chunk(package, chunk)
+                routing_layout = _validate_layout(routing_decoded, chunk, rows)
+            _textures, routing_indices = routing_layout
+            palette, index_levels, _ = _quantize_art(levels, 256, measure_quality=False)
+            expected = b"".join(bytes(palette[i]) for i in index_levels[0])
+            projected, _ = _project_palette(routing_indices, levels, 256)
+            actual = _palette_rgba(routing_indices[0], projected)
+            if actual != expected:
+                from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
+                shared_fallback[target.reference_index] = (target, payload, rgba, levels)
+                payload = with_import_mode(payload, target.asset_id, rgba, independent=True)
+                mode = OWN_TEXTURE
+                automatic_bands.add(target.reference_index)
+                levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
+                levels[0] = replace(levels[0], rgba=rgba)
+        authored[target.reference_index] = (target, payload, rgba, levels)
         if mode == OWN_TEXTURE:
             independent.add(target.reference_index)
-        signature.append((target.reference_index, _digest(rgba), mode, scale, retail_source(payload, rgba)))
+        signature.append((target.reference_index, _digest(rgba), mode, scale,
+                          retail_source(payload, rgba), target.reference_index in automatic_bands))
         input_rows.append({
             "target": target.asset_id,
             "path": str(path.resolve(strict=True)),
             "file_name": path.name,
-            "sha256": _digest(payload),
+            "sha256": input_sha256,
             "rgba_sha256": _digest(rgba),
             "width": target.width,
             "height": target.height,
@@ -1909,9 +1954,35 @@ def build_unified_uniform_equipment_imports(
                 retail[reference] = _retail_artwork(archive, source, groups, rgba)
         preferred = by_id.get(fit_asset_id) if fit_asset_id is not None else None
         try:
-            compiled = _compile_group(template_span, chunk, decoded, decode_info, rows, authored, independent, retail,
-                                      suggest_fit=suggest_fit,
-                                      fit_reference=preferred.reference_index if preferred is not None else None)
+            for automatic_scale in ((1, 2, 4, 0) if automatic_bands else (1,)):
+                alternative = dict(authored)
+                if automatic_scale == 0:
+                    # b77-i2: no size of the promoted chain fits. An ordinary PNG then keeps the shared-palette
+                    # route it had before b77 eqx (lossy for spatial bands, but it builds) instead of failing.
+                    alternative.update(shared_fallback)
+                    compiled = _compile_group(
+                        template_span, chunk, decoded, decode_info, rows, alternative, independent - automatic_bands,
+                        retail, suggest_fit=suggest_fit,
+                        fit_reference=preferred.reference_index if preferred is not None else None)
+                    break
+                for reference in automatic_bands:
+                    target, payload, rgba, full_levels = authored[reference]
+                    levels = [replace(level, level=n) for n, level in
+                              enumerate(full_levels[automatic_scale.bit_length() - 1:])]
+                    alternative[reference] = (target, with_import_mode(
+                        payload, target.asset_id, rgba, independent=True, scale=automatic_scale), rgba, levels)
+                try:
+                    compiled = _compile_group(
+                        template_span, chunk, decoded, decode_info, rows, alternative, independent, retail,
+                        suggest_fit=suggest_fit if not automatic_bands else False,
+                        fit_reference=preferred.reference_index if preferred is not None else None)
+                    break
+                except EquipmentFitError:
+                    # Ordinary banded PNGs need real indices. If their complete
+                    # chain cannot fit, try the same checked distance levels as
+                    # Build's refit. Explicit import choices never shrink here.
+                    if not automatic_bands:
+                        raise
         except EquipmentFitPending:
             # Neither the memory nor the disk failure cache may keep a clock
             # result: beta 72 replayed a quick-check timeout at every Build.
@@ -2158,7 +2229,9 @@ def _refit_ladder(target, payload, rgba):
     from mod_editor.core.nfl2k5_digit_texture import make_digit_mips
     from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
     mode, current_scale = import_settings(payload, target.asset_id, rgba)
-    independent = mode == OWN_TEXTURE
+    independent = mode == OWN_TEXTURE or (
+        not has_import_choice(payload) and supports_own_texture(target.asset_id)
+        and _striped_art(rgba, target.width, target.height))
     levels = make_digit_mips(rgba, target.width, target.height, target.mip_levels)
     seen = set()
     for scale in ((s for s in (1, 2, 4) if s >= current_scale) if independent else (1,)):

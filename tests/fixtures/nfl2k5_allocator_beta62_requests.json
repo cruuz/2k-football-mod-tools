@@ -426,6 +426,48 @@
   16
  ],
  [
+  "nfl2k5_letter_grades",
+  "code",
+  160,
+  16
+ ],
+ [
+  "nfl2k5_letter_grades",
+  "read_only",
+  240,
+  16
+ ],
+ [
+  "nfl2k5_letter_grades_progress",
+  "code",
+  16,
+  16
+ ],
+ [
+  "nfl2k5_period_goalposts",
+  "code",
+  176,
+  16
+ ],
+ [
+  "nfl2k5_period_goalposts",
+  "read_only",
+  32,
+  4
+ ],
+ [
+  "nfl2k5_honors",
+  "code",
+  2560,
+  16
+ ],
+ [
+  "nfl2k5_honors",
+  "data",
+  16,
+  16
+ ],
+ [
   "nfl2k5_stock_books",
   "code",
   1536,

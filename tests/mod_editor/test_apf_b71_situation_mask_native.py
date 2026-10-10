@@ -1,7 +1,14 @@
 """Execute the authored mask leaves and every APF-3 native case on pinned images."""
 from __future__ import annotations
-import json,struct,unittest
+
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+import json,struct,unittest
 from tests.mod_editor import test_apf_playcall_research_native as previous
 from tools.apf_playcall_research_probe import BOOK,MASTER,MANAGER,OUTPUT,GAME,STATE
 from mod_editor.core import apf2k8_situation_mask as mask

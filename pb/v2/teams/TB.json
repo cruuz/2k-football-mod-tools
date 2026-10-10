@@ -1,0 +1,665 @@
+{
+ "team": "TB",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "McVay/Robinson condensed passing",
+ "staff": "Zac Robinson",
+ "family": "mcvay",
+ "feature": "WR1",
+ "key_players": "Emeka Egbuka; Bucky Irving",
+ "depth_step": 1,
+ "keep_in_menu": {
+  "I-Form Pro": [
+   "Flea Flicker"
+  ],
+  "Singleback Doubles": [
+   "End Around"
+  ]
+ },
+ "keep_in_menu_note": "b77 p48o: TB fields 32 formations in 137 play slots; with all three core gadgets the Gun Empty menu would hold 7 plays, so TB keeps the Flea Flicker and End Around (no toss Reverse)",
+ "tendencies": {
+  "shotgun_pct": 65.07,
+  "pistol_pct": 3.94,
+  "play_action_pct": 16.77,
+  "motion_pct": 62.16,
+  "personnel": {
+   "12": 214,
+   "21": 49,
+   "11": 738,
+   "13": 30,
+   "10": 13,
+   "other": 18,
+   "22": 2,
+   "20": 1
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Doubles",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Trey"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Doubles Tight",
+   "Singleback Wing",
+   "Pistol Strong",
+   "Ace Jumbo",
+   "I-Form Twins",
+   "Gun Split Pro",
+   "Split Backs",
+   "Gun Empty Bunch",
+   "Weak I",
+   "Strong I Twins",
+   "Split Backs Twins",
+   "Gun Empty",
+   "Pistol Doubles",
+   "Pistol Trey",
+   "Pistol Bunch",
+   "Pistol Wing"
+  ]
+ },
+ "boost": {
+  "Dagger": 5,
+  "Double Post": 1,
+  "Drive": 2,
+  "Duo": 2,
+  "Levels": 3,
+  "Mills": 2,
+  "Outside Zone": 2,
+  "PA Boot": 2,
+  "RB Screen": 2,
+  "Smash": 1,
+  "Yankee": 2
+ },
+ "preference_shift": {
+  "PA Boot": 1,
+  "PA Crossers": 1,
+  "PA Dagger": 1
+ },
+ "signature": [
+  {
+   "formation": "Gun Trey",
+   "concept": "Y Cross",
+   "name": "Trey Cross",
+   "overrides": {
+    "routes": {
+     "S2": [
+      "route",
+      "Out",
+      12
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "PA Boot",
+   "name": "Boot Flood",
+   "overrides": {
+    "routes": {
+     "W2": [
+      "route",
+      "Sail",
+      10
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "TB RB Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.666666666666668
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bubble Screen",
+   "name": "TB Bubble Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.666666666666668
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "WR Slip Screen",
+   "name": "TB WR Slip Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.666666666666668
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "RB Screen",
+   "name": "TB RB Screen",
+   "overrides": {
+    "depth_step": 1,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.666666666666668
+     ]
+    }
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.buccaneers.com/news/buccaneers-offensive-preview-training-camp-2026)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.09 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Strong": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Ace Jumbo": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Split Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Empty Bunch": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  },
+  "Weak I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Strong I Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Split Backs Twins": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Gun Empty": {
+   "own": "5 Wide",
+   "mask": [
+    "5 Wide"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Wing": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "TB RB Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.2% (league 9.1)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Bubble Screen",
+    "name": "TB Bubble Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.2% (league 9.1)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "WR Slip Screen",
+    "name": "TB WR Slip Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "screen_pct 10.5 (league 7.8)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "RB Screen",
+    "name": "TB RB Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "screen_pct 10.5 (league 7.8)"
+   }
+  ],
+  "dropped_plays": [
+   {
+    "formation": "Ace Wing",
+    "concept": "TE Screen",
+    "name": "TB TE Screen",
+    "overrides": {
+     "depth_step": 1,
+     "routes": {
+      "W1": [
+       "route",
+       "Comeback",
+       18.666666666666668
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.2% (league 9.1)",
+    "why": "Ace Wing requires 12 personnel. TB has no stock 12-personnel group, and its plan adds only the Kings Long 11-personnel twin, so the planned formation cannot compile."
+   }
+  ],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 95.7%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   2,
+   0
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   4,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   0,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   2,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Gun Split Backs": [
+   3,
+   0,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   1,
+   0
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Singleback Wing": [
+   0,
+   0,
+   0
+  ],
+  "Pistol Strong": [
+   1,
+   0,
+   2
+  ],
+  "Ace Jumbo": [
+   4,
+   4,
+   4
+  ],
+  "I-Form Twins": [
+   3,
+   3,
+   4
+  ],
+  "Gun Split Pro": [
+   4,
+   0,
+   1
+  ],
+  "Split Backs": [
+   2,
+   2,
+   4
+  ],
+  "Gun Empty Bunch": [
+   1,
+   1,
+   0
+  ],
+  "Weak I": [
+   2,
+   2,
+   4
+  ],
+  "Strong I Twins": [
+   3,
+   2,
+   4
+  ],
+  "Split Backs Twins": [
+   2,
+   2,
+   4
+  ],
+  "Gun Empty": [
+   1,
+   0,
+   0
+  ],
+  "Pistol Doubles": [
+   0,
+   4,
+   1
+  ],
+  "Pistol Trey": [
+   4,
+   4,
+   1
+  ],
+  "Pistol Bunch": [
+   4,
+   4,
+   1
+  ],
+  "Pistol Wing": [
+   3,
+   4,
+   1
+  ]
+ }
+}

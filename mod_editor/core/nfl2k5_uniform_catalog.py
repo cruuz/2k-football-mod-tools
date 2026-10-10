@@ -133,7 +133,7 @@ class UniformAsset:
                 "asset_code": self.asset_code,
                 "clean_png": png,
                 "kind": self.kind,
-                "mud_mode": "darken_60",
+                "mud_mode": "wet_93",
                 "mud_png": None,
                 "side": self.side_code,
                 "variant": self.variant,

@@ -124,7 +124,9 @@ class PatchTests(unittest.TestCase):
                 result, receipt = module.apply(result)
                 self.assertEqual(receipt['changed_bytes'], 0)
             self.assertEqual(result, a)
-        self.assertEqual([row['label'] for row in fp.read_rows(a)][4:6], ['Practice', 'Practice Squad'])
+        # b765-p1 retired the incomplete Practice Squad destination; replay
+        # preserves Practice followed by the retail Front Office row.
+        self.assertEqual([row['label'] for row in fp.read_rows(a)][4:6], ['Practice', 'Front Office'])
 
 
 @unittest.skipUnless(XBE.is_file() and HAVE_UNICORN, 'pinned USA retail XBE or Unicorn is absent')

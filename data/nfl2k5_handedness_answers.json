@@ -1,0 +1,4675 @@
+{
+ "schema": "b77/a2_answers/v1",
+ "answers": [
+  {
+   "id": "main:primary:1617",
+   "name": "Andre Szmyt",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.foxsports.com/articles/cfb/syracuse-pk-andre-szmyt-back-in-awardwinning-form"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:876",
+   "name": "Andy Borregales",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:1755",
+   "name": "Ben Sauls",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls",
+    "https://www.giants.com/news/dominic-zvada-michigan-wolverines-kicker-ben-sauls-john-harbaugh-chris-horton"
+   ],
+   "note": "tier A high: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "main:primary:1035",
+   "name": "Blake Grupe",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:396",
+   "name": "Brandon Aubrey",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://newswest9.com/article/sports/nfl/cowboys/dallas-cowboys-brandon-aubrey-kicking-stats-record-nfl-field-goals/287-88798202-6be7-45b0-ac53-1377530898d8"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:293",
+   "name": "Cairo Santos",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:662",
+   "name": "Cam Little",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.cbssports.com/nfl/news/pro-football-hall-of-fame-requests-cam-littles-jersey-and-cleat-after-his-historic-70-yard-field-goal"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1300",
+   "name": "Cameron Dicker",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:27",
+   "name": "Chad Ryland",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:1457",
+   "name": "Chase McLaughlin",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://preview-prod.w.sfchronicle.com/sports/49ers/article/49ers-kicker-Chase-McLaughlin-makes-three-misses-14827512.php"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-11-2022-colts-9:51",
+   "name": "Chase McLaughlin",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://preview-prod.w.sfchronicle.com/sports/49ers/article/49ers-kicker-Chase-McLaughlin-makes-three-misses-14827512.php"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-07-2014-cowboys-9:51",
+   "name": "Dan Bailey",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.dallascowboys.com/news/star-as-one-of-nfl-s-top-kickers-bailey-is-breaking-stereotypes-410926"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:929",
+   "name": "Daniel Carlson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-21-2004-eagles-0:29",
+   "name": "David Akers",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.49ers.com/news/notebook-akers-stays-steady-6280251",
+    "https://bleacherreport.com/articles/402823-philadelphias-gem-david-akers-a-figure-of-consistency-for-the-eagles",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-21-2010-eagles-9:51",
+   "name": "David Akers",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.49ers.com/news/notebook-akers-stays-steady-6280251",
+    "https://bleacherreport.com/articles/402823-philadelphias-gem-david-akers-a-figure-of-consistency-for-the-eagles",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-25-2011-49ers-9:51",
+   "name": "David Akers",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.49ers.com/news/notebook-akers-stays-steady-6280251",
+    "https://bleacherreport.com/articles/402823-philadelphias-gem-david-akers-a-figure-of-consistency-for-the-eagles",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-25-2012-49ers-9:51",
+   "name": "David Akers",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.49ers.com/news/notebook-akers-stays-steady-6280251",
+    "https://bleacherreport.com/articles/402823-philadelphias-gem-david-akers-a-figure-of-consistency-for-the-eagles",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-27-1979-buccaneers-3:29",
+   "name": "Donald Igwebuike",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://buccaneers.com/news/igwebuike-sold-on-opportunity-in-tampa-20662222"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1351",
+   "name": "Eddy Pineiro",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:344",
+   "name": "Evan McPherson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://nfl.com/_amp/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t",
+    "https://amp.nfl.com/news/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-06-2021-bengals-9:51",
+   "name": "Evan McPherson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://nfl.com/_amp/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t",
+    "https://amp.nfl.com/news/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-06-2025-bengals-9:51",
+   "name": "Evan McPherson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://nfl.com/_amp/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t",
+    "https://amp.nfl.com/news/bengals-marvel-at-evan-mcpherson-s-clutch-gene-after-kicker-s-gw-fg-sends-them-t"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-14-1972-dolphins-4:30",
+   "name": "Garo Yepremian",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.history.com/articles/longest-nfl-game-chiefs-dolphins-yepremian"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-17-2009-saints-9:51",
+   "name": "Garrett Hartley",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.theadvocate.com/baton_rouge/new-orleans-saints-cut-place-kicker-garrett-hartley/article_47545740-f87d-5a98-9a76-2412f07eaf9d.html"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-17-2010-saints-9:51",
+   "name": "Garrett Hartley",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.theadvocate.com/baton_rouge/new-orleans-saints-cut-place-kicker-garrett-hartley/article_47545740-f87d-5a98-9a76-2412f07eaf9d.html"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-15-1998-vikings-9:51",
+   "name": "Gary Anderson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://vault.si.com/vault/1990/09/17/a-great-outdoorsman"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:715",
+   "name": "Harrison Butker",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://gazette.com/?p=98172"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-13-2019-chiefs-9:51",
+   "name": "Harrison Butker",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://gazette.com/?p=98172"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-13-2021-chiefs-9:51",
+   "name": "Harrison Butker",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://gazette.com/?p=98172"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-13-2023-chiefs-9:51",
+   "name": "Harrison Butker",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://gazette.com/?p=98172"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "main:primary:1247",
+   "name": "Harrison Mevis",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:505",
+   "name": "Jake Bates",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:1140",
+   "name": "Jake Elliott",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://inquirer.com/philly/sports/eagles/philadelphia-eagles-jake-elliott-record-lyons-township-high-school-20170929.html"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-21-2017-eagles-9:51",
+   "name": "Jake Elliott",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://inquirer.com/philly/sports/eagles/philadelphia-eagles-jake-elliott-record-lyons-township-high-school-20170929.html"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1752",
+   "name": "Jake Moody",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://africa.espn.com/nfl/story/_/id/41653007/jake-moody-suffers-ankle-sprain-san-francisco-49ers-loss",
+    "https://abc7news.com/post/jake-moody-niners-hope-new-kicking-approach-yields-results/17684356/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-25-2023-49ers-9:51",
+   "name": "Jake Moody",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://africa.espn.com/nfl/story/_/id/41653007/jake-moody-suffers-ankle-sprain-san-francisco-49ers-loss",
+    "https://abc7news.com/post/jake-moody-niners-hope-new-kicking-approach-yields-results/17684356/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:28",
+   "name": "Jan Stenerud",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jan_Stenerud"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1405",
+   "name": "Jason Myers",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-06-1988-bengals-1:29",
+   "name": "Jim Breech",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jim_Breech"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "main:primary:1514",
+   "name": "Joey Slye",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-04-2003-panthers-9:51",
+   "name": "John Kasay",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/news/bad-break-for-panthers-kasay"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-17-2011-saints-9:51",
+   "name": "John Kasay",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/news/bad-break-for-panthers-kasay"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "main:primary:1671",
+   "name": "Ka'imi Fairbairn",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.ourlads.com/nfldepthcharts/player/27770/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-29-1982-redskins-2:32",
+   "name": "Mark Moseley",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.packers.com/news/skins-packers-83-one-for-the-books-2498446"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-30-1986-browns-1:29",
+   "name": "Mark Moseley",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.packers.com/news/skins-packers-83-one-for-the-books-2498446"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-01-2016-falcons-9:51",
+   "name": "Matt Bryant",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://tvcc.prestosports.com/hall_of_fame/Matt_Bryant",
+    "https://www.foxnews.com/sports/mr-automatic-matt-bryant-makes-all-the-big-kicks-for-falcons-heading-into-nfc-title-game"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-18-2003-giants-0:29",
+   "name": "Matt Bryant",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://tvcc.prestosports.com/hall_of_fame/Matt_Bryant",
+    "https://www.foxnews.com/sports/mr-automatic-matt-bryant-makes-all-the-big-kicks-for-falcons-heading-into-nfc-title-game"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1087",
+   "name": "Matt Gay",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Matt_Gay",
+    "https://preview-prod.w.sfchronicle.com/sports/49ers/article/matt-gay-accidental-kicker-joins-49ers-career-21198800.php"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-23-2021-rams-9:51",
+   "name": "Matt Gay",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Matt_Gay",
+    "https://preview-prod.w.sfchronicle.com/sports/49ers/article/matt-gay-accidental-kicker-joins-49ers-career-21198800.php"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-01-1998-falcons-9:51",
+   "name": "Morten Andersen",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Morten_Andersen"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "main:primary:82",
+   "name": "Nick Folk",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:769",
+   "name": "Riley Patterson",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-25-2019-49ers-9:51",
+   "name": "Robbie Gould",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:241",
+   "name": "Ryan Fitzgerald",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-20-2001-raiders-9:51",
+   "name": "Sebastian Janikowski",
+   "position": "K",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/sanfrancisco/news/raiders-cut-long-time-kicker-sebastian-janikowski/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "main:primary:607",
+   "name": "Spencer Shrader",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "team:h-16-2007-patriots-9:51",
+   "name": "Stephen Gostkowski",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonglobe.com/sports/2014/11/14/stephen-gostkowski-makes-his-job-look-routine/2hRKkfZinNJ4aEBC22d6QK/story.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2011-patriots-9:51",
+   "name": "Stephen Gostkowski",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonglobe.com/sports/2014/11/14/stephen-gostkowski-makes-his-job-look-routine/2hRKkfZinNJ4aEBC22d6QK/story.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2014-patriots-9:51",
+   "name": "Stephen Gostkowski",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonglobe.com/sports/2014/11/14/stephen-gostkowski-makes-his-job-look-routine/2hRKkfZinNJ4aEBC22d6QK/story.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2016-patriots-9:51",
+   "name": "Stephen Gostkowski",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonglobe.com/sports/2014/11/14/stephen-gostkowski-makes-his-job-look-routine/2hRKkfZinNJ4aEBC22d6QK/story.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2017-patriots-9:51",
+   "name": "Stephen Gostkowski",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonglobe.com/sports/2014/11/14/stephen-gostkowski-makes-his-job-look-routine/2hRKkfZinNJ4aEBC22d6QK/story.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1742",
+   "name": "Tanner Brown",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ben_Sauls"
+   ],
+   "note": "tier B medium: Wikipedia (Ben Sauls): first left-footed kicker to appear in a regular-season game since 2018; this kicker appeared in 2019 or later"
+  },
+  {
+   "id": "main:primary:560",
+   "name": "Trey Smack",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.packers.com/news/trey-smack-was-powerful-under-pressure-kicking-at-florida-april-25-2026"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:131",
+   "name": "Tyler Loop",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.thebanner.com/sports/ravens-nfl/tyler-loop-ravens-rookie-kicker-justin-tucker-TUBGPTGW4JHUPEFN4HRVKHZCEI"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:823",
+   "name": "Will Reichard",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "https://www.vikings.com/news/will-reichard-5-field-goals-creative-kickoffs-help-drop-dolphins"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-00-2008-cardinals-9:52",
+   "name": "Ben Graham",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.azcardinals.com/news/cards-change-punters-7608005"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "main:primary:34",
+   "name": "Blake Gillikin",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.azcardinals.com/news/cardinals-add-punter-michael-palardy-to-practice-squad-blake-gillikin"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1145",
+   "name": "Braden Mann",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.ourlads.com/nfldepthcharts/player/52235"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-08-2012-broncos-9:52",
+   "name": "Britton Colquitt",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2007-patriots-9:52",
+   "name": "Chris Hanson",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.boston.com/sports/new-england-patriots/2007/08/30/leftfooted_punt/?amp=1",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A medium: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-07-2014-cowboys-9:52",
+   "name": "Chris Jones",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Chris_Jones_(punter)",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:1356",
+   "name": "Corliss Waitman",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.bostonglobe.com/2023/03/23/sports/patriots-sign-left-footed-punter-corliss-waitman",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-22-2025-steelers-9:52",
+   "name": "Corliss Waitman",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.bostonglobe.com/2023/03/23/sports/patriots-sign-left-footed-punter-corliss-waitman",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-21-2017-eagles-9:52",
+   "name": "Donnie Jones",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.philadelphiaeagles.com/news/a-punter-jones-makes-sense-9777259",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-13-2019-chiefs-9:52",
+   "name": "Dustin Colquitt",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:87",
+   "name": "Jake Bailey",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.bostonsportsjournal.com/2019/05/07/can-fifth-round-pick-jake-bailey-break-the-mold-when-it-comes-to-patriots-special-teams-approach/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-23-2021-rams-9:52",
+   "name": "Johnny Hekker",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.cbsnews.com/boston/news/johnny-hekker-weapon-bill-belichick-new-england-patriots-los-angeles-rams-super-bowl-liii/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-26-2010-seahawks-9:52",
+   "name": "Jon Ryan",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.nfl.com/_amp/two-step-punting-approach-working-for-packers-ryan-09000d5d80180202"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-26-2014-seahawks-9:52",
+   "name": "Jon Ryan",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.nfl.com/_amp/two-step-punting-approach-working-for-packers-ryan-09000d5d80180202"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1676",
+   "name": "Kai Kroeger",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://sportstalksc.com/recruiting/strecruiting-illinois-punter-earns-gamecocks-offer-in-camp/"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-16-2001-patriots-0:35",
+   "name": "Ken Walter",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.boston.com/sports/new-england-patriots/2007/08/30/leftfooted_punt/?amp=1"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-16-2001-patriots-9:52",
+   "name": "Ken Walter",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.boston.com/sports/new-england-patriots/2007/08/30/leftfooted_punt/?amp=1"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-16-2003-patriots-9:52",
+   "name": "Ken Walter",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.boston.com/sports/new-england-patriots/2007/08/30/leftfooted_punt/?amp=1"
+   ],
+   "note": "tier A medium: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-06-2021-bengals-9:52",
+   "name": "Kevin Huber",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:721",
+   "name": "Matt Araiza",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://atozsports.com/nfl/chiefs-matt-araiza-left-footed-punting-style-opposing-teams-major-disadvantage/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-03-2021-bills-9:52",
+   "name": "Matt Haack",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.miamidolphins.com/news/ac-in-the-am-the-story-behind-punter-matt-haack"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-11-2022-colts-9:52",
+   "name": "Matt Haack",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.miamidolphins.com/news/ac-in-the-am-the-story-behind-punter-matt-haack"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "main:primary:1410",
+   "name": "Michael Dickson",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.burntorangenation.com/2015/6/25/8844683/michael-dickson-texas-longhorns-commit-punter-2015"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:880",
+   "name": "Mitch Wishnowsky",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mitch_Wishnowsky",
+    "https://www.ourlads.com/nfldepthcharts/player/37082/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-25-2019-49ers-9:52",
+   "name": "Mitch Wishnowsky",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mitch_Wishnowsky",
+    "https://www.ourlads.com/nfldepthcharts/player/37082/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-25-2023-49ers-9:52",
+   "name": "Mitch Wishnowsky",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mitch_Wishnowsky",
+    "https://www.ourlads.com/nfldepthcharts/player/37082/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-11-2009-colts-9:52",
+   "name": "Pat McAfee",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.wwe.com/shows/wwenxt/article/adam-cole-picks-fight-with-pat-mcafee"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-20-1976-raiders-0:36",
+   "name": "Ray Guy",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://profootballhof.com/players/ray-guy"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-20-1983-raiders-0:36",
+   "name": "Ray Guy",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://profootballhof.com/players/ray-guy"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1462",
+   "name": "Riley Dixon",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2014-patriots-9:52",
+   "name": "Ryan Allen",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/boston/news/socci-ryan-allen-puts-best-left-foot-forward/",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-16-2016-patriots-9:52",
+   "name": "Ryan Allen",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/boston/news/socci-ryan-allen-puts-best-left-foot-forward/",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-16-2017-patriots-9:52",
+   "name": "Ryan Allen",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://www.cbsnews.com/boston/news/socci-ryan-allen-puts-best-left-foot-forward/",
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:349",
+   "name": "Ryan Rehkow",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/chiefs/gm-report/chiefs-in-real-close-punter-battle-during-otas",
+    "https://atozsports.com/kansas-city/chiefs-punter-battle-matt-araiza-ryan-rehkow-real-close-dave-toub/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-06-2025-bengals-9:52",
+   "name": "Ryan Rehkow",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/chiefs/gm-report/chiefs-in-real-close-punter-battle-during-otas",
+    "https://atozsports.com/kansas-city/chiefs-punter-battle-matt-araiza-ryan-rehkow-real-close-dave-toub/"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:935",
+   "name": "Ryan Wright",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.vikings.com/news/ryan-wright-2025-season-right-approach",
+    "https://www.neworleanssaints.com/news/ryan-wright-punter-saints-free-agency-2026-5-things-to-know"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-15-2022-vikings-9:52",
+   "name": "Ryan Wright",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.vikings.com/news/ryan-wright-2025-season-right-approach",
+    "https://www.neworleanssaints.com/news/ryan-wright-punter-saints-free-agency-2026-5-things-to-know"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-02-2012-ravens-9:52",
+   "name": "Sam Koch",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/2018/01/11/lefty-left-footed-punters-bill-belichick-dustin-colquitt-zoltan-mesko-ryan-allen"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:298",
+   "name": "Tory Taylor",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "https://www.si.com/nfl/bears/onsi/bears-turn-down-under-for-help-punting-with-tory-taylor"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1566",
+   "name": "Tress Way",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tress_Way",
+    "https://mondaq.com/unitedstates/sport/1394476/lefty-love"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-16-2011-patriots-9:52",
+   "name": "Zoltan Mesko",
+   "position": "P",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Zolt%C3%A1n_Mesk%C3%B3_(American_football)"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched by the lead"
+  },
+  {
+   "id": "team:h-21-2004-eagles-0:37",
+   "name": "A.J. Feeley",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1197",
+   "name": "Aaron Rodgers",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2014-packers-9:0",
+   "name": "Aaron Rodgers",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2015-packers-9:0",
+   "name": "Aaron Rodgers",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-2025-steelers-9:0",
+   "name": "Aaron Rodgers",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1711",
+   "name": "Adrian Martinez",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1095",
+   "name": "Aidan O'Connell",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-19-1968-jets-4:39",
+   "name": "Al Woodall",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2011-49ers-9:0",
+   "name": "Alex Smith",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2012-49ers-9:1",
+   "name": "Alex Smith",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1999-bills-9:2",
+   "name": "Alex Van Pelt",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1147",
+   "name": "Andy Dalton",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:616",
+   "name": "Anthony Richardson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2007-giants-9:1",
+   "name": "Anthony Wright",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-1991-saints-4:36",
+   "name": "Archie Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1569",
+   "name": "Athan Kaliakmanis",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1802",
+   "name": "Austin Reed",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2014-seahawks-9:2",
+   "name": "B.J. Daniels",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-19-1968-jets-4:38",
+   "name": "Babe Parilli",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1697",
+   "name": "Bailey Zappe",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1463",
+   "name": "Baker Mayfield",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1966-packers-3:35",
+   "name": "Bart Starr",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:883",
+   "name": "Behren Morton",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-2008-steelers-9:0",
+   "name": "Ben Roethlisberger",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-30-1986-browns-1:35",
+   "name": "Bernie Kosar",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-14-1972-dolphins-4:39",
+   "name": "Billy Lothridge",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2459",
+   "name": "Blaine Gabbert",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2023-chiefs-9:1",
+   "name": "Blaine Gabbert",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:457",
+   "name": "Bo Nix",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-14-1972-dolphins-4:37",
+   "name": "Bob Griese",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-29-1982-redskins-2:39",
+   "name": "Bob Holly",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-1975-steelers-1:37",
+   "name": "Bob Leahy",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-1991-saints-4:37",
+   "name": "Bobby Scott",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-1988-bengals-1:36",
+   "name": "Boomer Esiason",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Boomer_Esiason",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-15-1998-vikings-9:1",
+   "name": "Brad Johnson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1977-cowboys-3:36",
+   "name": "Brad Wright",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:777",
+   "name": "Brady Cook",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2326",
+   "name": "Brandon Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-2021-bengals-9:1",
+   "name": "Brandon Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2023-49ers-9:2",
+   "name": "Brandon Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2003-49ers-0:39",
+   "name": "Brandon Doman",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-2014-cowboys-9:1",
+   "name": "Brandon Weeden",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1996-packers-2:33",
+   "name": "Brett Favre",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2004-packers-0:35",
+   "name": "Brett Favre",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2015-packers-9:2",
+   "name": "Brett Hundley",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2011-patriots-9:1",
+   "name": "Brian Hoyer",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2017-patriots-9:1",
+   "name": "Brian Hoyer",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-00-2008-cardinals-9:2",
+   "name": "Brian St. Pierre",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-2012-broncos-9:1",
+   "name": "Brock Osweiler",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1357",
+   "name": "Brock Purdy",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2023-49ers-9:0",
+   "name": "Brock Purdy",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-2021-rams-9:2",
+   "name": "Bryce Perkins",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:248",
+   "name": "Bryce Young",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1998-broncos-0:38",
+   "name": "Bubby Brister",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-2008-steelers-9:1",
+   "name": "Byron Leftwich",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2019-49ers-9:2",
+   "name": "C.J. Beathard",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1677",
+   "name": "C.J. Stroud",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1043",
+   "name": "Cade Klubnik",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-2012-broncos-9:2",
+   "name": "Caleb Hanie",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:299",
+   "name": "Caleb Williams",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1843",
+   "name": "Cam Miller",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1519",
+   "name": "Cam Ward",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:37",
+   "name": "Carson Beck",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:830",
+   "name": "Carson Wentz",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:301",
+   "name": "Case Keenum",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-2022-bills-9:1",
+   "name": "Case Keenum",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2017-vikings-9:0",
+   "name": "Case Keenum",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2019-chiefs-9:2",
+   "name": "Chad Henne",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2021-chiefs-9:1",
+   "name": "Chad Henne",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2010-seahawks-9:1",
+   "name": "Charlie Whitehurst",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2009-saints-9:2",
+   "name": "Chase Daniel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2010-saints-9:1",
+   "name": "Chase Daniel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2011-saints-9:1",
+   "name": "Chase Daniel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2017-saints-9:1",
+   "name": "Chase Daniel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-01-1998-falcons-9:0",
+   "name": "Chris Chandler",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-04-2003-panthers-9:2",
+   "name": "Chris Weinke",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2328",
+   "name": "Clayton Tune",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1979-oilers-2:35",
+   "name": "Cody Carlson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1149",
+   "name": "Cole Payton",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Cole_Payton",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-25-2011-49ers-9:1",
+   "name": "Colin Kaepernick",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2012-49ers-9:0",
+   "name": "Colin Kaepernick",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1895",
+   "name": "Connor Bazelak",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:90",
+   "name": "Cooper Rush",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1967-raiders-1:34",
+   "name": "Cotton Davidson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1971-cowboys-4:38",
+   "name": "Craig Morton",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2004-packers-0:37",
+   "name": "Craig Nall",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-2009-colts-9:1",
+   "name": "Curtis Painter",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:401",
+   "name": "Dak Prescott",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2001-patriots-9:1",
+   "name": "Damon Huard",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2003-patriots-9:1",
+   "name": "Damon Huard",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-24-1980-chargers-4:39",
+   "name": "Dan Fouts",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-09-2015-lions-9:1",
+   "name": "Dan Orlovsky",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:615",
+   "name": "Daniel Jones",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1967-raiders-1:32",
+   "name": "Daryle Lamonica",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1993-chiefs-2:34",
+   "name": "Dave Krieg",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2011-giants-9:1",
+   "name": "David Carr",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1983-raiders-0:39",
+   "name": "David Humm",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A medium: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-14-1984-dolphins-3:35",
+   "name": "David Woodley",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1678",
+   "name": "Davis Mills",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:40",
+   "name": "Dean Carlson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-2008-steelers-9:2",
+   "name": "Dennis Dixon",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1624",
+   "name": "Deshaun Watson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2458",
+   "name": "Desmond Ridder",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1971-cowboys-4:37",
+   "name": "Don Meredith",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-14-1984-dolphins-3:36",
+   "name": "Don Strock",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-21-2004-eagles-0:35",
+   "name": "Donovan McNabb",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1999-bills-9:1",
+   "name": "Doug Flutie",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1996-packers-2:35",
+   "name": "Doug Pederson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2004-packers-0:36",
+   "name": "Doug Pederson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:881",
+   "name": "Drake Maye",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1200",
+   "name": "Drew Allar",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2001-patriots-0:38",
+   "name": "Drew Bledsoe",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2001-patriots-9:2",
+   "name": "Drew Bledsoe",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2009-saints-9:0",
+   "name": "Drew Brees",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2010-saints-9:0",
+   "name": "Drew Brees",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2011-saints-9:0",
+   "name": "Drew Brees",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2017-saints-9:0",
+   "name": "Drew Brees",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1412",
+   "name": "Drew Lock",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-2014-cowboys-9:2",
+   "name": "Dustin Vaughan",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-1991-saints-4:38",
+   "name": "Ed Burns",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-24-1980-chargers-4:40",
+   "name": "Ed Luther",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2007-giants-9:0",
+   "name": "Eli Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2010-giants-9:0",
+   "name": "Eli Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2011-giants-9:0",
+   "name": "Eli Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1094",
+   "name": "Fernando Mendoza",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1990-bills-2:37",
+   "name": "Frank Reich",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1990-bills-2:38",
+   "name": "Gale Gilbert",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:36",
+   "name": "Gardner Minshew",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:724",
+   "name": "Garrett Nussmeier",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-30-1986-browns-1:37",
+   "name": "Gary Danielson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1977-cowboys-3:35",
+   "name": "Gary Hogeboom",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1986-broncos-1:37",
+   "name": "Gary Kubiak",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1042",
+   "name": "Geno Smith",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1967-raiders-1:33",
+   "name": "George Blanda",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1976-raiders-0:39",
+   "name": "George Blanda",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-14-1972-dolphins-4:38",
+   "name": "George Mira",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1977-cowboys-3:34",
+   "name": "Glenn Carano",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-1981-49ers-3:41",
+   "name": "Guy Benjamin",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:250",
+   "name": "Haynes King",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://awfulannouncing.com/espn/david-hale-haynes-king-espn2-left-right-handed-profile.html"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:1907",
+   "name": "Hunter Dekkers",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://www.nwestiowa.com/opinion/anderson-hunter-dekkers-the-lethal-lefty/article_cb06f6e0-b470-11e9-b991-5fc630422a6f.html",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A medium: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:831",
+   "name": "J.J. McCarthy",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2010-seahawks-9:2",
+   "name": "J.P. Losman",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:58",
+   "name": "Jack Strand",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:35",
+   "name": "Jacoby Brissett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2016-patriots-9:2",
+   "name": "Jacoby Brissett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2325",
+   "name": "Jake Browning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-2025-bengals-9:1",
+   "name": "Jake Browning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-04-2003-panthers-9:0",
+   "name": "Jake Delhomme",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1779",
+   "name": "Jake Haener",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1146",
+   "name": "Jalen Hurts",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1413",
+   "name": "Jalen Milroe",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1464",
+   "name": "Jalon Daniels",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:988",
+   "name": "Jameis Winston",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jameis_Winston"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-24-1980-chargers-4:41",
+   "name": "James Harris",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:512",
+   "name": "Jared Goff",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2007-giants-9:2",
+   "name": "Jared Lorenzen",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jared_Lorenzen",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:458",
+   "name": "Jarrett Stidham",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2003-giants-0:37",
+   "name": "Jason Garrett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:987",
+   "name": "Jaxson Dart",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-1998-vikings-9:3",
+   "name": "Jay Fiedler",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1567",
+   "name": "Jayden Daniels",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2456",
+   "name": "Jeff Driskel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2003-49ers-0:37",
+   "name": "Jeff Garcia",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-1990-giants-2:35",
+   "name": "Jeff Hostetler",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1998-broncos-0:37",
+   "name": "Jeff Lewis",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1971-cowboys-4:39",
+   "name": "Jerry Rhome",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2003-giants-0:36",
+   "name": "Jesse Palmer",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-1970-colts-5:35",
+   "name": "Jim Harbaugh",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1990-bills-2:36",
+   "name": "Jim Kelly",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1996-packers-2:36",
+   "name": "Jim McMahon",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1983-raiders-0:37",
+   "name": "Jim Plunkett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2324",
+   "name": "Jimmy Garoppolo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2014-patriots-9:1",
+   "name": "Jimmy Garoppolo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2016-patriots-9:1",
+   "name": "Jimmy Garoppolo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2019-49ers-9:0",
+   "name": "Jimmy Garoppolo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:350",
+   "name": "Joe Burrow",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-2021-bengals-9:0",
+   "name": "Joe Burrow",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:139",
+   "name": "Joe Fagnano",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:351",
+   "name": "Joe Flacco",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-02-2012-ravens-9:0",
+   "name": "Joe Flacco",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-2025-bengals-9:0",
+   "name": "Joe Flacco",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-1999-rams-2:38",
+   "name": "Joe Germaine",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-1975-steelers-1:36",
+   "name": "Joe Gilliam",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-1981-49ers-3:40",
+   "name": "Joe Montana",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-1989-49ers-3:37",
+   "name": "Joe Montana",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-19-1968-jets-4:37",
+   "name": "Joe Namath",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-29-1982-redskins-2:38",
+   "name": "Joe Theismann",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1986-broncos-1:36",
+   "name": "John Elway",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1998-broncos-0:36",
+   "name": "John Elway",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:39",
+   "name": "John Huarte",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-1989-49ers-3:39",
+   "name": "John Paye",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-27-1979-buccaneers-3:38",
+   "name": "John Reaves",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2457",
+   "name": "John Wolford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-2021-rams-9:1",
+   "name": "John Wolford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:565",
+   "name": "Jordan Love",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:190",
+   "name": "Josh Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-2021-bills-9:0",
+   "name": "Josh Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-2022-bills-9:0",
+   "name": "Josh Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:513",
+   "name": "Joshua Dobbs",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:723",
+   "name": "Justin Fields",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1305",
+   "name": "Justin Herbert",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-1970-colts-5:37",
+   "name": "Kelly Holcomb",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1976-raiders-0:37",
+   "name": "Ken Stabler",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:249",
+   "name": "Kenny Pickett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2003-giants-0:35",
+   "name": "Kerry Collins",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://www.pro-football-reference.com/players/C/CollKe00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-28-1999-titans-0:35",
+   "name": "Kevin Daft",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1999-titans-9:2",
+   "name": "Kevin Daft",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-21-2010-eagles-9:1",
+   "name": "Kevin Kolb",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1093",
+   "name": "Kirk Cousins",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2022-vikings-9:0",
+   "name": "Kirk Cousins",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-21-2004-eagles-0:36",
+   "name": "Koy Detmer",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-00-2008-cardinals-9:0",
+   "name": "Kurt Warner",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-1999-rams-2:36",
+   "name": "Kurt Warner",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1359",
+   "name": "Kurtis Rourke",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:191",
+   "name": "Kyle Allen",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:776",
+   "name": "Kyle McCord",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2017-vikings-9:3",
+   "name": "Kyle Sloter",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2327",
+   "name": "Kyle Trask",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:829",
+   "name": "Kyler Murray",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:137",
+   "name": "Lamar Jackson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1976-raiders-0:38",
+   "name": "Larry Lawrence",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:37",
+   "name": "Len Dawson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1358",
+   "name": "Mac Jones",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:775",
+   "name": "Malik Willis",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-1983-raiders-0:38",
+   "name": "Marc Wilson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1568",
+   "name": "Marcus Mariota",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2009-saints-9:1",
+   "name": "Mark Brunell",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://nfl.com/news/jets-qb-brunell-plays-tebow-role-in-preparation-for-broncos-09000d5d8242caba",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:1927",
+   "name": "Mark Gronowski",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1993-chiefs-2:35",
+   "name": "Mark Vlasic",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-2001-raiders-9:1",
+   "name": "Marques Tuiasosopo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1198",
+   "name": "Mason Rudolph",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-2025-steelers-9:1",
+   "name": "Mason Rudolph",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:2460",
+   "name": "Matt Barkley",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1993-chiefs-2:36",
+   "name": "Matt Blundin",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2007-patriots-9:1",
+   "name": "Matt Cassel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2014-packers-9:1",
+   "name": "Matt Flynn",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2007-patriots-9:2",
+   "name": "Matt Gutierrez",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2010-seahawks-9:0",
+   "name": "Matt Hasselbeck",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-00-2008-cardinals-9:1",
+   "name": "Matt Leinart",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://amp.nfl.com/news/leinart-says-he-expects-few-changes-for-texans-offense-09000d5d824636a8",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-13-2019-chiefs-9:1",
+   "name": "Matt Moore",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-01-2016-falcons-9:0",
+   "name": "Matt Ryan",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-2022-colts-9:0",
+   "name": "Matt Ryan",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-01-2016-falcons-9:1",
+   "name": "Matt Schaub",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1254",
+   "name": "Matthew Stafford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-09-2015-lions-9:0",
+   "name": "Matthew Stafford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-2021-rams-9:0",
+   "name": "Matthew Stafford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:88",
+   "name": "Michael Penix",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://www.pro-football-reference.com/players/P/PeniMi00.htm",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-21-2010-eagles-9:0",
+   "name": "Michael Vick",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://www.britannica.com/facts/Michael-Vick",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-21-2010-eagles-9:2",
+   "name": "Mike Kafka",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:38",
+   "name": "Mike Livingston",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-06-1988-bengals-1:38",
+   "name": "Mike Norseth",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-30-1986-browns-1:36",
+   "name": "Mike Pagel",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1520",
+   "name": "Mitchell Trubisky",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-2021-bills-9:1",
+   "name": "Mitchell Trubisky",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-21-2017-eagles-9:1",
+   "name": "Nate Sudfeld",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-00-1975-cardinals-3:39",
+   "name": "Neil Lomax",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1999-titans-0:34",
+   "name": "Neil O'Donnell",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1999-titans-9:1",
+   "name": "Neil O'Donnell",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-2022-colts-9:1",
+   "name": "Nick Foles",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-21-2017-eagles-9:0",
+   "name": "Nick Foles",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2022-vikings-9:1",
+   "name": "Nick Mullens",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2019-49ers-9:1",
+   "name": "Nick Mullens",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:722",
+   "name": "Patrick Mahomes",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2019-chiefs-9:0",
+   "name": "Patrick Mahomes",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2021-chiefs-9:0",
+   "name": "Patrick Mahomes",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2023-chiefs-9:0",
+   "name": "Patrick Mahomes",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-1970-colts-5:36",
+   "name": "Paul Justin",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-23-1999-rams-2:37",
+   "name": "Paul Justin",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-2012-broncos-9:0",
+   "name": "Peyton Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-2009-colts-9:0",
+   "name": "Peyton Manning",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-1990-giants-2:36",
+   "name": "Phil Simms",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:670",
+   "name": "Quinn Ewers",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-1998-vikings-9:0",
+   "name": "Randall Cunningham",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1979-oilers-2:36",
+   "name": "Reggie Slack",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-2001-raiders-9:0",
+   "name": "Rich Gannon",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:617",
+   "name": "Riley Leonard",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-03-1999-bills-9:0",
+   "name": "Rob Johnson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-04-2003-panthers-9:1",
+   "name": "Rodney Peete",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-20-2001-raiders-9:2",
+   "name": "Rodney Peete",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-07-1977-cowboys-3:33",
+   "name": "Roger Staubach",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2003-patriots-9:2",
+   "name": "Rohan Davey",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2014-seahawks-9:0",
+   "name": "Russell Wilson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2011-patriots-9:2",
+   "name": "Ryan Mallett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-18-2010-giants-9:1",
+   "name": "Sage Rosenfels",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2017-vikings-9:1",
+   "name": "Sam Bradford",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1411",
+   "name": "Sam Darnold",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2023-49ers-9:1",
+   "name": "Sam Darnold",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:459",
+   "name": "Sam Ehlinger",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-11-2022-colts-9:2",
+   "name": "Sam Ehlinger",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:402",
+   "name": "Sam Howell",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-08-1986-broncos-1:38",
+   "name": "Scott Stankavage",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2014-packers-9:2",
+   "name": "Scott Tolzien",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-2015-packers-9:1",
+   "name": "Scott Tolzien",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2011-49ers-9:2",
+   "name": "Scott Tolzien",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2012-49ers-9:2",
+   "name": "Scott Tolzien",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-13-2021-chiefs-9:2",
+   "name": "Shane Buechele",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-00-1975-cardinals-3:40",
+   "name": "Shawn Halloran",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1625",
+   "name": "Shedeur Sanders",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:937",
+   "name": "Spencer Rattler",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1255",
+   "name": "Stetson Bennett",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1996-packers-2:34",
+   "name": "Steve Bono",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-01-1998-falcons-9:1",
+   "name": "Steve DeBerg",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-27-1979-buccaneers-3:36",
+   "name": "Steve DeBerg",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1999-titans-0:33",
+   "name": "Steve McNair",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1999-titans-9:0",
+   "name": "Steve McNair",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-1989-49ers-3:38",
+   "name": "Steve Young",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "main:primary:1148",
+   "name": "Tanner McKee",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-26-2014-seahawks-9:1",
+   "name": "Tarvaris Jackson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1626",
+   "name": "Taylen Green",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-17-2017-saints-9:2",
+   "name": "Taysom Hill",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-2017-vikings-9:2",
+   "name": "Teddy Bridgewater",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-1975-steelers-1:34",
+   "name": "Terry Bradshaw",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-22-1975-steelers-1:35",
+   "name": "Terry Hanratty",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-25-2003-49ers-0:38",
+   "name": "Tim Rattay",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-15-1998-vikings-9:2",
+   "name": "Todd Bouman",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-16-2001-patriots-0:37",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2001-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2003-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2007-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2011-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2014-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2016-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "team:h-16-2017-patriots-9:0",
+   "name": "Tom Brady",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks",
+    "https://www.pro-football-reference.com/players/B/BradTo00.htm"
+   ],
+   "note": "tier A high: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:882",
+   "name": "Tommy DeVito",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-01-1998-falcons-9:2",
+   "name": "Tony Graziani",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-fetched / re-searched 2026-10-08"
+  },
+  {
+   "id": "team:h-07-2014-cowboys-9:0",
+   "name": "Tony Romo",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:669",
+   "name": "Trevor Lawrence",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1306",
+   "name": "Trey Lance",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:89",
+   "name": "Tua Tagovailoa",
+   "position": "QB",
+   "hand": "Left",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tua_Tagovailoa",
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier A high: lead re-read the source 2026-10-08"
+  },
+  {
+   "id": "team:h-06-1988-bengals-1:37",
+   "name": "Turk Schonert",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1256",
+   "name": "Ty Simpson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:138",
+   "name": "Tyler Huntley",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:936",
+   "name": "Tyler Shough",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://www.ea.com/es/games/madden-nfl/ratings/player-ratings/tyler-shough/14788"
+   ],
+   "note": "tier A medium: swarm quote with URL; not re-fetched"
+  },
+  {
+   "id": "main:primary:566",
+   "name": "Tyrod Taylor",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-02-2012-ravens-9:1",
+   "name": "Tyrod Taylor",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:300",
+   "name": "Tyson Bagent",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-27-1979-buccaneers-3:37",
+   "name": "Vinny Testaverde",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-28-1979-oilers-2:34",
+   "name": "Warren Moon",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1199",
+   "name": "Will Howard",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:938",
+   "name": "Zach Wilson",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "team:h-10-1966-packers-3:36",
+   "name": "Zeke Bratkowski",
+   "position": "QB",
+   "hand": "Right",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_left-handed_quarterbacks"
+   ],
+   "note": "tier B medium: absent from Wikipedia's complete 'List of left-handed quarterbacks' (fetched 2026-10-08)"
+  },
+  {
+   "id": "main:primary:1196",
+   "name": "Cameron Johnston",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "main:primary:136",
+   "name": "Ryan Eckley",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "main:primary:456",
+   "name": "Jeremy Crawshaw",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-07-1977-cowboys-3:32",
+   "name": "Danny White",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:35",
+   "name": "Jerrel Wilson",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-13-1969-chiefs-4:36",
+   "name": "Jim McCann",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-16-2001-patriots-0:36",
+   "name": "Lee Johnson",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-17-1991-saints-4:31",
+   "name": "Benny Ricardo",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-19-1968-jets-4:36",
+   "name": "Curley Johnson",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-22-1975-steelers-1:33",
+   "name": "Bobby Walden",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-23-1999-rams-2:35",
+   "name": "Rick Tuten",
+   "position": "P",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  },
+  {
+   "id": "team:h-30-1986-browns-1:28",
+   "name": "Matt Bahr",
+   "position": "K",
+   "hand": "Right",
+   "sources": [
+    "Noah 2026-10-08"
+   ],
+   "basis": "noah_default_right",
+   "decision_source": "Noah 2026-10-08",
+   "note": "Default Right by Noah; estimate, not sourced footedness."
+  }
+ ]
+}

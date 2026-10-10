@@ -69,9 +69,11 @@ def compose(retail, plan):
     r62 = mb._validated_r62_plan_options(plan)
     if plan.momentum or plan.momentum_collisions:
         plan = replace(plan, accel_ramp=False)
+    pack_groups = mb.plan_playbook_packs(plan.playbook_packs)
     tree = ast.parse(inspect.getsource(mb._build))
     env = dict(plan=plan, tt=tt, source=DISC, progress=lambda *_: None,
-               uniform_choice_mode=mb.uniform_choice_mode)
+               uniform_choice_mode=mb.uniform_choice_mode,
+               complete_offense_packs=pack_groups[0])
     kwargs_node = next(n.value for n in ast.walk(tree) if isinstance(n, ast.AnnAssign)
                        and isinstance(n.target, ast.Name) and n.target.id == 'kwargs')
     first = _expression(kwargs_node, env)
@@ -103,7 +105,7 @@ def compose(retail, plan):
     if plan.position_pools:
         payload = pools.apply(payload, roster_has_olb=False)[0]
         passes.append('pools_final')
-    pairs = mb._preview_play_intents(DISC, list(plan.playbook_packs)) if (
+    pairs = mb._preview_play_intents(DISC, [path for group in pack_groups for path in group]) if (
         plan.read_option_runtime or plan.qb_spy) else []
     read_table, read_receipt = tt.read_option_patch.compile_intent_table(pairs) if plan.read_option_runtime else (None, None)
     spy_table, spy_receipt = tt.qb_spy_patch.compile_intent_table(pairs) if plan.qb_spy else (None, None)

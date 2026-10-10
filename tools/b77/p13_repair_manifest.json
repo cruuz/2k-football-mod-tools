@@ -1,0 +1,696 @@
+{
+ "schema": "b77.p13.play-execution-manifest.v1",
+ "source": "SOFTDRINK 2K28 v0.5 (sha256 5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f) PACK0 PLAY entries",
+ "books": {
+  "307": {
+   "book": "ARZ",
+   "before_sha256": "45ddb7c5057116e46a5196a9c446f3c34ce06d3a1ca7b597ecd24d498e003173",
+   "after_sha256": "41a19be2807549acd494a4ebd66c9abea617d39ef3f0b360d67c007da0155acf",
+   "plays": 67,
+   "slots": 73,
+   "appended_chains": 5,
+   "old_node_count": 2913,
+   "new_node_count": 2929
+  },
+  "308": {
+   "book": "ATL",
+   "before_sha256": "15362413a563a01e1189bd230e5e8685add6f673d76134197c2c659041de5a3e",
+   "after_sha256": "6a6f2ea5dfed92982c0d17dea975d796d802dbcd13e40b5a83f9dae2fae5c848",
+   "plays": 56,
+   "slots": 127,
+   "appended_chains": 6,
+   "old_node_count": 2885,
+   "new_node_count": 2904
+  },
+  "309": {
+   "book": "BAL",
+   "before_sha256": "db8ba1dade1831a40347da280114d3e3c965f1bee354f2f0b53ea8838ca7e7d2",
+   "after_sha256": "d09e9741044223b3ea2bde8183529e8db6efb51599251aa55611ac69c1496073",
+   "plays": 47,
+   "slots": 84,
+   "appended_chains": 8,
+   "old_node_count": 2854,
+   "new_node_count": 2878
+  },
+  "310": {
+   "book": "BUF",
+   "before_sha256": "b406361c0ed419770bff391785bd207395996ffbc4b618736601709e76f2a0d9",
+   "after_sha256": "9e3b63309c10f8c440e5d7d20045a082f5d3764565e427e4470af4416c37c801",
+   "plays": 50,
+   "slots": 116,
+   "appended_chains": 3,
+   "old_node_count": 2852,
+   "new_node_count": 2862
+  },
+  "311": {
+   "book": "CAR",
+   "before_sha256": "93b277a2dbbe4402858b09f372c684c65e50f2cef6c44a5a4e973be51e315c67",
+   "after_sha256": "2724bffc85f583e0d2233782df92bef7e41400de8680d11ab5c7f547f41e243f",
+   "plays": 46,
+   "slots": 70,
+   "appended_chains": 4,
+   "old_node_count": 2879,
+   "new_node_count": 2892
+  },
+  "312": {
+   "book": "CHI",
+   "before_sha256": "cfc873ae19635c19daa1c135cd491ca1dbdfa415088158d7cbcf0486d52666be",
+   "after_sha256": "43d735c76e8722755e30cdfbc38a8987bb8ec2f698da5a49eb2879b7c0217d83",
+   "plays": 39,
+   "slots": 71,
+   "appended_chains": 3,
+   "old_node_count": 2924,
+   "new_node_count": 2934
+  },
+  "313": {
+   "book": "CIN",
+   "before_sha256": "a5def4b187b6e68e833fa5640b7848b9055aa81e64e84641e3ce96f57213e600",
+   "after_sha256": "7c2ae2c1ed1e4d255a125826ba4e2cd581f65c57e51204ebaf2eb13e279dbdca",
+   "plays": 81,
+   "slots": 121,
+   "appended_chains": 3,
+   "old_node_count": 2859,
+   "new_node_count": 2869
+  },
+  "314": {
+   "book": "CLE",
+   "before_sha256": "9337e6d4647637b77e4ec722238ca180d1b15dc9ed42aa5708cc388b9984bb66",
+   "after_sha256": "6c00ccae979b69f21de53425a1f5ceffcb3e83c4ad0c026c42f70352f8660f30",
+   "plays": 63,
+   "slots": 79,
+   "appended_chains": 8,
+   "old_node_count": 2770,
+   "new_node_count": 2797
+  },
+  "315": {
+   "book": "DAL",
+   "before_sha256": "317a2d34254cc9dcb61a8955456a9a845249bbf6167ebcba2790954cc49a6751",
+   "after_sha256": "b2d3573d62ad4098b51644fecbf57c4bd3e2be880416f8f883f48e59bcbf7ed7",
+   "plays": 48,
+   "slots": 69,
+   "appended_chains": 8,
+   "old_node_count": 3255,
+   "new_node_count": 3279
+  },
+  "316": {
+   "book": "DEN",
+   "before_sha256": "d22dd185db1279fb9643a67d32ce8569bd89db38fdeb0d322d19bdfac17c59d3",
+   "after_sha256": "7cb42716b2604a13c7265aa90c387efa0a61ef2abf9f5f85b7aa08796ebf5bbb",
+   "plays": 59,
+   "slots": 89,
+   "appended_chains": 5,
+   "old_node_count": 2750,
+   "new_node_count": 2766
+  },
+  "317": {
+   "book": "DET",
+   "before_sha256": "9994380abeaadebf3a63abe7f56f006464a462188198b6b03df25eaafd14d360",
+   "after_sha256": "d0169ef36ed8ef267def380d841d9b25e9a0397449f93d18fdb2f91f76d97cf6",
+   "plays": 40,
+   "slots": 85,
+   "appended_chains": 2,
+   "old_node_count": 2886,
+   "new_node_count": 2893
+  },
+  "318": {
+   "book": "Editor",
+   "before_sha256": "86508469f372528e4487c99067143a0bb5eaa26caa677dca836fb64289be1e06",
+   "after_sha256": "86508469f372528e4487c99067143a0bb5eaa26caa677dca836fb64289be1e06",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 896,
+   "new_node_count": 896
+  },
+  "319": {
+   "book": "GB",
+   "before_sha256": "2fd8d4eca42c034fc17c72f6b3a0f7703f3a7a37c19567f95aaa959236731b5d",
+   "after_sha256": "b4bfad0eb85b150db6bf877ea05668ca93c73c212abfce73decf75d383c12f98",
+   "plays": 63,
+   "slots": 103,
+   "appended_chains": 6,
+   "old_node_count": 2947,
+   "new_node_count": 2966
+  },
+  "320": {
+   "book": "GEN",
+   "before_sha256": "887350dd5fffccd1ee12f50a99740ca8551b02b75610095b7ffaef1268ce2ca5",
+   "after_sha256": "887350dd5fffccd1ee12f50a99740ca8551b02b75610095b7ffaef1268ce2ca5",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2246,
+   "new_node_count": 2246
+  },
+  "321": {
+   "book": "HOU",
+   "before_sha256": "30e68c343b4649a7dc51c1adf51681988831c96be1d69cfedd6a3e1e0f8d38da",
+   "after_sha256": "d44cd3c0bc915b182621535b40a2097d9063ad868b05c62cfbaf792581f8b2d3",
+   "plays": 49,
+   "slots": 71,
+   "appended_chains": 5,
+   "old_node_count": 2913,
+   "new_node_count": 2929
+  },
+  "322": {
+   "book": "IND",
+   "before_sha256": "6ee9e0dce19a1c2a523c9a0c8b33dc6e657392c229a5edae47b1b2890733ea52",
+   "after_sha256": "9578f7563b2ab9e0f1079814d2058fc409bcf2756a536d7b43d456497fbc2187",
+   "plays": 60,
+   "slots": 62,
+   "appended_chains": 3,
+   "old_node_count": 2839,
+   "new_node_count": 2848
+  },
+  "323": {
+   "book": "JAX",
+   "before_sha256": "8bd50970111c5e2b0be4bc3fe7550ee43c3bad6134f7064d8ee61cdb322fc79b",
+   "after_sha256": "267ced2de001f161d55ff13bf3fe3e2ecfadb7f5e87f354b48919865c74ae6ec",
+   "plays": 58,
+   "slots": 69,
+   "appended_chains": 6,
+   "old_node_count": 2907,
+   "new_node_count": 2926
+  },
+  "324": {
+   "book": "KC",
+   "before_sha256": "f9533a123c4bdfd01a32e08e56822c92b71dd97b74a0402d982eedc27dd43edf",
+   "after_sha256": "ab3ad20eaf0d72adc029642c05a3052b7d43f435ae2b5a7a9d10765abf77e26f",
+   "plays": 75,
+   "slots": 138,
+   "appended_chains": 3,
+   "old_node_count": 2754,
+   "new_node_count": 2764
+  },
+  "325": {
+   "book": "MIA",
+   "before_sha256": "5d2b6456f1a6b18bb8825be783bcf2667cea30e99799fc1d3e6403a7f87d797b",
+   "after_sha256": "e2c1a1a5b2cdb11bf4331eabfeacf13d33e9a92b8350bfcddbb10ae09649117f",
+   "plays": 62,
+   "slots": 151,
+   "appended_chains": 7,
+   "old_node_count": 3205,
+   "new_node_count": 3227
+  },
+  "326": {
+   "book": "MIN",
+   "before_sha256": "4375f2bde29af541c8647108a5ef582549a83ffb43e32c9985a5cab0e51634b9",
+   "after_sha256": "fe06ac8af7cbe9ea7cc443a179a998265bf74864e7291cc7aec009b60677f7ff",
+   "plays": 53,
+   "slots": 94,
+   "appended_chains": 5,
+   "old_node_count": 3046,
+   "new_node_count": 3062
+  },
+  "327": {
+   "book": "NE",
+   "before_sha256": "273046a3ae6b84353ae152efaf820a57e5ce01980dd752bfbe8c5554d69fa9e9",
+   "after_sha256": "a440919c582108ef1fe38bf4bac1ca2a2b2f7cbab8c849ac029ba388c07aa397",
+   "plays": 51,
+   "slots": 66,
+   "appended_chains": 6,
+   "old_node_count": 2854,
+   "new_node_count": 2873
+  },
+  "328": {
+   "book": "NO",
+   "before_sha256": "fb3b658febf2e450d5f7d6cdb4b470fb47506c67aa8a90f96bd41cbda4e4c2ce",
+   "after_sha256": "296c51abdb4385b9918480709bbcdb70806725da7b8368473a1f50b76a26596e",
+   "plays": 65,
+   "slots": 114,
+   "appended_chains": 5,
+   "old_node_count": 2859,
+   "new_node_count": 2875
+  },
+  "329": {
+   "book": "NYG",
+   "before_sha256": "c71eb8d1fed6f0378771f4b95d6e47170f20ce7b85bd040e291b4145864b1dfb",
+   "after_sha256": "c5aae8135129d272a20d2778146f16deff61b38e76bad6c302a376a70eefb80a",
+   "plays": 47,
+   "slots": 91,
+   "appended_chains": 7,
+   "old_node_count": 2954,
+   "new_node_count": 2976
+  },
+  "330": {
+   "book": "NYJ",
+   "before_sha256": "92dd4ac3a9e2bab4ed6650de27b3343fdd12af97f079b4d6e3314f0938113849",
+   "after_sha256": "8851a69ca68c15da05b005462471374d316106ff0d59282ad234e131c52b4ac3",
+   "plays": 55,
+   "slots": 114,
+   "appended_chains": 5,
+   "old_node_count": 3234,
+   "new_node_count": 3250
+  },
+  "331": {
+   "book": "OAK",
+   "before_sha256": "b3b84f2b2e36ddd69e9ee84060b0b208f4559559509d48fbeda2e488989af7b9",
+   "after_sha256": "d6d1c9a8944133050c11bfa8d3b873aa4832c5e2f3bd91ffdb91f9e7c75db157",
+   "plays": 64,
+   "slots": 116,
+   "appended_chains": 6,
+   "old_node_count": 2855,
+   "new_node_count": 2874
+  },
+  "332": {
+   "book": "PHI",
+   "before_sha256": "9be0bf63de60cbc5aa961cae442d9c05a0a94c25912a8ffaf73327716e8dffb4",
+   "after_sha256": "6cc45ecf8b7077b8ed8f6159c611bc133464f3ae3b8951bb1b0969a9ee95e575",
+   "plays": 48,
+   "slots": 95,
+   "appended_chains": 6,
+   "old_node_count": 2962,
+   "new_node_count": 2981
+  },
+  "333": {
+   "book": "PIT",
+   "before_sha256": "ed01ebca7bd57809c01e843a826c1a59dce0ce0317b9cabe9b194305970dcc2f",
+   "after_sha256": "893a9970f755a49bda6d78ecf6fb570756b377188330e7e21069678425e491f5",
+   "plays": 54,
+   "slots": 88,
+   "appended_chains": 6,
+   "old_node_count": 3205,
+   "new_node_count": 3224
+  },
+  "334": {
+   "book": "PRACTICE",
+   "before_sha256": "a48181961c764e07ab81fe957130e896f2da1534a74eafbd4602b0c1c414e56c",
+   "after_sha256": "a48181961c764e07ab81fe957130e896f2da1534a74eafbd4602b0c1c414e56c",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 706,
+   "new_node_count": 706
+  },
+  "335": {
+   "book": "reference",
+   "before_sha256": "0373372201b25db53b3507ba1f9d228dbd72696d9d8235b381a548cf505ffc8b",
+   "after_sha256": "0373372201b25db53b3507ba1f9d228dbd72696d9d8235b381a548cf505ffc8b",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2497,
+   "new_node_count": 2497
+  },
+  "336": {
+   "book": "SD",
+   "before_sha256": "739ba40caa808df142c24a177b4b04c78ff699f099a322283e41282ee4c384ac",
+   "after_sha256": "3a271d1753b29a10982fae5f5b54e7d20fd5978bd55b8e4318ce0330bbc1e488",
+   "plays": 65,
+   "slots": 137,
+   "appended_chains": 7,
+   "old_node_count": 3269,
+   "new_node_count": 3291
+  },
+  "337": {
+   "book": "SEA",
+   "before_sha256": "e6ce5a6470bd18c1302341949cb6fc9fb23abf16d5a00be01e455941465b9a05",
+   "after_sha256": "0d5ca2a38b323ca98007a96ee448339d927728f9a48fb17d3df31f4d01dce463",
+   "plays": 55,
+   "slots": 101,
+   "appended_chains": 7,
+   "old_node_count": 2917,
+   "new_node_count": 2939
+  },
+  "338": {
+   "book": "SF",
+   "before_sha256": "d889df7d12d94eab040db1f0c8533111553bca087d23ae614259a33add3c6c20",
+   "after_sha256": "6e3f2e28f7bac81da40a2daab0ad08ee44755a716366d4f04c2b1843edc91a98",
+   "plays": 63,
+   "slots": 141,
+   "appended_chains": 7,
+   "old_node_count": 2912,
+   "new_node_count": 2934
+  },
+  "339": {
+   "book": "STL",
+   "before_sha256": "0e168444ca99014843fac1e3528a1c0cbf0007d169ed8ac0f0e50ef07b37b043",
+   "after_sha256": "29e170c54cca59a806b9ffc81f15c7190593c307b0d940504195c91288a4d337",
+   "plays": 32,
+   "slots": 48,
+   "appended_chains": 5,
+   "old_node_count": 2901,
+   "new_node_count": 2917
+  },
+  "340": {
+   "book": "TB",
+   "before_sha256": "788bbb88b2d5a20357aad648efc6ce96bc77d7ac994356c03d2654d68ef46978",
+   "after_sha256": "862bb30fb020ba198258c591f4dbd8252fcf84c8465d00dfc24cb7faebb1bf04",
+   "plays": 49,
+   "slots": 83,
+   "appended_chains": 5,
+   "old_node_count": 2844,
+   "new_node_count": 2860
+  },
+  "341": {
+   "book": "TEN",
+   "before_sha256": "11b5872902b7e4259fb3464228b8b1780e682bfe8a26e8b81bf99894bf2979e7",
+   "after_sha256": "2c532ce8b06bb419514943fd9b8bd6147b8bdc43c5d1f9515401f94217ba6c0d",
+   "plays": 62,
+   "slots": 100,
+   "appended_chains": 4,
+   "old_node_count": 2786,
+   "new_node_count": 2799
+  },
+  "342": {
+   "book": "WAS",
+   "before_sha256": "96b162a3d9fb68c9758347a5cefa5448f46405d15e48703a471c89f782663890",
+   "after_sha256": "72010cb204a06c09b5f75b1ee54e59270da11dda20405fee3980e4343c3f1154",
+   "plays": 61,
+   "slots": 103,
+   "appended_chains": 5,
+   "old_node_count": 2940,
+   "new_node_count": 2956
+  },
+  "343": {
+   "book": "WCO",
+   "before_sha256": "48e8565ec24b9ff4e34ee44c573c2f5f21846bdb3e85bc0f12107e051de5ad8c",
+   "after_sha256": "48e8565ec24b9ff4e34ee44c573c2f5f21846bdb3e85bc0f12107e051de5ad8c",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2324,
+   "new_node_count": 2324
+  },
+  "4418": {
+   "book": "ARZ",
+   "before_sha256": "cde32bc0f1dcd7d9b382a5d7c8c0fc52b53b80ae3797d39ab09a207ede6dfc3d",
+   "after_sha256": "cde32bc0f1dcd7d9b382a5d7c8c0fc52b53b80ae3797d39ab09a207ede6dfc3d",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2655,
+   "new_node_count": 2655
+  },
+  "4419": {
+   "book": "ATL",
+   "before_sha256": "cb477dcfa09e593b430b8f7111b476624f1a813055f35209b8ffa6a171800316",
+   "after_sha256": "cb477dcfa09e593b430b8f7111b476624f1a813055f35209b8ffa6a171800316",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2438,
+   "new_node_count": 2438
+  },
+  "4420": {
+   "book": "BAL",
+   "before_sha256": "2eddc84274cbeb9d059b4256c2c6eb15968dc6b246202941ece0cc059f3acdf4",
+   "after_sha256": "2eddc84274cbeb9d059b4256c2c6eb15968dc6b246202941ece0cc059f3acdf4",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2496,
+   "new_node_count": 2496
+  },
+  "4421": {
+   "book": "BUF",
+   "before_sha256": "96b4fa1de9f732ee9892a5be60ef4030cee2d71dece80fe1e6818a352b83241a",
+   "after_sha256": "96b4fa1de9f732ee9892a5be60ef4030cee2d71dece80fe1e6818a352b83241a",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2710,
+   "new_node_count": 2710
+  },
+  "4422": {
+   "book": "CAR",
+   "before_sha256": "febb3fa81fec138eacf8eb5f6625086856508c4ceb521e8bb36a96efc4982ea7",
+   "after_sha256": "febb3fa81fec138eacf8eb5f6625086856508c4ceb521e8bb36a96efc4982ea7",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2659,
+   "new_node_count": 2659
+  },
+  "4423": {
+   "book": "CHI",
+   "before_sha256": "c99b41739f17f7a422be8be6fcb56b55b92a29cee58bf67c9eba33e3122c261d",
+   "after_sha256": "c99b41739f17f7a422be8be6fcb56b55b92a29cee58bf67c9eba33e3122c261d",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2739,
+   "new_node_count": 2739
+  },
+  "4424": {
+   "book": "CIN",
+   "before_sha256": "e9851eb2c482f93fce6a265096f79b86462b5d3617f5c0bf6f4401d1fd4ba918",
+   "after_sha256": "e9851eb2c482f93fce6a265096f79b86462b5d3617f5c0bf6f4401d1fd4ba918",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2694,
+   "new_node_count": 2694
+  },
+  "4425": {
+   "book": "CLE",
+   "before_sha256": "97571f07edac27027e0fcf58f13fd8c756c31dee282c4fc79eb0e9a51090ff3d",
+   "after_sha256": "97571f07edac27027e0fcf58f13fd8c756c31dee282c4fc79eb0e9a51090ff3d",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2685,
+   "new_node_count": 2685
+  },
+  "4426": {
+   "book": "DAL",
+   "before_sha256": "500147f12105ac8379039c0e1b8eec640f6af1b2fd433b787c7d731350a140cb",
+   "after_sha256": "500147f12105ac8379039c0e1b8eec640f6af1b2fd433b787c7d731350a140cb",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2674,
+   "new_node_count": 2674
+  },
+  "4427": {
+   "book": "DEN",
+   "before_sha256": "f8d2538c4792afd140613037d34dd41c939e0bdd1d445a76ddff7ee8f49faeac",
+   "after_sha256": "f8d2538c4792afd140613037d34dd41c939e0bdd1d445a76ddff7ee8f49faeac",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2649,
+   "new_node_count": 2649
+  },
+  "4428": {
+   "book": "DET",
+   "before_sha256": "6aa4e981fe98287faa5854b9730828971ebb0c2f9238b05c9c3b8a2977b30c78",
+   "after_sha256": "6aa4e981fe98287faa5854b9730828971ebb0c2f9238b05c9c3b8a2977b30c78",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2504,
+   "new_node_count": 2504
+  },
+  "4429": {
+   "book": "GB",
+   "before_sha256": "0fe0492dbe3af8d49d8bb221c7bc02be895cdcae32e567bd7bc7b75c7eed73d3",
+   "after_sha256": "0fe0492dbe3af8d49d8bb221c7bc02be895cdcae32e567bd7bc7b75c7eed73d3",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2578,
+   "new_node_count": 2578
+  },
+  "4430": {
+   "book": "HOU",
+   "before_sha256": "cc4c7673161940d6bfe8601c2e0c54b3b24e68d68a9c9f193920e96650937fe0",
+   "after_sha256": "cc4c7673161940d6bfe8601c2e0c54b3b24e68d68a9c9f193920e96650937fe0",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2725,
+   "new_node_count": 2725
+  },
+  "4431": {
+   "book": "IND",
+   "before_sha256": "4d3fdad413d894772ca6c7c1219591ea534f1b85ffae07068d086de1f8cbd0b5",
+   "after_sha256": "4d3fdad413d894772ca6c7c1219591ea534f1b85ffae07068d086de1f8cbd0b5",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2646,
+   "new_node_count": 2646
+  },
+  "4432": {
+   "book": "JAX",
+   "before_sha256": "f7bf1d7e63b1164fecdc49a8f256a85e15ce76805fee961b8fc2a9c0a37006f0",
+   "after_sha256": "f7bf1d7e63b1164fecdc49a8f256a85e15ce76805fee961b8fc2a9c0a37006f0",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2607,
+   "new_node_count": 2607
+  },
+  "4433": {
+   "book": "KC",
+   "before_sha256": "8c9623dcc92be602dd4ebd6affc7773ac4f52280f3792dbe979f936677d34569",
+   "after_sha256": "8c9623dcc92be602dd4ebd6affc7773ac4f52280f3792dbe979f936677d34569",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2718,
+   "new_node_count": 2718
+  },
+  "4434": {
+   "book": "MIA",
+   "before_sha256": "369781bbec578f9dac7d0d76a14ccf065cd40cf90cc3240efb1deffc6433ee18",
+   "after_sha256": "369781bbec578f9dac7d0d76a14ccf065cd40cf90cc3240efb1deffc6433ee18",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2722,
+   "new_node_count": 2722
+  },
+  "4435": {
+   "book": "MIN",
+   "before_sha256": "efbcffa1e696cc6b4cdc8259a3bdffc14277cef879f2c37f9363f42384ed456f",
+   "after_sha256": "efbcffa1e696cc6b4cdc8259a3bdffc14277cef879f2c37f9363f42384ed456f",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2472,
+   "new_node_count": 2472
+  },
+  "4436": {
+   "book": "NE",
+   "before_sha256": "115f5a8a398fa62da653a8658c312575fdbc4a93feca7ec9c3a73bbaa6bd0fce",
+   "after_sha256": "115f5a8a398fa62da653a8658c312575fdbc4a93feca7ec9c3a73bbaa6bd0fce",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2615,
+   "new_node_count": 2615
+  },
+  "4437": {
+   "book": "NO",
+   "before_sha256": "eba2aa75ddbfd0fd9f83f16462ba37eeeb0751c8c7de05179d10ee62de1f0f62",
+   "after_sha256": "eba2aa75ddbfd0fd9f83f16462ba37eeeb0751c8c7de05179d10ee62de1f0f62",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2730,
+   "new_node_count": 2730
+  },
+  "4438": {
+   "book": "NYG",
+   "before_sha256": "de16572c5e1e5ff38fe0bd2d91916964be72b597db1ae948fb93f3a6e62aeafd",
+   "after_sha256": "de16572c5e1e5ff38fe0bd2d91916964be72b597db1ae948fb93f3a6e62aeafd",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2609,
+   "new_node_count": 2609
+  },
+  "4439": {
+   "book": "NYJ",
+   "before_sha256": "22158b188ae62f699eaa029dbeb0c13812dd259fb94675ca357e9119770748c6",
+   "after_sha256": "22158b188ae62f699eaa029dbeb0c13812dd259fb94675ca357e9119770748c6",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2622,
+   "new_node_count": 2622
+  },
+  "4440": {
+   "book": "OAK",
+   "before_sha256": "85a778d75f25c6e5e98276b32507555c70d8f4843d0867884acc4af7a6029265",
+   "after_sha256": "85a778d75f25c6e5e98276b32507555c70d8f4843d0867884acc4af7a6029265",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2617,
+   "new_node_count": 2617
+  },
+  "4441": {
+   "book": "PHI",
+   "before_sha256": "7baa3c2a539ded7705673dbc3e7892bf7013f1e8262cbe596b5c955f064859de",
+   "after_sha256": "7baa3c2a539ded7705673dbc3e7892bf7013f1e8262cbe596b5c955f064859de",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2553,
+   "new_node_count": 2553
+  },
+  "4442": {
+   "book": "PIT",
+   "before_sha256": "c62970887a513f89f9009e418c0823fea4dd5c3b82a36193411188aced48de82",
+   "after_sha256": "c62970887a513f89f9009e418c0823fea4dd5c3b82a36193411188aced48de82",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2706,
+   "new_node_count": 2706
+  },
+  "4443": {
+   "book": "SD",
+   "before_sha256": "4e027c11453c7945a0e69e2238c3e5a1c8dc6556ef60949f7d427f3d5771eeb6",
+   "after_sha256": "4e027c11453c7945a0e69e2238c3e5a1c8dc6556ef60949f7d427f3d5771eeb6",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2716,
+   "new_node_count": 2716
+  },
+  "4444": {
+   "book": "SEA",
+   "before_sha256": "df1d3ce1cdb62baad3463ae5dd56854fbda5093f7cae53c1e6875f66ff023458",
+   "after_sha256": "df1d3ce1cdb62baad3463ae5dd56854fbda5093f7cae53c1e6875f66ff023458",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2632,
+   "new_node_count": 2632
+  },
+  "4445": {
+   "book": "SF",
+   "before_sha256": "e10309ee625b3aeba6a72a000e3ab50bc33e7bf2aeba77cf95c2924a1c51edad",
+   "after_sha256": "e10309ee625b3aeba6a72a000e3ab50bc33e7bf2aeba77cf95c2924a1c51edad",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2403,
+   "new_node_count": 2403
+  },
+  "4446": {
+   "book": "STL",
+   "before_sha256": "ecb43438be136e77d0f18284fe4365309ffa9c58a1891b48717392773b857189",
+   "after_sha256": "ecb43438be136e77d0f18284fe4365309ffa9c58a1891b48717392773b857189",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2705,
+   "new_node_count": 2705
+  },
+  "4447": {
+   "book": "TB",
+   "before_sha256": "058232e00111c5568a19a8f51a2da28485bd25a98263b7c105fc03012f395236",
+   "after_sha256": "058232e00111c5568a19a8f51a2da28485bd25a98263b7c105fc03012f395236",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2395,
+   "new_node_count": 2395
+  },
+  "4448": {
+   "book": "TEN",
+   "before_sha256": "4a3372505d1d449df78e1bd16ad101a9e30e2320603ee7c9329e8067f33cb67f",
+   "after_sha256": "4a3372505d1d449df78e1bd16ad101a9e30e2320603ee7c9329e8067f33cb67f",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2616,
+   "new_node_count": 2616
+  },
+  "4449": {
+   "book": "WAS",
+   "before_sha256": "ffda5cfd1d8ebe4f8522038b3b86dbffe626baf7f3fbec2eb8ce8d6c14c96206",
+   "after_sha256": "ffda5cfd1d8ebe4f8522038b3b86dbffe626baf7f3fbec2eb8ce8d6c14c96206",
+   "plays": 0,
+   "slots": 0,
+   "appended_chains": 0,
+   "old_node_count": 2645,
+   "new_node_count": 2645
+  }
+ }
+}

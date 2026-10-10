@@ -26,6 +26,9 @@ SITE_VA = 0xA867F4
 TABLE_VA, TABLE_SIZE = 0xA867F0, 60
 TABLE_SHA256 = "311636b9459867b8fb1fb57be66e6bee17660119754995f678f8f9e1f6642520"
 BEFORE, AFTER = struct.pack("<f", 0.8), struct.pack("<f", 1.0)
+# b77-i2: the rain row inside TABLE and its retail fog distances (3000 cm, 6000 cm); see _inspect.
+RAIN_ROW_VA = 0xA86804
+RAIN_DISTANCES_RETAIL = struct.pack("<2f", 3000.0, 6000.0)
 GUARDS = (
     (0x85EF0, 160, "9a6c2b318862584e4831c20c289a3686cf206dc63df001a3cc57bf0758944777"),
     (0x86190, 35, "a2dd6d42a842bb0da56a1acb2da8b76580acd0dd73b4769bb5a0fa15922374ae"),
@@ -43,6 +46,15 @@ def _inspect(payload):
     if value not in (BEFORE, AFTER):
         raise ValueError("Foreign weather haze coefficient; rebuild from a supported base")
     table[4:8] = BEFORE
+    # b77-i2: the rain row of this table (0xA86804, 20 bytes) carries the rain fog start and end distances (+8, +16), which
+    # nfl2k5_modern_color owns since b77 w1 (RAIN_FOG). They are not part of the dry-haze response, so they are compared
+    # as retail here; every other byte of the rain row (density flags and colour) must still be retail.
+    rain = RAIN_ROW_VA - TABLE_VA
+    start, end = struct.unpack_from("<2f", table, rain + 8)
+    if bytes(table[rain + 8:rain + 16]) != RAIN_DISTANCES_RETAIL:
+        if not (0.0 < start < end <= 100000.0):
+            raise ValueError("Foreign rain fog distances inside the weather haze table")
+        table[rain + 8:rain + 16] = RAIN_DISTANCES_RETAIL
     if hashlib.sha256(table).hexdigest() != TABLE_SHA256:
         raise ValueError("Weather haze table changed outside the owned coefficient")
     if image.section(SITE_VA).name != ".data":

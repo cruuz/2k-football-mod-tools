@@ -1,0 +1,3495 @@
+{
+ "schema": "nfl2k5_uniform_alternates_2026/v1",
+ "note": "u3b recipes (CLE DAL DEN DET GB HOU IND): 2026 alternates in free uniform style slots (data/nfl2k5_uniform_slots_2026.json). Every set starts from the team's shipped 2026 kit (the donor) and applies the ordered ops of tools/b77/u3b_alternates.py (remix, tint, paint) to each texture; colours are measured from the donor art and the club photos named in each recipe's sources, boxes are native texture pixels. Applied to the disc by tools/b77/u3b_repair.py.",
+ "alternates": {
+  "CLE:3": {
+   "team": "CLE",
+   "code": "30",
+   "style": 3,
+   "set": "Alpha Dawg (all-brown)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "30H0"
+    },
+    "A": {
+     "donor": "30H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF2F1C0A",
+    "turtleneck": "FF3A2208"
+   },
+   "card_facemask": "2F1C0A",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the Alpha Dawg helmet carries no number on the back (clevelandbrowns.com helmet photos); the 2026 Browns helmets carry none",
+   "socks": {
+    "colour": "#3A2208",
+    "why": "brown socks with no stripes (Wikipedia, alternate brown)"
+   },
+   "splayer_socks": "#3A2208",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#3A2208"
+     ],
+     "to": [
+      "#3A2208",
+      "#3A2208",
+      "#3A2208"
+     ],
+     "tolerance": 0.2,
+     "boxes": [
+      [
+       50,
+       42,
+       88,
+       84
+      ],
+      [
+       238,
+       42,
+       274,
+       84
+      ],
+      [
+       284,
+       70,
+       310,
+       116
+      ],
+      [
+       470,
+       70,
+       496,
+       116
+      ]
+     ],
+     "why": "no sleeve stripe tips on the shoulders (alternate brown has no striping)",
+     "moved": [
+      0,
+      1
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#311D00"
+     ],
+     "to": [
+      "#3A2208",
+      "#3A2208",
+      "#3A2208"
+     ],
+     "tolerance": 0.25,
+     "boxes": [
+      [
+       0,
+       8,
+       56,
+       62
+      ],
+      [
+       56,
+       16,
+       86,
+       62
+      ],
+      [
+       86,
+       8,
+       128,
+       62
+      ],
+      [
+       0,
+       70,
+       44,
+       128
+      ],
+      [
+       44,
+       79,
+       86,
+       128
+      ],
+      [
+       86,
+       70,
+       128,
+       128
+      ]
+     ],
+     "why": "plain brown sleeves, the orange swooshes stay",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#311D00"
+     ],
+     "to": [
+      "#3A2208",
+      "#3A2208",
+      "#3A2208"
+     ],
+     "tolerance": 0.25,
+     "why": "brown pants with no stripes",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "tint",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "colour": "#FF3C00",
+     "why": "orange numbers"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02"
+     ],
+     "from": [
+      "#401F00",
+      "#E8E8EA",
+      "#FF3D00"
+     ],
+     "to": [
+      "#FF3C00",
+      "#2A1A0B",
+      "#2A1A0E"
+     ],
+     "tolerance": 0.2,
+     "boxes": [
+      [
+       140,
+       20,
+       184,
+       232
+      ]
+     ],
+     "why": "stripe: orange, brown, orange (clevelandbrowns.com July 23 2025)",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02"
+     ],
+     "from": [
+      "#FF3D00",
+      "#E8E8EA",
+      "#000000"
+     ],
+     "to": [
+      "#2A1A0E",
+      "#E8E8EA",
+      "#000000"
+     ],
+     "tolerance": 0.1,
+     "exclude": [
+      [
+       140,
+       20,
+       184,
+       232
+      ]
+     ],
+     "why": "matte brown shell",
+     "moved": [
+      0
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet00"
+     ],
+     "from": [
+      "#401F00",
+      "#ECECED",
+      "#FF3D00"
+     ],
+     "to": [
+      "#FF3C00",
+      "#2A1A0B",
+      "#2A1A0E"
+     ],
+     "tolerance": 0.2,
+     "boxes": [
+      [
+       144,
+       20,
+       184,
+       232
+      ]
+     ],
+     "why": "stripe on shell A",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet00"
+     ],
+     "from": [
+      "#FF3D00",
+      "#ECECED",
+      "#000000"
+     ],
+     "to": [
+      "#2A1A0E",
+      "#ECECED",
+      "#000000"
+     ],
+     "tolerance": 0.1,
+     "exclude": [
+      [
+       144,
+       20,
+       184,
+       232
+      ]
+     ],
+     "why": "matte brown shell A",
+     "moved": [
+      0
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#311D00"
+     ],
+     "to": [
+      "#4A2D0A",
+      "#4A2D0A",
+      "#4A2D0A"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas: brown pants",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#311D00"
+     ],
+     "to": [
+      "#4A2D0A",
+      "#4A2D0A",
+      "#4A2D0A"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas: plain sleeves",
+     "moved": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "boxes": [
+      [
+       136,
+       12,
+       162,
+       36
+      ],
+      [
+       198,
+       12,
+       224,
+       36
+      ],
+      [
+       214,
+       26,
+       236,
+       50
+      ]
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FF3C00",
+      "#4A2D0A"
+     ],
+     "to": [
+      "#4A2D0A",
+      "#4A2D0A",
+      "#4A2D0A"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas: no shoulder stripe tips",
+     "moved": [
+      0,
+      1
+     ]
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#FF3C00",
+     "to": "#2A1A0E",
+     "tolerance": 0.25,
+     "why": "sideline atlas: brown shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.clevelandbrowns.com/news/cleveland-browns-announce-alpha-dawg-presented-by-dude-wipes-as-the-new-alternate-helmet-for-the-2025-season",
+     "supports": "July 23 2025: matte all-brown shell, brown middle stripe between two orange stripes, all-brown facemask"
+    },
+    {
+     "url": "https://www.nbcsportsboston.com/nfl/nfl-week-4-uniforms-helmets-jerseys-alternates-2026/805626/",
+     "supports": "Week 4 2026 (Oct 1 vs PIT): brown helmets, brown jerseys, brown pants (alternate)"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Cleveland_Browns",
+     "supports": "alternate brown: orange numbers, no striping on jersey, pants or socks"
+    }
+   ]
+  },
+  "DAL:7": {
+   "team": "DAL",
+   "code": "07",
+   "style": 7,
+   "set": "Arctic Cowboy Color Rush (all-white)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1994,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "07A0",
+     "part_donors": {
+      "sleeve": "07H0"
+     }
+    },
+    "A": {
+     "donor": "07A0",
+     "part_donors": {
+      "sleeve": "07H0"
+     }
+    }
+   },
+   "unif": {
+    "facemask": "FFF2F3F6",
+    "turtleneck": "FFF2F3F6"
+   },
+   "card_facemask": "F2F3F6",
+   "socks": {
+    "colour": "#F4F4F4",
+    "why": "white socks (the 2024 Arctic Cowboy photo)"
+   },
+   "splayer_socks": "#F4F4F4",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#003594",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#002244",
+      "#FFFFFF"
+     ],
+     "tolerance": 0.2,
+     "why": "navy shoulder slashes"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#B8BCBF",
+      "#FFFFFF",
+      "#002244"
+     ],
+     "to": [
+      "#002244",
+      "#002244",
+      "#002244"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.3,
+     "why": "navy sleeve cap with no stripes"
+    },
+    {
+     "op": "star",
+     "components": [
+      "sleeve"
+     ],
+     "stars": [
+      {
+       "c": [
+        62,
+        24
+       ],
+       "R": 18,
+       "r": 0.42,
+       "rot": 0,
+       "outline": 1.4,
+       "fill": "#002244",
+       "line": "#D8DBE0"
+      },
+      {
+       "c": [
+        66,
+        90
+       ],
+       "R": 18,
+       "r": 0.42,
+       "rot": 0,
+       "outline": 1.4,
+       "fill": "#002244",
+       "line": "#D8DBE0"
+      }
+     ],
+     "why": "a star on each sleeve cap (SportsLogos: navy sleeve caps and stars on the shoulders), drawn as the shipped 2026 home sleeve star: navy with a light ring"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#9DB3AE",
+      "#003594",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#002244",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "white pants, navy stripes"
+    },
+    {
+     "op": "tint",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "colour": "#002244",
+     "why": "navy numbers"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "from": [
+      "#949FA3",
+      "#E9E9E9",
+      "#000000"
+     ],
+     "to": [
+      "#F6F6F6",
+      "#E9E9E9",
+      "#000000"
+     ],
+     "tolerance": 0.1,
+     "why": "white shell (silver rebuilt as white; shading and the navy stripes and star stay)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#A4BCB4",
+      "#003594",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#002244",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#FFFFFF",
+      "#003594",
+      "#BCC4D4"
+     ],
+     "to": [
+      "#002244",
+      "#002244",
+      "#002244"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas sleeve cap"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#949FA3",
+     "to": "#F0F0F0",
+     "tolerance": 0.2,
+     "why": "sideline atlas white shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2024/12/09/dallas-cowboys-to-wear-arctic-cowboy-color-rush-uniforms-on-monday-night-football/football/",
+     "supports": "white jerseys with navy sleeve caps and stars on the shoulders, white pants with navy and silver stripes, white helmets with the primary logo, two navy stripes, white facemask; the photo IMG_3278 (white socks, navy numbers, navy pants stripes)"
+    },
+    {
+     "url": "https://www.dallascowboys.com/news/dallas-cowboys-reveal-uniform-schedule-for-2026-season",
+     "supports": "2026 Alternate (Color Rush) in Weeks 2, 7 and 16; arctic white helmets added in 2022"
+    }
+   ]
+  },
+  "DEN:6": {
+   "team": "DEN",
+   "code": "08",
+   "style": 6,
+   "set": "Midnight Navy (alternate)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "08H0"
+    },
+    "A": {
+     "donor": "08H0"
+    }
+   },
+   "socks": {
+    "colour": "#0A2343",
+    "why": "Midnight Navy socks (Sep 23 2026 release)"
+   },
+   "splayer_socks": "#0A2343",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#FC4C02",
+      "#0A2343"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "Midnight Navy sleeve: orange body becomes navy, navy sawtooth orange"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "boxes": [
+      [
+       100,
+       0,
+       215,
+       70
+      ],
+      [
+       360,
+       0,
+       440,
+       50
+      ]
+     ],
+     "from": [
+      "#FC4C02",
+      "#0A2343"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "Midnight Navy jersey: the body becomes navy; the collar trim becomes orange (the Week 3 photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "exclude": [
+      [
+       100,
+       0,
+       215,
+       70
+      ],
+      [
+       360,
+       0,
+       440,
+       50
+      ]
+     ],
+     "from": [
+      "#FC4C02",
+      "#0A2343"
+     ],
+     "to": [
+      "#0A2343",
+      "#0A2343"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "the rest of the torso plain navy (no orange hem or chest dashes in the photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0A2343",
+      "#002E65",
+      "#FC4C02"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02",
+      "#0A2343",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "tolerance": 0.25,
+     "why": "Midnight Navy pants: the white body and the waistband dashes become navy, the navy stripe orange, its orange edge white"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0A2343"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#FC4C02"
+     ],
+     "moved": [
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "white numbers with an orange outline (the Week 3 photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#FC4C02",
+      "#0A2343",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#FC4C02",
+      "#0A2343",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#0A2343",
+      "#FC4C02"
+     ],
+     "to": [
+      "#0A2343",
+      "#FC4C02",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas pants"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.denverbroncos.com/news/broncos-to-wear-midnight-navy-helmets-jerseys-pants-vs-los-angeles-rams",
+     "supports": "Sep 23 2026: Midnight Navy alternate jerseys, pants and socks with the primary navy metallic satin helmets (Week 3 vs the Rams); hero photo p1so4mxs6kjeypv7hgta: navy jersey with white numbers outlined in orange, orange and white shoulder peaks, orange wordmark"
+    },
+    {
+     "url": "https://www.nbcsportsbayarea.com/nfl/nfl-week-3-uniforms-helmets-jerseys-pants-games-teams/1965723/",
+     "supports": "Week 3: navy blue helmets, navy blue jerseys, navy blue pants (alternate)"
+    }
+   ]
+  },
+  "DEN:5": {
+   "team": "DEN",
+   "code": "08",
+   "style": 5,
+   "set": "Summit White helmet looks",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "08H0",
+     "ops": [
+      {
+       "op": "remix",
+       "components": [
+        "sleeve"
+       ],
+       "from": [
+        "#FC4C02",
+        "#0A2343"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.25,
+       "why": "Midnight Navy sleeve: orange body becomes navy, navy sawtooth orange"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "torso"
+       ],
+       "boxes": [
+        [
+         100,
+         0,
+         215,
+         70
+        ],
+        [
+         360,
+         0,
+         440,
+         50
+        ]
+       ],
+       "from": [
+        "#FC4C02",
+        "#0A2343"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.25,
+       "why": "Midnight Navy jersey: the body becomes navy; the collar trim becomes orange (the Week 3 photo)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "torso"
+       ],
+       "exclude": [
+        [
+         100,
+         0,
+         215,
+         70
+        ],
+        [
+         360,
+         0,
+         440,
+         50
+        ]
+       ],
+       "from": [
+        "#FC4C02",
+        "#0A2343"
+       ],
+       "to": [
+        "#0A2343",
+        "#0A2343"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.25,
+       "why": "the rest of the torso plain navy (no orange hem or chest dashes in the photo)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "pants"
+       ],
+       "from": [
+        "#FFFFFF",
+        "#0A2343",
+        "#002E65",
+        "#FC4C02"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02",
+        "#0A2343",
+        "#FFFFFF"
+       ],
+       "moved": [
+        0,
+        1,
+        2,
+        3
+       ],
+       "tolerance": 0.25,
+       "why": "Midnight Navy pants: the white body and the waistband dashes become navy, the navy stripe orange, its orange edge white"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "digit_jersey_*",
+        "digit_arm_*"
+       ],
+       "from": [
+        "#FFFFFF",
+        "#0A2343"
+       ],
+       "to": [
+        "#FFFFFF",
+        "#FC4C02"
+       ],
+       "moved": [
+        1
+       ],
+       "tolerance": 0.25,
+       "why": "white numbers with an orange outline (the Week 3 photo)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "splayer"
+       ],
+       "region": "torso",
+       "from": [
+        "#FC4C02",
+        "#0A2343",
+        "#FFFFFF"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02",
+        "#FFFFFF"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.4,
+       "why": "sideline atlas jersey"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "splayer"
+       ],
+       "region": "sleeve",
+       "from": [
+        "#FC4C02",
+        "#0A2343",
+        "#FFFFFF"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02",
+        "#FFFFFF"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.4,
+       "why": "sideline atlas sleeve"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "splayer"
+       ],
+       "region": "pants",
+       "from": [
+        "#FFFFFF",
+        "#0A2343",
+        "#FC4C02"
+       ],
+       "to": [
+        "#0A2343",
+        "#FC4C02",
+        "#FFFFFF"
+       ],
+       "moved": [
+        0,
+        1,
+        2
+       ],
+       "tolerance": 0.4,
+       "why": "sideline atlas pants"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "helmet_helmet02",
+        "helmet_helmet00"
+       ],
+       "boxes": [
+        [
+         24,
+         54,
+         130,
+         106
+        ],
+        [
+         24,
+         140,
+         130,
+         200
+        ]
+       ],
+       "from": [
+        "#081E39",
+        "#FFFFFF",
+        "#FC4C02"
+       ],
+       "to": [
+        "#F2F2F2",
+        "#0A2343",
+        "#FC4C02"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.15,
+       "why": "white helmet: inside the two horse logos the navy ground is white and the white horse navy (estimate: no close photo of the logo on the white shell)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "helmet_helmet02",
+        "helmet_helmet00"
+       ],
+       "exclude": [
+        [
+         24,
+         54,
+         130,
+         106
+        ],
+        [
+         24,
+         140,
+         130,
+         200
+        ]
+       ],
+       "from": [
+        "#081E39",
+        "#000000",
+        "#FC4C02"
+       ],
+       "to": [
+        "#F2F2F2",
+        "#000000",
+        "#FC4C02"
+       ],
+       "moved": [
+        0
+       ],
+       "tolerance": 0.1,
+       "why": "Summit White metallic satin shell (denverbroncos.com Week 1 release)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "splayer"
+       ],
+       "region": "helmet",
+       "from": "#081E39",
+       "to": "#F0F0F0",
+       "tolerance": 0.25,
+       "why": "sideline atlas white shell"
+      }
+     ],
+     "socks": {
+      "colour": "#0A2343"
+     },
+     "splayer_socks": "#0A2343"
+    },
+    "A": {
+     "donor": "08A0",
+     "ops": [
+      {
+       "op": "remix",
+       "components": [
+        "helmet_helmet02",
+        "helmet_helmet00"
+       ],
+       "boxes": [
+        [
+         24,
+         54,
+         130,
+         106
+        ],
+        [
+         24,
+         140,
+         130,
+         200
+        ]
+       ],
+       "from": [
+        "#081E39",
+        "#FFFFFF",
+        "#FC4C02"
+       ],
+       "to": [
+        "#F2F2F2",
+        "#0A2343",
+        "#FC4C02"
+       ],
+       "moved": [
+        0,
+        1
+       ],
+       "tolerance": 0.15,
+       "why": "white helmet: inside the two horse logos the navy ground is white and the white horse navy (estimate: no close photo of the logo on the white shell)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "helmet_helmet02",
+        "helmet_helmet00"
+       ],
+       "exclude": [
+        [
+         24,
+         54,
+         130,
+         106
+        ],
+        [
+         24,
+         140,
+         130,
+         200
+        ]
+       ],
+       "from": [
+        "#081E39",
+        "#000000",
+        "#FC4C02"
+       ],
+       "to": [
+        "#F2F2F2",
+        "#000000",
+        "#FC4C02"
+       ],
+       "moved": [
+        0
+       ],
+       "tolerance": 0.1,
+       "why": "Summit White metallic satin shell (denverbroncos.com Week 1 release)"
+      },
+      {
+       "op": "remix",
+       "components": [
+        "splayer"
+       ],
+       "region": "helmet",
+       "from": "#081E39",
+       "to": "#F0F0F0",
+       "tolerance": 0.25,
+       "why": "sideline atlas white shell"
+      }
+     ],
+     "socks": null,
+     "splayer_socks": null
+    }
+   },
+   "sources": [
+    {
+     "url": "https://www.denverbroncos.com/news/broncos-to-wear-midnight-navy-helmets-jerseys-pants-vs-los-angeles-rams",
+     "supports": "Sep 23 2026: Midnight Navy alternate jerseys, pants and socks with the primary navy metallic satin helmets (Week 3 vs the Rams); hero photo p1so4mxs6kjeypv7hgta: navy jersey with white numbers outlined in orange, orange and white shoulder peaks, orange wordmark"
+    },
+    {
+     "url": "https://www.nbcsportsbayarea.com/nfl/nfl-week-3-uniforms-helmets-jerseys-pants-games-teams/1965723/",
+     "supports": "Week 3: navy blue helmets, navy blue jerseys, navy blue pants (alternate)"
+    },
+    {
+     "url": "https://www.denverbroncos.com/news/broncos-to-wear-summit-white-helmets-all-white-uniforms-for-monday-night-football-matchup-vs-chiefs",
+     "supports": "Week 1 at Kansas City: Summit White helmets with Summit White jerseys, pants and socks; hero photo shv6oukq8knvfgvp28k9: white jersey with navy numbers outlined in orange, white socks, white helmet"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "white alternate helmets with navy blue jerseys on Christmas Day against the Bills (secondary)"
+    }
+   ],
+   "note": "home kit = Midnight Navy jersey with the Summit White helmet (Christmas Day look, SportsLogos preview; pants and socks not announced, navy used as in Week 3); road kit = all white with the white helmet (Week 1 at Kansas City)"
+  },
+  "IND:3": {
+   "team": "IND",
+   "code": "11",
+   "style": 3,
+   "set": "Anvil Strike (Rivalries)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    1987,
+    1987
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "11H0"
+    },
+    "A": {
+     "donor": "11H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF16161A",
+    "turtleneck": "FF2A2C2E"
+   },
+   "card_facemask": "16161A",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 Colts helmets carry no number on the back",
+   "socks": {
+    "colour": "#3A3D40",
+    "why": "ESTIMATE: socks are not stated for Anvil Strike; anthracite matches the jersey"
+   },
+   "splayer_socks": "#3A3D40",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#0C3A9C",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#3A3D40",
+      "#1650C8"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "dark anthracite jersey with blue shoulder stripes (SportsLogos Sept 27 photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0C3A9C",
+      "#071451"
+     ],
+     "to": [
+      "#8E9195",
+      "#1650C8",
+      "#101012"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "gray pants (ESPN Week 3 chart), blue stripe"
+    },
+    {
+     "op": "outline",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "fill": "#1650C8",
+     "line": "#FFFFFF",
+     "width": 1,
+     "why": "blue numbers with a white outline (colts.com photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       150,
+       18,
+       174,
+       232
+      ]
+     ],
+     "from": [
+      "#0C3A9C",
+      "#F1F2F6",
+      "#000000"
+     ],
+     "to": [
+      "#000000",
+      "#1650C8",
+      "#000000"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "black centre stripe on the metallic blue shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       44,
+       50,
+       110,
+       118
+      ],
+      [
+       44,
+       138,
+       110,
+       206
+      ]
+     ],
+     "from": [
+      "#0C3A9C",
+      "#F1F2F6",
+      "#000000"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#1650C8",
+      "#000000"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "white horseshoe logos on the blue shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       192,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       128,
+       0,
+       196,
+       24
+      ],
+      [
+       128,
+       226,
+       196,
+       256
+      ],
+      [
+       150,
+       18,
+       174,
+       232
+      ],
+      [
+       44,
+       50,
+       110,
+       118
+      ],
+      [
+       44,
+       138,
+       110,
+       206
+      ]
+     ],
+     "from": [
+      "#F1F2F6",
+      "#000000"
+     ],
+     "to": [
+      "#1650C8",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "metallic blue shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#0C3A9C"
+     ],
+     "to": [
+      "#3A3D40"
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#0C3A9C"
+     ],
+     "to": [
+      "#3A3D40"
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#0C3A9C"
+     ],
+     "to": [
+      "#8E9195",
+      "#1650C8"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": [
+      "#F1F2F6",
+      "#000000"
+     ],
+     "to": [
+      "#1650C8",
+      "#000000"
+     ],
+     "tolerance": 0.2,
+     "why": "sideline atlas blue shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2026/09/27/indianapolis-colts-to-wear-rivalries-uniforms-against-houston-texans/football/",
+     "supports": "worn Sept 27 2026 vs Houston: dark anthracite jersey, blue numbers with reflective accents, metallic blue helmet with white horseshoes, black centre stripe and black facemask; photo indianapolis-colts-2026-nfl-nike-rivalries-uniforms-1.jpg"
+    },
+    {
+     "url": "https://www.colts.com/team/rivalries/",
+     "supports": "Anvil Steel jersey, metallic blue helmet, horseshoe grommets, For The Shoe inside the collar"
+    },
+    {
+     "url": "https://www.espn.com/nfl/story/_/id/50008808/nfl-week-3-uniforms",
+     "supports": "Week 3 chart: helmet blue, jersey gray, pants gray"
+    }
+   ],
+   "estimates": "anthracite and royal blue read from the SportsLogos photo (no hex published); socks estimated; the grommet/horseshoe artwork on the shoulders and pants is not drawn"
+  },
+  "IND:4": {
+   "team": "IND",
+   "code": "11",
+   "style": 4,
+   "set": "Indiana Nights (Color Rush, black helmet)",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    1982,
+    1982
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "11H0"
+    },
+    "A": {
+     "donor": "11H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF16161A",
+    "turtleneck": "FF0A0A0C"
+   },
+   "card_facemask": "16161A",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 Colts helmets carry no number on the back",
+   "socks": {
+    "colour": "#1A50B8",
+    "why": "blue socks (the 2026 Indiana Nights photo shows blue socks)"
+   },
+   "splayer_socks": "#1A50B8",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#0C3A9C"
+     ],
+     "to": [
+      "#1A50B8"
+     ],
+     "tolerance": 0.25,
+     "why": "heather blue (flat here): colts.com photos read a brighter royal than the Speed Blue primary"
+    },
+    {
+     "op": "halo",
+     "components": [
+      "torso"
+     ],
+     "target": "#DCDCDC",
+     "tolerance": 0.06,
+     "width": 9,
+     "colour": "#0A0A0C",
+     "why": "black V-neck trim (the Indiana Nights photo shows a black collar with the shield on it)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0C3A9C",
+      "#071451"
+     ],
+     "to": [
+      "#1A50B8",
+      "#1A50B8",
+      "#0A0A0C"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "heather blue pants with no stripe (colts.com does not state the pants; the 2026 photo shows plain blue pants)"
+    },
+    {
+     "op": "outline",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "fill": "#FFFFFF",
+     "line": "#0A0A0C",
+     "width": 1,
+     "why": "white numbers with black trim (colts.com: black trim outlines the numbers)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       192,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       128,
+       0,
+       196,
+       24
+      ],
+      [
+       128,
+       226,
+       196,
+       256
+      ]
+     ],
+     "from": [
+      "#F1F2F6",
+      "#000000",
+      "#0C3A9C"
+     ],
+     "to": [
+      "#0A0A0C",
+      "#000000",
+      "#0C3A9C"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "black shell (colts.com: first black helmet in team history); the horseshoes and the centre stripe stay blue"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#0C3A9C"
+     ],
+     "to": [
+      "#1A50B8"
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#0C3A9C"
+     ],
+     "to": [
+      "#1A50B8"
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#0C3A9C"
+     ],
+     "to": [
+      "#1A50B8",
+      "#1A50B8"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.4,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": [
+      "#F1F2F6",
+      "#000000"
+     ],
+     "to": [
+      "#0A0A0C",
+      "#000000"
+     ],
+     "tolerance": 0.2,
+     "why": "sideline atlas black shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.colts.com/team/indiana-nights/",
+     "supports": "Blue Heather Material, black trim outlines the numbers, sleeves and body, two shoulder stripes, Indiana C logo upper left, black helmet with a heather blue centre stripe; photo gallery (white numbers with black outline, black V collar with the NFL shield, blue pants and socks)"
+    },
+    {
+     "url": "https://www.colts.com/news/indianapolis-colts-alternate-uniform-schedule-2026-nike-rivalries-white-out-indiana-nights-houston-texans-dallas-cowboys-cincinnati-bengals-tickets",
+     "supports": "Indiana Nights returns in Week 16 at home vs Cincinnati (Dec 26 or 27)"
+    }
+   ],
+   "estimates": "base blue read from the photos (no hex published); the heather speckle is not drawn (flat colour); the Indiana C chest logo is not drawn; pants and socks blue from the photo"
+  },
+  "DET:9": {
+   "team": "DET",
+   "code": "09",
+   "style": 9,
+   "set": "Defend the Den (Rivalries)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2004,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "09A0"
+    },
+    "A": {
+     "donor": "09A0"
+    }
+   },
+   "unif": {
+    "facemask": "FF16181B",
+    "turtleneck": "FF17191C"
+   },
+   "card_facemask": "16181B",
+   "socks": {
+    "colour": "#E3E5E7",
+    "why": "ESTIMATE: socks are not stated; pale like the pants"
+   },
+   "splayer_socks": "#E3E5E7",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#E3E5E7",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "very light gray-white body (WXYZ/ESPN: white, SportsLogos: concrete gray; the official photos read pale gray-white)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0076B6"
+     ],
+     "to": [
+      "#17191C",
+      "#0076B6"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "Honolulu blue and black shoulders: black sleeves with the blue stripes (WXYZ, WNDU)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#E3E5E7",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "pale pants (the photos); colour not stated in the sources"
+    },
+    {
+     "op": "paint",
+     "components": [
+      "pants"
+     ],
+     "rects": [
+      {
+       "box": [
+        131,
+        12,
+        138,
+        256
+       ],
+       "colour": "#17191C"
+      },
+      {
+       "box": [
+        138,
+        12,
+        147,
+        256
+       ],
+       "colour": "#0076B6"
+      },
+      {
+       "box": [
+        147,
+        12,
+        153,
+        256
+       ],
+       "colour": "#17191C"
+      },
+      {
+       "box": [
+        359,
+        12,
+        365,
+        256
+       ],
+       "colour": "#17191C"
+      },
+      {
+       "box": [
+        365,
+        12,
+        374,
+        256
+       ],
+       "colour": "#0076B6"
+      },
+      {
+       "box": [
+        374,
+        12,
+        381,
+        256
+       ],
+       "colour": "#17191C"
+      }
+     ],
+     "why": "pant stripe mirrors the shoulder detail: black, Honolulu blue, black (WXYZ)"
+    },
+    {
+     "op": "outline",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "fill": "#17191C",
+     "line": "#0076B6",
+     "width": 1,
+     "why": "black numbers outlined in blue (WNDU)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#E3E5E7",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.2,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#FFFFFF",
+      "#0076B6"
+     ],
+     "to": [
+      "#17191C",
+      "#0076B6"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.2,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#E3E5E7",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.2,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       146,
+       0,
+       180,
+       232
+      ]
+     ],
+     "from": [
+      "#0076B6",
+      "#FFFFFF",
+      "#B0B7BC"
+     ],
+     "to": [
+      "#16181B",
+      "#C4C8CC",
+      "#0A74B0"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.2,
+     "why": "stripes: black carbon bars with a silver pinstripe, on the matte Honolulu blue shell (Fox 2 helmet photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       36,
+       44,
+       104,
+       104
+      ],
+      [
+       36,
+       150,
+       104,
+       210
+      ]
+     ],
+     "from": [
+      "#0076B6",
+      "#B0B7BC",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#16181B",
+      "#0A74B0",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "the leaping lion becomes black carbon with its white outline, on the blue shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       188,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       146,
+       0,
+       180,
+       232
+      ],
+      [
+       36,
+       44,
+       104,
+       104
+      ],
+      [
+       36,
+       150,
+       104,
+       210
+      ],
+      [
+       128,
+       226,
+       196,
+       256
+      ]
+     ],
+     "from": [
+      "#B0B7BC",
+      "#000000"
+     ],
+     "to": [
+      "#0A74B0",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "matte Honolulu blue shell (SportsLogos, Audacy: matte blue shell)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#B0B7BC",
+     "to": "#0A74B0",
+     "tolerance": 0.25,
+     "why": "sideline atlas blue shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.wxyz.com/sports/detroit-lions-reveal-rivalries-uniforms-that-will-be-worn-twice-this-season",
+     "supports": "Aug 25 2026 reveal: white uniforms, dark carbon-fiber numbers, Honolulu blue and black shoulders, Detroit across the chest, Defend the Den inside the collar, pant stripe mirrors the shoulder detail; worn once, Nov 1 vs Minnesota"
+    },
+    {
+     "url": "https://www.wndu.com/2026/08/25/bears-colts-lions-unveil-2026-nfl-rivalries-uniforms/",
+     "supports": "primarily white with Honolulu blue; black italic numbers outlined in blue; blue and black shoulder stripes; DETROIT in blue above the number"
+    },
+    {
+     "url": "https://www.fox2detroit.com/news/detroit-lions-new-uniform-rivalries-nfl",
+     "supports": "helmet image: matte Honolulu blue shell, black carbon-fibre centre stripes between silver pinstripes, black carbon lion outlined in white, white bumper with DETROIT (photo detroit-lion_rivaliry-uniform.jpg)"
+    }
+   ],
+   "estimates": "pale body and pants hex read from the official photos; pants and socks colours are not stated; numbers are upright (the game's block glyphs), the real ones lean forward; the carbon-fibre texture is flat black",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's"
+  },
+  "DET:2": {
+   "team": "DET",
+   "code": "09",
+   "style": 2,
+   "set": "Motor City Muscle (black alternate)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1999,
+    1999
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "09H0"
+    },
+    "A": {
+     "donor": "09H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF111214",
+    "turtleneck": "FF0D0D0F"
+   },
+   "card_facemask": "111214",
+   "socks": {
+    "colour": "#0D0D0F",
+    "why": "ESTIMATE: socks are not stated; black with the pants"
+   },
+   "splayer_socks": "#0D0D0F",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#0076B6"
+     ],
+     "to": [
+      "#0D0D0F"
+     ],
+     "tolerance": 0.3,
+     "why": "black jersey (NFL.com Apr 2024)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#0076B6"
+     ],
+     "to": [
+      "#0D0D0F"
+     ],
+     "tolerance": 0.3,
+     "why": "black pants (Wikipedia: solid black or solid Honolulu blue)"
+    },
+    {
+     "op": "tint",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "colour": "#0076B6",
+     "why": "Honolulu blue numbers (NFL.com Apr 2024)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#0076B6"
+     ],
+     "to": [
+      "#0D0D0F"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#0076B6"
+     ],
+     "to": [
+      "#0D0D0F"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#0076B6"
+     ],
+     "to": [
+      "#0D0D0F"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       146,
+       0,
+       180,
+       232
+      ]
+     ],
+     "from": [
+      "#0076B6",
+      "#FFFFFF",
+      "#B0B7BC"
+     ],
+     "to": [
+      "#16181B",
+      "#C4C8CC",
+      "#0A74B0"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.2,
+     "why": "stripes: black carbon bars with a silver pinstripe, on the matte Honolulu blue shell (Fox 2 helmet photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       36,
+       44,
+       104,
+       104
+      ],
+      [
+       36,
+       150,
+       104,
+       210
+      ]
+     ],
+     "from": [
+      "#0076B6",
+      "#B0B7BC",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#16181B",
+      "#0A74B0",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "the leaping lion becomes black carbon with its white outline, on the blue shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       188,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       146,
+       0,
+       180,
+       232
+      ],
+      [
+       36,
+       44,
+       104,
+       104
+      ],
+      [
+       36,
+       150,
+       104,
+       210
+      ],
+      [
+       128,
+       226,
+       196,
+       256
+      ]
+     ],
+     "from": [
+      "#B0B7BC",
+      "#000000"
+     ],
+     "to": [
+      "#0A74B0",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "matte Honolulu blue shell (SportsLogos, Audacy: matte blue shell)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#B0B7BC",
+     "to": "#0A74B0",
+     "tolerance": 0.25,
+     "why": "sideline atlas blue shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://amp.nfl.com/news/new-look-lions-reigning-nfc-north-champions-unveil-fresh-uniforms-including-all-back-alternates",
+     "supports": "Apr 18 2024: all-black alternate, Honolulu blue numbers and trim, matte metallic Honolulu blue helmet with black facemask, black striping and black Leaping Lion logo"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Detroit_Lions",
+     "supports": "alternate pants solid black or solid Honolulu blue; helmet black stripes and black lion with silver accents"
+    }
+   ],
+   "estimates": "TIER 2: no 2026 game found; the Lions wordmark across the chest is not drawn; the helmet reuses the Defend the Den shell, stripes and lion; socks estimated",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's"
+  },
+  "GB:5": {
+   "team": "GB",
+   "code": "10",
+   "style": 5,
+   "set": "Rivalries (vintage green, alabaster, gold)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "10H0"
+    },
+    "A": {
+     "donor": "10H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF1F3A30",
+    "turtleneck": "FF404A36"
+   },
+   "card_facemask": "1F3A30",
+   "socks": {
+    "colour": "#404A36",
+    "why": "ESTIMATE: socks are not stated; the jersey green"
+   },
+   "splayer_socks": "#404A36",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#404A36",
+      "#E8E2D1"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "desaturated vintage green jersey with alabaster and gold stripes (packers.com via WBAY, CBS58)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FFB612"
+     ],
+     "to": [
+      "#E8E2D1",
+      "#FFB612"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.3,
+     "why": "alabaster numbers with a gold edge (the club's Aug 25 2026 promotional photo of #10: cream numerals with a gold outline)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFB612",
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#E8E2D1",
+      "#E8E2D1",
+      "#E8E2D1"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.25,
+     "why": "alabaster pants (packers.com release, Aug 25 2026)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       148,
+       20,
+       178,
+       230
+      ]
+     ],
+     "from": [
+      "#29463F",
+      "#FFFFFF",
+      "#FFB612"
+     ],
+     "to": [
+      "#29463F",
+      "#FFB612",
+      "#E8E2D1"
+     ],
+     "moved": [
+      1,
+      2
+     ],
+     "tolerance": 0.2,
+     "why": "green and gold striping on the matte alabaster shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       188,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       148,
+       20,
+       178,
+       230
+      ],
+      [
+       128,
+       226,
+       196,
+       256
+      ]
+     ],
+     "from": [
+      "#FFB612",
+      "#000000"
+     ],
+     "to": [
+      "#E8E2D1",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "matte alabaster shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#26413A"
+     ],
+     "to": [
+      "#404A36"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#26413A"
+     ],
+     "to": [
+      "#404A36"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFB612",
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#E8E2D1",
+      "#E8E2D1",
+      "#E8E2D1"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#FFB612",
+     "to": "#E8E2D1",
+     "tolerance": 0.25,
+     "why": "sideline atlas shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.wbay.com/2026/08/25/packers-reveal-2026-nfl-rivalries-uniforms/",
+     "supports": "Aug 25 2026: desaturated vintage green jersey, alabaster and gold stripes, engraved numbers, alabaster pants, matte helmet with green and gold striping, matte green facemask; debut Oct 11 vs Chicago"
+    },
+    {
+     "url": "https://www.cbs58.com/news/packers-unveil-new-alternate-uniforms-honoring-teams-public-ownership",
+     "supports": "desaturated green jersey with alabaster and gold stripes; alabaster pants"
+    },
+    {
+     "url": "https://www.wsaw.com/2026/08/25/green-bay-packers-unveil-new-nfl-rivalries-alternate-uniforms/",
+     "supports": "u3r: the club's own full-length promo image of #10 (Aug 25 2026): dark desaturated olive jersey (about #3B432F after removing the warm cast; #404A36 used), alabaster numbers with gold edge, alabaster V insert with gold lines, gold GB chest mark, alabaster helmet with a green-gold-green centre stripe and a green-and-cream G"
+    }
+   ],
+   "estimates": "u3r (photo-checked): jersey green darkened from the first #47604F estimate to #404A36 and the numbers made alabaster. Still not drawn: the alabaster V-neck insert with gold lines, the gold interlocking GB chest mark, the engraved numerals, the sleeve cap bars (cream and gold bars); the helmet logo is kept as the G (the photo shows a cream oval G with gold edge); socks estimated (jersey olive)",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's"
+  },
+  "GB:6": {
+   "team": "GB",
+   "code": "10",
+   "style": 6,
+   "set": "1923 Classic",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "10H0"
+    },
+    "A": {
+     "donor": "10H0"
+    }
+   },
+   "unif": {
+    "facemask": "FF1B2A49",
+    "turtleneck": "FF1B2A49"
+   },
+   "card_facemask": "1B2A49",
+   "socks": {
+    "colour": "#1B2A49",
+    "why": "navy socks (packers.com Jul 24 2025)"
+   },
+   "splayer_socks": "#1B2A49",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#26413A",
+      "#FFB612",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#1B2A49",
+      "#B8892B",
+      "#1B2A49"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.2,
+     "why": "navy jersey with dark gold stripes (packers.com Jul 24 2025)"
+    },
+    {
+     "op": "tint",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "colour": "#B8892B",
+     "why": "dark gold numbers"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFB612",
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#B79F73",
+      "#B79F73",
+      "#B79F73"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.25,
+     "why": "tan pants, no stripe stated"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       0,
+       0,
+       188,
+       256
+      ]
+     ],
+     "exclude": [
+      [
+       128,
+       226,
+       196,
+       256
+      ]
+     ],
+     "from": [
+      "#FFB612",
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#6B4A2E",
+      "#6B4A2E",
+      "#6B4A2E"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.12,
+     "why": "brown leather-look shell: the G logos and the stripe are removed (the 1923 helmet carries none)"
+    },
+    {
+     "op": "paint",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "rects": [
+      {
+       "box": [
+        42,
+        58,
+        114,
+        106
+       ],
+       "colour": "#6B4A2E"
+      },
+      {
+       "box": [
+        42,
+        148,
+        114,
+        196
+       ],
+       "colour": "#6B4A2E"
+      }
+     ],
+     "why": "the two G logos painted out in the shell brown (the 1923 helmet carries no logo; the remix left the dark green ring)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#26413A"
+     ],
+     "to": [
+      "#1B2A49"
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#26413A",
+      "#FFB612",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#1B2A49",
+      "#B8892B",
+      "#1B2A49"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFB612",
+      "#26413A",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#B79F73",
+      "#B79F73",
+      "#B79F73"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#FFB612",
+     "to": "#6B4A2E",
+     "tolerance": 0.25,
+     "why": "sideline atlas shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.packers.com/news/packers-introduce-1923-inspired-classic-uniform-leather-look-helmet",
+     "supports": "Jul 24 2025: navy blue jerseys with dark gold numbers and stripes, tan pants, navy socks, brown helmets with realistic distressing and leather strap and stitching effects, navy facemask"
+    },
+    {
+     "url": "https://www.packers.com/news/packers-announce-game-themes-for-2026-season",
+     "supports": "1923 Classic uniforms with leather painted helmets vs Buffalo in December 2026"
+    }
+   ],
+   "estimates": "navy, dark gold, tan and brown hex are estimates (no hex published); the helmet distressing, strap and stitching are not drawn (flat brown)",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's"
+  },
+  "HOU:2": {
+   "team": "HOU",
+   "code": "37",
+   "style": 2,
+   "set": "Battle Red alternate (all-red)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "37H0"
+    },
+    "A": {
+     "donor": "37H0"
+    }
+   },
+   "unif": {
+    "facemask": "FFB01830",
+    "turtleneck": "FFB5122E"
+   },
+   "card_facemask": "B01830",
+   "socks": {
+    "colour": "#B5122E",
+    "why": "ESTIMATE: socks are not stated; Battle Red with the pants"
+   },
+   "splayer_socks": "#B5122E",
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#1C2433",
+      "#D8102E"
+     ],
+     "to": [
+      "#B5122E",
+      "#03202F"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "Battle Red jersey (houstontexans.com): the navy body red, the red marks Deep Steel Blue"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "torso"
+     ],
+     "boxes": [
+      [
+       138,
+       88,
+       188,
+       99
+      ]
+     ],
+     "from": [
+      "#B5122E",
+      "#03202F"
+     ],
+     "to": [
+      "#B5122E",
+      "#FFFFFF"
+     ],
+     "moved": [
+      1
+     ],
+     "tolerance": 0.2,
+     "why": "the chest TEXANS wordmark is white on the Battle Red jersey (SportsLogos/Imagn photos of the Nov 2025 Bills game, Texans Battle Red; u3b had drawn it Deep Steel Blue)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#D8102E"
+     ],
+     "to": [
+      "#03202F",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.25,
+     "why": "numbers Deep Steel Blue trimmed Liberty White (NFL.com 2024)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#1C2433",
+      "#D8102E"
+     ],
+     "to": [
+      "#B5122E",
+      "#03202F",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.25,
+     "why": "red pants, wide Deep Steel Blue stripe with a thin white stripe (NFL.com 2024)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "from": [
+      "#111B30",
+      "#D8102E",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#B01830",
+      "#03202F",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.15,
+     "why": "Battle Red candy shell with the bullhorn logo in Deep Steel Blue (houstontexans.com, NFL.com)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": [
+      "#1C2433",
+      "#D8102E"
+     ],
+     "to": [
+      "#B5122E",
+      "#03202F"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas jersey"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": [
+      "#1C2433",
+      "#D8102E"
+     ],
+     "to": [
+      "#B5122E",
+      "#03202F"
+     ],
+     "moved": [
+      0,
+      1
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas sleeve"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#1C2433",
+      "#D8102E"
+     ],
+     "to": [
+      "#B5122E",
+      "#03202F",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0,
+      1,
+      2
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#111B30",
+     "to": "#B01830",
+     "tolerance": 0.25,
+     "why": "sideline atlas shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.houstontexans.com/news/houston-texans-reveal-four-new-fan-inspired-uniforms",
+     "supports": "Battle Red alternate: a bold red version of the away jersey, candy-paint red helmet, red chrome facemask"
+    },
+    {
+     "url": "https://www.nfl.com/news/houston-texans-unveil-first-uniform-redesign-since-franchise-s-inception-in-2000",
+     "supports": "numbers Deep Steel Blue trimmed Liberty White; matching red pants with wide Deep Steel Blue and thin white stripes; bullhorn logos on both sides of the helmet"
+    },
+    {
+     "url": "https://www.houstontexans.com/news/houston-texans-announce-2026-home-game-themes",
+     "supports": "Battle Red Game vs the Giants on Oct 25 2026"
+    },
+    {
+     "url": "https://news.sportslogos.net/?p=94429",
+     "supports": "u3r: Nov 2025 game photos of the all-red Battle Red set (Bills, Thursday night): red jersey, white TEXANS wordmark above dark navy numbers with a thin white edge, candy red helmet with navy bull-horn shapes over the shell and a chrome red facemask, red pants with a navy and white stripe, red socks"
+    }
+   ],
+   "estimates": "u3r (photo-checked against Nov 2025 game photos): the white wordmark is now drawn. NOT matching the photos and not fixed: the helmet (photos: candy red shell with large navy horn shapes on both sides and no side bull logo; ours keeps the navy bull logo on a red shell), the numerals' edge width. The red hex, socks and stripe order stay estimates",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's",
+   "keep_slot": [
+    "glove*",
+    "elbowpad*",
+    "longsleeve*",
+    "shoes*",
+    "wristband*"
+   ],
+   "keep_slot_why": "the 37H0 equipment textures equal the slot's retail ones (the equipment writer refuses an edit equal to retail); the slot's own are kept"
+  },
+  "CLE:4": {
+   "team": "CLE",
+   "code": "30",
+   "style": 4,
+   "set": "White throwback with the white helmet",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "30A0"
+    },
+    "A": {
+     "donor": "30A0"
+    }
+   },
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "ops": [
+    {
+     "op": "outline",
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "fill": "#311D00",
+     "line": "#FF3C00",
+     "width": 1,
+     "why": "brown numbers with an orange outline (clevelandbrowns.com White Out Series photo)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "boxes": [
+      [
+       140,
+       20,
+       184,
+       232
+      ]
+     ],
+     "from": [
+      "#401F00",
+      "#E8E8EA",
+      "#FF3D00"
+     ],
+     "to": [
+      "#401F00",
+      "#FF3C00",
+      "#F4F4F4"
+     ],
+     "moved": [
+      1,
+      2
+     ],
+     "tolerance": 0.2,
+     "why": "white helmet: a middle orange stripe between two brown stripes (clevelandbrowns.com, Wikipedia)"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "exclude": [
+      [
+       140,
+       20,
+       184,
+       232
+      ]
+     ],
+     "from": [
+      "#FF3D00",
+      "#E8E8EA",
+      "#000000"
+     ],
+     "to": [
+      "#F4F4F4",
+      "#E8E8EA",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "white shell"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#FF3C00",
+     "to": "#F0F0F0",
+     "tolerance": 0.25,
+     "why": "sideline atlas white shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.clevelandbrowns.com/news/browns-unveil-white-alternate-throwback-helmets",
+     "supports": "White Out Series photo hfh0gcvlgcttwbd4yqff: white helmet with brown-orange-brown stripe and BROWNS bumper, white jersey with brown numbers outlined in orange, 1946 patch on the chest, brown and orange sleeve stripes"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Cleveland_Browns",
+     "supports": "2023 white alternate helmet worn with the 2021 white throwback jersey; thinner orange stripes on jersey, pants and socks; worn in 2025 week 12"
+    }
+   ],
+   "estimates": "TIER 2: no 2026 game found; built on the 2026 road kit (white pants with the orange-brown-orange stripe, white socks) so the stripe widths are the 2026 ones, not the thinner 2021 ones; the oval 1946 chest patch is not drawn (the 2026 back-collar 1946 stays); socks are plain white (the real socks carry thin orange stripes; see socks.why)",
+   "socks": {
+    "colour": "#FFFFFF",
+    "why": "plain white socks: the striped 2026 road socks (brown and orange bands) do not survive the Studio's equipment writer in this slot (the decoded texture is scrambled for any banded image, found with synthetic tests), so the socks are white without stripes"
+   },
+   "splayer_socks": "#FFFFFF"
+  },
+  "DAL:9": {
+   "team": "DAL",
+   "code": "07",
+   "style": 9,
+   "set": "1960s Classic (Thanksgiving throwback)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2002,
+    1
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "07H9"
+    },
+    "A": {
+     "donor": "07A9"
+    }
+   },
+   "ops": [
+    {
+     "op": "remix",
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#BABDBF",
+      "#001D4C",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#001D4C",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "white pants (dallascowboys.com 2022: white pants); the navy stripe stays"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "from": [
+      "#949FA3",
+      "#E9E9E9",
+      "#000000"
+     ],
+     "to": [
+      "#F6F6F6",
+      "#E9E9E9",
+      "#000000"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.1,
+     "why": "white helmet with the single navy star and the two navy stripes (dallascowboys.com Jul 21 2022); the retail silver shell rebuilt as white"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#B4BCBC",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#FFFFFF"
+     ],
+     "moved": [
+      0
+     ],
+     "tolerance": 0.3,
+     "why": "sideline atlas pants"
+    },
+    {
+     "op": "remix",
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#949FA3",
+     "to": "#F0F0F0",
+     "tolerance": 0.2,
+     "why": "sideline atlas white shell"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.dallascowboys.com/news/cowboys-unveil-alternate-helmet-for-2022-season",
+     "supports": "Jul 21 2022: white helmet with a single navy star, two navy stripes, grey facemask; navy jerseys with white sleeves and shoulders and white chest numbers; white pants; navy socks with white stripes"
+    },
+    {
+     "url": "https://www.dallascowboys.com/news/dallas-cowboys-reveal-uniform-schedule-for-2026-season",
+     "supports": "W12 vs Eagles (Thanksgiving) Alternate (Classic), classic 1960s-era jerseys"
+    }
+   ],
+   "estimates": "MODERNIZE: the slot's own retail 2002 art already is this uniform (navy body, white yoke and sleeves with stars, white numbers); only the pants (retail light grey, now white) and the helmet (retail silver, now white as in 2022) are changed; the retail Reebok marks on the jersey and pants stay",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 helmets of this team carry no number on the back (club photos); the slot's helmet digit textures are smaller than the donor's"
+  }
+ }
+}

@@ -125,6 +125,7 @@
     "team_logo_full": "club_logo.png",
     "cle_1946": "cle_1946_fill.png",
     "cle_h_sleeve": "cle_h_sleeve.png",
+    "cle_h_sleeve_u2a": "cle_h_sleeve_u2a.png",
     "cle_a_sleeve": "cle_a_sleeve.png",
     "cle_h_sh1": "cle_h_sh1.png",
     "cle_h_sh2": "cle_h_sh2.png",
@@ -207,15 +208,15 @@
         "stripes_from": null,
         "decorations": [
           {
-            "mark": "cle_h_sleeve",
+            "mark": "cle_h_sleeve_u2a",
             "center": [
               64.0,
-              56.0
+              64.0
             ],
             "width": 128.0
           }
         ],
-        "art_shift_rows": 9
+        "art_shift_rows": 0
       },
       "pants": {
         "base_colour": "white",

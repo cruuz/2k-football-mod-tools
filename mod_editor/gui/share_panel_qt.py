@@ -729,6 +729,13 @@ class SharePanel(QWidget):
                   else "every run verified; the rest of the file is your own base"
                   if target["matches_author_result"] is False else "every run verified")
         extra = ""
+        moved = receipt.get("source_metadata_changed")
+        if moved:
+            # Beta 77 E1: a synced folder (OneDrive), a virus scanner or the search indexer rewrites a
+            # file's dates while it is read. That never makes the install fail; say so instead of alarming.
+            what = ", ".join(moved) if isinstance(moved, (list, tuple)) else "file details"
+            extra += (f" Note: your disc file's details changed while this ran ({what}). OneDrive, a virus scanner"
+                      " or the search indexer often do that. The new disc was still checked byte for byte, so it is not affected.")
         if receipt.get("official_marks"):
             extra += " SOFTDRINK logos saved for your builds."
         if receipt.get("official_marks_error"):

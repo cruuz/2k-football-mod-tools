@@ -1,0 +1,759 @@
+{
+ "team": "MIA",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "Shanahan/Slowik zone",
+ "staff": "Bobby Slowik",
+ "family": "wide_zone",
+ "feature": "HB1",
+ "key_players": "De'Von Achane",
+ "depth_step": 0,
+ "tendencies": {
+  "shotgun_pct": 71.44,
+  "pistol_pct": 19.0,
+  "play_action_pct": 27.39,
+  "motion_pct": 70.59,
+  "personnel": {
+   "21": 230,
+   "11": 341,
+   "10": 43,
+   "20": 14,
+   "12": 90,
+   "22": 75,
+   "23": 1,
+   "13": 10,
+   "other": 132,
+   "31": 3,
+   "32": 1,
+   "02": 2
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Y Trips",
+   "Pistol Doubles",
+   "Pistol Ace",
+   "Pistol Strong",
+   "Weak I",
+   "Split Backs",
+   "Gun Doubles",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Doubles Tight",
+   "Gun Trey",
+   "Singleback Doubles",
+   "Singleback Ace",
+   "I-Form Pro"
+  ],
+  "avoid": [],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Pistol Strong",
+   "Weak I",
+   "Pistol Doubles",
+   "Pistol Ace",
+   "Split Backs",
+   "I-Form Twins"
+  ]
+ },
+ "boost": {
+  "Counter": 1,
+  "Dagger": 1,
+  "Draw": 1,
+  "Drive": 2,
+  "End Around": 2,
+  "Outside Zone": 6,
+  "PA Boot": 3,
+  "PA Boot Leak": 2,
+  "RB Screen": 3,
+  "Sail": 1,
+  "Texas": 1,
+  "Y Cross": 1,
+  "Yankee": 2
+ },
+ "preference_shift": {
+  "PA Boot": -1,
+  "PA Boot Leak": -1,
+  "Yankee": -1,
+  "PA Dagger": -1,
+  "PA Crossers": -1
+ },
+ "signature": [
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Outside Zone",
+   "name": "Pistol Wide Zone",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Four Verticals",
+   "name": "Verts Swing",
+   "overrides": {
+    "routes": {
+     "B": [
+      "route",
+      "Swing"
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "End Around",
+   "name": "Speed Reverse",
+   "overrides": {}
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "RB Screen",
+   "name": "MIA RB Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "S2": [
+      "route",
+      "Comeback",
+      18.333333333333332
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Bubble Screen",
+   "name": "MIA Bubble Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "S3": [
+      "route",
+      "Comeback",
+      18.333333333333332
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Ace Wing",
+   "concept": "TE Screen",
+   "name": "MIA TE Screen",
+   "overrides": {
+    "depth_step": 0,
+    "routes": {
+     "W1": [
+      "route",
+      "Comeback",
+      18.333333333333332
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "concept": "Mesh Wheel",
+   "name": "MIA Mesh Wheel",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "W2",
+     "S2",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Texas",
+   "name": "MIA Texas",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S1",
+     "S2",
+     "W1",
+     "B"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Post Wheel",
+   "name": "MIA Post Wheel",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "W2",
+     "W1",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Double Post",
+   "name": "MIA Double Post",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "B",
+     "W1",
+     "S1",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "PA Boot",
+   "name": "MIA PA Boot",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S2",
+     "S1",
+     "W2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Crossers",
+   "name": "MIA PA Crossers",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "S2",
+     "W2",
+     "W1",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "I-Form Pro",
+   "concept": "Yankee",
+   "name": "MIA Yankee",
+   "overrides": {
+    "depth_step": 1.3333333333333333,
+    "reads": [
+     "W1",
+     "S1"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.miamidolphins.com/team/coaches-roster/bobby-slowik)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 7.05 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out comeback variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Queens": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  },
+  "Straight": {
+   "twin_of": "12",
+   "code": 8,
+   "name": "Ace Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace",
+    "Ace Long"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace Long",
+   "mask": [
+    "Ace Long"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings Long"
+   ]
+  },
+  "Pistol Strong": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Weak I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Pistol Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "RB Screen",
+    "name": "MIA RB Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "S2": [
+       "route",
+       "Comeback",
+       18.333333333333332
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.8% (league 9.1)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Bubble Screen",
+    "name": "MIA Bubble Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "S3": [
+       "route",
+       "Comeback",
+       18.333333333333332
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.8% (league 9.1)"
+   },
+   {
+    "formation": "Ace Wing",
+    "concept": "TE Screen",
+    "name": "MIA TE Screen",
+    "overrides": {
+     "depth_step": 0,
+     "routes": {
+      "W1": [
+       "route",
+       "Comeback",
+       18.333333333333332
+      ]
+     }
+    },
+    "reason": "targets SCREEN 12.8% (league 9.1)"
+   },
+   {
+    "formation": "Gun Doubles Tight",
+    "concept": "Mesh Wheel",
+    "name": "MIA Mesh Wheel",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "W2",
+      "S2",
+      "B"
+     ]
+    },
+    "reason": "targets SWING 8.1% (league 5.3)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Texas",
+    "name": "MIA Texas",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S1",
+      "S2",
+      "W1",
+      "B"
+     ]
+    },
+    "reason": "targets SWING 8.1% (league 5.3)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Post Wheel",
+    "name": "MIA Post Wheel",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "W2",
+      "W1",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "targets POST 7.9% (league 5.7)"
+   },
+   {
+    "formation": "Gun Doubles",
+    "concept": "Double Post",
+    "name": "MIA Double Post",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "B",
+      "W1",
+      "S1",
+      "S2"
+     ]
+    },
+    "reason": "targets POST 7.9% (league 5.7)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "PA Boot",
+    "name": "MIA PA Boot",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S2",
+      "S1",
+      "W2",
+      "W1"
+     ]
+    },
+    "reason": "play_action_pct 27.4 (league 23.2)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Crossers",
+    "name": "MIA PA Crossers",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "S2",
+      "W2",
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "play_action_pct 27.4 (league 23.2)"
+   },
+   {
+    "formation": "I-Form Pro",
+    "concept": "Yankee",
+    "name": "MIA Yankee",
+    "overrides": {
+     "depth_step": 1.3333333333333333,
+     "reads": [
+      "W1",
+      "S1"
+     ]
+    },
+    "reason": "play_action_pct 27.4 (league 23.2)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Queens",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 73.4%",
+    "note": "keeps the stock Flush group (10 personnel 10.1% on 3rd and 7+) and the optional Gun Spread / Gun Trips Open sets"
+   },
+   {
+    "record": "Straight (else Queens)",
+    "twin_of": "12",
+    "code": 8,
+    "name": "Ace Long",
+    "reason": "3rd and 7+: 12 personnel 11.0%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   3
+  ],
+  "Gun Doubles": [
+   1,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   3,
+   0,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   3,
+   3
+  ],
+  "Gun Trey": [
+   4,
+   4,
+   0
+  ],
+  "Goal Line": [
+   3,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Trey": [
+   4,
+   0,
+   0
+  ],
+  "Gun Trips": [
+   1,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   2
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   1,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   2,
+   4,
+   3
+  ],
+  "Heavy Wing": [
+   3,
+   3,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   4,
+   4
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   2
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   4,
+   3
+  ],
+  "Gun Y Trips": [
+   0,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Pistol Strong": [
+   1,
+   0,
+   2
+  ],
+  "Weak I": [
+   2,
+   0,
+   3
+  ],
+  "Pistol Doubles": [
+   1,
+   4,
+   1
+  ],
+  "Pistol Ace": [
+   2,
+   0,
+   2
+  ],
+  "Split Backs": [
+   0,
+   2,
+   4
+  ],
+  "I-Form Twins": [
+   2,
+   0,
+   0
+  ]
+ }
+}

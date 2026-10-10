@@ -1,6 +1,14 @@
 """Three-argument digit encoders edit the base without pretending to rebuild mips."""
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import unittest
 
 from mod_editor.apf_studio.backend import ensure_tools_importable

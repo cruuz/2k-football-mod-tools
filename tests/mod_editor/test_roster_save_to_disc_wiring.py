@@ -183,10 +183,27 @@ class WiringTests(unittest.TestCase):
         receipt = rr.apply(self.disc, build.plan().roster_edits)
         self.assertEqual(receipt['log'], [])
         target = rr.load_image(self.disc)
+        # c2's final commentary pass repairs stale numbers and absent name cues.
+        # Every other carried field, and every other player's ID, stays exact.
+        canonical_pbp = {
+            1700: 9033,  # Nathan Jones: 9027 -> 9033
+            1715: 9048,  # Andre Sommersell: 9093 -> 9048
+            1850: 9079,  # Christian Ferrara: 9099 -> 9079
+            1862: 9637,  # Robert Tate: 971 -> 9637
+            1867: 9056,  # Deon Humphrey: 3787 -> 9056
+            1893: 9459,  # Leonard Stephens: 4906 -> 9459
+            1898: 9048,  # Lenny Williams: 9024 -> 9048
+            1904: 9598,  # Moran Norris: 0 -> 9598
+            1906: 9057,  # Colby Bockwoldt: 9051 -> 9057
+            2118: 9097,  # Martin Zdyrko: 9783 -> 9097
+        }
         for src, dst in zip(source.players, target.players):
             self.assertEqual((src.first, src.last, src.college), (dst.first, dst.last, dst.college))
             for field in importer.CARRIED_FIELDS:
-                self.assertEqual(src.record.get(field), dst.record.get(field), (src.index, field))
+                expected = src.record.get(field)
+                if field == 'pbp_id' and src.pool == 'primary':
+                    expected = canonical_pbp.get(src.index, expected)
+                self.assertEqual(expected, dst.record.get(field), (src.index, field))
         for src, dst in zip(source.teams, target.teams):
             self.assertEqual([source.by_offset[o].index for o in src.slots],
                              [target.by_offset[o].index for o in dst.slots])

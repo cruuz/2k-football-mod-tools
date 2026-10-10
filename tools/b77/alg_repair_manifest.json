@@ -1,0 +1,244 @@
+{
+  "bundles": {
+    "s20ad.iff": {
+      "after_stretch_sha256": "f3489d736521727ba926e700c234c73da470e3427b40eb5a07886970ca4328df",
+      "before_stretch_sha256": "8533be10ef4ac5374d2ef250ba69ccd4c2a96fd3dccc5ffbeec23fd7d5ae1beb",
+      "grass": {
+        "divots_after_sha256": "633a3c0d1562bea093fc0e30cc3f94b3ed6f41d8b9bf4aa5b71b4b3d29905326",
+        "divots_before_sha256": "e77cc68edb4d5dae4f05020ccab2713875492fb46fdba8971842eb499c19b1e0",
+        "divots_length": 4912,
+        "divots_offset": 460768,
+        "field_after_sha256": "69f5fa9918c74fffa5b2a33139a9d29da86aff8d670afcd781e16ac26142fc3d",
+        "field_before_sha256": "855324289da6619ee3cae9d88eeab52a2bb352d31b928f421c0803810a93afa5",
+        "field_length": 258768,
+        "field_offset": 0
+      },
+      "length": 1022624,
+      "offset": 465680,
+      "size": 1586960
+    },
+    "s20ar.iff": {
+      "after_stretch_sha256": "a4a1ad718e6a8b37141f938609311823847b0586a2f21aa581aa798c65a72204",
+      "before_stretch_sha256": "79f562bda345649cad39ba3088665034ac8ba951d53c7aa4eebd2f0cdaf1eff4",
+      "grass": {
+        "divots_after_sha256": "9e381955386af44ec67bf2364db399601bef8d8c55d279731dc406aa2d3f5272",
+        "divots_before_sha256": "095fac2b06ecfd2360aadd53a8ec4729211becb5c87ea6d673dc2e7d9c19adc0",
+        "divots_length": 4896,
+        "divots_offset": 468640,
+        "field_after_sha256": "cd646d8210093b4a257c8dcc570b9868e0b9926e4eb41a39c3bc85df70e7f79a",
+        "field_before_sha256": "29b2281b4e0885d4332340db08a21ed5d4bf9d5e25c3328c50096e012575777d",
+        "field_length": 266640,
+        "field_offset": 0
+      },
+      "length": 1051136,
+      "offset": 473536,
+      "size": 1616128
+    },
+    "s20as.iff": {
+      "after_stretch_sha256": "faabde94a6bfa6876d647a009a38cccdc6023982522b49fadf2a26329f190042",
+      "before_stretch_sha256": "da18fcc51ff330f4478fefc962069d22d6c082fd2af29682ed3e7fc4542fc7d4",
+      "grass": {
+        "divots_after_sha256": "068fae3f920869f58fb40d10e0b74066dd5dc8c1d7992b39458e4eae3ac8ee0c",
+        "divots_before_sha256": "9f32eb3e7e9e3b86b3b47bfff92df90008259fda6ca50434ba231cbee47d575c",
+        "divots_length": 4944,
+        "divots_offset": 425232,
+        "field_after_sha256": "ae2e7180f07aaaa7e55d4aa9da4ffaf6bda45d4e50633d0678cfe39bf1715d8d",
+        "field_before_sha256": "fb30c620d49aaa5ddb1b720adea0b980c03bfe1c37c1b244f04a8f92e736b2c1",
+        "field_length": 223232,
+        "field_offset": 0
+      },
+      "length": 1049008,
+      "offset": 430176,
+      "size": 1586912
+    },
+    "s20dd.iff": {
+      "after_stretch_sha256": "9e4364bf86a1d5b8c8cff86fcac7db56027d038f852b5962e5c092a838e68ce0",
+      "before_stretch_sha256": "8e72770fd3ef4414edb443a7cbc50293e9fb48262b2f93d852f60d08005248d7",
+      "grass": {
+        "divots_after_sha256": "ff235372e060b4284c2436a58217fce30dbc8a88a2803261954c76e00118d6c2",
+        "divots_before_sha256": "9582e5182fd578c9f612203cbaff023836e610307b28e579b007a48379259893",
+        "divots_length": 4912,
+        "divots_offset": 460688,
+        "field_after_sha256": "752a21a88bc31a32ee3dba042a37a75f32eb2564b5cbfa474739f503527379c0",
+        "field_before_sha256": "fdc613ca5d8c161053cdc752cad429784a6cbc1ad2031a6fe8954abd48cd4742",
+        "field_length": 258688,
+        "field_offset": 0
+      },
+      "length": 1018192,
+      "offset": 465600,
+      "size": 1611472
+    },
+    "s20dr.iff": {
+      "after_stretch_sha256": "eb91fbfdb6714819725054daff2b7182b949a189bebe67df41ba52e9ec54e1e9",
+      "before_stretch_sha256": "40cf890db9b3e262b7ae0379a04de58df65330f080659c60a030e2fa522c14e2",
+      "grass": {
+        "divots_after_sha256": "7d5c260a322ea4f1d77871924c0b92b4d92f4974cfdf82571ab75adfdb80978c",
+        "divots_before_sha256": "4aa426182f1c4450fc75a90a46c289e896603675b319aba4bb0faf97eead1f93",
+        "divots_length": 4896,
+        "divots_offset": 468560,
+        "field_after_sha256": "efec53e695ffc236a807194cde939e4c14936f626afc9c80473bbd5ea96205b4",
+        "field_before_sha256": "af6be708d2e438dcf368d6f4d8b23f944e171d7daff528f1d720b740c3387fb1",
+        "field_length": 266560,
+        "field_offset": 0
+      },
+      "length": 1046752,
+      "offset": 473456,
+      "size": 1623808
+    },
+    "s20ds.iff": {
+      "after_stretch_sha256": "8fc6f149a97e877ea0b12528f34d7baa9fb935c234f65c56bc7c6d03da963173",
+      "before_stretch_sha256": "acd49a8fab6e7737cc01c4bac71179d8e2f7c0d5773d2f2f3c75f90d9bbb2433",
+      "grass": {
+        "divots_after_sha256": "300d6e06bf607ea64131bb7e52c38900ce53cade09f859a22d4e8ed559da84ba",
+        "divots_before_sha256": "d90079d738845bd8ec9ddcf81469397996f4c5db1a2b4bcb225b3e1bcc37a465",
+        "divots_length": 4944,
+        "divots_offset": 425184,
+        "field_after_sha256": "d999bc5b3cbfc59b82b803f772e587bdc769771d9f1c8bd208dc027e8cd96abe",
+        "field_before_sha256": "f9629f35db9879a39b724f175edabe525c20ab6b087b4a8f2684ca5bbadbf6f8",
+        "field_length": 223184,
+        "field_offset": 0
+      },
+      "length": 1044592,
+      "offset": 430128,
+      "size": 1591712
+    },
+    "s20nd.iff": {
+      "after_stretch_sha256": "10b3219071e5f223e67784b5fa3850a4bbf2800f51ed2ce8052b26e88b610348",
+      "before_stretch_sha256": "4bab42be84c3088ceed6f55faa696ef65dd27f2824a9b6faa6b6732d80e57cd8",
+      "grass": {
+        "divots_after_sha256": "ff235372e060b4284c2436a58217fce30dbc8a88a2803261954c76e00118d6c2",
+        "divots_before_sha256": "9582e5182fd578c9f612203cbaff023836e610307b28e579b007a48379259893",
+        "divots_length": 4912,
+        "divots_offset": 460688,
+        "field_after_sha256": "42a4c5464d2089d309c356a7f95c1719e1cc625903740cb5277fe3a53751a2bf",
+        "field_before_sha256": "6b0e7b42122dbf75bd4795deaa7184ea638048fa3822bce58ebf0d36b0ed9de3",
+        "field_length": 258688,
+        "field_offset": 0
+      },
+      "length": 1017184,
+      "offset": 465600,
+      "size": 1564224
+    },
+    "s20nr.iff": {
+      "after_stretch_sha256": "872e16c371574fcfcac9ed9f81a30f9bc35de1f8a61b289d816b9f750bede2c6",
+      "before_stretch_sha256": "3f5541e0b2895c267fb5292bb34560fb3fdf7e311598ac33bd8a8e294f5b03d3",
+      "grass": {
+        "divots_after_sha256": "7d5c260a322ea4f1d77871924c0b92b4d92f4974cfdf82571ab75adfdb80978c",
+        "divots_before_sha256": "4aa426182f1c4450fc75a90a46c289e896603675b319aba4bb0faf97eead1f93",
+        "divots_length": 4896,
+        "divots_offset": 468560,
+        "field_after_sha256": "8e2a811e7e6573556497c01d8b6b4712f8a390d9c047c7b156375f5a09b98841",
+        "field_before_sha256": "29e2e749823cd16ba848f1ceede4587ba7b7979f7afdd7003a0f0cf13bacfcb6",
+        "field_length": 266560,
+        "field_offset": 0
+      },
+      "length": 1045632,
+      "offset": 473456,
+      "size": 1598784
+    },
+    "s20ns.iff": {
+      "after_stretch_sha256": "d8906191edc6e190b81413ed7000abac89159784fa77daaacfd09004dc25e00d",
+      "before_stretch_sha256": "565dd54bbb2aa53543e066f812e6fc600c1b11ffcdf03977fc35783a01ea9546",
+      "grass": {
+        "divots_after_sha256": "04fe2aa940bbb3eb862ec0555d8a07bf4c7c4d2606ba76b1cd0845e8a61df1d9",
+        "divots_before_sha256": "d90079d738845bd8ec9ddcf81469397996f4c5db1a2b4bcb225b3e1bcc37a465",
+        "divots_length": 4944,
+        "divots_offset": 425168,
+        "field_after_sha256": "a2a89f4d51d963334034772e36d9830d3a16b5c02e3f7f47714761efad40fe3c",
+        "field_before_sha256": "d72a9c7ee74886dabc70b8a52e682ed373a4e64fe979208c712cae83de2907d8",
+        "field_length": 223168,
+        "field_offset": 0
+      },
+      "length": 1039808,
+      "offset": 430112,
+      "size": 1571792
+    }
+  },
+  "colour_settings": {
+    "disabled": [],
+    "enabled": {
+      "divots": true,
+      "endzones": true,
+      "master": true,
+      "normal": true,
+      "outside": true,
+      "rig_afternoon": true,
+      "rig_alt_day": true,
+      "rig_alt_dynamic": true,
+      "rig_day": true,
+      "rig_night_indoor": true,
+      "rig_rain": true,
+      "rig_snow": true,
+      "tints": true,
+      "turf": true
+    },
+    "linked": {
+      "endzones": true,
+      "outside": true
+    },
+    "preview_class": "outdoor",
+    "preview_rig": "night_indoor",
+    "schema": "nfl2k5_colour_lighting/v1",
+    "values": {
+      "divots.contrast": 0.3,
+      "endzones.hue_pull": 0.5,
+      "endzones.hue_target": 72.0,
+      "endzones.saturation": 1.12,
+      "endzones.value_lift": 2.8,
+      "master.strength": 0.5,
+      "normal.flatten": 0.68,
+      "outside.falloff": 0.45,
+      "outside.hue_pull": 0.5,
+      "outside.hue_target": 72.0,
+      "outside.match": 1,
+      "outside.saturation": 1.12,
+      "outside.value_lift": 2.8,
+      "rig_afternoon.ambient": 0.6,
+      "rig_afternoon.balance": 1,
+      "rig_afternoon.fill": 1.04,
+      "rig_afternoon.gain": 1,
+      "rig_afternoon.key": 1.2,
+      "rig_alt_day.ambient": 0.45,
+      "rig_alt_day.balance": 1,
+      "rig_alt_day.fill": 0.4,
+      "rig_alt_day.gain": 1,
+      "rig_alt_day.key": 1.1,
+      "rig_alt_dynamic.ambient": 0.42,
+      "rig_alt_dynamic.balance": 1,
+      "rig_alt_dynamic.fill": 0.4,
+      "rig_alt_dynamic.gain": 1,
+      "rig_alt_dynamic.key": 1.1,
+      "rig_day.ambient": 0.44,
+      "rig_day.balance": 1,
+      "rig_day.fill": 0.99,
+      "rig_day.gain": 1,
+      "rig_day.key": 1.6,
+      "rig_night_indoor.ambient": 0.5,
+      "rig_night_indoor.balance": 1,
+      "rig_night_indoor.fill": 0.86,
+      "rig_night_indoor.gain": 1,
+      "rig_night_indoor.key": 0.86,
+      "rig_rain.ambient": 0.46,
+      "rig_rain.balance": 1,
+      "rig_rain.fill": 0.7,
+      "rig_rain.gain": 1,
+      "rig_rain.key": 0.7,
+      "rig_snow.ambient": 0.5,
+      "rig_snow.balance": 1,
+      "rig_snow.fill": 0.62,
+      "rig_snow.gain": 1,
+      "rig_snow.key": 0.62,
+      "tints.afternoon": 1,
+      "tints.day": 1,
+      "tints.night": 1,
+      "turf.hue_pull": 0.5,
+      "turf.hue_target": 72.0,
+      "turf.map_contrast": 1,
+      "turf.saturation": 1.12,
+      "turf.value_lift": 2.8
+    }
+  },
+  "colour_settings_sha256": "11acc24b84c2d26678eb4fe0ef0d0c3ecacb8af509c9639a375bb8976d8f3490",
+  "schema": "b77_alg_repair/v2",
+  "source": "SOFTDRINK 2K28 v0.5 (2026-10-06) disc sha256 5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f"
+}

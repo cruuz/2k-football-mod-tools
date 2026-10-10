@@ -346,6 +346,24 @@ def _underlying_view(payload):
     return _seal(out)
 
 
+def _money_downs_two_point(payload):
+    """b77-i2: CPU money downs at Modern 2 (b77 p9) replaces the first call of the CPU two-point chart at 0x206E70 with a
+    5-byte call into its own code. Era rules depend on that chart only through try_ai (0x208470), which forwards to it in
+    eras whose flags allow a two-point try and returns the one-point kick otherwise; the chart is then the owner's sourced
+    Modern 2 chart. That one site is restored to retail before the dependency guard is hashed, and only while the complete
+    money-downs owner validates as applied at Modern 2. Any other change in the guard still reads foreign."""
+    from . import nfl2k5_cpu_money_downs as money_downs
+    try:
+        if money_downs.status(payload) != "applied" or (money_downs.read_settings(payload) or {}).get("level") != "modern2":
+            return ()
+    except (ValueError, KeyError, IndexError, TypeError, struct.error):
+        return ()
+    va, retail = money_downs.HOOKS2["two_point"]
+    if XbeImage(payload).read(va, len(retail)) == retail:
+        return ()
+    return ((va, retail),)
+
+
 def _prerequisites(payload):
     from . import nfl2k5_anniversary_kickoff as gate, nfl2k5_kick_rules as kr, nfl2k5_overtime as ot
     from . import nfl2k5_defensive_try as dt, nfl2k5_coin_defer as coin, nfl2k5_decided_clock as clock
@@ -358,8 +376,13 @@ def _prerequisites(payload):
     image = XbeImage(payload)
     manifest = json.loads((ROOT / "data/nfl2k5_era_rules.json").read_text())
     pins = manifest["retail_sites"]
+    tolerated = _money_downs_two_point(payload)
     for guard in manifest["retail_guards"]:
-        require(hashlib.sha256(image.read(guard["va"], guard["size"])).hexdigest() == guard["sha256"],
+        raw = bytearray(image.read(guard["va"], guard["size"]))
+        for va, retail in tolerated:
+            if guard["va"] <= va and va + len(retail) <= guard["va"] + guard["size"]:
+                raw[va - guard["va"]:va - guard["va"] + len(retail)] = retail
+        require(hashlib.sha256(raw).hexdigest() == guard["sha256"],
                 "foreign era dependency at " + hex(guard["va"]))
     for name, site, size, dispatch in specs():
         if dispatch in ("regular_tie", "no_ot", "try_points", "try_ai", "fair_catch", "fair_spot", "penalty_finish"):

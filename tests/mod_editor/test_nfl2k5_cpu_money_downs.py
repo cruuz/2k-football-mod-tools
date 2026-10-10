@@ -22,7 +22,8 @@ class PolicyTests(unittest.TestCase):
     def test_published_table_and_defaults(self):
         self.assertEqual(patch.GO_LIMITS["modern"], (0, 1, 2, 3, 2, 2))
         self.assertEqual(patch.GO_LIMITS["aggressive"], (0, 2, 3, 5, 3, 3))
-        self.assertEqual(set(patch.mapping()["presets"].values()), {"retail"})
+        # b77 p9: Basic stays retail, Advanced and Experimental use Modern 2
+        self.assertEqual(patch.mapping()["presets"], {"basic": "retail", "advanced": "modern2", "experimental": "modern2"})
         self.assertEqual(patch.decision(), "go")
         self.assertEqual(patch.decision(level="retail"), "retail")
         self.assertLessEqual(len(patch.assembly.CODE), patch.CODE_SIZE)
@@ -51,7 +52,7 @@ class PolicyTests(unittest.TestCase):
 
     def test_ui_labels(self):
         self.assertLessEqual(len(patch.BUILD_CAPTION), 60)
-        for word in ("Retail", "Patch", "EXPERIMENTAL", "UNWITNESSED"):
+        for word in ("Retail", "Modern 2", "EXPERIMENTAL", "UNWITNESSED"):
             self.assertIn(word, patch.HELP_TEXT)
         self.assertNotIn("\u2014", patch.HELP_TEXT)
 

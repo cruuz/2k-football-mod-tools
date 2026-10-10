@@ -4,7 +4,8 @@ The private ancillary PNG chunk survives the existing replacement-only project,
 snapshot and Undo transport without a second, unsynchronised settings ledger.
 Its uppercase final letter makes it unsafe to copy after an image editor changes
 pixels. The target and decoded pixel digest also reject stale/copied intent.
-Ordinary PNGs continue to mean palette-only import.
+Ordinary PNGs permit automatic own-texture routing for new banded designs.
+Explicit palette-only choices retain the shared retail image.
 """
 
 from __future__ import annotations
@@ -103,15 +104,26 @@ def import_settings(payload: bytes, asset_id: str, rgba: bytes) -> tuple[str, in
     except (ValueError, UnicodeDecodeError) as exc:
         raise ValidationError("Equipment PNG import choice is invalid.") from exc
     scale = record.get("scale") if isinstance(record, dict) else None
+    mode = record.get("mode") if isinstance(record, dict) else None
+    # A shared-palette choice is portable, like the ordinary PNG it used to
+    # produce. Only an own-chain choice names and changes a descriptor.
+    selected = record.get("asset_id") if mode == PALETTE_ONLY else asset_id
     if type(scale) is not int or scale not in (1, 2, 4) or record != {
-        "schema": SCHEMA, "asset_id": asset_id, "mode": OWN_TEXTURE,
+        "schema": SCHEMA, "asset_id": selected, "mode": mode,
         "rgba_sha256": hashlib.sha256(rgba).hexdigest(), "scale": scale,
-    } or not supports_own_texture(asset_id):
+    } or not isinstance(selected, str) or not isinstance(mode, str) or mode not in {OWN_TEXTURE, PALETTE_ONLY} or (
+        mode == OWN_TEXTURE and not supports_own_texture(asset_id)
+    ) or (mode == PALETTE_ONLY and scale != 1):
         raise ValidationError(
             "Equipment PNG import choice no longer matches this artwork or variant. "
             "Import the edited image again and choose its texture option."
         )
-    return OWN_TEXTURE, scale
+    return mode, scale
+
+
+def has_import_choice(payload: bytes) -> bool:
+    """Distinguish an explicit shared-palette choice from an ordinary PNG."""
+    return any(kind == INTENT_CHUNK for kind, *_ in _chunks(payload))
 
 
 def import_mode(payload: bytes, asset_id: str, rgba: bytes) -> str:
@@ -131,10 +143,12 @@ def with_import_mode(payload: bytes, asset_id: str, rgba: bytes, *, independent:
     for kind, _data, start, end in _chunks(payload):
         if kind == INTENT_CHUNK:
             continue
-        if kind == b"IEND" and independent:
+        # Portable export passes empty rgba to remove the project choice.
+        if kind == b"IEND" and (independent or rgba):
             data = json.dumps({
-                "schema": SCHEMA, "asset_id": asset_id, "mode": OWN_TEXTURE,
-                "rgba_sha256": hashlib.sha256(rgba).hexdigest(), "scale": scale,
+                "schema": SCHEMA, "asset_id": asset_id,
+                "mode": OWN_TEXTURE if independent else PALETTE_ONLY,
+                "rgba_sha256": hashlib.sha256(rgba).hexdigest(), "scale": scale if independent else 1,
             }, sort_keys=True, separators=(",", ":")).encode("utf-8")
             result.extend(struct.pack(">I4s", len(data), INTENT_CHUNK) + data
                           + struct.pack(">I", zlib.crc32(INTENT_CHUNK + data) & 0xFFFFFFFF))

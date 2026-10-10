@@ -117,13 +117,13 @@
    "note": "user-owned retail game input; not distributed"
   }
  },
- "spec_sha256": "4a594c9a26a5d09f6535ed50ad9ed0f90fde41f1465ed5391feda6467eb0d648",
+ "spec_sha256": "d052135919a5f62a492c2c5d796164b303a7850ad4b5a5b2fe807c72d17d6126",
  "teams": {
   "49ers_2011": {
    "abbreviation": "SF",
    "asset_code": "25",
    "city": "San Francisco",
-   "csv_sha256": "37ad8b0e006d59493cb70b85e96f492447cf7b6dfe31b8613e85b8b46a7678e7",
+   "csv_sha256": "63b2c0d532ca85555f6c8b19dd3184ce6c4b16da7d867889685b7c4409ecd980",
    "game_id": "2011_19_NO_SF",
    "jerseys_from_pbp": 29,
    "nflverse_team": "SF",
@@ -134,7 +134,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023436",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "roster",
@@ -159,7 +159,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027974",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -184,7 +184,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028595",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -1419,7 +1419,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0000108",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -1480,7 +1480,7 @@
    "abbreviation": "SF",
    "asset_code": "25",
    "city": "San Francisco",
-   "csv_sha256": "9b82d81a0bcd989f15a84e33c53dc9981a63f2d0fcf93621e4bf15e2ea5543bb",
+   "csv_sha256": "d52cb7ca42cb4c37eaa459a0283430221e86f8f38c4f856a5aa13e57be544f35",
    "game_id": "2012_21_BAL_SF",
    "jerseys_from_pbp": 26,
    "nflverse_team": "SF",
@@ -1491,7 +1491,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027974",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -1516,7 +1516,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023436",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -1541,7 +1541,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028595",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -2775,7 +2775,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0000108",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -2836,7 +2836,7 @@
    "abbreviation": "SF",
    "asset_code": "25",
    "city": "San Francisco",
-   "csv_sha256": "0586e4831b233d20fdb43a2f7645c8205a3b4e0ca25b7b796e2aacc91cf92234",
+   "csv_sha256": "1a44f6c758cac33493d5f668b48587adba33e221ce304a47e72a24db5544b3ac",
    "game_id": "2019_21_SF_KC",
    "jerseys_from_pbp": 28,
    "nflverse_team": "SF",
@@ -2847,7 +2847,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0031345",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -2872,7 +2872,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0033319",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -2897,7 +2897,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033936",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -4138,7 +4138,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023252",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -4163,7 +4163,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034941",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -4199,7 +4199,7 @@
    "abbreviation": "SF",
    "asset_code": "25",
    "city": "San Francisco",
-   "csv_sha256": "d0762ceede0116732e98578bc173dfe1ad5d25337c46f68ab1f1ce59f8264bd0",
+   "csv_sha256": "d81a2132193a1225dd197ee207acce32f4ea733408840083eeef6e06e2abbfd3",
    "game_id": "2023_22_SF_KC",
    "jerseys_from_pbp": 33,
    "nflverse_team": "SF",
@@ -4210,7 +4210,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0037834",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -4235,7 +4235,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034869",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -4260,7 +4260,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0032434",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -5494,7 +5494,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0038562",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -5519,7 +5519,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034941",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -5555,7 +5555,7 @@
    "abbreviation": "CIN",
    "asset_code": "06",
    "city": "Cincinnati",
-   "csv_sha256": "b8e4da4d4eb1bfffef347144f5cf8e095102507f6b35247860fb9372865748c4",
+   "csv_sha256": "bbe37d96eee964ffad73c04fda26e320f1a245869551261e1a46ca372849b500",
    "game_id": "2021_22_LA_CIN",
    "jerseys_from_pbp": 26,
    "nflverse_team": "CIN",
@@ -5566,7 +5566,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0036442",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -5591,7 +5591,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0032434",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -6852,7 +6852,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0036854",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -6877,7 +6877,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027103",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -6913,7 +6913,7 @@
    "abbreviation": "CIN",
    "asset_code": "06",
    "city": "Cincinnati",
-   "csv_sha256": "9cd4f343905739c468c980cf384bafd63e22cb8605418980f2ebc9954f4702ac",
+   "csv_sha256": "23211f988adc97ea41c377f8c3c7bc2fe5f3f12e9d92ce42352dfdce0960a5db",
    "game_id": "2025_07_PIT_CIN",
    "jerseys_from_pbp": 31,
    "nflverse_team": "CIN",
@@ -6924,7 +6924,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0026158",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -6950,7 +6950,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0035100",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -8208,7 +8208,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0036854",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -8233,7 +8233,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0039323",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -8269,7 +8269,7 @@
    "abbreviation": "BUF",
    "asset_code": "03",
    "city": "Buffalo",
-   "csv_sha256": "e0af24faa4d71e22365ab4c97d1f7b06e56f8e1fb0c9c1b6f5fd1d9400236c61",
+   "csv_sha256": "57df9f88108e46049486046f408c81bd1e011e9041d7828cf36cdc60e85c174e",
    "game_id": "1999_18_BUF_TEN",
    "jerseys_from_pbp": 0,
    "nflverse_team": "BUF",
@@ -8280,7 +8280,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0008612",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "roster",
@@ -8299,13 +8299,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Rob Johnson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0005363",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -8324,13 +8325,14 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Doug Flutie",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0016838",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -8349,7 +8351,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Alex Van Pelt",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8374,7 +8377,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jonathan Linton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8399,7 +8403,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Antowain Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8425,7 +8430,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Thurman Thomas",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8450,7 +8456,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lennox Gordon",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8476,7 +8483,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Sam Gash",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8501,7 +8509,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Eric Moulds",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8526,7 +8535,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Andre Reed",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8551,7 +8561,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Peerless Price",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8577,7 +8588,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kevin R. Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8602,7 +8614,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kamil Loud",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8627,7 +8640,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jeremy McDaniel",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8652,7 +8666,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Jay Riemersma",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8677,7 +8692,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bobby Collins",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8702,7 +8718,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Sheldon Jackson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8728,7 +8745,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "John Fina",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8754,7 +8772,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Robert Hicks",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8781,7 +8800,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "T. Marcus Spriggs",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8808,7 +8828,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Ruben Brown",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8834,7 +8855,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Ethan Albright",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8861,7 +8883,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Victor Allotey",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8888,7 +8911,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jamie Nails",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8915,7 +8939,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Joe Panos",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8941,7 +8966,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dusty Zeigler",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8968,7 +8994,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bill Conaty",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -8994,7 +9021,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jerry Ostroski",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9020,7 +9048,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bruce Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9045,7 +9074,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Phil Hansen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9070,7 +9100,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Shawn Price",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9095,7 +9126,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Marcellus Wiley",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9120,7 +9152,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Ted Washington",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9145,7 +9178,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Pat Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9170,7 +9204,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Sean Moran",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9195,7 +9230,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Sam Rogers",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9220,7 +9256,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Gabe Northern",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9245,7 +9282,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Marlo Perry",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9270,7 +9308,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dan Brandenburg",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9295,7 +9334,8 @@
      "retail_identity": "loose match of retail Jay Foreman",
      "role_fill": null,
      "source_name": "Jay Foreman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9320,7 +9360,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Keith Newman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9345,7 +9386,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Sam Cowart",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9370,7 +9412,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "John Holecek",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9395,7 +9438,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Joe Cummings",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9421,7 +9465,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Antoine Winfield",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9447,7 +9492,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Thomas Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9472,7 +9518,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Henry Jones",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9497,7 +9544,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Donovan Greer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9522,7 +9570,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Daryl Porter",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9547,7 +9596,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kurt Schulz",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9572,7 +9622,8 @@
      "retail_identity": "exact",
      "role_fill": "FS -> SS (retail minimum)",
      "source_name": "Keion Carpenter",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9597,7 +9648,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Steve Christie",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -9622,7 +9674,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Chris Mohr",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     }
    ],
    "pool": "roster_1999.csv (ACT)",
@@ -9639,7 +9692,7 @@
    "abbreviation": "BUF",
    "asset_code": "03",
    "city": "Buffalo",
-   "csv_sha256": "7253306d32c4971f59b0bda498eb966841349aeea29342bc22bc60df567845be",
+   "csv_sha256": "9286a93af532572a38764dcdceb821648167647cbe236325822c7816e2e1c0db",
    "game_id": "2021_20_BUF_KC",
    "jerseys_from_pbp": 30,
    "nflverse_team": "BUF",
@@ -9650,7 +9703,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034857",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -9675,7 +9728,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033869",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -10959,7 +11012,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033400",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -10995,7 +11048,7 @@
    "abbreviation": "BUF",
    "asset_code": "03",
    "city": "Buffalo",
-   "csv_sha256": "c3bd251e022636e7942452e8d00d9e58cd43a42e8e8ef4c17eda05493f7f3e96",
+   "csv_sha256": "3a560f62128be21a8655f271600a518d70268eb338469b95f33b6ce24e518d8c",
    "game_id": "2022_10_MIN_BUF",
    "jerseys_from_pbp": 30,
    "nflverse_team": "BUF",
@@ -11006,7 +11059,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034857",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -11031,7 +11084,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028986",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -12349,7 +12402,7 @@
    "abbreviation": "DEN",
    "asset_code": "08",
    "city": "Denver",
-   "csv_sha256": "ec42b182b63c3b6fb59e17319423f947a74c616313d1f133a5a53c3384315cd0",
+   "csv_sha256": "752a1b804c418abc18c3777a4bef74351be2470689d0b6ac8e2f7e6d1291c7f5",
    "game_id": "2012_19_BAL_DEN",
    "jerseys_from_pbp": 32,
    "nflverse_team": "DEN",
@@ -12360,7 +12413,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0010346",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -12385,7 +12438,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029682",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -12410,7 +12463,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0025970",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -13665,7 +13718,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026516",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -13701,7 +13754,7 @@
    "abbreviation": "ARZ",
    "asset_code": "00",
    "city": "Arizona",
-   "csv_sha256": "d8a7661c1f966d841215df1311ce71e6364cee83b875846767ac88b161c90921",
+   "csv_sha256": "39d29f74be3efcbe4cabb788b1f002483ecda2f9bbde5a24141a9354213478f5",
    "game_id": "2008_21_PIT_ARI",
    "jerseys_from_pbp": 32,
    "nflverse_team": "ARI",
@@ -13712,7 +13765,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0017200",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -13737,7 +13790,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0024225",
-     "hand_basis": "left-handed list",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -13762,7 +13815,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022101",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -15018,7 +15071,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022954",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -15055,7 +15108,7 @@
    "abbreviation": "KC",
    "asset_code": "13",
    "city": "Kansas City",
-   "csv_sha256": "fca637836c5fc10f4805e7db12afb443d845c3a79fa783f89e576a1de45da4ba",
+   "csv_sha256": "1c67a0a004b144693156b9843c55941a44bc63a9fc03896727ce2d70cce0e283",
    "game_id": "2019_21_SF_KC",
    "jerseys_from_pbp": 29,
    "nflverse_team": "KC",
@@ -15066,7 +15119,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033873",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -15091,7 +15144,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0025708",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -15116,7 +15169,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026197",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -16353,7 +16406,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033303",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -16378,7 +16431,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023534",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -16414,7 +16467,7 @@
    "abbreviation": "KC",
    "asset_code": "13",
    "city": "Kansas City",
-   "csv_sha256": "93f5e58ec3c727aa500d7da2e936d68e3f61b7cfb562aba29914461ccdc9b398",
+   "csv_sha256": "197faa61d6561a9c0feb58179a6913201c8d7b3b2795ce71237743bc99f026df",
    "game_id": "2021_20_BUF_KC",
    "jerseys_from_pbp": 28,
    "nflverse_team": "KC",
@@ -16425,7 +16478,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033873",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -16450,7 +16503,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026197",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -16475,7 +16528,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0036679",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -17715,7 +17768,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033303",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -17776,7 +17829,7 @@
    "abbreviation": "KC",
    "asset_code": "13",
    "city": "Kansas City",
-   "csv_sha256": "aa55d802a558ab90dd2ce3ad4e612be34063ad4c2e2baf24cf426f507be8a1d9",
+   "csv_sha256": "4aee2788581482314926f666729d9f0fca7d86657d73c9100b2d82a4c0fd8094",
    "game_id": "2023_22_SF_KC",
    "jerseys_from_pbp": 32,
    "nflverse_team": "KC",
@@ -17787,7 +17840,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033873",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -17812,7 +17865,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027948",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -19073,7 +19126,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033303",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -19134,7 +19187,7 @@
    "abbreviation": "IND",
    "asset_code": "11",
    "city": "Indianapolis",
-   "csv_sha256": "aaef2585bddc5eb2f962c2ce08cdf1c840e6345100bf52acbfc2130c8eeceda1",
+   "csv_sha256": "13bd8fb719b408a2e169b7977e252da3cfc547526233186145f554abc4aaad46",
    "game_id": "2009_21_NO_IND",
    "jerseys_from_pbp": 26,
    "nflverse_team": "IND",
@@ -19145,7 +19198,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0010346",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -19170,7 +19223,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0027134",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -20448,7 +20501,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027145",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -20484,7 +20537,7 @@
    "abbreviation": "IND",
    "asset_code": "11",
    "city": "Indianapolis",
-   "csv_sha256": "133ce70e71c64ccb420fc44d7cda846bba6014b6a0981105caf520421d323e36",
+   "csv_sha256": "49fd50c32c58118a1876598935b75815eab7526f3cc578e1ecb03b6f657f9921",
    "game_id": "2022_15_IND_MIN",
    "jerseys_from_pbp": 33,
    "nflverse_team": "IND",
@@ -20495,7 +20548,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026143",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -20520,7 +20573,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029567",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -20545,7 +20598,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0036879",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -21783,7 +21836,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0035358",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -21808,7 +21861,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033400",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -21844,7 +21897,7 @@
    "abbreviation": "DAL",
    "asset_code": "07",
    "city": "Dallas",
-   "csv_sha256": "463db0fd569e8cc4949247b0fbcec8c553426cc9b909b57d901bc17d8dee30d5",
+   "csv_sha256": "4fd3f493b2878381f767dd8e13dfa8a4035b2611eecf99dd7cfe0a37e06d5a0d",
    "game_id": "2014_19_DAL_GB",
    "jerseys_from_pbp": 28,
    "nflverse_team": "DAL",
@@ -21855,7 +21908,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0021678",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -21880,7 +21933,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029677",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -21905,7 +21958,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0030970",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -23141,7 +23194,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028660",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -23166,7 +23219,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0028664",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -23202,7 +23255,7 @@
    "abbreviation": "PHI",
    "asset_code": "21",
    "city": "Philadelphia",
-   "csv_sha256": "c4c45216e5152f81b153de1c43a34563543fa9a20a503eaaa5c2a1b3a2fad01b",
+   "csv_sha256": "3d7ed298dfa61afe7d3612903a20d4168858970c360dbe0761b9ec694163be34",
    "game_id": "2010_15_PHI_NYG",
    "jerseys_from_pbp": 32,
    "nflverse_team": "PHI",
@@ -23213,7 +23266,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020245",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -23238,7 +23291,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0025423",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -23263,7 +23316,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027722",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -24494,7 +24547,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0000108",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -24555,7 +24608,7 @@
    "abbreviation": "PHI",
    "asset_code": "21",
    "city": "Philadelphia",
-   "csv_sha256": "87b9fb66fb2656471815b5e0a0dca422a56baf52df4d8dac1c715ab6027c2116",
+   "csv_sha256": "7eca500e0ab9a6c92a4638e229d343cbf6d7f09bd60ab2db4c40451ac64aa239",
    "game_id": "2017_21_PHI_NE",
    "jerseys_from_pbp": 28,
    "nflverse_team": "PHI",
@@ -24566,7 +24619,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029567",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -24592,7 +24645,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0032792",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -25848,7 +25901,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033787",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -25873,7 +25926,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0022684",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -25909,7 +25962,7 @@
    "abbreviation": "ATL",
    "asset_code": "01",
    "city": "Atlanta",
-   "csv_sha256": "42b8025ce56750cbbab91f20c39df242bd6064cbb7c79c61a6545e79d82b0268",
+   "csv_sha256": "5ba3b40390cbf3b1ef6129d6d7510e68af80d9508cc03dbbee97c6eafddec610",
    "game_id": null,
    "jerseys_from_pbp": 0,
    "nflverse_team": "ATL",
@@ -25920,7 +25973,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0002876",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 0,
      "jersey_source": "roster",
@@ -25930,13 +25983,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Chandler",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0004116",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -25952,13 +26006,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Steve DeBerg",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0006299",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -25974,7 +26029,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tony Graziani",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -25996,7 +26052,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jamal Anderson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26018,7 +26075,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Harold Green",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26040,7 +26098,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ken Oxendine",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26062,7 +26121,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Gary Downs",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26078,7 +26138,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Brian Kozlowski",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26100,7 +26161,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tony Martin",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26122,7 +26184,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Terance Mathis",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26138,7 +26201,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tim Dwight",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26160,7 +26224,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Todd Kinchen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26182,7 +26247,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ronnie Harris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26198,7 +26264,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "O.J. Santiago",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26220,7 +26287,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ed Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26242,7 +26310,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Rod Monroe",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26258,7 +26327,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bob Whitfield",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26280,7 +26350,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ephraim Salaam",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26296,7 +26367,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jose Portilla",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26312,7 +26384,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Calvin Collins",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26334,7 +26407,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Gene Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26350,7 +26424,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dave Widell",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26366,7 +26441,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Robbie Tobeck",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26382,7 +26458,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bob Hallen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26404,7 +26481,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Adam Schreiber",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26420,7 +26498,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lester Archambeau",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26442,7 +26521,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chuck Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26464,7 +26544,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Shawn Swayda",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26486,7 +26567,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "John Burrough",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26508,7 +26590,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Antonio Edwards",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26524,7 +26607,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Travis Hall",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26546,7 +26630,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Shane Dronett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26568,7 +26653,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Esera Tuaolo",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26584,7 +26670,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Henri Crockett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26606,7 +26693,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Cornelius Bennett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26628,7 +26716,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Craig Sauer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26650,7 +26739,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ben Talley",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26666,7 +26756,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Keith Brooking",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26688,7 +26779,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jessie Tuggle",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26710,7 +26802,8 @@
      "retail_identity": null,
      "role_fill": "OLB -> ILB (retail minimum)",
      "source_name": "Ruffin Hamilton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26726,7 +26819,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ray Buchanan",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26748,7 +26842,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Michael Booker",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26770,7 +26865,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Darren Anderson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26792,7 +26888,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Randy Fuller",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26814,7 +26911,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Elijah Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26836,7 +26934,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ronnie Bradford",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26852,7 +26951,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Eugene Robinson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26868,7 +26968,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Omar Brown",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26890,7 +26991,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Bayne",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26906,7 +27008,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "William White",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26922,13 +27025,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Devin Bush",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0000282",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 51,
      "jersey_source": "roster",
@@ -26938,7 +27042,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Morten Andersen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -26954,7 +27059,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dan Stryzinski",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     }
    ],
    "pool": "roster_1998.csv (ACT)",
@@ -26971,7 +27077,7 @@
    "abbreviation": "ATL",
    "asset_code": "01",
    "city": "Atlanta",
-   "csv_sha256": "336220d13b63ca94b1ba16c6d6f2b2c7698765e816671d9fe872cc7e156e397b",
+   "csv_sha256": "12c2521c9354d3b73724b52a595e84b76a83b02d17f02d911e291e14195aa343",
    "game_id": "2016_21_NE_ATL",
    "jerseys_from_pbp": 33,
    "nflverse_team": "ATL",
@@ -26982,7 +27088,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026143",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -27007,7 +27113,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0022787",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -28272,7 +28378,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020578",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -28333,7 +28439,7 @@
    "abbreviation": "NYG",
    "asset_code": "18",
    "city": "New York",
-   "csv_sha256": "423daff5ab4226cb769059a9f91d368e30633cc1d1e05793a30f0fa07e4c26f2",
+   "csv_sha256": "625f416a102e5e241b5dafd904d0190633e8d32f4a33f00d54563908a7d52428",
    "game_id": "2007_21_NYG_NE",
    "jerseys_from_pbp": 30,
    "nflverse_team": "NYG",
@@ -28344,7 +28450,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0022803",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -28369,7 +28475,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0018272",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -28394,7 +28500,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022590",
-     "hand_basis": "left-handed list",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -29687,7 +29793,7 @@
    "abbreviation": "NYG",
    "asset_code": "18",
    "city": "New York",
-   "csv_sha256": "37433861f86051fbdd282f1b230de7b7d6b06f6f2a37d327a03cb4408d3f1aa7",
+   "csv_sha256": "848164d6e585ea667fb4c8bdd31ccc7472fd4a211d9a13b50c026829c46f3491",
    "game_id": "2010_15_PHI_NYG",
    "jerseys_from_pbp": 33,
    "nflverse_team": "NYG",
@@ -29698,7 +29804,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0022803",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -29723,7 +29829,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0020480",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -31042,7 +31148,7 @@
    "abbreviation": "NYG",
    "asset_code": "18",
    "city": "New York",
-   "csv_sha256": "a6d3fdacc44462537c49943079b5faeb52961b79cd4204019bc8d8997b2fb088",
+   "csv_sha256": "82a2f42e91fc9473fe57e497fc6e5b163a29a5b14513027b4e599ae35d40eadd",
    "game_id": "2011_21_NYG_NE",
    "jerseys_from_pbp": 29,
    "nflverse_team": "NYG",
@@ -31053,7 +31159,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0022803",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -31078,7 +31184,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0020608",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -32397,7 +32503,7 @@
    "abbreviation": "DET",
    "asset_code": "09",
    "city": "Detroit",
-   "csv_sha256": "fb1e48e6675c315664e85409b0544ae34b9b029c68a5da040677af6ed06b2414",
+   "csv_sha256": "58bb2f4ac49c34340ff221fe2b1b03551a6fba5a870b0d79d4990fb8b7630acd",
    "game_id": "2015_13_GB_DET",
    "jerseys_from_pbp": 30,
    "nflverse_team": "DET",
@@ -32408,7 +32514,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026498",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -32433,7 +32539,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023578",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -33753,7 +33859,7 @@
    "abbreviation": "GB",
    "asset_code": "10",
    "city": "Green Bay",
-   "csv_sha256": "11422b0a0cdc2ffcb9325598a55de834137e58f42c98ea3319750ebcbb84c504",
+   "csv_sha256": "bbe7f70cb7f7aef398aad4c63034e0058972124725a3296ab1fbb7b3733eb9e6",
    "game_id": "2014_19_DAL_GB",
    "jerseys_from_pbp": 33,
    "nflverse_team": "GB",
@@ -33764,7 +33870,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023459",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -33789,7 +33895,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026349",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -33814,7 +33920,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028595",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -35111,7 +35217,7 @@
    "abbreviation": "GB",
    "asset_code": "10",
    "city": "Green Bay",
-   "csv_sha256": "5c479aee82e0db1218aaffabd35d6bc8e9bd34bdf11a1f746929a8be44921c23",
+   "csv_sha256": "c473ae7f822f8269cf8b19079cb68947e799521509599071d4a5feb1f28d8ca0",
    "game_id": "2015_13_GB_DET",
    "jerseys_from_pbp": 32,
    "nflverse_team": "GB",
@@ -35122,7 +35228,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023459",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -35147,7 +35253,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028595",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -35172,7 +35278,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0031589",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -36468,7 +36574,7 @@
    "abbreviation": "CAR",
    "asset_code": "04",
    "city": "Carolina",
-   "csv_sha256": "c4bb63815ab060b6baa94e720326e2a497daa407f5fc52324e895544dc74430a",
+   "csv_sha256": "4f7200aeca73cef36b69a88aad1b12c7820228fe389fdd672b60b984bfdb87a4",
    "game_id": "2003_21_CAR_NE",
    "jerseys_from_pbp": 36,
    "nflverse_team": "CAR",
@@ -36479,7 +36585,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0004161",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -36495,7 +36601,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0012732",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -36511,7 +36617,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0020434",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -37301,7 +37407,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0009028",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -37344,7 +37450,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "21d19745d37575427ec335ca30b5e884cc6b1029031284780e9734dd85fb8426",
+   "csv_sha256": "2225326b9d44a698ff054b0f824bcd23c48b9024fa4534eeb78570121c0ec209",
    "game_id": "2001_19_OAK_NE",
    "jerseys_from_pbp": 30,
    "nflverse_team": "NE",
@@ -37355,7 +37461,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -37371,7 +37477,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0007835",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -37387,13 +37493,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Damon Huard",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0001361",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -37403,7 +37510,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Drew Bledsoe",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37419,7 +37527,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Antowain Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37435,7 +37544,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kevin Faulk",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37451,7 +37561,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Marc Edwards",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37467,7 +37578,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "J.R. Redmond",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37483,7 +37595,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Patrick Pass",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37499,7 +37612,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Troy Brown",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37515,7 +37629,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "David Patten",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37537,7 +37652,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Fred Coleman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37559,7 +37675,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Charles Johnson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37575,7 +37692,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jimmy Farris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37591,7 +37709,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jermaine Wiggins",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37613,7 +37732,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Rod Rutledge",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37635,7 +37755,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Arther Love",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37651,7 +37772,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Matt Light",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37673,7 +37795,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Greg Randall",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37689,7 +37812,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Grant Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37705,7 +37829,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mike Compton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37721,7 +37846,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Joe Andruzzi",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37737,7 +37863,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kenyatta Jones",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37753,7 +37880,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Grey Ruegamer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37769,7 +37897,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Damien Woody",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37791,7 +37920,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bobby Hamilton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37813,7 +37943,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Anthony Pleasant",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37835,7 +37966,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Sullivan",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37851,7 +37983,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Brandon Mitchell",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37867,7 +38000,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Richard Seymour",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37889,7 +38023,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Riddick Parker",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37911,7 +38046,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "David Nugent",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37933,7 +38069,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Stephen Neal",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37949,7 +38086,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mike Vrabel",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37965,7 +38103,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Willie McGinest",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37981,7 +38120,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Larry Izzo",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -37997,7 +38137,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Matt Chatham",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38019,7 +38160,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lonie Paxton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38035,7 +38177,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tedy Bruschi",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38057,7 +38200,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bryan Cox",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38073,7 +38217,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Roman Phifer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38089,7 +38234,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ted Johnson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38105,7 +38251,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ty Law",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38121,7 +38268,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Otis Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38143,7 +38291,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Terrell Buckley",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38165,7 +38314,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Terrance Shaw",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38187,7 +38337,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Leonard Myers",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38203,7 +38354,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Matt Stevens",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38219,7 +38371,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tebucky Jones",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38235,7 +38388,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Je'Rod Cherry",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38251,7 +38405,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lawyer Milloy",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38273,7 +38428,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Antwan Harris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -38295,7 +38451,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0017127",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -38305,7 +38461,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ken Walter",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     }
    ],
    "pool": "roster_2001.csv (ACT)",
@@ -38322,7 +38479,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "cd9788af07c022744143fcd40bb3a35aa3fe98a51aac1ab0f8c33bf3bce9a0f3",
+   "csv_sha256": "c7c84112c34e9c1c41b111fb909b41bffe07c8b832540114062d73e62f60fdae",
    "game_id": "2003_21_CAR_NE",
    "jerseys_from_pbp": 29,
    "nflverse_team": "NE",
@@ -38333,7 +38490,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -38349,7 +38506,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0007835",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -38365,7 +38522,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0021238",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -39183,7 +39340,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0017127",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -39210,7 +39367,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "961694620140bb0efaaba82b300a9fb0b9d4eee52039d6327bbade4c8e4d10a9",
+   "csv_sha256": "faa914b2c286049cbd023a8ee6906ab9bbe63ffda03a099c1991437f33bd773d",
    "game_id": "2007_21_NYG_NE",
    "jerseys_from_pbp": 31,
    "nflverse_team": "NE",
@@ -39221,7 +39378,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -39246,7 +39403,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0023662",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -39271,7 +39428,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0024824",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -40501,7 +40658,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024333",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -40526,7 +40683,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0006799",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -40562,7 +40719,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "d6bc451edf1a557cdf6f77211a9b326cba26c816a1ef86f4a853139177481583",
+   "csv_sha256": "0c6d0072f366e9576d928bf64dc44fb2e68f01a7064cc2775d2c52c3eb5e5876",
    "game_id": "2011_21_NYG_NE",
    "jerseys_from_pbp": 28,
    "nflverse_team": "NE",
@@ -40573,7 +40730,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -40598,7 +40755,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026625",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -40623,7 +40780,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028012",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -41864,7 +42021,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024333",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -41889,7 +42046,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0027749",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -41925,7 +42082,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "a8331e21cb2590030dc421d3c1b8a715c7d38319d9447d2999959071a2f2e62e",
+   "csv_sha256": "66dcac316c577519c661735677bef310a5d3888474817e2245a786efe96c5fd7",
    "game_id": "2014_21_NE_SEA",
    "jerseys_from_pbp": 28,
    "nflverse_team": "NE",
@@ -41936,7 +42093,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -41961,7 +42118,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0031345",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -43220,7 +43377,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024333",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -43245,7 +43402,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029984",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -43281,7 +43438,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "a8019e486e73096a52d8c0d9736f1db568236f1964094bdfe00c537ffc9db3e7",
+   "csv_sha256": "eee667a41318ad1b3a2e79e4ee151b35302ca99ca78a323638e0789365ad3e86",
    "game_id": "2016_21_NE_ATL",
    "jerseys_from_pbp": 30,
    "nflverse_team": "NE",
@@ -43292,7 +43449,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -43317,7 +43474,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0031345",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -43342,7 +43499,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033119",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -44575,7 +44732,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024333",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -44600,7 +44757,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029984",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -44636,7 +44793,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "b2c590b51cd7bf1f1e1990f6b276014e01aab78e15a3904201585c85a8144918",
+   "csv_sha256": "0a541849eea085c5b97409a99f3d57f2f8f217cdea49f9d2a4dda1593dd2cf59",
    "game_id": "2017_21_PHI_NE",
    "jerseys_from_pbp": 27,
    "nflverse_team": "NE",
@@ -44647,7 +44804,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019596",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -44672,7 +44829,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026625",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -45938,7 +46095,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024333",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -45963,7 +46120,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029984",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 52,
      "jersey_source": "roster",
@@ -45999,7 +46156,7 @@
    "abbreviation": "OAK",
    "asset_code": "20",
    "city": "Oakland",
-   "csv_sha256": "4cfedc464c9acc0b593af785374718906bcecaafb1f3a49b43f9df552e872b48",
+   "csv_sha256": "b043e9725abb27629266fdd0497980d75e0e26552e5bd2491f388251eaad878b",
    "game_id": "2001_19_OAK_NE",
    "jerseys_from_pbp": 34,
    "nflverse_team": "LV",
@@ -46010,7 +46167,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0005741",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -46029,13 +46186,14 @@
      "retail_identity": "loose match of retail Rich Gannon",
      "role_fill": null,
      "source_name": "Rich Gannon",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0020405",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -46054,13 +46212,14 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Marques Tuiasosopo",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0012732",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -46080,7 +46239,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Rodney Peete",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46106,7 +46266,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Tyrone Wheatley",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46131,7 +46292,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Charlie Garner",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46157,7 +46319,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Randy Jordan",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46183,7 +46346,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Terry Kirby",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46208,7 +46372,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jermaine Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46233,7 +46398,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Jon Ritchie",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46258,7 +46424,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Zack Crockett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46283,7 +46450,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Tim Brown",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46308,7 +46476,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Jerry Rice",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46333,7 +46502,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Jerry Porter",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46358,7 +46528,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Marcus Knight",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46384,7 +46555,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "James Jett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46409,7 +46581,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Roland Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46434,7 +46607,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mondriel Fulcher",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46459,7 +46633,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jeremy Brigham",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46484,7 +46659,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Barry Sims",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46509,7 +46685,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lincoln Kennedy",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46534,7 +46711,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Matt Stinchcomb",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46559,7 +46737,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Darryl Ashmore",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46585,7 +46764,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Toby Myles",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46610,7 +46790,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Steve Wisniewski",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46635,7 +46816,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Mo Collins",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46660,7 +46842,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Frank Middleton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46686,7 +46869,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Adam Treu",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46711,7 +46895,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Aaron Graham",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46736,7 +46921,8 @@
      "retail_identity": "loose match of retail Regan Upshaw",
      "role_fill": null,
      "source_name": "Regan Upshaw",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46761,7 +46947,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Tony Bryant",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46786,7 +46973,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Josh Taves",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46812,7 +47000,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "DeLawrence Grant",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46837,7 +47026,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Rod Coleman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46862,7 +47052,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Grady Jackson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46887,7 +47078,8 @@
      "retail_identity": "loose match of retail Chris Cooper",
      "role_fill": null,
      "source_name": "Chris Cooper",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46913,7 +47105,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Junior Ioane",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46938,7 +47131,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "William Thomas",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46963,7 +47157,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Elijah Alexander",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -46988,7 +47183,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Travian Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47013,7 +47209,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Greg Biekert",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47038,7 +47235,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Eric Barton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47063,7 +47261,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bobby Brooks",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47114,7 +47313,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Eric Allen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47139,7 +47339,8 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Tory James",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47164,7 +47365,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Brandon Jennings",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47190,7 +47392,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Anthony Dorsett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47215,7 +47418,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Johnnie Harris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47241,7 +47445,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Raymond Perryman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47266,7 +47471,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Marquez Pope",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -47291,13 +47497,14 @@
      "retail_identity": "exact",
      "role_fill": null,
      "source_name": "Derrick Gibson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0019646",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -47358,7 +47565,7 @@
    "abbreviation": "STL",
    "asset_code": "23",
    "city": "Los Angeles",
-   "csv_sha256": "3c9c04c7cf16b63457b8eceb5d0145bc313dd35e0bc6695bb71a3fae1409f77f",
+   "csv_sha256": "458da3a857676cf83d37eaf741a995ec06345ac11d90cb7e10d43252ac7e2599",
    "game_id": "2021_22_LA_CIN",
    "jerseys_from_pbp": 28,
    "nflverse_team": "LA",
@@ -47369,7 +47576,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026498",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -47394,7 +47601,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034899",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -47419,7 +47626,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0035939",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -48657,7 +48864,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0035269",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -48682,7 +48889,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028872",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -48718,7 +48925,7 @@
    "abbreviation": "BAL",
    "asset_code": "02",
    "city": "Baltimore",
-   "csv_sha256": "c1b5d243af2194d462cec62df68e9c8503c8e18cce14da5e064cdfff81e17c6e",
+   "csv_sha256": "6b7561dcb9b7f9465067682ff0a45249bac4bf71a165dcdd2ad499fd266db2e7",
    "game_id": "2012_21_BAL_SF",
    "jerseys_from_pbp": 30,
    "nflverse_team": "BAL",
@@ -48729,7 +48936,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026158",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -48754,7 +48961,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028118",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -50040,7 +50247,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0024417",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -50076,7 +50283,7 @@
    "abbreviation": "NO",
    "asset_code": "17",
    "city": "New Orleans",
-   "csv_sha256": "ad131821cd8a1897d3abfdc0770fb527dc57193524348921b5cb6523ed204b6d",
+   "csv_sha256": "904b8028bc519ac27616b0c06504f819961238da08214d6866913b4b62a013ca",
    "game_id": "2009_21_NO_IND",
    "jerseys_from_pbp": 30,
    "nflverse_team": "NO",
@@ -50087,7 +50294,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020531",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -50112,7 +50319,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0002110",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -50137,7 +50344,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026544",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -51368,7 +51575,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0025824",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -51430,7 +51637,7 @@
    "abbreviation": "NO",
    "asset_code": "17",
    "city": "New Orleans",
-   "csv_sha256": "50d77a139cd6509c0ecdf69faa4d933569841f5b4a0b7b50ae52df8f015efa60",
+   "csv_sha256": "3780966111d5e026364dea8076d221cda9523e241786f2d0afd47eddfd0f0a77",
    "game_id": "2010_18_NO_SEA",
    "jerseys_from_pbp": 32,
    "nflverse_team": "NO",
@@ -51441,7 +51648,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020531",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -51466,7 +51673,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026544",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -52725,7 +52932,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0025824",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -52786,7 +52993,7 @@
    "abbreviation": "NO",
    "asset_code": "17",
    "city": "New Orleans",
-   "csv_sha256": "ace20d59c9fd301bec682bf12eb9ad63881dd05aed6444502152da64cc7e2e98",
+   "csv_sha256": "edeb85caafb0f49504b91aa32382f8b225540f8f7c7e47a91612f30a7dc6ca7a",
    "game_id": "2011_19_NO_SF",
    "jerseys_from_pbp": 33,
    "nflverse_team": "NO",
@@ -52797,7 +53004,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020531",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -52822,7 +53029,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026544",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -54081,7 +54288,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0009028",
-     "hand_basis": "retail 2004 identity",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 51,
      "jersey_source": "pbp",
@@ -54142,7 +54349,7 @@
    "abbreviation": "NO",
    "asset_code": "17",
    "city": "New Orleans",
-   "csv_sha256": "89ffe026549a760d42b1425e64b0048bbd7e99fe591dc6461e04169e29437aa1",
+   "csv_sha256": "0fd8a6be45557c3d4e14dbb7fe59e996accf7f357d5acb7f1440e28d5d7cff90",
    "game_id": "2017_19_NO_MIN",
    "jerseys_from_pbp": 26,
    "nflverse_team": "NO",
@@ -54153,7 +54360,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0020531",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -54178,7 +54385,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0026544",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -54203,7 +54410,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0033357",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -55504,7 +55711,7 @@
    "abbreviation": "SEA",
    "asset_code": "26",
    "city": "Seattle",
-   "csv_sha256": "1095c5360fc33a43201f5fda8a116bc51f6241b67ec4ad30e329fd88a7acce63",
+   "csv_sha256": "0fa88b5ab45adf8c79d390a9dc62dc6cbfd2fb475038654746eecca740b07a26",
    "game_id": "2010_18_NO_SEA",
    "jerseys_from_pbp": 32,
    "nflverse_team": "SEA",
@@ -55515,7 +55722,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0007091",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -55540,7 +55747,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0024296",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -55565,7 +55772,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022912",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -56826,7 +57033,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0023742",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -56862,7 +57069,7 @@
    "abbreviation": "SEA",
    "asset_code": "26",
    "city": "Seattle",
-   "csv_sha256": "8b5e5294468eb89d2bee1f9f0b2e6877e626419577f473692f364b9ef638f7f6",
+   "csv_sha256": "3cd5fc7291ecfd0b3e84cd1193535c115d081cb87e9cf1ea452870579b591ec4",
    "game_id": "2014_21_NE_SEA",
    "jerseys_from_pbp": 28,
    "nflverse_team": "SEA",
@@ -56873,7 +57080,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029263",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -56898,7 +57105,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0024279",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -56923,7 +57130,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0030120",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -58182,7 +58389,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0023742",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -58218,7 +58425,7 @@
    "abbreviation": "PIT",
    "asset_code": "22",
    "city": "Pittsburgh",
-   "csv_sha256": "9b510e83356c32830f4345a9aed6eb1596d62498f9b170a607f5f3927542fe99",
+   "csv_sha256": "397d39e8a1052223bcf75fa1854d0ddfdcef454ce667fb1965aaefe026412e57",
    "game_id": "2008_21_PIT_ARI",
    "jerseys_from_pbp": 30,
    "nflverse_team": "PIT",
@@ -58229,7 +58436,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022924",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -58254,7 +58461,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0022177",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -58279,7 +58486,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0026296",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -59574,7 +59781,7 @@
    "abbreviation": "PIT",
    "asset_code": "22",
    "city": "Pittsburgh",
-   "csv_sha256": "0a5abc4ca06f2765e0ff95f6e8dfae9d5f8d761d9831eac0923b82fef7cb3b0c",
+   "csv_sha256": "518c1cdb418ce402f6cab0e4c42532c0dfa55c991d4eef9724649fe6a7e2521a",
    "game_id": "2025_07_PIT_CIN",
    "jerseys_from_pbp": 32,
    "nflverse_team": "PIT",
@@ -59585,7 +59792,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0023459",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -59610,7 +59817,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0034771",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -60895,7 +61102,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0035821",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -60931,7 +61138,7 @@
    "abbreviation": "TEN",
    "asset_code": "28",
    "city": "Tennessee",
-   "csv_sha256": "8912d6b75969791e60ada0a3578eedd7935dff80b3fa343b68829fccd809e7e6",
+   "csv_sha256": "0a43b591a0d7700ee08e4c7287b2e0646bb89ff4216c97bbdac6b01b6bbde40e",
    "game_id": "1999_18_BUF_TEN",
    "jerseys_from_pbp": 0,
    "nflverse_team": "TEN",
@@ -60942,7 +61149,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0011024",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "roster",
@@ -60952,13 +61159,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Steve McNair",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0012261",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -60974,13 +61182,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Neil O'Donnell",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0003819",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -60996,7 +61205,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kevin Daft",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61012,7 +61222,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Eddie George",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61034,7 +61245,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Rodney Thomas",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61050,7 +61262,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Spencer George",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61066,7 +61279,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Lorenzo Neal",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61082,7 +61296,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kevin Dyson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61104,7 +61319,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Yancey Thigpen",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61126,7 +61342,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Sanders",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61148,7 +61365,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Isaac Byrd",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61164,7 +61382,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Derrick Mason",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61186,7 +61405,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Joey Kent",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61202,7 +61422,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Frank Wycheck",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61224,7 +61445,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jackie Harris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61246,7 +61468,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Larry Brown",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61262,7 +61485,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jon Runyan",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61278,7 +61502,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Brad Hopkins",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61294,7 +61519,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Zach Piller",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61310,7 +61536,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jason Mathews",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61332,7 +61559,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Bruce Matthews",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61348,7 +61576,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jason Layman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61364,7 +61593,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Benji Olson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61380,7 +61610,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kevin Long",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61396,7 +61627,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Craig Page",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61412,7 +61644,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jevon Kearse",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61428,7 +61661,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kenny Holmes",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61450,7 +61684,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Henry Ford",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61472,7 +61707,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mike Frederick",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61488,7 +61724,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jason Fisk",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61504,7 +61741,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "John Thornton",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61526,7 +61764,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Josh Evans",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61542,7 +61781,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mike D. Jones",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61558,7 +61798,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Joe Salave'a",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61580,7 +61821,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Eddie Robinson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61602,7 +61844,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Terry Killens",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61624,7 +61867,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Doug Colman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61640,7 +61884,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Greg Favors",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61662,7 +61907,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Phil Glover",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61684,7 +61930,8 @@
      "retail_identity": null,
      "role_fill": "OLB -> ILB (retail minimum)",
      "source_name": "Joe Bowden",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61706,7 +61953,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Barron Wortham",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61722,7 +61970,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Samari Rolle",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61738,7 +61987,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dainon Sidney",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61754,7 +62004,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Denard Walker",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61776,7 +62027,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Donald Mitchell",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61798,7 +62050,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Steve Jackson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61820,7 +62073,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "George McCullough",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61836,7 +62090,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Marcus Robertson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61852,7 +62107,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Blaine Bishop",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61874,7 +62130,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Anthony Dorsett",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61890,7 +62147,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Perry Phenix",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61906,7 +62164,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Al Del Greco",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -61922,7 +62181,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Craig Hentrich",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     }
    ],
    "pool": "roster_1999.csv (ACT)",
@@ -61939,7 +62199,7 @@
    "abbreviation": "MIN",
    "asset_code": "15",
    "city": "Minnesota",
-   "csv_sha256": "daa8befc8e4e24bdec7348f4e58cdf466c356e35b7f0177076118cce22cd501d",
+   "csv_sha256": "ee3b1ea17f25e4cdc0f9120967cbc032c7af5c0f5094eea6e3759c09d9b8f435",
    "game_id": null,
    "jerseys_from_pbp": 0,
    "nflverse_team": "MIN",
@@ -61950,7 +62210,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0003761",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 0,
      "jersey_source": "roster",
@@ -61966,13 +62226,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Randall Cunningham",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0008442",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -61982,13 +62243,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Brad Johnson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0001545",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -62004,13 +62266,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Todd Bouman",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0005180",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 3,
      "jersey_source": "roster",
@@ -62020,7 +62283,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jay Fiedler",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62042,7 +62306,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Robert Smith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62058,7 +62323,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Harold Morrow",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62074,7 +62340,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Leroy Hoard",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62096,7 +62363,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "David Palmer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62118,7 +62386,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chuck Evans",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62134,7 +62403,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Randy Moss",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62156,7 +62426,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Cris Carter",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62178,7 +62449,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tony Bland",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62200,7 +62472,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Matt Hatchette",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62222,7 +62495,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Robert Tate",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62244,7 +62518,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jake Reed",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62266,7 +62541,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Walsh",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62288,7 +62564,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Andrew Glover",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62304,7 +62581,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Hunter Goodwin",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62326,7 +62604,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Greg DeLong",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62342,7 +62621,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Todd Steussie",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62364,7 +62644,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Korey Stringer",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62386,7 +62667,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Everett Lindsay",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62402,7 +62684,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Matt Birk",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62418,7 +62701,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Chris Liwienski",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62434,7 +62718,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Randall McDaniel",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62450,7 +62735,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "David Dixon",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62466,7 +62752,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jeff Christy",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62488,7 +62775,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mike Morris",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62510,7 +62798,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Derrick L. Alexander",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62532,7 +62821,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "John Randle",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62548,7 +62838,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Duane Clemons",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62570,7 +62861,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Stalin Colinet",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62592,7 +62884,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jerry Ball",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62608,7 +62901,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Tony Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62624,7 +62918,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jason Fisk",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62646,7 +62941,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ben Williams",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62668,7 +62964,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dixon Edwards",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62684,7 +62981,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Dwayne Rudd",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62706,7 +63004,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Kivuusama Mays",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62728,7 +63027,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Pete Bercich",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62750,7 +63050,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ed McDaniel",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62772,7 +63073,8 @@
      "retail_identity": null,
      "role_fill": "OLB -> ILB (retail minimum)",
      "source_name": "Bobby Houston",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62788,7 +63090,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Corey Fuller",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62810,7 +63113,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Jimmy Hitchcock",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62832,7 +63136,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Anthony Bass",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62854,7 +63159,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Antonio Banks",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62876,7 +63182,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Ramos McDonald",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62898,7 +63205,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Orlando Thomas",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62914,7 +63222,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Robert Griffith",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62930,7 +63239,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Gregg Briggs",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62952,13 +63262,14 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Duane Butler",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0000313",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 51,
      "jersey_source": "roster",
@@ -62968,7 +63279,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Gary Anderson",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     },
     {
      "added_from_season_roster": false,
@@ -62984,7 +63296,8 @@
      "retail_identity": null,
      "role_fill": null,
      "source_name": "Mitch Berger",
-     "source_status": "ACT"
+     "source_status": "ACT",
+     "years_pro_basis": "players.csv: season minus the earlier of draft_year and rookie_season, plus 1 (this roster file has no years_exp for the player)"
     }
    ],
    "pool": "roster_1998.csv (ACT)",
@@ -63001,7 +63314,7 @@
    "abbreviation": "MIN",
    "asset_code": "15",
    "city": "Minnesota",
-   "csv_sha256": "cc1c8f019076642e425f4dc6369981c85a2037b17259d3a4e288e3aa2c2d7937",
+   "csv_sha256": "c3cc098f1051fed2d125ddd1e36087b04119cf32a3ed24bd8d61b37cbda74d47",
    "game_id": "2017_19_NO_MIN",
    "jerseys_from_pbp": 29,
    "nflverse_team": "MIN",
@@ -63012,7 +63325,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0028986",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -63037,7 +63350,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0027854",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -63062,7 +63375,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0031237",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 2,
      "jersey_source": "roster",
@@ -63087,7 +63400,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0033672",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 3,
      "jersey_source": "roster",
@@ -64357,7 +64670,7 @@
    "abbreviation": "MIN",
    "asset_code": "15",
    "city": "Minnesota",
-   "csv_sha256": "1183d3ea2f53631359e5d20a254e09f425d1afcc6c8ac9ac67d87edd910cb85a",
+   "csv_sha256": "40febaa03772d85dfc251ed7a905a8b53ace9fbb1c5e602ee94c39f10ce2d7b4",
    "game_id": "2022_10_MIN_BUF",
    "jerseys_from_pbp": 32,
    "nflverse_team": "MIN",
@@ -64368,7 +64681,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0029604",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 0,
      "jersey_source": "pbp",
@@ -64393,7 +64706,7 @@
      "added_from_season_roster": false,
      "college_basis": "not in the table (template keeps its own)",
      "gsis_id": "00-0033319",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": false,
      "index": 1,
      "jersey_source": "roster",
@@ -65678,7 +65991,7 @@
      "added_from_season_roster": false,
      "college_basis": "main college table",
      "gsis_id": "00-0037500",
-     "hand_basis": "default right",
+     "hand_basis": "sourced (b77 a2 handedness)",
      "in_moment_game_pbp": true,
      "index": 52,
      "jersey_source": "pbp",
@@ -65710,5 +66023,7 @@
    "template": "h-15-1998-vikings-0.iff",
    "week": 10
   }
- }
+ },
+ "years_pro_convention": "game_rookie_1",
+ "years_pro_convention_note": "years pro counts the season in progress (rookie = 1, the card prints R): nflverse years_exp (rookie = 0) plus 1"
 }

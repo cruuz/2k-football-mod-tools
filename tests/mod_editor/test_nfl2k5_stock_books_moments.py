@@ -1,7 +1,14 @@
 """Bounded native resolver proof; synthetic loaded SITU rows, no gameplay claim."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import hashlib
 import json
-from pathlib import Path
 import struct
 import unittest
 
@@ -27,8 +34,9 @@ class ModernMomentBooks(unittest.TestCase):
         cls.current = books.apply(cls.retail)[0]
         allocated = space.apply(cls.retail, books.REQUESTS)[0]
         a = books.allocation(allocated)
-        for name, code in (('legacy', books.code_for(a['va'], modern_moments=False)),
-                           ('previous50', books.code_for(a['va'], moment_limit=50))):
+        for name, code in (('legacy', books.code_for(a['va'], modern_moments=False, legacy=True)),
+                           ('previous50', books.code_for(a['va'], moment_limit=50, legacy=True)),
+                           ('v05', books.code_for(a['va'], legacy=True))):      # b77-a4: the v0.5 body (40 byte alias rows)
             buf = bytearray(space.install_code(allocated, books.OWNER, code)[0])
             image = XbeImage(buf)
             at = image.offset(books.SITE, len(books.RETAIL))
@@ -125,7 +133,7 @@ class ModernMomentBooks(unittest.TestCase):
             self.assertTrue(self.resolve(m, null_team=True))
 
     def test_exact_upgrade_idempotence_and_foreign_code_refusal(self):
-        for previous in (self.legacy, self.previous50):
+        for previous in (self.legacy, self.previous50, self.v05):
             self.assertEqual(books.status(previous), 'needs_fix')
             fixed, receipt = books.apply(previous)
             self.assertEqual(fixed, self.current)

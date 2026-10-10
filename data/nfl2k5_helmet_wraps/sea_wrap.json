@@ -1,0 +1,30 @@
+{
+ "schema": "nfl2k5_helmet_wrap/v1",
+ "team": "SEA",
+ "camera": {
+  "elevation": 30.0,
+  "sx": 11.0,
+  "sy": 10.8,
+  "tx": 150.78,
+  "ty": 615.78,
+  "fit_size": 300
+ },
+ "res_cm": 0.05,
+ "u_range": [
+  -13.0,
+  13.0
+ ],
+ "w_range": [
+  28.0,
+  56.0
+ ],
+ "values": {
+  "0": "none",
+  "1": "white",
+  "2": "grey"
+ },
+ "view_plane": "u = -x, w = y cos(el) + z sin(el), cm, rest-pose head",
+ "photo_axis_offset_cm": -0.175,
+ "symmetrized": "the half with more painted cells, mirrored about the helmet centre line",
+ "source": "classified from Riddell authentic SpeedFlex SEA-4 (back view); only the classification is kept"
+}

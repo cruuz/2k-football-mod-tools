@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_play_codec as codec
 from mod_editor.core import nfl2k5_play_library as lib
+from mod_editor.core import nfl2k5_offense_concepts as _modern_catalog  # noqa: F401  (registers modern concepts)
 from mod_editor.core import nfl2k5_play_rules as rules
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_playbook_inspector import Nfl2k5Playbook
@@ -612,6 +613,7 @@ class PlayTypePage(QWizardPage):
             ("keeper", "QB keeper", "QB keeps it around the edge"),
             ("option", "Option reads EXPERIMENTAL", "native speed option and fixed-opponent read experiments"),
             ("reverse", "Reverse", "handoff to the back, who hands to a receiver going the other way"),
+            ("flea", "Flea flicker", "hand off, the back pitches it back, the QB throws deep (retail script)"),
         ):
             rb = QRadioButton(label)
             rb.setStyleSheet(HUGE)
@@ -915,7 +917,8 @@ class PlayTypePage(QWizardPage):
                 self.screen_drop.value(), self.screen_delay.value(),
             )
         lib.default_assignments(spec, concept=concept, scheme=scheme if t == "run" else None)
-        if t == "pa_pass" and spec.carrier_slot is not None:
+        current = spec.assignments.get(spec.carrier_slot) if spec.carrier_slot is not None else None
+        if t == "pa_pass" and spec.carrier_slot is not None and (current is None or current.kind != "custom"):
             spec.assignments[spec.carrier_slot] = lib.PlayerAssignment("fake_carry")
         label = concept if t in ("pass", "pa_pass") else (scheme if t == "run" else t)
         return spec, label

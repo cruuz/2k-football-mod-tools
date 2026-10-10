@@ -1394,7 +1394,7 @@
       "stadium_index": 27,
       "stadium_note": "Raymond James Stadium, Tampa: the retail 'Tampa Bay Stadium' is the Buccaneers' 2004 home, the same building under its unlicensed name.",
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "notes": "The Cardinals' 2005 redesign is not on the disc; their 2004 uniform (index 0) is the closest.",
@@ -1464,8 +1464,8 @@
       "stadium_index": 3,
       "stadium_note": "Highmark Stadium, Orchard Park: the retail 'Ralph Wilson Stadium' is the same building under its 2004 name.",
       "kits": {
-        "away": 0,
-        "home": 4
+        "away": "modern",
+        "home": "modern"
       },
       "notes": "Bills kit 4 ('1976 - 1983 Uniform': white helmet, royal blue) is the closest to their 2021 uniforms.",
       "sources": [
@@ -1513,7 +1513,7 @@
       "stadium_index": 16,
       "stadium_note": "Foxboro Stadium was replaced in 2002 by Gillette Stadium, built next door; the retail 'Gillette Stadium' stands in.",
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -1541,7 +1541,7 @@
       "stadium_index": 31,
       "stadium_note": "Reliant Stadium, Houston: the real venue (the retail 'Reliant Stadium').",
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -1567,8 +1567,8 @@
       "stadium_index": 37,
       "stadium_note": "Sun Life Stadium, Miami Gardens: index 37 is the game's own 'Super Bowl 2007' Miami site, the same building as the retail Pro Player Stadium (fallback 14).",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 6,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
@@ -1591,7 +1591,7 @@
       "stadium_index": 18,
       "stadium_note": "New Meadowlands Stadium (now MetLife Stadium) replaced Giants Stadium next door in 2010; the retail 'Giants Stadium' stands in.",
       "kits": {
-        "away": 0,
+        "away": 10,
         "home": 0
       },
       "sources": [
@@ -1613,7 +1613,7 @@
       "stadium_index": 26,
       "stadium_note": "Qwest Field, Seattle: the real venue under its 2011 name.",
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -1636,8 +1636,8 @@
       "stadium_index": 25,
       "stadium_note": "Candlestick Park: the retail 'San Francisco Park' is the same building under its 2004 name.",
       "kits": {
-        "away": 0,
-        "home": 3
+        "away": 6,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/The_Catch_III"
@@ -1659,8 +1659,8 @@
       "stadium_index": 8,
       "stadium_note": "Sports Authority Field at Mile High: the retail 'INVESCO Field' is the same building under its 2004 name.",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 1,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Mile_High_Miracle"
@@ -1682,8 +1682,8 @@
       "stadium_index": 17,
       "stadium_note": "Mercedes-Benz Superdome: the retail 'Louisiana Super Dome' is the same building under its 2004 name.",
       "kits": {
-        "away": 0,
-        "home": 3
+        "away": 1,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
@@ -1705,8 +1705,8 @@
       "stadium_index": 10,
       "stadium_note": "Lambeau Field: the real venue.",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/2014%E2%80%9315_NFL_playoffs"
@@ -1729,7 +1729,7 @@
       "stadium_note": "University of Phoenix Stadium, Glendale AZ, also hosted Super Bowl XLII; index 38 is the game's own 'Super Bowl 2008' Arizona site (fallback 0).",
       "kits": {
         "away": 0,
-        "home": 0
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
@@ -1751,7 +1751,7 @@
       "stadium_index": 9,
       "stadium_note": "Ford Field, Detroit: the real venue.",
       "kits": {
-        "away": 0,
+        "away": "modern",
         "home": 0
       },
       "sources": [
@@ -1773,8 +1773,8 @@
       "stadium_index": 15,
       "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Minneapolis_Miracle"
@@ -1795,8 +1795,8 @@
       "stadium_index": 15,
       "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 14,
+        "home": 11
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Philly_Special",
@@ -1819,8 +1819,8 @@
       "stadium_index": 37,
       "stadium_note": "Hard Rock Stadium, Miami Gardens: index 37 is the game's own 'Super Bowl 2007' Miami site, the same building as the retail Pro Player Stadium (fallback 14).",
       "kits": {
-        "away": 3,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LIV"
@@ -1841,8 +1841,8 @@
       "stadium_index": 13,
       "stadium_note": "Arrowhead Stadium: the real venue.",
       "kits": {
-        "away": 4,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/13_seconds_game"
@@ -1864,8 +1864,8 @@
       "stadium_index": 39,
       "stadium_note": "SoFi Stadium, Inglewood: index 39 is the game's own 'Super Bowl Future' Los Angeles site.",
       "kits": {
-        "away": 4,
-        "home": 0
+        "away": 2,
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
@@ -1887,8 +1887,8 @@
       "stadium_index": 15,
       "stadium_note": "U.S. Bank Stadium was built on the Metrodome site; the retail 'H. H. H. Metrodome' stands in.",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/2022_Minnesota_Vikings_season"
@@ -1910,8 +1910,8 @@
       "stadium_index": 36,
       "stadium_note": "Allegiant Stadium, Las Vegas, has no counterpart on the disc; index 36 is the game's own indoor 'Super Bowl 2006' site.",
       "kits": {
-        "away": 3,
-        "home": 0
+        "away": "modern",
+        "home": "modern"
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_LVIII"
@@ -1931,8 +1931,8 @@
       "home": "bengals_2025",
       "user_side": "home",
       "kits": {
-        "away": 0,
-        "home": 0
+        "away": 4,
+        "home": 5
       },
       "sources": [
         "https://www.pro-football-reference.com/boxscores/202510160cin.htm",
@@ -1964,5 +1964,227 @@
       },
       "evidence": "PFR indexed boxscore verifies date,venue,final score,scoring and QB totals. Full PFR request403; official NFL gamebook verifies starters,first scrimmage snap,weather,timeouts and drive. Ratings are estimates from the existing season model. Offline only."
     }
-  ]
+  ],
+  "handedness": {
+    "source": "data/HANDEDNESS_FINAL.json: tiers A and B are sourced; noah_default_right is Noah 2026-10-08's decision for twelve leftover LEFT rows. QB throwing hand and K/P kicking foot.",
+    "answers": {
+      "Aaron Rodgers|QB": "Right",
+      "Alex Smith|QB": "Right",
+      "Alex Van Pelt|QB": "Right",
+      "Anthony Wright|QB": "Right",
+      "B.J. Daniels|QB": "Right",
+      "Ben Graham|P": "Left",
+      "Ben Roethlisberger|QB": "Right",
+      "Benny Ricardo|K": "Right",
+      "Blaine Gabbert|QB": "Right",
+      "Bobby Walden|P": "Right",
+      "Brad Johnson|QB": "Right",
+      "Brandon Allen|QB": "Right",
+      "Brandon Weeden|QB": "Right",
+      "Brett Hundley|QB": "Right",
+      "Brian Hoyer|QB": "Right",
+      "Brian St. Pierre|QB": "Right",
+      "Britton Colquitt|P": "Right",
+      "Brock Osweiler|QB": "Right",
+      "Brock Purdy|QB": "Right",
+      "Bryce Perkins|QB": "Right",
+      "Byron Leftwich|QB": "Right",
+      "C.J. Beathard|QB": "Right",
+      "Caleb Hanie|QB": "Right",
+      "Cameron Johnston|P": "Right",
+      "Case Keenum|QB": "Right",
+      "Chad Henne|QB": "Right",
+      "Charlie Whitehurst|QB": "Right",
+      "Chase Daniel|QB": "Right",
+      "Chase McLaughlin|K": "Right",
+      "Chris Chandler|QB": "Right",
+      "Chris Hanson|P": "Left",
+      "Chris Jones|P": "Left",
+      "Chris Weinke|QB": "Right",
+      "Colin Kaepernick|QB": "Right",
+      "Corliss Waitman|P": "Left",
+      "Curley Johnson|P": "Right",
+      "Curtis Painter|QB": "Right",
+      "Damon Huard|QB": "Right",
+      "Dan Bailey|K": "Right",
+      "Dan Orlovsky|QB": "Right",
+      "Danny White|P": "Right",
+      "David Akers|K": "Left",
+      "David Carr|QB": "Right",
+      "Dennis Dixon|QB": "Right",
+      "Donnie Jones|P": "Left",
+      "Doug Flutie|QB": "Right",
+      "Drew Bledsoe|QB": "Right",
+      "Drew Brees|QB": "Right",
+      "Dustin Colquitt|P": "Left",
+      "Dustin Vaughan|QB": "Right",
+      "Eli Manning|QB": "Right",
+      "Evan McPherson|K": "Right",
+      "Garrett Hartley|K": "Right",
+      "Gary Anderson|K": "Right",
+      "Harrison Butker|K": "Right",
+      "J.P. Losman|QB": "Right",
+      "Jacoby Brissett|QB": "Right",
+      "Jake Browning|QB": "Right",
+      "Jake Delhomme|QB": "Right",
+      "Jake Elliott|K": "Right",
+      "Jake Moody|K": "Right",
+      "Jared Lorenzen|QB": "Left",
+      "Jay Fiedler|QB": "Right",
+      "Jeremy Crawshaw|P": "Right",
+      "Jerrel Wilson|P": "Right",
+      "Jim McCann|P": "Right",
+      "Jimmy Garoppolo|QB": "Right",
+      "Joe Burrow|QB": "Right",
+      "Joe Flacco|QB": "Right",
+      "John Kasay|K": "Left",
+      "John Wolford|QB": "Right",
+      "Johnny Hekker|P": "Right",
+      "Jon Ryan|P": "Right",
+      "Josh Allen|QB": "Right",
+      "Ken Walter|P": "Left",
+      "Kevin Daft|QB": "Right",
+      "Kevin Huber|P": "Left",
+      "Kevin Kolb|QB": "Right",
+      "Kirk Cousins|QB": "Right",
+      "Kurt Warner|QB": "Right",
+      "Kyle Sloter|QB": "Right",
+      "Lee Johnson|P": "Right",
+      "Mark Brunell|QB": "Left",
+      "Marques Tuiasosopo|QB": "Right",
+      "Mason Rudolph|QB": "Right",
+      "Matt Bahr|K": "Right",
+      "Matt Bryant|K": "Right",
+      "Matt Cassel|QB": "Right",
+      "Matt Flynn|QB": "Right",
+      "Matt Gay|K": "Right",
+      "Matt Gutierrez|QB": "Right",
+      "Matt Haack|P": "Left",
+      "Matt Hasselbeck|QB": "Right",
+      "Matt Leinart|QB": "Left",
+      "Matt Moore|QB": "Right",
+      "Matt Ryan|QB": "Right",
+      "Matt Schaub|QB": "Right",
+      "Matthew Stafford|QB": "Right",
+      "Michael Vick|QB": "Left",
+      "Mike Kafka|QB": "Right",
+      "Mitch Wishnowsky|P": "Right",
+      "Mitchell Trubisky|QB": "Right",
+      "Morten Andersen|K": "Left",
+      "Nate Sudfeld|QB": "Right",
+      "Neil O'Donnell|QB": "Right",
+      "Nick Foles|QB": "Right",
+      "Nick Mullens|QB": "Right",
+      "Pat McAfee|P": "Right",
+      "Patrick Mahomes|QB": "Right",
+      "Peyton Manning|QB": "Right",
+      "Randall Cunningham|QB": "Right",
+      "Rich Gannon|QB": "Right",
+      "Rick Tuten|P": "Right",
+      "Rob Johnson|QB": "Right",
+      "Robbie Gould|K": "Right",
+      "Rodney Peete|QB": "Right",
+      "Rohan Davey|QB": "Right",
+      "Russell Wilson|QB": "Right",
+      "Ryan Allen|P": "Left",
+      "Ryan Eckley|P": "Right",
+      "Ryan Mallett|QB": "Right",
+      "Ryan Rehkow|P": "Right",
+      "Ryan Wright|P": "Right",
+      "Sage Rosenfels|QB": "Right",
+      "Sam Bradford|QB": "Right",
+      "Sam Darnold|QB": "Right",
+      "Sam Ehlinger|QB": "Right",
+      "Sam Koch|P": "Right",
+      "Scott Tolzien|QB": "Right",
+      "Sebastian Janikowski|K": "Left",
+      "Shane Buechele|QB": "Right",
+      "Stephen Gostkowski|K": "Right",
+      "Steve DeBerg|QB": "Right",
+      "Steve McNair|QB": "Right",
+      "Tarvaris Jackson|QB": "Right",
+      "Taysom Hill|QB": "Right",
+      "Teddy Bridgewater|QB": "Right",
+      "Todd Bouman|QB": "Right",
+      "Tom Brady|QB": "Right",
+      "Tony Graziani|QB": "Left",
+      "Tony Romo|QB": "Right",
+      "Tyrod Taylor|QB": "Right",
+      "Zoltan Mesko|P": "Left"
+    },
+    "decisions": {
+      "main:primary:1196": {
+        "name": "Cameron Johnston",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "main:primary:136": {
+        "name": "Ryan Eckley",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "main:primary:456": {
+        "name": "Jeremy Crawshaw",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-07-1977-cowboys-3:32": {
+        "name": "Danny White",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-13-1969-chiefs-4:35": {
+        "name": "Jerrel Wilson",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-13-1969-chiefs-4:36": {
+        "name": "Jim McCann",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-16-2001-patriots-0:36": {
+        "name": "Lee Johnson",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-17-1991-saints-4:31": {
+        "name": "Benny Ricardo",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-19-1968-jets-4:36": {
+        "name": "Curley Johnson",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-22-1975-steelers-1:33": {
+        "name": "Bobby Walden",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-23-1999-rams-2:35": {
+        "name": "Rick Tuten",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      },
+      "team:h-30-1986-browns-1:28": {
+        "name": "Matt Bahr",
+        "hand": "Right",
+        "basis": "noah_default_right",
+        "decision_source": "Noah 2026-10-08"
+      }
+    }
+  }
 }

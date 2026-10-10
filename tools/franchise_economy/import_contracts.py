@@ -172,7 +172,8 @@ def fallback_schedule(player, row, data):
         return cap, {'evidence': 'DESIGN', 'rule': 'OTC draft-slot cap schedule interpolation',
                      'draft_slot': source_pick, 'scale_slot': pick, 'knots': [lower['pick'], upper['pick']],
                      'source': data['rookie_anchors']['source'] if 'source' in data['rookie_anchors'] else 'https://overthecap.com/draft'}
-    pro = min(player.record.values['years_pro'], 7)
+    # the CBA minimum is indexed by credited (completed) seasons; the record's years pro counts the current season too
+    pro = min(rr.accrued_seasons(player.record.values['years_pro']), 7)
     return [data['minimums']['dollars'][pro]], {
         'evidence': 'DESIGN', 'rule': 'one-year active-roster CBA minimum',
         'experience_proxy': pro, 'source': 'https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf'}

@@ -334,3 +334,19 @@ Add `--disc /path/to/retail.xiso.iso` for a read-only 2K5 source-options probe.
 The Studio archive builder gates its finished output automatically. The
 Windows builder gates the assembled runtime before generating NSIS and prints
 the gate command for the compiled Setup executable.
+
+
+### Preparing Windows Setup without running Windows
+
+When the build host must not run Wine or Windows, pass
+`--defer-runtime-check` to `packaging/windows/build_windows_installer.py`.
+This still checks the pinned downloads and the packaged dependency files. It
+writes `runtime-check.json` with `status: pending` in the work directory and
+allows NSIS generation. The default still requires the executable runtime
+check and refuses if it fails.
+
+An installer assembled with this flag is a preparation artifact. Before
+publishing it, run `packaging/check_packaged_runtime.py` on the finished Setup
+on an authorized Windows runtime and retain the passing receipt. Real disc
+builds, thread/pool behavior, desktop launching and target-platform acceptance
+remain separate release gates. A pending receipt is never a passing gate.

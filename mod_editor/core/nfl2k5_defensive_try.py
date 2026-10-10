@@ -734,15 +734,29 @@ def _validate(payload):
             space._require(labels is not None and actual == _hook_bytes(name, labels), "foreign try hook: " + name)
             states.append("applied")
     space._require(set(states) == {code_state}, "mixed defensive try hooks/code; rebuild from base")
+    restored = [(va, bytes.fromhex(before)) for va, before, _ in {**BRANCHES, **HOOKS}.values()] + _compatible_edits(payload)
     for start, size, digest in CONTEXT_PINS:
         context = bytearray(_read(payload, start, size))
-        for va, before, _ in {**BRANCHES, **HOOKS}.values():
-            original = bytes.fromhex(before)
+        for va, original in restored:
             lo, hi = max(start, va), min(start + size, va + len(original))
             if lo < hi:
                 context[lo-start:hi-start] = original[lo-va:hi-va]
         space._require(hashlib.sha256(context).hexdigest() == digest, "foreign try instruction context")
     return code_state
+
+
+def _compatible_edits(payload: bytes) -> list[tuple[int, bytes]]:
+    """Retail bytes to restore before hashing a pinned context, for another owner's edit that cannot interact.
+
+    b77-f5b: the Player Card honors owner (job F5) replaces the 7-byte rule-table load of the history fold at 0x14F168,
+    inside the history-engine pin (0x14E7E0, 3,216 bytes). Its replacement returns exactly the retail value for every
+    field except 96..105, and this patch only ever writes field 59, so the two do not interact (disjoint bytes in both
+    install orders, the hook compared with the retail load for all 128 fields, and the fold, the writer and the postgame
+    merge run under Unicorn with and without it: tests/mod_editor/test_nfl2k5_honors_defensive_try.py). The edit is
+    tolerated only while the honors owner validates as exactly applied; any other change in the span is still foreign.
+    """
+    from . import nfl2k5_honors as honors  # lazy: the honors owner never imports this module
+    return honors.fold_site_edit(payload)
 
 
 def status(payload: bytes) -> str:

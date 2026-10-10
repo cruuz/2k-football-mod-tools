@@ -1,6 +1,7 @@
 """Pinned replacement histories, owned by the identities in a roster-edits file.
 
-DESIGN: regular seasons through epoch-1, sparse zero counters, no invented
+DESIGN: regular seasons through epoch-1 (a player's k-th pro season is slot k and the current
+season is slot years pro, the game's convention: rookie = 1), sparse zero counters, no invented
 participation. Unrelated streams remain byte-for-byte intact. Old seasons stay
 separate even outside the 15-row card window so career sums cannot overflow a
 16-bit folded cell. Native rollover may subsequently fold those seasons.
@@ -91,7 +92,11 @@ def apply_body(body: bytes, spec: dict):
         for season in identity['seasons']:
             year = season['year']
             slot = count - (epoch - year)
-            require(type(year) is int and 1900 <= year < epoch and 0 <= slot < count <= 31, 'unrepresentable completed season')
+            # the k-th pro season is slot k (rookie year = slot 1; the current season is slot years pro). years_pro
+            # must be in the game's convention (rookie = 1); an nflverse years_exp would put the rookie year at slot 0
+            require(type(year) is int and 1900 <= year < epoch and 1 <= slot < count <= 31,
+                    f"unrepresentable completed season {year} for {p.first} {p.last} (years pro {count}): the rookie year is slot 1, so a"
+                    " roster written with nflverse years_exp (rookie 0) must add 1 first (nfl2k5_roster_records.years_pro_from_years_exp)")
             require(year not in seen, 'duplicate player season')
             seen.add(year)
             require(season['source'] in sources, 'stats source not pinned')

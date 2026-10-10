@@ -272,7 +272,7 @@
   "kits": {
     "home": {
       "selector": "06H0",
-      "note": "2026 home (standard): black jersey, white numbers with an orange outline, orange tiger stripes on the sleeves, orange BENGALS on the chest, no TV numbers; white pants with black tiger strokes; black socks; orange helmet with black tiger stripes, black facemask",
+      "note": "2026 home (standard): black jersey, white numbers with an orange outline, orange tiger stripes on the sleeves, orange BENGALS on the chest, no TV numbers; black pants with orange tiger strokes (week 4 vs JAX, u2a); orange socks; orange helmet with black tiger stripes, black facemask",
       "torso": {
         "base_colour": "black",
         "neck_donor": "06N0",
@@ -291,9 +291,9 @@
             "at": "chest_logo",
             "offset": [
               0,
-              -1.5
+              5.5
             ],
-            "width": 40
+            "width": 58
           }
         ]
       },
@@ -312,9 +312,9 @@
         ]
       },
       "pants": {
-        "base_colour": "white",
+        "base_colour": "black",
         "stripe": [],
-        "swoosh_colour": "black",
+        "swoosh_colour": "white",
         "decorations": [
           {
             "polygon": [
@@ -335,7 +335,7 @@
                 20.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -356,7 +356,7 @@
                 52.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -377,7 +377,7 @@
                 84.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -398,7 +398,7 @@
                 116.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -419,7 +419,7 @@
                 148.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -440,7 +440,7 @@
                 180.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -461,7 +461,7 @@
                 212.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -482,7 +482,7 @@
                 20.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -503,7 +503,7 @@
                 52.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -524,7 +524,7 @@
                 84.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -545,7 +545,7 @@
                 116.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -566,7 +566,7 @@
                 148.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -587,7 +587,7 @@
                 180.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           },
           {
             "polygon": [
@@ -608,12 +608,12 @@
                 212.0
               ]
             ],
-            "colour": "black"
+            "colour": "orange"
           }
         ]
       },
       "socks": {
-        "colour": "black"
+        "colour": "orange"
       },
       "digits": {
         "glyph_donor": "06H0",
@@ -1225,9 +1225,9 @@
             "at": "chest_logo",
             "offset": [
               0,
-              -1.5
+              5.5
             ],
-            "width": 40
+            "width": 58
           }
         ]
       },

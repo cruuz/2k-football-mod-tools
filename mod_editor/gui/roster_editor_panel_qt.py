@@ -1405,7 +1405,7 @@ class RosterEditorPanel(QWidget):
         box = QVBoxLayout(pane)
         box.setContentsMargins(0, 0, 0, 0)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Search name, years pro or college")
+        self.search.setPlaceholderText("Search name, years pro (R = rookie) or college")
         self.search.setAccessibleName("Search players")
         self.search.textChanged.connect(lambda _t: self.refresh_grid())
         box.addWidget(self.search)
@@ -2432,7 +2432,8 @@ class RosterEditorPanel(QWidget):
             players = [p for p in players
                        if needle in p.display.casefold()
                        or needle in p.college.casefold()
-                       or needle == str(p.record.values["years_pro"])]
+                       or needle == str(p.record.values["years_pro"])
+                       or (needle in ("r", "rookie") and p.record.values["years_pro"] == rr.ROOKIE_YEARS_PRO)]
         return players
 
     def _depth_chart(self) -> dict[int, list[rr.Player]]:
@@ -2463,7 +2464,7 @@ class RosterEditorPanel(QWidget):
             record = player.record
             marker = "● " if (player.pool, player.index) in self._dirty else ""
             cells = (record.position_name, str(record.values["jersey"]), f"{marker}{player.display}",
-                     str(record.values["years_pro"]), str(record.overall()),
+                     rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
                      self._depth_text(player))
             note = self._depth_note(chart, player) if chart else ""
             for column, text in enumerate(cells):
@@ -2532,9 +2533,11 @@ class RosterEditorPanel(QWidget):
         # the animation family the engine picks for this record (Scramble parity, then magnitude)
         family = ("odd = scrambler" if record.throw_style
                   else ("even, high animation family" if record.mobile_quarterback else "even animation family"))
+        years_pro = record.values["years_pro"]
+        experience = ("rookie (R)" if years_pro == rr.ROOKIE_YEARS_PRO else f"{years_pro} yrs pro")   # as the card prints it
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
-            f"{record.weight} lb{age} · {record.values['years_pro']} yrs pro · {player.college or '—'} · "
+            f"{record.weight} lb{age} · {experience} · {player.college or '—'} · "
             f"{rr.HANDS[record.values['hand']]} hand · "
             f"{rr.POWER_RUN_STYLES[record.power_run_style_bucket]} · {family}")
         code = record.values["position"]
@@ -2700,7 +2703,7 @@ class RosterEditorPanel(QWidget):
                 note = self._depth_note(chart, player) if chart else ""
                 for column, text in enumerate((record.position_name, str(record.values["jersey"]),
                                                f"{marker}{player.display}",
-                                               str(record.values["years_pro"]), str(record.overall()),
+                                               rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
                                                self._depth_text(player))):
                     item = self.player_table.item(row, column)
                     if item is not None:

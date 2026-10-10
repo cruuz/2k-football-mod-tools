@@ -6,11 +6,18 @@ selector and script classifier execute actual retail/patched instructions.
 """
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import hashlib
 import struct
 import contextlib
 import io
-from pathlib import Path
 import tempfile
 import unittest
 
@@ -41,12 +48,38 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(picture.heading_bytes()[96:], bytes(36))
 
     def test_sites_do_not_overlap_bracket_or_season_and_preserve_instruction_sizes(self):
-        sites = list(picture.sites()) + [s for g in season.GROUPS for s in season.group_sites(g)]
+        sites = list(picture.sites()) + list(picture.week_sites()) + [s for g in season.GROUPS for s in season.group_sites(g)]
         for a, b in zip(sorted(sites, key=lambda s: s.va), sorted(sites, key=lambda s: s.va)[1:]):
             self.assertLessEqual(a.va + a.size, b.va, (a.label, b.label))
-        for site in picture.sites():
+        for site in list(picture.sites()) + list(picture.week_sites()):
             if site.retail is not None:
                 self.assertEqual(site.size, len(site.retail), site.label)
+
+    def test_sportscenter_descriptor_and_week_sites_are_exactly_the_s7_repair_table(self):
+        """The Studio module and tools/b77/s7_repair.py must describe the same six owned ranges."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("s7_repair", base.ROOT / "tools" / "b77" / "s7_repair.py")
+        repair = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(repair)
+        known = {s.label: s for s in picture.week_sites() + picture.sites()}
+        self.assertEqual([row[0] for row in repair.OWNED],
+                         ["show_banner_round_base", "picture_bubble_last_week", "primetime_next_week_playoffs",
+                          "bubble_label_on_first_out", "retired_bubble_sticker_kind", "retired_bubble_sticker_rank",
+                          "week_browser_header_round_base", "idle_team_label_round_base", "teaser_dispatch_bound",
+                          "teaser_default_target", "teaser_table_pointer", "teaser_table"])
+        for label, va, before, after in repair.OWNED:
+            self.assertEqual((known[label].va, known[label].retail, known[label].patched), (va, before, after), label)
+        # the week sites are 18-week values over the 17-week retail ones; the descriptor edits are three dwords
+        self.assertEqual({s.label: (s.retail, s.patched) for s in picture.week_sites()},
+                         {"show_banner_round_base": (b"\xef", b"\xee"),
+                          "picture_bubble_last_week": (b"\x10", b"\x11"),
+                          "primetime_next_week_playoffs": (b"\x10", b"\x11"),
+                          "week_browser_header_round_base": (b"\xef", b"\xee"),
+                          "idle_team_label_round_base": (b"\xef", b"\xee"),
+                          "teaser_dispatch_bound": (b"\x04", b"\x05"),
+                          "teaser_default_target": (struct.pack("<I", 0x13A), struct.pack("<I", 0x23)),
+                          "teaser_table_pointer": (struct.pack("<I", 0x2CF60C), struct.pack("<I", 0x2CF604)),
+                          "teaser_table": (picture.TEASER_BLOCK_RETAIL, picture.TEASER_BLOCK_PATCHED)})
 
     @unittest.skipUnless(base.HAVE_CAPSTONE, "Capstone needed")
     def test_complete_callbacks_decode_and_branch_to_instruction_boundaries(self):
@@ -84,7 +117,9 @@ class ApplyTests(unittest.TestCase):
         self.assertEqual(second["changed_bytes"], 0)
         self.assertEqual(receipt["sections_repinned"], [0, 12, 13, 14])
         allowed = bytearray(len(result))
-        for site in picture.sites():
+        self.assertEqual(picture.season_weeks(result), 18)
+        self.assertEqual(len(picture.active_sites(result)), len(picture.sites()) + len(picture.week_sites()))
+        for site in picture.active_sites(result):
             off = season._offset(result, site.va)
             allowed[off:off + site.size] = b"\1" * site.size
         for sec in strength._sections(result):
@@ -104,6 +139,11 @@ class ApplyTests(unittest.TestCase):
                 self.assertEqual(picture.status(bytes(data)), "foreign", site.label)
                 with self.assertRaises(picture.PlayoffPictureError):
                     picture.apply(bytes(data))
+        for source in (self.bracket, result):
+            for site in picture.week_sites():
+                data = bytearray(source)
+                data[season._offset(data, site.va)] ^= 0x55
+                self.assertEqual(picture.status(bytes(data)), "foreign", site.label)
         partial = bytearray(self.bracket)
         first = picture.sites()[0]
         at = season._offset(partial, first.va)
@@ -115,6 +155,26 @@ class ApplyTests(unittest.TestCase):
         broken[at:at + dependency.size] = dependency.retail
         self.assertEqual(picture.status(bytes(broken)), "foreign")
         self.assertEqual(picture.status(b"invalid"), "foreign")
+
+    def test_seventeen_week_build_keeps_the_retail_week_values(self):
+        """Without the season_length group the three week-keyed sites stay retail; the descriptors still move."""
+        seventeen, _ = season.apply(self.retail, groups=("playoffs_14",))
+        self.assertEqual(picture.season_weeks(seventeen), 17)
+        result, receipt = picture.apply(seventeen)
+        self.assertEqual(picture.status(result), "applied")
+        self.assertEqual(receipt["regular_weeks"], 17)
+        self.assertEqual(len(picture.active_sites(result)), len(picture.sites()))
+        for site in picture.week_sites():
+            off = season._offset(result, site.va)
+            self.assertEqual(result[off:off + site.size], site.retail, site.label)
+        eighteen, _ = picture.apply(self.bracket)
+        self.assertNotEqual(result, eighteen)
+        # an executable whose week group is half applied is refused outright
+        broken = bytearray(self.bracket)
+        broken[season._offset(broken, season.WEEK_SITES[0].va)] ^= 0x55
+        self.assertEqual(picture.status(bytes(broken)), "foreign")
+        with self.assertRaises(picture.PlayoffPictureError):
+            picture.apply(bytes(broken))
 
     def test_cli_copies_binary_and_never_overwrites_an_existing_path(self):
         with tempfile.TemporaryDirectory() as root:
@@ -147,7 +207,7 @@ class InstructionTests(unittest.TestCase):
         groups = ("playoffs_14", "season_length") if weeks == 18 else ("playoffs_14",)
         uc = self._boot(groups, weeks, 0, self.league, user_team)
         if patched:
-            for site in picture.sites():
+            for site in picture.sites() + (picture.week_sites() if weeks == 18 else ()):
                 uc.mem_write(site.va, site.patched)
         uc.mem_write(0xE576A0, struct.pack("<I", 2))  # franchise
         uc.mem_write(0xE576A4, struct.pack("<I", 8))
@@ -296,11 +356,13 @@ class InstructionTests(unittest.TestCase):
             for rank in range(8):
                 key = bytes(uc.mem_read(0x50FA60 + rank * 12, 4))
                 uc.mem_write(widget_base + rank * 0x100 + 0x80, key)
+            # widget 8 is the retired retail sticker (key 0x7362B270): a blank rank-7 status cell since S7
+            uc.mem_write(widget_base + 8 * 0x100 + 0x80, struct.pack("<I", 0x7362B270))
             uc.mem_write(0xC14388, struct.pack("<I", widget_base))
             rendered = {}
             self.hooks[0x151530] = lambda: (0, 0)
             self.hooks[0x2DE60] = lambda: (0, 0)
-            self.hooks[0x151580] = lambda: (8, 0)
+            self.hooks[0x151580] = lambda: (9, 0)
             self.hooks[0x151570] = lambda: (widget_base + uc.reg_read(UC_X86_REG_EDX) * 0x100, 0)
             self.hooks[0x15F1C0] = lambda: (0, 0)
             def text_setter():
@@ -312,13 +374,55 @@ class InstructionTests(unittest.TestCase):
             self.assertEqual(rendered[0], "#1 Seed / Bye")
             self.assertEqual(rendered[1], "Division Title")
             self.assertEqual(rendered[6], "Playoff Berth")
-            self.assertEqual(rendered[7], "")
+            # S7: the first team out (row 8) carries the bubble label in its Clinched cell, the seventh SEED never
+            # does, and the retired sticker widget is blank.  The mock league has every week complete (index 17).
+            self.assertEqual(rendered[7], "Better Luck Next Year")
+            self.assertEqual(rendered[8], "")
+            for last_played, expected in ((15, "On The Bubble"), (16, "On The Bubble"), (17, "Better Luck Next Year")):
+                self.hooks[0x15DF10] = lambda value=last_played: (value, 0)
+                rendered.clear()
+                self.call(uc, 0x220C50)
+                self.assertEqual(rendered[7], expected, last_played)
+                self.assertNotIn("Bubble", rendered[6] + rendered[5] + rendered[8])
+                self.assertNotIn("Luck", rendered[6] + rendered[5] + rendered[8])
+            self.hooks.pop(0x15DF10)
             for rank in range(7):
                 uc.mem_write(0xC146A8, struct.pack("<I", ptrs[rank]))
                 uc.mem_write(0xC146AC, struct.pack("<I", rank))
                 self.assertEqual(self.call(uc, 0x220FE0), 0 if rank == 0 else 3 if rank < 4 else 4)
                 label = self.wide(uc, self.call(uc, 0x3687D0, ecx=ptrs[rank]))
                 self.assertEqual(label, "#1 Seed / Bye" if rank == 0 else "Division Title" if rank < 4 else "Playoff Berth")
+
+    def test_bubble_label_week_follows_the_season_length(self):
+        """17 regular weeks: index 16 is the last one; 18 weeks: index 17.  The label never leaves row 8."""
+        from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_EDX
+        for weeks, last_index in ((17, 16), (18, 17)):
+            uc = self.boot(weeks)
+            out = 0xC146B0
+            self.call(uc, 0x220960, ebx=out, args=(0,))
+            uc.mem_write(0xC146A0, struct.pack("<I", out))
+            widget_base = 0xD20000
+            keys = [0x133D3780, 0x7362B270]          # first-out Clinched cell, retired sticker
+            for i, key in enumerate(keys):
+                uc.mem_write(widget_base + i * 0x100 + 0x80, struct.pack("<I", key))
+            uc.mem_write(0xC14388, struct.pack("<I", widget_base))
+            rendered = {}
+            self.hooks[0x151530] = lambda: (0, 0)
+            self.hooks[0x2DE60] = lambda: (0, 0)
+            self.hooks[0x151580] = lambda: (len(keys), 0)
+            self.hooks[0x151570] = lambda: (widget_base + uc.reg_read(UC_X86_REG_EDX) * 0x100, 0)
+            self.hooks[0x15F1C0] = lambda: (0, 0)
+            def text_setter():
+                rendered[(uc.reg_read(UC_X86_REG_ECX) - widget_base) // 0x100] = self.wide(uc, uc.reg_read(UC_X86_REG_EDX))
+                return 0, 0
+            self.hooks[0x1513D0] = text_setter
+            for last_played in range(10, last_index + 2):
+                self.hooks[0x15DF10] = lambda value=last_played: (value, 0)
+                rendered.clear()
+                self.call(uc, 0x220C50)
+                self.assertEqual(rendered[0], "Better Luck Next Year" if last_played == last_index else "On The Bubble",
+                                 (weeks, last_played))
+                self.assertEqual(rendered[1], "")
 
     def test_recap_bubble_compares_seventh_with_eighth(self):
         from unicorn.x86_const import UC_X86_REG_ECX

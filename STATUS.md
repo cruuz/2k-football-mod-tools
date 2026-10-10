@@ -1,4 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC110 Release Status
+# 2K5 Mod Studio: v1.0 RC111 Release Status
+
+## Beta 77 (RC111 / APF alpha.107, 2026-10-09)
+
+The beta-77 integration adds modern and classic playbook controls, franchise grades and honors, uniform and Anniversary repairs, and clearer build and install behavior. The corrected shotgun selector follows the live team's roster pointer; offline replay passes. Gameplay confirmation and the final Windows and hosted CI gates remain pending. SOFTDRINK 2K28 v0.6 installs the complete approved disc; its editable source recipe still has two uniform-layer blockers.
 
 ## Beta 76.5 (RC110 / APF alpha.106, 2026-10-06): SOFTDRINK repairs and Studio builds
 

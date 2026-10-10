@@ -1229,6 +1229,26 @@
       "written_sha256": "7c87e0ace4b12ff2dd3f2aa8f84abbd43a2180eba90adce3b720adab22be68a8"
     },
     {
+      "name": "hb_kind_lists",
+      "va": "0x4f5980",
+      "size": 8,
+      "group": "data",
+      "accepted_sha256": [
+        "64ed86b909d6d0502b64b28db0ea1272ffb358e20e9b1d88b63ccb07fa900cf5"
+      ],
+      "written_sha256": "99c75defc76c67a2237ae1d96a4b67186250e8f9138e2d83627638de2ae21b29"
+    },
+    {
+      "name": "hb_side_list_kind",
+      "va": "0x4f5a04",
+      "size": 4,
+      "group": "data",
+      "accepted_sha256": [
+        "972b8373b897c65c4f631c6bdf2443d0d817a88f224b54d8e593fdcf32488d60"
+      ],
+      "written_sha256": "075de2b906dbd7066da008cab735bee896370154603579a50122f9b88545bd45"
+    },
+    {
       "name": "roster_targets",
       "va": "0x521c68",
       "size": 68,
@@ -2156,15 +2176,16 @@
     }
   ],
   "minimal_composition": {
-    "edge_modern_pools_sha256": "4245439d7b5753956cbb3014b75b03ae0e6c33423a22b2a542fe399f9c69c013",
-    "with_inline_mycareer_sha256": "307fbdd9828531301f23b545a9aed6050089358aa9274207441032fad1be6b09",
-    "pool_changed_bytes": 1914,
+    "edge_modern_pools_sha256": "fba54dc68b2cc31903e675c3880605c23fec077ffb9fe7eca8905530536b5b27",
+    "with_inline_mycareer_sha256": "d79525bca99ad8c4545237352f1ebf3d7aae333aa64f96a320d12641e24a26f3",
+    "pool_changed_bytes": 1916,
     "pool_sections_repinned": [
       0,
       12,
       14
     ],
-    "mycareer_content_bytes": 14858
+    "mycareer_content_bytes": 20318
   },
-  "lineup_exhaustion_revision": "SD2, 2026-09-28; PROVED OFFLINE; see sd/SD2_REPORT.md"
+  "lineup_exhaustion_revision": "SD2, 2026-09-28; PROVED OFFLINE; see sd/SD2_REPORT.md",
+  "halfback_side_chain_revision": "2c82378d5: HB list pair and inverse list-kind mapping; minimal hashes rebuilt with current inline MyCareer mode; PROVED OFFLINE, historical FPF evidence unchanged"
 }

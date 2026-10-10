@@ -33,9 +33,12 @@ RAIDERS = dict(silver=(165, 172, 175), black=(0, 0, 0), white=(255, 255, 255), c
 
 def seat(p_grey, seed, size=(64, 128)):
     """One section per u repeat, 21 rows per v repeat (the retail convention), the aisle steps at u = 0. The seats are
-    charcoal and black (the 2021 and 2022 interiors), a few mid-grey seats scattered through them (``p_grey``)."""
+    charcoal and black (the 2021 and 2022 interiors), a few mid-grey seats scattered through them (``p_grey``).
+    ALG pass 1 (2026-10-08): neutral black seats on dark risers with a thin grey lip, and the aisle stairs a mid
+    concrete grey (the 2021 and 2022 photos: the empty sections read near black with faint row lines; the stairs show
+    as soft grey stripes, not white ones)."""
     W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGB", (W, H), (58, 60, 64))
+    im = Image.new("RGB", (W, H), (40, 40, 42))
     d = ImageDraw.Draw(im)
     r = rng(seed)
     rows = 21
@@ -44,21 +47,21 @@ def seat(p_grey, seed, size=(64, 128)):
     cols = W // pitch
     for k in range(rows):
         y0 = int(k * rh)
-        d.rectangle([0, y0, W, y0 + int(rh * 0.16)], fill=(150, 152, 154))
-        d.rectangle([0, y0 + int(rh * 0.16), W, y0 + int(rh * 0.30)], fill=(36, 38, 40))
+        d.rectangle([0, y0, W, y0 + int(rh * 0.10)], fill=(98, 98, 98))
+        d.rectangle([0, y0 + int(rh * 0.10), W, y0 + int(rh * 0.28)], fill=(24, 24, 26))
         for c in range(cols):
             x = c * pitch
-            basec = (96, 98, 102) if r.random() < p_grey else (44, 46, 50)
-            tone = int(r.integers(-6, 7))
+            basec = (78, 78, 80) if r.random() < p_grey else (34, 34, 37)
+            tone = int(r.integers(-5, 6))
             fill = tuple(int(np.clip(v + tone, 0, 255)) for v in basec)
-            d.rectangle([x + SCALE, y0 + int(rh * 0.30), x + pitch - SCALE, y0 + int(rh * 0.94)], fill=fill)
-    aisle = int(round(W * 0.16 / 2))
+            d.rectangle([x + SCALE, y0 + int(rh * 0.28), x + pitch - SCALE, y0 + int(rh * 0.94)], fill=fill)
+    aisle = int(round(W * 0.14 / 2))
     for x0, x1 in ((0, aisle), (W - aisle, W)):
-        d.rectangle([x0, 0, x1, H], fill=(150, 150, 148))
+        d.rectangle([x0, 0, x1, H], fill=(104, 103, 100))
     for k in range(rows * 2):
         y = int(k * rh / 2)
         for x0, x1 in ((0, aisle), (W - aisle, W)):
-            d.line([x0, y, x1, y], fill=(110, 110, 108), width=SCALE)
+            d.line([x0, y, x1, y], fill=(72, 72, 70), width=SCALE)
     return im
 
 
@@ -75,33 +78,44 @@ def wall(size=(256, 32)):
     return im
 
 
-def ribbon(size=(256, 64)):
-    """The LED ribbons on the 200 and 300 levels (plain type, no logos): a black band with RAIDERS and LAS VEGAS in silver
-    and white; and a lively band of red, silver, black and white segments with the partners' names as type (the 2021 and
-    2022 photos: red and white LED ribbons with partner names)."""
-    W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGB", (W, H), (0, 0, 0))
-    h = H // 2
-    top = Image.new("RGB", (W, h), (6, 6, 8))
-    band = _row([_text("RAIDERS", RAIDERS["silver"]), _text("LAS VEGAS", RAIDERS["white"]),
-                 _text("RAIDER NATION", RAIDERS["silver"]), _text("LAS VEGAS", RAIDERS["white"])], W, h, SCALE * 10, 0.56)
-    top.paste(band, (0, 0), band)
-    im.paste(top, (0, 0))
-    segs = [((200, 20, 30), [_text("SUMMERLIN.COM", RAIDERS["white"])]),
-            (RAIDERS["silver"], [_text("RAIDERS", RAIDERS["black"])]),
-            ((10, 10, 12), [_text("ALLEGIANT STADIUM", RAIDERS["white"])]),
-            ((240, 240, 242), [_text("NEW HOMES NOW SELLING", (200, 20, 30))])]
+def _segments(W, h, segs):
+    """One LED ribbon band: (background, [type], width fraction) segments side by side, a thin dark seam between."""
+    band = Image.new("RGB", (W, h), (6, 6, 8))
     x = 0
-    for (bg, items), w in zip(segs, (0.24, 0.20, 0.28, 0.28)):
-        sw = int(W * w) if x + int(W * w) <= W else W - x
+    for bg, items, frac in segs:
+        sw = min(int(round(W * frac)), W - x)
         seg = Image.new("RGB", (sw, h), bg)
-        b = _row(items, sw, h, SCALE * 6, 0.56)
-        seg.paste(b, (0, 0), b)
-        im.paste(seg, (x, h))
+        if items:
+            b = _row(items, sw, h, SCALE * 6, 0.58)
+            seg.paste(b, (0, 0), b)
+        ImageDraw.Draw(seg).rectangle([sw - SCALE // 2, 0, sw, h], fill=(4, 4, 6))
+        band.paste(seg, (x, 0))
         x += sw
-    if x < W:
-        im.paste(Image.new("RGB", (W - x, h), (6, 6, 8)), (x, h))
+    return band
+
+
+def ribbon_lit(size=(256, 64)):
+    """ALG pass 1 (2026-10-08): the LED ribbons as the photos show them lit (2021 north end, 2022 Las Vegas Bowl and
+    torch photos: continuous bright red and black segments right round the 100-level and 300-level fascias with white
+    type, a black game-information segment among them; pass 2: no white grounds, they read as a white band from the
+    game cameras). Plain type only, club words, no partner marks. Top half: the 100-level fascia; bottom half: the
+    300-level fascia."""
+    W, H = size[0] * SCALE, size[1] * SCALE
+    h = H // 2
+    red, white, black, silver = (206, 22, 32), (244, 244, 246), (8, 8, 10), RAIDERS["silver"]
+    top = _segments(W, h, [(red, [_text("LAS VEGAS", white)], 0.30),
+                           (black, [_text("RAIDERS", silver)], 0.22),
+                           (red, [_text("RAIDER NATION", white)], 0.28),
+                           (black, [_text("1ST & 10", white)], 0.20)])
+    bottom = _segments(W, h, [(black, [_text("RAIDERS", white)], 0.24),
+                              (red, [_text("JUST WIN BABY", white)], 0.34),
+                              (black, [_text("LAS VEGAS", silver)], 0.22),
+                              (red, [_text("RAIDERS", white)], 0.20)])
+    im = Image.new("RGB", (W, H), (0, 0, 0))
+    im.paste(top, (0, 0))
+    im.paste(bottom, (0, h))
     return im
+
 
 
 def black(size=32):
@@ -115,24 +129,48 @@ def black(size=32):
     return im
 
 
-def roof_under(size=128):
-    """The ETFE roof from below (the 2021 and 2022 interiors): bright translucent cushions on a dense white steel grid,
-    the cable net's lines across them."""
+
+def roof_grid(size=128):
+    """ALG pass 1 (2026-10-08): the ETFE roof from below on a plan grid (u across, v along the field; one repeat 24 m):
+    bright cushions between white steel, the main members along the field heavier than the cross members (the 2022 Las
+    Vegas Bowl photo looking north: long white trusses run toward the lanai, light cross members every few metres)."""
     S = size * SCALE
-    r = rng(29)
+    r = rng(31)
     a = np.zeros((S, S, 3), np.float32)
-    n = _blur(r.random((S // 4, S // 4)), 2)
-    n = np.kron((n - n.min()) / max(1e-6, n.max() - n.min()), np.ones((4, 4)))
-    for k, v in enumerate((232, 236, 240)):
-        a[..., k] = v * (0.93 + 0.07 * n)
+    n = _blur(r.random((S // 8, S // 8)), 2)
+    n = np.kron((n - n.min()) / max(1e-6, n.max() - n.min()), np.ones((8, 8)))
+    for k, v in enumerate((222, 225, 230)):
+        a[..., k] = v * (0.94 + 0.06 * n)
     im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
-    step = S // 8
-    for k in range(0, S, step):
-        d.rectangle([k, 0, k + SCALE * 2, S], fill=(196, 198, 202))
-        d.rectangle([0, k, S, k + SCALE * 2], fill=(196, 198, 202))
-    for k in range(0, S, step // 2):
-        d.line([k, 0, k + step // 2, S], fill=(214, 216, 220), width=max(1, SCALE // 2))
+    cell = S // 4
+    # the steel reads mid grey: the game's vertex light lifts the bright cushions to white, so lighter lines vanish
+    for k in range(0, S, cell // 2):
+        d.rectangle([0, k, S, k + SCALE * 2], fill=(150, 152, 160))
+    for k in range(0, S, cell):
+        d.rectangle([k, 0, k + SCALE * 3, S], fill=(132, 134, 142))
+    for k in range(0, S, S // 2):
+        d.rectangle([k, 0, k + SCALE * 4, S], fill=(124, 126, 134))
+    return im
+
+
+def truss(size=(64, 32)):
+    """ALG pass 1: one bay of the white roof trusses hanging under the ETFE (alpha): top and bottom chords and the
+    diagonal lacing, clear between (the 2022 photos; the chords leave a clear top and bottom texel so wrap filtering
+    never draws a line)."""
+    W, H = size[0] * SCALE, size[1] * SCALE
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    white = (226, 228, 232, 255)
+    c = SCALE * 3
+    d.rectangle([0, SCALE, W, SCALE + c], fill=white)
+    d.rectangle([0, H - SCALE - c, W, H - SCALE], fill=white)
+    bay = W // 4
+    for k in range(4):
+        x0 = k * bay
+        d.line([x0, SCALE + c, x0 + bay // 2, H - SCALE - c], fill=white, width=SCALE * 2)
+        d.line([x0 + bay // 2, H - SCALE - c, x0 + bay, SCALE + c], fill=white, width=SCALE * 2)
+        d.rectangle([x0, SCALE, x0 + SCALE * 2, H - SCALE], fill=white)
     return im
 
 
@@ -169,16 +207,66 @@ def lamps(size=(64, 32)):
     return im
 
 
-def lanai(size=(128, 128)):
-    """The lanai's tall glass (the torch photo: a grid of tall panes with the Strip bright beyond): thin dark mullions and
-    a faint blue tint, the panes mostly transparent so the Strip's towers show through (alpha)."""
+def lanai(size=(64, 64)):
+    """The lanai's tall glass (the torch photo, 2022: about ten heavy black mullions across the glass, a thin one between
+    each pair and a few thin transoms, the Strip bright beyond; one repeat is 10 m wide, the glass's full height tall):
+    the panes nearly clear with a faint blue tint so the skyline behind reads (alpha; ALG pass 3: 64 texels, the
+    lines in fractions of the repeat so their mips fade instead of shimmering)."""
     W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGBA", (W, H), (150, 176, 206, 64))
+    im = Image.new("RGBA", (W, H), (170, 190, 214, 22))
     d = ImageDraw.Draw(im)
-    for x in range(0, W, W // 8):
-        d.rectangle([x, 0, x + SCALE, H], fill=(40, 42, 46, 255))
-    for y in range(0, H, H // 4):
-        d.rectangle([0, y, W, y + SCALE], fill=(40, 42, 46, 255))
+    d.rectangle([0, 0, int(W * 0.05), H], fill=(14, 15, 18, 255))
+    d.rectangle([W // 2, 0, W // 2 + int(W * 0.016), H], fill=(24, 25, 28, 255))
+    for y in range(0, H, H // 5):
+        d.rectangle([0, y, W, y + max(1, int(H * 0.008))], fill=(24, 25, 28, 255))
+    return im
+
+
+def skyline(size=(128, 32)):
+    """ALG pass 3: the view through the lanai painted once across the whole glass (u west to east, v the glass's height;
+    the 2022 torch photo looking north): blue sky, the Strip's cream, white and blue-glass towers filling the lower
+    two thirds, the Excalibur's white walls and red, blue and gold turrets toward the east, the freeway's dark band at the
+    foot. Architecture only, no signs or marks; drawn large and reduced so the mips stay calm at game distance."""
+    W, H = size[0] * SCALE, size[1] * SCALE
+    r = rng(71)
+    a = np.zeros((H, W, 3), np.float32)
+    t = np.linspace(0.0, 1.0, H)[:, None]
+    for k, (top, hor) in enumerate(zip((112, 164, 222), (198, 214, 230))):
+        a[..., k] = top + (hor - top) * t
+    im = Image.fromarray(a.astype(np.uint8))
+    d = ImageDraw.Draw(im)
+    Y = lambda f: int(H * (1.0 - f))  # noqa: E731  (f = height fraction of the glass)
+    tones = [(226, 218, 200), (204, 198, 186), (146, 170, 198), (238, 232, 216), (184, 176, 160), (120, 146, 178)]
+
+    def tower(x0, x1, top, colour):
+        d.rectangle([int(W * x0), Y(top), int(W * x1), H], fill=colour)
+        dark = tuple(int(c * 0.78) for c in colour)
+        step = max(SCALE * 2, int(H * 0.035))
+        for y in range(Y(top) + step, H, step):
+            d.rectangle([int(W * x0), y, int(W * x1), y + max(1, step // 3)], fill=dark)
+    x = 0.0
+    while x < 1.0:
+        w = 0.025 + 0.035 * r.random()
+        tower(x, x + w, 0.30 + 0.25 * r.random(), tones[int(r.integers(len(tones)))])
+        x += w * (0.6 + 0.5 * r.random())
+    for x0, x1, top, c in ((0.04, 0.10, 0.72, (236, 230, 214)), (0.15, 0.20, 0.64, (214, 206, 190)),
+                           (0.30, 0.36, 0.86, (126, 156, 194)), (0.37, 0.42, 0.78, (150, 178, 210)),
+                           (0.45, 0.50, 0.70, (232, 226, 212)), (0.53, 0.58, 0.82, (134, 162, 198)),
+                           (0.64, 0.71, 0.62, (232, 224, 204)), (0.80, 0.87, 0.66, (226, 218, 198))):
+        tower(x0, x1, top, c)
+    # the Excalibur: white walls and round turrets with coloured cone roofs
+    d.rectangle([int(W * 0.62), Y(0.30), int(W * 0.92), H], fill=(240, 236, 228))
+    for k, (cx, top, roof) in enumerate(((0.635, 0.44, (196, 36, 40)), (0.665, 0.52, (40, 78, 168)),
+                                         (0.70, 0.40, (214, 178, 60)), (0.735, 0.56, (196, 36, 40)),
+                                         (0.77, 0.46, (40, 78, 168)), (0.805, 0.50, (196, 36, 40)),
+                                         (0.84, 0.42, (214, 178, 60)), (0.875, 0.54, (40, 78, 168)),
+                                         (0.905, 0.44, (196, 36, 40)))):
+        hw = 0.011
+        d.rectangle([int(W * (cx - hw)), Y(top), int(W * (cx + hw)), H], fill=(246, 244, 238))
+        d.polygon([(int(W * (cx - hw * 1.4)), Y(top)), (int(W * (cx + hw * 1.4)), Y(top)),
+                   (int(W * cx), Y(top + 0.13))], fill=roof)
+    d.rectangle([0, Y(0.10), W, H], fill=(72, 74, 80))
+    d.rectangle([0, Y(0.10), W, Y(0.10) + max(1, int(H * 0.02))], fill=(150, 150, 146))
     return im
 
 
@@ -250,8 +338,9 @@ def facade(size=128):
         a[..., k] = lo + (hi - lo) * g
     im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
+    # pass 3: faint mullions, the drum reads as one smooth black shell from the flyover (the I-15 photo)
     for x in range(0, S, S // 8):
-        d.rectangle([x, 0, x + SCALE // 2, S], fill=(46, 48, 54))
+        d.rectangle([x, 0, x + SCALE // 2, S], fill=(30, 31, 36))
     return im
 
 
@@ -280,26 +369,43 @@ def lines(size=(64, 8)):
 
 
 def mesh(size=(256, 64)):
-    """The LED mesh toward I-15 (27,600 sq ft; the 2024 photo shows it running game-day graphics): a black field with
-    RAIDERS and ALLEGIANT STADIUM in silver and white (plain type)."""
+    """The LED mesh toward I-15 (27,600 sq ft; the 2024 photo shows it lit edge to edge with bright game-day graphics):
+    ALG pass 2, a lit silver and charcoal diamond pattern with red chevrons at the ends and RAIDERS in big white
+    plain type (no marks)."""
     W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGB", (W, H), (8, 8, 10))
-    band = _row([_text("RAIDERS", RAIDERS["silver"]), _text("ALLEGIANT STADIUM", RAIDERS["white"]),
-                 _text("LAS VEGAS", RAIDERS["silver"])], W, H, SCALE * 16, 0.5)
-    im.paste(band, (0, 0), band)
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    k = H / 4.0
+    dia = ((np.abs((xx % (2 * k)) - k) + np.abs((yy % (2 * k)) - k)) < k * 0.8).astype(np.float32)
+    a = np.zeros((H, W, 3), np.float32)
+    for c, (lo, hi) in enumerate(zip((24, 24, 28), (118, 122, 128))):
+        a[..., c] = lo + (hi - lo) * dia
+    im = Image.fromarray(a.astype(np.uint8))
+    d = ImageDraw.Draw(im)
+    for x0 in (0, W - H):
+        for j in range(3):
+            o = j * H // 3
+            d.polygon([(x0 + o, 0), (x0 + o + H // 6, 0), (x0 + o + H // 2, H // 2), (x0 + o + H // 6, H), (x0 + o, H),
+                       (x0 + o + H // 3, H // 2)], fill=(214, 26, 38))
+    band = _row([_text("RAIDERS", RAIDERS["white"])], W - 2 * H, H, SCALE * 24, 0.62)
+    im.paste(band, (H, 0), band)
+    # pass 3: the white light line framing the wall above and below (the 2024 I-15 photo)
+    d.rectangle([0, 0, W, int(H * 0.05)], fill=(250, 250, 252))
+    d.rectangle([0, H - int(H * 0.05), W, H], fill=(250, 250, 252))
     return im
 
 
 def strip(size=(64, 64)):
-    """The Strip's towers: glass with rows of lit windows (bright by night through the LIGHT_ class)."""
+    """The Strip's towers (the torch photo by day, 2022: cream and pale gold walls with blue-grey window bands, the
+    Excalibur, New York-New York and MGM Grand bright beyond the lanai; by night the LIGHT_ class lights them)."""
     S_w, S_h = size[0] * SCALE, size[1] * SCALE
     r = rng(57)
-    im = Image.new("RGB", (S_w, S_h), (70, 78, 90))
+    im = Image.new("RGB", (S_w, S_h), (172, 162, 142))
     d = ImageDraw.Draw(im)
     for y in range(0, S_h, SCALE * 4):
+        d.rectangle([0, y + SCALE, S_w, y + SCALE * 3], fill=(88, 106, 128))
         for x in range(0, S_w, SCALE * 3):
-            if r.random() < 0.55:
-                d.rectangle([x, y + SCALE, x + SCALE * 2, y + SCALE * 3], fill=(236, 218, 170))
+            if r.random() < 0.3:
+                d.rectangle([x, y + SCALE, x + SCALE * 2, y + SCALE * 3], fill=(240, 226, 186))
     return im
 
 
@@ -365,12 +471,14 @@ def drawings():
         "ag_seat_front": (seat(0.06, 11), (64, 128)), "ag_seat_mid": (seat(0.10, 12), (64, 128)),
         "ag_seat_back": (seat(0.16, 13), (64, 128)),
         "ag_concrete": (base.concrete(), (64, 64)), "ag_wall": (wall(), (256, 32)),
-        "LIGHT_ag_ribbon": (ribbon(), (256, 64)), "LIGHT_ag_glass": (base.glass(), (128, 64)),
+        "LIGHT_ag_ribbon": (ribbon_lit(), (256, 64)), "LIGHT_ag_glass": (base.glass(), (128, 64)),
         "LIGHT_ag_concourse": (base.concourse(), (128, 64)), "ag_portal": (base.vomitory(), (32, 32)),
         "ag_dark": (base.dark(), (32, 32)), "ag_black": (black(), (32, 32)),
-        "ag_roof_under": (roof_under(), (128, 128)), "ag_roof_top": (roof_top(), (64, 64)),
+        "ag_roof_under": (roof_grid(), (128, 128)), "ag_roof_top": (roof_top(), (64, 64)),
+        "ag_truss": (truss(), (64, 32)),
         "ag_roof_rim": (roof_rim(), (64, 64)),
-        "LIGHT_ag_lights": (lamps(), (64, 32)), "LIGHT_ag_lanai": (lanai(), (128, 128)),
+        "LIGHT_ag_lights": (lamps(), (64, 32)), "LIGHT_ag_lanai": (lanai(), (64, 64)),
+        "LIGHT_ag_skyline": (skyline(), (128, 32)),
         "ag_torch": (torch(), (64, 128)), "LIGHT_ag_flame": (flame(), (32, 64)),
         "LIGHT_ag_board_panel": (board_panels(), (128, 128)), "ag_letters": (letters(), (256, 64)),
         "ag_facade": (facade(), (128, 128)), "ag_glass_out": (glass_out(), (64, 64)),

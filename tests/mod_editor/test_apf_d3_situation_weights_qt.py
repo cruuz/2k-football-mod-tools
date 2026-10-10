@@ -1,4 +1,12 @@
 """Draft previews and honest live-bucket aliases with the actual model."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import os
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 import hashlib

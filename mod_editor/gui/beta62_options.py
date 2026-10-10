@@ -116,11 +116,19 @@ OPTIONS += (
     ("k128_roster_heap", tt.k128_patch.ROSTER_HEAP_LABEL, tt.k128_patch.ROSTER_HEAP_HELP),
     ("k128_early", tt.k128_patch.EARLY_LABEL, tt.k128_patch.EARLY_HELP),
 )
+# b77-f4: letter grades in Franchise (one allocator owner, one row).
+OPTIONS += (
+    ("letter_grades", tt.letter_grades_patch.UI_LABEL, tt.letter_grades_patch.HELP_TEXT),
+)
+# b77-f5: the Player Card honors page (one allocator owner, one row; the award history data is a Build-panel input).
+OPTIONS += (
+    ("honors_page", tt.honors_patch.UI_LABEL, tt.honors_patch.HELP_TEXT),
+)
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
 # Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
 CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
-LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"))}
+LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (
     ("helmets", "All teams' helmets (experimental)"),

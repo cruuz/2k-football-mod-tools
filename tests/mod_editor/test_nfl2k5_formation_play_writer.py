@@ -10,7 +10,10 @@ for _entry in (_Path(__file__).resolve().parents[2], _Path(__file__).resolve().p
         sys.path.insert(0, str(_entry))
 
 import pathlib
+import shutil
+import tempfile
 import unittest
+from unittest import mock
 
 from mod_editor.core import nfl2k5_formation_play_writer as w
 
@@ -25,6 +28,18 @@ def _has_cache() -> bool:
 
 @unittest.skipUnless(_has_cache(), "private 2K5 cache missing")
 class FormationPlayPackIntegrationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        temporary = tempfile.TemporaryDirectory(prefix="formation-play-index-")
+        cls.addClassCleanup(temporary.cleanup)
+        # The game packs are read-only; this fixture owns its generated SQLite
+        # sidecar and keeps it beside a private copy of the inventory metadata.
+        inventory = pathlib.Path(temporary.name) / INVENTORY.name
+        shutil.copyfile(INVENTORY, inventory)
+        patch = mock.patch.object(sys.modules[__name__], "INVENTORY", inventory)
+        patch.start()
+        cls.addClassCleanup(patch.stop)
+
     def test_atl_clone_one_formation_one_play(self):
         asset_id = "nfl2k5.resource.o0308.c0000.k504c4159"  # ATL-like 39/254
         repl, _, report, sel, tgt = w.build_unified_formation_play_import(
@@ -154,7 +169,7 @@ def _read_atl_span() -> bytes:
     import sys
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "tools"))
     from nfl_outer import read_entry_range
-    sidecar = INVENTORY.parent.parent / "universal-assets-v1.sqlite3"
+    sidecar = INVENTORY.parent / "universal-assets-v1.sqlite3"
     index = Nfl2k5UniversalAssetIndex(INVENTORY, INDEX, sidecar)
     record = index.get("nfl2k5.resource.o0308.c0000.k504c4159")
     entry = index.archive.entries[record.outer_index]

@@ -97,7 +97,7 @@ plus these:
 | `jersey` | 1 to 99, unique inside the team (document any exception) |
 | `height`, `weight` | inches; pounds 150 to 405 |
 | `birth_date` | `YYYY-MM-DD` |
-| `years_pro` | 0 to 31 |
+| `years_pro` | 1 to 31: the game's value, which counts the season in progress (rookie = 1, the card prints R); nflverse `years_exp` + 1. nflverse's 1998, 1999 and 2001 roster files have no `years_exp`; there it is the season minus the earlier of the draft year and the first season with a game (players.csv), plus 1, and the manifest names the basis per player (`years_pro_basis`) |
 | `college` | exactly a name in the main college table, else empty (the template's is kept) |
 | `hand` | `Left` or `Right` (empty = Right) |
 | ratings | the 28 bytes, 0 to 99; `power_run_style` 1, 50 or 99; `kicking_style` as retail |

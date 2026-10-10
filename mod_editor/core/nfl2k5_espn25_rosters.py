@@ -3,7 +3,7 @@
 Names and numbers on the 35 shared historic ROSTs used by the retail 25 moments.
 Box-score starters and season numbers are sourced; shared-file gaps are listed.
 The paired executable fix clears released historic-team pointers on re-entry.
-No scenario, saved team pointer, rating or appearance edit is made here.
+No scenario, saved team pointer or rating edit is made here. Sparse hand cells change only the hand bit.
 The image adapter edits only a caller-owned disposable build copy. ``build_image``
 provides copy-first publication. No whole image or archive pack is read into RAM.
 """
@@ -46,7 +46,7 @@ DEFAULT_ENABLED = False
 BUILD_BLOCK_REASON = ""
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.
-DATASET_SHA256 = "8f7e8661e5772887f470cf3f846e0955102519818b22749ce78e19406e7d2f84"
+DATASET_SHA256 = "9bccb798f5bf28d5800dcc6f1b84f328cc902297c2a827157a0694ffcff493f7"
 MAX_RESOURCE = 1024 * 1024
 MAX_MANIFEST = 8 * 1024 * 1024
 SITU_OUTER = 22
@@ -83,7 +83,7 @@ ONE_POOL_PINS = {
     125: ("13bb4299909bd3ce844615799fe181c4c11c2517780f32e1e357705f7b907352",
           "8c59a4786ce53fd9ce6645ede24280cc33b630d4725c145cb0d73615f75997f1"),
     126: ("d023f2a4ec9220a0edc77e036a5147982544a08cca9786f3308ca27e4b0ee06a",
-          "bdeaba2912340fb70fd599714711d0edf37b3bce55483b7afc90055c1e531ae6"),
+          "1984e17d584f14e52bb672c9b139c2590a0c1abaa4269c127ef120de5008b83b"),
     129: ("e07fd1bfa463a59374d9d9aff531909cb09a247497852b0ce95dd59c65f6a97a",
           "fc88cba9653ec85a24be6897abcb0d6ced3d6e38928c76c21dbd7c02a6f534a7"),
     130: ("e7e36fe2e536b27f5f75e915f3bbaa11ce8f17d9e8ef61362057f9a5a6a54fa7",
@@ -97,7 +97,7 @@ ONE_POOL_PINS = {
     136: ("41d02289544dc100ed9e06ae508ddece7ee553bb554fd785993ca593d527ff45",
           "bdb9475c946240eabc2917603b0661ff805cfb1559036ce8ec6c0b9e0997ec73"),
     139: ("3969766a78e86b4b7f4b5b61fe643784ea3a05c43a9c7c403387d41900b2478f",
-          "d2c42af91d142f05de50e552a98812e1158f5a49bc8c3e952b56d2bb51ccff66"),
+          "073082e7476122c26c403a22d30c7a12682fa1f8ad3aa6526fd818f9434e9ad6"),
     140: ("99a48364028e04824024fa4382337e1efcf333b9aca7d52932f6300adeb30c33",
           "f464aab72469da6787db58bdde89136a8ddb3bb8af7709ad7557c43ffc0347f7"),
     141: ("5a5e8aaa64ce34fb320b790de6451ccfa81719c7a4c9bd2be2eac94ebb78ec0d",
@@ -105,15 +105,15 @@ ONE_POOL_PINS = {
     142: ("34d4076ccdb849521ff71d7e8aec43a2f1d97760931496ac8381641e4b6966d3",
           "9025f62d672097147569c9e6888927749077c6fc007a81fd3007ffe91523c334"),
     147: ("8ce79ba8d36d3f523aa002d47b36c9b6f07a11610f9054783c8711103f73dd36",
-          "90b58c5c4e15ab5c24a4c1370d54247fb0fa1050af47561d82163ffdaa042314"),
+          "8b520daa4153740e5df94fa39bcecbd2b3252d93648555bb74cb47c75252e27a"),
     149: ("cfd4f5e8cf9c22ff60af784dac03acd4d6ee29cf6506a49285a940c97c7034dc",
-          "3639f9274131cac867ea92d3fe0180e58267240aee973781663871739b92a266"),
+          "7122e796a1684cb5cf2bd0b5cabb064d12fd2bff0db044c1fc8faf3fdf3f718d"),
     153: ("ce05a6c70e7c690d1770905eaeeeeaa7056555971f83e72b83bb5f3435465341",
           "a4145da35c6a98c07b56f2d8d50617b2def0c7f9ab57acf435bdb78153185bbc"),
     154: ("8c90a93aac5a7e7116c61683cc21b6ba31ee198a00d6c27dd7adb538432f4ed5",
           "1c3053b61c31b4cb81188a6818d4fd0fadda22ab769f8fb2cc9b57f7a95446fe"),
     155: ("6e31f8822ba5f5db1fa8d74b6d0d845076b3742b953adc7cfa77932178890a4d",
-          "7941c5f248c82c52432699c71f1f0f6026d5b5e59ffdab15413fe161c048b48b"),
+          "2b66ea362e85bf921f804c56c4a7b882f644e4b9ed569fc96e714e1e05ad141c"),
     157: ("59e3475033ea5b9e2e2f47e2b98278eef74d9155b8863548de4a50f599b4132a",
           "2d17ebba0b55b93b21ef56407178cde867bf79040db7f8c5799db4fe4c633cbc"),
     158: ("2ba50f24610a52f91d44cb463588f2043d940b2ca5e277da4e37f78bf058b312",
@@ -123,9 +123,9 @@ ONE_POOL_PINS = {
     162: ("8aa16fe442e7a016aa451414cd76889305255639af205f4efabd7a97e7e5eeba",
           "27be14bd8f104dd7886d8068524781ece85fdba552d8e275cc6bc76723026cc8"),
     163: ("ef8e80e295c9ef37887523661155b8c90aea0388737db03e1fb25a442b1420aa",
-          "d223b95302b0bdbfdc41f57286133cf3fd90b2d85fda5b4004d43c2f3543b853"),
+          "82b80f9e6503d0682b361552a4ff6ab22701f14b74c61e99bfc13094f2d04d73"),
     167: ("14e6aa67aed7c0d66b593ea8ad9196238536bace89642d68d65e217c37f378ad",
-          "68160af42e2281f0f9676ff7c9e1f23bd1672a6df522e166b8fc77e7ec2364a0"),
+          "213849b33ef3f314b0fc369b7feadd5e53d19b2c34b3b3ef5282af2581b8aabe"),
     169: ("ef8399e2d93d51621f8786e240a1a57bec03d34d920e41dce7d9468315a84deb",
           "e53bd57ba4106d858f9ff2102f060d615f66f107dd4c44a0523c431795a714c8"),
     171: ("6e2e76c91883690386ad81270dbdea08817fc72b5a52d94c34783863e11680d0",
@@ -143,7 +143,7 @@ ONE_POOL_PINS = {
     183: ("18d4baa452f8ba6bf405f9f013b9b16e24d4ba00ab9e836af84fdfc8e52f6581",
           "b72ca0f24b3bb459b096bdde5e6cc9d0c6d2c2daa07e96ffb6618b3c2dc96320"),
     187: ("e7e04d09661a898f3e43b3326899bce0f4d2ebdeb861ba9b70ead85e8c91495c",
-          "a9474295f1ecaff47e1f8e64fdab5be99996e42a39a7dee175c27b53368a90d0"),
+          "afbdd3ff12931c88fa5241ba2e50d6636098b2e48d38db46ffd2eda473fb3e77"),
 }
 # The historic 4-3 rule's only position recode; every other slot keeps its retail label.
 ONE_POOL_POSITIONS = {"OLB": "ILB"}
@@ -237,8 +237,9 @@ def describe_context(main, situ, entries):
     """Independently decode the retail historical descriptors and moment bindings.
 
     Ordinary current-team roster edits may coexist. Historic descriptor changes,
-    changed title/date/bindings cannot use this dataset. The known 50-row profile
-    is validated by its owner, then reduced to this dataset's original 25 bindings.
+    changed title/date/bindings cannot use this dataset. The known expanded profile
+    (25 retail rows plus the moments owner's rows, 51 since beta 76.5) is validated by its owner,
+    then reduced to this dataset's original 25 bindings.
     Narrative text is used only by the offline generator, never to execute code.
     """
     require(32 < len(main) <= MAX_RESOURCE and main[:4] == b"ROST", "missing main ROST")
@@ -265,13 +266,16 @@ def describe_context(main, situ, entries):
     by_team = {(d["selector"], d["year"]): d for d in descriptors}
     require(len(by_team) == 75 and len({d["outer"] for d in descriptors}) == 75,
             "duplicate historic descriptor")
-    require(32 < len(situ) <= MAX_RESOURCE and situ[:4] == b"SITU" and
-            u32(situ, 8) in (COUNT, 50) and u32(situ, 16) == 0, "foreign SITU wrapper")
+    require(32 < len(situ) <= MAX_RESOURCE and situ[:4] == b"SITU" and u32(situ, 16) == 0, "foreign SITU wrapper")
     count = u32(situ, 8)
     canonical = None
     if count != COUNT:
+        # b77 i1: the expanded profile has exactly the moments owner's row count (25 retail rows plus every authored
+        # moment: 51 since beta 76.5 added the Unc Bowl). The old literal (25 or 50) refused every 51-row disc.
         from . import nfl2k5_espn25_more_moments as more
-        require(more.situ_rows(situ, more.Data.load()) == "applied", "foreign expanded SITU profile")
+        data = more.Data.load()
+        require(count == more.RETAIL_COUNT + len(data.moments), "foreign SITU wrapper")
+        require(more.situ_rows(situ, data) == "applied", "foreign expanded SITU profile")
         canonical = dataset()[0]["moments"]
     size = u32(situ, 4)
     require(RECORDS + count * STRIDE <= size <= len(situ) - 32, "SITU span outside entry")
@@ -305,7 +309,7 @@ def context_sha(context):
 def parse_csv(text):
     require(isinstance(text, str) and len(text.encode("utf-8")) <= 256 * 1024, "roster CSV exceeds 256 KiB")
     reader = csv.DictReader(io.StringIO(text), strict=True)
-    require(tuple(reader.fieldnames or ()) == CSV_COLUMNS, "unexpected roster CSV columns")
+    require(tuple(reader.fieldnames or ()) in (CSV_COLUMNS, CSV_COLUMNS + ("hand",)), "unexpected roster CSV columns")
     rows = list(reader)
     require(len(rows) == 53, "each historic roster requires 53 rows")
     names = set()
@@ -319,6 +323,7 @@ def parse_csv(text):
         require(identity not in names, "duplicate player name in one roster")
         names.add(identity)
         require(row["position"] in rr.POSITIONS, "invalid retail position")
+        require(row.get("hand", "") in ("", "Left", "Right"), "invalid historic hand")
         for field, maximum in (("jersey", 99), *((r, 255) for r in rr.RATING_BYTE_ORDER)):
             value = row[field]
             require(value.isascii() and value.isdigit() and str(int(value)) == value and int(value) <= maximum,
@@ -506,7 +511,7 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
                             extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows)
-    # This historical author owns names, jerseys and college pointers only.
+    # This historical author owns names, jerseys, college pointers and explicitly filled hand cells.
     # Defer commentary through preview/apply as well as final serialization;
     # the full Studio save retains its default commentary normalization.
     receipt = rr.import_csv(document, stream.getvalue(), delimiter=",", normalise_commentary=False)
@@ -517,6 +522,8 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
         require(expected == rr.POSITIONS[old["position"]] and
                 all(int(row[k]) == old[k] for k in rr.RATING_BYTE_ORDER), "retail slot position/ratings changed")
         require((p.first, p.last) == (row["first"], row["last"]), "name import was incomplete")
+        if row.get("hand"):
+            p.record.set("hand", rr.HANDS.index(row["hand"]))
         name = row["college"]
         if not name and source_colleges is not None:
             index = old["college_pointer"]
@@ -532,12 +539,17 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
         for field in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer"):
             spec = rr.FIELD_BY_NAME[field]
             allowed.update(range(32 + p.offset + spec.offset, 32 + p.offset + spec.offset + spec.size))
+        if rows[p.index].get("hand"):
+            at = 32 + p.offset + rr.FIELD_BY_NAME["hand"].offset
+            allowed.add(at)
+            require((raw[at] ^ result[at]) & ~0x02 == 0, "historic hand edit escaped bit 1")
     require(all(i in allowed for i, (a, b) in enumerate(zip(raw, result)) if a != b), "edit escaped owned roster fields")
     after = rr.RosterDocument(result[32:])
     require(tuple(after.teams[0].slots) == original_slots, "team pointer/depth order changed")
-    for p, old in zip(after.players, original_values):
+    for p, old, row in zip(after.players, original_values, rows):
         require(all(p.record.values[k] == v for k, v in old.items()
-                    if k not in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer")),
+                    if k not in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer")
+                    and not (k == "hand" and row.get("hand"))),
                 "rating, appearance or other record bits changed")
     return result
 

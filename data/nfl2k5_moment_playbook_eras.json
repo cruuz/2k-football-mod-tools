@@ -1,0 +1,5607 @@
+{
+ "schema": "b77/a4_moment_playbook_eras/v2",
+ "modern_first_season": 2005,
+ "rule": "A side whose SITU season word is 2005 or later gets its franchise's current book; an older side keeps the preserved retail 2004 bank. The selector stays the one in nfl2k5_stock_books (62902). gun_weight replaces the retail 0.05 that 0x207EF0 gives every shotgun set beyond 10 yards of the goal line (nfl2k5_moment_gun_weight).",
+ "league_shotgun_pct": {
+  "1999": {
+   "plays": 32476,
+   "gun_pct": 12.1,
+   "first_down_pct": 6.0,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz"
+  },
+  "2000": {
+   "plays": 32238,
+   "gun_pct": 12.9,
+   "first_down_pct": 6.8,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2000.csv.gz"
+  },
+  "2001": {
+   "plays": 32106,
+   "gun_pct": 14.0,
+   "first_down_pct": 7.6,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2001.csv.gz"
+  },
+  "2002": {
+   "plays": 33583,
+   "gun_pct": 13.9,
+   "first_down_pct": 7.5,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2002.csv.gz"
+  },
+  "2003": {
+   "plays": 33002,
+   "gun_pct": 14.3,
+   "first_down_pct": 7.7,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2003.csv.gz"
+  },
+  "2004": {
+   "plays": 32900,
+   "gun_pct": 13.2,
+   "first_down_pct": 7.6,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2004.csv.gz"
+  },
+  "2007": {
+   "plays": 32646,
+   "gun_pct": 27.1,
+   "first_down_pct": 16.4,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2007.csv.gz"
+  },
+  "2008": {
+   "plays": 32259,
+   "gun_pct": 32.3,
+   "first_down_pct": 20.4,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz"
+  },
+  "2009": {
+   "plays": 32920,
+   "gun_pct": 37.0,
+   "first_down_pct": 23.3,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2009.csv.gz"
+  },
+  "2010": {
+   "plays": 33112,
+   "gun_pct": 37.9,
+   "first_down_pct": 24.6,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz"
+  },
+  "2011": {
+   "plays": 33416,
+   "gun_pct": 40.6,
+   "first_down_pct": 27.4,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz"
+  },
+  "2012": {
+   "plays": 33821,
+   "gun_pct": 47.5,
+   "first_down_pct": 33.6,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz"
+  },
+  "2014": {
+   "plays": 33839,
+   "gun_pct": 60.9,
+   "first_down_pct": 48.8,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz"
+  },
+  "2015": {
+   "plays": 34116,
+   "gun_pct": 62.7,
+   "first_down_pct": 50.3,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2015.csv.gz"
+  },
+  "2016": {
+   "plays": 33834,
+   "gun_pct": 64.5,
+   "first_down_pct": 52.2,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2016.csv.gz"
+  },
+  "2017": {
+   "plays": 33487,
+   "gun_pct": 59.6,
+   "first_down_pct": 44.9,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz"
+  },
+  "2019": {
+   "plays": 33680,
+   "gun_pct": 64.9,
+   "first_down_pct": 52.4,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2019.csv.gz"
+  },
+  "2021": {
+   "plays": 35480,
+   "gun_pct": 66.4,
+   "first_down_pct": 54.4,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz"
+  },
+  "2022": {
+   "plays": 35033,
+   "gun_pct": 68.0,
+   "first_down_pct": 56.9,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz"
+  },
+  "2023": {
+   "plays": 35215,
+   "gun_pct": 72.4,
+   "first_down_pct": 62.9,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2023.csv.gz"
+  },
+  "2025": {
+   "plays": 34295,
+   "gun_pct": 66.4,
+   "first_down_pct": 53.1,
+   "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz"
+  }
+ },
+ "source": "nflverse play_by_play (https://github.com/nflverse/nflverse-data/releases/tag/pbp), regular season, run and pass snaps excluding spikes and kneels, share with shotgun == 1",
+ "moments": [
+  {
+   "row": 1,
+   "title": "THE ICE BOWL",
+   "date": "December 31, 1967",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "DAL",
+     "season": 1971,
+     "book_now": "classic: E2R-DAL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1971 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "GB",
+     "season": 1966,
+     "book_now": "classic: E2R-GB-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
+     "era": "classic",
+     "offense": "Season 1966 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 2,
+   "title": "THE HEIDI BOWL",
+   "date": "November 17, 1968",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NYJ",
+     "season": 1968,
+     "book_now": "classic: E2R-NYJ-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-NYJ-pb.iff",
+     "era": "classic",
+     "offense": "Season 1968 is before 2005: the preserved retail 2004 NYJ book (E2R-NYJ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "OAK",
+     "season": 1967,
+     "book_now": "classic: E2R-OAK-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
+     "era": "classic",
+     "offense": "Season 1967 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 3,
+   "title": "MERRY CHRISTMAS MIAMI",
+   "date": "December 25, 1971",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "MIA",
+     "season": 1972,
+     "book_now": "classic: E2R-MIA-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
+     "era": "classic",
+     "offense": "Season 1972 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "KC",
+     "season": 1969,
+     "book_now": "classic: E2R-KC-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
+     "era": "classic",
+     "offense": "Season 1969 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 4,
+   "title": "THE IMMACULATE RECEPTION",
+   "date": "December 23, 1972",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "OAK",
+     "season": 1967,
+     "book_now": "classic: E2R-OAK-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
+     "era": "classic",
+     "offense": "Season 1967 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "PIT",
+     "season": 1975,
+     "book_now": "classic: E2R-PIT-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-PIT-pb.iff",
+     "era": "classic",
+     "offense": "Season 1975 is before 2005: the preserved retail 2004 PIT book (E2R-PIT-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 5,
+   "title": "THE SEA OF HANDS",
+   "date": "December 21, 1974",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "MIA",
+     "season": 1972,
+     "book_now": "classic: E2R-MIA-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
+     "era": "classic",
+     "offense": "Season 1972 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "OAK",
+     "season": 1976,
+     "book_now": "classic: E2R-OAK-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
+     "era": "classic",
+     "offense": "Season 1976 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 6,
+   "title": "THE FINAL COMEBACK",
+   "date": "December 16, 1979",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "WAS",
+     "season": 1982,
+     "book_now": "classic: E2R-WAS-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-WAS-pb.iff",
+     "era": "classic",
+     "offense": "Season 1982 is before 2005: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "DAL",
+     "season": 1977,
+     "book_now": "classic: E2R-DAL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1977 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 7,
+   "title": "MONTANA'S COMEBACK",
+   "date": "December 7, 1980",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NO",
+     "season": 1991,
+     "book_now": "classic: E2R-NO-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-NO-pb.iff",
+     "era": "classic",
+     "offense": "Season 1991 is before 2005: the preserved retail 2004 NO book (E2R-NO-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 1981,
+     "book_now": "classic: E2R-SF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1981 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 8,
+   "title": "EPIC IN MIAMI",
+   "date": "January 2, 1982",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "SD",
+     "season": 1980,
+     "book_now": "classic: E2R-SD-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-SD-pb.iff",
+     "era": "classic",
+     "offense": "Season 1980 is before 2005: the preserved retail 2004 SD book (E2R-SD-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "MIA",
+     "season": 1984,
+     "book_now": "classic: E2R-MIA-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
+     "era": "classic",
+     "offense": "Season 1984 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 9,
+   "title": "THE CATCH",
+   "date": "January 10, 1982",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "DAL",
+     "season": 1977,
+     "book_now": "classic: E2R-DAL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1977 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 1981,
+     "book_now": "classic: E2R-SF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1981 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 10,
+   "title": "WASHINGTON RALLIES",
+   "date": "October 2, 1983",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "OAK",
+     "season": 1983,
+     "book_now": "classic: E2R-OAK-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
+     "era": "classic",
+     "offense": "Season 1983 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "WAS",
+     "season": 1982,
+     "book_now": "classic: E2R-WAS-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-WAS-pb.iff",
+     "era": "classic",
+     "offense": "Season 1982 is before 2005: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 11,
+   "title": "THE DRIVE",
+   "date": "January 11, 1987",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "DEN",
+     "season": 1986,
+     "book_now": "classic: E2R-DEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "CLE",
+     "season": 1986,
+     "book_now": "classic: E2R-CLE-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-CLE-pb.iff",
+     "era": "classic",
+     "offense": "Season 1986 is before 2005: the preserved retail 2004 CLE book (E2R-CLE-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 12,
+   "title": "THE 2-SECOND MISCALCULATION",
+   "date": "September 20, 1987",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "SF",
+     "season": 1989,
+     "book_now": "classic: E2R-SF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1989 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "CIN",
+     "season": 1988,
+     "book_now": "classic: E2R-CIN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-CIN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1988 is before 2005: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 13,
+   "title": "SAME OLD BUCS",
+   "date": "November 8, 1987",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "TB",
+     "season": 1979,
+     "book_now": "classic: E2R-TB-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-TB-pb.iff",
+     "era": "classic",
+     "offense": "Season 1979 is before 2005: the preserved retail 2004 TB book (E2R-TB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "ARZ",
+     "season": 1975,
+     "book_now": "classic: E2R-ARZ-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-ARZ-pb.iff",
+     "era": "classic",
+     "offense": "Season 1975 is before 2005: the preserved retail 2004 ARZ book (E2R-ARZ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 14,
+   "title": "SUPER BOWL XXIII",
+   "date": "January 22, 1989",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "CIN",
+     "season": 1988,
+     "book_now": "classic: E2R-CIN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-CIN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1988 is before 2005: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 1989,
+     "book_now": "classic: E2R-SF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1989 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 15,
+   "title": "WIDE RIGHT",
+   "date": "January 27, 1991",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "BUF",
+     "season": 1990,
+     "book_now": "classic: E2R-BUF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "NYG",
+     "season": 1990,
+     "book_now": "classic: E2R-NYG-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-NYG-pb.iff",
+     "era": "classic",
+     "offense": "Season 1990 is before 2005: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 16,
+   "title": "HOUSTON'S HEARTS RIPPED OUT",
+   "date": "January 4, 1992",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "TEN",
+     "season": 1979,
+     "book_now": "classic: E2R-TEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1979 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "DEN",
+     "season": 1986,
+     "book_now": "classic: E2R-DEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 17,
+   "title": "THE TWO TD COMEBACK ON KC",
+   "date": "October 4, 1992",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "KC",
+     "season": 1993,
+     "book_now": "classic: E2R-KC-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
+     "era": "classic",
+     "offense": "Season 1993 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "DEN",
+     "season": 1986,
+     "book_now": "classic: E2R-DEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 18,
+   "title": "THE 32-POINT COMEBACK",
+   "date": "January 3, 1993",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "TEN",
+     "season": 1979,
+     "book_now": "classic: E2R-TEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1979 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "BUF",
+     "season": 1990,
+     "book_now": "classic: E2R-BUF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 19,
+   "title": "THE HEARTBREAKER",
+   "date": "October 17, 1994",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "DEN",
+     "season": 1986,
+     "book_now": "classic: E2R-DEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "KC",
+     "season": 1993,
+     "book_now": "classic: E2R-KC-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
+     "era": "classic",
+     "offense": "Season 1993 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 20,
+   "title": "THE COLTS' COLLAPSE",
+   "date": "September 21, 1997",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "IND",
+     "season": 1970,
+     "book_now": "classic: E2R-IND-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-IND-pb.iff",
+     "era": "classic",
+     "offense": "Season 1970 is before 2005: the preserved retail 2004 IND book (E2R-IND-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "BUF",
+     "season": 1990,
+     "book_now": "classic: E2R-BUF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 21,
+   "title": "SUPER BOWL XXXII",
+   "date": "January 25, 1998",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "GB",
+     "season": 1996,
+     "book_now": "classic: E2R-GB-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
+     "era": "classic",
+     "offense": "Season 1996 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "DEN",
+     "season": 1998,
+     "book_now": "classic: E2R-DEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1998 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 22,
+   "title": "A YARD TOO SHORT",
+   "date": "January 30, 2000",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "STL",
+     "season": 1999,
+     "book_now": "classic: E2R-STL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz",
+      "nflverse_team": "LA",
+      "plays": 954,
+      "gun_pct": 3.0,
+      "first_down_pct": 1.8,
+      "second_down_pct": 2.3,
+      "third_down_pct": 6.7,
+      "pass_pct": 59.3,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-STL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1999 is before 2005: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "TEN",
+     "season": 1999,
+     "book_now": "classic: E2R-TEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz",
+      "nflverse_team": "TEN",
+      "plays": 1031,
+      "gun_pct": 21.0,
+      "first_down_pct": 10.5,
+      "second_down_pct": 14.1,
+      "third_down_pct": 51.8,
+      "pass_pct": 60.1,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1999 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 23,
+   "title": "VINATIERI STRIKES AGAIN",
+   "date": "February 3, 2002",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "STL",
+     "season": 1999,
+     "book_now": "classic: E2R-STL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz",
+      "nflverse_team": "LA",
+      "plays": 954,
+      "gun_pct": 3.0,
+      "first_down_pct": 1.8,
+      "second_down_pct": 2.3,
+      "third_down_pct": 6.7,
+      "pass_pct": 59.3,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-STL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1999 is before 2005: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2001,
+     "book_now": "classic: E2R-NE-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2001.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1035,
+      "gun_pct": 14.0,
+      "first_down_pct": 10.3,
+      "second_down_pct": 9.7,
+      "third_down_pct": 27.6,
+      "pass_pct": 53.8,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
+     "era": "classic",
+     "offense": "Season 2001 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 24,
+   "title": "THE BOTCHED SNAP",
+   "date": "January 5, 2003",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NYG",
+     "season": 2003,
+     "book_now": "classic: E2R-NYG-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2003.csv.gz",
+      "nflverse_team": "NYG",
+      "plays": 1088,
+      "gun_pct": 24.4,
+      "first_down_pct": 14.1,
+      "second_down_pct": 16.0,
+      "third_down_pct": 54.4,
+      "pass_pct": 64.7,
+      "no_huddle_pct": 1.3
+     },
+     "book_choice": "preserved retail 2004 book E2R-NYG-pb.iff",
+     "era": "classic",
+     "offense": "Season 2003 is before 2005: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NYG 2003: 24.4% of snaps in shotgun (first down 14.1%, second 16.0%, third 54.4%), 1.3% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 2003,
+     "book_now": "classic: E2R-SF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2003.csv.gz",
+      "nflverse_team": "SF",
+      "plays": 1051,
+      "gun_pct": 10.0,
+      "first_down_pct": 4.3,
+      "second_down_pct": 6.0,
+      "third_down_pct": 26.6,
+      "pass_pct": 56.1,
+      "no_huddle_pct": 0.7
+     },
+     "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
+     "era": "classic",
+     "offense": "Season 2003 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. SF 2003: 10.0% of snaps in shotgun (first down 4.3%, second 6.0%, third 26.6%), 0.7% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 25,
+   "title": "FOURTH AND TWENTY-SIX",
+   "date": "January 11, 2004",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "GB",
+     "season": 2004,
+     "book_now": "classic: E2R-GB-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2004.csv.gz",
+      "nflverse_team": "GB",
+      "plays": 1075,
+      "gun_pct": 14.1,
+      "first_down_pct": 8.4,
+      "second_down_pct": 8.4,
+      "third_down_pct": 36.4,
+      "pass_pct": 59.8,
+      "no_huddle_pct": 0.1
+     },
+     "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
+     "era": "classic",
+     "offense": "Season 2004 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. GB 2004: 14.1% of snaps in shotgun (first down 8.4%, second 8.4%, third 36.4%), 0.1% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "PHI",
+     "season": 2004,
+     "book_now": "classic: E2R-PHI-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2004.csv.gz",
+      "nflverse_team": "PHI",
+      "plays": 976,
+      "gun_pct": 6.7,
+      "first_down_pct": 4.2,
+      "second_down_pct": 4.0,
+      "third_down_pct": 15.9,
+      "pass_pct": 65.2,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-PHI-pb.iff",
+     "era": "classic",
+     "offense": "Season 2004 is before 2005: the preserved retail 2004 PHI book (E2R-PHI-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. PHI 2004: 6.7% of snaps in shotgun (first down 4.2%, second 4.0%, third 15.9%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 26,
+   "title": "THE MISS",
+   "date": "January 17, 1999",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "ATL",
+     "season": 1998,
+     "book_now": "classic: E2R-ATL-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-ATL-pb.iff",
+     "era": "classic",
+     "offense": "Season 1998 is before 2005: the preserved retail 2004 ATL book (E2R-ATL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "MIN",
+     "season": 1998,
+     "book_now": "classic: E2R-MIN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "book_choice": "preserved retail 2004 book E2R-MIN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1998 is before 2005: the preserved retail 2004 MIN book (E2R-MIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 27,
+   "title": "SUPER BOWL XLII: TYREE",
+   "date": "February 3, 2008",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "NYG",
+     "season": 2007,
+     "book_now": "franchise book NYG-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2007.csv.gz",
+      "nflverse_team": "NYG",
+      "plays": 1062,
+      "gun_pct": 36.8,
+      "first_down_pct": 25.2,
+      "second_down_pct": 31.9,
+      "third_down_pct": 67.4,
+      "pass_pct": 57.0,
+      "no_huddle_pct": 5.9
+     },
+     "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2007 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 27.1% (first down 16.4%) in 2007. NYG 2007: 36.8% of snaps in shotgun (first down 25.2%, second 31.9%, third 67.4%), 5.9% no-huddle",
+     "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2007 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2007,
+     "book_now": "franchise book NE-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2007.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1078,
+      "gun_pct": 50.6,
+      "first_down_pct": 39.8,
+      "second_down_pct": 51.9,
+      "third_down_pct": 75.4,
+      "pass_pct": 60.6,
+      "no_huddle_pct": 10.6
+     },
+     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2007 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 27.1% (first down 16.4%) in 2007. NE 2007: 50.6% of snaps in shotgun (first down 39.8%, second 51.9%, third 75.4%), 10.6% no-huddle",
+     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2007 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.6,
+   "fit": {
+    "book": "NE.play",
+    "book_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+    "target": {
+     "first_down": 39.8,
+     "second_down": 51.9,
+     "third_down_real": 75.4
+    },
+    "retail_rule": {
+     "first_down": 17.9,
+     "second_down": 23.0,
+     "third_and_short_to_long": 52.4
+    },
+    "fitted": {
+     "first_down": 41.1,
+     "second_down": 49.0,
+     "third_and_short_to_long": 68.7
+    }
+   }
+  },
+  {
+   "row": 28,
+   "title": "SUPER BOWL XLIII: HOLMES",
+   "date": "February 1, 2009",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "PIT",
+     "season": 2008,
+     "book_now": "franchise book PIT-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz",
+      "nflverse_team": "PIT",
+      "plays": 1030,
+      "gun_pct": 30.5,
+      "first_down_pct": 13.3,
+      "second_down_pct": 20.5,
+      "third_down_pct": 77.8,
+      "pass_pct": 57.3,
+      "no_huddle_pct": 4.9
+     },
+     "book_choice": "franchise book PIT-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2008 is 2005 or later: the franchise's current PIT book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 32.3% (first down 20.4%) in 2008. PIT 2008: 30.5% of snaps in shotgun (first down 13.3%, second 20.5%, third 77.8%), 4.9% no-huddle",
+     "defense": "The same PIT book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2008 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "ARZ",
+     "season": 2008,
+     "book_now": "franchise book ARZ-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz",
+      "nflverse_team": "ARI",
+      "plays": 1014,
+      "gun_pct": 49.2,
+      "first_down_pct": 36.6,
+      "second_down_pct": 53.1,
+      "third_down_pct": 72.0,
+      "pass_pct": 67.6,
+      "no_huddle_pct": 8.8
+     },
+     "book_choice": "franchise book ARZ-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2008 is 2005 or later: the franchise's current ARZ book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 32.3% (first down 20.4%) in 2008. ARZ 2008: 49.2% of snaps in shotgun (first down 36.6%, second 53.1%, third 72.0%), 8.8% no-huddle",
+     "defense": "The same ARZ book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2008 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "ARZ.play",
+    "book_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
+    "target": {
+     "first_down": 36.6,
+     "second_down": 53.1,
+     "third_down_real": 72.0
+    },
+    "retail_rule": {
+     "first_down": 52.9,
+     "second_down": 55.9,
+     "third_and_short_to_long": 55.7
+    },
+    "fitted": {
+     "first_down": 52.9,
+     "second_down": 55.9,
+     "third_and_short_to_long": 55.7
+    }
+   }
+  },
+  {
+   "row": 29,
+   "title": "SUPER BOWL XLVI: SIDELINE",
+   "date": "February 5, 2012",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "NYG",
+     "season": 2011,
+     "book_now": "franchise book NYG-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz",
+      "nflverse_team": "NYG",
+      "plays": 1050,
+      "gun_pct": 45.7,
+      "first_down_pct": 32.7,
+      "second_down_pct": 36.7,
+      "third_down_pct": 88.6,
+      "pass_pct": 62.7,
+      "no_huddle_pct": 4.3
+     },
+     "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2011 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NYG 2011: 45.7% of snaps in shotgun (first down 32.7%, second 36.7%, third 88.6%), 4.3% no-huddle",
+     "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2011,
+     "book_now": "franchise book NE-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1117,
+      "gun_pct": 51.0,
+      "first_down_pct": 41.8,
+      "second_down_pct": 50.8,
+      "third_down_pct": 75.9,
+      "pass_pct": 61.6,
+      "no_huddle_pct": 22.8
+     },
+     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2011 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NE 2011: 51.0% of snaps in shotgun (first down 41.8%, second 50.8%, third 75.9%), 22.8% no-huddle",
+     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.65,
+   "fit": {
+    "book": "NE.play",
+    "book_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+    "target": {
+     "first_down": 41.8,
+     "second_down": 50.8,
+     "third_down_real": 75.9
+    },
+    "retail_rule": {
+     "first_down": 17.9,
+     "second_down": 23.0,
+     "third_and_short_to_long": 52.4
+    },
+    "fitted": {
+     "first_down": 42.8,
+     "second_down": 50.8,
+     "third_and_short_to_long": 69.7
+    }
+   }
+  },
+  {
+   "row": 30,
+   "title": "SUPER BOWL LI: 28-3",
+   "date": "February 5, 2017",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "NE",
+     "season": 2016,
+     "book_now": "franchise book NE-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2016.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1096,
+      "gun_pct": 54.0,
+      "first_down_pct": 40.0,
+      "second_down_pct": 52.9,
+      "third_down_pct": 84.2,
+      "pass_pct": 58.1,
+      "no_huddle_pct": 4.4
+     },
+     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2016 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. NE 2016: 54.0% of snaps in shotgun (first down 40.0%, second 52.9%, third 84.2%), 4.4% no-huddle",
+     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2016 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "ATL",
+     "season": 2016,
+     "book_now": "franchise book ATL-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2016.csv.gz",
+      "nflverse_team": "ATL",
+      "plays": 1022,
+      "gun_pct": 40.5,
+      "first_down_pct": 24.0,
+      "second_down_pct": 39.3,
+      "third_down_pct": 86.2,
+      "pass_pct": 60.7,
+      "no_huddle_pct": 9.1
+     },
+     "book_choice": "franchise book ATL-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2016 is 2005 or later: the franchise's current ATL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. ATL 2016: 40.5% of snaps in shotgun (first down 24.0%, second 39.3%, third 86.2%), 9.1% no-huddle",
+     "defense": "The same ATL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2016 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "ATL.play",
+    "book_sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c",
+    "target": {
+     "first_down": 24.0,
+     "second_down": 39.3,
+     "third_down_real": 86.2
+    },
+    "retail_rule": {
+     "first_down": 57.8,
+     "second_down": 50.0,
+     "third_and_short_to_long": 53.4
+    },
+    "fitted": {
+     "first_down": 57.8,
+     "second_down": 50.0,
+     "third_and_short_to_long": 53.4
+    }
+   }
+  },
+  {
+   "row": 31,
+   "title": "FOURTH AND EIGHTEEN",
+   "date": "November 13, 2022",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "MIN",
+     "season": 2022,
+     "book_now": "franchise book MIN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz",
+      "nflverse_team": "MIN",
+      "plays": 1153,
+      "gun_pct": 53.9,
+      "first_down_pct": 34.9,
+      "second_down_pct": 59.0,
+      "third_down_pct": 87.0,
+      "pass_pct": 66.7,
+      "no_huddle_pct": 16.1
+     },
+     "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2022 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
+     "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "BUF",
+     "season": 2022,
+     "book_now": "franchise book BUF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz",
+      "nflverse_team": "BUF",
+      "plays": 1055,
+      "gun_pct": 74.5,
+      "first_down_pct": 68.2,
+      "second_down_pct": 76.5,
+      "third_down_pct": 86.4,
+      "pass_pct": 65.6,
+      "no_huddle_pct": 9.8
+     },
+     "book_choice": "franchise book BUF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2022 is 2005 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. BUF 2022: 74.5% of snaps in shotgun (first down 68.2%, second 76.5%, third 86.4%), 9.8% no-huddle",
+     "defense": "The same BUF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 1.7,
+   "fit": {
+    "book": "BUF.play",
+    "book_sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
+    "target": {
+     "first_down": 68.2,
+     "second_down": 76.5,
+     "third_down_real": 86.4
+    },
+    "retail_rule": {
+     "first_down": 20.2,
+     "second_down": 24.8,
+     "third_and_short_to_long": 52.6
+    },
+    "fitted": {
+     "first_down": 70.2,
+     "second_down": 75.2,
+     "third_and_short_to_long": 84.9
+    }
+   }
+  },
+  {
+   "row": 32,
+   "title": "MUSIC CITY MIRACLE",
+   "date": "January 8, 2000",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "BUF",
+     "season": 1999,
+     "book_now": "classic: E2R-BUF-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz",
+      "nflverse_team": "BUF",
+      "plays": 1078,
+      "gun_pct": 25.2,
+      "first_down_pct": 13.9,
+      "second_down_pct": 17.5,
+      "third_down_pct": 59.0,
+      "pass_pct": 59.6,
+      "no_huddle_pct": 0.1
+     },
+     "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
+     "era": "classic",
+     "offense": "Season 1999 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. BUF 1999: 25.2% of snaps in shotgun (first down 13.9%, second 17.5%, third 59.0%), 0.1% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "TEN",
+     "season": 1999,
+     "book_now": "classic: E2R-TEN-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_1999.csv.gz",
+      "nflverse_team": "TEN",
+      "plays": 1031,
+      "gun_pct": 21.0,
+      "first_down_pct": 10.5,
+      "second_down_pct": 14.1,
+      "third_down_pct": 51.8,
+      "pass_pct": 60.1,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
+     "era": "classic",
+     "offense": "Season 1999 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 33,
+   "title": "THE TUCK RULE GAME",
+   "date": "January 19, 2002",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "OAK",
+     "season": 2001,
+     "book_now": "classic: E2R-OAK-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2001.csv.gz",
+      "nflverse_team": "LV",
+      "plays": 1060,
+      "gun_pct": 0.0,
+      "first_down_pct": 0.0,
+      "second_down_pct": 0.0,
+      "third_down_pct": 0.0,
+      "pass_pct": 60.6,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
+     "era": "classic",
+     "offense": "Season 2001 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. OAK 2001: 0.0% of snaps in shotgun (first down 0.0%, second 0.0%, third 0.0%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2001,
+     "book_now": "classic: E2R-NE-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2001.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1035,
+      "gun_pct": 14.0,
+      "first_down_pct": 10.3,
+      "second_down_pct": 9.7,
+      "third_down_pct": 27.6,
+      "pass_pct": 53.8,
+      "no_huddle_pct": 0.0
+     },
+     "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
+     "era": "classic",
+     "offense": "Season 2001 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 34,
+   "title": "SUPER BOWL XXXVIII: FINALE",
+   "date": "February 1, 2004",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "CAR",
+     "season": 2003,
+     "book_now": "classic: E2R-CAR-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2003.csv.gz",
+      "nflverse_team": "CAR",
+      "plays": 1040,
+      "gun_pct": 3.2,
+      "first_down_pct": 3.6,
+      "second_down_pct": 3.1,
+      "third_down_pct": 2.1,
+      "pass_pct": 50.8,
+      "no_huddle_pct": 0.1
+     },
+     "book_choice": "preserved retail 2004 book E2R-CAR-pb.iff",
+     "era": "classic",
+     "offense": "Season 2003 is before 2005: the preserved retail 2004 CAR book (E2R-CAR-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. CAR 2003: 3.2% of snaps in shotgun (first down 3.6%, second 3.1%, third 2.1%), 0.1% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2003,
+     "book_now": "classic: E2R-NE-pb.iff",
+     "book_now_exit": "stock_alias",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2003.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1063,
+      "gun_pct": 12.9,
+      "first_down_pct": 9.2,
+      "second_down_pct": 9.7,
+      "third_down_pct": 25.4,
+      "pass_pct": 56.5,
+      "no_huddle_pct": 3.6
+     },
+     "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
+     "era": "classic",
+     "offense": "Season 2003 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NE 2003: 12.9% of snaps in shotgun (first down 9.2%, second 9.7%, third 25.4%), 3.6% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
+    }
+   },
+   "gun_weight": 0.05
+  },
+  {
+   "row": 35,
+   "title": "SUPER BOWL XLIV: AMBUSH",
+   "date": "February 7, 2010",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "NO",
+     "season": 2009,
+     "book_now": "franchise book NO-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2009.csv.gz",
+      "nflverse_team": "NO",
+      "plays": 1051,
+      "gun_pct": 31.2,
+      "first_down_pct": 19.4,
+      "second_down_pct": 29.9,
+      "third_down_pct": 63.1,
+      "pass_pct": 56.4,
+      "no_huddle_pct": 0.5
+     },
+     "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2009 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.0% (first down 23.3%) in 2009. NO 2009: 31.2% of snaps in shotgun (first down 19.4%, second 29.9%, third 63.1%), 0.5% no-huddle",
+     "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2009 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "IND",
+     "season": 2009,
+     "book_now": "franchise book IND-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2009.csv.gz",
+      "nflverse_team": "IND",
+      "plays": 1002,
+      "gun_pct": 50.3,
+      "first_down_pct": 36.8,
+      "second_down_pct": 55.3,
+      "third_down_pct": 74.7,
+      "pass_pct": 64.4,
+      "no_huddle_pct": 8.9
+     },
+     "book_choice": "franchise book IND-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2009 is 2005 or later: the franchise's current IND book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.0% (first down 23.3%) in 2009. IND 2009: 50.3% of snaps in shotgun (first down 36.8%, second 55.3%, third 74.7%), 8.9% no-huddle",
+     "defense": "The same IND book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2009 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "IND.play",
+    "book_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
+    "target": {
+     "first_down": 36.8,
+     "second_down": 55.3,
+     "third_down_real": 74.7
+    },
+    "retail_rule": {
+     "first_down": 43.1,
+     "second_down": 55.1,
+     "third_and_short_to_long": 54.9
+    },
+    "fitted": {
+     "first_down": 43.1,
+     "second_down": 55.1,
+     "third_and_short_to_long": 54.9
+    }
+   }
+  },
+  {
+   "row": 36,
+   "title": "NEW MEADOWLANDS MIRACLE",
+   "date": "December 19, 2010",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "PHI",
+     "season": 2010,
+     "book_now": "franchise book PHI-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz",
+      "nflverse_team": "PHI",
+      "plays": 1058,
+      "gun_pct": 51.0,
+      "first_down_pct": 42.0,
+      "second_down_pct": 51.7,
+      "third_down_pct": 70.0,
+      "pass_pct": 65.8,
+      "no_huddle_pct": 2.3
+     },
+     "book_choice": "franchise book PHI-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2010 is 2005 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. PHI 2010: 51.0% of snaps in shotgun (first down 42.0%, second 51.7%, third 70.0%), 2.3% no-huddle",
+     "defense": "The same PHI book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "NYG",
+     "season": 2010,
+     "book_now": "franchise book NYG-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz",
+      "nflverse_team": "NYG",
+      "plays": 1057,
+      "gun_pct": 38.4,
+      "first_down_pct": 24.1,
+      "second_down_pct": 31.0,
+      "third_down_pct": 83.3,
+      "pass_pct": 56.4,
+      "no_huddle_pct": 3.7
+     },
+     "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2010 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NYG 2010: 38.4% of snaps in shotgun (first down 24.1%, second 31.0%, third 83.3%), 3.7% no-huddle",
+     "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "NYG.play",
+    "book_sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57",
+    "target": {
+     "first_down": 24.1,
+     "second_down": 31.0,
+     "third_down_real": 83.3
+    },
+    "retail_rule": {
+     "first_down": 51.8,
+     "second_down": 48.8,
+     "third_and_short_to_long": 54.2
+    },
+    "fitted": {
+     "first_down": 51.8,
+     "second_down": 48.8,
+     "third_and_short_to_long": 54.2
+    }
+   }
+  },
+  {
+   "row": 37,
+   "title": "BEAST QUAKE",
+   "date": "January 8, 2011",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NO",
+     "season": 2010,
+     "book_now": "franchise book NO-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz",
+      "nflverse_team": "NO",
+      "plays": 1088,
+      "gun_pct": 39.2,
+      "first_down_pct": 26.4,
+      "second_down_pct": 35.3,
+      "third_down_pct": 72.2,
+      "pass_pct": 65.5,
+      "no_huddle_pct": 1.4
+     },
+     "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2010 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NO 2010: 39.2% of snaps in shotgun (first down 26.4%, second 35.3%, third 72.2%), 1.4% no-huddle",
+     "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "SEA",
+     "season": 2010,
+     "book_now": "franchise book SEA-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2010.csv.gz",
+      "nflverse_team": "SEA",
+      "plays": 980,
+      "gun_pct": 38.8,
+      "first_down_pct": 24.6,
+      "second_down_pct": 33.8,
+      "third_down_pct": 74.1,
+      "pass_pct": 62.9,
+      "no_huddle_pct": 1.0
+     },
+     "book_choice": "franchise book SEA-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2010 is 2005 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. SEA 2010: 38.8% of snaps in shotgun (first down 24.6%, second 33.8%, third 74.1%), 1.0% no-huddle",
+     "defense": "The same SEA book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "NO.play",
+    "book_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+    "target": {
+     "first_down": 26.4,
+     "second_down": 35.3,
+     "third_down_real": 72.2
+    },
+    "retail_rule": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    },
+    "fitted": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    }
+   }
+  },
+  {
+   "row": 38,
+   "title": "THE CATCH III",
+   "date": "January 14, 2012",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NO",
+     "season": 2011,
+     "book_now": "franchise book NO-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz",
+      "nflverse_team": "NO",
+      "plays": 1147,
+      "gun_pct": 37.4,
+      "first_down_pct": 28.3,
+      "second_down_pct": 33.2,
+      "third_down_pct": 68.3,
+      "pass_pct": 63.3,
+      "no_huddle_pct": 1.1
+     },
+     "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2011 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NO 2011: 37.4% of snaps in shotgun (first down 28.3%, second 33.2%, third 68.3%), 1.1% no-huddle",
+     "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 2011,
+     "book_now": "franchise book SF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2011.csv.gz",
+      "nflverse_team": "SF",
+      "plays": 1004,
+      "gun_pct": 27.4,
+      "first_down_pct": 11.6,
+      "second_down_pct": 17.9,
+      "third_down_pct": 70.5,
+      "pass_pct": 54.4,
+      "no_huddle_pct": 1.2
+     },
+     "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2011 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. SF 2011: 27.4% of snaps in shotgun (first down 11.6%, second 17.9%, third 70.5%), 1.2% no-huddle",
+     "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "NO.play",
+    "book_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+    "target": {
+     "first_down": 28.3,
+     "second_down": 33.2,
+     "third_down_real": 68.3
+    },
+    "retail_rule": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    },
+    "fitted": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    }
+   }
+  },
+  {
+   "row": 39,
+   "title": "MILE HIGH MIRACLE",
+   "date": "January 12, 2013",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "BAL",
+     "season": 2012,
+     "book_now": "franchise book BAL-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz",
+      "nflverse_team": "BAL",
+      "plays": 1078,
+      "gun_pct": 40.9,
+      "first_down_pct": 23.8,
+      "second_down_pct": 34.3,
+      "third_down_pct": 85.0,
+      "pass_pct": 60.0,
+      "no_huddle_pct": 22.9
+     },
+     "book_choice": "franchise book BAL-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2012 is 2005 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
+     "defense": "The same BAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "DEN",
+     "season": 2012,
+     "book_now": "franchise book DEN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz",
+      "nflverse_team": "DEN",
+      "plays": 1114,
+      "gun_pct": 57.2,
+      "first_down_pct": 46.8,
+      "second_down_pct": 56.8,
+      "third_down_pct": 81.6,
+      "pass_pct": 58.1,
+      "no_huddle_pct": 13.4
+     },
+     "book_choice": "franchise book DEN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2012 is 2005 or later: the franchise's current DEN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. DEN 2012: 57.2% of snaps in shotgun (first down 46.8%, second 56.8%, third 81.6%), 13.4% no-huddle",
+     "defense": "The same DEN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.4,
+   "fit": {
+    "book": "DEN.play",
+    "book_sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
+    "target": {
+     "first_down": 46.8,
+     "second_down": 56.8,
+     "third_down_real": 81.6
+    },
+    "retail_rule": {
+     "first_down": 29.2,
+     "second_down": 33.0,
+     "third_and_short_to_long": 53.7
+    },
+    "fitted": {
+     "first_down": 48.9,
+     "second_down": 54.0,
+     "third_and_short_to_long": 68.6
+    }
+   }
+  },
+  {
+   "row": 40,
+   "title": "SUPER BOWL XLVII: HOLD ON",
+   "date": "February 3, 2013",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "BAL",
+     "season": 2012,
+     "book_now": "franchise book BAL-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz",
+      "nflverse_team": "BAL",
+      "plays": 1078,
+      "gun_pct": 40.9,
+      "first_down_pct": 23.8,
+      "second_down_pct": 34.3,
+      "third_down_pct": 85.0,
+      "pass_pct": 60.0,
+      "no_huddle_pct": 22.9
+     },
+     "book_choice": "franchise book BAL-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2012 is 2005 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
+     "defense": "The same BAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "SF",
+     "season": 2012,
+     "book_now": "franchise book SF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2012.csv.gz",
+      "nflverse_team": "SF",
+      "plays": 991,
+      "gun_pct": 37.9,
+      "first_down_pct": 26.6,
+      "second_down_pct": 33.9,
+      "third_down_pct": 70.5,
+      "pass_pct": 54.2,
+      "no_huddle_pct": 1.3
+     },
+     "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2012 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. SF 2012: 37.9% of snaps in shotgun (first down 26.6%, second 33.9%, third 70.5%), 1.3% no-huddle",
+     "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.4,
+   "fit": {
+    "book": "SF.play",
+    "book_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+    "target": {
+     "first_down": 26.6,
+     "second_down": 33.9,
+     "third_down_real": 70.5
+    },
+    "retail_rule": {
+     "first_down": 14.1,
+     "second_down": 19.5,
+     "third_and_short_to_long": 51.8
+    },
+    "fitted": {
+     "first_down": 25.8,
+     "second_down": 34.0,
+     "third_and_short_to_long": 60.9
+    }
+   }
+  },
+  {
+   "row": 41,
+   "title": "DEZ CAUGHT IT?",
+   "date": "January 11, 2015",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "DAL",
+     "season": 2014,
+     "book_now": "franchise book DAL-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz",
+      "nflverse_team": "DAL",
+      "plays": 1045,
+      "gun_pct": 48.1,
+      "first_down_pct": 27.5,
+      "second_down_pct": 54.7,
+      "third_down_pct": 82.9,
+      "pass_pct": 52.3,
+      "no_huddle_pct": 3.9
+     },
+     "book_choice": "franchise book DAL-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2014 is 2005 or later: the franchise's current DAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. DAL 2014: 48.1% of snaps in shotgun (first down 27.5%, second 54.7%, third 82.9%), 3.9% no-huddle",
+     "defense": "The same DAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "GB",
+     "season": 2014,
+     "book_now": "franchise book GB-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz",
+      "nflverse_team": "GB",
+      "plays": 1028,
+      "gun_pct": 63.3,
+      "first_down_pct": 52.2,
+      "second_down_pct": 63.2,
+      "third_down_pct": 89.4,
+      "pass_pct": 61.2,
+      "no_huddle_pct": 31.7
+     },
+     "book_choice": "franchise book GB-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2014 is 2005 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. GB 2014: 63.3% of snaps in shotgun (first down 52.2%, second 63.2%, third 89.4%), 31.7% no-huddle",
+     "defense": "The same GB book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.5,
+   "fit": {
+    "book": "GB.play",
+    "book_sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437",
+    "target": {
+     "first_down": 52.2,
+     "second_down": 63.2,
+     "third_down_real": 89.4
+    },
+    "retail_rule": {
+     "first_down": 28.0,
+     "second_down": 37.8,
+     "third_and_short_to_long": 55.0
+    },
+    "fitted": {
+     "first_down": 53.8,
+     "second_down": 63.0,
+     "third_and_short_to_long": 76.3
+    }
+   }
+  },
+  {
+   "row": 42,
+   "title": "SUPER BOWL XLIX: BUTLER",
+   "date": "February 1, 2015",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "NE",
+     "season": 2014,
+     "book_now": "franchise book NE-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1114,
+      "gun_pct": 47.4,
+      "first_down_pct": 31.2,
+      "second_down_pct": 48.5,
+      "third_down_pct": 78.8,
+      "pass_pct": 62.2,
+      "no_huddle_pct": 7.5
+     },
+     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2014 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. NE 2014: 47.4% of snaps in shotgun (first down 31.2%, second 48.5%, third 78.8%), 7.5% no-huddle",
+     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "SEA",
+     "season": 2014,
+     "book_now": "franchise book SEA-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2014.csv.gz",
+      "nflverse_team": "SEA",
+      "plays": 1040,
+      "gun_pct": 68.8,
+      "first_down_pct": 58.7,
+      "second_down_pct": 69.3,
+      "third_down_pct": 89.9,
+      "pass_pct": 54.8,
+      "no_huddle_pct": 2.6
+     },
+     "book_choice": "franchise book SEA-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2014 is 2005 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. SEA 2014: 68.8% of snaps in shotgun (first down 58.7%, second 69.3%, third 89.9%), 2.6% no-huddle",
+     "defense": "The same SEA book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 1.5,
+   "fit": {
+    "book": "SEA.play",
+    "book_sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933",
+    "target": {
+     "first_down": 58.7,
+     "second_down": 69.3,
+     "third_down_real": 89.9
+    },
+    "retail_rule": {
+     "first_down": 16.7,
+     "second_down": 22.6,
+     "third_and_short_to_long": 51.8
+    },
+    "fitted": {
+     "first_down": 60.8,
+     "second_down": 68.0,
+     "third_and_short_to_long": 80.0
+    }
+   }
+  },
+  {
+   "row": 43,
+   "title": "MIRACLE IN MOTOWN",
+   "date": "December 3, 2015",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "GB",
+     "season": 2015,
+     "book_now": "franchise book GB-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2015.csv.gz",
+      "nflverse_team": "GB",
+      "plays": 1124,
+      "gun_pct": 73.0,
+      "first_down_pct": 64.4,
+      "second_down_pct": 73.9,
+      "third_down_pct": 88.7,
+      "pass_pct": 65.3,
+      "no_huddle_pct": 38.2
+     },
+     "book_choice": "franchise book GB-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2015 is 2005 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. GB 2015: 73.0% of snaps in shotgun (first down 64.4%, second 73.9%, third 88.7%), 38.2% no-huddle",
+     "defense": "The same GB book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2015 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "DET",
+     "season": 2015,
+     "book_now": "franchise book DET-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2015.csv.gz",
+      "nflverse_team": "DET",
+      "plays": 1063,
+      "gun_pct": 67.5,
+      "first_down_pct": 56.7,
+      "second_down_pct": 67.9,
+      "third_down_pct": 90.7,
+      "pass_pct": 69.0,
+      "no_huddle_pct": 6.4
+     },
+     "book_choice": "franchise book DET-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2015 is 2005 or later: the franchise's current DET book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. DET 2015: 67.5% of snaps in shotgun (first down 56.7%, second 67.9%, third 90.7%), 6.4% no-huddle",
+     "defense": "The same DET book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2015 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 1.0,
+   "fit": {
+    "book": "DET.play",
+    "book_sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb",
+    "target": {
+     "first_down": 56.7,
+     "second_down": 67.9,
+     "third_down_real": 90.7
+    },
+    "retail_rule": {
+     "first_down": 19.1,
+     "second_down": 24.6,
+     "third_and_short_to_long": 53.4
+    },
+    "fitted": {
+     "first_down": 59.0,
+     "second_down": 66.3,
+     "third_and_short_to_long": 81.4
+    }
+   }
+  },
+  {
+   "row": 44,
+   "title": "MINNEAPOLIS MIRACLE",
+   "date": "January 14, 2018",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "NO",
+     "season": 2017,
+     "book_now": "franchise book NO-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz",
+      "nflverse_team": "NO",
+      "plays": 1014,
+      "gun_pct": 48.6,
+      "first_down_pct": 30.6,
+      "second_down_pct": 53.6,
+      "third_down_pct": 84.1,
+      "pass_pct": 57.7,
+      "no_huddle_pct": 1.7
+     },
+     "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2017 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NO 2017: 48.6% of snaps in shotgun (first down 30.6%, second 53.6%, third 84.1%), 1.7% no-huddle",
+     "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "MIN",
+     "season": 2017,
+     "book_now": "franchise book MIN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz",
+      "nflverse_team": "MIN",
+      "plays": 1091,
+      "gun_pct": 53.1,
+      "first_down_pct": 37.8,
+      "second_down_pct": 51.1,
+      "third_down_pct": 87.0,
+      "pass_pct": 56.7,
+      "no_huddle_pct": 10.7
+     },
+     "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2017 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. MIN 2017: 53.1% of snaps in shotgun (first down 37.8%, second 51.1%, third 87.0%), 10.7% no-huddle",
+     "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "NO.play",
+    "book_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+    "target": {
+     "first_down": 30.6,
+     "second_down": 53.6,
+     "third_down_real": 84.1
+    },
+    "retail_rule": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    },
+    "fitted": {
+     "first_down": 43.9,
+     "second_down": 53.1,
+     "third_and_short_to_long": 54.1
+    }
+   }
+  },
+  {
+   "row": 45,
+   "title": "SUPER BOWL LII: PHILLY",
+   "date": "February 4, 2018",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "PHI",
+     "season": 2017,
+     "book_now": "franchise book PHI-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz",
+      "nflverse_team": "PHI",
+      "plays": 1103,
+      "gun_pct": 70.8,
+      "first_down_pct": 64.4,
+      "second_down_pct": 71.3,
+      "third_down_pct": 84.7,
+      "pass_pct": 60.6,
+      "no_huddle_pct": 8.3
+     },
+     "book_choice": "franchise book PHI-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2017 is 2005 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. PHI 2017: 70.8% of snaps in shotgun (first down 64.4%, second 71.3%, third 84.7%), 8.3% no-huddle",
+     "defense": "The same PHI book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "NE",
+     "season": 2017,
+     "book_now": "franchise book NE-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2017.csv.gz",
+      "nflverse_team": "NE",
+      "plays": 1123,
+      "gun_pct": 51.7,
+      "first_down_pct": 36.4,
+      "second_down_pct": 53.0,
+      "third_down_pct": 87.0,
+      "pass_pct": 60.5,
+      "no_huddle_pct": 5.2
+     },
+     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2017 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NE 2017: 51.7% of snaps in shotgun (first down 36.4%, second 53.0%, third 87.0%), 5.2% no-huddle",
+     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.6,
+   "fit": {
+    "book": "NE.play",
+    "book_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+    "target": {
+     "first_down": 36.4,
+     "second_down": 53.0,
+     "third_down_real": 87.0
+    },
+    "retail_rule": {
+     "first_down": 17.9,
+     "second_down": 23.0,
+     "third_and_short_to_long": 52.4
+    },
+    "fitted": {
+     "first_down": 41.1,
+     "second_down": 49.0,
+     "third_and_short_to_long": 68.7
+    }
+   }
+  },
+  {
+   "row": 46,
+   "title": "SUPER BOWL LIV: WASP",
+   "date": "February 2, 2020",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "SF",
+     "season": 2019,
+     "book_now": "franchise book SF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2019.csv.gz",
+      "nflverse_team": "SF",
+      "plays": 1036,
+      "gun_pct": 44.8,
+      "first_down_pct": 27.5,
+      "second_down_pct": 41.7,
+      "third_down_pct": 85.9,
+      "pass_pct": 54.0,
+      "no_huddle_pct": 3.7
+     },
+     "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2019 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. SF 2019: 44.8% of snaps in shotgun (first down 27.5%, second 41.7%, third 85.9%), 3.7% no-huddle",
+     "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2019 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "KC",
+     "season": 2019,
+     "book_now": "franchise book KC-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2019.csv.gz",
+      "nflverse_team": "KC",
+      "plays": 1033,
+      "gun_pct": 79.2,
+      "first_down_pct": 71.5,
+      "second_down_pct": 83.1,
+      "third_down_pct": 91.7,
+      "pass_pct": 67.0,
+      "no_huddle_pct": 0.8
+     },
+     "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2019 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. KC 2019: 79.2% of snaps in shotgun (first down 71.5%, second 83.1%, third 91.7%), 0.8% no-huddle",
+     "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2019 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.55,
+   "fit": {
+    "book": "SF.play",
+    "book_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+    "target": {
+     "first_down": 27.5,
+     "second_down": 41.7,
+     "third_down_real": 85.9
+    },
+    "retail_rule": {
+     "first_down": 14.1,
+     "second_down": 19.5,
+     "third_and_short_to_long": 51.8
+    },
+    "fitted": {
+     "first_down": 30.2,
+     "second_down": 39.1,
+     "third_and_short_to_long": 63.8
+    }
+   }
+  },
+  {
+   "row": 47,
+   "title": "THIRTEEN SECONDS",
+   "date": "January 23, 2022",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "BUF",
+     "season": 2021,
+     "book_now": "franchise book BUF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz",
+      "nflverse_team": "BUF",
+      "plays": 1169,
+      "gun_pct": 73.6,
+      "first_down_pct": 66.4,
+      "second_down_pct": 74.8,
+      "third_down_pct": 89.1,
+      "pass_pct": 65.9,
+      "no_huddle_pct": 12.2
+     },
+     "book_choice": "franchise book BUF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2021 is 2005 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. BUF 2021: 73.6% of snaps in shotgun (first down 66.4%, second 74.8%, third 89.1%), 12.2% no-huddle",
+     "defense": "The same BUF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "KC",
+     "season": 2021,
+     "book_now": "franchise book KC-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz",
+      "nflverse_team": "KC",
+      "plays": 1172,
+      "gun_pct": 80.4,
+      "first_down_pct": 70.2,
+      "second_down_pct": 91.1,
+      "third_down_pct": 88.0,
+      "pass_pct": 68.3,
+      "no_huddle_pct": 2.4
+     },
+     "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2021 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. KC 2021: 80.4% of snaps in shotgun (first down 70.2%, second 91.1%, third 88.0%), 2.4% no-huddle",
+     "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 1.55,
+   "fit": {
+    "book": "BUF.play",
+    "book_sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
+    "target": {
+     "first_down": 66.4,
+     "second_down": 74.8,
+     "third_down_real": 89.1
+    },
+    "retail_rule": {
+     "first_down": 20.2,
+     "second_down": 24.8,
+     "third_and_short_to_long": 52.6
+    },
+    "fitted": {
+     "first_down": 67.7,
+     "second_down": 72.9,
+     "third_and_short_to_long": 83.7
+    }
+   }
+  },
+  {
+   "row": 48,
+   "title": "SUPER BOWL LVI: DONALD",
+   "date": "February 13, 2022",
+   "user_side": "away",
+   "cpu_side": "home",
+   "sides": {
+    "away": {
+     "franchise_key": "STL",
+     "season": 2021,
+     "book_now": "franchise book STL-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz",
+      "nflverse_team": "LA",
+      "plays": 1072,
+      "gun_pct": 58.7,
+      "first_down_pct": 43.9,
+      "second_down_pct": 64.0,
+      "third_down_pct": 86.0,
+      "pass_pct": 63.0,
+      "no_huddle_pct": 17.6
+     },
+     "book_choice": "franchise book STL-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2021 is 2005 or later: the franchise's current STL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. STL 2021: 58.7% of snaps in shotgun (first down 43.9%, second 64.0%, third 86.0%), 17.6% no-huddle",
+     "defense": "The same STL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "CIN",
+     "season": 2021,
+     "book_now": "franchise book CIN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz",
+      "nflverse_team": "CIN",
+      "plays": 1079,
+      "gun_pct": 63.3,
+      "first_down_pct": 48.9,
+      "second_down_pct": 66.2,
+      "third_down_pct": 88.8,
+      "pass_pct": 61.6,
+      "no_huddle_pct": 4.9
+     },
+     "book_choice": "franchise book CIN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2021 is 2005 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. CIN 2021: 63.3% of snaps in shotgun (first down 48.9%, second 66.2%, third 88.8%), 4.9% no-huddle",
+     "defense": "The same CIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.05,
+   "fit": {
+    "book": "CIN.play",
+    "book_sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7",
+    "target": {
+     "first_down": 48.9,
+     "second_down": 66.2,
+     "third_down_real": 88.8
+    },
+    "retail_rule": {
+     "first_down": 61.3,
+     "second_down": 58.1,
+     "third_and_short_to_long": 54.8
+    },
+    "fitted": {
+     "first_down": 61.3,
+     "second_down": 58.1,
+     "third_and_short_to_long": 54.8
+    }
+   }
+  },
+  {
+   "row": 49,
+   "title": "THE 33-POINT COMEBACK",
+   "date": "December 17, 2022",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "IND",
+     "season": 2022,
+     "book_now": "franchise book IND-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz",
+      "nflverse_team": "IND",
+      "plays": 1135,
+      "gun_pct": 76.6,
+      "first_down_pct": 64.7,
+      "second_down_pct": 81.8,
+      "third_down_pct": 93.3,
+      "pass_pct": 63.0,
+      "no_huddle_pct": 14.0
+     },
+     "book_choice": "franchise book IND-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2022 is 2005 or later: the franchise's current IND book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. IND 2022: 76.6% of snaps in shotgun (first down 64.7%, second 81.8%, third 93.3%), 14.0% no-huddle",
+     "defense": "The same IND book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "MIN",
+     "season": 2022,
+     "book_now": "franchise book MIN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2022.csv.gz",
+      "nflverse_team": "MIN",
+      "plays": 1153,
+      "gun_pct": 53.9,
+      "first_down_pct": 34.9,
+      "second_down_pct": 59.0,
+      "third_down_pct": 87.0,
+      "pass_pct": 66.7,
+      "no_huddle_pct": 16.1
+     },
+     "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2022 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
+     "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.8,
+   "fit": {
+    "book": "IND.play",
+    "book_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
+    "target": {
+     "first_down": 64.7,
+     "second_down": 81.8,
+     "third_down_real": 93.3
+    },
+    "retail_rule": {
+     "first_down": 43.1,
+     "second_down": 55.1,
+     "third_and_short_to_long": 54.9
+    },
+    "fitted": {
+     "first_down": 69.4,
+     "second_down": 76.5,
+     "third_and_short_to_long": 82.8
+    }
+   }
+  },
+  {
+   "row": 50,
+   "title": "SUPER BOWL LVIII: OVERTIME",
+   "date": "February 11, 2024",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "SF",
+     "season": 2023,
+     "book_now": "franchise book SF-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2023.csv.gz",
+      "nflverse_team": "SF",
+      "plays": 1039,
+      "gun_pct": 61.8,
+      "first_down_pct": 54.5,
+      "second_down_pct": 60.2,
+      "third_down_pct": 83.9,
+      "pass_pct": 55.0,
+      "no_huddle_pct": 1.8
+     },
+     "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2023 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. SF 2023: 61.8% of snaps in shotgun (first down 54.5%, second 60.2%, third 83.9%), 1.8% no-huddle",
+     "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2023 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "KC",
+     "season": 2023,
+     "book_now": "franchise book KC-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2023.csv.gz",
+      "nflverse_team": "KC",
+      "plays": 1105,
+      "gun_pct": 84.1,
+      "first_down_pct": 77.2,
+      "second_down_pct": 87.6,
+      "third_down_pct": 95.7,
+      "pass_pct": 68.5,
+      "no_huddle_pct": 3.0
+     },
+     "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2023 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. KC 2023: 84.1% of snaps in shotgun (first down 77.2%, second 87.6%, third 95.7%), 3.0% no-huddle",
+     "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2023 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 1.4,
+   "fit": {
+    "book": "SF.play",
+    "book_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+    "target": {
+     "first_down": 54.5,
+     "second_down": 60.2,
+     "third_down_real": 83.9
+    },
+    "retail_rule": {
+     "first_down": 14.1,
+     "second_down": 19.5,
+     "third_and_short_to_long": 51.8
+    },
+    "fitted": {
+     "first_down": 52.7,
+     "second_down": 62.1,
+     "third_and_short_to_long": 76.1
+    }
+   }
+  },
+  {
+   "row": 51,
+   "title": "THE UNC BOWL",
+   "date": "October 16, 2025",
+   "user_side": "home",
+   "cpu_side": "away",
+   "sides": {
+    "away": {
+     "franchise_key": "PIT",
+     "season": 2025,
+     "book_now": "franchise book PIT-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+      "nflverse_team": "PIT",
+      "plays": 1014,
+      "gun_pct": 67.3,
+      "first_down_pct": 51.7,
+      "second_down_pct": 71.6,
+      "third_down_pct": 92.3,
+      "pass_pct": 61.6,
+      "no_huddle_pct": 11.8
+     },
+     "book_choice": "franchise book PIT-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2025 is 2005 or later: the franchise's current PIT book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. PIT 2025: 67.3% of snaps in shotgun (first down 51.7%, second 71.6%, third 92.3%), 11.8% no-huddle",
+     "defense": "The same PIT book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2025 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    },
+    "home": {
+     "franchise_key": "CIN",
+     "season": 2025,
+     "book_now": "franchise book CIN-pb.iff",
+     "book_now_exit": "default",
+     "category": 4,
+     "real": {
+      "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+      "nflverse_team": "CIN",
+      "plays": 1092,
+      "gun_pct": 82.3,
+      "first_down_pct": 72.8,
+      "second_down_pct": 87.2,
+      "third_down_pct": 95.5,
+      "pass_pct": 66.1,
+      "no_huddle_pct": 2.6
+     },
+     "book_choice": "franchise book CIN-pb.iff (v2 offense, v2 defense)",
+     "era": "modern",
+     "offense": "Season 2025 is 2005 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. CIN 2025: 82.3% of snaps in shotgun (first down 72.8%, second 87.2%, third 95.5%), 2.6% no-huddle",
+     "defense": "The same CIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2025 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+    }
+   },
+   "gun_weight": 0.2,
+   "fit": {
+    "book": "PIT.play",
+    "book_sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
+    "target": {
+     "first_down": 51.7,
+     "second_down": 71.6,
+     "third_down_real": 92.3
+    },
+    "retail_rule": {
+     "first_down": 55.1,
+     "second_down": 59.0,
+     "third_and_short_to_long": 56.4
+    },
+    "fitted": {
+     "first_down": 59.6,
+     "second_down": 64.5,
+     "third_and_short_to_long": 66.2
+    }
+   }
+  }
+ ],
+ "teams": {
+  "ARZ": {
+   "nflverse_team": "ARI",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1294,
+   "gun_pct": 69.2,
+   "bins": {
+    "d1": {
+     "snaps": 561,
+     "gun": 326,
+     "gun_pct": 58.1,
+     "mean_togo": 10.42
+    },
+    "d2_short": {
+     "snaps": 69,
+     "gun": 39,
+     "gun_pct": 56.5,
+     "mean_togo": 2.01
+    },
+    "d2_mid": {
+     "snaps": 118,
+     "gun": 76,
+     "gun_pct": 64.4,
+     "mean_togo": 5.58
+    },
+    "d2_long": {
+     "snaps": 245,
+     "gun": 191,
+     "gun_pct": 78.0,
+     "mean_togo": 11.29
+    },
+    "d3_short": {
+     "snaps": 89,
+     "gun": 56,
+     "gun_pct": 62.9,
+     "mean_togo": 1.94
+    },
+    "d3_mid": {
+     "snaps": 66,
+     "gun": 65,
+     "gun_pct": 98.5,
+     "mean_togo": 4.79
+    },
+    "d3_long": {
+     "snaps": 146,
+     "gun": 142,
+     "gun_pct": 97.3,
+     "mean_togo": 11.36
+    }
+   },
+   "gun_weights": {
+    "d1": 0.2,
+    "d2_short": 0.65,
+    "d2_mid": 0.35,
+    "d2_long": 1.65,
+    "d3_short": 0.75,
+    "d3_mid": 12.8,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "ARZ.play",
+    "book_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
+    "retail_rule": {
+     "d1": 52.9,
+     "d2_short": 8.6,
+     "d2_mid": 50.2,
+     "d2_long": 59.8,
+     "d3_short": 8.9,
+     "d3_mid": 69.0,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 57.4,
+     "d2_short": 57.0,
+     "d2_mid": 63.6,
+     "d2_long": 77.6,
+     "d3_short": 62.4,
+     "d3_mid": 97.3,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "ATL": {
+   "nflverse_team": "ATL",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1241,
+   "gun_pct": 75.3,
+   "bins": {
+    "d1": {
+     "snaps": 561,
+     "gun": 373,
+     "gun_pct": 66.5,
+     "mean_togo": 10.25
+    },
+    "d2_short": {
+     "snaps": 60,
+     "gun": 35,
+     "gun_pct": 58.3,
+     "mean_togo": 2.02
+    },
+    "d2_mid": {
+     "snaps": 140,
+     "gun": 94,
+     "gun_pct": 67.1,
+     "mean_togo": 5.84
+    },
+    "d2_long": {
+     "snaps": 213,
+     "gun": 199,
+     "gun_pct": 93.4,
+     "mean_togo": 10.84
+    },
+    "d3_short": {
+     "snaps": 86,
+     "gun": 55,
+     "gun_pct": 64.0,
+     "mean_togo": 1.79
+    },
+    "d3_mid": {
+     "snaps": 62,
+     "gun": 61,
+     "gun_pct": 98.4,
+     "mean_togo": 4.97
+    },
+    "d3_long": {
+     "snaps": 119,
+     "gun": 117,
+     "gun_pct": 98.3,
+     "mean_togo": 10.83
+    }
+   },
+   "gun_weights": {
+    "d1": 0.3,
+    "d2_short": 3.0,
+    "d2_mid": 0.9,
+    "d2_long": 4.0,
+    "d3_short": 3.25,
+    "d3_mid": 4.75,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "ATL.play",
+    "book_sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c",
+    "retail_rule": {
+     "d1": 57.8,
+     "d2_short": 3.6,
+     "d2_mid": 39.2,
+     "d2_long": 67.8,
+     "d3_short": 5.2,
+     "d3_mid": 78.5,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 66.0,
+     "d2_short": 58.0,
+     "d2_mid": 67.3,
+     "d2_long": 92.9,
+     "d3_short": 63.5,
+     "d3_mid": 97.9,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "BAL": {
+   "nflverse_team": "BAL",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1125,
+   "gun_pct": 65.8,
+   "bins": {
+    "d1": {
+     "snaps": 513,
+     "gun": 267,
+     "gun_pct": 52.0,
+     "mean_togo": 10.25
+    },
+    "d2_short": {
+     "snaps": 54,
+     "gun": 26,
+     "gun_pct": 48.1,
+     "mean_togo": 2.09
+    },
+    "d2_mid": {
+     "snaps": 130,
+     "gun": 79,
+     "gun_pct": 60.8,
+     "mean_togo": 5.59
+    },
+    "d2_long": {
+     "snaps": 184,
+     "gun": 157,
+     "gun_pct": 85.3,
+     "mean_togo": 10.61
+    },
+    "d3_short": {
+     "snaps": 72,
+     "gun": 43,
+     "gun_pct": 59.7,
+     "mean_togo": 1.85
+    },
+    "d3_mid": {
+     "snaps": 63,
+     "gun": 61,
+     "gun_pct": 96.8,
+     "mean_togo": 5.03
+    },
+    "d3_long": {
+     "snaps": 109,
+     "gun": 107,
+     "gun_pct": 98.2,
+     "mean_togo": 11.05
+    }
+   },
+   "gun_weights": {
+    "d1": 0.45,
+    "d2_short": 3.05,
+    "d2_mid": 0.55,
+    "d2_long": 2.45,
+    "d3_short": 4.4,
+    "d3_mid": 3.85,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "BAL.play",
+    "book_sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f",
+    "retail_rule": {
+     "d1": 38.8,
+     "d2_short": 2.2,
+     "d2_mid": 48.2,
+     "d2_long": 47.8,
+     "d3_short": 2.2,
+     "d3_mid": 67.5,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 51.7,
+     "d2_short": 47.5,
+     "d2_mid": 61.0,
+     "d2_long": 85.0,
+     "d3_short": 59.2,
+     "d3_mid": 96.3,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "BUF": {
+   "nflverse_team": "BUF",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1218,
+   "gun_pct": 52.1,
+   "bins": {
+    "d1": {
+     "snaps": 553,
+     "gun": 173,
+     "gun_pct": 31.3,
+     "mean_togo": 10.16
+    },
+    "d2_short": {
+     "snaps": 58,
+     "gun": 13,
+     "gun_pct": 22.4,
+     "mean_togo": 2.02
+    },
+    "d2_mid": {
+     "snaps": 153,
+     "gun": 74,
+     "gun_pct": 48.4,
+     "mean_togo": 5.63
+    },
+    "d2_long": {
+     "snaps": 189,
+     "gun": 160,
+     "gun_pct": 84.7,
+     "mean_togo": 10.63
+    },
+    "d3_short": {
+     "snaps": 88,
+     "gun": 46,
+     "gun_pct": 52.3,
+     "mean_togo": 1.78
+    },
+    "d3_mid": {
+     "snaps": 71,
+     "gun": 66,
+     "gun_pct": 93.0,
+     "mean_togo": 4.94
+    },
+    "d3_long": {
+     "snaps": 106,
+     "gun": 103,
+     "gun_pct": 97.2,
+     "mean_togo": 10.75
+    }
+   },
+   "gun_weights": {
+    "d1": 0.25,
+    "d2_short": 0.3,
+    "d2_mid": 0.55,
+    "d2_long": 2.45,
+    "d3_short": 0.95,
+    "d3_mid": 3.75,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "BUF.play",
+    "book_sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
+    "retail_rule": {
+     "d1": 20.2,
+     "d2_short": 4.4,
+     "d2_mid": 20.9,
+     "d2_long": 28.4,
+     "d3_short": 5.1,
+     "d3_mid": 30.4,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 30.4,
+     "d2_short": 21.3,
+     "d2_mid": 47.7,
+     "d2_long": 84.2,
+     "d3_short": 51.8,
+     "d3_mid": 92.5,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "CAR": {
+   "nflverse_team": "CAR",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1222,
+   "gun_pct": 67.4,
+   "bins": {
+    "d1": {
+     "snaps": 525,
+     "gun": 292,
+     "gun_pct": 55.6,
+     "mean_togo": 10.25
+    },
+    "d2_short": {
+     "snaps": 61,
+     "gun": 24,
+     "gun_pct": 39.3,
+     "mean_togo": 2.02
+    },
+    "d2_mid": {
+     "snaps": 144,
+     "gun": 79,
+     "gun_pct": 54.9,
+     "mean_togo": 5.65
+    },
+    "d2_long": {
+     "snaps": 205,
+     "gun": 174,
+     "gun_pct": 84.9,
+     "mean_togo": 11.01
+    },
+    "d3_short": {
+     "snaps": 89,
+     "gun": 60,
+     "gun_pct": 67.4,
+     "mean_togo": 1.94
+    },
+    "d3_mid": {
+     "snaps": 77,
+     "gun": 76,
+     "gun_pct": 98.7,
+     "mean_togo": 4.81
+    },
+    "d3_long": {
+     "snaps": 121,
+     "gun": 119,
+     "gun_pct": 98.3,
+     "mean_togo": 11.45
+    }
+   },
+   "gun_weights": {
+    "d1": 0.5,
+    "d2_short": 0.45,
+    "d2_mid": 0.4,
+    "d2_long": 1.85,
+    "d3_short": 1.05,
+    "d3_mid": 7.05,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "CAR.play",
+    "book_sha256": "962e759ad18e62e40552e25d0ce6208ed465462e4bf3b48491ba3509298a1e24",
+    "retail_rule": {
+     "d1": 32.9,
+     "d2_short": 6.4,
+     "d2_mid": 34.1,
+     "d2_long": 42.8,
+     "d3_short": 7.9,
+     "d3_mid": 43.7,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 56.0,
+     "d2_short": 38.8,
+     "d2_mid": 55.1,
+     "d2_long": 84.5,
+     "d3_short": 67.1,
+     "d3_mid": 98.2,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "CHI": {
+   "nflverse_team": "CHI",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1317,
+   "gun_pct": 53.6,
+   "bins": {
+    "d1": {
+     "snaps": 581,
+     "gun": 211,
+     "gun_pct": 36.3,
+     "mean_togo": 10.28
+    },
+    "d2_short": {
+     "snaps": 68,
+     "gun": 24,
+     "gun_pct": 35.3,
+     "mean_togo": 2.0
+    },
+    "d2_mid": {
+     "snaps": 130,
+     "gun": 49,
+     "gun_pct": 37.7,
+     "mean_togo": 5.73
+    },
+    "d2_long": {
+     "snaps": 239,
+     "gun": 173,
+     "gun_pct": 72.4,
+     "mean_togo": 11.2
+    },
+    "d3_short": {
+     "snaps": 87,
+     "gun": 44,
+     "gun_pct": 50.6,
+     "mean_togo": 1.8
+    },
+    "d3_mid": {
+     "snaps": 85,
+     "gun": 80,
+     "gun_pct": 94.1,
+     "mean_togo": 4.91
+    },
+    "d3_long": {
+     "snaps": 127,
+     "gun": 125,
+     "gun_pct": 98.4,
+     "mean_togo": 11.12
+    }
+   },
+   "gun_weights": {
+    "d1": 0.4,
+    "d2_short": 0.6,
+    "d2_mid": 0.3,
+    "d2_long": 1.25,
+    "d3_short": 0.95,
+    "d3_mid": 2.6,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "CHI.play",
+    "book_sha256": "9a9085d91c8a8c98b41923836a6f6375eafce18601d62a2e7155714384c12bea",
+    "retail_rule": {
+     "d1": 20.9,
+     "d2_short": 4.4,
+     "d2_mid": 24.8,
+     "d2_long": 29.9,
+     "d3_short": 4.9,
+     "d3_mid": 44.0,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 37.0,
+     "d2_short": 35.9,
+     "d2_mid": 38.6,
+     "d2_long": 71.7,
+     "d3_short": 50.2,
+     "d3_mid": 93.7,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "CIN": {
+   "nflverse_team": "CIN",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1263,
+   "gun_pct": 80.6,
+   "bins": {
+    "d1": {
+     "snaps": 563,
+     "gun": 388,
+     "gun_pct": 68.9,
+     "mean_togo": 10.31
+    },
+    "d2_short": {
+     "snaps": 66,
+     "gun": 51,
+     "gun_pct": 77.3,
+     "mean_togo": 2.12
+    },
+    "d2_mid": {
+     "snaps": 124,
+     "gun": 92,
+     "gun_pct": 74.2,
+     "mean_togo": 5.67
+    },
+    "d2_long": {
+     "snaps": 225,
+     "gun": 215,
+     "gun_pct": 95.6,
+     "mean_togo": 10.48
+    },
+    "d3_short": {
+     "snaps": 80,
+     "gun": 71,
+     "gun_pct": 88.8,
+     "mean_togo": 1.75
+    },
+    "d3_mid": {
+     "snaps": 79,
+     "gun": 78,
+     "gun_pct": 98.7,
+     "mean_togo": 5.06
+    },
+    "d3_long": {
+     "snaps": 126,
+     "gun": 123,
+     "gun_pct": 97.6,
+     "mean_togo": 11.02
+    }
+   },
+   "gun_weights": {
+    "d1": 0.2,
+    "d2_short": 1.5,
+    "d2_mid": 0.7,
+    "d2_long": 4.1,
+    "d3_short": 3.15,
+    "d3_mid": 5.4,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "CIN.play",
+    "book_sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7",
+    "retail_rule": {
+     "d1": 61.3,
+     "d2_short": 9.2,
+     "d2_mid": 47.4,
+     "d2_long": 66.8,
+     "d3_short": 9.3,
+     "d3_mid": 73.7,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 67.9,
+     "d2_short": 77.2,
+     "d2_mid": 73.6,
+     "d2_long": 95.1,
+     "d3_short": 88.3,
+     "d3_mid": 98.2,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "CLE": {
+   "nflverse_team": "CLE",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1235,
+   "gun_pct": 69.3,
+   "bins": {
+    "d1": {
+     "snaps": 514,
+     "gun": 281,
+     "gun_pct": 54.7,
+     "mean_togo": 10.34
+    },
+    "d2_short": {
+     "snaps": 48,
+     "gun": 20,
+     "gun_pct": 41.7,
+     "mean_togo": 2.02
+    },
+    "d2_mid": {
+     "snaps": 123,
+     "gun": 77,
+     "gun_pct": 62.6,
+     "mean_togo": 5.82
+    },
+    "d2_long": {
+     "snaps": 238,
+     "gun": 201,
+     "gun_pct": 84.5,
+     "mean_togo": 11.52
+    },
+    "d3_short": {
+     "snaps": 78,
+     "gun": 46,
+     "gun_pct": 59.0,
+     "mean_togo": 1.77
+    },
+    "d3_mid": {
+     "snaps": 70,
+     "gun": 69,
+     "gun_pct": 98.6,
+     "mean_togo": 5.11
+    },
+    "d3_long": {
+     "snaps": 164,
+     "gun": 162,
+     "gun_pct": 98.8,
+     "mean_togo": 11.8
+    }
+   },
+   "gun_weights": {
+    "d1": 0.25,
+    "d2_short": 0.7,
+    "d2_mid": 0.65,
+    "d2_long": 3.6,
+    "d3_short": 1.15,
+    "d3_mid": 13.4,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "CLE.play",
+    "book_sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd",
+    "retail_rule": {
+     "d1": 49.6,
+     "d2_short": 4.9,
+     "d2_mid": 43.4,
+     "d2_long": 56.7,
+     "d3_short": 5.9,
+     "d3_mid": 72.3,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 54.3,
+     "d2_short": 41.1,
+     "d2_mid": 62.8,
+     "d2_long": 84.0,
+     "d3_short": 58.6,
+     "d3_mid": 96.7,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "DAL": {
+   "nflverse_team": "DAL",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1296,
+   "gun_pct": 65.1,
+   "bins": {
+    "d1": {
+     "snaps": 582,
+     "gun": 282,
+     "gun_pct": 48.5,
+     "mean_togo": 10.24
+    },
+    "d2_short": {
+     "snaps": 77,
+     "gun": 38,
+     "gun_pct": 49.4,
+     "mean_togo": 2.05
+    },
+    "d2_mid": {
+     "snaps": 139,
+     "gun": 85,
+     "gun_pct": 61.2,
+     "mean_togo": 5.66
+    },
+    "d2_long": {
+     "snaps": 217,
+     "gun": 184,
+     "gun_pct": 84.8,
+     "mean_togo": 10.94
+    },
+    "d3_short": {
+     "snaps": 85,
+     "gun": 62,
+     "gun_pct": 72.9,
+     "mean_togo": 1.89
+    },
+    "d3_mid": {
+     "snaps": 75,
+     "gun": 74,
+     "gun_pct": 98.7,
+     "mean_togo": 4.87
+    },
+    "d3_long": {
+     "snaps": 121,
+     "gun": 119,
+     "gun_pct": 98.3,
+     "mean_togo": 10.89
+    }
+   },
+   "gun_weights": {
+    "d1": 0.35,
+    "d2_short": 0.65,
+    "d2_mid": 0.55,
+    "d2_long": 1.6,
+    "d3_short": 1.4,
+    "d3_mid": 5.15,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "DAL.play",
+    "book_sha256": "30e7d59b713b1cc33925935dd7b774c6357b57be63d116700685e363ccece633",
+    "retail_rule": {
+     "d1": 29.4,
+     "d2_short": 7.1,
+     "d2_mid": 31.6,
+     "d2_long": 41.0,
+     "d3_short": 8.2,
+     "d3_mid": 40.9,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 47.5,
+     "d2_short": 49.8,
+     "d2_mid": 61.5,
+     "d2_long": 84.7,
+     "d3_short": 72.8,
+     "d3_mid": 98.2,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "DEN": {
+   "nflverse_team": "DEN",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1254,
+   "gun_pct": 66.8,
+   "bins": {
+    "d1": {
+     "snaps": 545,
+     "gun": 304,
+     "gun_pct": 55.8,
+     "mean_togo": 10.44
+    },
+    "d2_short": {
+     "snaps": 62,
+     "gun": 26,
+     "gun_pct": 41.9,
+     "mean_togo": 2.03
+    },
+    "d2_mid": {
+     "snaps": 136,
+     "gun": 80,
+     "gun_pct": 58.8,
+     "mean_togo": 5.59
+    },
+    "d2_long": {
+     "snaps": 222,
+     "gun": 181,
+     "gun_pct": 81.5,
+     "mean_togo": 11.09
+    },
+    "d3_short": {
+     "snaps": 96,
+     "gun": 61,
+     "gun_pct": 63.5,
+     "mean_togo": 1.86
+    },
+    "d3_mid": {
+     "snaps": 70,
+     "gun": 66,
+     "gun_pct": 94.3,
+     "mean_togo": 5.04
+    },
+    "d3_long": {
+     "snaps": 123,
+     "gun": 120,
+     "gun_pct": 97.6,
+     "mean_togo": 11.02
+    }
+   },
+   "gun_weights": {
+    "d1": 0.6,
+    "d2_short": 0.75,
+    "d2_mid": 0.55,
+    "d2_long": 1.4,
+    "d3_short": 1.4,
+    "d3_mid": 2.45,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "DEN.play",
+    "book_sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
+    "retail_rule": {
+     "d1": 29.2,
+     "d2_short": 4.9,
+     "d2_mid": 27.9,
+     "d2_long": 39.1,
+     "d3_short": 6.1,
+     "d3_mid": 41.6,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 56.2,
+     "d2_short": 42.0,
+     "d2_mid": 58.1,
+     "d2_long": 81.1,
+     "d3_short": 63.6,
+     "d3_mid": 93.8,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "DET": {
+   "nflverse_team": "DET",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1232,
+   "gun_pct": 52.7,
+   "bins": {
+    "d1": {
+     "snaps": 569,
+     "gun": 207,
+     "gun_pct": 36.4,
+     "mean_togo": 10.27
+    },
+    "d2_short": {
+     "snaps": 64,
+     "gun": 26,
+     "gun_pct": 40.6,
+     "mean_togo": 1.91
+    },
+    "d2_mid": {
+     "snaps": 114,
+     "gun": 44,
+     "gun_pct": 38.6,
+     "mean_togo": 5.68
+    },
+    "d2_long": {
+     "snaps": 220,
+     "gun": 138,
+     "gun_pct": 62.7,
+     "mean_togo": 10.86
+    },
+    "d3_short": {
+     "snaps": 84,
+     "gun": 55,
+     "gun_pct": 65.5,
+     "mean_togo": 1.9
+    },
+    "d3_mid": {
+     "snaps": 56,
+     "gun": 55,
+     "gun_pct": 98.2,
+     "mean_togo": 4.89
+    },
+    "d3_long": {
+     "snaps": 125,
+     "gun": 124,
+     "gun_pct": 99.2,
+     "mean_togo": 11.26
+    }
+   },
+   "gun_weights": {
+    "d1": 0.35,
+    "d2_short": 0.45,
+    "d2_mid": 0.25,
+    "d2_long": 0.85,
+    "d3_short": 1.1,
+    "d3_mid": 7.9,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "DET.play",
+    "book_sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb",
+    "retail_rule": {
+     "d1": 19.1,
+     "d2_short": 6.7,
+     "d2_mid": 21.7,
+     "d2_long": 26.1,
+     "d3_short": 6.8,
+     "d3_mid": 31.1,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 36.5,
+     "d2_short": 39.6,
+     "d2_mid": 37.5,
+     "d2_long": 62.7,
+     "d3_short": 65.1,
+     "d3_mid": 97.7,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "GB": {
+   "nflverse_team": "GB",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1174,
+   "gun_pct": 64.9,
+   "bins": {
+    "d1": {
+     "snaps": 520,
+     "gun": 269,
+     "gun_pct": 51.7,
+     "mean_togo": 10.44
+    },
+    "d2_short": {
+     "snaps": 38,
+     "gun": 19,
+     "gun_pct": 50.0,
+     "mean_togo": 2.34
+    },
+    "d2_mid": {
+     "snaps": 148,
+     "gun": 92,
+     "gun_pct": 62.2,
+     "mean_togo": 5.72
+    },
+    "d2_long": {
+     "snaps": 198,
+     "gun": 152,
+     "gun_pct": 76.8,
+     "mean_togo": 10.76
+    },
+    "d3_short": {
+     "snaps": 101,
+     "gun": 66,
+     "gun_pct": 65.3,
+     "mean_togo": 1.84
+    },
+    "d3_mid": {
+     "snaps": 54,
+     "gun": 51,
+     "gun_pct": 94.4,
+     "mean_togo": 5.15
+    },
+    "d3_long": {
+     "snaps": 115,
+     "gun": 113,
+     "gun_pct": 98.3,
+     "mean_togo": 11.19
+    }
+   },
+   "gun_weights": {
+    "d1": 0.45,
+    "d2_short": 0.45,
+    "d2_mid": 0.5,
+    "d2_long": 1.15,
+    "d3_short": 0.8,
+    "d3_mid": 2.3,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "GB.play",
+    "book_sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437",
+    "retail_rule": {
+     "d1": 28.0,
+     "d2_short": 10.2,
+     "d2_mid": 34.3,
+     "d2_long": 35.2,
+     "d3_short": 10.3,
+     "d3_mid": 43.7,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 51.8,
+     "d2_short": 50.6,
+     "d2_mid": 62.7,
+     "d2_long": 76.6,
+     "d3_short": 65.1,
+     "d3_mid": 94.1,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "HOU": {
+   "nflverse_team": "HOU",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1311,
+   "gun_pct": 63.9,
+   "bins": {
+    "d1": {
+     "snaps": 566,
+     "gun": 282,
+     "gun_pct": 49.8,
+     "mean_togo": 10.43
+    },
+    "d2_short": {
+     "snaps": 61,
+     "gun": 27,
+     "gun_pct": 44.3,
+     "mean_togo": 1.93
+    },
+    "d2_mid": {
+     "snaps": 142,
+     "gun": 74,
+     "gun_pct": 52.1,
+     "mean_togo": 5.72
+    },
+    "d2_long": {
+     "snaps": 244,
+     "gun": 202,
+     "gun_pct": 82.8,
+     "mean_togo": 11.25
+    },
+    "d3_short": {
+     "snaps": 87,
+     "gun": 47,
+     "gun_pct": 54.0,
+     "mean_togo": 1.7
+    },
+    "d3_mid": {
+     "snaps": 61,
+     "gun": 56,
+     "gun_pct": 91.8,
+     "mean_togo": 4.79
+    },
+    "d3_long": {
+     "snaps": 150,
+     "gun": 150,
+     "gun_pct": 100.0,
+     "mean_togo": 11.52
+    }
+   },
+   "gun_weights": {
+    "d1": 0.7,
+    "d2_short": 0.95,
+    "d2_mid": 0.6,
+    "d2_long": 2.35,
+    "d3_short": 1.3,
+    "d3_mid": 3.4,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "HOU.play",
+    "book_sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a",
+    "retail_rule": {
+     "d1": 27.1,
+     "d2_short": 3.2,
+     "d2_mid": 27.6,
+     "d2_long": 37.4,
+     "d3_short": 3.4,
+     "d3_mid": 36.3,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 50.0,
+     "d2_short": 43.8,
+     "d2_mid": 52.1,
+     "d2_long": 82.5,
+     "d3_short": 53.3,
+     "d3_mid": 91.4,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "IND": {
+   "nflverse_team": "IND",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1190,
+   "gun_pct": 70.4,
+   "bins": {
+    "d1": {
+     "snaps": 541,
+     "gun": 313,
+     "gun_pct": 57.9,
+     "mean_togo": 10.2
+    },
+    "d2_short": {
+     "snaps": 58,
+     "gun": 31,
+     "gun_pct": 53.4,
+     "mean_togo": 1.88
+    },
+    "d2_mid": {
+     "snaps": 121,
+     "gun": 84,
+     "gun_pct": 69.4,
+     "mean_togo": 5.57
+    },
+    "d2_long": {
+     "snaps": 207,
+     "gun": 182,
+     "gun_pct": 87.9,
+     "mean_togo": 10.52
+    },
+    "d3_short": {
+     "snaps": 92,
+     "gun": 60,
+     "gun_pct": 65.2,
+     "mean_togo": 1.73
+    },
+    "d3_mid": {
+     "snaps": 54,
+     "gun": 52,
+     "gun_pct": 96.3,
+     "mean_togo": 4.8
+    },
+    "d3_long": {
+     "snaps": 117,
+     "gun": 116,
+     "gun_pct": 99.1,
+     "mean_togo": 11.32
+    }
+   },
+   "gun_weights": {
+    "d1": 0.35,
+    "d2_short": 0.6,
+    "d2_mid": 0.5,
+    "d2_long": 1.9,
+    "d3_short": 0.75,
+    "d3_mid": 3.1,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "IND.play",
+    "book_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
+    "retail_rule": {
+     "d1": 43.1,
+     "d2_short": 8.1,
+     "d2_mid": 50.8,
+     "d2_long": 55.0,
+     "d3_short": 9.9,
+     "d3_mid": 58.2,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 56.8,
+     "d2_short": 53.1,
+     "d2_mid": 69.0,
+     "d2_long": 87.4,
+     "d3_short": 64.3,
+     "d3_mid": 95.9,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "JAX": {
+   "nflverse_team": "JAX",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1240,
+   "gun_pct": 60.5,
+   "bins": {
+    "d1": {
+     "snaps": 559,
+     "gun": 246,
+     "gun_pct": 44.0,
+     "mean_togo": 10.32
+    },
+    "d2_short": {
+     "snaps": 59,
+     "gun": 20,
+     "gun_pct": 33.9,
+     "mean_togo": 2.05
+    },
+    "d2_mid": {
+     "snaps": 126,
+     "gun": 61,
+     "gun_pct": 48.4,
+     "mean_togo": 5.73
+    },
+    "d2_long": {
+     "snaps": 227,
+     "gun": 191,
+     "gun_pct": 84.1,
+     "mean_togo": 11.26
+    },
+    "d3_short": {
+     "snaps": 79,
+     "gun": 47,
+     "gun_pct": 59.5,
+     "mean_togo": 1.77
+    },
+    "d3_mid": {
+     "snaps": 64,
+     "gun": 60,
+     "gun_pct": 93.8,
+     "mean_togo": 5.0
+    },
+    "d3_long": {
+     "snaps": 126,
+     "gun": 125,
+     "gun_pct": 99.2,
+     "mean_togo": 12.02
+    }
+   },
+   "gun_weights": {
+    "d1": 0.25,
+    "d2_short": 0.3,
+    "d2_mid": 0.25,
+    "d2_long": 1.75,
+    "d3_short": 0.75,
+    "d3_mid": 3.0,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "JAX.play",
+    "book_sha256": "01b8ce8e9fef0ff66d7fe174169cb34fba2db27b8a910a8f01942db93298568a",
+    "retail_rule": {
+     "d1": 29.6,
+     "d2_short": 7.9,
+     "d2_mid": 31.1,
+     "d2_long": 38.8,
+     "d3_short": 8.5,
+     "d3_mid": 40.1,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 42.6,
+     "d2_short": 34.2,
+     "d2_mid": 47.4,
+     "d2_long": 83.6,
+     "d3_short": 59.6,
+     "d3_mid": 93.3,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "KC": {
+   "nflverse_team": "KC",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1223,
+   "gun_pct": 77.4,
+   "bins": {
+    "d1": {
+     "snaps": 542,
+     "gun": 361,
+     "gun_pct": 66.6,
+     "mean_togo": 10.3
+    },
+    "d2_short": {
+     "snaps": 65,
+     "gun": 41,
+     "gun_pct": 63.1,
+     "mean_togo": 2.08
+    },
+    "d2_mid": {
+     "snaps": 124,
+     "gun": 106,
+     "gun_pct": 85.5,
+     "mean_togo": 5.59
+    },
+    "d2_long": {
+     "snaps": 215,
+     "gun": 192,
+     "gun_pct": 89.3,
+     "mean_togo": 10.88
+    },
+    "d3_short": {
+     "snaps": 102,
+     "gun": 74,
+     "gun_pct": 72.5,
+     "mean_togo": 1.7
+    },
+    "d3_mid": {
+     "snaps": 57,
+     "gun": 56,
+     "gun_pct": 98.2,
+     "mean_togo": 4.86
+    },
+    "d3_long": {
+     "snaps": 118,
+     "gun": 116,
+     "gun_pct": 98.3,
+     "mean_togo": 11.43
+    }
+   },
+   "gun_weights": {
+    "d1": 0.2,
+    "d2_short": 0.75,
+    "d2_mid": 1.25,
+    "d2_long": 1.35,
+    "d3_short": 1.05,
+    "d3_mid": 4.1,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "KC.play",
+    "book_sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666",
+    "retail_rule": {
+     "d1": 59.9,
+     "d2_short": 10.6,
+     "d2_mid": 51.3,
+     "d2_long": 65.7,
+     "d3_short": 10.4,
+     "d3_mid": 71.9,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 67.2,
+     "d2_short": 63.5,
+     "d2_mid": 84.9,
+     "d2_long": 88.7,
+     "d3_short": 72.1,
+     "d3_mid": 97.7,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "MIA": {
+   "nflverse_team": "MIA",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1120,
+   "gun_pct": 69.6,
+   "bins": {
+    "d1": {
+     "snaps": 488,
+     "gun": 280,
+     "gun_pct": 57.4,
+     "mean_togo": 10.27
+    },
+    "d2_short": {
+     "snaps": 52,
+     "gun": 29,
+     "gun_pct": 55.8,
+     "mean_togo": 1.96
+    },
+    "d2_mid": {
+     "snaps": 97,
+     "gun": 61,
+     "gun_pct": 62.9,
+     "mean_togo": 5.59
+    },
+    "d2_long": {
+     "snaps": 224,
+     "gun": 172,
+     "gun_pct": 76.8,
+     "mean_togo": 11.05
+    },
+    "d3_short": {
+     "snaps": 51,
+     "gun": 36,
+     "gun_pct": 70.6,
+     "mean_togo": 1.69
+    },
+    "d3_mid": {
+     "snaps": 66,
+     "gun": 63,
+     "gun_pct": 95.5,
+     "mean_togo": 5.02
+    },
+    "d3_long": {
+     "snaps": 142,
+     "gun": 138,
+     "gun_pct": 97.2,
+     "mean_togo": 10.69
+    }
+   },
+   "gun_weights": {
+    "d1": 1.05,
+    "d2_short": 1.85,
+    "d2_mid": 1.35,
+    "d2_long": 2.05,
+    "d3_short": 2.9,
+    "d3_mid": 6.45,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "MIA.play",
+    "book_sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928",
+    "retail_rule": {
+     "d1": 19.8,
+     "d2_short": 3.5,
+     "d2_mid": 12.4,
+     "d2_long": 23.5,
+     "d3_short": 4.2,
+     "d3_mid": 41.6,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 57.2,
+     "d2_short": 55.6,
+     "d2_mid": 62.8,
+     "d2_long": 76.1,
+     "d3_short": 70.1,
+     "d3_mid": 95.0,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "MIN": {
+   "nflverse_team": "MIN",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1154,
+   "gun_pct": 57.6,
+   "bins": {
+    "d1": {
+     "snaps": 506,
+     "gun": 193,
+     "gun_pct": 38.1,
+     "mean_togo": 10.29
+    },
+    "d2_short": {
+     "snaps": 47,
+     "gun": 17,
+     "gun_pct": 36.2,
+     "mean_togo": 1.96
+    },
+    "d2_mid": {
+     "snaps": 127,
+     "gun": 58,
+     "gun_pct": 45.7,
+     "mean_togo": 5.64
+    },
+    "d2_long": {
+     "snaps": 203,
+     "gun": 163,
+     "gun_pct": 80.3,
+     "mean_togo": 11.02
+    },
+    "d3_short": {
+     "snaps": 75,
+     "gun": 47,
+     "gun_pct": 62.7,
+     "mean_togo": 1.64
+    },
+    "d3_mid": {
+     "snaps": 65,
+     "gun": 60,
+     "gun_pct": 92.3,
+     "mean_togo": 5.11
+    },
+    "d3_long": {
+     "snaps": 131,
+     "gun": 127,
+     "gun_pct": 96.9,
+     "mean_togo": 11.32
+    }
+   },
+   "gun_weights": {
+    "d1": 0.3,
+    "d2_short": 0.45,
+    "d2_mid": 0.35,
+    "d2_long": 3.0,
+    "d3_short": 1.1,
+    "d3_mid": 8.15,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "MIN.play",
+    "book_sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d",
+    "retail_rule": {
+     "d1": 26.7,
+     "d2_short": 6.0,
+     "d2_mid": 31.2,
+     "d2_long": 38.6,
+     "d3_short": 6.8,
+     "d3_mid": 40.0,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 37.2,
+     "d2_short": 35.9,
+     "d2_mid": 46.1,
+     "d2_long": 79.9,
+     "d3_short": 61.9,
+     "d3_mid": 91.8,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "NE": {
+   "nflverse_team": "NE",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1211,
+   "gun_pct": 55.8,
+   "bins": {
+    "d1": {
+     "snaps": 539,
+     "gun": 222,
+     "gun_pct": 41.2,
+     "mean_togo": 10.28
+    },
+    "d2_short": {
+     "snaps": 66,
+     "gun": 17,
+     "gun_pct": 25.8,
+     "mean_togo": 2.11
+    },
+    "d2_mid": {
+     "snaps": 135,
+     "gun": 67,
+     "gun_pct": 49.6,
+     "mean_togo": 5.68
+    },
+    "d2_long": {
+     "snaps": 199,
+     "gun": 148,
+     "gun_pct": 74.4,
+     "mean_togo": 10.85
+    },
+    "d3_short": {
+     "snaps": 88,
+     "gun": 46,
+     "gun_pct": 52.3,
+     "mean_togo": 1.78
+    },
+    "d3_mid": {
+     "snaps": 61,
+     "gun": 59,
+     "gun_pct": 96.7,
+     "mean_togo": 5.1
+    },
+    "d3_long": {
+     "snaps": 123,
+     "gun": 117,
+     "gun_pct": 95.1,
+     "mean_togo": 10.61
+    }
+   },
+   "gun_weights": {
+    "d1": 0.6,
+    "d2_short": 0.5,
+    "d2_mid": 0.6,
+    "d2_long": 1.65,
+    "d3_short": 1.25,
+    "d3_mid": 4.75,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "NE.play",
+    "book_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
+    "retail_rule": {
+     "d1": 17.9,
+     "d2_short": 3.4,
+     "d2_mid": 20.0,
+     "d2_long": 22.3,
+     "d3_short": 4.0,
+     "d3_mid": 35.7,
+     "d3_long": 99.9
+    },
+    "fitted": {
+     "d1": 41.1,
+     "d2_short": 25.8,
+     "d2_mid": 49.3,
+     "d2_long": 74.3,
+     "d3_short": 52.2,
+     "d3_mid": 96.2,
+     "d3_long": 99.9
+    }
+   }
+  },
+  "NO": {
+   "nflverse_team": "NO",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1337,
+   "gun_pct": 77.4,
+   "bins": {
+    "d1": {
+     "snaps": 563,
+     "gun": 371,
+     "gun_pct": 65.9,
+     "mean_togo": 10.17
+    },
+    "d2_short": {
+     "snaps": 53,
+     "gun": 33,
+     "gun_pct": 62.3,
+     "mean_togo": 2.0
+    },
+    "d2_mid": {
+     "snaps": 140,
+     "gun": 107,
+     "gun_pct": 76.4,
+     "mean_togo": 5.54
+    },
+    "d2_long": {
+     "snaps": 266,
+     "gun": 232,
+     "gun_pct": 87.2,
+     "mean_togo": 10.61
+    },
+    "d3_short": {
+     "snaps": 97,
+     "gun": 74,
+     "gun_pct": 76.3,
+     "mean_togo": 1.68
+    },
+    "d3_mid": {
+     "snaps": 85,
+     "gun": 85,
+     "gun_pct": 100.0,
+     "mean_togo": 4.93
+    },
+    "d3_long": {
+     "snaps": 133,
+     "gun": 133,
+     "gun_pct": 100.0,
+     "mean_togo": 11.09
+    }
+   },
+   "gun_weights": {
+    "d1": 0.65,
+    "d2_short": 0.9,
+    "d2_mid": 0.9,
+    "d2_long": 1.9,
+    "d3_short": 1.6,
+    "d3_mid": 11.3,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "NO.play",
+    "book_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
+    "retail_rule": {
+     "d1": 43.9,
+     "d2_short": 7.5,
+     "d2_mid": 50.3,
+     "d2_long": 55.5,
+     "d3_short": 7.9,
+     "d3_mid": 45.2,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 65.4,
+     "d2_short": 61.7,
+     "d2_mid": 76.4,
+     "d2_long": 86.7,
+     "d3_short": 75.9,
+     "d3_mid": 98.6,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "NYG": {
+   "nflverse_team": "NYG",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1285,
+   "gun_pct": 73.2,
+   "bins": {
+    "d1": {
+     "snaps": 548,
+     "gun": 334,
+     "gun_pct": 60.9,
+     "mean_togo": 10.23
+    },
+    "d2_short": {
+     "snaps": 54,
+     "gun": 40,
+     "gun_pct": 74.1,
+     "mean_togo": 2.11
+    },
+    "d2_mid": {
+     "snaps": 139,
+     "gun": 90,
+     "gun_pct": 64.7,
+     "mean_togo": 5.7
+    },
+    "d2_long": {
+     "snaps": 237,
+     "gun": 197,
+     "gun_pct": 83.1,
+     "mean_togo": 10.93
+    },
+    "d3_short": {
+     "snaps": 82,
+     "gun": 58,
+     "gun_pct": 70.7,
+     "mean_togo": 1.95
+    },
+    "d3_mid": {
+     "snaps": 68,
+     "gun": 66,
+     "gun_pct": 97.1,
+     "mean_togo": 5.13
+    },
+    "d3_long": {
+     "snaps": 157,
+     "gun": 155,
+     "gun_pct": 98.7,
+     "mean_togo": 11.22
+    }
+   },
+   "gun_weights": {
+    "d1": 0.35,
+    "d2_short": 1.4,
+    "d2_mid": 0.6,
+    "d2_long": 2.55,
+    "d3_short": 1.1,
+    "d3_mid": 12.55,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "NYG.play",
+    "book_sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57",
+    "retail_rule": {
+     "d1": 51.8,
+     "d2_short": 6.8,
+     "d2_mid": 39.5,
+     "d2_long": 57.4,
+     "d3_short": 8.3,
+     "d3_mid": 65.2,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 60.8,
+     "d2_short": 73.7,
+     "d2_mid": 63.9,
+     "d2_long": 82.7,
+     "d3_short": 70.2,
+     "d3_mid": 96.6,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "NYJ": {
+   "nflverse_team": "NYJ",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1204,
+   "gun_pct": 71.5,
+   "bins": {
+    "d1": {
+     "snaps": 504,
+     "gun": 292,
+     "gun_pct": 57.9,
+     "mean_togo": 10.32
+    },
+    "d2_short": {
+     "snaps": 53,
+     "gun": 33,
+     "gun_pct": 62.3,
+     "mean_togo": 2.21
+    },
+    "d2_mid": {
+     "snaps": 131,
+     "gun": 78,
+     "gun_pct": 59.5,
+     "mean_togo": 5.49
+    },
+    "d2_long": {
+     "snaps": 203,
+     "gun": 175,
+     "gun_pct": 86.2,
+     "mean_togo": 11.22
+    },
+    "d3_short": {
+     "snaps": 86,
+     "gun": 60,
+     "gun_pct": 69.8,
+     "mean_togo": 1.7
+    },
+    "d3_mid": {
+     "snaps": 86,
+     "gun": 85,
+     "gun_pct": 98.8,
+     "mean_togo": 5.09
+    },
+    "d3_long": {
+     "snaps": 141,
+     "gun": 138,
+     "gun_pct": 97.9,
+     "mean_togo": 11.21
+    }
+   },
+   "gun_weights": {
+    "d1": 0.7,
+    "d2_short": 1.55,
+    "d2_mid": 0.6,
+    "d2_long": 1.75,
+    "d3_short": 2.1,
+    "d3_mid": 7.9,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "NYJ.play",
+    "book_sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2",
+    "retail_rule": {
+     "d1": 34.3,
+     "d2_short": 4.0,
+     "d2_mid": 34.8,
+     "d2_long": 51.0,
+     "d3_short": 4.3,
+     "d3_mid": 46.7,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 58.0,
+     "d2_short": 62.5,
+     "d2_mid": 59.2,
+     "d2_long": 85.9,
+     "d3_short": 69.3,
+     "d3_mid": 98.3,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "OAK": {
+   "nflverse_team": "LV",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1188,
+   "gun_pct": 64.1,
+   "bins": {
+    "d1": {
+     "snaps": 495,
+     "gun": 255,
+     "gun_pct": 51.5,
+     "mean_togo": 10.23
+    },
+    "d2_short": {
+     "snaps": 55,
+     "gun": 29,
+     "gun_pct": 52.7,
+     "mean_togo": 2.05
+    },
+    "d2_mid": {
+     "snaps": 122,
+     "gun": 63,
+     "gun_pct": 51.6,
+     "mean_togo": 5.65
+    },
+    "d2_long": {
+     "snaps": 208,
+     "gun": 155,
+     "gun_pct": 74.5,
+     "mean_togo": 11.38
+    },
+    "d3_short": {
+     "snaps": 99,
+     "gun": 55,
+     "gun_pct": 55.6,
+     "mean_togo": 1.73
+    },
+    "d3_mid": {
+     "snaps": 67,
+     "gun": 63,
+     "gun_pct": 94.0,
+     "mean_togo": 5.25
+    },
+    "d3_long": {
+     "snaps": 142,
+     "gun": 141,
+     "gun_pct": 99.3,
+     "mean_togo": 11.47
+    }
+   },
+   "gun_weights": {
+    "d1": 0.15,
+    "d2_short": 0.5,
+    "d2_mid": 0.15,
+    "d2_long": 1.15,
+    "d3_short": 0.55,
+    "d3_mid": 4.9,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "OAK.play",
+    "book_sha256": "41b532ea2673eefc4820c2d687fdac1650fc99e00b49b2f1abf9c2076afdcfc7",
+    "retail_rule": {
+     "d1": 47.0,
+     "d2_short": 9.7,
+     "d2_mid": 43.1,
+     "d2_long": 54.2,
+     "d3_short": 9.7,
+     "d3_mid": 60.5,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 51.4,
+     "d2_short": 52.7,
+     "d2_mid": 50.1,
+     "d2_long": 73.9,
+     "d3_short": 55.7,
+     "d3_mid": 93.5,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "PHI": {
+   "nflverse_team": "PHI",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1177,
+   "gun_pct": 77.3,
+   "bins": {
+    "d1": {
+     "snaps": 503,
+     "gun": 353,
+     "gun_pct": 70.2,
+     "mean_togo": 10.35
+    },
+    "d2_short": {
+     "snaps": 66,
+     "gun": 44,
+     "gun_pct": 66.7,
+     "mean_togo": 2.2
+    },
+    "d2_mid": {
+     "snaps": 119,
+     "gun": 86,
+     "gun_pct": 72.3,
+     "mean_togo": 5.61
+    },
+    "d2_long": {
+     "snaps": 211,
+     "gun": 176,
+     "gun_pct": 83.4,
+     "mean_togo": 11.01
+    },
+    "d3_short": {
+     "snaps": 57,
+     "gun": 34,
+     "gun_pct": 59.6,
+     "mean_togo": 1.89
+    },
+    "d3_mid": {
+     "snaps": 70,
+     "gun": 69,
+     "gun_pct": 98.6,
+     "mean_togo": 5.1
+    },
+    "d3_long": {
+     "snaps": 151,
+     "gun": 148,
+     "gun_pct": 98.0,
+     "mean_togo": 11.17
+    }
+   },
+   "gun_weights": {
+    "d1": 0.6,
+    "d2_short": 1.05,
+    "d2_mid": 0.7,
+    "d2_long": 1.15,
+    "d3_short": 0.65,
+    "d3_mid": 5.25,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "PHI.play",
+    "book_sha256": "c11ea05254cc497b0b6c82bd524337680ee8b56e678552c2c4e2f4aca64ac14d",
+    "retail_rule": {
+     "d1": 48.6,
+     "d2_short": 7.9,
+     "d2_mid": 40.3,
+     "d2_long": 58.8,
+     "d3_short": 10.1,
+     "d3_mid": 66.8,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 69.4,
+     "d2_short": 66.4,
+     "d2_mid": 72.1,
+     "d2_long": 83.4,
+     "d3_short": 59.5,
+     "d3_mid": 98.1,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "PIT": {
+   "nflverse_team": "PIT",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1175,
+   "gun_pct": 68.0,
+   "bins": {
+    "d1": {
+     "snaps": 512,
+     "gun": 278,
+     "gun_pct": 54.3,
+     "mean_togo": 10.16
+    },
+    "d2_short": {
+     "snaps": 60,
+     "gun": 30,
+     "gun_pct": 50.0,
+     "mean_togo": 1.8
+    },
+    "d2_mid": {
+     "snaps": 123,
+     "gun": 73,
+     "gun_pct": 59.3,
+     "mean_togo": 5.61
+    },
+    "d2_long": {
+     "snaps": 213,
+     "gun": 179,
+     "gun_pct": 84.0,
+     "mean_togo": 10.88
+    },
+    "d3_short": {
+     "snaps": 79,
+     "gun": 54,
+     "gun_pct": 68.4,
+     "mean_togo": 1.85
+    },
+    "d3_mid": {
+     "snaps": 67,
+     "gun": 66,
+     "gun_pct": 98.5,
+     "mean_togo": 5.04
+    },
+    "d3_long": {
+     "snaps": 121,
+     "gun": 119,
+     "gun_pct": 98.3,
+     "mean_togo": 10.96
+    }
+   },
+   "gun_weights": {
+    "d1": 0.05,
+    "d2_short": 0.55,
+    "d2_mid": 0.15,
+    "d2_long": 1.75,
+    "d3_short": 0.95,
+    "d3_mid": 7.0,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "PIT.play",
+    "book_sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
+    "retail_rule": {
+     "d1": 55.1,
+     "d2_short": 8.7,
+     "d2_mid": 53.0,
+     "d2_long": 61.3,
+     "d3_short": 9.0,
+     "d3_mid": 71.4,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 55.1,
+     "d2_short": 50.6,
+     "d2_mid": 58.5,
+     "d2_long": 83.5,
+     "d3_short": 67.9,
+     "d3_mid": 98.0,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "SD": {
+   "nflverse_team": "LAC",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1293,
+   "gun_pct": 71.2,
+   "bins": {
+    "d1": {
+     "snaps": 550,
+     "gun": 307,
+     "gun_pct": 55.8,
+     "mean_togo": 10.32
+    },
+    "d2_short": {
+     "snaps": 57,
+     "gun": 35,
+     "gun_pct": 61.4,
+     "mean_togo": 2.12
+    },
+    "d2_mid": {
+     "snaps": 138,
+     "gun": 92,
+     "gun_pct": 66.7,
+     "mean_togo": 5.65
+    },
+    "d2_long": {
+     "snaps": 233,
+     "gun": 208,
+     "gun_pct": 89.3,
+     "mean_togo": 11.37
+    },
+    "d3_short": {
+     "snaps": 95,
+     "gun": 64,
+     "gun_pct": 67.4,
+     "mean_togo": 1.83
+    },
+    "d3_mid": {
+     "snaps": 80,
+     "gun": 78,
+     "gun_pct": 97.5,
+     "mean_togo": 4.94
+    },
+    "d3_long": {
+     "snaps": 140,
+     "gun": 136,
+     "gun_pct": 97.1,
+     "mean_togo": 11.74
+    }
+   },
+   "gun_weights": {
+    "d1": 0.75,
+    "d2_short": 1.55,
+    "d2_mid": 0.65,
+    "d2_long": 2.45,
+    "d3_short": 1.7,
+    "d3_mid": 7.3,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "SD.play",
+    "book_sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420",
+    "retail_rule": {
+     "d1": 28.8,
+     "d2_short": 3.4,
+     "d2_mid": 42.8,
+     "d2_long": 46.0,
+     "d3_short": 4.6,
+     "d3_mid": 49.4,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 55.6,
+     "d2_short": 61.5,
+     "d2_mid": 66.1,
+     "d2_long": 89.0,
+     "d3_short": 67.2,
+     "d3_mid": 97.0,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "SEA": {
+   "nflverse_team": "SEA",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1177,
+   "gun_pct": 47.5,
+   "bins": {
+    "d1": {
+     "snaps": 559,
+     "gun": 177,
+     "gun_pct": 31.7,
+     "mean_togo": 10.2
+    },
+    "d2_short": {
+     "snaps": 54,
+     "gun": 12,
+     "gun_pct": 22.2,
+     "mean_togo": 2.04
+    },
+    "d2_mid": {
+     "snaps": 114,
+     "gun": 32,
+     "gun_pct": 28.1,
+     "mean_togo": 5.77
+    },
+    "d2_long": {
+     "snaps": 208,
+     "gun": 139,
+     "gun_pct": 66.8,
+     "mean_togo": 10.88
+    },
+    "d3_short": {
+     "snaps": 73,
+     "gun": 37,
+     "gun_pct": 50.7,
+     "mean_togo": 1.7
+    },
+    "d3_mid": {
+     "snaps": 48,
+     "gun": 48,
+     "gun_pct": 100.0,
+     "mean_togo": 4.88
+    },
+    "d3_long": {
+     "snaps": 121,
+     "gun": 114,
+     "gun_pct": 94.2,
+     "mean_togo": 11.15
+    }
+   },
+   "gun_weights": {
+    "d1": 0.45,
+    "d2_short": 0.55,
+    "d2_mid": 0.2,
+    "d2_long": 1.35,
+    "d3_short": 1.35,
+    "d3_mid": 11.65,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "SEA.play",
+    "book_sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933",
+    "retail_rule": {
+     "d1": 16.7,
+     "d2_short": 2.2,
+     "d2_mid": 19.2,
+     "d2_long": 23.4,
+     "d3_short": 2.8,
+     "d3_mid": 37.1,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 31.9,
+     "d2_short": 21.8,
+     "d2_mid": 27.1,
+     "d2_long": 66.6,
+     "d3_short": 50.7,
+     "d3_mid": 98.5,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "SF": {
+   "nflverse_team": "SF",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1207,
+   "gun_pct": 53.8,
+   "bins": {
+    "d1": {
+     "snaps": 555,
+     "gun": 227,
+     "gun_pct": 40.9,
+     "mean_togo": 10.2
+    },
+    "d2_short": {
+     "snaps": 66,
+     "gun": 23,
+     "gun_pct": 34.8,
+     "mean_togo": 2.12
+    },
+    "d2_mid": {
+     "snaps": 128,
+     "gun": 57,
+     "gun_pct": 44.5,
+     "mean_togo": 5.71
+    },
+    "d2_long": {
+     "snaps": 203,
+     "gun": 135,
+     "gun_pct": 66.5,
+     "mean_togo": 10.4
+    },
+    "d3_short": {
+     "snaps": 89,
+     "gun": 42,
+     "gun_pct": 47.2,
+     "mean_togo": 1.71
+    },
+    "d3_mid": {
+     "snaps": 70,
+     "gun": 69,
+     "gun_pct": 98.6,
+     "mean_togo": 5.03
+    },
+    "d3_long": {
+     "snaps": 96,
+     "gun": 96,
+     "gun_pct": 100.0,
+     "mean_togo": 10.81
+    }
+   },
+   "gun_weights": {
+    "d1": 0.9,
+    "d2_short": 1.05,
+    "d2_mid": 0.65,
+    "d2_long": 1.7,
+    "d3_short": 1.5,
+    "d3_mid": 8.15,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "SF.play",
+    "book_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
+    "retail_rule": {
+     "d1": 14.1,
+     "d2_short": 2.4,
+     "d2_mid": 17.4,
+     "d2_long": 20.4,
+     "d3_short": 2.8,
+     "d3_mid": 30.9,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 40.0,
+     "d2_short": 34.0,
+     "d2_mid": 43.6,
+     "d2_long": 66.0,
+     "d3_short": 46.9,
+     "d3_mid": 98.1,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "STL": {
+   "nflverse_team": "LA",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1254,
+   "gun_pct": 46.7,
+   "bins": {
+    "d1": {
+     "snaps": 578,
+     "gun": 170,
+     "gun_pct": 29.4,
+     "mean_togo": 10.24
+    },
+    "d2_short": {
+     "snaps": 79,
+     "gun": 28,
+     "gun_pct": 35.4,
+     "mean_togo": 2.09
+    },
+    "d2_mid": {
+     "snaps": 147,
+     "gun": 34,
+     "gun_pct": 23.1,
+     "mean_togo": 5.48
+    },
+    "d2_long": {
+     "snaps": 195,
+     "gun": 150,
+     "gun_pct": 76.9,
+     "mean_togo": 10.99
+    },
+    "d3_short": {
+     "snaps": 105,
+     "gun": 58,
+     "gun_pct": 55.2,
+     "mean_togo": 1.89
+    },
+    "d3_mid": {
+     "snaps": 58,
+     "gun": 56,
+     "gun_pct": 96.6,
+     "mean_togo": 5.1
+    },
+    "d3_long": {
+     "snaps": 92,
+     "gun": 90,
+     "gun_pct": 97.8,
+     "mean_togo": 10.63
+    }
+   },
+   "gun_weights": {
+    "d1": 0.2,
+    "d2_short": 0.65,
+    "d2_mid": 0.05,
+    "d2_long": 1.05,
+    "d3_short": 0.85,
+    "d3_mid": 5.1,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "STL.play",
+    "book_sha256": "02003b8abaee95a596eb5c675897d74d6b8ba1c90925ddd346c2132743c1c3db",
+    "retail_rule": {
+     "d1": 20.3,
+     "d2_short": 2.9,
+     "d2_mid": 26.5,
+     "d2_long": 35.4,
+     "d3_short": 5.6,
+     "d3_mid": 41.4,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 28.7,
+     "d2_short": 35.6,
+     "d2_mid": 26.5,
+     "d2_long": 76.6,
+     "d3_short": 54.6,
+     "d3_mid": 96.1,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "TB": {
+   "nflverse_team": "TB",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1299,
+   "gun_pct": 67.6,
+   "bins": {
+    "d1": {
+     "snaps": 551,
+     "gun": 271,
+     "gun_pct": 49.2,
+     "mean_togo": 10.27
+    },
+    "d2_short": {
+     "snaps": 56,
+     "gun": 29,
+     "gun_pct": 51.8,
+     "mean_togo": 2.12
+    },
+    "d2_mid": {
+     "snaps": 142,
+     "gun": 76,
+     "gun_pct": 53.5,
+     "mean_togo": 5.65
+    },
+    "d2_long": {
+     "snaps": 224,
+     "gun": 214,
+     "gun_pct": 95.5,
+     "mean_togo": 10.53
+    },
+    "d3_short": {
+     "snaps": 107,
+     "gun": 73,
+     "gun_pct": 68.2,
+     "mean_togo": 1.83
+    },
+    "d3_mid": {
+     "snaps": 63,
+     "gun": 61,
+     "gun_pct": 96.8,
+     "mean_togo": 4.95
+    },
+    "d3_long": {
+     "snaps": 156,
+     "gun": 154,
+     "gun_pct": 98.7,
+     "mean_togo": 11.54
+    }
+   },
+   "gun_weights": {
+    "d1": 0.15,
+    "d2_short": 0.6,
+    "d2_mid": 0.1,
+    "d2_long": 8.95,
+    "d3_short": 1.2,
+    "d3_mid": 14.1,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "TB.play",
+    "book_sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61",
+    "retail_rule": {
+     "d1": 46.5,
+     "d2_short": 8.6,
+     "d2_mid": 50.8,
+     "d2_long": 61.7,
+     "d3_short": 9.1,
+     "d3_mid": 51.3,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 49.1,
+     "d2_short": 50.6,
+     "d2_mid": 53.5,
+     "d2_long": 95.0,
+     "d3_short": 67.7,
+     "d3_mid": 95.6,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "TEN": {
+   "nflverse_team": "TEN",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1186,
+   "gun_pct": 73.3,
+   "bins": {
+    "d1": {
+     "snaps": 491,
+     "gun": 294,
+     "gun_pct": 59.9,
+     "mean_togo": 10.37
+    },
+    "d2_short": {
+     "snaps": 38,
+     "gun": 19,
+     "gun_pct": 50.0,
+     "mean_togo": 1.89
+    },
+    "d2_mid": {
+     "snaps": 136,
+     "gun": 96,
+     "gun_pct": 70.6,
+     "mean_togo": 5.66
+    },
+    "d2_long": {
+     "snaps": 218,
+     "gun": 188,
+     "gun_pct": 86.2,
+     "mean_togo": 10.93
+    },
+    "d3_short": {
+     "snaps": 80,
+     "gun": 53,
+     "gun_pct": 66.2,
+     "mean_togo": 1.98
+    },
+    "d3_mid": {
+     "snaps": 72,
+     "gun": 72,
+     "gun_pct": 100.0,
+     "mean_togo": 4.93
+    },
+    "d3_long": {
+     "snaps": 151,
+     "gun": 147,
+     "gun_pct": 97.4,
+     "mean_togo": 11.6
+    }
+   },
+   "gun_weights": {
+    "d1": 0.3,
+    "d2_short": 0.55,
+    "d2_mid": 0.6,
+    "d2_long": 4.3,
+    "d3_short": 0.75,
+    "d3_mid": 14.15,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "TEN.play",
+    "book_sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
+    "retail_rule": {
+     "d1": 48.9,
+     "d2_short": 14.6,
+     "d2_mid": 47.3,
+     "d2_long": 57.3,
+     "d3_short": 20.0,
+     "d3_mid": 65.5,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 59.8,
+     "d2_short": 50.2,
+     "d2_mid": 70.1,
+     "d2_long": 85.7,
+     "d3_short": 65.6,
+     "d3_mid": 95.1,
+     "d3_long": 100.0
+    }
+   }
+  },
+  "WAS": {
+   "nflverse_team": "WAS",
+   "sources": {
+    "2025": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+    "2026": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz"
+   },
+   "snaps": 1193,
+   "gun_pct": 86.0,
+   "bins": {
+    "d1": {
+     "snaps": 521,
+     "gun": 413,
+     "gun_pct": 79.3,
+     "mean_togo": 10.28
+    },
+    "d2_short": {
+     "snaps": 64,
+     "gun": 50,
+     "gun_pct": 78.1,
+     "mean_togo": 1.83
+    },
+    "d2_mid": {
+     "snaps": 120,
+     "gun": 103,
+     "gun_pct": 85.8,
+     "mean_togo": 5.55
+    },
+    "d2_long": {
+     "snaps": 221,
+     "gun": 206,
+     "gun_pct": 93.2,
+     "mean_togo": 10.88
+    },
+    "d3_short": {
+     "snaps": 77,
+     "gun": 66,
+     "gun_pct": 85.7,
+     "mean_togo": 1.82
+    },
+    "d3_mid": {
+     "snaps": 59,
+     "gun": 57,
+     "gun_pct": 96.6,
+     "mean_togo": 5.12
+    },
+    "d3_long": {
+     "snaps": 131,
+     "gun": 131,
+     "gun_pct": 100.0,
+     "mean_togo": 11.52
+    }
+   },
+   "gun_weights": {
+    "d1": 1.4,
+    "d2_short": 1.4,
+    "d2_mid": 2.2,
+    "d2_long": 4.85,
+    "d3_short": 2.35,
+    "d3_mid": 10.3,
+    "d3_long": 0.05
+   },
+   "fit": {
+    "book": "WAS.play",
+    "book_sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca",
+    "retail_rule": {
+     "d1": 38.9,
+     "d2_short": 10.5,
+     "d2_mid": 41.3,
+     "d2_long": 46.6,
+     "d3_short": 10.6,
+     "d3_mid": 51.2,
+     "d3_long": 100.0
+    },
+    "fitted": {
+     "d1": 78.7,
+     "d2_short": 77.9,
+     "d2_mid": 85.5,
+     "d2_long": 92.7,
+     "d3_short": 85.4,
+     "d3_mid": 96.1,
+     "d3_long": 100.0
+    }
+   }
+  }
+ },
+ "team_bins": {
+  "d1": {
+   "downs": [
+    1
+   ],
+   "togo": [
+    1,
+    99
+   ],
+   "selector_distance": 10
+  },
+  "d2_short": {
+   "downs": [
+    2
+   ],
+   "togo": [
+    1,
+    3
+   ],
+   "selector_distance": 2
+  },
+  "d2_mid": {
+   "downs": [
+    2
+   ],
+   "togo": [
+    4,
+    7
+   ],
+   "selector_distance": 6
+  },
+  "d2_long": {
+   "downs": [
+    2
+   ],
+   "togo": [
+    8,
+    99
+   ],
+   "selector_distance": 11
+  },
+  "d3_short": {
+   "downs": [
+    3,
+    4
+   ],
+   "togo": [
+    1,
+    3
+   ],
+   "selector_distance": 2
+  },
+  "d3_mid": {
+   "downs": [
+    3,
+    4
+   ],
+   "togo": [
+    4,
+    6
+   ],
+   "selector_distance": 5
+  },
+  "d3_long": {
+   "downs": [
+    3,
+    4
+   ],
+   "togo": [
+    7,
+    99
+   ],
+   "selector_distance": 10
+  }
+ },
+ "team_bin_files": {
+  "2025": {
+   "bytes": 19105296,
+   "downloaded": "2026-10-08 01:53",
+   "file": "play_by_play_2025.csv.gz",
+   "last_week": 18,
+   "regular_season_games": 272,
+   "sha256": "2f135887790a013fd004e609e37096bb4816d5cc80b9f19122e1bad478961978"
+  },
+  "2026": {
+   "bytes": 4380426,
+   "downloaded": "2026-10-08 04:28",
+   "file": "play_by_play_2026.csv.gz",
+   "last_week": 4,
+   "regular_season_games": 64,
+   "sha256": "2b3e9f2c6f92123f3dd41d94009e1978e8635beb775cd4dab32e79c60c46e080"
+  }
+ }
+}

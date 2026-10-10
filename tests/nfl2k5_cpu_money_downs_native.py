@@ -25,6 +25,9 @@ class Machine(BaseMachine):
         super().__init__(payload, patched=False)
         self.owner = next((a["va"] for a in space.layout(payload)["allocations"]
                            if a["owner"] == patch.OWNER), None)
+        settings = patch.read_settings(payload)
+        self.level = settings["level"] if settings else "retail"
+        self.labels = patch.assembly.LABELS2 if self.level == "modern2" else patch.assembly.LABELS
         self.u32(self.OFF, self.DEF)
         self.u32(self.DEF, self.OFF)
         self.u32(self.DEF+8, self.DEF+0x200)
@@ -46,8 +49,11 @@ class Machine(BaseMachine):
         if address == self.stop_at:
             self.uc.emu_stop()
 
+    HOME = 0xE5FC20
+
     def configure(self, *, down=4, own_yard=50, distance=2, score_margin=0,
-                  quarter=2, seconds=600, cpu=True, phase=4, direction=1):
+                  quarter=2, seconds=600, cpu=True, phase=4, direction=1,
+                  quarter_seconds=0, ot_bits=0, home=False):
         self.u32(self.GAME+4, down)
         self.u32(0xE602B4, phase)
         self.u32(0xE602C4, quarter)
@@ -60,14 +66,24 @@ class Machine(BaseMachine):
         self.u32(self.OFFMETA+4, 3)
         self.u32(self.DEF+0x204, 3)
         self.f32(self.GAME+0x510, seconds)
-        self.f32(0xE602B0, 0)
+        self.f32(0xE602B0, quarter_seconds)
+        self.u32(0xE602A8, ot_bits)
+        # b77 p9: Modern 2 reads the home-team pointer (overtime possession bits) and the period length.
+        offense = self.HOME if home else self.OFF
+        if home:
+            self.uc.mem_write(self.HOME, bytes(self.uc.mem_read(self.OFF, 0x200)))
+            self.u32(self.DEF, self.HOME)
+        else:
+            self.u32(self.DEF, self.OFF)
+        self.u32(0xE60280, offense)
+        self.u32(0xE60288, offense)
         self.direction = direction
         self.uc.reg_write(x86.UC_X86_REG_FPCW, 0x37F)
         self.uc.reg_write(x86.UC_X86_REG_FPTAG, 0xFFFF)
 
     def policy(self, **settings):
         self.configure(**settings)
-        self.run(self.owner+patch.assembly.LABELS["policy"])
+        self.run(self.owner+self.labels["policy"])
         return self.uc.reg_read(x86.UC_X86_REG_EAX)
 
     def supply_fg_range(self, yards=40):
@@ -143,7 +159,7 @@ class Machine(BaseMachine):
         base = 0xB75A40+buffer*0x13390
         self.u32(self.FRAME+8, base+0x134+formation*180)
         self.u32(self.FRAME-0x28, int(mirrored))
-        self.run(self.owner+patch.assembly.LABELS["primary_depth"],
+        self.run(self.owner+self.labels["primary_depth"],
                  esi=base+0x33FC+play*96, ebp=self.FRAME)
         value = self.uc.reg_read(x86.UC_X86_REG_EAX)
         return None if value == 0xFFFF8000 else (value if value < 2**31 else value-2**32)

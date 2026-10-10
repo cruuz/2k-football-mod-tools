@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import unittest
 
 from mod_editor.core.nfl2k5_uniform_catalog import (
@@ -16,6 +23,9 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
 class Nfl2k5UniformCatalogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         cls.catalog = load_nfl2k5_uniform_catalog()
 
     def test_all_sets_and_39_component_surfaces_are_unique(self) -> None:
@@ -78,7 +88,7 @@ class Nfl2k5UniformCatalogTests(unittest.TestCase):
             "asset_code": "18",
             "clean_png": "replacements/giants.png",
             "kind": "torso",
-            "mud_mode": "darken_60",
+            "mud_mode": "wet_93",
             "mud_png": None,
             "side": "A",
             "variant": 0,

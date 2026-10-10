@@ -13,6 +13,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 
 from .errors import ValidationError
 from .platform_compat import absolute_path, io_path, long_path, paths_alias, publish_no_replace, validate_output_path
@@ -124,18 +125,50 @@ def check_image_destination(target: Path, *, overwrite: bool = False):
     return target.stat()
 
 
+#: beta 77 (E2): a freshly written 6 GB image is exactly what antivirus, the search indexer and cloud-sync clients open
+#: for a while, and Windows then refuses the rename with "being used by another process" (WinError 32) or "Access is
+#: denied" (WinError 5). Before this the build failed on the spot, after every other step had finished. About a minute
+#: of patience, the same one the compaction swap uses; a different error (a destination that exists, a read-only
+#: folder) is never retried.
+PUBLISH_HELD_ATTEMPTS = 240
+PUBLISH_HELD_WAIT_SECONDS = 0.25
+_WINDOWS_HELD = frozenset({5, 32})
+
+
+def _held_by_another_program(exc: OSError) -> bool:
+    """True only for the refusals Windows itself gives for a file another program has open."""
+    return isinstance(exc, PermissionError) and getattr(exc, "winerror", None) in _WINDOWS_HELD
+
+
+def _publish_when_released(publish, target: Path) -> None:
+    for attempt in range(PUBLISH_HELD_ATTEMPTS):
+        try:
+            publish()
+            return
+        except PermissionError as exc:
+            if not _held_by_another_program(exc):
+                raise
+            if attempt == PUBLISH_HELD_ATTEMPTS - 1:
+                raise ValidationError(
+                    f"Windows is still holding the finished disc open, so it could not be saved as {target.name}. "
+                    "Antivirus, the search indexer, an emulator or a cloud-sync program usually lets go within a "
+                    "minute: pause it for this folder or choose another output folder, then make the disc again. "
+                    "Nothing was published.") from exc
+            time.sleep(PUBLISH_HELD_WAIT_SECONDS)
+
+
 def publish_image(staging: Path, target: Path, previous) -> None:
     """Publish completed bytes; refuse a newly appeared, changed or open target."""
     staging, target = io_path(staging), io_path(target)
     if previous is None:
-        publish_no_replace(staging, target)
+        _publish_when_released(lambda: publish_no_replace(staging, target), target)
         return
     assert_image_available(target)
     now = target.stat()
     if (now.st_dev, now.st_ino, now.st_size, now.st_mtime_ns) != (
             previous.st_dev, previous.st_ino, previous.st_size, previous.st_mtime_ns):
         raise ValidationError("The output image changed during copying; retry with a new output path.")
-    os.replace(long_path(staging), long_path(target))
+    _publish_when_released(lambda: os.replace(long_path(staging), long_path(target)), target)
 
 
 def copy_image(source: Path, target: Path, *, overwrite: bool = False) -> None:

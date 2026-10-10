@@ -13,9 +13,16 @@ Beta 38).
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import json
 import unittest
-from pathlib import Path
 
 from mod_editor.apf_studio import field_art
 from mod_editor.apf_studio.field_art import (

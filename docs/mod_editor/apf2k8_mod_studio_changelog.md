@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.107 - beta 77
+
+Version aligned with beta-77. No new APF gameplay features are included. Shared packaging and capability-count checks are refreshed for this release. Windows execution and hosted CI must pass before final release acceptance.
+
 ## 0.1.0-alpha.106 - beta 76.5
 
 Thanks to Urianus for the APF reports. New behavior is proved offline on BASE and TU 1.1; rendered effects and CPU playcalling still need his gameplay check. Export matching revision 4 patches and restart Xenia.

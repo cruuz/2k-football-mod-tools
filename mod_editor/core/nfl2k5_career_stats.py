@@ -318,7 +318,10 @@ def apply_body(body: bytes, rows: Iterable[Row], *, base_year: int = 2004,
         player, match_kind = _match(document, row)
         count = (struct.unpack_from('<I', body, player.offset + 0x24)[0] >> 8) & 31
         slot = count - (base_year - row.season)
-        _require(0 <= slot < count <= 31, f'{player.first} {player.last}: season has no representable completed slot')
+        # the game keeps a player's k-th pro season in slot k (rookie year = slot 1, the current season = slot years pro);
+        # a slot below 1 is a season before his rookie year, which is what a years pro stored in the nflverse convention
+        # (rookie = 0, see nfl2k5_roster_records.years_pro_from_years_exp) would produce
+        _require(1 <= slot < count <= 31, f'{player.first} {player.last}: season has no representable completed slot')
         field = BY_NAME[row.stat]
         try:
             value = Decimal(str(row.value))

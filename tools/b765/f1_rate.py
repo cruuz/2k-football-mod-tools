@@ -34,7 +34,7 @@ def rate(args):
         identity=identities.get((p.pool,p.index))
         if not identity: continue
         born=dt.date.fromisoformat(identity['birth_date'])
-        years=p.record.get('years_pro');pos=p.record.position_name
+        years=rr.accrued_seasons(p.record.get('years_pro'));pos=p.record.position_name  # the model's years = completed seasons (rookie 0)
         players.append(dict(gsis=identity['gsis_id'],name=p.display,pos=pos,index=p.index,pool=p.pool,
             team='FA' if p.offset in document.free_agents else document.teams[p.teams[0]].abbreviation,
             depth=p.record.get('depth_rank'),tier='backup' if p.offset in document.free_agents else

@@ -1,0 +1,426 @@
+{
+ "schema": "nfl2k5_moment_goalposts/v1",
+ "classification": "SOURCED",
+ "rule": {
+  "period_ft_above_crossbar": 30,
+  "modern_ft_above_crossbar": 35,
+  "crossbar_ft_above_field": 10,
+  "modern_from_season": 2014,
+  "basis": "The NFL owners voted in March 2014 to extend the uprights from 30 to 35 feet above the crossbar, effective for the 2014 season. Noah (2026-10-08) chose to keep 30 ft for every earlier moment; how tall the uprights were in the decades before is not researched and is not modelled.",
+  "sources": [
+   "https://www.footballzebras.com/2014/03/goalposts-will-grow-5-feet-taller/",
+   "https://www.neworleanssaints.com/news/john-deshazier-nfl-votes-to-extend-length-of-uprights-12812659",
+   "https://www.si.com/nfl/2014/04/04/nfl-taller-field-goal-posts-makers"
+  ]
+ },
+ "moments": [
+  {
+   "row": 1,
+   "date": "1967-12-31",
+   "title": "THE ICE BOWL",
+   "season": 1967,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 2,
+   "date": "1968-11-17",
+   "title": "THE HEIDI BOWL",
+   "season": 1968,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 3,
+   "date": "1971-12-25",
+   "title": "MERRY CHRISTMAS MIAMI",
+   "season": 1971,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 4,
+   "date": "1972-12-23",
+   "title": "THE IMMACULATE RECEPTION",
+   "season": 1972,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 5,
+   "date": "1974-12-21",
+   "title": "THE SEA OF HANDS",
+   "season": 1974,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 6,
+   "date": "1979-12-16",
+   "title": "THE FINAL COMEBACK",
+   "season": 1979,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 7,
+   "date": "1980-12-07",
+   "title": "MONTANA'S COMEBACK",
+   "season": 1980,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 8,
+   "date": "1982-01-02",
+   "title": "EPIC IN MIAMI",
+   "season": 1981,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 9,
+   "date": "1982-01-10",
+   "title": "THE CATCH",
+   "season": 1981,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 10,
+   "date": "1983-10-02",
+   "title": "WASHINGTON RALLIES",
+   "season": 1983,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 11,
+   "date": "1987-01-11",
+   "title": "THE DRIVE",
+   "season": 1986,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 12,
+   "date": "1987-09-20",
+   "title": "THE 2-SECOND MISCALCULATION",
+   "season": 1987,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 13,
+   "date": "1987-11-08",
+   "title": "SAME OLD BUCS",
+   "season": 1987,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 14,
+   "date": "1989-01-22",
+   "title": "SUPER BOWL XXIII",
+   "season": 1988,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 15,
+   "date": "1991-01-27",
+   "title": "WIDE RIGHT",
+   "season": 1990,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 16,
+   "date": "1992-01-04",
+   "title": "HOUSTON'S HEARTS RIPPED OUT",
+   "season": 1991,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 17,
+   "date": "1992-10-04",
+   "title": "THE TWO TD COMEBACK ON KC",
+   "season": 1992,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 18,
+   "date": "1993-01-03",
+   "title": "THE 32-POINT COMEBACK",
+   "season": 1992,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 19,
+   "date": "1994-10-17",
+   "title": "THE HEARTBREAKER",
+   "season": 1994,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 20,
+   "date": "1997-09-21",
+   "title": "THE COLTS' COLLAPSE",
+   "season": 1997,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 21,
+   "date": "1998-01-25",
+   "title": "SUPER BOWL XXXII",
+   "season": 1997,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 22,
+   "date": "2000-01-30",
+   "title": "A YARD TOO SHORT",
+   "season": 1999,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 23,
+   "date": "2002-02-03",
+   "title": "VINATIERI STRIKES AGAIN",
+   "season": 2001,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 24,
+   "date": "2003-01-05",
+   "title": "THE BOTCHED SNAP",
+   "season": 2002,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 25,
+   "date": "2004-01-11",
+   "title": "FOURTH AND TWENTY-SIX",
+   "season": 2003,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 26,
+   "date": "1999-01-17",
+   "title": "THE MISS",
+   "season": 1998,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 27,
+   "date": "2008-02-03",
+   "title": "SUPER BOWL XLII: TYREE",
+   "season": 2007,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 28,
+   "date": "2009-02-01",
+   "title": "SUPER BOWL XLIII: HOLMES",
+   "season": 2008,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 29,
+   "date": "2012-02-05",
+   "title": "SUPER BOWL XLVI: SIDELINE",
+   "season": 2011,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 30,
+   "date": "2017-02-05",
+   "title": "SUPER BOWL LI: 28-3",
+   "season": 2016,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 31,
+   "date": "2022-11-13",
+   "title": "FOURTH AND EIGHTEEN",
+   "season": 2022,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 32,
+   "date": "2000-01-08",
+   "title": "MUSIC CITY MIRACLE",
+   "season": 1999,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 33,
+   "date": "2002-01-19",
+   "title": "THE TUCK RULE GAME",
+   "season": 2001,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 34,
+   "date": "2004-02-01",
+   "title": "SUPER BOWL XXXVIII: FINALE",
+   "season": 2003,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 35,
+   "date": "2010-02-07",
+   "title": "SUPER BOWL XLIV: AMBUSH",
+   "season": 2009,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 36,
+   "date": "2010-12-19",
+   "title": "NEW MEADOWLANDS MIRACLE",
+   "season": 2010,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 37,
+   "date": "2011-01-08",
+   "title": "BEAST QUAKE",
+   "season": 2010,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 38,
+   "date": "2012-01-14",
+   "title": "THE CATCH III",
+   "season": 2011,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 39,
+   "date": "2013-01-12",
+   "title": "MILE HIGH MIRACLE",
+   "season": 2012,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 40,
+   "date": "2013-02-03",
+   "title": "SUPER BOWL XLVII: HOLD ON",
+   "season": 2012,
+   "uprights_above_crossbar_ft": 30,
+   "upright_top_above_field_ft": 40
+  },
+  {
+   "row": 41,
+   "date": "2015-01-11",
+   "title": "DEZ CAUGHT IT?",
+   "season": 2014,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 42,
+   "date": "2015-02-01",
+   "title": "SUPER BOWL XLIX: BUTLER",
+   "season": 2014,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 43,
+   "date": "2015-12-03",
+   "title": "MIRACLE IN MOTOWN",
+   "season": 2015,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 44,
+   "date": "2018-01-14",
+   "title": "MINNEAPOLIS MIRACLE",
+   "season": 2017,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 45,
+   "date": "2018-02-04",
+   "title": "SUPER BOWL LII: PHILLY",
+   "season": 2017,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 46,
+   "date": "2020-02-02",
+   "title": "SUPER BOWL LIV: WASP",
+   "season": 2019,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 47,
+   "date": "2022-01-23",
+   "title": "THIRTEEN SECONDS",
+   "season": 2021,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 48,
+   "date": "2022-02-13",
+   "title": "SUPER BOWL LVI: DONALD",
+   "season": 2021,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 49,
+   "date": "2022-12-17",
+   "title": "THE 33-POINT COMEBACK",
+   "season": 2022,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 50,
+   "date": "2024-02-11",
+   "title": "SUPER BOWL LVIII: OVERTIME",
+   "season": 2023,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  },
+  {
+   "row": 51,
+   "date": "2025-10-16",
+   "title": "THE UNC BOWL",
+   "season": 2025,
+   "uprights_above_crossbar_ft": 35,
+   "upright_top_above_field_ft": 45
+  }
+ ]
+}

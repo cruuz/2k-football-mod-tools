@@ -1,6 +1,6 @@
 # 2K Football Mod Tools
 
-Beta 76.4 is the current release. The
+Beta 77 is the current release (2K5 1.0.0rc111 and APF 0.1.0-alpha.107). The
 project is open source under the MIT license, and forks are welcome. See
 [Making your own fork](CONTRIBUTING.md#making-your-own-fork).
 

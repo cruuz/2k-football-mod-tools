@@ -1,7 +1,14 @@
 """DL comparison integrity and optional pinned native regression proofs."""
+
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from dataclasses import replace
 import os
-from pathlib import Path
 import unittest
 
 from mod_editor.core import apf2k8_play_codec as codec

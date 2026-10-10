@@ -49,6 +49,20 @@ texture keeps its index and bytes except the freed slots ``paint`` repaints, whi
 venue art never paints (checked against its table): the 2026 venue art (u4) and Modern colour, which write before it in
 a build, keep their work, and Modern playing surfaces, after it, leaves the stadium scene alone.
 
+A stadium the kit cannot build on is left as it is (b77 e4, Coach Edwards' photo of 4 October 2026: one stadium, Kansas
+City, refused a whole build after hours of work). Every stadium is judged whole, by what its nine bundles hold:
+
+* ``retail`` or ``venues`` (the 2026 venue art's repaint of retail): the boards go on;
+* ``applied``: the boards are already there (the kit's own work, or a published SOFTDRINK 2K28 pack: each pack's
+  stadium scenes are pinned by hash beside the kit's own pins, so nothing the project ever published reads as foreign);
+* ``arrowhead``: Modern Arrowhead wrote Kansas City's scenes (the one stadium both options write); they stay as written;
+* anything else (``foreign``): another tool changed it; it stays as it is.
+
+Stadiums that stay are named in the build's result and in the finished-disc message; the build only refuses when no
+stadium at all can take the boards. ``check_request`` looks at the source before any copy, ``apply_to_image`` judges the
+bytes it is about to write (the earlier steps of the same build may have changed them), and both take ``owned``: the
+stadiums another selected option writes in this very build ({"s13": "Modern Arrowhead"}).
+
 EXPERIMENTAL / UNWITNESSED in game.
 """
 from __future__ import annotations
@@ -117,7 +131,9 @@ def _help_text():
             "with the old boards and their frames taken out and the game clock and scores moved onto the new boards where "
             "the old boards carried them"
             + (f": {listed}" if listed else "") + ". The 2026 venue art and Modern colour keep their work on these "
-            "stadiums. Off in every preset; appearance in game is unwitnessed.")
+            "stadiums. A stadium the boards cannot be built on (Kansas City when Modern Arrowhead is on, or one another "
+            "tool changed) stays exactly as it is and is named when the disc is ready. "
+            "Off in every preset; appearance in game is unwitnessed.")
 
 
 def feed_crop(aspect):
@@ -805,6 +821,10 @@ PINS_DIR = DATA_DIR / "pins"
 RECEIPT_SCHEMA = "nfl2k5_board_kit_receipt/v1"
 BUILD_CAPTION = "Modern stadium boards (experimental)"
 HELP_TEXT = _help_text()
+#: how Modern Arrowhead is named in the boards' own sentences; Kansas City (s13) is the one kit stadium it also writes
+ARROWHEAD = "Modern Arrowhead"
+#: the bundle states the boards can be built on (``applied`` already carries them)
+BUILDABLE = ("retail", "venues")
 
 
 def _mv():
@@ -925,12 +945,33 @@ def _venues_receipt(source):
         return None
 
 
-def bundle_state(archive, name, venues_receipt=None):
-    """retail / venues / applied / foreign for the stadium scene of one kit bundle.
+def published_spans(name):
+    """{stadium span sha-256: [pack labels]} of the published SOFTDRINK 2K28 packs' scene for one kit bundle.
+
+    Recorded by ``tools/b77/e4s_record_published.py`` from the published packs themselves; every hash in it was read
+    as a stadium scene carrying the boards before it was kept."""
+    return dict(_pin(name).get("published") or {})
+
+
+def _arrowhead_owns(archive, name, colour_receipt=None):
+    """True when Modern Arrowhead wrote this Kansas City bundle (alone, or combined with Modern colour)."""
+    mv = _mv()
+    if name[:3] != mv.ARROWHEAD_VENUE:
+        return False
+    try:
+        return bool(mv._arrowhead_applied(archive, name, colour_receipt))
+    except Exception:  # noqa: BLE001 - without Arrowhead's pins the bundle is not Arrowhead's
+        return False
+
+
+def bundle_state(archive, name, venues_receipt=None, colour_receipt=None):
+    """retail / venues / applied / arrowhead / foreign for the stadium scene of one kit bundle.
 
     retail: the pinned retail stadium span. venues: the 2026 venue art's wall art on the retail scene, the bundle
     exactly as that option's receipt records it (the kit builds on it: it keeps every texture). applied: the pinned
-    renovation of the retail scene, or the kit's boards on a scene the 2026 venue art repainted."""
+    renovation of the retail scene, the kit's boards on a scene the 2026 venue art repainted, or the scene of a
+    published SOFTDRINK 2K28 pack (pinned by hash). arrowhead: Kansas City as Modern Arrowhead wrote it (the boards
+    are not built on it). foreign: anything else."""
     pin = _pin(name)
     e = _entry(archive, _venue_pins(name[:3])[name])
     if e.size != pin["size"]:
@@ -941,10 +982,16 @@ def bundle_state(archive, name, venues_receipt=None):
         return "applied"
     if have == pin["retail_sha256"]:
         return "retail"
+    if have in (pin.get("published") or {}):
+        return "applied"
     if _renovated(data, name):
         return "applied"
     row = ((venues_receipt or {}).get("bundles") or {}).get(name) or {}
-    return "venues" if row.get("applied_sha256") == sha(data) else "foreign"
+    if row.get("applied_sha256") == sha(data):
+        return "venues"
+    if _arrowhead_owns(archive, name, colour_receipt):
+        return "arrowhead"
+    return "foreign"
 
 
 def receipt_path(source):
@@ -960,60 +1007,160 @@ def read_receipt(source):
     return doc
 
 
-def bundle_states(source, *, stop_after_foreign=None):
-    """{bundle name: bundle_state} for every pinned venue's nine bundles."""
+def bundle_states(source, *, stop_after_foreign=None, brief=False):
+    """{bundle name: bundle_state} for every pinned venue's nine bundles.
+
+    ``brief`` stops reading a stadium at its first bundle that is foreign or Modern Arrowhead's: the stadium is judged
+    whole, so the other eight cannot change what the boards do with it, and an image that no stadium of can take the
+    boards is refused in seconds, not after parsing every scene."""
     ml = _ml()
     receipt = _venues_receipt(source)
+    colour_receipt = _mv()._colour_receipt(source)
     out = {}
     foreign = 0
     with ml._outer_image()(str(source)) as archive:
         for venue in pinned_venues():
             for name in variants(venue):
                 try:
-                    out[name] = bundle_state(archive, name, receipt)
+                    out[name] = bundle_state(archive, name, receipt, colour_receipt)
                 except (sb.ScneBuildError, ValueError, StopIteration):
                     out[name] = "foreign"
                 if out[name] == "foreign":
                     foreign += 1
                     if stop_after_foreign is not None and foreign >= stop_after_foreign:
                         return out
+                if brief and out[name] in ("foreign", "arrowhead"):
+                    break
     return out
 
 
-def image_status(source):
-    """retail / applied / mixed / foreign across every pinned venue's nine bundles (a stadium scene carrying the 2026
-    venue art's wall art, as that option's receipt records it, counts as retail: the kit builds on it)."""
-    states = {"retail" if s == "venues" else s for s in bundle_states(source).values()}
-    if not states:
+def venue_label(venue):
+    """The stadium as a person knows it: "Arrowhead Stadium (KC)"."""
+    try:
+        doc = spec(venue)
+        return f"{doc['name']} ({doc['team']})"
+    except (OSError, ValueError, KeyError):
+        return venue
+
+
+def plan_venues(states, owned=None):
+    """What the boards do with each stadium, from {bundle name: bundle state}.
+
+    {"write": [venues whose scenes the boards go on], "keep": [venues that already carry them],
+    "skip": {venue: {"kind": "owned" | "foreign", "by": option or None, "bundles": [names]}}}. A stadium is judged
+    whole: one changed bundle keeps all nine as they are, so the day, afternoon and night boards never disagree.
+    ``owned`` names the stadiums another selected option writes in this very build ({"s13": "Modern Arrowhead"})."""
+    owned = dict(owned or {})
+    grouped = {}
+    for name, state in states.items():
+        grouped.setdefault(name[:3], {})[name] = state
+    plan = dict(write=[], keep=[], skip={})
+    for venue in pinned_venues():
+        rows = grouped.get(venue)
+        if not rows:
+            continue
+        by = owned.get(venue) or (ARROWHEAD if "arrowhead" in rows.values() else None)
+        other = sorted(n for n, st in rows.items() if st not in BUILDABLE + ("applied", "arrowhead"))
+        if by is not None:
+            plan["skip"][venue] = dict(kind="owned", by=by, bundles=sorted(rows))
+        elif other:
+            plan["skip"][venue] = dict(kind="foreign", by=None, bundles=other)
+        elif all(st == "applied" for st in rows.values()):
+            plan["keep"].append(venue)
+        else:
+            plan["write"].append(venue)
+    return plan
+
+
+def _skipped(plan):
+    return [dict(venue=venue, stadium=venue_label(venue), **info) for venue, info in sorted(plan["skip"].items())]
+
+
+def _why(row):
+    if row["kind"] == "owned":
+        return (f"this stadium belongs to {row['by']} and the boards cannot be built on its scenes, so it stays "
+                f"exactly as {row['by']} made it.")
+    names = ", ".join(row["bundles"][:3]) + (f" and {len(row['bundles']) - 3} more" if len(row["bundles"]) > 3 else "")
+    return (f"something other than the 2026 venue art or these boards changed its scenes ({names}), so the boards "
+            "cannot be built on them and they stay exactly as they are.")
+
+
+def skip_notes(plan):
+    """The sentences for the finished-disc message: empty unless a stadium was left as it was."""
+    if not plan["skip"]:
+        return []
+    total = len(plan["write"]) + len(plan["keep"]) + len(plan["skip"])
+    have = len(plan["write"]) + len(plan["keep"])
+    lines = [f"Modern stadium boards: {have} of {total} stadiums have them. These stayed as they were:"]
+    lines += [f"{row['stadium']}: {_why(row)}" for row in _skipped(plan)]
+    return lines
+
+
+def _state_of(rows, plan):
+    """retail (every stadium takes the boards) / partial (some do, some already have them or stay) / applied (nothing
+    left to do, at least one stadium has them) / foreign (no stadium can take them)."""
+    if not rows:
         return "retail"
-    if "foreign" in states:
-        return "foreign"
-    return states.pop() if len(states) == 1 else "mixed"
+    if plan["write"]:
+        return "partial" if (plan["keep"] or plan["skip"]) else "retail"
+    return "applied" if plan["keep"] else "foreign"
+
+
+def _nothing_to_build_on(rows, plan):
+    bad = sorted(name for name, state in rows.items() if state not in BUILDABLE + ("applied",))
+    shown = ", ".join(bad[:6]) + (f" and {len(bad) - 6} more" if len(bad) > 6 else "")
+    text = ("No stadium in this image has scenes the modern stadium boards can be built on (the retail scenes, or the "
+            f"2026 venue art on them). Modified scenes: {shown}. "
+            "Choose your unmodified USA retail image, or turn off Modern stadium boards "
+            "to keep this project's stadium artwork. ")
+    owners = sorted({row["by"] for row in plan["skip"].values() if row["kind"] == "owned"})
+    if owners:
+        text += f"{' and '.join(owners)} already writes some of these stadiums. "
+    text += ("The 2026 venue art is recognized through the .venues-2026.json file kept beside the image it was built "
+             "into (the image's name, then .venues-2026.json); a copy that was moved or renamed without it reads as "
+             "modified.")
+    return text
+
+
+def image_report(source, *, owned=None, brief=False):
+    """One reading of an image for the Build page: its state, what the boards would write or keep, what stays."""
+    rows = bundle_states(source, brief=brief)
+    plan = plan_venues(rows, owned)
+    return dict(state=_state_of(rows, plan), write=list(plan["write"]), keep=list(plan["keep"]),
+                skipped=_skipped(plan), notes=skip_notes(plan))
+
+
+def image_status(source):
+    """retail / partial / applied / foreign across every pinned venue's nine bundles (a stadium scene carrying the
+    2026 venue art's wall art, as that option's receipt records it, counts as retail: the kit builds on it)."""
+    return image_report(source)["state"]
 
 
 status = image_status
 
 
-def verify(source, *, enabled=True):
-    state = image_status(source)
+def verify(source, *, enabled=True, states=None, owned=None):
+    rows = bundle_states(source) if states is None else states
+    plan = plan_venues(rows, owned)
+    state = "applied" if (plan["keep"] and not plan["write"]) else _state_of(rows, plan)
     sb.require(state == ("applied" if enabled else "retail"), f"the stadium boards' state is {state}")
-    return dict(state=state, enabled=enabled, label=LABEL, runtime_witnessed=False, venues=list(pinned_venues()))
+    covered = plan["keep"] if enabled else plan["write"]
+    return dict(state=state, enabled=enabled, label=LABEL, runtime_witnessed=False, venues=sorted(covered),
+                skipped_venues=sorted(plan["skip"]))
 
 
-def check_request(source):
-    """The build's quick check before any copy: the kit's stadium scenes are retail (the 2026 venue art may repaint
-    them later in the build; the kit writes after it)."""
-    rows = bundle_states(source, stop_after_foreign=6)
-    states = {"retail" if value == "venues" else value for value in rows.values()}
-    state = "retail" if not states else next(iter(states)) if len(states) == 1 else "mixed"
-    bad = sorted(name for name, value in rows.items() if value == "foreign")
-    sb.require(not bad and state in ("retail", "applied"),
-               "Modern stadium boards cannot use these modified stadium scenes: "
-               + ", ".join(bad[:6] or sorted(rows)[:6]) + ". "
-               "Choose your unmodified USA retail image, or turn off Modern stadium boards "
-               "to keep this project's stadium artwork. Recognized 2026 venue art can be "
-               "selected in Build options.")
-    return dict(state=state)
+def check_request(source, *, owned=None):
+    """The build's quick check before any copy: some stadium's scenes are retail (the 2026 venue art may repaint them
+    later in the build; the kit writes after it) or already carry the boards. A stadium that is neither stays as it is
+    (the result's ``skipped`` names it); only an image with no usable stadium at all is refused."""
+    rows = bundle_states(source, brief=True)
+    plan = plan_venues(rows, owned)
+    if rows:
+        sb.require(plan["write"] or plan["keep"], _nothing_to_build_on(rows, plan))
+    out = dict(state=_state_of(rows, plan))
+    if plan["skip"]:
+        out["skipped"] = _skipped(plan)
+    return out
 
 
 def _compose(job):
@@ -1022,10 +1169,16 @@ def _compose(job):
     return name, out, info
 
 
-def apply_to_image(target, *, progress=None, workers=None):
+def apply_to_image(target, *, progress=None, workers=None, owned=None):
     """Build step (after Modern colour and the 2026 venue art, which may have repainted these stadium scenes' textures;
-    the kit keeps every texture and changes geometry only): each pinned venue's nine bundles renovated in place. The
-    2026 venue art's and Modern colour's receipts take the new bundle hashes, so both still recognize their work."""
+    the kit keeps every texture and changes geometry only): each stadium whose scenes the boards can be built on has its
+    nine bundles renovated in place. The 2026 venue art's and Modern colour's receipts take the new bundle hashes, so
+    both still recognize their work.
+
+    A stadium the boards cannot be built on (Kansas City after Modern Arrowhead, a stadium another tool changed) stays
+    byte for byte as it is, is named in the result (``skipped``, ``user_notes``) and does not fail the build; one that
+    already carries the boards is kept. Only a disc with no usable stadium at all is refused. The bytes are judged here,
+    on the copy, because the earlier steps of the same build may have changed them since the early check."""
     from copy import deepcopy
     from . import nfl2k5_modern_color as colour
     ml = _ml()
@@ -1033,28 +1186,36 @@ def apply_to_image(target, *, progress=None, workers=None):
     say = progress or (lambda message, done, total: None)
     sb.require(read_receipt(target) is None, "the output already carries the modern stadium boards")
     states = bundle_states(target)
-    if states and set(states.values()) == {"applied"}:
-        return dict(state="already_applied", **verify(target))
-    bad = sorted(n for n, s in states.items() if s not in ("retail", "venues"))
-    sb.require(not bad, "the modern stadium boards need retail stadium scenes or the 2026 venue art's (found "
-               + ", ".join(f"{n} {states[n]}" for n in bad[:6]) + ")")
+    plan = plan_venues(states, owned)
+    skipped = _skipped(plan)
+    sb.require(plan["write"] or plan["keep"], _nothing_to_build_on(states, plan))
+    if skipped:
+        say("Modern stadium boards: leaving " + ", ".join(row["stadium"] for row in skipped) + " as it is", 0, 0)
+    if not plan["write"]:
+        return dict(verify(target, states=states, owned=owned), state="already_applied", skipped=skipped,
+                    venues_written=[], venues_kept=list(plan["keep"]), user_notes=skip_notes(plan))
     try:
         colour_receipt = colour.read_image_receipt(target)
     except (OSError, ValueError):
         colour_receipt = None
     colour_before = sm._colour_states(target, colour_receipt) if colour_receipt else None
     venues_receipt = mv.read_receipt(target)
-    jobs, pins = [], {}
+    jobs, pins, untouched = [], {}, {}
     with ml._outer_image()(str(target)) as archive:
         for venue in pinned_venues():
             for name, vp in _venue_pins(venue).items():
                 e = _entry(archive, vp)
                 data = archive.read(e.virtual_offset, e.size)
-                pins[name] = vp
-                jobs.append((name, data))
+                if venue in plan["write"] and states.get(name) in BUILDABLE:
+                    pins[name] = vp
+                    jobs.append((name, data))
+                else:
+                    untouched[name] = (vp, sha(data))      # the scope receipt: what the boards must not change
     results = ml.run_jobs(_compose, jobs, workers=workers, progress=say, label="Modern stadium boards")
     current = dict(jobs)
-    receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False, venues=list(pinned_venues()), bundles={})
+    receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False,
+                   venues=sorted(plan["write"] + plan["keep"]),
+                   skipped={row["venue"]: {k: v for k, v in row.items() if k != "venue"} for row in skipped}, bundles={})
     new_colour = deepcopy(colour_receipt) if colour_receipt else None
     new_venues = deepcopy(venues_receipt) if venues_receipt else None
     with ml._outer_image()(str(target), writable=True) as archive:
@@ -1092,11 +1253,19 @@ def apply_to_image(target, *, progress=None, workers=None):
             got = mv.bundle_state(archive, pins[name], new_venues, new_colour)
             if got != ("venues" if name in rows else "board_kit"):
                 wrong.append(f"{name} {got}")
+        # the scope receipt: every bundle the boards were to leave alone is byte for byte what it was
+        changed = []
+        for name, (vp, digest) in sorted(untouched.items()):
+            e = _entry(archive, vp)
+            if sha(archive.read(e.virtual_offset, e.size)) != digest:
+                changed.append(name)
     sb.require(not wrong, f"the 2026 venue art's read-back failed after the stadium boards: {', '.join(wrong[:6])}")
+    sb.require(not changed, f"the stadium boards changed stadiums they were to leave alone: {', '.join(changed[:6])}")
     receipt_path(target).write_text(json.dumps(receipt, indent=1, default=str) + "\n", encoding="utf-8", newline="\n")
     say("Modern stadium boards: done", 1, 1)
-    return dict(verify(target), bundles_written=len(results), colour=new_colour is not None,
-                venue_art=new_venues is not None)
+    return dict(verify(target, owned=owned), bundles_written=len(results), colour=new_colour is not None,
+                venue_art=new_venues is not None, venues_written=list(plan["write"]), venues_kept=list(plan["keep"]),
+                skipped=skipped, user_notes=skip_notes(plan))
 
 
 def apply_lab_disc(disc, *, progress=None):

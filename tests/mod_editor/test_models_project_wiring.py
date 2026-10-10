@@ -1,5 +1,6 @@
 """Execute the exact protected J2 handoff in memory, or use it after integration."""
 from __future__ import annotations
+from dataclasses import replace
 import os
 os.environ.setdefault('QT_QPA_PLATFORM','offscreen')
 from pathlib import Path
@@ -104,7 +105,7 @@ class WiringTests(unittest.TestCase):
                 stream.seek(absolute)
                 self.assertEqual(stream.read(size),self.compiled.rebuilt_span[inner:inner+size])
         self.assertEqual(Path(plan.target).read_bytes()[35*2048+4],123)
-        plan = fixtures.SimpleNamespace(guardian_cap=True)
+        plan = replace(plan, guardian_cap=True)
         with patch.object(service,'build') as build:
             with self.assertRaisesRegex(P.ValidationError,'Guardian cap/overlay'):
                 self.builder.build_with_project(plan,service,self.cache,self.session)

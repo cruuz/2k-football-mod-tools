@@ -81,6 +81,8 @@ def refresh(document: dict) -> None:
 class RuntimeResultTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not REPORT.exists():
+            raise unittest.SkipTest(f"Missing asset: {REPORT}")
         cls.document = json.loads(REPORT.read_bytes())
 
     def test_checked_partial_result_has_only_control_selector_negative(self) -> None:

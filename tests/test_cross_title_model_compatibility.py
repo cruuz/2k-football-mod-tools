@@ -18,6 +18,10 @@ import cross_title_model_compatibility as compatibility  # noqa: E402
 class CrossTitleModelCompatibilityTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        for source in compatibility.SOURCES.values():
+            required_asset = compatibility.ROOT / source
+            if not required_asset.exists():
+                raise unittest.SkipTest(f"Missing asset: {required_asset}")
         cls.report, cls.matrix, cls.bones = compatibility.generate()
 
     def test_representative_geometry_metrics(self) -> None:

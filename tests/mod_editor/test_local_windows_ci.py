@@ -823,6 +823,8 @@ class ProcessTests(unittest.TestCase):
 
 
 class WineAvailabilityTests(unittest.TestCase):
+    @unittest.skipIf(os.environ.get("NFL2K5_SKIP_WINE_TESTS") == "1",
+                     "Wine execution is disabled for this test run")
     def test_wine_can_start_without_a_display(self):
         if sys.platform != "linux" or not shutil.which("wine"):
             self.skipTest("Wine is absent; pure runner contracts were still tested")

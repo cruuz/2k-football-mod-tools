@@ -1,5 +1,285 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC111, beta 77: SOFTDRINK 2K28 v0.6
+
+The Studio source changes and SOFTDRINK v0.6 contents are described below. Native replays, file comparisons and offscreen editor checks establish the stated offline results. Gameplay and platform acceptance remain separate.
+
+### Freeze repair
+
+The final freeze investigation reproduced an a4/a4pd shotgun-selection defect: the hook read a live team object as if it were a roster record. The fields it wanted belong to the roster reached through the live team's `+0x1C` pointer. Reading them directly from the smaller live object reached the game's random-number state instead. A nonzero random value could then be dereferenced as a pointer during selection of the next play.
+
+The corrected hook follows the roster pointer first. Exact earlier hook versions can be recognized and upgraded; unknown code still refuses. The final executable passed 800 consecutive offensive selections and 1,920 formation-rule cases in offline native replay, with no recorded pointer faults, invalid weights, stack errors or floating-point balance errors. Earlier fixtures had placed roster fields directly on a synthetic live team, which is why they missed the defect.
+
+This is a reproduced pointer defect and a tested source fix. The reports do not establish that the visible attract-demo freeze has disappeared in a running game. The next acceptance checks are the same Ravens/Eagles attract demo, then exhibition and franchise transitions after a play. Older freeze investigations and their discarded suspects are superseded by this finding; it does not certify every possible hang.
+
+### Studio setup, installation and builds
+
+Installing a current SOFTDRINK pack no longer rejects a fully verified image merely because the source file's dates or other metadata moved during installation. Source and output content checks remain in place, and the result reports metadata changes. OneDrive or a scanner is consistent with the reported symptom, but the original machine's cause was not captured. Older format-1/2 patch paths retain their existing behavior.
+
+Compaction reports one total for each phase, names planning, verification, disk flushing and publication, and measures the estimate from the current phase. A slow flush shows that work is still running instead of leaving a completed counter with zero seconds remaining. Cancellation waits for the disk operation to return. Windows sharing refusals during the final swap or publication get a bounded wait and a plain error if the lock persists. Copy Build summary includes the active step, elapsed time and time since the last progress update. These changes do not promise that a slow drive finishes sooner.
+
+Playbook compatibility is checked before an expensive project build. A stale offense/defense pair names the team and pack, explains that the versions do not fit, and stops before writing. Long all-team checks report their progress. The bundled defense packs are regenerated against the final offense books; exact fingerprint checks remain strict. Recipe normalization from beta-76.5 is retained, including valid differently formatted JSON and Windows line endings.
+
+Modern stadium boards can skip unsupported stadiums while building the supported ones. Modern Arrowhead's Kansas City scenes are recognized and retained, and the completed-build summary names every stadium left alone. A source with no usable stadiums still refuses early. Already-installed boards no longer cause a duplicate-state error at the end of a build. Pinned scene identities also speed recognition of the previously published SOFTDRINK packs.
+
+Large Make my disc confirmations keep OK and Cancel on the first screen, with the complete change list under scrollable details. A Windows OneDrive note appears before building when the source or destination is in a synced folder. First-run text points to the playbook controls. The Hi-res artwork budget preview also gets a fix for a mismatched return-value unpack that left it on Checking.
+
+Build & Share now offers All 32, None and Choose teams for modern playbooks, with a live Modern/Classic count. Playbooks & Plays offers Modern and Classic for the selected team plus all-team controls. Both pages share the same saved project setting, refresh each other and preserve unrelated packs. An offense-only or defense-only pair is identified as incomplete. Classic means leaving that team's source book alone, so use an original retail dump to recover the 2004 books; switching off a pack cannot undo a book already modified in the source disc.
+
+The new `build-sources` command uses the same source-recipe build path as Make my disc and returns normal validation errors. PNG imports can retain a validated minimum loader allocation from pinned author metadata. This resolves the three Rams source-import differences recorded during kit integration. It does not close the two remaining full-pack source gaps listed below.
+
+Repeated roster-save imports preserve a player's career history when the only identity difference is the exact commentary-ID normalization for that same name and birth data. Real identity changes still clear the previous occupant's history. Seven-on-seven's strict source/output pins are updated for the existing lead-back depth-role normalization, including its 14 independently checked byte changes. This repairs editor composition; the final pack's practice resource remains byte-identical to v0.5.
+
+### Offense, defense and Create a Play
+
+All 32 modern offense books have a shared core and team packages. The Titans receive a dedicated spread, play-action and third-down package, including Trips Whip Stick, Y Seam Hitch, Helm Screen, Helm Pivot, Titans Mills, Titans Post Wheel, Mesh Wheel, Pistol Boot, Empty Spacing and QB Draw. The other 31 packages retain 221 planned team plays. Four planned plays were dropped with recorded personnel or fit reasons.
+
+The following named team plays survived the final package build. The labels are the authored menu names; their concepts are design choices informed by the reported tendencies, not a claim that each NFL team used that exact play. The Titans names are listed above.
+
+| Team | Added team plays and formations |
+| --- | --- |
+| ARZ | Gun Doubles: ARZ Quick Outs; Gun Doubles: ARZ Shallow Cross; Gun Doubles: ARZ RB Screen; Ace Wing: Y Leak Boot; Singleback Ace: Y Cross Over; Gun Y Trips: Y Stick Seam |
+| ATL | Gun Doubles Tight: ATL Mesh Wheel; Gun Trey: ATL Texas; Gun Trips: ATL Bench; Gun Doubles: ATL Scissors; Pistol Strong: Pistol Counter Weak; Gun Doubles: Mesh Wheel; I-Form Pro: Wide Zone Weak |
+| BAL | Gun Doubles: BAL Shallow Cross; Gun Trey: BAL Drive; Gun Bunch: BAL Mesh; Singleback Doubles: BAL Curl Flat; Gun Doubles: BAL Hank; Gun Doubles Tight: BAL Comebacks |
+| BUF | Gun Doubles: BUF RB Screen; Gun Trips: BUF Bubble Screen; Ace Wing: BUF TE Screen; Gun Doubles: BUF Dagger; Singleback Doubles: BUF Mills; Gun Trips: BUF Levels |
+| CAR | Singleback Doubles: CAR Curl Flat; Gun Doubles: CAR Hank; Gun Doubles Tight: CAR Comebacks; Gun Trips: CAR Bench; Gun Doubles Tight: CAR Mesh Wheel; Gun Doubles: CAR Quick Outs; Singleback Doubles: CAR Post Wheel; Gun Trey: X Dig Cross; Singleback Doubles: Boot Corner |
+| CHI | Gun Trips: CHI Bench; Gun Wing: CHI Comebacks; Singleback Doubles: CHI Post Wheel; Gun Doubles: CHI Double Post; Singleback Doubles: CHI PA Boot; Singleback Ace: CHI PA Crossers; I-Form Pro: CHI Yankee; Singleback Ace: CHI PA Shot; Pistol Doubles: CHI Post Wheel; Gun Trips: CHI Stick Nod |
+| CIN | Singleback Doubles: CIN Curl Flat; Gun Doubles: CIN Hank; Gun Doubles Tight: CIN Comebacks; Gun Doubles: CIN Four Verticals; Gun Trips: CIN Bench; Gun Doubles Tight: CIN Mesh Wheel; Gun Doubles: X Mills; Gun Trips: Trips Bubble |
+| CLE | Gun Doubles Tight: CLE Mesh Wheel; Gun Trey: CLE Texas; Gun Doubles: CLE Dagger; Singleback Doubles: CLE Mills; Gun Trips: CLE Levels |
+| DAL | Singleback Doubles: DAL Curl Flat; Gun Doubles: DAL Hank; Gun Doubles Tight: DAL Comebacks; Gun Doubles: DAL Slant Flat; Gun Bunch: DAL Double Slants |
+| DEN | Gun Doubles: DEN RB Screen; Gun Trips: DEN Bubble Screen; Ace Wing: DEN TE Screen; Gun Doubles: DEN Four Verticals; Gun Trey: DEN Hitch Seam; Pistol Doubles: DEN Slant Flat; Gun Doubles: DEN Bubble Screen; Gun Wing: DEN Stick; Gun Doubles: DEN WR Slip Screen; Gun Trey: DEN RB Screen |
+| DET | Gun Doubles: DET Dagger; Singleback Doubles: DET Mills; Gun Trips: DET Levels; Gun Doubles: DET RB Screen; Gun Trips: DET Bubble Screen; Ace Wing: DET TE Screen |
+| GB | Gun Doubles: GB Quick Outs; Gun Trey: GB Bench; Singleback Doubles: GB Smash; Singleback Ace: GB PA Shot; Pistol Doubles: GB Post Wheel; Gun Trips: GB Stick Nod |
+| HOU | Gun Doubles: HOU Quick Outs; Gun Trey: HOU Bench; Singleback Doubles: HOU Smash; Gun Doubles: HOU Slant Flat; Gun Bunch: HOU Double Slants |
+| IND | Gun Doubles: IND Shallow Cross; Gun Trey: IND Drive; Gun Bunch: IND Mesh; Singleback Doubles: IND PA Boot; Singleback Ace: IND PA Crossers; I-Form Pro: IND Yankee |
+| JAX | Singleback Ace: JAX PA Shot; Pistol Doubles: JAX Post Wheel; Gun Trips: JAX Stick Nod; Gun Trips: JAX Bench; Gun Doubles: JAX Four Verticals; Gun Doubles: JAX Dagger; Gun Doubles: JAX Shallow Cross; Gun Doubles: JAX Scissors; Gun Trey: Trey Mills |
+| KC | Gun Doubles Tight: KC Mesh Wheel; Gun Trey: KC Texas; Gun Doubles: KC Slant Flat; Gun Bunch: KC Double Slants; Pistol Doubles: KC Slant Flat; Gun Doubles: KC Bubble Screen; Gun Wing: KC Stick |
+| MIA | Gun Doubles: MIA RB Screen; Gun Trips: MIA Bubble Screen; Ace Wing: MIA TE Screen; Gun Doubles Tight: MIA Mesh Wheel; Gun Trey: MIA Texas; Singleback Doubles: MIA Post Wheel; Gun Doubles: MIA Double Post; Singleback Doubles: MIA PA Boot; Singleback Ace: MIA PA Crossers; I-Form Pro: MIA Yankee |
+| MIN | Gun Trips: MIN Bench; Gun Wing: MIN Comebacks; Gun Doubles: MIN Scissors; Singleback Doubles: MIN Post Corner; Gun Doubles: MIN RB Screen; Singleback Doubles: MIN Post Wheel; Singleback Trey: Y Cross Dig; Gun Doubles: Yankee Posts |
+| NE | Gun Doubles: NE Four Verticals; Gun Trey: NE Hitch Seam; Singleback Ace: NE PA Shot; Pistol Doubles: NE Post Wheel; Gun Trips: NE Stick Nod |
+| NO | Singleback Doubles: NO Curl Flat; Gun Doubles: NO Hank; Gun Doubles Tight: NO Comebacks; Gun Doubles: NO Slant Flat; Gun Trips: NO Bench; Singleback Doubles: NO Post Wheel; Gun Doubles: Mesh Sit |
+| NYG | Gun Doubles: NYG Scissors; Singleback Doubles: NYG Post Corner; Gun Doubles: NYG Four Verticals; Gun Trey: NYG Hitch Seam; Gun Doubles: NYG Slant Flat; Gun Doubles Tight: NYG Mesh Wheel; Singleback Doubles: NYG Curl Flat; Singleback Ace: Y Over Cross; Gun Trey: Trey Stick Seam |
+| NYJ | Gun Doubles: NYJ Quick Outs; Gun Trey: NYJ Bench; Singleback Doubles: NYJ Smash; Singleback Doubles: NYJ Curl Flat; Gun Doubles: NYJ Hank; Gun Doubles Tight: NYJ Comebacks |
+| OAK | Gun Doubles Tight: OAK Mesh Wheel; Gun Trey: OAK Texas; Gun Doubles: OAK Quick Outs; Singleback Doubles: OAK Curl Flat; Gun Doubles: OAK RB Screen; Singleback Ace: Y Cross Bender; I-Form Pro: Stretch Weak |
+| PHI | Gun Trips: PHI Bench; Gun Wing: PHI Comebacks; Gun Doubles: PHI Quick Outs; Gun Trey: PHI Bench; Singleback Doubles: PHI Smash; Singleback Ace: PHI PA Shot; Pistol Doubles: PHI Post Wheel; Gun Trips: PHI Stick Nod |
+| PIT | Gun Doubles: PIT RB Screen; Gun Trips: PIT Bubble Screen; Ace Wing: PIT TE Screen; Gun Doubles: PIT Quick Outs; Gun Trey: PIT Bench; Singleback Doubles: PIT Smash; Gun Doubles Tight: PIT Mesh Wheel; Gun Trey: PIT Texas; Gun Doubles: PIT Four Verticals; Gun Trey: PIT Hitch Seam |
+| SD | Gun Doubles: SD Slant Flat; Gun Bunch: SD Double Slants; Singleback Doubles: SD Curl Flat; Gun Doubles: SD Hank; Gun Doubles Tight: SD Comebacks |
+| SEA | Gun Doubles: SEA Dagger; Singleback Doubles: SEA Mills; Gun Trips: SEA Levels; Gun Doubles: SEA Slant Flat; Gun Bunch: SEA Double Slants |
+| SF | Gun Doubles: SF Quick Outs; Gun Trey: SF Bench; Singleback Doubles: SF Smash; Gun Doubles: SF Dagger; Singleback Doubles: SF Mills; Gun Trips: SF Levels |
+| STL | Gun Doubles: STL Scissors; Singleback Doubles: STL Post Corner; Gun Doubles: STL Four Verticals; Gun Trey: STL Hitch Seam; Singleback Doubles: STL PA Boot; Singleback Ace: STL PA Crossers; I-Form Pro: STL Yankee; Singleback Ace: STL PA Shot; Pistol Doubles: STL Post Wheel; Gun Trips: STL Stick Nod |
+| TB | Gun Doubles: TB RB Screen; Gun Trips: TB Bubble Screen; Gun Doubles: TB WR Slip Screen; Gun Trey: TB RB Screen |
+| WAS | Singleback Doubles: WAS Curl Flat; Gun Doubles: WAS Hank; Gun Doubles Tight: WAS Comebacks; Gun Doubles: WAS Dagger; Singleback Doubles: WAS Mills; Gun Trips: WAS Levels; Singleback Ace: WAS PA Shot; Pistol Doubles: WAS Post Wheel; Gun Trips: WAS Stick Nod; Pistol Doubles: WAS Slant Flat |
+
+The four omissions are:
+
+- CIN: Verts Bender (Gun Spread): Gun Spread needs 10 personnel; the planned Flush -> Kings Long twin replaces that stock 10-personnel group, so this formation cannot be compiled.
+- JAX: Slot Reverse (Singleback Doubles): Cannot author a distinct legal override: override leaves assignments unchanged
+- NO: Spread Dagger (Gun Spread): Gun Spread needs 10 personnel; the planned Flush -> Kings Long twin replaces that stock 10-personnel group, so this formation cannot be compiled.
+- TB: TB TE Screen (Ace Wing): Ace Wing requires 12 personnel. TB has no stock 12-personnel group, and its plan adds only the Kings Long 11-personnel twin, so the planned formation cannot compile.
+
+The offense library and Studio wizard gain multi-break routes, quick game, screens and modern concepts. Additions include Snag, Sail, Whip, Over, Scissors, Post Wheel, Comebacks, Stick Nod, Y Pivot, Slot Fade and Mesh Wheel. Singleback Wing, Pistol Wing and Gun Ace expand the formation choices. Flea Flicker returns to all 32 books; End Around is available throughout the league, and toss Reverse fits in 29 books. Green Bay, the Jets and Tampa Bay omit that Reverse because of menu or node limits.
+
+End-around repair brings the handoff recipient within the native handoff envelope. RB screens go to the back's side with enough QB drop depth to keep the back ahead. Back routes gain depth before breaking sideways, reducing the authored cases that made a checkdown backward after a QB step-up. True backward passes remain live balls. These route changes need play and animation checks; they do not prove that every screen or checkdown succeeds in gameplay.
+
+Route tracing also corrected crossing or stacked landmarks in Scissors, Smash, Y Cross, Double Slants, two-back Mesh, Y Pivot and Slot Fade. Long-yardage personnel now has an 11-personnel option instead of relying on a four-receiver category for every team. Team route-depth adjustments use sourced 2025 air-yard tendencies. Screen variants preserve their target, blocking and QB timing while allowing an authored receiver override.
+
+The final receiving-read rules use the available 2026 regular-season target data through Week 4. They reorder compatible reads without changing routes, protection or drop timing. Read order influences the evaluation queue and ties; it does not force the final receiver. Missing roster matches and unresolved substitute roles retain explicit limits. Component simulations measure the effect under supplied receiver scores and release opportunities, not predicted season target shares.
+
+Modern defenses get rebuilt fronts, gap assignments and coverage menus. Native pre-snap alignment is retained when a retail coverage script is reused. The library distinguishes Cover 0, Cover 1, 2-Man, Cover 2, Tampa 2, Cover 3, Cover 4 and Cover 6, with pressure and match variants where supported. Fronts include 4-3 Over, 4-3 Wide, 3-4 Okie, Nickel, Dime and short-yardage Bear, with slants, stunts, pinch and contain calls.
+
+Nickel Mug is an additional pressure look in Denver, Kansas City, Minnesota, Tampa Bay and Washington, rather than the only nickel formation. Bear joins the ordinary personnel group where personnel matches, allowing situational weighting. Coverage and blitz bands use sourced coordinator tendencies. The final 32-book lint has zero errors and five retained Nickel Mug warnings. The Studio's playbook checking and the standalone linter expose authored handoff, screen, route and defensive-front problems.
+
+### CPU decisions and shotgun use
+
+CPU decisions adds Modern 2, selected by Advanced and Experimental; Basic keeps retail decisions. Its fourth-down limits use sourced field-position, score and clock tables. Two-point choices use a margin/time chart. The overtime branch accounts for the available possession state, including a last possession that must produce a touchdown and cases where a field goal can tie. A late-lead rule prefers a real field goal in the researched long-yardage situation and keeps the dispatch and fake-kick decision consistent.
+
+Modern 2 also reduces the concentration of the defensive front and coverage lotteries. Modern and Aggressive retain their earlier behavior. These policies were checked through native selectors, but their conversion-rate assumptions, real overtime state and feel remain gameplay questions.
+
+Modern-season Anniversary sides load modern franchise books; earlier sides retain period books. Modern-team shotgun weights now vary by seven down/distance bins, fitted to the available 2025 and 2026-through-Week-4 data. The rule also applies outside Anniversary to ordinary modern-team games, while historic teams and unsupported keys retain their fallback. Goal-line and inside-the-10 behavior is outside this weight hook. The final pointer correction described above is part of this implementation. Fitted frequencies remain offline measurements, not promised live call percentages.
+
+### Player controls, names and quarterback ratings
+
+The Punter holds on field goals and PATs option selects the first punter through the live depth chart. If a usable punter is absent or conflicts with the kicker, the original holder rule remains. The decoded FG Sweep and FG Pass plays share that holder slot; fake-kick execution still needs a gameplay check. Snap, hold, fake and depth-chart-change checks are still needed in gameplay.
+
+Player abilities gains independent stars-only settings for right-stick moves, charge-ups and button moves, plus four tier access controls. The full-pack rules leave ordinary button moves available, restrict stick moves and charge-ups to stars, and give higher tiers more access. The access choices range from no extras through charge-only or limited stick moves to everything including hurdle. A star without a tier gets flicks and charge-ups by default; Star adds stutter-step and stop-short; Superstar and X-Factor get the complete set. These rules require Player abilities to be enabled. Pocket-QB evade is outside the carrier filter. Existing ability bonuses and stored ability capacity are preserved, and incompatible legacy move locks refuse.
+
+The name-keyboard option accepts spaces, periods, apostrophes and hyphens in first and last names. The keys were already present; the character filter discarded them. Native text checks show that jersey-back text keeps its existing character limitations, including omission of a period.
+
+The v0.6 roster raises every covered quarterback's Throw Power by four points, capped at 99, across the main roster and historic/moment resources. Studio exposes the amount through a validated roster-edits directive. It adds to the source value, so do not apply that directive again to an already-raised source. There is no new roster-page slider for this amount.
+
+### Franchise, MyNFL, grades and honors
+
+Experience now uses the game's rookie-equals-1 convention. The imported completed-season count had put 2026 rookies at 0, 2025 draftees at rookie, and veterans one year low. Generators, MyPlayer, free-agent data, the dated league roster and authored Anniversary rosters are corrected. Career-history slots move with the correction so existing season labels stay aligned. Studio shows R for rookies and accepts rookie searches. Native yearly rollover already advanced experience correctly; it was the imported starting value that was wrong.
+
+Six early Anniversary rosters lacked source experience values. Their fallback uses entry-year evidence rather than treating every blank as a rookie. Some undrafted veterans may still be low because a first-game record can miss earlier camp or practice-squad seasons. Existing franchise saves retain their embedded roster and history, so start a fresh franchise for the updated data.
+
+The Player Card TEAM column records the club after played or simulated games and uses current membership for the live season. Trades and signings therefore have a current-team path. One season row stores one club, with the later club retained in a split season. Seasons played before the patch have no recoverable team entry; folded history and missing historical entries can show `--`. Offensive-line cards still lack a stats table.
+
+Letter grades in Franchise replaces overall player ratings and team offense, defense and overall displays on the supported card, team, list, depth-chart, contract and weekly-prep paths. Sorting and calculations retain the numeric rating. Individual attributes, statistics and bars remain numeric. The later progression fix changes previous/current overall values to letter grades while keeping the change numeric; native text-formatting checks cover that separate screen; no frame was rendered. Basic leaves the option off; Advanced and Experimental enable it.
+
+| Rating | Grade |
+| --- | --- |
+| 95 and above | A+ |
+| 90 to 94 | A |
+| 85 to 89 | B+ |
+| 80 to 84 | B |
+| 75 to 79 | C+ |
+| 70 to 74 | C |
+| 65 to 69 | D+ |
+| 60 to 64 | D |
+| 55 to 59 | F+ |
+| 50 to 54 | F |
+| 0 to 49 | F- |
+
+The Franchise Player Card gains a second honors page, reached with the shoulder/page buttons and returned to ratings with the same controls. It keeps the photo, model and season table, replacing rating rows with ten award counts and bio lines with award years. The seeded 2026 history contains 1,167 honors for 410 players. Custom history can be supplied as JSON or CSV and exported through the honors tool.
+
+The native award hooks record MVP, offensive and defensive player and rookie awards, rushing titles, the game's All-Pro selections, Super Bowl wins and Super Bowl MVP. Native history checks cover moving the honors with the player and preserving them in franchise data. Honors folding composes with defensive two-point statistics, so old seasons do not turn award totals into the wrong kind of summary.
+
+Pro Bowl history is seeded, not updated by a new live voting hook. Live All-Pro uses the game's ten position-group winners, not the full real-world AP roster. A league/team record book is not implemented. The report also flags existing week-17 award timing and a possible Week 18 weekly-award table boundary for further investigation; neither is certified fixed here. Page layout, award timing and multi-season persistence remain unwitnessed in gameplay.
+
+### Commentary and SportsCenter
+
+The final commentary pass covers roster resources that the earlier main-roster repair missed, including Anniversary starters. It replaces stale number calls and missing cues using the player's current identity and jersey. The obsolete double-zero cue lookup is retired so a saved 9100 ID falls back to the current jersey number in the shared resolver. The native cue audit retains the supported calls for real number-zero players. Code tracing identifies the resolver shared by live play, replays and shows. Audio playback still needs a listening check; installing a disc does not rewrite old save contents.
+
+The native SportsCenter scene-fill replay distinguishes seven seeded teams from the eighth team, with the final elimination text on the correct row. Week 18 and the playoff round names are corrected in the show banner, primetime NEXT WEEK line, schedule browser and idle-team labels. The later SportsCenter pass expands the menu dispatch to six playoff-picture teasers for the longer season, checked through native calls for every weeks-played value. Recorded narration is unchanged, and the separate in-game PLAYOFF_RACE overlay remains unverified.
+
+### Anniversary menu, uniforms and venues
+
+The chronological list now draws each row through the same moment mapping used when opening it. All 51 visible rows passed native identity checks on the final image. The old display hook could show one moment while selection opened another.
+
+Handedness and kicking-foot corrections cover the researched current and moment roster identities, including right-footed Harrison Butker and left-footed Ben Sauls. A later pass defaults twelve unresolved left-valued rows to Right by an explicit project decision. Those twelve remain estimates, not sourced handedness claims.
+
+Uniform selection follows the design era and the worn home/away combination instead of treating a manufacturing-template year as the cutoff. This restores the older Patriots design for the 2001 through 2017 moments, the Giants road combination for their two Super Bowls, and reviewed choices for the Cardinals, Lions, Eagles, Rams and other authored sides. Five approved slot trades supply the otherwise missing combinations:
+
+| Slot | New set and use |
+| --- | --- |
+| NE 11 | 2017 white Patriots set in both home/away files for Super Bowl LII |
+| PHI 14 | 2017 midnight-green Eagles set in both files for Super Bowl LII |
+| NO 6 | 2006 to 2016 Saints with old-gold pants for Ambush and The Catch III |
+| BAL 1 | 2008 to 2025 Ravens with black pants for Mile High Miracle and Super Bowl XLVII |
+| PIT 4 | 2025 black Steelers set in both files for the Unc Bowl, paired with the existing White Bengal home kit |
+
+These trades also change the corresponding ordinary Team Select slots and labels. They do not expand the number of uniform slots. The Saints, Ravens and Eagles donor combinations use larger native far-player atlases; their runtime memory and distant appearance need checking.
+
+All 51 moment venues were audited. Eleven environment selections are corrected so period shells do not borrow an inappropriate modern roof or surface record, including old Oakland and Super Bowl XXXII. Dedicated field and shell aliases remain in use. Music City Miracle already uses the retail Titans Coliseum shell and a 1999 field; A Yard Too Short already uses the Georgia Dome and its XXXIV field. This release does not build every missing historical stadium.
+
+Remaining period presentation gaps are explicit: all 17 Super Bowl moments use typed SB labels rather than the official season stamp; some end-zone colors and wordmarks differ from dated references; old Raiders strips are blank; early exact paint remains unproved in twelve physical rows. Closed-roof geometry, historical surfaces and some old stadium buildings still need work. The Catch and Catch III already have red end zones in the decoded disc, despite older catalog descriptions.
+
+### Primary uniforms and helmets
+
+The primary-kit audit covers all 32 teams. Authored corrections use the project's own art and native inputs; the external game references were used for placement, not copied into the pack. Final changes include:
+
+| Team | Primary-kit changes |
+| --- | --- |
+| Arizona | Chest wordmark size/placement and wider road pants striping |
+| Atlanta | Home and road wordmark size/placement |
+| Baltimore | Wordmarks, purple home socks, tapered pants details and black road pants |
+| Buffalo | Wordmark and white road pants |
+| Carolina | Black home pants and helmet, with corrected pants stripes |
+| Cincinnati | Wordmarks, black home pants with tiger strokes and orange socks |
+| Cleveland | Home sleeve stripe proportions; striped-sock writer repairs |
+| Dallas | Smaller/lower road wordmark and silver-blue home pants |
+| Denver | Wordmarks, navy road pants with hip stripe, white socks, and corrected upper shell-A horse decals |
+| Detroit | Road wordmark and continuous home sleeve band |
+| Houston | TEXANS and HOUSTON wordmark placement |
+| Los Angeles Rams | Shoulder yoke/horns and road pants stripe |
+| Miami | Chest wordmark and pants striping |
+| New England | Full shoulder yoke across UV seams, chest mark/logo, pants stripes, white road socks, rear helmet numbers/decals and matching sideline art |
+| New Orleans | Estimated 60th-season chest patch |
+| New York Giants | Final restoration of the original plain white home numerals; the earlier red-outline experiment is removed |
+| New York Jets | Wider road collar |
+| Pittsburgh | Wider pants stripe and road collar trim |
+| Seattle | White road combination and final helmet logo/wrap placement on both shell families |
+| San Francisco | Chest wordmark size/placement |
+| Tampa Bay | Narrower pants seam stripe |
+| Tennessee | Larger chest wordmarks |
+| Washington | Road collar and white socks with burgundy/gold bands |
+
+Chicago, Green Bay, Indianapolis, Jacksonville, Kansas City, the Chargers, Raiders, Minnesota and Philadelphia had no substantiated primary-art change in that audit. Chicago's existing socks still receive the equipment-writer repair.
+
+The final Seattle work supersedes the first helmet correction: the beaks point forward with a flatter, connected wrap on primary, Rivalries and alternate-2 kits, across both shell families. The old green center stripe is removed from the affected navy shell-A kits. Denver's upper shell-A decals are flipped into the correct world orientation for primary and derived styles 5/6. Pittsburgh's gold style-5 upper badges are rotated in both families. The Patriots Nor'easter and Cardinals Rivalries left-side logos retain their corrected mirrored convention.
+
+All touched Team Select card families are rerendered from the final decoded kit art, 489 cards across 163 sets. A UV contract check guards against an extra vertical flip or swapped side islands. The reported inversion of Denver and Pittsburgh primary preview cards was not reproduced from their stored textures, so that screen symptom remains unconfirmed.
+
+### Alternate and throwback uniforms
+
+The new sets reuse reviewed existing slots, with matching labels and cards. Some slots contain different home/road combinations. The in-game labels remain year/alternate numbers rather than all the descriptive names below.
+
+| Team | Added or revised alternate sets |
+| --- | --- |
+| Arizona | All-black; sand/copper Rivalries |
+| Atlanta | 1966-inspired throwback |
+| Baltimore | Purple Rising/White Noise; Darkness |
+| Buffalo | Red alternate; Nickel City; Cold Front |
+| Carolina | Blue alternate with black helmet |
+| Chicago | Rivalries |
+| Cincinnati | White Bengal; Open in Orange |
+| Cleveland | Alpha Dawg; white-helmet throwback |
+| Dallas | Arctic Cowboy; 1960s Classic |
+| Denver | Summit White combinations; Midnight Navy |
+| Detroit | Motor City Muscle; Defend the Den |
+| Green Bay | Rivalries; 1923 Classic |
+| Houston | Battle Red |
+| Indianapolis | White Out; Anvil Strike; Indiana Nights |
+| Jacksonville | Bold City, relabeled Alternate 1 after the speculative black set was excluded |
+| Los Angeles Chargers | Charger Power; gold-pants combinations; Super Chargers |
+| Las Vegas | White throwback |
+| Miami | Rivalries |
+| Minnesota | Winter Warrior; Rivalries |
+| New England | Pat Patriot red; Nor'easter |
+| New Orleans | White Color Rush; all-black; Gameday Gold |
+| New York Giants | Vintage White |
+| New York Jets | Legacy Black; Gotham City Football Club; White Out |
+| Philadelphia | Kelly Green; white/green-pants; black-helmet road; all-black |
+| Pittsburgh | 1933 gold throwback |
+| Seattle | Rivalries; additional primary combinations |
+| San Francisco | Black Rivalries |
+| Tampa Bay | White '76; all-pewter Color Rush |
+| Tennessee | Music City Rivalries |
+| Washington | Hail Raiser |
+
+The Rams' three existing alternates are retained. Chicago's proposed orange set was not built. The speculative Jacksonville black set is excluded, with its old slot preserved. The planned extra Houston, Kansas City and Minnesota slots still require capacity work.
+
+The equipment writer now keeps banded textures on a private index chain when shared palette indices cannot reproduce them. Exact recolors retain their existing path. Explicit palette-only and own-texture choices are preserved; only the automatic band route may try smaller distance sizes to fit. A projection that is exactly the retail result is accepted as a no-op. No compression algorithm changed.
+
+The sock redo compiles the reviewed striped socks at full 64 by 64 resolution, including Washington road, Cleveland white throwback, Chicago Rivalries and the frozen Chicago/Cleveland primary art. San Francisco Rivalries socks become red and Tennessee Rivalries socks light blue. Green Bay Rivalries gets a darker olive tone with alabaster numerals; Houston Battle Red gets its white wordmark. Wet body palettes are regenerated after the kit layers so one repair does not restore another layer's dark jerseys.
+
+Art limits remain visible. Examples include Houston's Battle Red helmet horns, Detroit's chest mark/number edge/helmet tone, Green Bay's V inserts and small marks, Cleveland's 1946 patch, Indianapolis' fine heather/C detail, Baltimore Darkness's special raven, Buffalo's reflective details, Miami's reflective fin details and Jacksonville's small collar/back details. Pittsburgh gold uses simpler black numerals and Tennessee Rivalries omits the inner white number line to fit the selected slots. Some Seattle pants and Tampa Bay stripe details remain approximations. Several uniform combinations have a documented design but unconfirmed 2026 use. Some far-player atlas colors are still rough, including the smallest San Francisco/Tennessee sock views. A photo comparison is not an in-game witness.
+
+### Goalposts, weather and Allegiant
+
+Modern goalposts adds five feet to the upright tops, from 30 to 35 feet above the crossbar, with corresponding shadows, bounds and collision height. The crossbar and spacing stay the same. Modern goalposts is an explicit build option, off in the ordinary presets and enabled by the complete v0.6 pack recipe. The period hook uses 30-foot uprights for 38 pre-2014 Anniversary moments and 35-foot uprights for the other 13 and normal modern games. Earlier pre-1991 variations and pre-1974 goal-line placement are not modeled.
+
+The wet-jersey investigation measured body mud palettes at 60 percent of the clean color, compounded by rain lighting and fog. Modern body imports now support 93 percent wet palettes, with neutralized rain ambient and farther character fog. Equipment and old projects retain their explicit mud choices. The separate less-rain weather plan lowers modeled outdoor rain from 24.0 to 12.5 percent for the checked 2026 schedule. That is a data-model result, not a season played in game.
+
+Allegiant receives darker seats and aisles, lit ribbons, roof-grid treatment and lattice trusses, clearer lanai glass, a revised torch, a painted skyline, two lanai boards, a shaped exterior LED wall, curved exterior light lines and hanging speaker clusters. The lanai remains at the north end. Its field color is retuned through the existing surface painter after the preview was found to exaggerate grass brightness. The skyline is flat artwork without parallax, the exterior LED content is a designed Raiders pattern, and crowd density, camera motion and day/night appearance still need game review.
+
+### APF and release maintenance
+
+APF 2K8 Mod Studio advances to 0.1.0-alpha.107 for the shared release. There are no new APF gameplay features. Its shared capability checks use the current 210-row registry while retaining the 74-row APF subset.
+
+Standalone test imports and narrowly scoped missing-private-asset skips are repaired for lean checkouts. Existing assertions and runtime refusal checks remain. The later test-repair pass resolves the five failure files listed by the earlier integration report, including the real second-import career-history bug. The repin tool now has a read-only `--check` mode that returns a failure status for stale pins.
+
+The release uses retail-free allowlists and indexed file permissions. Windows installer preparation can explicitly defer execution validation when cross-building in a no-Wine session; it records a pending check rather than a pass. Default installer preparation still requires that validation. A deferred installer needs the coordinator's Windows execution gate before publication.
+
+### Since the previous write-up
+
+Beta-76.5's shorter public body did not spell out several retained details. Historical imports, Historical Catalog CSV edits and ability assignment/undo preserve unrelated commentary fields until the final repair pass. Imported free agents keep independent name buffers, sourced generic appearance and the original Create Player/import vacancies. Roster transfer includes selected face, shape and portrait artwork, rather than assuming a photo index identifies the same asset in another project.
+
+Portable launchers check the full dependency set; cancellation lets the existing pipe readers drain before teardown; packaged checks write portable LF text. Offline stadium diagnostics work without their optional accelerators. The standalone APF VIP reader resolves its sibling decoder in embedded runtimes. These are retained beta-76.5 changes, not new beta-77 gameplay claims.
+
+### Proof limits and remaining checks
+
+The final integration verifies readback of all 11 replaced files, unchanged XDVDFS layout, zero changes outside the declared replacement extents, all 51 menu identities and the corrected selector replay. The pack reconstruction compares the complete 6,004,408,320-byte image stream with zero differing bytes. This is a complete offline reconstruction comparison, separate from a finished Windows installation or source-authoring build.
+
+The editable source recipe is not certified to rebuild that image. Two operations are missing from Make my disc: native donor-kit composition for the five era trades, including their far-player atlas formats, and palette/index-preserving helmet operations for Denver, Pittsburgh and Seattle. The pack includes `assets/documents/source-build-blockers.json` and editable specifications. Its attempted complete source build stopped at the storage preflight and produced no source-image hash. The earlier Rams import mismatch is resolved; these two uniform layers remain open.
+
+Some older individual native repair commands refuse the final combined layers rather than replaying as no-ops. The final integration separately verifies surviving owned bytes and final output hashes. Those refusals were not removed or relabeled as successful replays.
+
+Gameplay checks still needed include the attract demo and post-play transitions; end-arounds, screens, flea flickers and CPU choices; kicks and punter-held fakes; star controls; commentary in live play and shows; fresh-franchise experience, trades, grades, honors and season rollover; all 51 moments; home/road/alternate helmets and distant wet uniforms; goalpost collisions; Allegiant cameras; and period stadium re-entry. The reports' CPU replays, offscreen Qt views and lab captures do not replace a player witness. No new Windows desktop or macOS acceptance is claimed by this preparation.
+
+Research for expanded uniform styles and separate CPU-uniform selection includes bounded native replays with synthetic extra styles, but no installed new style packages or production UI. A general wardrobe, every historical kit, a league/team record book, exact season Super Bowl branding and new presentation people remain future work. Modern practice-squad management, the older receiver-TD graphic report, APF defensive-line behavior and live APF VIP assignment also remain outside this release.
+
 ## v1.0 RC110, beta 76.5: SOFTDRINK repairs and reliable Studio builds
 
 These fixes have offline/native proof and reviewed machine captures where stated. Noah has not supplied a new gameplay witness. Load the new disc roster and start a fresh franchise for roster changes; old saves retain embedded records.

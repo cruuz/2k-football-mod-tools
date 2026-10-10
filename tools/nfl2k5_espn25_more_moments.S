@@ -121,9 +121,12 @@ venue_name:
 venue_retail:
     jmp stadium_get              /* 77460: the selected stadium record, whose first dword is its name */
 
-/* The physical SITU order and saved completion identities remain stable. Only the list's caption, selected
- * record and completion callbacks translate the chronological display ordinal. EDI is the selected identity
- * at 20CB45; replacing it here makes BF1858 and all subsequent readers retain the legacy physical identity. */
+/* The physical SITU order and saved completion identities remain stable. The list's selected record, completion
+ * test and restored highlight translate the chronological display ordinal, and so do the row-draw callbacks (beta 77:
+ * 20C710 and 20C790 draw the mini helmets, 20C800 draws the title and date; their four `call 2CFD40` sites jump
+ * through display_caption below). 20C350 is the caption function beta 76.5 hooked; retail has no caller and no
+ * table entry for it, so it never runs. EDI is the selected identity at 20CB45; replacing it here makes BF1858 and
+ * all subsequent readers retain the legacy physical identity. */
 .section .display,"ax"
 .global display_caption, display_select, display_return
 .extern display_map, record_get, display_selected

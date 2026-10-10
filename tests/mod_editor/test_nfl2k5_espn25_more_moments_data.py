@@ -141,7 +141,8 @@ class MomentsTests(unittest.TestCase):
                 self.assertTrue(0 <= m["stadium_index"] <= 42)
                 for side in ("away", "home"):
                     kit = m["kits"][side]
-                    self.assertTrue(isinstance(kit, int) and 0 <= kit <= 14 or isinstance(kit, dict) and "era_year" in kit)
+                    self.assertTrue(isinstance(kit, int) and 0 <= kit <= 14 or isinstance(kit, dict) and "era_year" in kit
+                                    or kit == "modern")
 
     def test_noah_five_situations(self):
         """The five starting situations, read from nflverse play-by-play (PROVED OFFLINE from the source data).

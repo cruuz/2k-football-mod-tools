@@ -114,23 +114,23 @@
     "stripe": [
      [
       "black",
-      2
+      1
      ],
      [
       "jersey_red",
-      3
+      2
      ],
      [
       "orange",
-      2
+      1
      ],
      [
       "jersey_red",
-      3
+      2
      ],
      [
       "black",
-      2
+      1
      ]
     ],
     "swoosh_colour": "jersey_red"
@@ -267,23 +267,23 @@
     "stripe": [
      [
       "black",
-      2
+      1
      ],
      [
       "jersey_red",
-      3
+      2
      ],
      [
       "orange",
-      2
+      1
      ],
      [
       "jersey_red",
-      3
+      2
      ],
      [
       "black",
-      2
+      1
      ]
     ],
     "swoosh_colour": "white"
@@ -994,5 +994,8 @@
     ]
    }
   }
+ },
+ "u2d_b77": {
+  "both": "pants stripe 12 to 7 px total: club 2026 photos (week 1 at CIN pewter pants, week 2 vs CLE white pants) show a thin black-red-black seam stripe, about 0.05 of the leg width in the oblique view (v0.5 0.2). Away kit (white jersey, pewter pants, BUCCANEERS wordmark 0.6 number heights wide) otherwise matches week 1 photos. No red-jersey game has been played yet in 2026 (weeks 2 to 4 at home were white), so the red home kit is left as in v0.5."
  }
 }

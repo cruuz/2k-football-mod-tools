@@ -27,7 +27,7 @@ class SetupTests(unittest.TestCase):
         self.assertEqual(doc.players[-1].display, "My Player")
         self.assertFalse(doc.players[-1].teams)
         self.assertNotIn(doc.players[-1].offset, doc.free_agents)
-        self.assertEqual(doc.players[-1].record.get("years_pro"), 0)
+        self.assertEqual(doc.players[-1].record.get("years_pro"), rr.ROOKIE_YEARS_PRO)  # a game rookie is 1 (R), not 0
         at = fs.SEASON_BLOCK + fs.S_USER_CONTROL
         self.assertEqual(result[at:at+136], bytes(136))
         self.assertEqual(result[fs.FRONT_OFFICE_BLOCK:], before[fs.FRONT_OFFICE_BLOCK:])
@@ -113,7 +113,7 @@ class AnyPositionTests(unittest.TestCase):
                 player = doc.players[-1]
                 self.assertEqual(player.record.get("position"), code)
                 self.assertEqual(player.display, "My Player")
-                self.assertEqual(player.record.get("years_pro"), 0)
+                self.assertEqual(player.record.get("years_pro"), rr.ROOKIE_YEARS_PRO)
                 self.assertTrue(player.record.get("player_type") & 0x10)
                 self.assertFalse(player.teams)
                 state = c.read_setup(setup)

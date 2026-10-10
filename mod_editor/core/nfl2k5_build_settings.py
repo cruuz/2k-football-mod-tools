@@ -15,11 +15,12 @@ FEATURE_KEYS += (
     "kick_rules", "kick_power", "kickoff_alignment", "xbe_space", "kickoff_relocated", "momentum",
     "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "practice_squad_screen",
     "abilities", "abilities_off_week", "abilities_lock_right_stick", "abilities_lock_special_moves", "abilities_lock_speedster",
+    "abilities_right_stick_stars_only", "abilities_button_moves_stars_only", "abilities_charge_stars_only", "abilities_star_access",
     "qb_spy", "calendar_engine", "coverage_slider",
     "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "dynamic_kickoff",
     "dynamic_kickoff_settings", "position_pools", "position_pools_keep_olb", "depth_chart_rows", "season_cap", "season_2026",
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",
-    "career_stats", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "penalties", "uniform_choice", "helmet_finish", "kick_laces",
+    "career_stats", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "name_keyboard", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder",
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
     "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
@@ -54,12 +55,15 @@ FEATURE_KEYS += ("espn_marks_2026", "official_marks_pack")  # b76 p1: ESPN prese
 FEATURE_KEYS += ("number_kerning",)  # b76-k2: the jersey 1 kerned in two-digit numbers
 FEATURE_KEYS += ("espn_wipes_boards_2026",)  # b76-p2: ESPN 2026 wipes and boards
 FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN bar's look
+FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off
 FEATURE_KEYS += ("historic_teams_quick_game",)  # b76-h1: historic teams in Quick Game Team Select
 FEATURE_KEYS += ("historic_rosters_2026",)  # ht: held until all source/routing gaps are resolved
 FEATURE_KEYS += ("kickoff_return_blocking",)  # b76-vb3 E1: return blockers claim distinct men after the catch (test)
 FEATURE_KEYS += ("espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules")  # b76-m1: 25 more ESPN 25th Anniversary moments
 FEATURE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")  # b76-k1: 128 MB memory (K128), the roster heap, the early form
+FEATURE_KEYS += ("letter_grades",)  # b77-f4: letter grades in Franchise (allocator owner, late)
+FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors page (allocator owner, late) and its award history
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 

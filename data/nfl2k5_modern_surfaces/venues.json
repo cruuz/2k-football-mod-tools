@@ -351,6 +351,15 @@
         ],
         "source": "2026 Week 1 highlights (MIA@LV, Allegiant Stadium, dome (translucent roof)), frames 434-464 of NFL-Lighting-References/Week1-All-Teams-Highlights; median turf with Modern colour's mask (tf, 2026-09-25)"
       },
+      "design": {
+        "light": "dome",
+        "rgb": [
+          75,
+          106,
+          49
+        ],
+        "source": "Beta 77 ALG pass 4 (DESIGN, 2026-10-08): the broadcast median above re-aimed after Noah found the grass too bright on the pass 3 sheet. Luma 90.2 (the broadcast measurement is 99.4, 9 percent lower); chroma at the midpoint between that video median (R/G 0.75, B/G 0.51, hue 90.0) and the median turf of the 83 field-dominant raiders.com photos of the same game (R/G 0.66, B/G 0.42, hue 96.0): R/G 0.71, B/G 0.46, hue 92.6. The measurements are in b77_session/reports/alg_REPORT.md"
+      },
       "look": "grass_bermuda",
       "note": "retail model: Oakland Coliseum (kept); the surface follows the 2026 venue",
       "prefix": "s20",

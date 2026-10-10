@@ -1,10 +1,16 @@
 """Every APF page and dialog uses readable application colours and bounded UI."""
 from __future__ import annotations
 
-import os
-from pathlib import Path
-import subprocess
 import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
+import os
+import subprocess
 import tempfile
 import unittest
 

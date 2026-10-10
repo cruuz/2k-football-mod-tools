@@ -1,0 +1,321 @@
+{
+ "schema": "nfl2k5_team_2026/v1",
+ "team": "WAS",
+ "name": "Washington Commanders",
+ "asset_code": "29",
+ "season": 2026,
+ "status": "u3e alternate WAS:9 Hail Raiser (all-black), authored by tools/b77/u3e_paint.py into the slot 29H9/29A9 (2004 Alternate 1)",
+ "sources": {
+  "alternate": "https://www.commanders.com/news/washington-commanders-new-uniforms-five-things-to-know ; https://www.commanders.com/news/commanders-2026-uniform-inspired-franchise-history (Hail Raiser card: black jersey, burgundy numbers with gold trim, burgundy and gold sleeve stripes, black helmet with the spear W, black pants with two stripes)"
+ },
+ "albedo": {
+  "burgundy": "#5E1519",
+  "helmet_burgundy": "#5B0F12",
+  "gold": "#FFB612",
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "shield_navy": "#013369",
+  "shield_red": "#D50A0A",
+  "gray": "#A5ACAF",
+  "ez_burgundy": "#5E1519",
+  "label_blue": "#DDE3F0",
+  "label_navy": "#1B2A5A",
+  "board_burgundy": "#6A1A20",
+  "jersey_black": "#121215",
+  "helmet_black": "#1A1A1F",
+  "pants_black": "#121215"
+ },
+ "marks": {
+  "w": "w_full.png",
+  "sleeve_29A0": "sleeve_29A0.png",
+  "w_spear": "w_spear.png"
+ },
+ "kits": {
+  "home": {
+   "selector": "29H9",
+   "note": "Hail Raiser (all-black alternate): black jersey, black pants, black helmet; burgundy numbers with a gold outline, burgundy and gold sleeve stripes, gold swoosh and names (estimates marked in the report)",
+   "torso": {
+    "base_colour": "jersey_black",
+    "neck_donor": "29H9",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "gold"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_29A0",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_black",
+    "stripe": [
+     [
+      "burgundy",
+      9
+     ],
+     [
+      "gold",
+      10
+     ]
+    ],
+    "swoosh_colour": "gold"
+   },
+   "socks": {
+    "colour": "jersey_black"
+   },
+   "digits": {
+    "glyph_donor": "29H9",
+    "fill": "burgundy",
+    "outline": "gold",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "29H9",
+    "fill": "gold"
+   },
+   "helmet_digits": "none",
+   "helmet": {
+    "shell": "helmet_black",
+    "shell_from": "#5F070C",
+    "recolour": [
+     {
+      "from": "#F5A500",
+      "to": "gold",
+      "tolerance": 0.18
+     },
+     {
+      "from": "#F2F2F2",
+      "to": "burgundy",
+      "region": "stripe_band",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "w_spear",
+     "scale": 1.0,
+     "sizes": {
+      "lower": [
+       84,
+       46
+      ],
+      "upper": [
+       84,
+       46
+      ]
+     }
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "29H9",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_black",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_black",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#880030",
+      "to": "pants_black",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#880030",
+      "to": "helmet_black",
+      "region": "helmet",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "helmet_black",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "w_spear",
+     "scale": 1.0
+    }
+   },
+   "copy_regions": [
+    {
+     "from": "29H0",
+     "files": [
+      "helmet_helmet00.png",
+      "helmet_helmet02.png"
+     ],
+     "box": [
+      188,
+      58,
+      256,
+      109
+     ]
+    }
+   ]
+  },
+  "away": {
+   "selector": "29A9",
+   "note": "Hail Raiser (all-black alternate): black jersey, black pants, black helmet; burgundy numbers with a gold outline, burgundy and gold sleeve stripes, gold swoosh and names (estimates marked in the report)",
+   "torso": {
+    "base_colour": "jersey_black",
+    "neck_donor": "29A9",
+    "collar_shield": true,
+    "sleeve_swooshes": {
+     "colour": "gold"
+    }
+   },
+   "sleeve": {
+    "base_colour": "jersey_black",
+    "stripes_from": null,
+    "decorations": [
+     {
+      "mark": "sleeve_29A0",
+      "center": [
+       64,
+       64
+      ],
+      "width": 128
+     }
+    ]
+   },
+   "pants": {
+    "base_colour": "pants_black",
+    "stripe": [
+     [
+      "burgundy",
+      9
+     ],
+     [
+      "gold",
+      10
+     ]
+    ],
+    "swoosh_colour": "gold"
+   },
+   "socks": {
+    "colour": "jersey_black"
+   },
+   "digits": {
+    "glyph_donor": "29A9",
+    "fill": "burgundy",
+    "outline": "gold",
+    "outline_frac": 0.032
+   },
+   "nameplate": {
+    "glyph_donor": "29A9",
+    "fill": "gold"
+   },
+   "helmet_digits": "none",
+   "helmet": {
+    "shell": "helmet_black",
+    "shell_from": "#5F070C",
+    "recolour": [
+     {
+      "from": "#F5A500",
+      "to": "gold",
+      "tolerance": 0.18
+     },
+     {
+      "from": "#F2F2F2",
+      "to": "burgundy",
+      "region": "stripe_band",
+      "tolerance": 0.2
+     }
+    ],
+    "decal": {
+     "mark": "w_spear",
+     "scale": 1.0,
+     "sizes": {
+      "lower": [
+       84,
+       46
+      ],
+      "upper": [
+       84,
+       46
+      ]
+     }
+    }
+   },
+   "card": {
+    "recolour": []
+   },
+   "splayer": {
+    "torso_donor": "29A9",
+    "sleeve_from_donor": false,
+    "recolour": [
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_black",
+      "region": "torso",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "jersey_black",
+      "region": "sleeve",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#880030",
+      "to": "pants_black",
+      "region": "pants",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#880030",
+      "to": "helmet_black",
+      "region": "helmet",
+      "tolerance": 0.3
+     },
+     {
+      "from": "#E6E6EE",
+      "to": "helmet_black",
+      "region": "helmet",
+      "tolerance": 0.3
+     }
+    ],
+    "logo": {
+     "mark": "w_spear",
+     "scale": 1.0
+    }
+   },
+   "copy_regions": [
+    {
+     "from": "29H0",
+     "files": [
+      "helmet_helmet00.png",
+      "helmet_helmet02.png"
+     ],
+     "box": [
+      188,
+      58,
+      256,
+      109
+     ]
+    }
+   ]
+  }
+ }
+}

@@ -9,15 +9,21 @@ changes inside one fixed TSET span while shared indices and siblings stay exact.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import ast
 from collections import Counter
 from dataclasses import replace
 import hashlib
 import json
 import os
-from pathlib import Path
 from types import SimpleNamespace
-import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -109,6 +115,9 @@ class CompactCatalogTests(unittest.TestCase):
 class ProductInventoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_player_portrait_compatibility.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         from mod_editor.core.nfl2k5_extended_visual_catalog import (
             load_nfl2k5_extended_visual_catalog,
         )
@@ -280,6 +289,9 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
         cls.application = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            raise unittest.SkipTest(f"Missing asset: {required_asset}")
         self._auto_accept_equipment_dialog()
         self.temporary = tempfile.TemporaryDirectory(prefix="2k5-equipment-qt-")
         self.root = Path(self.temporary.name)
@@ -443,6 +455,46 @@ class RealSourceDecodeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValidationError, "reviewed source hashes"):
                 Nfl2k5ExtendedVisualIO(cache).ensure_original(changed)
 
+    def test_ordinary_banded_glove_and_shoe_pngs_build_in_their_span(self) -> None:
+        """b77-i2: an ordinary banded PNG takes its own chain when one fits (glove01) and otherwise keeps the shared
+        palette route instead of failing (shoes02 missed every own-chain size by a few bytes)."""
+        from mod_editor.core.nfl2k5_extended_visual_catalog import load_nfl2k5_extended_visual_catalog
+        from mod_editor.core.nfl2k5_uniform_equipment_writer import build_unified_uniform_equipment_imports
+        from nfl_outer import parse_archive, read_entry_bytes
+        from nfl_txtr import decode_chunk, encode_rgba_png, parse_chunks
+
+        assets = load_nfl2k5_extended_visual_catalog().assets_for_kind("uniform_equipment_texture")
+        archive = parse_archive(_PACK0)
+        with tempfile.TemporaryDirectory(prefix="2k5-equipment-banded-") as name:
+            for texture in ("glove01", "shoes02"):
+                with self.subTest(texture=texture):
+                    asset = next(row for row in assets if "28H0" in row.search_terms and row.texture == texture)
+                    descriptor = asset.equipment_descriptor
+                    rgba = b"".join(
+                        bytes((24 + (x // 8) * 19 % 220, 32 + (y // 8) * 17 % 210,
+                               210 if (x // 16 + y // 16) & 1 else 42, 255))
+                        for y in range(asset.height) for x in range(asset.width))
+                    png = Path(name) / f"{texture}.png"
+                    png.write_bytes(encode_rgba_png(asset.width, asset.height, rgba))
+                    replacement, previews, report, _selector, _target = build_unified_uniform_equipment_imports(
+                        _PACK0, [(asset.asset_id, png)], pack_hashes={})
+                    package = read_entry_bytes(archive, archive.entries[descriptor.outer_index])
+                    chunk = next(row for row in parse_chunks(package, allow_trailing=True)
+                                 if row.index == descriptor.chunk_index)
+                    self.assertEqual(len(replacement), chunk.end_offset - chunk.offset)
+                    rebuilt_package = package[:chunk.offset] + replacement + package[chunk.end_offset:]
+                    rebuilt = next(row for row in parse_chunks(rebuilt_package, allow_trailing=True)
+                                   if row.index == descriptor.chunk_index)
+                    decoded, info = decode_chunk(rebuilt_package, rebuilt)
+                    self.assertIsNotNone(info)
+                    self.assertEqual(len(decoded), rebuilt.output_size)
+                    self.assertLessEqual(info.consumed_bytes, rebuilt.stored_size)
+                    self.assertEqual(len(previews), 1)
+                    own_chain = texture == "glove01"
+                    self.assertEqual(report["allocation"]["independent_variant_count"], 1 if own_chain else 0)
+                    if not own_chain:
+                        self.assertEqual(report["edits"][0]["palette_method"], "shared_index_projection")
+
     def test_every_equipment_family_round_trips_inside_one_fixed_tset_span(
         self,
     ) -> None:
@@ -456,6 +508,7 @@ class RealSourceDecodeTests(unittest.TestCase):
         )
         from nfl_outer import parse_archive, read_entry_bytes
         from nfl_txtr import decode_chunk, encode_rgba_png, parse_chunks
+        from mod_editor.core.nfl2k5_equipment_import_intent import with_import_mode
 
         catalog = load_nfl2k5_extended_visual_catalog()
         assets = catalog.assets_for_kind("uniform_equipment_texture")
@@ -493,9 +546,12 @@ class RealSourceDecodeTests(unittest.TestCase):
                         for x in range(asset.width)
                     )
                     png = root / f"{asset.texture}.png"
-                    png.write_bytes(encode_rgba_png(
+                    # b77-i2: this pattern is banded, so since b77 eqx an ordinary PNG of a sock, glove or shoe is
+                    # promoted to its own index chain (the video allocation grows). This test proves the shared
+                    # palette route, so the PNG carries that explicit choice; the automatic route is tested below.
+                    png.write_bytes(with_import_mode(encode_rgba_png(
                         asset.width, asset.height, rgba
-                    ))
+                    ), asset.asset_id, rgba, independent=False))
                     replacement, previews, report, selector, target = \
                         build_unified_uniform_equipment_imports(
                             _PACK0,

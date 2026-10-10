@@ -14,9 +14,15 @@ from mod_editor.gui.ux_text import failure_body
 from dataclasses import dataclass
 from pathlib import Path
 import re
-from typing import Callable, Iterable, Protocol, runtime_checkable
+from typing import Any, Callable, Iterable, Protocol, runtime_checkable
 
-from mod_editor.core.errors import ValidationError
+from mod_editor.core.errors import ModEditorError, ValidationError
+from mod_editor.core.nfl2k5_playbook_pack import TEAM_BOOKS
+from mod_editor.gui.playbook_pack_dialog_qt import (
+    BOOK_SET_EXPLAINER,
+    BOOK_SET_TEAM_NAMES,
+    book_set_status_text,
+)
 from mod_editor.core.nfl2k5_playbook_inspector import (
     Nfl2k5Playbook,
     PLAY_FAMILY_LABELS,
@@ -537,12 +543,15 @@ class PlaybooksPanel(QWidget):
     """Structured viewer plus exact stock route-copy authoring."""
 
     error_raised = pyqtSignal(str)
+    book_set_changed = pyqtSignal()   # Modern/Classic changed here; the shell syncs Build and marks the project
 
     def __init__(self, host: PlaybooksPanelHost, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         if not isinstance(host, PlaybooksPanelHost):
             raise TypeError("Playbooks panel host does not implement PlaybooksPanelHost")
         self.host = host
+        #: Set by the shell: stores pending Build page choices in the project before a book-set change.
+        self.flush_build_choices: Callable[[], None] | None = None
         self._all_books: tuple[Nfl2k5Playbook, ...] = ()
         self.browser = PlaybookBrowserResult((), 0, 0, 0, 0, 0)
         self.selected_asset_id: str | None = None
@@ -677,6 +686,37 @@ class PlaybooksPanel(QWidget):
         self.export_button.setObjectName("playPrimaryButton")
         detail_header.addLayout(detail_titles, 1)
         inspector_layout.addLayout(detail_header)
+
+        book_set_row = QHBoxLayout()
+        book_set_label = QLabel("Book set")
+        book_set_label.setObjectName("playFieldLabel")
+        self.book_set_team_label = QLabel("")
+        self.book_set_team_label.setObjectName("playMuted")
+        self.book_modern_button = QPushButton("Modern")
+        self.book_classic_button = QPushButton("Classic")
+        for button in (self.book_modern_button, self.book_classic_button):
+            button.setCheckable(True)
+            button.setAccessibleName(f"{button.text()} book for the selected team")
+            # the current choice must be visible at a glance, not only through the tooltip
+            button.setStyleSheet("QPushButton:checked { background: #1f7a4d; color: #ffffff; "
+                                 "border: 2px solid #6ee7c7; font-weight: 700; }")
+        self.book_all_modern_button = QPushButton("All modern")
+        self.book_all_classic_button = QPushButton("All classic")
+        self.book_set_status = QLabel("")
+        self.book_set_status.setObjectName("playCountPill")
+        self.book_set_status.setAccessibleName("Modern and classic book count")
+        book_set_row.addWidget(book_set_label)
+        book_set_row.addWidget(self.book_modern_button)
+        book_set_row.addWidget(self.book_classic_button)
+        book_set_row.addWidget(self.book_set_team_label, 1)
+        book_set_row.addWidget(self.book_all_modern_button)
+        book_set_row.addWidget(self.book_all_classic_button)
+        book_set_row.addWidget(self.book_set_status)
+        inspector_layout.addLayout(book_set_row)
+        book_set_note = QLabel(BOOK_SET_EXPLAINER)
+        book_set_note.setObjectName("playMuted")
+        book_set_note.setWordWrap(True)
+        inspector_layout.addWidget(book_set_note)
 
         formation_row = QHBoxLayout()
         formation_label = QLabel("Formation")
@@ -985,6 +1025,10 @@ class PlaybooksPanel(QWidget):
         self.play_table.itemSelectionChanged.connect(self._play_selected)
         self.assignment_table.itemSelectionChanged.connect(self._assignment_selected)
         self.export_button.clicked.connect(self._export_selected)
+        self.book_modern_button.clicked.connect(lambda: self._set_team_book(True))
+        self.book_classic_button.clicked.connect(lambda: self._set_team_book(False))
+        self.book_all_modern_button.clicked.connect(lambda: self._set_all_books(True))
+        self.book_all_classic_button.clicked.connect(lambda: self._set_all_books(False))
         self.copy_route_button.clicked.connect(self._copy_selected_route)
         self.revert_route_button.clicked.connect(self._revert_selected_route)
         self.create_formation_button.clicked.connect(self._create_formation)
@@ -1032,6 +1076,7 @@ class PlaybooksPanel(QWidget):
         self._refresh_controls()
 
     def refresh(self, *, force: bool = False) -> None:
+        self.refresh_book_set()
         if not self.host.source_ready or not self.host.playbook_available:
             self.reset_for_source()
             return
@@ -1689,6 +1734,96 @@ class PlaybooksPanel(QWidget):
         self.family_filter.setEnabled(not self._busy)
         self.donor_play_combo.setEnabled(not self._busy)
         self.donor_slot_combo.setEnabled(not self._busy)
+        self.refresh_book_set()
+
+    # -- modern / classic book set (the facade does the work; Build reads the same list) -----------
+    def _book_set_host(self) -> Any | None:
+        host = self.host
+        if (not host.source_ready or not callable(getattr(host, "set_softdrink_book_set", None))
+                or not callable(getattr(host, "project_softdrink_book_set", None))):
+            return None
+        return host
+
+    def _selected_team_key(self) -> str | None:
+        book = self._selected_book()
+        return book.book_name if book is not None and book.book_name in TEAM_BOOKS else None
+
+    def refresh_book_set(self) -> None:
+        """Show which books are modern or classic now (read only; buttons stay clickable and explain)."""
+
+        host = self._book_set_host()
+        info = None
+        if host is not None:
+            try:
+                info = host.project_softdrink_book_set()
+            except ModEditorError:
+                info = None
+        team = self._selected_team_key()
+        state = info["per_team"].get(team) if info is not None and team else None
+        self.book_modern_button.setChecked(state == "modern")
+        self.book_classic_button.setChecked(state == "classic")
+        self.book_set_status.setText(book_set_status_text(info))
+        if host is None:
+            reason = "Open your game disc first (top right)."
+            self.book_set_team_label.setText("")
+        elif team is None:
+            reason = "Select one of the 32 team books to set just that team."
+            self.book_set_team_label.setText("Select a team book")
+        else:
+            reason = ""
+            name = BOOK_SET_TEAM_NAMES.get(team, "")
+            suffix = " (half set: choose Modern or Classic)" if state == "incomplete" else ""
+            self.book_set_team_label.setText(f"{team} {name}: {state}{suffix}")
+        team_tip = reason or ("Modern: this team uses the SOFTDRINK 2026 book. Classic: the original 2004 book. "
+                              "Used when you press Make my disc.")
+        self.book_modern_button.setToolTip(team_tip)
+        self.book_classic_button.setToolTip(team_tip)
+        self.book_modern_button.setProperty("disableReason", reason)
+        self.book_classic_button.setProperty("disableReason", reason)
+        all_reason = "" if host is not None else "Open your game disc first (top right)."
+        self.book_all_modern_button.setToolTip(all_reason or "All 32 teams use the modern SOFTDRINK book.")
+        self.book_all_classic_button.setToolTip(all_reason or "All 32 teams use the classic 2004 book.")
+        self.book_all_modern_button.setProperty("disableReason", all_reason)
+        self.book_all_classic_button.setProperty("disableReason", all_reason)
+
+    def _change_book_set(self, change: Callable[[Any], object]) -> None:
+        host = self._book_set_host()
+        if host is None:
+            return
+        try:
+            if self.flush_build_choices is not None:
+                self.flush_build_choices()
+            change(host)
+        except (ModEditorError, ValueError, OSError) as exc:
+            self.error_raised.emit(str(exc))
+            self.refresh_book_set()
+            return
+        self.refresh_book_set()
+        self.book_set_changed.emit()
+
+    def _set_team_book(self, modern: bool) -> None:
+        reason = str(self.book_modern_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Choose a team first", reason)
+            self.refresh_book_set()
+            return
+        team = self._selected_team_key()
+        if team is None:
+            return
+
+        def change(host: Any) -> None:
+            chosen = set(host.project_softdrink_book_set()["modern_teams"])
+            chosen.add(team) if modern else chosen.discard(team)
+            host.set_softdrink_book_set(sorted(chosen))
+
+        self._change_book_set(change)
+
+    def _set_all_books(self, modern: bool) -> None:
+        reason = str(self.book_all_modern_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Open a disc first", reason)
+            return
+        self._change_book_set(lambda host: host.set_softdrink_book_set(None if modern else []))
 
     def _selected_route_target(self) -> tuple[Nfl2k5Playbook, int, int] | None:
         book = self._selected_book()

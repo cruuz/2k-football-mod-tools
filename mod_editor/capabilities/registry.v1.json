@@ -6539,14 +6539,17 @@
         "tests/mod_editor/test_nfl2k5_abilities_unicorn.py",
         "ASTRA_ABILITIES_V2_REPORT.md",
         "tests/mod_editor/test_nfl2k5_abilities_v2.py",
-        "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py"
+        "tests/mod_editor/test_nfl2k5_abilities_v2_manifest.py",
+        "tests/mod_editor/test_b77_g2_star_gate.py",
+        "tests/mod_editor/test_b77_g2_input_map.py",
+        "tests/mod_editor/test_b77_g2_repair.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; move locks default off and Speedster lock defaults on. Protected UI integration is in WIRING.md."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Runtime off in every preset; move locks default off and Speedster lock defaults on. Protected UI integration is in WIRING.md. The stars-only right-stick and charge-up rules are on in Advanced and Experimental and inert while abilities stay off."
       },
       "id": "nfl2k5.gameplay.abilities_runtime",
       "input_constraints": [
@@ -6555,7 +6558,8 @@
         "Two footer bits encode Unranked/Star/Superstar/X-Factor. Slot limits 0/2/4/7; legacy Unranked flags retain v1 permissions. Excess flags on a tiered record fail closed.",
         "Juke/Agility, Stiff-Arm/Strength, Hurdle/Jumping, Truck/Break Tackle and Spin/Pass Rush gain at most 0.02 per tier after native clamps, capped at 1 during live phase 14.",
         "With either move lock on, charge is limited to live carriers and known move consumers. Both move locks off restores native charge. Disabled locks never grant rating bonuses.",
-        "Off-week None or integer 0..17, exact franchise regular-season tuple. No simulated-game effect or save migration."
+        "Off-week None or integer 0..17, exact franchise regular-season tuple. No simulated-game effect or save migration.",
+        "b77-g2 star rules (all off by default): right_stick_stars_only (stick flicks 0x24..0x2B and the click hurdle 0x1A), charge_stars_only (the charge-up of live ball carriers; defenders and receivers keep retail charge) and button_moves_stars_only (the other twelve mapped commands). The roster star tag (record word 0x0100) plus the ability tier pick one of eight access levels from a four-entry table in the owner (star_access: starred with no tier, Star, Superstar, X-Factor); the level's grant bits (stick flicks, stutter-step/stop short, hurdle, charge-up) are added to the permissions the flag reader returns and are never stored in a roster. Face-button moves stay open to everyone unless button_moves_stars_only is on. charge_stars_only cannot be combined with the two legacy move locks. CPU players follow the same rules."
       ],
       "portme": [
         "Apply WIRING.md, regenerate the production manifest and complete Noah's witness list in ASTRA_ABILITIES_V2_REPORT.md."
@@ -6598,6 +6602,26 @@
           {
             "allowed": "Boolean; defaults true and meaningful only with abilities enabled",
             "name": "abilities_lock_speedster",
+            "required": false
+          },
+          {
+            "allowed": "Boolean; defaults false (on in Advanced and Experimental); meaningful only with abilities enabled",
+            "name": "abilities_right_stick_stars_only",
+            "required": false
+          },
+          {
+            "allowed": "Boolean; defaults false (on in Advanced and Experimental); meaningful only with abilities enabled; not with the two move locks",
+            "name": "abilities_charge_stars_only",
+            "required": false
+          },
+          {
+            "allowed": "Boolean; defaults false in every preset; meaningful only with abilities enabled",
+            "name": "abilities_button_moves_stars_only",
+            "required": false
+          },
+          {
+            "allowed": "Four names from none, charge, flicks, flicks_charge, stick, stick_charge, stick_hurdle, full (starred no tier, Star, Superstar, X-Factor); defaults flicks_charge, stick_charge, full, full",
+            "name": "abilities_star_access",
             "required": false
           }
         ],
@@ -6954,7 +6978,7 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern --output new-money-downs.xbe",
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern2 --output new-money-downs.xbe",
         "module": "mod_editor/core/nfl2k5_cpu_money_downs.py",
         "operation": "write"
       },
@@ -6966,22 +6990,28 @@
         "tests/mod_editor/test_nfl2k5_cpu_money_downs_manifest.py",
         "tests/nfl2k5_cpu_money_downs_native.py",
         "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
-        "tools/nfl2k5_cpu_money_downs.S"
+        "tools/nfl2k5_cpu_money_downs.S",
+        "docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json",
+        "tools/nfl2k5_cpu_money_downs_m2.S",
+        "tools/b77/p9_repair.py",
+        "tools/b77/p9_harness.py",
+        "tests/mod_editor/test_nfl2k5_cpu_money_downs_m2.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Retail in every preset; explicit Modern or Aggressive selection. Shared product integration is specified in WIRING.md."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Retail in Basic; Modern 2 in Advanced and Experimental; explicit Modern, Aggressive or Modern 2 selection. Shared product integration is specified in WIRING.md."
       },
       "id": "nfl2k5.gameplay.cpu_money_downs",
       "input_constraints": [
         "Pinned USA XBE or verified composed input; reserve the complete allocator union before installation. Mixed or foreign bytes refuse before mutation.",
-        "CPU offense, ordinary phase 4. Fourth-down table applies in regulation; third/fourth passing preferences retain native eligibility and scoring.",
+        "CPU offense, ordinary phase 4. Fourth-down table applies in regulation; third/fourth passing preferences retain native eligibility and scoring. Modern 2 also reads the score, the clock and the overtime owner's possession byte and replaces the two-point chart.",
         "Primary route preference requires an explicit first read and supported straight or straight-then-lateral route. Unsupported scripts keep retail weights.",
         "Target bonus follows native viability and threshold checks. Better short targets can still win. No forced catch or conversion.",
-        "Select Retail, Modern or Aggressive on a verified base; changing an installed level requires rebuilding."
+        "Select Retail, Modern, Aggressive or Modern 2 on a verified base; changing an installed level requires rebuilding, except the native repair that upgrades the SOFTDRINK 2K28 v0.5 Modern bytes to Modern 2.",
+        "Modern 2 keeps retail inside the CPU's own 20 yard line for ordinary game states and for any state outside the published tables; its thresholds are digitized or derived from published analytics (see the sources file) and are not fitted to this engine's conversion rates."
       ],
       "portme": [
         "Apply protected dispatcher, BuildPlan, three-level UI, packaging and capability-registry wiring in WIRING.md; regenerate the production cave manifest.",
@@ -6996,32 +7026,33 @@
       "runtime": {
         "evidence": [
           "ASTRA_CPU_MONEY_DOWNS_REPORT.md",
-          "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json"
+          "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
+          "docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json"
         ],
-        "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed.",
+        "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed. Modern 2: the real dispatcher, commit and try routines replay on a real book over grids of fourth-down, two-point and overtime states; defensive coverage variety is measured under the same fixture. No game, emulator or played-game result exists.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "retail | modern | aggressive; retail in Basic, Advanced and Experimental",
+            "allowed": "retail | modern | aggressive | modern2; retail in Basic, modern2 in Advanced and Experimental",
             "name": "cpu_money_downs",
             "required": true
           }
         ],
-        "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line."
+        "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line. Modern 2: a wider fourth-down table from published analytics that reads score and clock, the modern overtime rules, a modern two-point chart and more varied defensive coverage calls."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); 2048 RX bytes, immutable constants, zero runtime state.",
+        "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); Modern 2 adds 206E70 (5), 20B1A4 (5), 20B6DD (5), 20AA1F (1) and 20AC4E (1); 2048 RX bytes, immutable constants, zero runtime state.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Opt-in fourth-down attempts and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
+      "summary": "Opt-in fourth-down attempts, a sourced fourth-down, two-point and overtime policy (Modern 2) and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
       "surface": "gameplay_tuning_sliders",
-      "title": "CPU fourth downs and first downs (experimental, unwitnessed)",
+      "title": "CPU fourth downs, two-point tries and overtime (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"
     },
     {
@@ -7447,6 +7478,78 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_honors apply source.xbe new-honors.xbe",
+        "module": "mod_editor/core/nfl2k5_honors.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_honors.py",
+        "mod_editor/core/nfl2k5_honors_history.py",
+        "tests/mod_editor/test_nfl2k5_honors.py",
+        "tests/mod_editor/test_nfl2k5_honors_history.py",
+        "tools/nfl2k5_honors/runtime.c",
+        "tools/b77/f5_repair.py",
+        "data/nfl2k5_honors_2026.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Noah, 2026-10-07: a Player Card page switched with the bumpers showing award history, updated through Franchise. Off in Basic, on in Modern and Experimental (with the built-in award history)."
+      },
+      "id": "nfl2k5.gameplay.honors_page",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the owner is a late allocator owner placed after the letter grades (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). It is not part of the complete dormant-owner union (192 RX and 0 RW bytes left there). Foreign or mixed bytes refuse.",
+        "Owned 2,560 RX bytes (the page drawers, the pad check, the award commits and the history fold rule) and a 16-byte RW block (the page flag). Edits: seven call/jump sites at 0x320D7B, 0x320210, 0x320B75, 0x320B7A (the Player Card), 0x116E5F (the season awards tail), 0x1356B4 (the game commit) and 0x14F168 (the career-history fold).",
+        "Award history: history fields 96..105 in each player's career-stat stream (one word per honor and season); the built-in data covers the 2026 roster and is skipped on other rosters; a user JSON or CSV must match the roster exactly.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: open any Player Card and press LB/RB (Black/White) or a trigger: the ten rating rows become honor counts (MVP, OFF. POY, DEF. POY, OFF. ROOKIE, DEF. ROOKIE, SUPER BOWLS, SB MVP, PRO BOWLS, ALL-PRO, RUSH TITLES) and the bio lines show the years; press again for the ratings; B still leaves. Sim past week 17 and after the Super Bowl: the season's winners appear on their cards."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The card's pad loop, enter action and draw (with the text calls captured), the season-awards tail and the game commit through the game's own history writer, and the history fold run under Unicorn on the retail executable with the owner installed. No game boot, no gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Modern and Experimental",
+            "name": "honors_page",
+            "required": true
+          },
+          {
+            "allowed": "\"\" | \"builtin\" | path to an award history JSON or CSV; \"builtin\" in Modern and Experimental",
+            "name": "honors_history",
+            "required": false
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS and the main ROST resource (pack 0, outer entry 5)",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above; owned 2,560 RX and 16 RW bytes in the allocator's late region; the ROST career-stat pool for the award history.",
+        "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds a second page to every Franchise Player Card, flipped with the bumpers or triggers: the player's honors (MVP, offensive and defensive player of the year, rookies of the year, Super Bowls, Super Bowl MVP, Pro Bowls, All-Pro, rushing titles) with the years. The game records each season's winners itself, and the built-in data carries the real history of the 2026 roster, every honor cited.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Player Card honors page and award history (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_honors"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_k128 apply source.xbe new-128mb.xbe [--roster-heap]",
         "module": "mod_editor/core/nfl2k5_k128.py",
         "operation": "write"
@@ -7642,6 +7745,69 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Kickoff return blocking: one blocker per man after the catch (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_anniversary_kickoff"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_letter_grades apply source.xbe new-letter-grades.xbe",
+        "module": "mod_editor/core/nfl2k5_letter_grades.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_letter_grades.py",
+        "tests/mod_editor/test_nfl2k5_letter_grades.py",
+        "tools/nfl2k5_letter_grades.S",
+        "tools/b77/f4_repair.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Noah's 2K Player Grade System (2026-10-07) for Franchise player overall and team offense, defense and overall. Display only. Off in Basic (2004 numbers), on in Modern and Experimental."
+      },
+      "id": "nfl2k5.gameplay.letter_grades",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve the complete selected owner union before installation (the owner is a late allocator owner, placed after K128, or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse.",
+        "Owned 160 RX bytes (a grade function, the %R printf conversion handler, the spreadsheet cell kind 9 handler and one weekly prep stub) and 240 read-only bytes (the band table of eleven minimum/label rows and three format literals). Edits: the unused %n conversion row (.rdata 0x4E69B8), the spreadsheet formatter's unknown-kind branch (0x173128), seven column descriptors (flags 0x5 to 0x905), six 4-byte format literal pointers, one 7-byte jump at 0x2B0A29, five immediates in the Player Card glyph drawer at 0xF1F20 (so its 3D digit font draws the plus and minus meshes it already contains) and seven Trading Block guideline labels. Every getter, sort key and row builder is untouched.",
+        "Rebuild from a verified base to remove it or to change the band table."
+      ],
+      "portme": [
+        "Franchise: Team Roster, Free-Agent Wire, Player Trade, Trading Block (Add Guidelines), Player Contracts, Depth Chart, Weekly Prep, a player card and team select: a player overall and the team offense, defense and overall read as grades (95+ A+ ... 0-49 F-); sort the roster by rating and confirm the order is by the number; attributes stay numbers."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The real swprintf with the %R conversion, the real spreadsheet cell formatter with kind 9, the five panel sites from real roster players and the team select numbers from the real team-rating routines run under Unicorn on the shipped v0.5 executable. No game boot, no gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Modern and Experimental",
+            "name": "letter_grades",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text, .rdata and .string_ sites listed above; owned 160 RX and 240 read-only bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Shows the player overall and the team offense, defense and overall in Franchise as letter grades on Noah's 2K scale (A+ to F-) instead of numbers: roster, trade, free agent and contract lists, the depth chart panel, the player card, the weekly prep panel, team select and the defense lists. Text only: lists sort by the number, attributes stay numbers.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Letter grades in Franchise (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_letter_grades"
     },
     {
       "backend": {
@@ -12376,7 +12542,7 @@
         "Nine pinned stretches (s20 Raiders, day/afternoon/night x dry/rain/snow): the cityscape collapsed (the surroundings live in the stadium scene), the stadium SCNE written from scratch by nfl2k5_scne_builder (Allegiant Stadium: the charcoal bowl in four stacks with the heights measured on three solved photo poses, the fixed roof's dark steel ring and ETFE dome with its floodlights, the lanai's curved glass on the drum's north face with its deck, header and name and the Al Davis torch, the south primary board on the live feed between its stat panels with the game's digits and the name over it, the two north boards turned over the corner seats, the black glass drum with its white light lines and the LED mesh toward I-15 on the OpenStreetMap outline, the plazas, lots, roads and neighbours, the Strip's towers and the Luxor's pyramid, the ranges on the horizon) and the intro_cameras SCNE (five new flyover shots on s20's own channels, two of them outside); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail.",
         "The field scene of each bundle: natural grass mown in 5-yard bands (the retail grass quad's UVs remapped in place so the colour map runs goal line to goal line), the grass outside the field of play, and the 2026 venue art folder's Raiders end zones (each end on its own retail textures) and midfield composed over clean grass when that folder is given; composed before the Modern colour grade when that option is on. The surface word stays grass.",
         "The s20 row in the main ROST: Allegiant Stadium, Las Vegas, NV, capacity 65,000; the indoor word becomes 1 (the roof is fixed: no rain or snow falls), the grass word and the climate as retail.",
-        "34 authored PNGs in data/nfl2k5_allegiant_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_allegiant_model/footprint.json; no retail bytes are shipped.",
+        "36 authored PNGs in data/nfl2k5_allegiant_model/art (the reviewed PNG catalog; plain type only, no logos or players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_allegiant_model/footprint.json; no retail bytes are shipped.",
         "Appearance in game is unwitnessed by the owner.",
         "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
       ],
@@ -12832,6 +12998,70 @@
       "surface": "stadiums_fields",
       "title": "Gillette Stadium (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_gillette_model"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_goalposts status <source>",
+        "module": "mod_editor/core/nfl2k5_modern_goalposts.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_modern_goalposts.py",
+        "data/nfl2k5_modern_goalposts_pins.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Build tab checkbox Modern goalposts (35 ft uprights); Off in every preset. Needs a disc image; Off does not restore an already-modern source (the module's revert command restores the retail spans and executable bytes from a retail source). Composes with the sprite scorebug, the ESPN presentation marks and the 2026 kick meter (their gamedata.iff rule accepts the two goalpost spans)."
+      },
+      "id": "nfl2k5.stadiums_fields.modern_goalposts",
+      "input_constraints": [
+        "Two pinned VC-LZ SCNE chunks of gamedata.iff (outer 346, pack 0): goalpost_shadow 71 and goalpost 88, the one goalpost every venue draws (placed at each stadium scene's goalShape1 / goalShape2 markers). Each is compiled from the source's own retail span (retail span and decoded SHA-256 pins), refit into its retail stored span with the 32-byte wrapper (scratch word included) byte-identical, checked against its applied pin and read back; only retail or already-modern spans are accepted; the chunks are found through gamedata.iff's own chunk table.",
+        "Geometry only: the 56 upright-top vertices of goalpost (32 of goalpost_shadow) move from 1,219.2 to 1,371.6 cm (45 ft: 35 ft above the 10 ft crossbar, the NFL rule since 2014); base, pad, gooseneck, crossbar, width (18 ft 6 in inside), vertex colours, UVs, strips and vertex count stay retail. The NORMSHORT3 position constant grows x1.125 (every vertex re-quantised, unmoved ones within 0.011 cm) and the bounding sphere the frustum test culls by is recomputed to enclose the new tops.",
+        "default.xbe, three in-place 4-byte operands, guarded, .text digest re-sealed: the far-distance upright lines the goal draw (0x985B0) lays over the posts end at 1,371.6 (push operands at 0x986AB and 0x986FC), and the ball/upright collision (0x1C68C0 -> 0x1C5DD0) reads its upright top from the read-only literal 1,371.6 at 0x4F689C (fadd operand at 0x1C6A2E) instead of the shared 1,219.2 at 0x50A510, which stays untouched for its other readers. Scoring is unchanged: 0x157C10 judges a kick good inside the rectangle at 0x510410 (the uprights' inside edges extended up to 30,480 cm)."
+      ],
+      "portme": [
+        "Witness a field goal and a PAT from the kicker's camera and a kickoff in a few venues (a retail stadium, a rebuilt 2026 venue, the practice field, an Anniversary moment): the uprights reaching 35 ft above the crossbar, the goalpost's shadow, the thin far-distance lines on the posts, and a kick hitting an upright high up (rare)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute authoring tools, values and verified recipes only. Never bundle a retail roster, executable, disc or texture.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_modern_goalposts.py"
+        ],
+        "scope": "Proved offline: decoded geometry, byte receipts and renders from the data. Not yet seen in game; no Xbox witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false (default) or true",
+            "name": "enabled",
+            "required": false
+          }
+        ],
+        "notes": "On extends the uprights of the shared goalpost and its shadow and moves the three executable operands; Off leaves the source as it is."
+      },
+      "source_container": {
+        "format": "In-place fixed-span VC-LZ SCNE resources in pack 0 of the vc_53450030 archive, and three operands of default.xbe",
+        "hash_pins": [
+          "828663be18d8b0d0747976e4ec196f4dc26e057016f3ea8b729eeac5af7e2bf0",
+          "95bd5a553a79c4b5529737452e68f523eaa9beb8a971793aabda90bea83098a2"
+        ],
+        "resource": "outer 346 (gamedata.iff) chunks 71, 88; default.xbe 0x986AB, 0x986FC, 0x1C6A2E",
+        "retail_file": "vc_53450030/0 (pack 0 of the archive) and default.xbe"
+      },
+      "summary": "The goalposts in every venue made modern: the uprights rise 35 ft above the crossbar (45 ft above the field) instead of the 2004 game's 30 ft, with the goalpost's shadow, the thin far-distance lines on the posts and the ball's collision with the posts following; the base, pad, gooseneck, crossbar, width and colours stay the game's own and scoring is unchanged. Off in every preset; unwitnessed in game.",
+      "surface": "stadiums_fields",
+      "title": "Modern goalposts, 35 ft uprights (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_modern_goalposts"
     },
     {
       "backend": {

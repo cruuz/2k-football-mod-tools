@@ -65,8 +65,28 @@ def failure(detected, incompatible, next_step):
 
 
 def _stamp(stream):
+    """File details of an open source: device, file ID, size, mtime and st_ctime.
+
+    Metadata, never a verdict (Beta 77 E1). Nothing may be refused, and no finished
+    image may be thrown away, because these moved. A OneDrive, antivirus or
+    search-indexer pass can rewrite the times and attributes of a file it is working
+    on with no byte changed, and on Windows CPython 3.12 st_ctime is the file's
+    CREATION time, which sync software can reset under an open handle. Beta 72.1
+    ruled the same for projects and builds
+    (tests/mod_editor/test_b721_change_time_identity.py). The bytes decide instead:
+    every source byte that reaches the output is covered by the pack's SHA-256
+    values (before-hash per file and per replaced run, after-hash per output file,
+    read-back of the written image), so content that really changed still refuses,
+    even with every one of these fields restored. ``apply`` only reports which of
+    them moved."""
     s = os.fstat(stream.fileno())
     return s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns
+
+
+def _moved(first, now):
+    """Names of the file details that differ between two ``_stamp`` readings."""
+    names = ("device", "file ID", "size", "modified time", "creation time" if os.name == "nt" else "change time")
+    return [name for name, a, b in zip(names, first, now) if a != b]
 
 
 def _layout(stream):
@@ -268,7 +288,6 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
     output = _output_path(output)
     base_path, built_path = _path(base_iso), _path(built_iso)
     with base_path.open("rb", buffering=0) as base, built_path.open("rb", buffering=0) as built:
-        stamps = _stamp(base), _stamp(built)
         bl, tl = _layout(base), _layout(built)
         bf, tf = _files(bl), _files(tl)
         require(bf.keys() == tf.keys(), "Finished disc must retain the retail file paths; file additions/deletions are unsupported.")
@@ -337,9 +356,10 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
                 encoded = json.dumps(doc, separators=(",", ":")).encode()
                 require(len(encoded) <= m.MAX_MANIFEST_BYTES, "File manifest exceeds 16 MiB")
                 z.writestr("manifest.json", encoded)
+            # The replay re-reads both inputs and compares every replayed byte with them and with the
+            # hashes pinned above, so inputs that really changed refuse here, whatever their metadata did.
             verified = load(part, doc)
             replay = verify_against(verified, base_path, built_path, progress=progress)
-            require(stamps == (_stamp(base), _stamp(built)), "Input changed during export")
     result = inspect(m.load(output))
     result.update(pack=str(output), elapsed_seconds=round(time.monotonic() - started, 3), replay=replay)
     return result
@@ -547,7 +567,6 @@ def check(pack, image, *, progress=None, **_kwargs):
     progress = progress or m._no_progress
     try:
         with _open_source(image) as source, zipfile.ZipFile(pack.path) as archive:
-            stamp = _stamp(source)
             layout = _validate_source(pack, source, progress)
             for row in pack.manifest.raw["files"]:
                 if row["mode"] == "copy":
@@ -557,7 +576,6 @@ def check(pack, image, *, progress=None, **_kwargs):
                     digest.update(data)
                     progress("Checking pack payloads", at + len(data), row["after"]["size"])
                 require(digest.hexdigest() == row["after"]["sha256"], "Reconstructed file SHA-256 differs")
-            require(stamp == _stamp(source), "Source changed while checking")
         state, explanation, base = "ready", "Every required game file matches. ISO order, padding and video prefix are accepted.", layout.base
     except (m.ModpackError, zipfile.BadZipFile, OSError) as exc:
         state, explanation, base = "mismatch", str(exc), None
@@ -640,7 +658,6 @@ def verify_against(pack, source_iso, finished_iso, *, progress=None):
     progress = progress or m._no_progress
     started = time.monotonic()
     with _open_source(source_iso) as source, _open_source(finished_iso) as finished, zipfile.ZipFile(pack.path) as archive:
-        stamps = _stamp(source), _stamp(finished)
         before = _validate_source(pack, source, progress)
         after = _layout(finished)
         rows = pack.manifest.raw["files"]
@@ -658,7 +675,6 @@ def verify_against(pack, source_iso, finished_iso, *, progress=None):
                 progress("Proving exported files", done + size, total)
             require(size == actual.size and h.hexdigest() == row["after"]["sha256"], "Replayed file hash or length differs")
             done += size
-        require(stamps == (_stamp(source), _stamp(finished)), "Input changed during pack proof")
     return dict(all_files_byte_equal=True, files=len(rows), compared_bytes=total,
                 elapsed_seconds=round(time.monotonic() - started, 3))
 
@@ -707,13 +723,17 @@ def apply(pack, source_iso, target_iso, *, overwrite=False, progress=None, **_kw
                     require(digest == row["after"]["sha256"], f"Read-back SHA-256 differs: {row['path']}")
                     done += e.size
                 sha = _digest(output, 0, required_space, lambda n: progress("Verifying image", n, required_space))
-            require(stamp == _stamp(source), "Source changed during installation")
+            # Every output byte was just proved against the pack's SHA-256 values, so the install is
+            # complete whatever the source's file details did meanwhile. A synced folder (OneDrive)
+            # moves them under an open file: refusing here threw away a verified 6 GB image
+            # ("Source changed during installation", Beta 77 E1). Report it; never refuse on it.
+            source_metadata_changed = _moved(stamp, _stamp(source))
         # All descriptors, including ZIP handles, are closed before Windows rename.
     return dict(name=pack.manifest.name, mode="file-copy", runs=sum(r["mode"] != "copy" for r in rows), bytes=total,
                 target=dict(path=str(target), size=required_space, sha256=sha,
                             matches_author_result=sha == doc["result"]["sha256"], all_game_files_verified=True),
                 elapsed_seconds=round(time.monotonic() - started, 3), disk_required_bytes=required_space,
-                files_verified=len(rows), format=3)
+                files_verified=len(rows), format=3, source_metadata_changed=source_metadata_changed)
 
 
 def extract_assets(pack, directory, *, overwrite=False):

@@ -6,9 +6,9 @@
   "recipe_sha256": "8690e86f12c6b620a16ab0bc3e24c61fdff26cfbbf0182b7521d8d6e4465f163",
   "teams": {
     "ARZ": {
-      "nodes": 2832,
+      "nodes": 2845,
       "name_bytes": 9890,
-      "resource_sha256": "491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de",
+      "resource_sha256": "3ca961bbacb6c4b57f2088d5547cebe39df59e2990eb9945cb88590db80b8785",
       "defense_semantic_sha256": "3d030dd78742b697bad47c97fba24ee534af64dc85ee8adfa0e9f15c3deb1f43",
       "native_validated": 270,
       "protected": [
@@ -1716,9 +1716,9 @@
       ]
     },
     "ATL": {
-      "nodes": 2801,
+      "nodes": 2824,
       "name_bytes": 9626,
-      "resource_sha256": "0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab",
+      "resource_sha256": "ba23434f89bfde83e9cf1175794826c061cc76c077007ab7732be3134f825073",
       "defense_semantic_sha256": "3d24ebef5917781799e9d366eb2c4de2665ffac559fc919f6c606ffa4f630eb8",
       "native_validated": 254,
       "protected": [
@@ -3344,9 +3344,9 @@
       ]
     },
     "BAL": {
-      "nodes": 2773,
+      "nodes": 2792,
       "name_bytes": 9606,
-      "resource_sha256": "eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc",
+      "resource_sha256": "01472a1733f8a2553400684eca7217127bf5baa13d7c0123b9bc8a0ff4fec170",
       "defense_semantic_sha256": "d23e060ba7cb71bd81ed241ff9dc08214eae2ee5d7a75fcc45f28b64fd09e81e",
       "native_validated": 263,
       "protected": [
@@ -5019,9 +5019,9 @@
       ]
     },
     "BUF": {
-      "nodes": 2768,
+      "nodes": 2781,
       "name_bytes": 9722,
-      "resource_sha256": "a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f",
+      "resource_sha256": "721b12d319a3cb5cfedbbfa2047f6aae2cb265b31c15ca3f01a3ab7ea1b1b41e",
       "defense_semantic_sha256": "1934efc309c28b5d73793834c56539649cac850d3b327ae516fb71a7b60f2796",
       "native_validated": 270,
       "protected": [
@@ -6814,9 +6814,9 @@
       ]
     },
     "CAR": {
-      "nodes": 2795,
+      "nodes": 2811,
       "name_bytes": 9808,
-      "resource_sha256": "24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642",
+      "resource_sha256": "a347bf650769599fe219757daca718746944b9ccaa09608ea3cf6ba4eae76c99",
       "defense_semantic_sha256": "a2b1c0b3fc00fed016c5aa2df03966bfb85dcd631ce1c43de4624bf1a7d701dd",
       "native_validated": 269,
       "protected": [
@@ -8600,9 +8600,9 @@
       ]
     },
     "CHI": {
-      "nodes": 2843,
+      "nodes": 2851,
       "name_bytes": 9624,
-      "resource_sha256": "6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15",
+      "resource_sha256": "8a57896d1bb4aa06a278fdb92c6f5ea904ce7519ae18d87c40b98cf270c73482",
       "defense_semantic_sha256": "50e5d481d92ac669e6a091838a44868f412c1e2fe6f338cc92e81e9b15b77b6f",
       "native_validated": 266,
       "protected": [
@@ -10330,9 +10330,9 @@
       ]
     },
     "CIN": {
-      "nodes": 2775,
+      "nodes": 2791,
       "name_bytes": 9616,
-      "resource_sha256": "1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002",
+      "resource_sha256": "124d3ecf667a87a24d986e1c4becd88b6580a29fb534b5996570d893e3301087",
       "defense_semantic_sha256": "951b3698db48764d99026fe6bffb074a1fc1da87a6b0118a4dbcb6f0a7a933a7",
       "native_validated": 270,
       "protected": [
@@ -12107,9 +12107,9 @@
       ]
     },
     "CLE": {
-      "nodes": 2689,
+      "nodes": 2711,
       "name_bytes": 9622,
-      "resource_sha256": "53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb",
+      "resource_sha256": "aa46a7d8d009d4320a657ea68d056166cf46ae099cc83e34c82759db9d9a3023",
       "defense_semantic_sha256": "fe4d35ed75d8c104c2930a9f43297a301b1889e23149ece2198e690c1b065991",
       "native_validated": 269,
       "protected": [
@@ -13806,9 +13806,9 @@
       ]
     },
     "DAL": {
-      "nodes": 3171,
+      "nodes": 3196,
       "name_bytes": 10224,
-      "resource_sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
+      "resource_sha256": "f763fee6e929d86506b476aa2d0865b04b71914a0fddbbf25221c28ac044c78b",
       "defense_semantic_sha256": "893f4dbbbec38f88bd8d09ca361142c0d6877ea390eb97d73a41ea0d325d27c9",
       "native_validated": 269,
       "protected": [
@@ -15504,9 +15504,9 @@
       ]
     },
     "DEN": {
-      "nodes": 2669,
+      "nodes": 2686,
       "name_bytes": 9168,
-      "resource_sha256": "7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a",
+      "resource_sha256": "e33630b08ba3f12e3704d32f65e5e1cd443f814a99098dffca0225380e48f6a6",
       "defense_semantic_sha256": "167b620f5103f372d22491b86b16cac3b2389f6f3f0407af4ed2ce199b6230bc",
       "native_validated": 263,
       "protected": [
@@ -17208,9 +17208,9 @@
       ]
     },
     "DET": {
-      "nodes": 2802,
+      "nodes": 2815,
       "name_bytes": 9600,
-      "resource_sha256": "a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b",
+      "resource_sha256": "c7e34524469e4406fda4e914d32fff27a369c50315eb8368539bb97eec42f072",
       "defense_semantic_sha256": "8498bc99fa8433bc7f49f86a32e7625c1808edfbb6abd6e2f52f731bf67388e4",
       "native_validated": 255,
       "protected": [
@@ -18862,9 +18862,9 @@
       ]
     },
     "GB": {
-      "nodes": 2863,
+      "nodes": 2886,
       "name_bytes": 10198,
-      "resource_sha256": "20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875",
+      "resource_sha256": "45b1a218308887dcf26550ff027f4d56530aeebed9bf51d517d7bd7b1cd69b43",
       "defense_semantic_sha256": "38ebf03a794eb1927bd82835cedc4ed6c39c77000258082c51cc31cca2496883",
       "native_validated": 264,
       "protected": [
@@ -20677,9 +20677,9 @@
       ]
     },
     "HOU": {
-      "nodes": 2832,
+      "nodes": 2849,
       "name_bytes": 9768,
-      "resource_sha256": "1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29",
+      "resource_sha256": "92aae9fb21dcdcf39dbfe04cabd0aed2a8c71f687041f8512cf54b98aa383eee",
       "defense_semantic_sha256": "18d29fcae1463213ae7100285029ececd2f8dbdf48cdb0bb4abaeeb34651b1da",
       "native_validated": 270,
       "protected": [
@@ -22362,9 +22362,9 @@
       ]
     },
     "IND": {
-      "nodes": 2758,
+      "nodes": 2768,
       "name_bytes": 9718,
-      "resource_sha256": "cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff",
+      "resource_sha256": "b2ae4eb91447fd829a646532a59e1cb7568d080ec276b6b1f217de72105921fb",
       "defense_semantic_sha256": "7787ae5f6adc764dc6e21faaeaa918bc8969234f466707a2ec86a62f744751b4",
       "native_validated": 265,
       "protected": [
@@ -24148,9 +24148,9 @@
       ]
     },
     "JAX": {
-      "nodes": 2823,
+      "nodes": 2831,
       "name_bytes": 9824,
-      "resource_sha256": "5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5",
+      "resource_sha256": "2a0909ee9e34fb18d06abf7920185694e8b20347ee058d99849e66b9e4ac6efd",
       "defense_semantic_sha256": "544c5ebaeced30235cd45fc15db58fc89d71c75fbd1393cb665861e7a07bbd6f",
       "native_validated": 270,
       "protected": [
@@ -25868,9 +25868,9 @@
       ]
     },
     "KC": {
-      "nodes": 2673,
+      "nodes": 2686,
       "name_bytes": 9096,
-      "resource_sha256": "78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8",
+      "resource_sha256": "561dc38dc6459e8bb91ca9a18a774dbb8185abfddb74853617c4f4b9c33f54ab",
       "defense_semantic_sha256": "ff57e11c97a7d21a9c139e25a7acc589482d76086719cb06c0914591dd651ea3",
       "native_validated": 261,
       "protected": [
@@ -27567,9 +27567,9 @@
       ]
     },
     "MIA": {
-      "nodes": 3121,
+      "nodes": 3147,
       "name_bytes": 10248,
-      "resource_sha256": "4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983",
+      "resource_sha256": "71b677bd7ef5019bf0b5acf46a33b1c627d27b659a8d955332a69bf072f7af1e",
       "defense_semantic_sha256": "c5a006a023a300cf8ecf8326dae8598c9b792409b3880f83e3b164ee87dcfecc",
       "native_validated": 259,
       "protected": [
@@ -29275,9 +29275,9 @@
       ]
     },
     "MIN": {
-      "nodes": 2962,
+      "nodes": 2982,
       "name_bytes": 10318,
-      "resource_sha256": "8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a",
+      "resource_sha256": "d3b7bd3a7c8631c9b021d1a1bac593366bd4defe8686a9bdccc9e63b971c165d",
       "defense_semantic_sha256": "7d26d08bcf4b4401ab5e24de3916b9efe3230e07709ea882c0b577f6422da41d",
       "native_validated": 266,
       "protected": [
@@ -31042,9 +31042,9 @@
       ]
     },
     "NE": {
-      "nodes": 2773,
+      "nodes": 2785,
       "name_bytes": 9188,
-      "resource_sha256": "332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455",
+      "resource_sha256": "28824a0189efee314430a94c6beb7888491dd7ff8a991c5ffbb36eda210d2672",
       "defense_semantic_sha256": "a0b7297a27f7a5b9f308fed5243ccbd9eafe9ff76ae449e76a9196edbaa15859",
       "native_validated": 250,
       "protected": [
@@ -32749,9 +32749,9 @@
       ]
     },
     "NO": {
-      "nodes": 2778,
+      "nodes": 2795,
       "name_bytes": 9650,
-      "resource_sha256": "219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb",
+      "resource_sha256": "e5ca944d6b71b1433b6990a2dd4558b4d4eb11ff8dc576aa4e7b7d322beafeed",
       "defense_semantic_sha256": "5b74eb91b1fce8ffb9bb526b1b85e7d57b118b35a1ef31bff13f9e68aa114f82",
       "native_validated": 264,
       "protected": [
@@ -34427,9 +34427,9 @@
       ]
     },
     "NYG": {
-      "nodes": 2870,
+      "nodes": 2896,
       "name_bytes": 9584,
-      "resource_sha256": "046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed",
+      "resource_sha256": "b2cd7d1b468126ce016cdb259478c9b4350cea6684bb288d080b4cbd6b53122c",
       "defense_semantic_sha256": "2bec32b7584d80408134b5c72a032e041a4fe005b0b2b6196426ad9002bef68f",
       "native_validated": 269,
       "protected": [
@@ -36189,9 +36189,9 @@
       ]
     },
     "NYJ": {
-      "nodes": 3150,
+      "nodes": 3170,
       "name_bytes": 10078,
-      "resource_sha256": "7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400",
+      "resource_sha256": "839f14f0b6f37b1e12a5eaf8fc50bca508c6b7586a3f41b010f0434af20643ad",
       "defense_semantic_sha256": "1cd34953e5b62e45f52e6603691793f059965f204026dd51aa093603f1dee612",
       "native_validated": 270,
       "protected": [
@@ -37903,9 +37903,9 @@
       ]
     },
     "OAK": {
-      "nodes": 2774,
+      "nodes": 2794,
       "name_bytes": 9822,
-      "resource_sha256": "6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8",
+      "resource_sha256": "fe5c9088d5c21eb47123cb3017b815647f5299bd9aaf337056eef901728991d9",
       "defense_semantic_sha256": "968e803b36fadcd39f93afc4c7e3c13f264f41a80e1e48f6624f889a4192c825",
       "native_validated": 270,
       "protected": [
@@ -39632,9 +39632,9 @@
       ]
     },
     "PHI": {
-      "nodes": 2878,
+      "nodes": 2901,
       "name_bytes": 10000,
-      "resource_sha256": "d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221",
+      "resource_sha256": "d88fcc6e03ae0c8343b8526f3ae58e045539da8755322da51556ec89dc727658",
       "defense_semantic_sha256": "0454d4e107367ee75ce1618fbad3bc2953e011a9fd134f0c96adedab10a87f5b",
       "native_validated": 267,
       "protected": [
@@ -41360,9 +41360,9 @@
       ]
     },
     "PIT": {
-      "nodes": 3124,
+      "nodes": 3141,
       "name_bytes": 9846,
-      "resource_sha256": "e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac",
+      "resource_sha256": "adc95e2c960fb70415deadd225eae2db24104ebb341b2b7ef8e8eec21237d4cd",
       "defense_semantic_sha256": "28b35b6cf46a49b50ca789c65a05dac4cb4f161acbde2eb97425bc178fc33e92",
       "native_validated": 263,
       "protected": [
@@ -42962,9 +42962,9 @@
       ]
     },
     "SD": {
-      "nodes": 3185,
+      "nodes": 3211,
       "name_bytes": 10538,
-      "resource_sha256": "3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a",
+      "resource_sha256": "43904095114ba9ea409474afdaab57f5cddbb2855087204da6bb9c38e4f2a686",
       "defense_semantic_sha256": "a58d41024b9cec6bf7867cf9cb7c49e8f1f4ef215d122d036322ea57b1f80b8a",
       "native_validated": 270,
       "protected": [
@@ -44598,9 +44598,9 @@
       ]
     },
     "SEA": {
-      "nodes": 2833,
+      "nodes": 2859,
       "name_bytes": 9974,
-      "resource_sha256": "3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc",
+      "resource_sha256": "384bac327905e725fe1031e6c864cb3bd78446b9fb9708edbd80b01f3571caac",
       "defense_semantic_sha256": "ccbe0b094d85f860c8c0ad322cba81c8ce559ebe0a7defebba6e6294c9f384ae",
       "native_validated": 269,
       "protected": [
@@ -46340,9 +46340,9 @@
       ]
     },
     "SF": {
-      "nodes": 2828,
+      "nodes": 2854,
       "name_bytes": 9554,
-      "resource_sha256": "d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0",
+      "resource_sha256": "7f6120634e28448bc1a91f01fad71692a03d42aa69e87ce3dc4de9eb47570fc7",
       "defense_semantic_sha256": "2d68a64b9f7b65c2d003596388e99eefe2566c5e6b5e1af07d673e22b679ee94",
       "native_validated": 249,
       "protected": [
@@ -47928,9 +47928,9 @@
       ]
     },
     "STL": {
-      "nodes": 2820,
+      "nodes": 2837,
       "name_bytes": 10062,
-      "resource_sha256": "9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918",
+      "resource_sha256": "1879c853373f01afc19047439c07ac7afb5cf52eac1791344f53cbb4dd779b5b",
       "defense_semantic_sha256": "7fd58f886b7152e35a084ca88fa693ded877824f6381f7d28c16a744d1b15ef5",
       "native_validated": 269,
       "protected": [
@@ -49704,9 +49704,9 @@
       ]
     },
     "TB": {
-      "nodes": 2763,
+      "nodes": 2780,
       "name_bytes": 9728,
-      "resource_sha256": "810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902",
+      "resource_sha256": "28668b532ed0f07f6a040ee4523269bbe222ab6fe8c5fe79427ac9b25127b3b9",
       "defense_semantic_sha256": "37fb51a2dd2948ef7db4d9c3d7451e1902c697de77b7f4f6486b442b67c2e2f8",
       "native_validated": 253,
       "protected": [
@@ -51514,9 +51514,9 @@
       ]
     },
     "TEN": {
-      "nodes": 2705,
+      "nodes": 2708,
       "name_bytes": 9050,
-      "resource_sha256": "327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad",
+      "resource_sha256": "a85cbec4225d9d4c40ab86dd30be3a5d34a8893dcf3c5bf0e02f0d4d5aaef82f",
       "defense_semantic_sha256": "3258b47f8c204bc7908c5ea93e28bda051c433023aae625a2d9945cb27fb4176",
       "native_validated": 264,
       "protected": [
@@ -53195,9 +53195,9 @@
       ]
     },
     "WAS": {
-      "nodes": 2859,
+      "nodes": 2876,
       "name_bytes": 9368,
-      "resource_sha256": "338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3",
+      "resource_sha256": "9443527b3d6a18cf655d332aeb19cfcf61c085e2283478799cdc3c5e8bc28ede",
       "defense_semantic_sha256": "6fa7124fd18a0149053b037f19d9f8d65d9983780565ff9ec7e273a2293e0585",
       "native_validated": 260,
       "protected": [
@@ -54879,8 +54879,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 1410,
-            "changed_bytes": 24794
+            "nodes": 1423,
+            "changed_bytes": 24710
           }
         ]
       },
@@ -54902,8 +54902,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 254,
-            "nodes": 1427,
-            "changed_bytes": 22040
+            "nodes": 1450,
+            "changed_bytes": 22094
           }
         ]
       },
@@ -54925,8 +54925,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 263,
-            "nodes": 1403,
-            "changed_bytes": 23907
+            "nodes": 1422,
+            "changed_bytes": 24641
           }
         ]
       },
@@ -54948,8 +54948,8 @@
             "retargeted_entries": 0,
             "formations": 46,
             "plays": 270,
-            "nodes": 1510,
-            "changed_bytes": 23491
+            "nodes": 1523,
+            "changed_bytes": 23488
           }
         ]
       },
@@ -54971,8 +54971,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 269,
-            "nodes": 1437,
-            "changed_bytes": 24856
+            "nodes": 1453,
+            "changed_bytes": 24684
           }
         ]
       },
@@ -54994,8 +54994,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 266,
-            "nodes": 1463,
-            "changed_bytes": 23392
+            "nodes": 1471,
+            "changed_bytes": 23445
           }
         ]
       },
@@ -55017,8 +55017,8 @@
             "retargeted_entries": 0,
             "formations": 44,
             "plays": 270,
-            "nodes": 1469,
-            "changed_bytes": 25340
+            "nodes": 1485,
+            "changed_bytes": 25421
           }
         ]
       },
@@ -55040,8 +55040,8 @@
             "retargeted_entries": 0,
             "formations": 44,
             "plays": 269,
-            "nodes": 1379,
-            "changed_bytes": 24321
+            "nodes": 1401,
+            "changed_bytes": 24518
           }
         ]
       },
@@ -55063,8 +55063,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 269,
-            "nodes": 1503,
-            "changed_bytes": 22880
+            "nodes": 1528,
+            "changed_bytes": 22862
           }
         ]
       },
@@ -55086,8 +55086,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 263,
-            "nodes": 1405,
-            "changed_bytes": 24023
+            "nodes": 1422,
+            "changed_bytes": 23940
           }
         ]
       },
@@ -55109,8 +55109,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 255,
-            "nodes": 1424,
-            "changed_bytes": 22471
+            "nodes": 1437,
+            "changed_bytes": 22526
           }
         ]
       },
@@ -55132,8 +55132,8 @@
             "retargeted_entries": 0,
             "formations": 48,
             "plays": 264,
-            "nodes": 1435,
-            "changed_bytes": 24132
+            "nodes": 1458,
+            "changed_bytes": 24087
           }
         ]
       },
@@ -55155,8 +55155,8 @@
             "retargeted_entries": 0,
             "formations": 40,
             "plays": 270,
-            "nodes": 1482,
-            "changed_bytes": 22656
+            "nodes": 1499,
+            "changed_bytes": 22698
           }
         ]
       },
@@ -55178,8 +55178,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 265,
-            "nodes": 1426,
-            "changed_bytes": 24128
+            "nodes": 1436,
+            "changed_bytes": 24079
           }
         ]
       },
@@ -55201,8 +55201,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 1453,
-            "changed_bytes": 22829
+            "nodes": 1461,
+            "changed_bytes": 22969
           }
         ]
       },
@@ -55224,8 +55224,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 261,
-            "nodes": 1431,
-            "changed_bytes": 23539
+            "nodes": 1444,
+            "changed_bytes": 23534
           }
         ]
       },
@@ -55247,8 +55247,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 259,
-            "nodes": 1553,
-            "changed_bytes": 23702
+            "nodes": 1579,
+            "changed_bytes": 23601
           }
         ]
       },
@@ -55270,8 +55270,8 @@
             "retargeted_entries": 0,
             "formations": 46,
             "plays": 266,
-            "nodes": 1404,
-            "changed_bytes": 24307
+            "nodes": 1424,
+            "changed_bytes": 24244
           }
         ]
       },
@@ -55293,8 +55293,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 250,
-            "nodes": 1467,
-            "changed_bytes": 23258
+            "nodes": 1479,
+            "changed_bytes": 23305
           }
         ]
       },
@@ -55316,8 +55316,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 264,
-            "nodes": 1400,
-            "changed_bytes": 24021
+            "nodes": 1417,
+            "changed_bytes": 24133
           }
         ]
       },
@@ -55339,8 +55339,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 269,
-            "nodes": 1438,
-            "changed_bytes": 24391
+            "nodes": 1464,
+            "changed_bytes": 24441
           }
         ]
       },
@@ -55362,8 +55362,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 1512,
-            "changed_bytes": 23348
+            "nodes": 1532,
+            "changed_bytes": 23584
           }
         ]
       },
@@ -55385,8 +55385,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 270,
-            "nodes": 1496,
-            "changed_bytes": 23223
+            "nodes": 1516,
+            "changed_bytes": 23160
           }
         ]
       },
@@ -55408,8 +55408,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 267,
-            "nodes": 1462,
-            "changed_bytes": 23920
+            "nodes": 1485,
+            "changed_bytes": 23917
           }
         ]
       },
@@ -55431,8 +55431,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 263,
-            "nodes": 1560,
-            "changed_bytes": 22377
+            "nodes": 1577,
+            "changed_bytes": 22365
           }
         ]
       },
@@ -55454,8 +55454,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 1577,
-            "changed_bytes": 25484
+            "nodes": 1603,
+            "changed_bytes": 25445
           }
         ]
       },
@@ -55477,8 +55477,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 269,
-            "nodes": 1455,
-            "changed_bytes": 24493
+            "nodes": 1481,
+            "changed_bytes": 24478
           }
         ]
       },
@@ -55500,8 +55500,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 249,
-            "nodes": 1444,
-            "changed_bytes": 21598
+            "nodes": 1470,
+            "changed_bytes": 21610
           }
         ]
       },
@@ -55523,8 +55523,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 269,
-            "nodes": 1434,
-            "changed_bytes": 27475
+            "nodes": 1451,
+            "changed_bytes": 27450
           }
         ]
       },
@@ -55546,8 +55546,8 @@
             "retargeted_entries": 0,
             "formations": 49,
             "plays": 253,
-            "nodes": 1427,
-            "changed_bytes": 22925
+            "nodes": 1444,
+            "changed_bytes": 22937
           }
         ]
       },
@@ -55569,8 +55569,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 264,
-            "nodes": 1489,
-            "changed_bytes": 21776
+            "nodes": 1492,
+            "changed_bytes": 22051
           }
         ]
       },
@@ -55592,8 +55592,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 260,
-            "nodes": 1441,
-            "changed_bytes": 22888
+            "nodes": 1458,
+            "changed_bytes": 22999
           }
         ]
       },
@@ -55604,7 +55604,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "ARZ",
-        "book_fingerprint": "604b2b8703b074b322793243e4bdc0eff222ed820dc536801f865cd10113de98",
+        "book_fingerprint": "488259eea197c47d344e7fcc4df3027d2ebb66b7fa3a4f70051836b49d4f58b7",
         "formations": 1,
         "plays": 64,
         "books": [
@@ -55615,8 +55615,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 2832,
-            "changed_bytes": 10301
+            "nodes": 2845,
+            "changed_bytes": 10330
           }
         ]
       },
@@ -55627,7 +55627,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "ATL",
-        "book_fingerprint": "c1aed23bd9e5e44e621c5a474fd1f2deb6ec446d7dd8e998e6a59d2724faf28e",
+        "book_fingerprint": "3c14fb92dcdcc6a5e536a209f605786bd30c628144038e9125e19e0a2c00952a",
         "formations": 2,
         "plays": 62,
         "books": [
@@ -55638,8 +55638,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 254,
-            "nodes": 2801,
-            "changed_bytes": 10019
+            "nodes": 2824,
+            "changed_bytes": 9983
           }
         ]
       },
@@ -55650,7 +55650,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "BAL",
-        "book_fingerprint": "695331e23940d94770406005e2aa0c295b92a124f3f889d6b1c508a58c94e270",
+        "book_fingerprint": "a48ede5e5c7f9ab4eba64a1a9c3f0f20d96b98b574eba309e05e9c0e15944ddb",
         "formations": 2,
         "plays": 62,
         "books": [
@@ -55661,8 +55661,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 263,
-            "nodes": 2773,
-            "changed_bytes": 9837
+            "nodes": 2792,
+            "changed_bytes": 9820
           }
         ]
       },
@@ -55673,7 +55673,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "BUF",
-        "book_fingerprint": "df44add3919dd8b2607aea08b8f0b631c836329e11a0fb0ea054431b46c3d1d7",
+        "book_fingerprint": "a0c06193d8f8612a4ff5ad2444ba49281163065a3b85008471b5280b08528fe3",
         "formations": 2,
         "plays": 57,
         "books": [
@@ -55684,8 +55684,8 @@
             "retargeted_entries": 0,
             "formations": 46,
             "plays": 270,
-            "nodes": 2768,
-            "changed_bytes": 9130
+            "nodes": 2781,
+            "changed_bytes": 9132
           }
         ]
       },
@@ -55696,7 +55696,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "CAR",
-        "book_fingerprint": "64e72fe1999eb0a881f3edab45680840b58aa62ac7b2ebfdac48eb43cc200e05",
+        "book_fingerprint": "39fe78f56d8e932a231568cfc6be11271c49f45ce6d8705eb6dfe1d7eb9e74df",
         "formations": 1,
         "plays": 61,
         "books": [
@@ -55707,8 +55707,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 269,
-            "nodes": 2795,
-            "changed_bytes": 9893
+            "nodes": 2811,
+            "changed_bytes": 9907
           }
         ]
       },
@@ -55719,7 +55719,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "CHI",
-        "book_fingerprint": "1136c6db28f1bc2a7dec4c72434600c424b4f134e308d805dd310135423a30e2",
+        "book_fingerprint": "02b3dc0d796ac94252e313ea6b368929c851c17362ba9ed05a881cbec3616a38",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -55730,8 +55730,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 266,
-            "nodes": 2843,
-            "changed_bytes": 9977
+            "nodes": 2851,
+            "changed_bytes": 9973
           }
         ]
       },
@@ -55742,7 +55742,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "CIN",
-        "book_fingerprint": "f96f1056c619f3196af4847dac1fdfe6335b3c20c2c84f99e3aec85f30e2f281",
+        "book_fingerprint": "e063dc983ccdf4f7800fac171185e93e2d9a1d51aef57d57a77f74f4d9cd981f",
         "formations": 1,
         "plays": 59,
         "books": [
@@ -55753,8 +55753,8 @@
             "retargeted_entries": 0,
             "formations": 44,
             "plays": 270,
-            "nodes": 2775,
-            "changed_bytes": 9412
+            "nodes": 2791,
+            "changed_bytes": 9413
           }
         ]
       },
@@ -55765,7 +55765,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "CLE",
-        "book_fingerprint": "19231802dca9b4a6cd3a2d507b581f5f587bd3f9defe22d748cdb89b68da3db4",
+        "book_fingerprint": "778ea7b2d7647f8c7a3e0f51b0cfc44ad461e5fe363b4ab219859a532efaaf9e",
         "formations": 2,
         "plays": 59,
         "books": [
@@ -55776,8 +55776,8 @@
             "retargeted_entries": 0,
             "formations": 44,
             "plays": 269,
-            "nodes": 2689,
-            "changed_bytes": 9580
+            "nodes": 2711,
+            "changed_bytes": 9571
           }
         ]
       },
@@ -55788,7 +55788,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "DAL",
-        "book_fingerprint": "823dae76bbf750aefaa845728a0eb67e101f6969b8bbc82afd2fa9e2589ed37f",
+        "book_fingerprint": "3a6e94070f0a00823191ad504554514658e2173478f59f4f26f03d97fa8cd68b",
         "formations": 2,
         "plays": 75,
         "books": [
@@ -55799,8 +55799,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 269,
-            "nodes": 3171,
-            "changed_bytes": 12033
+            "nodes": 3196,
+            "changed_bytes": 12001
           }
         ]
       },
@@ -55811,7 +55811,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "DEN",
-        "book_fingerprint": "0bc23baee578270225f1a188268cbfa3359aab87986ee5aca746f5127b48347c",
+        "book_fingerprint": "12a35f11a6b3c91d7e49cc0583161f69b49f4785c314224132711e5be145cf86",
         "formations": 2,
         "plays": 57,
         "books": [
@@ -55822,8 +55822,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 263,
-            "nodes": 2669,
-            "changed_bytes": 9227
+            "nodes": 2686,
+            "changed_bytes": 9230
           }
         ]
       },
@@ -55834,7 +55834,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "DET",
-        "book_fingerprint": "39b29146924348c61021478303d791a09d14d7e41cbf1cdc0bcc2ac24c47f817",
+        "book_fingerprint": "3bcf15cdba142df0bc7d8858de8c3fb0d61fad308c8cc720478f5aad68d14a40",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -55845,8 +55845,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 255,
-            "nodes": 2802,
-            "changed_bytes": 10009
+            "nodes": 2815,
+            "changed_bytes": 10039
           }
         ]
       },
@@ -55857,7 +55857,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "GB",
-        "book_fingerprint": "e1bffe3683459ac1814952e47c9ea721f1aa066869664b159c8c737600d4241c",
+        "book_fingerprint": "1cd33ca85b64e12eeb4f71b58f641d786e605ba6839e7ecba562ea70b8ba5625",
         "formations": 1,
         "plays": 64,
         "books": [
@@ -55868,8 +55868,8 @@
             "retargeted_entries": 0,
             "formations": 48,
             "plays": 264,
-            "nodes": 2863,
-            "changed_bytes": 10477
+            "nodes": 2886,
+            "changed_bytes": 10443
           }
         ]
       },
@@ -55880,7 +55880,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "HOU",
-        "book_fingerprint": "630bb9bc352f1724587079f8f48957801c4fe866be61b0b9504a457e3cfde357",
+        "book_fingerprint": "25b26d6d48ace526e51b8648da0c6650bb8b0588c052a4d2c5f3cbd09cd04e91",
         "formations": 1,
         "plays": 61,
         "books": [
@@ -55891,8 +55891,8 @@
             "retargeted_entries": 0,
             "formations": 40,
             "plays": 270,
-            "nodes": 2832,
-            "changed_bytes": 9652
+            "nodes": 2849,
+            "changed_bytes": 9689
           }
         ]
       },
@@ -55903,7 +55903,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "IND",
-        "book_fingerprint": "588e9bb3c127cfe3cc54175e2435b5af698eec930d4ff7979e67c794470b907f",
+        "book_fingerprint": "1e92623427bed729911cb83fa2873319a52105e4896b72056d08ae00b402a75c",
         "formations": 1,
         "plays": 60,
         "books": [
@@ -55914,8 +55914,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 265,
-            "nodes": 2758,
-            "changed_bytes": 9629
+            "nodes": 2768,
+            "changed_bytes": 9644
           }
         ]
       },
@@ -55926,7 +55926,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "JAX",
-        "book_fingerprint": "bb2b0e68253e6604eb92ff6d884a2252e2e998707082dac41784b882043df0bf",
+        "book_fingerprint": "3ca65722915682afa754915dc8048917ae4115dd986287a821c061e72d3e75a2",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -55937,8 +55937,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 2823,
-            "changed_bytes": 10013
+            "nodes": 2831,
+            "changed_bytes": 10008
           }
         ]
       },
@@ -55949,7 +55949,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "KC",
-        "book_fingerprint": "7e562847bb0cd73b27e85d215ec8f9e37705a3bad4568507b8ed2b907642391a",
+        "book_fingerprint": "668ca1337b6c55afe9788352618553ca1441a589cff52ecec7e6f7e52f4acaab",
         "formations": 2,
         "plays": 56,
         "books": [
@@ -55960,8 +55960,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 261,
-            "nodes": 2673,
-            "changed_bytes": 9023
+            "nodes": 2686,
+            "changed_bytes": 9024
           }
         ]
       },
@@ -55972,7 +55972,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "MIA",
-        "book_fingerprint": "48ae4e61435a08ca29165016ca7f0452d339cb4bcb36b98e864e85e89a3915f2",
+        "book_fingerprint": "37170fa0772da401597920d9aee046edf73fc6ce10885730cc0d4e7cbb4ac86a",
         "formations": 1,
         "plays": 70,
         "books": [
@@ -55983,8 +55983,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 259,
-            "nodes": 3121,
-            "changed_bytes": 11403
+            "nodes": 3147,
+            "changed_bytes": 11397
           }
         ]
       },
@@ -55995,7 +55995,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "MIN",
-        "book_fingerprint": "e755ee34194973c6d777cdf74ebc96ddcf696ec57df9f7bb72319c28b54ff636",
+        "book_fingerprint": "56cc75de418935da106a3991475c1814b7ccc47742c04cecc7f44e152af78bcd",
         "formations": 3,
         "plays": 70,
         "books": [
@@ -56006,8 +56006,8 @@
             "retargeted_entries": 0,
             "formations": 46,
             "plays": 266,
-            "nodes": 2962,
-            "changed_bytes": 11296
+            "nodes": 2982,
+            "changed_bytes": 11309
           }
         ]
       },
@@ -56018,7 +56018,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "NE",
-        "book_fingerprint": "bee20a487bf4d63578764c2bd18f83de57944817c2f4fb7fee86790cc2a94ae2",
+        "book_fingerprint": "b78357577e8886d819c1155b0b226a34f1ba16fc5dd12b3802c250ad3d0c0a1a",
         "formations": 1,
         "plays": 59,
         "books": [
@@ -56029,8 +56029,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 250,
-            "nodes": 2773,
-            "changed_bytes": 9388
+            "nodes": 2785,
+            "changed_bytes": 9391
           }
         ]
       },
@@ -56041,7 +56041,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "NO",
-        "book_fingerprint": "e459782e87bb130a82846fa619158b13aac3feea98c7e86804654bd23ad26c55",
+        "book_fingerprint": "8d9cbb575c0d57fad45585c3202fb60486aed39d7b1160837798856302b8d44e",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -56052,8 +56052,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 264,
-            "nodes": 2778,
-            "changed_bytes": 10109
+            "nodes": 2795,
+            "changed_bytes": 10140
           }
         ]
       },
@@ -56064,7 +56064,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "NYG",
-        "book_fingerprint": "ea4a3a80d1e96a53f8e6ef161e66d346bb419dd94c529e0e1aeb159381280726",
+        "book_fingerprint": "b3df8efa347a787559db346f3281065ba1fce57572dcd2fa2089dbbaf35390b2",
         "formations": 1,
         "plays": 64,
         "books": [
@@ -56075,8 +56075,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 269,
-            "nodes": 2870,
-            "changed_bytes": 10429
+            "nodes": 2896,
+            "changed_bytes": 10427
           }
         ]
       },
@@ -56087,7 +56087,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "NYJ",
-        "book_fingerprint": "42cbf0ea2d2ccd0f47c4a42c04f7351011535290d0931159c53a53a1c7af68c7",
+        "book_fingerprint": "0a48f1ff3cc05ad60f24b984bd251e267521cee878bb6bf7c040129fbc974df9",
         "formations": 3,
         "plays": 74,
         "books": [
@@ -56098,8 +56098,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 3150,
-            "changed_bytes": 11899
+            "nodes": 3170,
+            "changed_bytes": 11907
           }
         ]
       },
@@ -56110,7 +56110,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "OAK",
-        "book_fingerprint": "86781982e2516b0eb4b55d7155a5cb0f8b8778cd415e90126da97006a07fe2b4",
+        "book_fingerprint": "34c49c4926c9408d34ac6126306916fd65a24c6f800c0d00939dce8bfce7a91f",
         "formations": 2,
         "plays": 57,
         "books": [
@@ -56121,8 +56121,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 270,
-            "nodes": 2774,
-            "changed_bytes": 9146
+            "nodes": 2794,
+            "changed_bytes": 9153
           }
         ]
       },
@@ -56133,7 +56133,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "PHI",
-        "book_fingerprint": "1ee91122052648772124303730a6332e6a3b645cbab579232b2ae3128eabb89d",
+        "book_fingerprint": "b943d34042a5da6fa03e5a621346e76990186b2d3ddca0aba2b99bbb2303094d",
         "formations": 1,
         "plays": 64,
         "books": [
@@ -56144,8 +56144,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 267,
-            "nodes": 2878,
-            "changed_bytes": 10292
+            "nodes": 2901,
+            "changed_bytes": 10302
           }
         ]
       },
@@ -56156,7 +56156,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "PIT",
-        "book_fingerprint": "2c631fe583d5a3be670cd3f04c2762fdf2dd204633879f7da40411ef381865b8",
+        "book_fingerprint": "db72fb50db92712e076cdeea0de48f380cf74656bf47028c11621abd695ba94d",
         "formations": 1,
         "plays": 70,
         "books": [
@@ -56167,8 +56167,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 263,
-            "nodes": 3124,
-            "changed_bytes": 11325
+            "nodes": 3141,
+            "changed_bytes": 11383
           }
         ]
       },
@@ -56179,7 +56179,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "SD",
-        "book_fingerprint": "14181556f970dc90285b790e77d0f40ae54b9b6dbb412896f87033f0c74c10f9",
+        "book_fingerprint": "9d0584ae73819f1cd4a8073d52233ad5b960f135bc9970ea72d4512ba9d1a49f",
         "formations": 1,
         "plays": 72,
         "books": [
@@ -56190,8 +56190,8 @@
             "retargeted_entries": 0,
             "formations": 41,
             "plays": 270,
-            "nodes": 3185,
-            "changed_bytes": 11704
+            "nodes": 3211,
+            "changed_bytes": 11715
           }
         ]
       },
@@ -56202,7 +56202,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "SEA",
-        "book_fingerprint": "eba15541e5546b10fbe1aee8439ec8b3466afb94f4b34352f131ef0bc859617c",
+        "book_fingerprint": "9e59b3233e6a9ab3226206e2fc6623fa9e787ccd66d8b5b7c9496a55d1e2b62f",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -56213,8 +56213,8 @@
             "retargeted_entries": 0,
             "formations": 43,
             "plays": 269,
-            "nodes": 2833,
-            "changed_bytes": 10056
+            "nodes": 2859,
+            "changed_bytes": 10048
           }
         ]
       },
@@ -56225,7 +56225,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "SF",
-        "book_fingerprint": "d4452a9733348a9e444516a55cdcf2aa937e1e5809c55aacf364fddb779e5ef6",
+        "book_fingerprint": "03d8e2b99bbb229d0dff5ff75bd7d9f448b0a935926d509ce10177a8a753f9d1",
         "formations": 2,
         "plays": 62,
         "books": [
@@ -56236,8 +56236,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 249,
-            "nodes": 2828,
-            "changed_bytes": 10103
+            "nodes": 2854,
+            "changed_bytes": 10096
           }
         ]
       },
@@ -56248,7 +56248,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "STL",
-        "book_fingerprint": "c91021ff82297c49967dfa1fab875412b23e40f544496286e483281088df8bdd",
+        "book_fingerprint": "fb9deb168d027802e76cd1690ff976896666c685e8aacd29ff4493a7a7e3ee3a",
         "formations": 1,
         "plays": 62,
         "books": [
@@ -56259,8 +56259,8 @@
             "retargeted_entries": 0,
             "formations": 45,
             "plays": 269,
-            "nodes": 2820,
-            "changed_bytes": 10214
+            "nodes": 2837,
+            "changed_bytes": 10208
           }
         ]
       },
@@ -56271,7 +56271,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "TB",
-        "book_fingerprint": "71cd7b5720db01867291dcafa85339ca5ab42db99ed11d19d18c94bd46aac249",
+        "book_fingerprint": "32cb9ac8f79aa560f1cef7e5249b2f491c69abbd72217bdc305a23752f237265",
         "formations": 2,
         "plays": 60,
         "books": [
@@ -56282,8 +56282,8 @@
             "retargeted_entries": 0,
             "formations": 49,
             "plays": 253,
-            "nodes": 2763,
-            "changed_bytes": 9824
+            "nodes": 2780,
+            "changed_bytes": 9790
           }
         ]
       },
@@ -56294,7 +56294,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "TEN",
-        "book_fingerprint": "988d6c1425ff9fde96bd1a20e02de0ce3a6c19e82ca4389a240c65b01711863e",
+        "book_fingerprint": "e24578e583d617b93b494883c1e46b299d0ef68726d3689f5fc1ae091ac2b0ad",
         "formations": 1,
         "plays": 55,
         "books": [
@@ -56305,8 +56305,8 @@
             "retargeted_entries": 0,
             "formations": 39,
             "plays": 264,
-            "nodes": 2705,
-            "changed_bytes": 8815
+            "nodes": 2708,
+            "changed_bytes": 8814
           }
         ]
       },
@@ -56317,7 +56317,7 @@
         "version": "0.3.0",
         "license": "CC0-1.0",
         "authored_on": "WAS",
-        "book_fingerprint": "91813bbbd314aa2cb7609f46e9ed85e9bfaa0b3a313361d420e492251bac4873",
+        "book_fingerprint": "82aac1b16adee524f33a45fd03e121aac885f671fd476a0d2c5b9492be1f2f11",
         "formations": 2,
         "plays": 64,
         "books": [
@@ -56328,8 +56328,8 @@
             "retargeted_entries": 0,
             "formations": 42,
             "plays": 260,
-            "nodes": 2859,
-            "changed_bytes": 10382
+            "nodes": 2876,
+            "changed_bytes": 10373
           }
         ]
       }
@@ -56341,8 +56341,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
-        "replacement_sha256": "d8c0338afab3af9d60e3a851ad0705e8d377980c38a8e6758abe94f3ff685e87",
-        "new_node_count": 1410,
+        "replacement_sha256": "ecbbddadbad39d2f6012d5c787003c4c3df6c69ae06803614c3749e2352cfa56",
+        "new_node_count": 1423,
         "new_formation_count": 41,
         "new_play_count": 270
       }
@@ -56352,8 +56352,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
-        "replacement_sha256": "b5e90b9bf3bf7bf8e53c73667051e7238e5a03297669b225bf3058ce3c4da844",
-        "new_node_count": 1427,
+        "replacement_sha256": "4db8bb5a0cbe3a6ada11dcd5702a9e58c6b52cd84590b6f7bad1b61fd286dbd4",
+        "new_node_count": 1450,
         "new_formation_count": 39,
         "new_play_count": 254
       }
@@ -56363,8 +56363,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
-        "replacement_sha256": "76aaa874cb3d891105caa0277445f301589bb1ab585fb673f4834270d52673af",
-        "new_node_count": 1403,
+        "replacement_sha256": "80333b9e77e6c030e959502fe10a599efa5af721a43bcfc26f1674df1288a5a0",
+        "new_node_count": 1422,
         "new_formation_count": 42,
         "new_play_count": 263
       }
@@ -56374,8 +56374,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
-        "replacement_sha256": "787a0d9c3434f37b2dfe99767477c51b6fd2778f13354368333c434a92a9610d",
-        "new_node_count": 1510,
+        "replacement_sha256": "89e0068b51716d8e5ef1e557b7f61fbde0ee1b12e93abfdb247e352fb5eb38cb",
+        "new_node_count": 1523,
         "new_formation_count": 46,
         "new_play_count": 270
       }
@@ -56385,8 +56385,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
-        "replacement_sha256": "85168a02872e474c7026b53b5c3aadd2fdf2e7aa9710ed91aaf483fef216393b",
-        "new_node_count": 1437,
+        "replacement_sha256": "58d3fdb54a2888f88c97677f3e2f7c30fcabb1c92ef310c4ba0e92516750b09b",
+        "new_node_count": 1453,
         "new_formation_count": 45,
         "new_play_count": 269
       }
@@ -56396,8 +56396,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
-        "replacement_sha256": "3dc3bdd40b755c650701d9ef038279a30242ec48e9fd7cca5820190a73d02e8d",
-        "new_node_count": 1463,
+        "replacement_sha256": "1376b3d5bec3566e4f31d75ddfec40509337a83e98c76e4482ddfb111877dffc",
+        "new_node_count": 1471,
         "new_formation_count": 41,
         "new_play_count": 266
       }
@@ -56407,8 +56407,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
-        "replacement_sha256": "d4e376d6656612127b87ec7d2319c0ff9eaa6b1db7fdc0a0499a934e2844d154",
-        "new_node_count": 1469,
+        "replacement_sha256": "f8255cd9023ec92de57756f9ff5aa157de3cd82a56a6871ad0ea988b9c931a9c",
+        "new_node_count": 1485,
         "new_formation_count": 44,
         "new_play_count": 270
       }
@@ -56418,8 +56418,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
-        "replacement_sha256": "391a96840274e8556234401e813861ed6aa74cd69f13446156795c390ad192a1",
-        "new_node_count": 1379,
+        "replacement_sha256": "6cc328ce114fbd664dabff4348eeab9f2f78995129d1d6f61713f367e4356d35",
+        "new_node_count": 1401,
         "new_formation_count": 44,
         "new_play_count": 269
       }
@@ -56429,8 +56429,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
-        "replacement_sha256": "938ee14b061bb4c29e3ba6dd716b833d980a06650ab9ba05c1c7fc6ee4a35a5d",
-        "new_node_count": 1503,
+        "replacement_sha256": "f7f937193e4443776a9625f2a321d8d49bc4f91afe8dd14b6e94601571cb9251",
+        "new_node_count": 1528,
         "new_formation_count": 41,
         "new_play_count": 269
       }
@@ -56440,8 +56440,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
-        "replacement_sha256": "df12f51474d90c5af62f44433ef68000951dfdb4309426fd08cdde630bb3eb94",
-        "new_node_count": 1405,
+        "replacement_sha256": "d6395cc6971c9cf3b431aaea0724de9d0ab1801baa68ea5a35c9471c8ed12bd5",
+        "new_node_count": 1422,
         "new_formation_count": 41,
         "new_play_count": 263
       }
@@ -56451,8 +56451,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
-        "replacement_sha256": "90417c5af3429761b7b58754026a08327ae11c2cbe5248b619174749e827ee3e",
-        "new_node_count": 1424,
+        "replacement_sha256": "bddac23ac9cb37f5b41729f307f81c6c2e9e1b2a1df021eafbd111fbcd3b34af",
+        "new_node_count": 1437,
         "new_formation_count": 41,
         "new_play_count": 255
       }
@@ -56462,8 +56462,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
-        "replacement_sha256": "c0ac291a31530a64022ec1f3947005dfe2a26a8cb1b7508efdc8a2fb7e9718c2",
-        "new_node_count": 1435,
+        "replacement_sha256": "94e57aa53527eef024964ef65886fb96c6a4a3241f95f5afe856a52682da99cf",
+        "new_node_count": 1458,
         "new_formation_count": 48,
         "new_play_count": 264
       }
@@ -56473,8 +56473,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
-        "replacement_sha256": "56caaf9e828a2d2e93a3782f30c1ec61419ef26d69dbd391bd7c8b8683804c6b",
-        "new_node_count": 1482,
+        "replacement_sha256": "6e798ebe565633821ade033303a80576ceea81da6440b1ee4fa9fde37af71a3a",
+        "new_node_count": 1499,
         "new_formation_count": 40,
         "new_play_count": 270
       }
@@ -56484,8 +56484,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
-        "replacement_sha256": "eea646513c6dd33aa63feb1b3a384485798d68020e58eb757dcf24e52498c795",
-        "new_node_count": 1426,
+        "replacement_sha256": "5e0afacb0e1e0dc17f1e26c1168420c9e2c83b2afce9d8d1d0f78a9155273e4a",
+        "new_node_count": 1436,
         "new_formation_count": 45,
         "new_play_count": 265
       }
@@ -56495,8 +56495,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
-        "replacement_sha256": "aa04a21bad4fa874b7f927fde285971524085a53365aae48cb3bf3fff5d39496",
-        "new_node_count": 1453,
+        "replacement_sha256": "7a150800a91a0efa8473a2c8cbdc7133f0fa074ac442a805b87b8f81ea4c48bb",
+        "new_node_count": 1461,
         "new_formation_count": 41,
         "new_play_count": 270
       }
@@ -56506,8 +56506,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
-        "replacement_sha256": "6f9bb580c6be1f370760973fc42cfdd8aa0fd940ff6d512e44359c9fc7b5908c",
-        "new_node_count": 1431,
+        "replacement_sha256": "1cc779545828f183e07b80125367cf74f71ff0790985f23e37ad96f16c4bb431",
+        "new_node_count": 1444,
         "new_formation_count": 42,
         "new_play_count": 261
       }
@@ -56517,8 +56517,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
-        "replacement_sha256": "7f99460f1f03ccafb94fa10917b3cc30be3eeebaf1f8bbccbf3023d5ad219b8b",
-        "new_node_count": 1553,
+        "replacement_sha256": "3b5be9d554d244da21da9aae653e06754f8bca84b7a71ac1ef9a4806c1d0560c",
+        "new_node_count": 1579,
         "new_formation_count": 43,
         "new_play_count": 259
       }
@@ -56528,8 +56528,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
-        "replacement_sha256": "60d73d2cb7a19644c21f91c1a9a399a300eab4be2553faa3a06f30cff57f293e",
-        "new_node_count": 1404,
+        "replacement_sha256": "aea1c1f367b20a28e8977f82949bee5ed2a32ad56680ad20b6622605d73449e0",
+        "new_node_count": 1424,
         "new_formation_count": 46,
         "new_play_count": 266
       }
@@ -56539,8 +56539,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
-        "replacement_sha256": "2918778e225d2a7c4f1e76978f4e30e5bb75daf20c8de4eb8eb79aa6b64618fc",
-        "new_node_count": 1467,
+        "replacement_sha256": "73991d943d17ce834884bbfed9111b5aafbeb91a2e5272bbacc7b1f49ef062b4",
+        "new_node_count": 1479,
         "new_formation_count": 42,
         "new_play_count": 250
       }
@@ -56550,8 +56550,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
-        "replacement_sha256": "138e5590e1019780a781ee67f86c1f3154abc179d0db4d665f0a1e0cb05faf15",
-        "new_node_count": 1400,
+        "replacement_sha256": "b40e04eac1d3429c3f05c2c510c2526e7fa26726294f084ef70a20badd665ba0",
+        "new_node_count": 1417,
         "new_formation_count": 41,
         "new_play_count": 264
       }
@@ -56561,8 +56561,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
-        "replacement_sha256": "757a9fd0ffba93e66e4f492d8b63ba4bb78da33d185a6a01d72eebc75a62a575",
-        "new_node_count": 1438,
+        "replacement_sha256": "894f9580366fe683affb997145c6ba50c7c45d4fefa0e152b0e67fe080e2ec49",
+        "new_node_count": 1464,
         "new_formation_count": 43,
         "new_play_count": 269
       }
@@ -56572,8 +56572,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
-        "replacement_sha256": "32052dc616a5a4d90019b125c9e1f92d0dafee3ff04b506c941488c9cc83876e",
-        "new_node_count": 1512,
+        "replacement_sha256": "a48d47e81ce3a50d96b06049203da086627de7ce4862e9dda1eecf71a28a0e9a",
+        "new_node_count": 1532,
         "new_formation_count": 41,
         "new_play_count": 270
       }
@@ -56583,8 +56583,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
-        "replacement_sha256": "f73e7f7766988635956ad5af0e3d8bf325a886524461bd8131d34f2f53b10795",
-        "new_node_count": 1496,
+        "replacement_sha256": "da8e4a9a110b15b7fc694f96a24ffe401c440fc0067c5d71267c6ab969809cde",
+        "new_node_count": 1516,
         "new_formation_count": 43,
         "new_play_count": 270
       }
@@ -56594,8 +56594,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
-        "replacement_sha256": "74acff67a9c502157aab8e9b5ac1a9d4a11ef0901515e4387c87ca542f39bfa6",
-        "new_node_count": 1462,
+        "replacement_sha256": "21e73ea86370779bc7d17c0ab3ed08b7ee3b1029172aab8f09a9ed6b96104101",
+        "new_node_count": 1485,
         "new_formation_count": 41,
         "new_play_count": 267
       }
@@ -56605,8 +56605,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
-        "replacement_sha256": "2e03e953eac84827fb03f0046b9362b78e27f6938a43d7413353d6e0c3eb353c",
-        "new_node_count": 1560,
+        "replacement_sha256": "e9533f7f0cf0c96f151a13c593ff2e463bcbb8b7254df97b3a40e4a7552aba7a",
+        "new_node_count": 1577,
         "new_formation_count": 41,
         "new_play_count": 263
       }
@@ -56616,8 +56616,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
-        "replacement_sha256": "4df7a106266e067652a0bac71bab351197981a2378ae805f76d8d376173deb9b",
-        "new_node_count": 1577,
+        "replacement_sha256": "77fd84933766c848123515e2b27cf28e9f8f97017f17234b01e165225730f7f1",
+        "new_node_count": 1603,
         "new_formation_count": 41,
         "new_play_count": 270
       }
@@ -56627,8 +56627,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
-        "replacement_sha256": "e7fd4bd000b45efff0e85df768c5e68cfc23d7b9501c3999723cdef4af33f743",
-        "new_node_count": 1455,
+        "replacement_sha256": "db358d30e58e9f742954986714829313847f286b3742da922751c9d82828967f",
+        "new_node_count": 1481,
         "new_formation_count": 43,
         "new_play_count": 269
       }
@@ -56638,8 +56638,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
-        "replacement_sha256": "fde365979b3375edaae9bf2246e8ef5654b9e262496bb200d5a9e5e79437e8cc",
-        "new_node_count": 1444,
+        "replacement_sha256": "bbe79ed96dc3ddd77a51759c82f3614d8b69e18322acbda37fa27e20cc6aafda",
+        "new_node_count": 1470,
         "new_formation_count": 39,
         "new_play_count": 249
       }
@@ -56649,8 +56649,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
-        "replacement_sha256": "5008099f6944bd670d62bf16b51cf131df95470e18cf48a19c4529df82767466",
-        "new_node_count": 1434,
+        "replacement_sha256": "9678b6156c3320b97f9f826b574d43fe4b82624551dc7dfcf37fd29fcc0bedb4",
+        "new_node_count": 1451,
         "new_formation_count": 45,
         "new_play_count": 269
       }
@@ -56660,8 +56660,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
-        "replacement_sha256": "aaff74010e97f0505a9b3ef64bd44b725427567be9e8b0c6dc09387f9de61f2f",
-        "new_node_count": 1427,
+        "replacement_sha256": "667c85a7774786b6a41d63cacda82174b5137fcb66b884f31ccfc8ccbb822a52",
+        "new_node_count": 1444,
         "new_formation_count": 49,
         "new_play_count": 253
       }
@@ -56671,8 +56671,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
-        "replacement_sha256": "749fed2057913222206a1d108a85a7c7d2aea2e222fea3ec98a4bded37cae70d",
-        "new_node_count": 1489,
+        "replacement_sha256": "03d7e425b396f789981ec4fadf84b8ffd0b6dd052ee7ecb5afb3280cd14c83ca",
+        "new_node_count": 1492,
         "new_formation_count": 39,
         "new_play_count": 264
       }
@@ -56682,8 +56682,8 @@
       "receipt": {
         "schema": "nfl2k5_complete_offense/v1",
         "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
-        "replacement_sha256": "69ba9d26ecb61744ef5ef3f72f09a4c662b323fdf38a9e41d280e6c28ed2fa5f",
-        "new_node_count": 1441,
+        "replacement_sha256": "e92b116cd23ac94d871e22b970b72806399893440c0c20195f230d3e05509430",
+        "new_node_count": 1458,
         "new_formation_count": 42,
         "new_play_count": 260
       }
@@ -56692,10 +56692,10 @@
       "pack": "data/playbooks/softdrink_arz_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "d8c0338afab3af9d60e3a851ad0705e8d377980c38a8e6758abe94f3ff685e87",
-        "replacement_sha256": "491e04d42fe71b3699a1b0115de6fcaf73f40a1f9059f75b2078586144a728de",
-        "old_node_count": 1410,
-        "new_node_count": 2832,
+        "source_sha256": "ecbbddadbad39d2f6012d5c787003c4c3df6c69ae06803614c3749e2352cfa56",
+        "replacement_sha256": "3ca961bbacb6c4b57f2088d5547cebe39df59e2990eb9945cb88590db80b8785",
+        "old_node_count": 1423,
+        "new_node_count": 2845,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 270,
@@ -56775,10 +56775,10 @@
       "pack": "data/playbooks/softdrink_atl_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "b5e90b9bf3bf7bf8e53c73667051e7238e5a03297669b225bf3058ce3c4da844",
-        "replacement_sha256": "0af16256a7951ecf0f7fb4da697b82a18cad21f113d0c27a721a9b00939030ab",
-        "old_node_count": 1427,
-        "new_node_count": 2801,
+        "source_sha256": "4db8bb5a0cbe3a6ada11dcd5702a9e58c6b52cd84590b6f7bad1b61fd286dbd4",
+        "replacement_sha256": "ba23434f89bfde83e9cf1175794826c061cc76c077007ab7732be3134f825073",
+        "old_node_count": 1450,
+        "new_node_count": 2824,
         "old_formation_count": 39,
         "new_formation_count": 39,
         "old_play_count": 254,
@@ -56857,10 +56857,10 @@
       "pack": "data/playbooks/softdrink_bal_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "76aaa874cb3d891105caa0277445f301589bb1ab585fb673f4834270d52673af",
-        "replacement_sha256": "eea7dca75b32439e616f6464a5baa7fdb3af0dd8591ad42964ef5593323439cc",
-        "old_node_count": 1403,
-        "new_node_count": 2773,
+        "source_sha256": "80333b9e77e6c030e959502fe10a599efa5af721a43bcfc26f1674df1288a5a0",
+        "replacement_sha256": "01472a1733f8a2553400684eca7217127bf5baa13d7c0123b9bc8a0ff4fec170",
+        "old_node_count": 1422,
+        "new_node_count": 2792,
         "old_formation_count": 42,
         "new_formation_count": 42,
         "old_play_count": 263,
@@ -56939,10 +56939,10 @@
       "pack": "data/playbooks/softdrink_buf_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "787a0d9c3434f37b2dfe99767477c51b6fd2778f13354368333c434a92a9610d",
-        "replacement_sha256": "a7a06483d28eb08e98e471bc7cdcdf057e96c06da280418a7ad9c36a9d43f15f",
-        "old_node_count": 1510,
-        "new_node_count": 2768,
+        "source_sha256": "89e0068b51716d8e5ef1e557b7f61fbde0ee1b12e93abfdb247e352fb5eb38cb",
+        "replacement_sha256": "721b12d319a3cb5cfedbbfa2047f6aae2cb265b31c15ca3f01a3ab7ea1b1b41e",
+        "old_node_count": 1523,
+        "new_node_count": 2781,
         "old_formation_count": 46,
         "new_formation_count": 46,
         "old_play_count": 270,
@@ -57016,10 +57016,10 @@
       "pack": "data/playbooks/softdrink_car_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "85168a02872e474c7026b53b5c3aadd2fdf2e7aa9710ed91aaf483fef216393b",
-        "replacement_sha256": "24656f87d4f924e1da5285fa75ee401eb3c9a7aa342b38fdf3e553544bf5d642",
-        "old_node_count": 1437,
-        "new_node_count": 2795,
+        "source_sha256": "58d3fdb54a2888f88c97677f3e2f7c30fcabb1c92ef310c4ba0e92516750b09b",
+        "replacement_sha256": "a347bf650769599fe219757daca718746944b9ccaa09608ea3cf6ba4eae76c99",
+        "old_node_count": 1453,
+        "new_node_count": 2811,
         "old_formation_count": 45,
         "new_formation_count": 45,
         "old_play_count": 269,
@@ -57096,10 +57096,10 @@
       "pack": "data/playbooks/softdrink_chi_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "3dc3bdd40b755c650701d9ef038279a30242ec48e9fd7cca5820190a73d02e8d",
-        "replacement_sha256": "6f4d87ef745f337fba4b8d78d638f0fa00079f5830942d32c8b5de28c31e3e15",
-        "old_node_count": 1463,
-        "new_node_count": 2843,
+        "source_sha256": "1376b3d5bec3566e4f31d75ddfec40509337a83e98c76e4482ddfb111877dffc",
+        "replacement_sha256": "8a57896d1bb4aa06a278fdb92c6f5ea904ce7519ae18d87c40b98cf270c73482",
+        "old_node_count": 1471,
+        "new_node_count": 2851,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 266,
@@ -57177,10 +57177,10 @@
       "pack": "data/playbooks/softdrink_cin_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "d4e376d6656612127b87ec7d2319c0ff9eaa6b1db7fdc0a0499a934e2844d154",
-        "replacement_sha256": "1a6dd4f3563ae13ff4e5827ced552316cfcbedb68e3bd6f64d977d87d2cc6002",
-        "old_node_count": 1469,
-        "new_node_count": 2775,
+        "source_sha256": "f8255cd9023ec92de57756f9ff5aa157de3cd82a56a6871ad0ea988b9c931a9c",
+        "replacement_sha256": "124d3ecf667a87a24d986e1c4becd88b6580a29fb534b5996570d893e3301087",
+        "old_node_count": 1485,
+        "new_node_count": 2791,
         "old_formation_count": 44,
         "new_formation_count": 44,
         "old_play_count": 270,
@@ -57255,10 +57255,10 @@
       "pack": "data/playbooks/softdrink_cle_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "391a96840274e8556234401e813861ed6aa74cd69f13446156795c390ad192a1",
-        "replacement_sha256": "53dd8700aa00c2adf6e2180fb73dfbfee9bce93aacb9b0788ec6d8c1da3f0bbb",
-        "old_node_count": 1379,
-        "new_node_count": 2689,
+        "source_sha256": "6cc328ce114fbd664dabff4348eeab9f2f78995129d1d6f61713f367e4356d35",
+        "replacement_sha256": "aa46a7d8d009d4320a657ea68d056166cf46ae099cc83e34c82759db9d9a3023",
+        "old_node_count": 1401,
+        "new_node_count": 2711,
         "old_formation_count": 44,
         "new_formation_count": 44,
         "old_play_count": 269,
@@ -57334,10 +57334,10 @@
       "pack": "data/playbooks/softdrink_dal_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "938ee14b061bb4c29e3ba6dd716b833d980a06650ab9ba05c1c7fc6ee4a35a5d",
-        "replacement_sha256": "09980ee7bd9577de928f8a0ad41065677859dfa86adeb72ffc5fb077115dec7f",
-        "old_node_count": 1503,
-        "new_node_count": 3171,
+        "source_sha256": "f7f937193e4443776a9625f2a321d8d49bc4f91afe8dd14b6e94601571cb9251",
+        "replacement_sha256": "f763fee6e929d86506b476aa2d0865b04b71914a0fddbbf25221c28ac044c78b",
+        "old_node_count": 1528,
+        "new_node_count": 3196,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 269,
@@ -57429,10 +57429,10 @@
       "pack": "data/playbooks/softdrink_den_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "df12f51474d90c5af62f44433ef68000951dfdb4309426fd08cdde630bb3eb94",
-        "replacement_sha256": "7aa0e1cea2e8877fd5e251f1ec0ead73a7d396a133ee74e82c6a4c641cc7224a",
-        "old_node_count": 1405,
-        "new_node_count": 2669,
+        "source_sha256": "d6395cc6971c9cf3b431aaea0724de9d0ab1801baa68ea5a35c9471c8ed12bd5",
+        "replacement_sha256": "e33630b08ba3f12e3704d32f65e5e1cd443f814a99098dffca0225380e48f6a6",
+        "old_node_count": 1422,
+        "new_node_count": 2686,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 263,
@@ -57506,10 +57506,10 @@
       "pack": "data/playbooks/softdrink_det_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "90417c5af3429761b7b58754026a08327ae11c2cbe5248b619174749e827ee3e",
-        "replacement_sha256": "a637a36f7d51aed22d716fb1c8aa0aff461ede229385f32b7d936c6a1c70660b",
-        "old_node_count": 1424,
-        "new_node_count": 2802,
+        "source_sha256": "bddac23ac9cb37f5b41729f307f81c6c2e9e1b2a1df021eafbd111fbcd3b34af",
+        "replacement_sha256": "c7e34524469e4406fda4e914d32fff27a369c50315eb8368539bb97eec42f072",
+        "old_node_count": 1437,
+        "new_node_count": 2815,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 255,
@@ -57587,10 +57587,10 @@
       "pack": "data/playbooks/softdrink_gb_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "c0ac291a31530a64022ec1f3947005dfe2a26a8cb1b7508efdc8a2fb7e9718c2",
-        "replacement_sha256": "20055ef53a6ddacb9c950af8a22ef4fc2f210418b70e8ab99ebe1597ed66a875",
-        "old_node_count": 1435,
-        "new_node_count": 2863,
+        "source_sha256": "94e57aa53527eef024964ef65886fb96c6a4a3241f95f5afe856a52682da99cf",
+        "replacement_sha256": "45b1a218308887dcf26550ff027f4d56530aeebed9bf51d517d7bd7b1cd69b43",
+        "old_node_count": 1458,
+        "new_node_count": 2886,
         "old_formation_count": 48,
         "new_formation_count": 48,
         "old_play_count": 264,
@@ -57670,10 +57670,10 @@
       "pack": "data/playbooks/softdrink_hou_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "56caaf9e828a2d2e93a3782f30c1ec61419ef26d69dbd391bd7c8b8683804c6b",
-        "replacement_sha256": "1b0ddf38be20fb16bbca6adf8b6fe1baae980256c622b56ea05bc20bd35cbc29",
-        "old_node_count": 1482,
-        "new_node_count": 2832,
+        "source_sha256": "6e798ebe565633821ade033303a80576ceea81da6440b1ee4fa9fde37af71a3a",
+        "replacement_sha256": "92aae9fb21dcdcf39dbfe04cabd0aed2a8c71f687041f8512cf54b98aa383eee",
+        "old_node_count": 1499,
+        "new_node_count": 2849,
         "old_formation_count": 40,
         "new_formation_count": 40,
         "old_play_count": 270,
@@ -57750,10 +57750,10 @@
       "pack": "data/playbooks/softdrink_ind_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "eea646513c6dd33aa63feb1b3a384485798d68020e58eb757dcf24e52498c795",
-        "replacement_sha256": "cd70fd64fd34eae0aa8efbbacf44bee30023aa9f8acfea64af333c5f40ccb6ff",
-        "old_node_count": 1426,
-        "new_node_count": 2758,
+        "source_sha256": "5e0afacb0e1e0dc17f1e26c1168420c9e2c83b2afce9d8d1d0f78a9155273e4a",
+        "replacement_sha256": "b2ae4eb91447fd829a646532a59e1cb7568d080ec276b6b1f217de72105921fb",
+        "old_node_count": 1436,
+        "new_node_count": 2768,
         "old_formation_count": 45,
         "new_formation_count": 45,
         "old_play_count": 265,
@@ -57829,10 +57829,10 @@
       "pack": "data/playbooks/softdrink_jax_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "aa04a21bad4fa874b7f927fde285971524085a53365aae48cb3bf3fff5d39496",
-        "replacement_sha256": "5361fe9ccc1f126f85d8deaac0ec5eb32dec87c270f27841313ba580c3c2a4e5",
-        "old_node_count": 1453,
-        "new_node_count": 2823,
+        "source_sha256": "7a150800a91a0efa8473a2c8cbdc7133f0fa074ac442a805b87b8f81ea4c48bb",
+        "replacement_sha256": "2a0909ee9e34fb18d06abf7920185694e8b20347ee058d99849e66b9e4ac6efd",
+        "old_node_count": 1461,
+        "new_node_count": 2831,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 270,
@@ -57910,10 +57910,10 @@
       "pack": "data/playbooks/softdrink_kc_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "6f9bb580c6be1f370760973fc42cfdd8aa0fd940ff6d512e44359c9fc7b5908c",
-        "replacement_sha256": "78152f36999fa02b603f6cf73cd351b5546a341e73c7fcb193607244f7b991c8",
-        "old_node_count": 1431,
-        "new_node_count": 2673,
+        "source_sha256": "1cc779545828f183e07b80125367cf74f71ff0790985f23e37ad96f16c4bb431",
+        "replacement_sha256": "561dc38dc6459e8bb91ca9a18a774dbb8185abfddb74853617c4f4b9c33f54ab",
+        "old_node_count": 1444,
+        "new_node_count": 2686,
         "old_formation_count": 42,
         "new_formation_count": 42,
         "old_play_count": 261,
@@ -57986,10 +57986,10 @@
       "pack": "data/playbooks/softdrink_mia_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "7f99460f1f03ccafb94fa10917b3cc30be3eeebaf1f8bbccbf3023d5ad219b8b",
-        "replacement_sha256": "4cf4a35c3f2eccb7002cd52870b9b02b88d31f4239ea5aeb4464070ab4f7f983",
-        "old_node_count": 1553,
-        "new_node_count": 3121,
+        "source_sha256": "3b5be9d554d244da21da9aae653e06754f8bca84b7a71ac1ef9a4806c1d0560c",
+        "replacement_sha256": "71b677bd7ef5019bf0b5acf46a33b1c627d27b659a8d955332a69bf072f7af1e",
+        "old_node_count": 1579,
+        "new_node_count": 3147,
         "old_formation_count": 43,
         "new_formation_count": 43,
         "old_play_count": 259,
@@ -58075,10 +58075,10 @@
       "pack": "data/playbooks/softdrink_min_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "60d73d2cb7a19644c21f91c1a9a399a300eab4be2553faa3a06f30cff57f293e",
-        "replacement_sha256": "8f3e56f610db7074be15cf2ac5921e43550ff97e58a823ed09ee252872aa2b4a",
-        "old_node_count": 1404,
-        "new_node_count": 2962,
+        "source_sha256": "aea1c1f367b20a28e8977f82949bee5ed2a32ad56680ad20b6622605d73449e0",
+        "replacement_sha256": "d3b7bd3a7c8631c9b021d1a1bac593366bd4defe8686a9bdccc9e63b971c165d",
+        "old_node_count": 1424,
+        "new_node_count": 2982,
         "old_formation_count": 46,
         "new_formation_count": 46,
         "old_play_count": 266,
@@ -58166,10 +58166,10 @@
       "pack": "data/playbooks/softdrink_ne_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "2918778e225d2a7c4f1e76978f4e30e5bb75daf20c8de4eb8eb79aa6b64618fc",
-        "replacement_sha256": "332a098ac6ef2bb64f9d9355dc1b080e05a26389d57874f18e05c4ed8bd4e455",
-        "old_node_count": 1467,
-        "new_node_count": 2773,
+        "source_sha256": "73991d943d17ce834884bbfed9111b5aafbeb91a2e5272bbacc7b1f49ef062b4",
+        "replacement_sha256": "28824a0189efee314430a94c6beb7888491dd7ff8a991c5ffbb36eda210d2672",
+        "old_node_count": 1479,
+        "new_node_count": 2785,
         "old_formation_count": 42,
         "new_formation_count": 42,
         "old_play_count": 250,
@@ -58244,10 +58244,10 @@
       "pack": "data/playbooks/softdrink_no_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "138e5590e1019780a781ee67f86c1f3154abc179d0db4d665f0a1e0cb05faf15",
-        "replacement_sha256": "219a8d406525464bb6fceed0d2b63bad0250e8e973c796cb88a81f7809af7afb",
-        "old_node_count": 1400,
-        "new_node_count": 2778,
+        "source_sha256": "b40e04eac1d3429c3f05c2c510c2526e7fa26726294f084ef70a20badd665ba0",
+        "replacement_sha256": "e5ca944d6b71b1433b6990a2dd4558b4d4eb11ff8dc576aa4e7b7d322beafeed",
+        "old_node_count": 1417,
+        "new_node_count": 2795,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 264,
@@ -58325,10 +58325,10 @@
       "pack": "data/playbooks/softdrink_nyg_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "757a9fd0ffba93e66e4f492d8b63ba4bb78da33d185a6a01d72eebc75a62a575",
-        "replacement_sha256": "046248ffa7737c63b8ddc740b26e3a5f905c5daff9deac366d3d2be7d8b0e2ed",
-        "old_node_count": 1438,
-        "new_node_count": 2870,
+        "source_sha256": "894f9580366fe683affb997145c6ba50c7c45d4fefa0e152b0e67fe080e2ec49",
+        "replacement_sha256": "b2cd7d1b468126ce016cdb259478c9b4350cea6684bb288d080b4cbd6b53122c",
+        "old_node_count": 1464,
+        "new_node_count": 2896,
         "old_formation_count": 43,
         "new_formation_count": 43,
         "old_play_count": 269,
@@ -58408,10 +58408,10 @@
       "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "32052dc616a5a4d90019b125c9e1f92d0dafee3ff04b506c941488c9cc83876e",
-        "replacement_sha256": "7e41fa370783d1d6c627022ec06193133e7f3e350a4fa1d43f69d7dea616a400",
-        "old_node_count": 1512,
-        "new_node_count": 3150,
+        "source_sha256": "a48d47e81ce3a50d96b06049203da086627de7ce4862e9dda1eecf71a28a0e9a",
+        "replacement_sha256": "839f14f0b6f37b1e12a5eaf8fc50bca508c6b7586a3f41b010f0434af20643ad",
+        "old_node_count": 1532,
+        "new_node_count": 3170,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 270,
@@ -58503,10 +58503,10 @@
       "pack": "data/playbooks/softdrink_oak_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "f73e7f7766988635956ad5af0e3d8bf325a886524461bd8131d34f2f53b10795",
-        "replacement_sha256": "6739e4193d5312634f1619fd79a235db6642a865323fad2b901ad6fc028866b8",
-        "old_node_count": 1496,
-        "new_node_count": 2774,
+        "source_sha256": "da8e4a9a110b15b7fc694f96a24ffe401c440fc0067c5d71267c6ab969809cde",
+        "replacement_sha256": "fe5c9088d5c21eb47123cb3017b815647f5299bd9aaf337056eef901728991d9",
+        "old_node_count": 1516,
+        "new_node_count": 2794,
         "old_formation_count": 43,
         "new_formation_count": 43,
         "old_play_count": 270,
@@ -58580,10 +58580,10 @@
       "pack": "data/playbooks/softdrink_phi_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "74acff67a9c502157aab8e9b5ac1a9d4a11ef0901515e4387c87ca542f39bfa6",
-        "replacement_sha256": "d4ab6fe6b9e31666fbabac5b4787af3d7de71dc20ca29d961caaab6df024c221",
-        "old_node_count": 1462,
-        "new_node_count": 2878,
+        "source_sha256": "21e73ea86370779bc7d17c0ab3ed08b7ee3b1029172aab8f09a9ed6b96104101",
+        "replacement_sha256": "d88fcc6e03ae0c8343b8526f3ae58e045539da8755322da51556ec89dc727658",
+        "old_node_count": 1485,
+        "new_node_count": 2901,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 267,
@@ -58663,10 +58663,10 @@
       "pack": "data/playbooks/softdrink_pit_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "2e03e953eac84827fb03f0046b9362b78e27f6938a43d7413353d6e0c3eb353c",
-        "replacement_sha256": "e601540ee61e139e7c8e68e8efa979c136f26906ffa54c64d671957b74fadeac",
-        "old_node_count": 1560,
-        "new_node_count": 3124,
+        "source_sha256": "e9533f7f0cf0c96f151a13c593ff2e463bcbb8b7254df97b3a40e4a7552aba7a",
+        "replacement_sha256": "adc95e2c960fb70415deadd225eae2db24104ebb341b2b7ef8e8eec21237d4cd",
+        "old_node_count": 1577,
+        "new_node_count": 3141,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 263,
@@ -58752,10 +58752,10 @@
       "pack": "data/playbooks/softdrink_sd_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "4df7a106266e067652a0bac71bab351197981a2378ae805f76d8d376173deb9b",
-        "replacement_sha256": "3d75c6652415400e946b9385674d2a865d5a96d35c4c886f7b0d992888c88d7a",
-        "old_node_count": 1577,
-        "new_node_count": 3185,
+        "source_sha256": "77fd84933766c848123515e2b27cf28e9f8f97017f17234b01e165225730f7f1",
+        "replacement_sha256": "43904095114ba9ea409474afdaab57f5cddbb2855087204da6bb9c38e4f2a686",
+        "old_node_count": 1603,
+        "new_node_count": 3211,
         "old_formation_count": 41,
         "new_formation_count": 41,
         "old_play_count": 270,
@@ -58843,10 +58843,10 @@
       "pack": "data/playbooks/softdrink_sea_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "e7fd4bd000b45efff0e85df768c5e68cfc23d7b9501c3999723cdef4af33f743",
-        "replacement_sha256": "3bb779467a1393ed3d1084fdebe7177f9d656e765faccf89fa5289483ca77acc",
-        "old_node_count": 1455,
-        "new_node_count": 2833,
+        "source_sha256": "db358d30e58e9f742954986714829313847f286b3742da922751c9d82828967f",
+        "replacement_sha256": "384bac327905e725fe1031e6c864cb3bd78446b9fb9708edbd80b01f3571caac",
+        "old_node_count": 1481,
+        "new_node_count": 2859,
         "old_formation_count": 43,
         "new_formation_count": 43,
         "old_play_count": 269,
@@ -58924,10 +58924,10 @@
       "pack": "data/playbooks/softdrink_sf_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "fde365979b3375edaae9bf2246e8ef5654b9e262496bb200d5a9e5e79437e8cc",
-        "replacement_sha256": "d28ef383b269d74cc1d0ce40f7fc257eb6d79ae9e2ff316a40ee9c10e973e5a0",
-        "old_node_count": 1444,
-        "new_node_count": 2828,
+        "source_sha256": "bbe79ed96dc3ddd77a51759c82f3614d8b69e18322acbda37fa27e20cc6aafda",
+        "replacement_sha256": "7f6120634e28448bc1a91f01fad71692a03d42aa69e87ce3dc4de9eb47570fc7",
+        "old_node_count": 1470,
+        "new_node_count": 2854,
         "old_formation_count": 39,
         "new_formation_count": 39,
         "old_play_count": 249,
@@ -59006,10 +59006,10 @@
       "pack": "data/playbooks/softdrink_stl_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "5008099f6944bd670d62bf16b51cf131df95470e18cf48a19c4529df82767466",
-        "replacement_sha256": "9b4423f6fb37ceeced9d6959d0e520d538287ec88ac753a1bab389c2001b0918",
-        "old_node_count": 1434,
-        "new_node_count": 2820,
+        "source_sha256": "9678b6156c3320b97f9f826b574d43fe4b82624551dc7dfcf37fd29fcc0bedb4",
+        "replacement_sha256": "1879c853373f01afc19047439c07ac7afb5cf52eac1791344f53cbb4dd779b5b",
+        "old_node_count": 1451,
+        "new_node_count": 2837,
         "old_formation_count": 45,
         "new_formation_count": 45,
         "old_play_count": 269,
@@ -59087,10 +59087,10 @@
       "pack": "data/playbooks/softdrink_tb_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "aaff74010e97f0505a9b3ef64bd44b725427567be9e8b0c6dc09387f9de61f2f",
-        "replacement_sha256": "810ae1ae1273aa8686728a0f8ec734bd7676d13f1c606079c3d36ba3986cf902",
-        "old_node_count": 1427,
-        "new_node_count": 2763,
+        "source_sha256": "667c85a7774786b6a41d63cacda82174b5137fcb66b884f31ccfc8ccbb822a52",
+        "replacement_sha256": "28668b532ed0f07f6a040ee4523269bbe222ab6fe8c5fe79427ac9b25127b3b9",
+        "old_node_count": 1444,
+        "new_node_count": 2780,
         "old_formation_count": 49,
         "new_formation_count": 49,
         "old_play_count": 253,
@@ -59167,10 +59167,10 @@
       "pack": "data/playbooks/softdrink_ten_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "749fed2057913222206a1d108a85a7c7d2aea2e222fea3ec98a4bded37cae70d",
-        "replacement_sha256": "327a670fd1acbe93915a03e6258f7b5eb02fc648dd5750eca3c959f5247368ad",
-        "old_node_count": 1489,
-        "new_node_count": 2705,
+        "source_sha256": "03d7e425b396f789981ec4fadf84b8ffd0b6dd052ee7ecb5afb3280cd14c83ca",
+        "replacement_sha256": "a85cbec4225d9d4c40ab86dd30be3a5d34a8893dcf3c5bf0e02f0d4d5aaef82f",
+        "old_node_count": 1492,
+        "new_node_count": 2708,
         "old_formation_count": 39,
         "new_formation_count": 39,
         "old_play_count": 264,
@@ -59241,10 +59241,10 @@
       "pack": "data/playbooks/softdrink_was_defense.2k5book",
       "receipt": {
         "schema": "nfl2k5_formation_play_create/v1",
-        "source_sha256": "69ba9d26ecb61744ef5ef3f72f09a4c662b323fdf38a9e41d280e6c28ed2fa5f",
-        "replacement_sha256": "338bd3bf6b303cc29428550edd641e049a99b400a27b86c5125f3d92c5c44fd3",
-        "old_node_count": 1441,
-        "new_node_count": 2859,
+        "source_sha256": "e92b116cd23ac94d871e22b970b72806399893440c0c20195f230d3e05509430",
+        "replacement_sha256": "9443527b3d6a18cf655d332aeb19cfcf61c085e2283478799cdc3c5e8bc28ede",
+        "old_node_count": 1458,
+        "new_node_count": 2876,
         "old_formation_count": 42,
         "new_formation_count": 42,
         "old_play_count": 260,

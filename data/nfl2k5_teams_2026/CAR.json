@@ -4,7 +4,9 @@
  "name": "Carolina Panthers",
  "asset_code": "04",
  "season": 2026,
- "sources_uw": {"sleeve_logo_2026": "nike.com's 2026 Panthers Game jerseys (blue and black): the panther head under the swoosh, a moderate patch, facing forward on both arms"},
+ "sources_uw": {
+  "sleeve_logo_2026": "nike.com's 2026 Panthers Game jerseys (blue and black): the panther head under the swoosh, a moderate patch, facing forward on both arms"
+ },
  "status": "Phase B job d7 (NFC South), 2026-09-23. KEPT its 2004 look with the 2012 logo, the 2019 straight pant stripes and silver pants at home and white on the road. Colours sourced; albedo INFERRED from 2026 photos.",
  "roster": {
   "season": 2026,
@@ -63,7 +65,7 @@
  "kits": {
   "home": {
    "selector": "04H0",
-   "note": "2026 home: black jersey with the Panther-blue collar and blue and silver shoulder stripes, white numbers outlined in blue, panther on the sleeves, silver pants with a black-blue-black stripe (the classic pairing with the black jersey; Wikipedia), black socks, silver helmet with the 2012 panther",
+   "note": "2026 home (u2a): black jersey with the Panther-blue collar and blue and silver shoulder stripes, white numbers outlined in blue, panther on the sleeves, black pants with a wide Panther-blue stripe edged in silver (week 4 vs DET), black socks, black alternate helmet with two Panther-blue stripes and the 2012 panther (black body, blue and silver detail)",
    "torso": {
     "base_colour": "black",
     "neck_donor": "04H0",
@@ -107,22 +109,95 @@
     ]
    },
    "pants": {
-    "base_colour": "silver",
-    "stripe": [
-     [
-      "black",
-      2
-     ],
-     [
-      "blue",
-      5
-     ],
-     [
-      "black",
-      2
-     ]
-    ],
-    "swoosh_colour": "black"
+    "base_colour": "black",
+    "stripe": [],
+    "swoosh_colour": "white",
+    "decorations": [
+     {
+      "polygon": [
+       [
+        123.5,
+        0
+       ],
+       [
+        160.5,
+        0
+       ],
+       [
+        155.5,
+        256
+       ],
+       [
+        128.5,
+        256
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        350.5,
+        0
+       ],
+       [
+        387.5,
+        0
+       ],
+       [
+        382.5,
+        256
+       ],
+       [
+        355.5,
+        256
+       ]
+      ],
+      "colour": "silver"
+     },
+     {
+      "polygon": [
+       [
+        126.0,
+        0
+       ],
+       [
+        158.0,
+        0
+       ],
+       [
+        153.0,
+        256
+       ],
+       [
+        131.0,
+        256
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        353.0,
+        0
+       ],
+       [
+        385.0,
+        0
+       ],
+       [
+        380.0,
+        256
+       ],
+       [
+        358.0,
+        256
+       ]
+      ],
+      "colour": "blue"
+     }
+    ]
    },
    "socks": {
     "colour": "black"
@@ -136,14 +211,9 @@
     "fill": "white"
    },
    "helmet": {
-    "shell_from": "retail_silver",
-    "shell": "silver",
-    "recolour": [
-     {
-      "from": "retail_blue",
-      "to": "blue"
-     }
-    ],
+    "shell_from": "silver",
+    "shell": "black",
+    "recolour": [],
     "decal": {
      "mark": "club_logo",
      "scale": 1.0,
@@ -180,6 +250,10 @@
      "mark": "club_logo",
      "scale": 1.0
     }
+   },
+   "helmet_digits": {
+    "glyph_donor": "04H0",
+    "fill": "white"
    }
   },
   "away": {
@@ -229,21 +303,94 @@
    },
    "pants": {
     "base_colour": "white",
-    "stripe": [
-     [
-      "black",
-      2
-     ],
-     [
-      "blue",
-      5
-     ],
-     [
-      "black",
-      2
-     ]
-    ],
-    "swoosh_colour": "black"
+    "stripe": [],
+    "swoosh_colour": "black",
+    "decorations": [
+     {
+      "polygon": [
+       [
+        124.0,
+        0
+       ],
+       [
+        160.0,
+        0
+       ],
+       [
+        154.5,
+        256
+       ],
+       [
+        129.5,
+        256
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        351.0,
+        0
+       ],
+       [
+        387.0,
+        0
+       ],
+       [
+        381.5,
+        256
+       ],
+       [
+        356.5,
+        256
+       ]
+      ],
+      "colour": "black"
+     },
+     {
+      "polygon": [
+       [
+        126.0,
+        0
+       ],
+       [
+        158.0,
+        0
+       ],
+       [
+        152.5,
+        256
+       ],
+       [
+        131.5,
+        256
+       ]
+      ],
+      "colour": "blue"
+     },
+     {
+      "polygon": [
+       [
+        353.0,
+        0
+       ],
+       [
+        385.0,
+        0
+       ],
+       [
+        379.5,
+        256
+       ],
+       [
+        358.5,
+        256
+       ]
+      ],
+      "colour": "blue"
+     }
+    ]
    },
    "socks": {
     "colour": "black"

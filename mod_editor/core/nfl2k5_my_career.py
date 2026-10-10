@@ -337,7 +337,9 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
         player.record.values.update(rr.decode_record(raw))
         starter_lock = False
     player.record.set("position", code)
-    player.record.set("years_pro", 0)
+    # a game rookie stores 1 (the card prints R; the generator's templates and every drafted prospect carry 1). 0 would
+    # print 0 and, at his first Preseason, make the aging routine apply the generation delta (old 0xFF -> 0) again
+    player.record.set("years_pro", rr.ROOKIE_YEARS_PRO)
     player.record.set("player_type", player.record.get("player_type") | 0x10)
     result = bytearray(doc.to_body())
     # Draft AI owns every club until the native destination is discovered.

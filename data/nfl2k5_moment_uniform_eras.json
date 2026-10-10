@@ -1,0 +1,4533 @@
+{
+  "schema": "b77/moment_uniform_eras/v1",
+  "compiled": "2026-10-08",
+  "compiled_by": "a1x (Sonnet 5.5): five Haiku 5.5 research shards over Wikipedia uniform histories, rules and spot checks by the lead",
+  "source_quality": "Design eras and 'since' years come from Wikipedia's uniform-history pages and the 2026 uniform data (reports/u3_uniforms_2026) as read by Haiku 5.5 researchers; some URLs were seen only as search snippets. The lead re-read the Giants, Saints and Seahawks pages (see lead_check). Worn colours are text reports, not photos.",
+  "rule": {
+    "text": "Per team-season: R0 a sourced per-side override (the `overrides` block, from what the team wore in the game); R1 style 0 (the 2026 kit) when the season is on or after design_2026_since; R2 a retail period set when a retail era row contains the season; R3 the retail 2004 kit ('retail_current') when the season is inside the 2004 look's years for that kit (home or road), whatever the Reebok or Nike template (a5, Noah 10/8); R4 otherwise style 0 (modern by default).",
+    "retail_kit_template_through": 2011,
+    "retail_kit_template_source": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks (Nike replaced Reebok as the league supplier for the 2012 season)"
+  },
+  "franchises": {
+    "49ers": {
+      "asset_code": "25",
+      "abbreviation": "SF",
+      "retail_era_sets": [
+        [
+          1,
+          1996,
+          1997
+        ],
+        [
+          2,
+          1993,
+          1994
+        ],
+        [
+          3,
+          1964,
+          1995
+        ],
+        [
+          4,
+          1962,
+          1963
+        ],
+        [
+          5,
+          1960,
+          1961
+        ],
+        [
+          6,
+          1958,
+          1959
+        ]
+      ],
+      "retail_spare_style_v05": 8,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2005,
+      "design_2004_through_road": 2005,
+      "design_2026_since": 2009,
+      "designs": [
+        {
+          "from": 1996,
+          "to": 2005,
+          "summary": "Metallic gold helmet with black-cardinal-black stripes; cardinal red jersey with black-outlined numerals and gold trim; white pants with black-cardinal-red stripes",
+          "home_colour": "cardinal red",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers"
+        },
+        {
+          "from": 2006,
+          "to": 2008,
+          "summary": "1996 helmet and jersey; shinier metallic gold pants with black-cardinal-red stripes and thin gold trim",
+          "home_colour": "cardinal red",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers"
+        },
+        {
+          "from": 2009,
+          "to": null,
+          "summary": "Metallic gold helmet with red-white-red stripes and oval red SF logo; red jersey with blocked serif numerals, black drop-shadow and gold trim; flat gold pants with red-white-red stripes; solid red socks; three sleeve stripes from 2015",
+          "home_colour": "red (cardinal/brighter red; Wikipedia does not reconcile)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/2011_San_Francisco_49ers_season",
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    "bengals": {
+      "asset_code": "06",
+      "abbreviation": "CIN",
+      "retail_era_sets": [
+        [
+          1,
+          1981,
+          1997
+        ],
+        [
+          2,
+          1979,
+          1980
+        ],
+        [
+          3,
+          1968,
+          1978
+        ]
+      ],
+      "retail_spare_style_v05": 8,
+      "design_2004_from": 2004,
+      "design_2004_through_home": 2020,
+      "design_2004_through_road": 2020,
+      "design_2026_since": 2021,
+      "designs": [
+        {
+          "from": 1981,
+          "to": 2003,
+          "summary": "Orange helmet with black tiger stripes (from 1981); black and white jerseys trimmed with orange and black tiger stripes; white pants with tiger stripes; 1997 leaping-tiger sleeve logo (logo tweak only)",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Cincinnati_Bengals"
+        },
+        {
+          "from": 2004,
+          "to": 2020,
+          "summary": "Striped orange helmet; black and white jerseys with orange tiger-striped sleeves and side and shoulder panels; 2004 alternates include black with white side panels and white with black tiger-striped sleeves",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Cincinnati_Bengals"
+        },
+        {
+          "from": 2021,
+          "to": null,
+          "summary": "2021 set: striped orange helmet (shade changed), black and white jerseys without side and shoulder panels, new sleeve stripe pattern, wordmark on chest; pants options black with orange stripes, white with black stripes, white with orange stripes",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Cincinnati_Bengals"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cincinnati_Bengals",
+        "https://www.si.com/nfl/steelers/news/bengals-unleash-special-uniforms-pittsburgh-steelers-game"
+      ]
+    },
+    "bills": {
+      "asset_code": "03",
+      "abbreviation": "BUF",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1994
+        ],
+        [
+          2,
+          1987,
+          2002
+        ],
+        [
+          3,
+          1984,
+          1986
+        ],
+        [
+          4,
+          1976,
+          1983
+        ],
+        [
+          5,
+          1974,
+          1975
+        ],
+        [
+          6,
+          1969,
+          1973
+        ],
+        [
+          7,
+          1964,
+          1965
+        ]
+      ],
+      "retail_spare_style_v05": 10,
+      "design_2004_from": 2002,
+      "design_2004_through_home": 2010,
+      "design_2004_through_road": 2010,
+      "design_2026_since": 2011,
+      "designs": [
+        {
+          "from": 1973,
+          "to": 1983,
+          "summary": "White helmet (blue facemask from 1974), charging blue bison with red streak from 1974; white jerseys with blue pants (introduced 1973)",
+          "home_colour": "unknown",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 1984,
+          "to": 2001,
+          "summary": "Red helmet (shell changed from white in 1984, helmet 'remained primarily red' through 2002); blue pants continued through 1985",
+          "home_colour": "unknown",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 2002,
+          "to": 2010,
+          "summary": "Redesign: darker blue primary jersey, nickel gray accent, red side panels; red helmet with navy, nickel, royal blue and white stripes, white facemask",
+          "home_colour": "darker blue",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 2005,
+          "to": 2021,
+          "summary": "Throwback standing-bison helmet and mid-1960s-style uniform (blue version retired after 2010, white version from 2012, last worn 2021)",
+          "home_colour": "blue (throwback, to 2010)",
+          "road_colour": "white (throwback, from 2012)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 2011,
+          "to": 2025,
+          "summary": "Base set: royal blue (not navy) jerseys, white helmets with charging buffalo, updated 1975-83 look; striped socks phased out by 2021",
+          "home_colour": "royal blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 2015,
+          "to": null,
+          "summary": "Color Rush all-red combination (first worn 2015)",
+          "home_colour": "red",
+          "road_colour": "red",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        },
+        {
+          "from": 2026,
+          "to": null,
+          "summary": "Nickel City all-gray uniform with dark gray stripes; blue alternate helmet with red streak",
+          "home_colour": "gray",
+          "road_colour": "gray",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/2022_Buffalo_Bills_season",
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills",
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    "broncos": {
+      "asset_code": "08",
+      "abbreviation": "DEN",
+      "retail_era_sets": [
+        [
+          1,
+          1985,
+          1996
+        ],
+        [
+          2,
+          1969,
+          1973
+        ],
+        [
+          3,
+          1963,
+          1965
+        ],
+        [
+          4,
+          1961,
+          1962
+        ]
+      ],
+      "retail_spare_style_v05": 7,
+      "design_2004_from": 1997,
+      "design_2004_through_home": 2011,
+      "design_2004_through_road": 2011,
+      "design_2026_since": 2024,
+      "designs": [
+        {
+          "from": 1997,
+          "to": 2011,
+          "summary": "Navy primary home jersey with orange streak and collar; road white with navy streak and orange accents; navy helmet facemask (from 1997); new numbering font with white numerals trimmed in orange on navy and navy trimmed in orange on white; navy pants with orange side streaks from 2003 for select games.",
+          "home_colour": "navy",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Denver_Broncos"
+        },
+        {
+          "from": 2012,
+          "to": 2023,
+          "summary": "Orange becomes primary home jersey in 2012; navy alternate worn at least one home game a season; white pants with orange stripes first worn Nov 1, 2015; 2016 Color Rush orange pants (first since 1979) with block numerals trimmed navy.",
+          "home_colour": "orange",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Denver_Broncos"
+        },
+        {
+          "from": 2024,
+          "to": null,
+          "summary": "'Mile High Collection': sunset orange primary; white road; navy alternate; pants orange, white or navy. Mountain-peak sleeve cap with contrasting sun; perforated triangles; '5280' inside neck; 'BRONCOS' chest wordmark; vintage block numbers.",
+          "home_colour": "sunset orange",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Denver_Broncos"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Denver_Broncos",
+        "https://en.wikipedia.org/wiki/Denver_Broncos (read; uniform section truncated; read at offset 0-100k and 100000-200000)",
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle"
+      ]
+    },
+    "cardinals": {
+      "asset_code": "00",
+      "abbreviation": "ARI",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1994
+        ],
+        [
+          2,
+          1990,
+          1991
+        ],
+        [
+          3,
+          1971,
+          1972
+        ],
+        [
+          4,
+          1959,
+          1960
+        ],
+        [
+          5,
+          1958,
+          1959
+        ]
+      ],
+      "retail_spare_style_v05": 9,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2004,
+      "design_2004_through_road": 2004,
+      "design_2026_since": 2023,
+      "designs": [
+        {
+          "from": 1996,
+          "to": 2004,
+          "summary": "Early Arizona era: Arizona flag on sleeve; all-red and all-white combinations in 2002-2004; helmet and pants not described in pages read",
+          "home_colour": "red",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Arizona_Cardinals"
+        },
+        {
+          "from": 2005,
+          "to": 2022,
+          "summary": "Updated cardinal-head logo; black accent returned; black alternate jersey from 2010; red or white pants with either jersey; red pants not worn in 2008",
+          "home_colour": "red",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Arizona_Cardinals"
+        },
+        {
+          "from": 2023,
+          "to": null,
+          "summary": "All-red home: white helmet with 3D birdhead logo and silver flake, silver facemask; red jersey with silver-outlined perforated numbers and ARIZONA across the front; red pants; red and silver stripes",
+          "home_colour": "red",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Arizona_Cardinals"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Arizona_Cardinals",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIII"
+      ]
+    },
+    "chiefs": {
+      "asset_code": "13",
+      "abbreviation": "KC",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1994
+        ],
+        [
+          2,
+          1991,
+          1993
+        ],
+        [
+          3,
+          1970,
+          1971
+        ],
+        [
+          4,
+          1963,
+          1970
+        ],
+        [
+          5,
+          1960,
+          1962
+        ]
+      ],
+      "retail_spare_style_v05": 6,
+      "design_2004_from": 1989,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1989,
+      "designs": [
+        {
+          "from": 1989,
+          "to": null,
+          "summary": "Red helmet with white arrowhead KC logo (thin black outline); red home jersey with white numbers and white pants (white pants with red jerseys stated for 1989-1999 and until Sept 15 2013); white facemask since 1974. Arrowhead introduction date not stated; 2000-2008 pants not stated",
+          "home_colour": "red",
+          "road_colour": "white (no official alternate; white jerseys with white pants 2006 opener)",
+          "url": "https://en.wikipedia.org/wiki/Kansas_City_Chiefs"
+        },
+        {
+          "from": 2013,
+          "to": null,
+          "summary": "Red-on-red alternate: red helmet, red jersey, red pants (first worn 2013 home opener vs Cowboys)",
+          "home_colour": "red",
+          "road_colour": "red",
+          "url": "https://en.wikipedia.org/wiki/Kansas_City_Chiefs"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kansas_City_Chiefs",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVIII"
+      ]
+    },
+    "colts": {
+      "asset_code": "11",
+      "abbreviation": "IND",
+      "retail_era_sets": [
+        [
+          1,
+          1995,
+          1995
+        ],
+        [
+          2,
+          1988,
+          1991
+        ],
+        [
+          3,
+          1987,
+          1987
+        ],
+        [
+          4,
+          1982,
+          1982
+        ],
+        [
+          5,
+          1968,
+          1970
+        ],
+        [
+          6,
+          1955,
+          1956
+        ],
+        [
+          7,
+          1954,
+          1955
+        ]
+      ],
+      "retail_spare_style_v05": 8,
+      "design_2004_from": 1957,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1957,
+      "designs": [
+        {
+          "from": 1957,
+          "to": null,
+          "summary": "base form: horseshoe on each side of helmet; blue jerseys with white shoulder stripes; white pants with blue side stripes; 2020 wordmark/font update treated as tweak",
+          "home_colour": "Speed Blue (2026 standard home, per file)",
+          "road_colour": "White (2026 standard road, per file)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Indianapolis_Colts"
+        },
+        {
+          "from": 1982,
+          "to": 1987,
+          "summary": "gray pants with blue jerseys, horseshoe with player number on sides; blue socks with gray stripes 1982-87; gray pants retired 1987",
+          "home_colour": "blue",
+          "road_colour": "white (white jerseys kept white pants)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Indianapolis_Colts"
+        },
+        {
+          "from": 2023,
+          "to": null,
+          "summary": "alternate: blue jersey with black number trim, white sleeve stripes moved to shoulders, Indiana C logo on left shoulder, blue pants with white stripes, first black alternate helmet",
+          "home_colour": "blue",
+          "road_colour": "blue",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Indianapolis_Colts"
+        },
+        {
+          "from": 2026,
+          "to": "unknown",
+          "summary": "Anvil Strike Rivalries uniform: anthracite base, metallic blue helmet, blue numbers with black-trimmed striping, silver horseshoe on sleeves; worn at home vs AFC South opponents",
+          "home_colour": "anthracite base with blue numbers",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Indianapolis_Colts"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Indianapolis_Colts",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV"
+      ]
+    },
+    "cowboys": {
+      "asset_code": "07",
+      "abbreviation": "DAL",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1995
+        ],
+        [
+          2,
+          1982,
+          1994
+        ],
+        [
+          3,
+          1977,
+          1980
+        ],
+        [
+          4,
+          1975,
+          1976
+        ],
+        [
+          5,
+          1964,
+          1966
+        ],
+        [
+          6,
+          1960,
+          1963
+        ]
+      ],
+      "retail_spare_style_v05": 10,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1996,
+      "designs": [
+        {
+          "from": 1960,
+          "to": 1963,
+          "summary": "White helmet with blue star and blue-white-blue crown stripe; blue home jersey with white sleeves and small blue star on each shoulder; away was the 'negative opposite'; socks with two white stripes over blue.",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Dallas_Cowboys"
+        },
+        {
+          "from": 1964,
+          "to": 1995,
+          "summary": "Silver-blue helmet with blue-white-blue tri-stripe; star shoulders removed; three horizontal sleeve stripes; white home jersey with royal blue stripes and blue away with white stripes; 'TV' numbers from 1964. End year inferred from Wikipedia's next heading (1996-present).",
+          "home_colour": "white",
+          "road_colour": "blue",
+          "url": "https://en.wikipedia.org/wiki/Dallas_Cowboys"
+        },
+        {
+          "from": 1996,
+          "to": null,
+          "summary": "Silver-blue helmet with blue-white-blue crown stripe; white home jersey with royal blue numbers and black-outlined sleeve stripes; navy road jersey with white lettering; metallic silver-green (seafoam) pants; royal blue solid socks. Star logo on sleeve stripes and 'Cowboys' neck wordmark.",
+          "home_colour": "white",
+          "road_colour": "navy",
+          "url": "https://en.wikipedia.org/wiki/Dallas_Cowboys"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dallas_Cowboys",
+        "https://en.wikipedia.org/wiki/Dallas_Cowboys (read; uniform section read at offset 0-100k and 100000-200000)"
+      ]
+    },
+    "eagles": {
+      "asset_code": "21",
+      "abbreviation": "PHI",
+      "retail_era_sets": [
+        [
+          1,
+          2000,
+          2003
+        ],
+        [
+          2,
+          1996,
+          1996
+        ],
+        [
+          3,
+          1993,
+          1994
+        ],
+        [
+          4,
+          1989,
+          1999
+        ],
+        [
+          5,
+          1979,
+          1980
+        ],
+        [
+          6,
+          1969,
+          1973
+        ],
+        [
+          7,
+          1967,
+          1967
+        ],
+        [
+          8,
+          1958,
+          1959
+        ]
+      ],
+      "retail_spare_style_v05": 9,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1996,
+      "designs": [
+        {
+          "from": "unknown",
+          "to": 1995,
+          "summary": "kelly green era (helmet and jerseys in classic kelly green, per Wikipedia 'changed from the classic kelly green' in 1996)",
+          "home_colour": "kelly green",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Philadelphia_Eagles"
+        },
+        {
+          "from": 1996,
+          "to": null,
+          "summary": "midnight green (darker) helmet and jerseys; standard home is midnight green jersey with white pants (per SB LII page); all-white road; primary 2026 set",
+          "home_colour": "midnight green",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Philadelphia_Eagles"
+        },
+        {
+          "from": 2022,
+          "to": null,
+          "summary": "black secondary helmet with black jersey and black pants (all-black look); 2026 file says black alternate helmet since 2022",
+          "home_colour": "black",
+          "road_colour": "black or white (third-helmet look: white jersey, black pants)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Philadelphia_Eagles"
+        },
+        {
+          "from": 2023,
+          "to": null,
+          "summary": "Kelly Green throwback (1985-95 era) with kelly green helmet as sole alternate helmet from 2023",
+          "home_colour": "kelly green",
+          "road_colour": "unknown (white road version unresolved per 2026 file)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Philadelphia_Eagles"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Philadelphia_Eagles",
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LII"
+      ]
+    },
+    "falcons": {
+      "asset_code": "01",
+      "abbreviation": "ATL",
+      "retail_era_sets": [
+        [
+          1,
+          1998,
+          2003
+        ],
+        [
+          2,
+          1993,
+          1994
+        ],
+        [
+          3,
+          1990,
+          1997
+        ],
+        [
+          4,
+          1987,
+          1989
+        ],
+        [
+          5,
+          1984,
+          1986
+        ],
+        [
+          6,
+          1978,
+          1979
+        ],
+        [
+          7,
+          1971,
+          1977
+        ],
+        [
+          8,
+          1968,
+          1969
+        ],
+        [
+          9,
+          1966,
+          1967
+        ]
+      ],
+      "retail_spare_style_v05": 14,
+      "design_2004_from": 2003,
+      "design_2004_through_home": 2019,
+      "design_2004_through_road": 2019,
+      "design_2026_since": 2026,
+      "designs": [
+        {
+          "from": 1990,
+          "to": 2002,
+          "summary": "Black helmets, silver pants, and either black or white jerseys; red numerals on white jerseys from 1997 (Wikipedia 1990-2002 and 1997-2002 entries).",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Atlanta_Falcons"
+        },
+        {
+          "from": 2003,
+          "to": 2019,
+          "summary": "2003 redesign: black helmets; jerseys and pants with red trim down the sides; from 2004 red primary jersey with white pants and black alternate; 2016-2021 black helmets with original logo decal (one-shell rule).",
+          "home_colour": "red (from 2004)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Atlanta_Falcons"
+        },
+        {
+          "from": 2020,
+          "to": 2025,
+          "summary": "Black returned as primary home colour; 'ATL' above numbers in red with red drop shadows; matte helmets with enlarged falcon logo and gray facemask; red side stripes on all three uniforms; red/black gradient alternate dropped in 2023.",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Atlanta_Falcons"
+        },
+        {
+          "from": 2026,
+          "to": null,
+          "summary": "Red primary jersey with white pants and black helmet with updated winged ATL bumper; silver accents in pant striping (Wikipedia 2026 entry; 2026 file: 'FALCONS' wordmark, white numbers, low-gloss black shell).",
+          "home_colour": "red",
+          "road_colour": "red (worn on road games at NO and TB per 2026 schedule); white pants or black",
+          "url": "https://en.wikipedia.org/wiki/Atlanta_Falcons"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Atlanta_Falcons",
+        "https://picks-s1.cbssports.com/nfl/news/2017-super-bowl-uniforms-patriots-get-lucky-white-jerseys-after-falcons-go-red/ (search result snippet only)"
+      ]
+    },
+    "giants": {
+      "asset_code": "18",
+      "abbreviation": "NYG",
+      "retail_era_sets": [
+        [
+          1,
+          2000,
+          2002
+        ],
+        [
+          2,
+          1981,
+          1999
+        ],
+        [
+          3,
+          1976,
+          1980
+        ],
+        [
+          4,
+          1974,
+          1975
+        ],
+        [
+          5,
+          1961,
+          1974
+        ],
+        [
+          6,
+          1956,
+          1960
+        ]
+      ],
+      "retail_spare_style_v05": 8,
+      "design_2004_from": 2000,
+      "design_2004_through_home": 2015,
+      "design_2004_through_road": 2004,
+      "design_2026_since": 2016,
+      "designs": [
+        {
+          "from": 2000,
+          "to": 2004,
+          "summary": "Dark royal blue home jersey with gray belt and gray pants (one thick red stripe between two blue); white road jersey with red numbers trimmed blue and blue names, gray pants with three thin red/blue/red stripes; gray facemask; rounder 'ny' logo",
+          "home_colour": "dark royal blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants"
+        },
+        {
+          "from": 2005,
+          "to": 2015,
+          "summary": "Road uniform replicating the 1956 championship look (lowercase 'ny' logo on jerseys); blue home; gray pants with three thin red/blue/red stripes full-time from 2012; red alternate jersey worn 2004-2007. Finer numbers/pants detail not in source",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants"
+        },
+        {
+          "from": 2016,
+          "to": null,
+          "summary": "Blue jersey with white block numbers and white pants with five thin blue/gray/red/gray/blue leg stripes; metallic blue helmet, white lowercase 'ny', red centre stripe, gray facemask; road white jersey with red Northwestern sleeve stripes and red numbers; white pants with red-and-white stripes from 2021",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants"
+        }
+      ],
+      "lead_check": {
+        "note": "Wikipedia (read by the lead 2026-10-08): the 2000 uniforms were new; in 2005 the ROAD uniform was redesigned as a replica of the 1956 set while the home look was 'largely a continuation' (logo swap, black cleats). So the 2004 retail look matches the home kit through 2015 and the road kit only through 2004.",
+        "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants",
+        "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+        "https://nfl.com/_amp/patriots-giants-super-bowl-rematch-will-feature-same-uniforms-09000d5d826426b1"
+      ]
+    },
+    "lions": {
+      "asset_code": "09",
+      "abbreviation": "DET",
+      "retail_era_sets": [
+        [
+          1,
+          2000,
+          2003
+        ],
+        [
+          2,
+          1999,
+          1999
+        ],
+        [
+          3,
+          1980,
+          1993
+        ],
+        [
+          4,
+          1972,
+          1976
+        ],
+        [
+          5,
+          1965,
+          1968
+        ],
+        [
+          6,
+          1957,
+          1965
+        ]
+      ],
+      "retail_spare_style_v05": 10,
+      "design_2004_from": 2003,
+      "design_2004_through_home": 2008,
+      "design_2004_through_road": 2008,
+      "design_2026_since": 2024,
+      "designs": [
+        {
+          "from": 2003,
+          "to": 2008,
+          "summary": "Silver helmet; blue jerseys with white numerals; 2003-2005 changes added black trim to logo and jerseys and changed the facemask from blue to black; black alternate jersey introduced 2005. Pants not stated for this period.",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Detroit_Lions"
+        },
+        {
+          "from": 2009,
+          "to": 2016,
+          "summary": "New logo and uniforms unveiled April 20, 2009: 'flowing mane and fangs' logo, modern font; black jersey became permanent alternate in 2009. Helmet shell and pants not described for 2009-2016 in the text read.",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Detroit_Lions"
+        },
+        {
+          "from": 2017,
+          "to": 2023,
+          "summary": "Black removed from team identity; logo border changed from black to silver; white jersey with blue pants returned; all-gray and all-blue alternates added; silver facemask helmet introduced; 'WCF' left-sleeve patch. Helmet shell colour beyond silver facemask not stated.",
+          "home_colour": "blue",
+          "road_colour": "white (also gray and blue alternates)",
+          "url": "https://en.wikipedia.org/wiki/Detroit_Lions"
+        },
+        {
+          "from": 2024,
+          "to": null,
+          "summary": "Honolulu Blue home jersey with white block numbers trimmed in silver; silver-striped sleeves with white accents; 'One Pride' inside collar; silver pants with blue stripes (or solid blue); silver primary helmet with Honolulu Blue facemask, blue-and-white centre stripe; road white jersey with blue numbers ('the 313').",
+          "home_colour": "Honolulu Blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Detroit_Lions"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Detroit_Lions",
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown (read via search snippets only)"
+      ]
+    },
+    "packers": {
+      "asset_code": "10",
+      "abbreviation": "GB",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1994
+        ],
+        [
+          2,
+          1983,
+          1984
+        ],
+        [
+          3,
+          1966,
+          1976
+        ],
+        [
+          4,
+          1952,
+          1965
+        ]
+      ],
+      "retail_spare_style_v05": 7,
+      "design_2004_from": 1959,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1959,
+      "designs": [
+        {
+          "from": 1959,
+          "to": null,
+          "summary": "Forest green jerseys (home) with white road jerseys; metallic gold pants and metallic gold plastic helmet (since 1951) with oval 'G' logo (added 1961, the only helmet logo). Stripe and number style not described in the Wikipedia text read. 2026 Green home matches this base (2026 file: Green home, gold pants and helmet).",
+          "home_colour": "forest green",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Green_Bay_Packers"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Green_Bay_Packers",
+        "https://en.wikipedia.org/wiki/Green_Bay_Packers (read; uniform section truncated before the Branding/Uniform variation text at 0-100k; read at offset 100000)",
+        "https://en.wikipedia.org/wiki/Miracle_in_Motown"
+      ]
+    },
+    "panthers": {
+      "asset_code": "04",
+      "abbreviation": "CAR",
+      "retail_era_sets": [
+        [
+          1,
+          1996,
+          1996
+        ]
+      ],
+      "retail_spare_style_v05": 3,
+      "design_2004_from": 1995,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1995,
+      "designs": [
+        {
+          "from": 1995,
+          "to": null,
+          "summary": "original design: white, black and blue jerseys; white and silver pants; blue socks with white pants, black socks with black/blue jerseys; 2019 Vapor Untouchable pants stripes extended to socks (treated as tweak)",
+          "home_colour": "unknown (white, black or blue jersey by choice)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Carolina_Panthers"
+        },
+        {
+          "from": 2015,
+          "to": "unknown",
+          "summary": "all-blue Color Rush uniform, debuted at 2015 Thanksgiving game vs Dallas",
+          "home_colour": "blue",
+          "road_colour": "blue",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Carolina_Panthers"
+        },
+        {
+          "from": 2022,
+          "to": null,
+          "summary": "secondary black helmet with no white elements on the logo, worn with black or blue jerseys",
+          "home_colour": "black",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Carolina_Panthers"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Carolina_Panthers",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
+      ]
+    },
+    "patriots": {
+      "asset_code": "16",
+      "abbreviation": "NE",
+      "retail_era_sets": [
+        [
+          1,
+          1996,
+          2000
+        ],
+        [
+          2,
+          1993,
+          1994
+        ],
+        [
+          3,
+          1992,
+          1993
+        ],
+        [
+          4,
+          1990,
+          1992
+        ],
+        [
+          5,
+          1984,
+          1987
+        ],
+        [
+          6,
+          1975,
+          1981
+        ],
+        [
+          7,
+          1965,
+          1969
+        ],
+        [
+          8,
+          1959,
+          1960
+        ]
+      ],
+      "retail_spare_style_v05": 12,
+      "design_2004_from": 2000,
+      "design_2004_through_home": 2019,
+      "design_2004_through_road": 2019,
+      "design_2026_since": 2020,
+      "designs": [
+        {
+          "from": 1993,
+          "to": 1999,
+          "summary": "Silver Flying Elvis helmet, no extra striping; royal blue home jersey, white away; silver pants with red/blue stripes",
+          "home_colour": "royal blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/New_England_Patriots"
+        },
+        {
+          "from": 2000,
+          "to": 2019,
+          "summary": "Silver helmet; nautical blue home jersey with silver 'New Century' stripes; white away with nautical blue stripes; silver pants with blue jerseys, navy pants with white jerseys; block numbers on shoulders",
+          "home_colour": "nautical blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/New_England_Patriots"
+        },
+        {
+          "from": 2020,
+          "to": null,
+          "summary": "All-blue Color Rush primary: navy jersey with tweaked nameplate/numbers and truncated shoulder striping, silver helmet; white road uniform with blue pants (2020); silver pants full-time from 2024; white pants with red-blue-red stripes from 2025",
+          "home_colour": "navy",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/New_England_Patriots"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants",
+        "https://en.wikipedia.org/wiki/New_England_Patriots",
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    "raiders": {
+      "asset_code": "20",
+      "abbreviation": "LV",
+      "retail_era_sets": [
+        [
+          1,
+          1966,
+          1967
+        ],
+        [
+          2,
+          1962,
+          1963
+        ],
+        [
+          3,
+          1960,
+          1962
+        ]
+      ],
+      "retail_spare_style_v05": 5,
+      "design_2004_from": 1963,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1963,
+      "designs": [
+        {
+          "from": 1960,
+          "to": 1962,
+          "summary": "Black helmet with white stripe and no logo (early Oakland era); black and gold jerseys with Gothic numerals",
+          "home_colour": "black",
+          "road_colour": "black/gold",
+          "url": "https://en.wikipedia.org/wiki/Las_Vegas_Raiders"
+        },
+        {
+          "from": 1963,
+          "to": null,
+          "summary": "Silver helmets (logo background silver, changed to black in 1964), silver pants, black or white jerseys (black with silver names/numerals at home, white with black numerals on the road); shield logo; essentially unchanged since 1963",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Las_Vegas_Raiders"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Las_Vegas_Raiders",
+        "https://en.wikipedia.org/wiki/Tuck_Rule_Game"
+      ]
+    },
+    "rams": {
+      "asset_code": "23",
+      "abbreviation": "LAR",
+      "retail_era_sets": [
+        [
+          1,
+          2002,
+          2003
+        ],
+        [
+          2,
+          1998,
+          1999
+        ],
+        [
+          3,
+          1993,
+          1994
+        ],
+        [
+          4,
+          1978,
+          1979
+        ],
+        [
+          5,
+          1965,
+          1972
+        ],
+        [
+          6,
+          1957,
+          1958
+        ]
+      ],
+      "retail_spare_style_v05": 13,
+      "design_2004_from": null,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 2026,
+      "designs": [
+        {
+          "from": 2026,
+          "to": null,
+          "summary": "2026 refresh primary: royal helmet with new 3D bumper logos; royal jersey with full-horn sleeves, gradient numerals and chest tag removed; royal, Sol or white pants; road white jersey with white pants (Wikipedia/JSON)",
+          "home_colour": "royal",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Los_Angeles_Rams"
+        },
+        {
+          "from": 2021,
+          "to": null,
+          "summary": "Alternate used in Super Bowl LVI: white jersey with yellow pants and royal helmet. End year not stated in pages read",
+          "home_colour": "royal",
+          "road_colour": "white jersey with yellow pants (alternate)",
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Los_Angeles_Rams",
+        "https://en.wikipedia.org/wiki/Super_Bowl_LVI"
+      ]
+    },
+    "ravens": {
+      "asset_code": "02",
+      "abbreviation": "BAL",
+      "retail_era_sets": [
+        [
+          1,
+          1997,
+          1999
+        ],
+        [
+          2,
+          1995,
+          1996
+        ]
+      ],
+      "retail_spare_style_v05": 4,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2025,
+      "design_2004_through_road": 2025,
+      "design_2026_since": 2026,
+      "designs": [
+        {
+          "from": 1996,
+          "to": null,
+          "summary": "Black helmet with purple talon stripes; purple home jersey, white road jersey; white pants with purple and black stripes from 1997 (black pants with white stripe in 1996). Wikipedia: original look worn about 30 seasons with subtle changes; 2026 tweaks (drop shadows removed, gold accents removed) treated as not a new design",
+          "home_colour": "purple",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Baltimore_Ravens"
+        },
+        {
+          "from": 2004,
+          "to": null,
+          "summary": "Alternate: black jersey with solid black pants (first worn Nov 2004 vs Cleveland per Wikipedia); black jerseys with white pants described from 2008",
+          "home_colour": "black (alternate)",
+          "road_colour": "black (alternate)",
+          "url": "https://en.wikipedia.org/wiki/Baltimore_Ravens"
+        }
+      ],
+      "lead_check": {
+        "note": "Corrected by the lead: the researcher's 'since 1996' ignored the April 16, 2026 'Next Flight' redesign recorded in this repo's 2026 uniform data (data/nfl2k5_teams_2026/BAL.json, status line 'SORT: redesigned'); the 2004 look therefore ran through 2025, and 2012 is Nike-template era (R4, style 0 by default).",
+        "url": null
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Baltimore_Ravens",
+        "https://en.wikipedia.org/wiki/Mile_High_Miracle",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLVII"
+      ]
+    },
+    "saints": {
+      "asset_code": "17",
+      "abbreviation": "NO",
+      "retail_era_sets": [
+        [
+          1,
+          2001,
+          2002
+        ],
+        [
+          2,
+          1999,
+          2000
+        ],
+        [
+          3,
+          1993,
+          1994
+        ],
+        [
+          4,
+          1991,
+          1992
+        ],
+        [
+          5,
+          1976,
+          1982
+        ],
+        [
+          6,
+          1975,
+          1976
+        ],
+        [
+          7,
+          1967,
+          1975
+        ]
+      ],
+      "retail_spare_style_v05": 9,
+      "design_2004_from": 2003,
+      "design_2004_through_home": 2005,
+      "design_2004_through_road": 2005,
+      "design_2026_since": 2006,
+      "designs": [
+        {
+          "from": 1967,
+          "to": 1974,
+          "summary": "Tulane era: gold helmet, gold pants, black or white jerseys, striping from inception",
+          "home_colour": "white (mostly)",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        },
+        {
+          "from": 1975,
+          "to": 1985,
+          "summary": "Superdome era, pants changed by year: white pants 1975; black pants with white jerseys 1976-82; black jerseys with white pants 1983-85",
+          "home_colour": "white (1976-82), black (1983-85)",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        },
+        {
+          "from": 1986,
+          "to": 1998,
+          "summary": "gold pants with black and white jerseys; fleur-de-lis on sleeves and pant sides (1986-95), gold numbers on both jerseys (1996-98)",
+          "home_colour": "unknown",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        },
+        {
+          "from": 1999,
+          "to": 2002,
+          "summary": "white jerseys with black numbers and black pants (wide gold stripe 1999; black pants 2000-01); gold alternate jersey debuted 2002; 1967-style throwback 2002",
+          "home_colour": "white (2000-01)",
+          "road_colour": "black (all-black road game 2001)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        },
+        {
+          "from": 2003,
+          "to": 2005,
+          "summary": "gold pants with black and white jerseys (reverted 2003); this is the 2004 look",
+          "home_colour": "black or white jersey, gold pants",
+          "road_colour": "black or white jersey, gold pants",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        },
+        {
+          "from": 2006,
+          "to": null,
+          "summary": "black jerseys at home (players voted 2006), black pants (gold pants used sporadically), white road jerseys, Louisiana fleur-de-lis patch 2006; 2016+ Color Rush white jersey with old gold numbers is a separate alternate",
+          "home_colour": "black (white in some home games)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+        }
+      ],
+      "lead_check": {
+        "note": "Wikipedia (read by the lead): the primary design has stayed largely the same since the 2006 return to Louisiana ('except for minor modifications'); gold helmets and pants, black or white jerseys.",
+        "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Beast_Quake",
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_Orleans_Saints",
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+        "https://en.wikipedia.org/wiki/The_Catch_III"
+      ]
+    },
+    "seahawks": {
+      "asset_code": "26",
+      "abbreviation": "SEA",
+      "retail_era_sets": [
+        [
+          1,
+          1983,
+          2002
+        ],
+        [
+          2,
+          1976,
+          1982
+        ]
+      ],
+      "retail_spare_style_v05": 5,
+      "design_2004_from": 2002,
+      "design_2004_through_home": 2011,
+      "design_2004_through_road": 2011,
+      "design_2026_since": 2012,
+      "designs": [
+        {
+          "from": 1976,
+          "to": 1982,
+          "summary": "original: silver helmet and silver pants; royal blue home jerseys with white and green sleeve stripes; white road jerseys with blue numerals; blue socks with green and white stripes",
+          "home_colour": "royal blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        },
+        {
+          "from": 1983,
+          "to": 2001,
+          "summary": "Chuck Knox-era refresh: arm striping incorporates logo; TV numbers moved to shoulders; blue facemask (from gray); Pro Block numbers and sewn logos from 1994",
+          "home_colour": "royal blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        },
+        {
+          "from": 2002,
+          "to": 2011,
+          "summary": "Seahawks Blue helmet (silver replaced after fan poll), all blue at home and all white on road from 2003, navy pants from Dec 2009, lime green jerseys 2009 only",
+          "home_colour": "Seahawks Blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        },
+        {
+          "from": 2012,
+          "to": null,
+          "summary": "Nike era: college navy helmet with feather trims; navy, white and grey jerseys; navy, green-feathered and grey pants; 12 feathers on neckline and pant legs; silver helmet returned 2012",
+          "home_colour": "college navy",
+          "road_colour": "white (with navy pants)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        },
+        {
+          "from": 2023,
+          "to": null,
+          "summary": "90s-inspired throwback: royal blue jersey, silver helmet and silver pants; first worn Oct 29 2023",
+          "home_colour": "royal blue",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        },
+        {
+          "from": 2025,
+          "to": null,
+          "summary": "Rivalries uniform: wolf grey with iridescent green numerals and helmet, 'soundwave' design",
+          "home_colour": "wolf grey",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+        }
+      ],
+      "lead_check": {
+        "note": "Wikipedia (read by the lead): March 2002 redesign (blue helmets); Nike's 2012 set (College Navy, Action Green) is the current primary design.",
+        "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks"
+      },
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLIX"
+      ]
+    },
+    "steelers": {
+      "asset_code": "22",
+      "abbreviation": "PIT",
+      "retail_era_sets": [
+        [
+          1,
+          1968,
+          1976
+        ],
+        [
+          2,
+          1966,
+          1967
+        ],
+        [
+          3,
+          1963,
+          1965
+        ],
+        [
+          4,
+          1961,
+          1962
+        ],
+        [
+          5,
+          1959,
+          1960
+        ]
+      ],
+      "retail_spare_style_v05": 6,
+      "design_2004_from": 1997,
+      "design_2004_through_home": 2026,
+      "design_2004_through_road": 2026,
+      "design_2026_since": 1997,
+      "designs": [
+        {
+          "from": 1997,
+          "to": null,
+          "summary": "Modern classic: black helmet with gold central stripe and primary logo on right side only, black facemask since 1977; black home jersey with gold sleeve stripes and white stripes in the gaps, gold pants; white road jersey with gold sleeve stripes outlined in black, gold pants; rounded numbers and left-side jersey logo from 1997",
+          "home_colour": "black",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Pittsburgh_Steelers"
+        },
+        {
+          "from": 2012,
+          "to": 2016,
+          "summary": "'Bumblebee' throwback: horizontal stripes with numbers on rectangular panels, based on 1933 design; gold helmets",
+          "home_colour": "unknown",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Pittsburgh_Steelers"
+        },
+        {
+          "from": 2025,
+          "to": null,
+          "summary": "1933 gold throwback: gold helmet with gray facemask, black chest stripes, black-trimmed white block numbers, beige pants",
+          "home_colour": "gold (throwback)",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Pittsburgh_Steelers"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Pittsburgh_Steelers",
+        "https://honoluluadvertiser.com/article/2009/Jan/21/br/hawaii90121042.html",
+        "https://www.si.com/nfl/steelers/news/bengals-unleash-special-uniforms-pittsburgh-steelers-game",
+        "https://www.steelers.com/news/steelers-fall-to-bengals-33-31"
+      ]
+    },
+    "titans": {
+      "asset_code": "28",
+      "abbreviation": "TEN",
+      "retail_era_sets": [
+        [
+          1,
+          1989,
+          1990
+        ],
+        [
+          2,
+          1974,
+          1975
+        ],
+        [
+          3,
+          1972,
+          1974
+        ],
+        [
+          4,
+          1967,
+          1968
+        ],
+        [
+          5,
+          1960,
+          1961
+        ]
+      ],
+      "retail_spare_style_v05": 9,
+      "design_2004_from": 1999,
+      "design_2004_through_home": 2017,
+      "design_2004_through_road": 2017,
+      "design_2026_since": 2026,
+      "designs": [
+        {
+          "from": 1960,
+          "to": 1965,
+          "summary": "Oilers: blue helmet; blue or white jerseys with red trim; white pants",
+          "home_colour": "blue",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 1966,
+          "to": 1971,
+          "summary": "Oilers: silver helmet; silver pants with blue and white jerseys",
+          "home_colour": "unknown",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 1972,
+          "to": 1974,
+          "summary": "Oilers: blue helmet; white road jerseys with light blue pants (from 1972)",
+          "home_colour": "unknown",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 1975,
+          "to": 1998,
+          "summary": "Oilers/Tennessee Oilers: white helmet; white road jerseys with light blue pants through 1994; all-white road in 1980 and selected mid-1980s games",
+          "home_colour": "white (1997-98)",
+          "road_colour": "white with light blue pants",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 1999,
+          "to": 2017,
+          "summary": "Titans: white helmet; navy or white jerseys with light Titans blue outside shoulders and sleeves; red trim; white pants with navy jersey, navy pants with white jersey",
+          "home_colour": "navy (from 2000, with white in some September day games)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 2018,
+          "to": 2025,
+          "summary": "Navy, Titans blue and white palette with red and silver elements; navy helmet with one silver sword-shaped stripe; metallic gray facemask",
+          "home_colour": "light Titans blue (primary again from March 27, 2025)",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        },
+        {
+          "from": 2026,
+          "to": null,
+          "summary": "New logo and uniforms (unveiled March 12, 2026): Titans blue primary; white helmet per the 2026 file; white, red and navy secondary",
+          "home_colour": "Titans blue (light)",
+          "road_colour": "unknown",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans",
+        "https://en.wikipedia.org/wiki/Music_City_Miracle"
+      ]
+    },
+    "vikings": {
+      "asset_code": "15",
+      "abbreviation": "MIN",
+      "retail_era_sets": [
+        [
+          1,
+          1993,
+          1994
+        ],
+        [
+          2,
+          1980,
+          1984
+        ],
+        [
+          3,
+          1972,
+          1973
+        ],
+        [
+          4,
+          1961,
+          1962
+        ]
+      ],
+      "retail_spare_style_v05": 7,
+      "design_2004_from": 1996,
+      "design_2004_through_home": 2005,
+      "design_2004_through_road": 2005,
+      "design_2026_since": 2013,
+      "designs": [
+        {
+          "from": 1996,
+          "to": 2005,
+          "summary": "Purple helmet with Viking horn; Norseman logo added to sleeves (1996); purple stripes toned down; TV numbers on shoulders. Helmet facemask gray->white (1980)->purple (1985) per the page; pants not stated for this era.",
+          "home_colour": "purple",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings"
+        },
+        {
+          "from": 2006,
+          "to": 2012,
+          "summary": "Redesign described as 'the first significant change': trim lines added; purple and white pants (rarely used after 2007); black shoes returned 2006.",
+          "home_colour": "purple",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings"
+        },
+        {
+          "from": 2013,
+          "to": null,
+          "summary": "New uniforms unveiled April 25, 2013 (Wikipedia gives no design detail). Purple home jersey with white pants; matte purple helmet with Viking horn logo and black facemask (2013 coverage cited in the 2026 file). Gold and white stripe near each cuff (2013 coverage). Current primary design.",
+          "home_colour": "purple",
+          "road_colour": "white",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings"
+        },
+        {
+          "from": 2022,
+          "to": null,
+          "summary": "All-white look: 'Winter Whiteout' all-white home uniform debuted Dec 24, 2022 (vs Giants). Also Primetime Purple and all-purple alternates.",
+          "home_colour": "white (all-white alternate); purple primary",
+          "road_colour": "white jersey with purple pants (2026 Week 2 at CHI, per 2026 file)",
+          "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings"
+        }
+      ],
+      "lead_check": null,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings",
+        "https://en.wikipedia.org/wiki/Minneapolis_Miracle"
+      ]
+    }
+  },
+  "sides": [
+    {
+      "moment": "the_miss",
+      "side": "away",
+      "team_key": "falcons_1998",
+      "season": 1998,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia: 1998-2003 helmets black; jerseys black or white. Game-day jersey not stated.",
+      "worn_url": "https://en.wikipedia.org/wiki/Atlanta_Falcons",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Style 1 covers 1998-2003. Design-level: the 1990-2002 black/silver look predates the 2003 redesign and the red 2026 primary."
+    },
+    {
+      "moment": "the_miss",
+      "side": "home",
+      "team_key": "vikings_1998",
+      "season": 1998,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia: the 1996-2005 era entry says the logos and uniforms changed in 1996 (Norseman sleeve logo); no game-day uniform is stated for 1998-99.",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Retail table has no style whose range contains 1998 (style 1 is 1993-94; styles 5/6 start 2004). Design-level match only; the page does not name the 1998 uniform."
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "away",
+      "team_key": "giants_2007",
+      "season": 2007,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "Giants Wikipedia page: the Giants 'wore their road uniforms' and won in that uniform",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2005-2015 road replicates 1956 look, so differs from 2000-2004 road (d04 false). 2026 road pants (white with red stripes) vs 2007 pants not stated. Retail: style 7 (2004-) is the only row containing 2007."
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "home",
+      "team_key": "patriots_2007",
+      "season": 2007,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "Giants article: the Patriots 'wore their home blues, forcing the Giants to wear their road uniforms'",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_New_York_Giants",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Home blue, 2000-2019 design. 2020 change tweaked numbers and truncated shoulder striping, so not the 2026 design. Retail: styles 9 and 10 both contain 2007, so null."
+    },
+    {
+      "moment": "toe_tap",
+      "side": "away",
+      "team_key": "steelers_2008",
+      "season": 2008,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "AP report (honolulu advertiser snippet): 'the Pittsburgh Steelers wore their white road uniforms against Arizona'",
+      "worn_url": "https://honoluluadvertiser.com/article/2009/Jan/21/br/hawaii90121042.html",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "White road with gold pants is in the modern classic design (2004 and 2026). Gold pants not stated for this game. Retail: no era row covers 2008, so null."
+    },
+    {
+      "moment": "toe_tap",
+      "side": "home",
+      "team_key": "cardinals_2008",
+      "season": 2008,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"The Cardinals wore their red jerseys\" (designated home team, per Super_Bowl_XLIII page)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Season is in the 2005-2022 design. The Arizona article says red pants were not worn at all in 2008, so the 2026 all-red set does not match. Retail styles 6, 7 and 8 all open-ended and contain 2008; no single style assigned."
+    },
+    {
+      "moment": "manningham",
+      "side": "away",
+      "team_key": "giants_2011",
+      "season": 2011,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "Search snippet (NFL.com): 'The Giants tweeted that they would wear their road white jerseys with gray pants.'",
+      "worn_url": "https://nfl.com/_amp/patriots-giants-super-bowl-rematch-will-feature-same-uniforms-09000d5d826426b1",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Road white with gray pants; 2026 road uses white pants with red stripes (2021). Retail: style 7 only."
+    },
+    {
+      "moment": "manningham",
+      "side": "home",
+      "team_key": "patriots_2011",
+      "season": 2011,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "Search summary (boston.com/NESN/NFL.com snippets): Patriots 'opt for home blues'; 'Navy blue jerseys with gray pants'",
+      "worn_url": "https://www.boston.com/sports/new-england-patriots/2012/01/23/patriots_opt_fo",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Navy home jersey, 2000-2019 design (pants grey in this summary). Retail: styles 9 and 10 both contain 2011, so null."
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "away",
+      "team_key": "patriots_2016",
+      "season": 2016,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "Search (CBS/NFL snippets): 'The Patriots wore white and the Falcons wore red.'",
+      "worn_url": "https://www.cbsnews.com/boston/news/patriots-to-wear-white-jerseys-for-super-bowl-li-vs-falcons",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "White jersey, 2000-2019 design; Falcons were the designated home team. 2026 white match unknown. Retail: styles 9 and 10 both contain 2016, so null."
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "home",
+      "team_key": "falcons_2016",
+      "season": 2016,
+      "worn_in_game": "red jersey",
+      "worn_evidence": "Falcons 'will be wearing their red jerseys in the Feb. 5 championship game at NRG Stadium' (search result, CBS Sports: Patriots 'get lucky' white jerseys after Falcons go red); Falcons were the designated home team.",
+      "worn_url": "https://picks-s1.cbssports.com/nfl/news/2017-super-bowl-uniforms-patriots-get-lucky-white-jerseys-after-falcons-go-red/",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Pants colour not stated in any source read (the claim that Falcons wore black pants was not verified and is not recorded). Base 2016 jersey/pants not described on Wikipedia, so design-level match unknown. Retail styles 10-13 are all open from 2004; style 10 listed (ambiguous)."
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "away",
+      "team_key": "vikings_2022",
+      "season": 2022,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Search found no uniform description for this game; the Vikings' team site photos are captioned only with the matchup.",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level: 2013-present purple design per the 2026 file and Wikipedia's 2013 new-uniform entry. Retail styles 5 and 6 are both open-ended from 2004; style 5 listed (ambiguous). Game-day jersey unknown; the all-white debut was Dec 24, 2022 vs Giants, not this game."
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "home",
+      "team_key": "bills_2022",
+      "season": 2022,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia 2022 Buffalo Bills season article: no uniform colour stated for the Week 10 Vikings game",
+      "worn_url": "https://en.wikipedia.org/wiki/2022_Buffalo_Bills_season",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2022 falls in the 2011-2025 base set. Retail table has no base-era style covering 2022; only the open-ended 2003 alternates (styles 8 and 9) do, so null is given."
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "away",
+      "team_key": "bills_1999",
+      "season": 1999,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Bills article: helmet 'remained primarily red through the 2002 redesign'; Music City Miracle article states no uniform colours",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "1999 is in the 1984-2001 red-helmet era, before the 2002 redesign. Retail style 2 (1987-2002) contains 1999."
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "home",
+      "team_key": "titans_1999",
+      "season": 1999,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Titans article: 'The article does not state which jersey colour was worn in any 1999 game, including the Music City Miracle'; Music City Miracle article states no uniform colours",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Tennessee_Titans",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "1999 falls in the 1999-2017 Titans era, which also covers 2004. Retail style 6 (alternate 1 of 1999, open-ended) is the only style containing 1999. The 2004 design's home jersey colour is not stated."
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "away",
+      "team_key": "raiders_2001",
+      "season": 2001,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Las Vegas Raiders article: silver helmets, silver pants and 'either black or white jerseys' that 'essentially remained the same since it debuted in 1963'; Tuck Rule Game article states no uniform colours",
+      "worn_url": "https://en.wikipedia.org/wiki/Las_Vegas_Raiders",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2001 is inside the 1963-present silver-and-black design. Retail styles 1-3 end by 1967 and style 4 starts in 2004, so no retail style covers 2001 and null is given."
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "home",
+      "team_key": "patriots_2001",
+      "season": 2001,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia Tuck Rule Game page gives no uniform colours. Search snippet (WBUR): Raiders wore white jerseys; Patriots colour not confirmed.",
+      "worn_url": "https://en.wikipedia.org/wiki/Tuck_Rule_Game",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2001 season is the 2000-2019 design (d04 true, season-level). Retail: only style 10 (1994-, open) contains 2001, so 10. Patriots jersey colour unverified."
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "away",
+      "team_key": "panthers_2003",
+      "season": 2003,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "\"the Panthers wore their road white uniforms with white pants\" (Wikipedia, Super Bowl XXXVIII)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Patriots designated home. 2026 match relies on the 2026 primary away white road jersey; 2026 pants for road weeks are not all stated in the file. Retail style 2 (alt 1 of 2003, open-ended) is the only row covering 2003 besides style 1 which ends 1996."
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "home",
+      "team_key": "patriots_2003",
+      "season": 2003,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "Search summary only: 'New England also wore its blue uniforms for Super Bowls XXXVI and XXXVIII' (page not opened)",
+      "worn_url": "https://www.boston.com/sports/new-england-patriots/2012/01/23/patriots_opt_fo",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Blue home jersey, 2000-2019 design. Retail: styles 9 and 10 are both open-ended and contain 2003, so null."
+    },
+    {
+      "moment": "ambush",
+      "side": "away",
+      "team_key": "saints_2009",
+      "season": 2009,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "\"the Saints wore their road white uniforms with old gold pants\" (Wikipedia, Super Bowl XLIV)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Colts were designated home. Gold pants, not black, so the 2026 black-pants primary sets do not match. Retail style 8 is the only row covering 2009."
+    },
+    {
+      "moment": "ambush",
+      "side": "home",
+      "team_key": "colts_2009",
+      "season": 2009,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"the Colts elected to wear their home blue uniforms with white pants\" (Wikipedia, Super Bowl XLIV)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Colts designated home. Retail table has no row covering 2009 (highest row 1995). Logos page: 2009 uniform facts not stated."
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "away",
+      "team_key": "eagles_2010",
+      "season": 2010,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia game article: Eagles and Giants jersey colours not stated",
+      "worn_url": "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Home/away not stated in article. Retail rows 9-14 are all open-ended and cover 2010; lowest (9) used. Logos page does not give 2010 uniform facts."
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "home",
+      "team_key": "giants_2010",
+      "season": 2010,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Miracle Wikipedia page: no uniform colours stated. Search found no uniform source for this game.",
+      "worn_url": "https://en.wikipedia.org/wiki/Miracle_at_the_New_Meadowlands",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Blue home is likely in the 2005-2015 design, but no source confirms the pants or jersey for this game."
+    },
+    {
+      "moment": "beast_quake",
+      "side": "away",
+      "team_key": "saints_2010",
+      "season": 2010,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia game article has no uniform sentence",
+      "worn_url": "https://en.wikipedia.org/wiki/Beast_Quake",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Seahawks home (6-3 home record stated). Logos page: 2010 uniform facts unknown."
+    },
+    {
+      "moment": "beast_quake",
+      "side": "home",
+      "team_key": "seahawks_2010",
+      "season": 2010,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"Home jerseys were all 'Seahawks Blue'\" (Logos page, 2010 season; game-level colour not stated on game page)",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Seattle_Seahawks",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Season-level fact used, not game-specific. Beast Quake article has no uniform sentence. Retail rows 3 and 4 both cover 2010; row 3 used."
+    },
+    {
+      "moment": "catch_three",
+      "side": "away",
+      "team_key": "saints_2011",
+      "season": 2011,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia game article has no uniform sentence in first 100k chars",
+      "worn_url": "https://en.wikipedia.org/wiki/The_Catch_III",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "49ers home at Candlestick Park. Article was read in part (first 100k of 170k chars)."
+    },
+    {
+      "moment": "catch_three",
+      "side": "home",
+      "team_key": "49ers_2011",
+      "season": 2011,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia 2011 season page gives no uniform colours for the game (uniform is only an infobox image, no text)",
+      "worn_url": "https://en.wikipedia.org/wiki/2011_San_Francisco_49ers_season",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design in effect is the 2009-2011 redesign. Retail style 7 is the only table row whose open-ended range contains 2011."
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "season": 2012,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia Mile High page lists players only. Baltimore_Ravens article says the purple-jersey, black-pants look was worn again \"on January 6, 2013\" (a different game); no uniform for January 12.",
+      "worn_url": "https://en.wikipedia.org/wiki/Mile_High_Miracle",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Base design in effect. Retail style 3 (2004-null) is the only table row containing 2012."
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "home",
+      "team_key": "broncos_2012",
+      "season": 2012,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia (Denver Broncos): 'Orange became the primary home jersey' in 2012. The Mile High Miracle article states no uniform colours.",
+      "worn_url": "https://en.wikipedia.org/wiki/Mile_High_Miracle",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level: the 2012 orange primary replaced the 2004 navy primary, so design_matches_2004 is false. The 2024 Mile High Collection differs in sleeves and pants, but the text read does not compare the 2012 and 2026 numbers. Retail styles 5 and 6 are both open from 2003 and 2004; style 5 listed (ambiguous)."
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "season": 2012,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "\"The Ravens wore white jerseys as they did in Super Bowl XXXV, but with black-colored pants this time instead of white.\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Black pants, not white: a pants variant of the road look, not the base white-pants set."
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "home",
+      "team_key": "49ers_2012",
+      "season": 2012,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"San Francisco elected to wear their red jerseys\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Red (colour) jersey; the page does not describe pants or helmet in this game."
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "away",
+      "team_key": "cowboys_2014",
+      "season": 2014,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia: 2014 'normal blue jerseys at home for Thanksgiving'; no game-day colour stated for this January playoff road game.",
+      "worn_url": "https://en.wikipedia.org/wiki/Dallas_Cowboys",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level match to the 1996-present design. The 2014 road (navy) jersey is not confirmed for this game and the 2026 primary is white, so the 2026 match is unknown. Retail styles 7 and 8 are both open from 1994; style 7 listed (ambiguous)."
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "home",
+      "team_key": "packers_2014",
+      "season": 2014,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia: 'Forest green or white jerseys with metallic gold pants' since 1959; no 2014 game-day uniform stated.",
+      "worn_url": "https://en.wikipedia.org/wiki/Green_Bay_Packers",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level match only (base look since 1959). Retail styles 5 and 6 are both open from 2004; style 5 listed (ambiguous). Pants stripe/number details not stated."
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "away",
+      "team_key": "patriots_2014",
+      "season": 2014,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "Search summary: 'The Patriots are 2-1 when wearing their white jerseys in Super Bowls... Seattle Seahawks in Super Bowl XLIX'",
+      "worn_url": "https://nfl.com/_amp/pats-wearing-white-in-super-bowl-will-definitely-win-0ap3000000778558",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "White jersey with navy pants is the 2000-2019 design. 2026 white uniform (blue pants) is not confirmed to match. Retail: styles 9 and 10 both contain 2014, so null."
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "home",
+      "team_key": "seahawks_2014",
+      "season": 2014,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"elected to wear their college navy home jerseys with navy pants\" (Wikipedia, Super Bowl XLIX)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Seahawks designated home. Navy is the 2012+ Nike design, not the 2002-2011 Seahawks Blue design. Retail rows 3 and 4 both cover 2014; row 3 used."
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "away",
+      "team_key": "packers_2015",
+      "season": 2015,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "Packers CEO Mark Murphy said the team 'would wear white on the road for the Detroit game' (search result citing an ESPN-sourced report; no URL in the result).",
+      "worn_url": "https://en.wikipedia.org/wiki/Miracle_in_Motown",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Wikipedia's Miracle in Motown article does not describe the uniforms. The white road jersey is part of the 1959-base design (design-level match true). The 2026 file does not describe a 2026 white road set. Retail styles 5/6 both open from 2004; style 5 listed (ambiguous)."
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "home",
+      "team_key": "lions_2015",
+      "season": 2015,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Search result (ESPN-sourced report): 'The game was played in regular uniforms by both teams.' Lions colours not stated.",
+      "worn_url": "https://en.wikipedia.org/wiki/Detroit_Lions",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2015 falls in the 2009-2016 design; Wikipedia does not describe those uniforms. Retail style 7 (2003-null) listed; styles 8/9 also open from 2004 (ambiguous)."
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "away",
+      "team_key": "saints_2017",
+      "season": 2017,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia game article: no uniform colour stated (only fan 'Vikings colors' reference)",
+      "worn_url": "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Vikings home at U.S. Bank Stadium. Logos page: 2017 home jerseys were not white; other 2017 facts unknown."
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "home",
+      "team_key": "vikings_2017",
+      "season": 2017,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia (Minneapolis Miracle) and the logos article give no uniform description for this game.",
+      "worn_url": "https://en.wikipedia.org/wiki/Minneapolis_Miracle",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level: falls in the 2013-2021 purple era that the 2026 file treats as the same primary design. Retail styles 5/6 both open-ended from 2004; style 5 listed (ambiguous)."
+    },
+    {
+      "moment": "philly_special",
+      "side": "away",
+      "team_key": "eagles_2017",
+      "season": 2017,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"The Eagles therefore wore their standard home uniform of midnight green jerseys with white pants.\" (Wikipedia, Super Bowl LII)",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Eagles were designated visitors (Patriots home). 2026 match is at jersey level: 2026 file lists midnight green home but does not state its pants. Retail rows 9-14 are open-ended; lowest (9) used."
+    },
+    {
+      "moment": "philly_special",
+      "side": "home",
+      "team_key": "patriots_2017",
+      "season": 2017,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "UPI/CBS snippets: 'The Patriots wore their white road jerseys, not white home jerseys, even though they were the home team for the game.'",
+      "worn_url": "https://www.upi.com/Sports_News/NFL/2018/01/23/Patriots-to-wear-white-jerseys-in-Super-Bowl-LII/6211516725062/",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Designated home team but wore white. 2000-2019 design. Retail: styles 9 and 10 both contain 2017, so null."
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "away",
+      "team_key": "49ers_2019",
+      "season": 2019,
+      "worn_in_game": "unknown",
+      "worn_evidence": "\"The 49ers sought special permission to wear their all-white third jersey combination, but approval was not granted.\" Worn jersey not stated.",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Road jersey colour not stated on the page."
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "home",
+      "team_key": "chiefs_2019",
+      "season": 2019,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"As the designated home team, the Chiefs elected to wear their standard red home jerseys with white pants.\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LIV",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "No retail table row contains 2019."
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "away",
+      "team_key": "bills_2021",
+      "season": 2021,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Wikipedia Bills article gives no game-specific jersey colour; Thirteen Seconds Wikipedia page returned 404",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Buffalo_Bills",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "A web search snippet (Buffalo Rumblings preview) said white jerseys, but that page was not opened or confirmed, so it is not used. Season 2021 is in the 2011-2025 base set. Retail table has no base-era style for 2021, so null."
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "home",
+      "team_key": "chiefs_2021",
+      "season": 2021,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Kansas City Chiefs article gives no uniform details for the 2021 Bills game",
+      "worn_url": "https://en.wikipedia.org/wiki/Kansas_City_Chiefs",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design family is the red/white base; the colour worn in this game is not stated."
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "away",
+      "team_key": "rams_2021",
+      "season": 2021,
+      "worn_in_game": "alternate: white jersey with yellow pants",
+      "worn_evidence": "\"The Rams selected newly unveiled alternate white jerseys with yellow pants.\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LVI",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "2004 Rams uniform not described in pages read (Los_Angeles_Rams excerpt lacked the uniform section). Retail styles 7, 8 and 9 (open-ended from 2000/2003) all contain 2021, so no single style is assigned."
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "home",
+      "team_key": "bengals_2021",
+      "season": 2021,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "Bengals Wikipedia: 'the white pants with orange stripes were worn with the black jersey in Super Bowl LVI against the Rams'",
+      "worn_url": "https://en.wikipedia.org/wiki/Cincinnati_Bengals",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Black jersey from the 2021 set (2026 primary); 2004-2020 panels design differs. Retail: styles 4 and 5 are both open-ended and contain 2021, so null."
+    },
+    {
+      "moment": "comeback_33",
+      "side": "away",
+      "team_key": "colts_2022",
+      "season": 2022,
+      "worn_in_game": "unknown",
+      "worn_evidence": "no uniform description in search results; Logos page: 2022 uniform facts not stated",
+      "worn_url": "https://chicago.suntimes.com/2022/12/17/23514571/colossal-comeback-vikings-rally-to-beat-colts-in-ot-despite-trailing-33-0-at-half",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Vikings home (39-36 OT win at U.S. Bank Stadium). The Suntimes URL is a search result only and was not fetched; the Wikipedia game page was not read. Colours unknown."
+    },
+    {
+      "moment": "comeback_33",
+      "side": "home",
+      "team_key": "vikings_2022",
+      "season": 2022,
+      "worn_in_game": "unknown",
+      "worn_evidence": "Search (sportslogos/Vikings coverage) says the first white-jersey home game was vs Giants on Christmas Eve 2022, not the Colts game; Colts-game uniforms not stated.",
+      "worn_url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Minnesota_Vikings",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Design-level match only. Retail styles 5/6 both open-ended from 2004; style 5 listed (ambiguous)."
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "away",
+      "team_key": "49ers_2023",
+      "season": 2023,
+      "worn_in_game": "white jersey",
+      "worn_evidence": "\"The 49ers wore their white away jerseys with gold pants.\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Gold pants are part of the 2009 design."
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "home",
+      "team_key": "chiefs_2023",
+      "season": 2023,
+      "worn_in_game": "dark/colour jersey",
+      "worn_evidence": "\"The Chiefs chose to wear their red home jerseys with white pants.\"",
+      "worn_url": "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "No retail table row contains 2023."
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "away",
+      "team_key": "steelers_2025",
+      "season": 2025,
+      "worn_in_game": "unknown",
+      "worn_evidence": "SI pre-game piece: Steelers 'will now likely be forced to use their black jerseys' (speculation); steelers.com recap gives no uniforms",
+      "worn_url": "https://www.si.com/nfl/steelers/news/bengals-unleash-special-uniforms-pittsburgh-steelers-game",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "Same modern-classic design in the 2025 base set; the 1933 gold throwbacks debuted in Week 8, not this game. Worn colour unconfirmed. Retail: no row covers 2025, so null."
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "home",
+      "team_key": "bengals_2025",
+      "season": 2025,
+      "worn_in_game": "alternate: all-white 'White Bengal' (pre-game plan, not confirmed postgame)",
+      "worn_evidence": "SI pre-game piece: 'the all-white helmet, jersey and pants combination, which has been dubbed the \"White Bengal\"'",
+      "worn_url": "https://www.si.com/nfl/steelers/news/bengals-unleash-special-uniforms-pittsburgh-steelers-game",
+      "worn_basis": "text report read by a Haiku researcher; no photo checked",
+      "note": "All-white helmet differs from the striped orange helmet of the 2004 and 2026 looks. Retail: styles 4 and 5 both contain 2025, so null."
+    }
+  ],
+  "decisions": [
+    {
+      "moment": "the_miss",
+      "side": "away",
+      "team_key": "falcons_1998",
+      "season": 1998,
+      "role": "away",
+      "kit": 1,
+      "rule": "R2",
+      "reason": "retail period set 1 covers 1998-2003",
+      "situ_row": 25,
+      "v06_kit": 1,
+      "v05_kit": 1,
+      "a1x_kit": 1,
+      "a5_kit": 1
+    },
+    {
+      "moment": "the_miss",
+      "side": "home",
+      "team_key": "vikings_1998",
+      "season": 1998,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (1996-2005, home kit) was worn in 1998 (Reebok template)",
+      "situ_row": 25,
+      "v06_kit": 7,
+      "v05_kit": 7,
+      "a1x_kit": 7,
+      "a5_kit": 7
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "away",
+      "team_key": "giants_2007",
+      "season": 2007,
+      "role": "away",
+      "kit": "retail_current",
+      "rule": "R0",
+      "reason": "worn: white jersey over GRAY pants; the retail 2004 Giants road kit is white over gray (style 0 has white pants)",
+      "situ_row": 26,
+      "v06_kit": 8,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 8
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "home",
+      "team_key": "patriots_2007",
+      "season": 2007,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, home kit) was worn in 2007 (Reebok template)",
+      "situ_row": 26,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 12,
+      "a5_kit": 12
+    },
+    {
+      "moment": "toe_tap",
+      "side": "away",
+      "team_key": "steelers_2008",
+      "season": 2008,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1997",
+      "situ_row": 27,
+      "v06_kit": 0,
+      "v05_kit": 6,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "toe_tap",
+      "side": "home",
+      "team_key": "cardinals_2008",
+      "season": 2008,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R0",
+      "reason": "worn: red jersey, white pants, white helmet; the retail 2004 Cardinals home kit is red over white with a white helmet (style 0 has maroon pants)",
+      "situ_row": 27,
+      "v06_kit": 9,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 9
+    },
+    {
+      "moment": "manningham",
+      "side": "away",
+      "team_key": "giants_2011",
+      "season": 2011,
+      "role": "away",
+      "kit": "retail_current",
+      "rule": "R0",
+      "reason": "worn: white jersey over GRAY pants; the retail 2004 Giants road kit is white over gray (style 0 has white pants)",
+      "situ_row": 28,
+      "v06_kit": 8,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 8
+    },
+    {
+      "moment": "manningham",
+      "side": "home",
+      "team_key": "patriots_2011",
+      "season": 2011,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, home kit) was worn in 2011 (Reebok template)",
+      "situ_row": 28,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 12,
+      "a5_kit": 12
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "away",
+      "team_key": "patriots_2016",
+      "season": 2016,
+      "role": "away",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, away kit) was worn in 2016 (Nike cut over the same design)",
+      "situ_row": 29,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 0,
+      "a5_kit": 12
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "home",
+      "team_key": "falcons_2016",
+      "season": 2016,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2003-2019, home kit) was worn in 2016 (Nike cut over the same design)",
+      "situ_row": 29,
+      "v06_kit": 14,
+      "v05_kit": 14,
+      "a1x_kit": 0,
+      "a5_kit": 14
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "away",
+      "team_key": "vikings_2022",
+      "season": 2022,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2013",
+      "situ_row": 30,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "home",
+      "team_key": "bills_2022",
+      "season": 2022,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2011",
+      "situ_row": 30,
+      "v06_kit": 0,
+      "v05_kit": 4,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "away",
+      "team_key": "bills_1999",
+      "season": 1999,
+      "role": "away",
+      "kit": 2,
+      "rule": "R2",
+      "reason": "retail period set 2 covers 1987-2002",
+      "situ_row": 31,
+      "v06_kit": 2,
+      "v05_kit": 2,
+      "a1x_kit": 2,
+      "a5_kit": 2
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "home",
+      "team_key": "titans_1999",
+      "season": 1999,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (1999-2017, home kit) was worn in 1999 (Reebok template)",
+      "situ_row": 31,
+      "v06_kit": 9,
+      "v05_kit": 9,
+      "a1x_kit": 9,
+      "a5_kit": 9
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "away",
+      "team_key": "raiders_2001",
+      "season": 2001,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1963",
+      "situ_row": 32,
+      "v06_kit": 0,
+      "v05_kit": 5,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "home",
+      "team_key": "patriots_2001",
+      "season": 2001,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, home kit) was worn in 2001 (Reebok template)",
+      "situ_row": 32,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 12,
+      "a5_kit": 12
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "away",
+      "team_key": "panthers_2003",
+      "season": 2003,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1995",
+      "situ_row": 33,
+      "v06_kit": 0,
+      "v05_kit": 3,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "home",
+      "team_key": "patriots_2003",
+      "season": 2003,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, home kit) was worn in 2003 (Reebok template)",
+      "situ_row": 33,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 12,
+      "a5_kit": 12
+    },
+    {
+      "moment": "ambush",
+      "side": "away",
+      "team_key": "saints_2009",
+      "season": 2009,
+      "role": "away",
+      "kit": 6,
+      "rule": "R0",
+      "reason": "worn: white, black numerals / old gold / gold; built G2 from existing native parts",
+      "situ_row": 34,
+      "v06_kit": 6,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "ambush",
+      "side": "home",
+      "team_key": "colts_2009",
+      "season": 2009,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1957",
+      "situ_row": 34,
+      "v06_kit": 0,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "away",
+      "team_key": "eagles_2010",
+      "season": 2010,
+      "role": "away",
+      "kit": 10,
+      "rule": "R0",
+      "reason": "worn: white jersey over midnight green pants; Eagles style 10 is the u3d alternate 'white jersey with midnight green pants' (both kits)",
+      "situ_row": 35,
+      "v06_kit": 10,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 10
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "home",
+      "team_key": "giants_2010",
+      "season": 2010,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2015, home kit) was worn in 2010 (Reebok template)",
+      "situ_row": 35,
+      "v06_kit": 8,
+      "v05_kit": 8,
+      "a1x_kit": 8,
+      "a5_kit": 8
+    },
+    {
+      "moment": "beast_quake",
+      "side": "away",
+      "team_key": "saints_2010",
+      "season": 2010,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2006",
+      "situ_row": 36,
+      "v06_kit": 0,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "beast_quake",
+      "side": "home",
+      "team_key": "seahawks_2010",
+      "season": 2010,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2002-2011, home kit) was worn in 2010 (Reebok template)",
+      "situ_row": 36,
+      "v06_kit": 5,
+      "v05_kit": 5,
+      "a1x_kit": 5,
+      "a5_kit": 5
+    },
+    {
+      "moment": "catch_three",
+      "side": "away",
+      "team_key": "saints_2011",
+      "season": 2011,
+      "role": "away",
+      "kit": 6,
+      "rule": "R0",
+      "reason": "worn: white, black numerals trimmed gold / old gold / gold; built G2 from existing native parts",
+      "situ_row": 37,
+      "v06_kit": 6,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "catch_three",
+      "side": "home",
+      "team_key": "49ers_2011",
+      "season": 2011,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2009",
+      "situ_row": 37,
+      "v06_kit": 0,
+      "v05_kit": 3,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "season": 2012,
+      "role": "away",
+      "kit": 1,
+      "rule": "R0",
+      "reason": "worn: white, purple numerals / black / black; built G3 from existing native parts",
+      "situ_row": 38,
+      "v06_kit": 1,
+      "v05_kit": 4,
+      "a1x_kit": 0,
+      "a5_kit": 4
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "home",
+      "team_key": "broncos_2012",
+      "season": 2012,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R4",
+      "reason": "no retail set covers 2012 and the 2004 look does not (modern by default)",
+      "situ_row": 38,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "season": 2012,
+      "role": "away",
+      "kit": 1,
+      "rule": "R0",
+      "reason": "worn: white, purple numerals / black / black; built G3 from existing native parts",
+      "situ_row": 39,
+      "v06_kit": 1,
+      "v05_kit": 4,
+      "a1x_kit": 0,
+      "a5_kit": 4
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "home",
+      "team_key": "49ers_2012",
+      "season": 2012,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2009",
+      "situ_row": 39,
+      "v06_kit": 0,
+      "v05_kit": 3,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "away",
+      "team_key": "cowboys_2014",
+      "season": 2014,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1996",
+      "situ_row": 40,
+      "v06_kit": 0,
+      "v05_kit": 10,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "home",
+      "team_key": "packers_2014",
+      "season": 2014,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1959",
+      "situ_row": 40,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "away",
+      "team_key": "patriots_2014",
+      "season": 2014,
+      "role": "away",
+      "kit": "retail_current",
+      "rule": "R3",
+      "reason": "the 2004 look (2000-2019, away kit) was worn in 2014 (Nike cut over the same design)",
+      "situ_row": 41,
+      "v06_kit": 12,
+      "v05_kit": 12,
+      "a1x_kit": 0,
+      "a5_kit": 12
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "home",
+      "team_key": "seahawks_2014",
+      "season": 2014,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2012",
+      "situ_row": 41,
+      "v06_kit": 0,
+      "v05_kit": 5,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "away",
+      "team_key": "packers_2015",
+      "season": 2015,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1959",
+      "situ_row": 42,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "home",
+      "team_key": "lions_2015",
+      "season": 2015,
+      "role": "home",
+      "kit": "retail_current",
+      "rule": "R0",
+      "reason": "worn: Honolulu blue over SILVER pants (the 2009-2016 set, the 2003 design); the retail 2004 Lions kit is that look (style 0 has blue pants)",
+      "situ_row": 42,
+      "v06_kit": 10,
+      "v05_kit": 10,
+      "a1x_kit": 0,
+      "a5_kit": 10
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "away",
+      "team_key": "saints_2017",
+      "season": 2017,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2006",
+      "situ_row": 43,
+      "v06_kit": 0,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "home",
+      "team_key": "vikings_2017",
+      "season": 2017,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2013",
+      "situ_row": 43,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "philly_special",
+      "side": "away",
+      "team_key": "eagles_2017",
+      "season": 2017,
+      "role": "away",
+      "kit": 14,
+      "rule": "R0",
+      "reason": "worn: midnight green, white numerals / white / midnight green; built G1b from existing native parts",
+      "situ_row": 44,
+      "v06_kit": 14,
+      "v05_kit": 9,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "philly_special",
+      "side": "home",
+      "team_key": "patriots_2017",
+      "season": 2017,
+      "role": "home",
+      "kit": 11,
+      "rule": "R0",
+      "reason": "worn: white, navy numerals / navy / silver; built G1 from existing native parts",
+      "situ_row": 44,
+      "v06_kit": 11,
+      "v05_kit": 12,
+      "a1x_kit": 0,
+      "a5_kit": 12
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "away",
+      "team_key": "49ers_2019",
+      "season": 2019,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2009",
+      "situ_row": 45,
+      "v06_kit": 0,
+      "v05_kit": 3,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "home",
+      "team_key": "chiefs_2019",
+      "season": 2019,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1989",
+      "situ_row": 45,
+      "v06_kit": 0,
+      "v05_kit": 6,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "away",
+      "team_key": "bills_2021",
+      "season": 2021,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2011",
+      "situ_row": 46,
+      "v06_kit": 0,
+      "v05_kit": 4,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "home",
+      "team_key": "chiefs_2021",
+      "season": 2021,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1989",
+      "situ_row": 46,
+      "v06_kit": 0,
+      "v05_kit": 6,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "away",
+      "team_key": "rams_2021",
+      "season": 2021,
+      "role": "away",
+      "kit": 2,
+      "rule": "R0",
+      "reason": "worn: the white modern throwback over yellow pants with royal helmet and gold horns, the 1999 road look; Rams style 2 (1998-1999) is that road kit (style 0 road has royal pants)",
+      "situ_row": 47,
+      "v06_kit": 2,
+      "v05_kit": 4,
+      "a1x_kit": 0,
+      "a5_kit": 2
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "home",
+      "team_key": "bengals_2021",
+      "season": 2021,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2021",
+      "situ_row": 47,
+      "v06_kit": 0,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "comeback_33",
+      "side": "away",
+      "team_key": "colts_2022",
+      "season": 2022,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1957",
+      "situ_row": 48,
+      "v06_kit": 0,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "comeback_33",
+      "side": "home",
+      "team_key": "vikings_2022",
+      "season": 2022,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2013",
+      "situ_row": 48,
+      "v06_kit": 0,
+      "v05_kit": 7,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "away",
+      "team_key": "49ers_2023",
+      "season": 2023,
+      "role": "away",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 2009",
+      "situ_row": 49,
+      "v06_kit": 0,
+      "v05_kit": 3,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "home",
+      "team_key": "chiefs_2023",
+      "season": 2023,
+      "role": "home",
+      "kit": "modern",
+      "rule": "R1",
+      "reason": "the current primary design began in 1989",
+      "situ_row": 49,
+      "v06_kit": 0,
+      "v05_kit": 6,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "away",
+      "team_key": "steelers_2025",
+      "season": 2025,
+      "role": "away",
+      "kit": 4,
+      "rule": "R0",
+      "reason": "worn: black, gold numerals / gold / black; built G4 from existing native parts",
+      "situ_row": 50,
+      "v06_kit": 4,
+      "v05_kit": 6,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "home",
+      "team_key": "bengals_2025",
+      "season": 2025,
+      "role": "home",
+      "kit": 5,
+      "rule": "R0",
+      "reason": "worn: all-white White Bengal, paired with the built black Steelers road kit G4",
+      "situ_row": 50,
+      "v06_kit": 5,
+      "v05_kit": 8,
+      "a1x_kit": 0,
+      "a5_kit": 0
+    }
+  ],
+  "a5_worn": [
+    {
+      "moment": "the_miss",
+      "side": "away",
+      "team_key": "falcons_1998",
+      "designated_home": false,
+      "jersey": "white, red numerals",
+      "pants": "silver with a red stripe",
+      "socks": "red",
+      "helmet": "black",
+      "note": "road set, Metrodome",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ATL&year=1998",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/1998_ATL_1.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/1998_NFC_Championship_Game",
+          "quote": "Game: https://en.wikipedia.org/wiki/1998_NFC_Championship_Game (Atlanta the visitor)"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "the_miss",
+      "side": "home",
+      "team_key": "vikings_1998",
+      "designated_home": true,
+      "jersey": "purple, white numerals trimmed gold",
+      "pants": "white, purple-gold stripe",
+      "socks": "purple",
+      "helmet": "purple, white horns",
+      "note": "home set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=1998",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/1998_MIN_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "away",
+      "team_key": "giants_2007",
+      "designated_home": false,
+      "jersey": "white, red numerals",
+      "pants": "gray",
+      "socks": "red",
+      "helmet": "blue",
+      "note": "road white with gray pants, Super Bowl patch",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2007",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2007_NYG_3.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+          "quote": "Wikipedia Super Bowl XLII: 'the Giants wore their road white uniforms with grey pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "home",
+      "team_key": "patriots_2007",
+      "designated_home": true,
+      "jersey": "navy blue",
+      "pants": "silver",
+      "socks": "navy",
+      "helmet": "silver",
+      "note": "home set, Super Bowl patch",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2007",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2007_NE_3.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLII",
+          "quote": "Wikipedia Super Bowl XLII: 'the Patriots elected to wear their home navy uniforms with silver pants'; designated home team"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "toe_tap",
+      "side": "away",
+      "team_key": "steelers_2008",
+      "designated_home": false,
+      "jersey": "white, black numerals",
+      "pants": "gold",
+      "socks": "black",
+      "helmet": "black",
+      "note": "road white (the black home set was not available)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=2008",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2008_PIT_2.png",
+      "text_sources": [
+        {
+          "url": "https://archives-new.honoluluadvertiser.com/article/2009/Jan/21/br/hawaii90121042.html",
+          "quote": "AP 2009-01-21: 'The Pittsburgh Steelers will wear their white road uniforms against Arizona in the Super Bowl'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "toe_tap",
+      "side": "home",
+      "team_key": "cardinals_2008",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "white",
+      "socks": "red",
+      "helmet": "white",
+      "note": "home red; text sources say red pants but the GUD graphic shows white pants (graphic kept)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ARZ&year=2008",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2008_ARZ_4.png",
+      "text_sources": [
+        {
+          "url": "https://archives-new.honoluluadvertiser.com/article/2009/Jan/21/br/hawaii90121042.html",
+          "quote": "AP 2009-01-21: 'The Cardinals, as the home team, chose to wear their red home jerseys'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "manningham",
+      "side": "away",
+      "team_key": "giants_2011",
+      "designated_home": false,
+      "jersey": "white, red numerals",
+      "pants": "gray",
+      "socks": "red",
+      "helmet": "blue",
+      "note": "road white with gray pants (the same combination as Super Bowl XLII)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2011",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2011_NYG_1b.png",
+      "text_sources": [
+        {
+          "url": "https://www.boston.com/sports/new-england-patriots/2012/01/23/patriots_opt_fo/?amp=1",
+          "quote": "Boston.com 2012-01-23: the Giants 'tweeted that they would wear their road white jerseys with gray pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "manningham",
+      "side": "home",
+      "team_key": "patriots_2011",
+      "designated_home": true,
+      "jersey": "navy blue",
+      "pants": "silver (text calls it gray)",
+      "socks": "navy",
+      "helmet": "silver",
+      "note": "home set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2011",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2011_NE_2a.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/patriots-giants-super-bowl-rematch-will-feature-same-uniforms-09000d5d826426b1",
+          "quote": "NFL.com: 'The Patriots chose their home blue uniforms'; Wikipedia: designated home team"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "away",
+      "team_key": "patriots_2016",
+      "designated_home": false,
+      "jersey": "white, navy numerals",
+      "pants": "navy",
+      "socks": "navy and white striped",
+      "helmet": "silver",
+      "note": "road whites with navy pants, Super Bowl LI patch",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2016",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2016_NE_1a.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/pats-wearing-white-in-super-bowl-will-definitely-win-0ap3000000778558",
+          "quote": "NFL.com 2017-01-27: 'The Patriots will wear their white jerseys'; Wikipedia: Patriots the designated away team"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "home",
+      "team_key": "falcons_2016",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "white",
+      "socks": "red",
+      "helmet": "black",
+      "note": "home red as the designated home team",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ATL&year=2016",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2016_ATL_2a.png",
+      "text_sources": [
+        {
+          "url": "https://web.archive.org/web/20170126094124/http://thefalconswire.usatoday.com/2017/01/24/falcons-choose-to-wear-red-jerseys-for-super-bowl-li-vs-patriots/",
+          "quote": "USA Today Falcons Wire 2017-01-24: Falcons 'will wear home red unis'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "away",
+      "team_key": "vikings_2022",
+      "designated_home": false,
+      "jersey": "white, purple numerals",
+      "pants": "purple",
+      "socks": "purple",
+      "helmet": "purple",
+      "note": "road white over purple pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2022",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2022_MIN_B.png",
+      "text_sources": [
+        {
+          "url": "https://betsdressed.beehiiv.com/p/bets-dressed-week-10-uniform-matchups-picks",
+          "quote": "Bets Dressed 2022-11-13: 'Purple pants confirmed for the Vikings'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "home",
+      "team_key": "bills_2022",
+      "designated_home": true,
+      "jersey": "royal blue, white numerals",
+      "pants": "white",
+      "socks": "blue",
+      "helmet": "white",
+      "note": "home blue over white pants, white helmet",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=2022",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2022_BUF_D3.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "away",
+      "team_key": "bills_1999",
+      "designated_home": false,
+      "jersey": "white, blue numerals",
+      "pants": "white, red-blue stripe",
+      "socks": "red",
+      "helmet": "red",
+      "note": "road set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=1999",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/1999_BUF_1.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "home",
+      "team_key": "titans_1999",
+      "designated_home": true,
+      "jersey": "navy, light blue shoulders",
+      "pants": "white",
+      "socks": "navy",
+      "helmet": "white",
+      "note": "home navy set, Adelphia Coliseum",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=TEN&year=1999",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/1999_TEN_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "away",
+      "team_key": "raiders_2001",
+      "designated_home": false,
+      "jersey": "white, silver numerals",
+      "pants": "silver",
+      "socks": "white",
+      "helmet": "silver",
+      "note": "the Raiders wore their road whites with silver pants (not black)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=OAK&year=2001",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2001_OAK_1.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "home",
+      "team_key": "patriots_2001",
+      "designated_home": true,
+      "jersey": "navy blue",
+      "pants": "silver",
+      "socks": "navy",
+      "helmet": "silver",
+      "note": "home set, Foxboro snow game",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2001",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2001_NE_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "away",
+      "team_key": "panthers_2003",
+      "designated_home": false,
+      "jersey": "white, blue numerals",
+      "pants": "white",
+      "socks": "blue",
+      "helmet": "silver",
+      "note": "road whites with white pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CAR&year=2003",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2003_CAR_2.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+          "quote": "Wikipedia Super Bowl XXXVIII: 'road white uniforms with white pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "home",
+      "team_key": "patriots_2003",
+      "designated_home": true,
+      "jersey": "navy blue",
+      "pants": "silver",
+      "socks": "navy",
+      "helmet": "silver",
+      "note": "home set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2003",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2003_NE_3.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
+          "quote": "Wikipedia Super Bowl XXXVIII: 'home navy uniforms with silver pants'; 'the Patriots, as the designated home team'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "ambush",
+      "side": "away",
+      "team_key": "saints_2009",
+      "designated_home": false,
+      "jersey": "white, black numerals",
+      "pants": "old gold",
+      "socks": "black",
+      "helmet": "gold",
+      "note": "road white over old gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2009",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2009_NO_2.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+          "quote": "Wikipedia Super Bowl XLIV: 'the Saints wore their road white uniforms with old gold pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "ambush",
+      "side": "home",
+      "team_key": "colts_2009",
+      "designated_home": true,
+      "jersey": "royal blue, white numerals",
+      "pants": "white",
+      "socks": "blue",
+      "helmet": "white",
+      "note": "home blue over white pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=IND&year=2009",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2009_IND_3.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIV",
+          "quote": "Wikipedia Super Bowl XLIV: 'the Colts elected to wear their home blue uniforms with white pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "away",
+      "team_key": "eagles_2010",
+      "designated_home": false,
+      "jersey": "white, midnight green numerals",
+      "pants": "midnight green",
+      "socks": "black",
+      "helmet": "midnight green",
+      "note": "white jersey over midnight green pants (the Giants were in blue)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2010",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2010_PHI_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "home",
+      "team_key": "giants_2010",
+      "designated_home": true,
+      "jersey": "royal blue, white numerals",
+      "pants": "gray",
+      "socks": "blue",
+      "helmet": "blue",
+      "note": "home blue over gray pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2010",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2010_NYG_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "beast_quake",
+      "side": "away",
+      "team_key": "saints_2010",
+      "designated_home": false,
+      "jersey": "white, black numerals trimmed gold",
+      "pants": "black",
+      "socks": "black",
+      "helmet": "gold",
+      "note": "road white over black pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2010",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2010_NO_3.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "beast_quake",
+      "side": "home",
+      "team_key": "seahawks_2010",
+      "designated_home": true,
+      "jersey": "Seahawks blue (steel blue), white numerals",
+      "pants": "Seahawks blue",
+      "socks": "navy",
+      "helmet": "Seahawks blue",
+      "note": "the 2002-2011 home set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SEA&year=2010",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2010_SEA_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "catch_three",
+      "side": "away",
+      "team_key": "saints_2011",
+      "designated_home": false,
+      "jersey": "white, black numerals trimmed gold",
+      "pants": "old gold",
+      "socks": "black",
+      "helmet": "gold",
+      "note": "road white over old gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2011",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2011_NO_1.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "catch_three",
+      "side": "home",
+      "team_key": "49ers_2011",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "gold",
+      "socks": "red",
+      "helmet": "gold",
+      "note": "home red over gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2011",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2011_SF_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "designated_home": false,
+      "jersey": "white, purple numerals",
+      "pants": "black",
+      "socks": "black",
+      "helmet": "black",
+      "note": "road white over black pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2012_BAL_A.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "home",
+      "team_key": "broncos_2012",
+      "designated_home": true,
+      "jersey": "orange, white numerals",
+      "pants": "white",
+      "socks": "navy",
+      "helmet": "navy",
+      "note": "home orange over white pants (the 2012 Nike set)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DEN&year=2012",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2012_DEN_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "away",
+      "team_key": "ravens_2012",
+      "designated_home": false,
+      "jersey": "white, purple numerals",
+      "pants": "black",
+      "socks": "black",
+      "helmet": "black",
+      "note": "road white over black pants, Super Bowl XLVII patch on the right chest",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2012_BAL_S.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+          "quote": "Wikipedia Super Bowl XLVII: 'The Ravens wore white jerseys as they did in Super Bowl XXXV, but with black-colored pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "home",
+      "team_key": "49ers_2012",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "gold",
+      "socks": "red",
+      "helmet": "gold",
+      "note": "red home jerseys over gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2012",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2012_SF_S.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLVII",
+          "quote": "Wikipedia Super Bowl XLVII: 'San Francisco elected to wear their red jerseys'; designated home team"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "away",
+      "team_key": "cowboys_2014",
+      "designated_home": false,
+      "jersey": "white, navy numerals",
+      "pants": "silver-blue (metallic)",
+      "socks": "navy",
+      "helmet": "silver",
+      "note": "road white over silver-blue pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DAL&year=2014",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2014_DAL_1.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "home",
+      "team_key": "packers_2014",
+      "designated_home": true,
+      "jersey": "green, white numerals",
+      "pants": "gold",
+      "socks": "green",
+      "helmet": "gold",
+      "note": "home green over gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=2014",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2014_GB_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "away",
+      "team_key": "patriots_2014",
+      "designated_home": false,
+      "jersey": "white, navy numerals",
+      "pants": "navy",
+      "socks": "navy and white striped",
+      "helmet": "silver",
+      "note": "road whites over navy pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2014",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2014_NE_3.png",
+      "text_sources": [
+        {
+          "url": "https://www.patriots.com/news/ask-pfw-on-to-the-super-bowl-221886-x2229",
+          "quote": "Patriots.com: 'As technically the visiting team for Super Bowl XLIX the Patriots will be wearing their white road jerseys'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "home",
+      "team_key": "seahawks_2014",
+      "designated_home": true,
+      "jersey": "college navy, neon green numerals",
+      "pants": "navy",
+      "socks": "navy",
+      "helmet": "navy",
+      "note": "all navy home set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SEA&year=2014",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2014_SEA_7.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_XLIX",
+          "quote": "Wikipedia Super Bowl XLIX: the Seahawks 'elected to wear their college navy home jerseys with navy pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "away",
+      "team_key": "packers_2015",
+      "designated_home": false,
+      "jersey": "white, green numerals",
+      "pants": "gold",
+      "socks": "green",
+      "helmet": "gold",
+      "note": "road white over gold pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=GB&year=2015",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2015_GB_1.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "home",
+      "team_key": "lions_2015",
+      "designated_home": true,
+      "jersey": "Honolulu blue",
+      "pants": "silver",
+      "socks": "white",
+      "helmet": "silver",
+      "note": "home Honolulu blue over silver pants (the 2009-2016 set)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DET&year=2015",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2015_DET_2.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "away",
+      "team_key": "saints_2017",
+      "designated_home": false,
+      "jersey": "white, black numerals",
+      "pants": "black",
+      "socks": "black",
+      "helmet": "gold",
+      "note": "road white over black pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2017",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2017_NO_B.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "home",
+      "team_key": "vikings_2017",
+      "designated_home": true,
+      "jersey": "purple, white numerals",
+      "pants": "white, purple stripe",
+      "socks": "purple",
+      "helmet": "purple",
+      "note": "home purple over white pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2017",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2017_MIN_C.png",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "philly_special",
+      "side": "away",
+      "team_key": "eagles_2017",
+      "designated_home": false,
+      "jersey": "midnight green, white numerals",
+      "pants": "white",
+      "socks": "black and white",
+      "helmet": "midnight green",
+      "note": "the Eagles wore GREEN as the visitor (the Patriots took white)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2017",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2017_PHI_D2.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+          "quote": "Wikipedia Super Bowl LII: 'The Eagles therefore wore their standard home uniform of midnight green jerseys with white pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "philly_special",
+      "side": "home",
+      "team_key": "patriots_2017",
+      "designated_home": true,
+      "jersey": "white, navy numerals",
+      "pants": "navy",
+      "socks": "navy and white striped",
+      "helmet": "silver",
+      "note": "the designated HOME team chose its road whites over navy pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2017",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2017_NE_A2.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/new-england-patriots-to-wear-white-in-super-bowl-lii-0ap3000000909752",
+          "quote": "NFL.com: 'As the home team in Super Bowl LII, New England earned its pick of jersey colors'"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_LII",
+          "quote": "Wikipedia Super Bowl LII: 'the Patriots chose to wear their road white jerseys with navy blue pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "away",
+      "team_key": "49ers_2019",
+      "designated_home": false,
+      "jersey": "white, red numerals",
+      "pants": "gold",
+      "socks": "red",
+      "helmet": "gold",
+      "note": "standard road set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2019",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2019_SF_A2.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/49ers-to-wear-white-jerseys-gold-pants-at-super-bowl-0ap3000001098078",
+          "quote": "NFL.com 2020-01-20: 'The Niners will don white jerseys with gold pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "home",
+      "team_key": "chiefs_2019",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "white",
+      "socks": "red and yellow striped",
+      "helmet": "red",
+      "note": "home red",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2019",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2019_KC_D3.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/49ers-to-wear-white-jerseys-gold-pants-at-super-bowl-0ap3000001098078",
+          "quote": "NFL.com: 'The Chiefs, the designated home team, will wear their dark jerseys'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "away",
+      "team_key": "bills_2021",
+      "designated_home": false,
+      "jersey": "white, blue numerals",
+      "pants": "white, red-blue stripe",
+      "socks": "white",
+      "helmet": "white",
+      "note": "all white with the white helmet",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BUF&year=2021",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2021_BUF_C.png",
+      "text_sources": [
+        {
+          "url": "https://www.buffalorumblings.com/2022/1/23/22896375/buffalo-bills-vs-kansas-city-chiefs-broadcast-info-announcers-streaming-radio-television-josh-allen",
+          "quote": "Buffalo Rumblings preview: 'white jerseys with white pants and white helmet' (search excerpt)"
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "home",
+      "team_key": "chiefs_2021",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "white",
+      "socks": "red",
+      "helmet": "red",
+      "note": "home red over white pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2021",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/hr/2021_KC_DDDD.gif",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "away",
+      "team_key": "rams_2021",
+      "designated_home": false,
+      "jersey": "white, royal numerals (modern throwback)",
+      "pants": "yellow",
+      "socks": "royal",
+      "helmet": "royal, gold horns",
+      "note": "the white 'modern throwback' with yellow pants (the 1999 road look)",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=LAR&year=2021",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2021_LAR_D2.png",
+      "text_sources": [
+        {
+          "url": "https://foxla.com/sports/super-bowl-lvi-la-rams-to-wear-popular-throwback-unis-for-big-game",
+          "quote": "Fox LA: 'the NFC champs will wear the white \"modern throwback\" jerseys to go with their yellow \"sol\" pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "home",
+      "team_key": "bengals_2021",
+      "designated_home": true,
+      "jersey": "black, orange stripes on the shoulders",
+      "pants": "white with orange tiger stripes",
+      "socks": "orange",
+      "helmet": "orange, black tiger stripes",
+      "note": "home black as the designated home team, Super Bowl patch on the left chest",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=2021",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2021_CIN_I2.png",
+      "text_sources": [
+        {
+          "url": "https://www.nfl.com/news/bengals-to-wear-black-home-uniforms-in-super-bowl-lvi-vs-rams",
+          "quote": "NFL.com: 'As the designated home team in Super Bowl LVI, the Bengals had the first choice of uniform'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "comeback_33",
+      "side": "away",
+      "team_key": "colts_2022",
+      "designated_home": false,
+      "jersey": "white, royal numerals",
+      "pants": "white",
+      "socks": "white",
+      "helmet": "white",
+      "note": "road whites",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=IND&year=2022",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2022_IND_A2.png",
+      "text_sources": [
+        {
+          "url": "https://betsdressed.beehiiv.com/p/bets-dressed-week-15-saturday-special-edition",
+          "quote": "Bets Dressed 2022-12-17: 'The icy white Colts are the runaway choice'"
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "moment": "comeback_33",
+      "side": "home",
+      "team_key": "vikings_2022",
+      "designated_home": true,
+      "jersey": "purple, white numerals",
+      "pants": "white",
+      "socks": "purple",
+      "helmet": "purple",
+      "note": "home purple over white pants",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=MIN&year=2022",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/hr/2022_MIN_CC.gif",
+      "text_sources": [],
+      "confidence": "high"
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "away",
+      "team_key": "49ers_2023",
+      "designated_home": false,
+      "jersey": "white, red numerals",
+      "pants": "gold",
+      "socks": "red",
+      "helmet": "gold",
+      "note": "road set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=SF&year=2023",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/hr/2023_SF_AA2.gif",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+          "quote": "Wikipedia Super Bowl LVIII: 'The 49ers wore their white away jerseys with gold pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "home",
+      "team_key": "chiefs_2023",
+      "designated_home": true,
+      "jersey": "red, white numerals",
+      "pants": "white",
+      "socks": "red and yellow striped",
+      "helmet": "red",
+      "note": "home red",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=KC&year=2023",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/2023_KC_H3.png",
+      "text_sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Super_Bowl_LVIII",
+          "quote": "Wikipedia Super Bowl LVIII: 'the Chiefs chose to wear their red home jerseys with white pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "away",
+      "team_key": "steelers_2025",
+      "designated_home": false,
+      "jersey": "black, gold numerals",
+      "pants": "gold",
+      "socks": "black",
+      "helmet": "black",
+      "note": "standard home set worn as the road team",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=2025",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2025_PIT_D.png",
+      "text_sources": [
+        {
+          "url": "https://news.sportslogos.net/2025/10/14/cincinnati-bengals-to-wear-white-bengal-alternate-uniforms-on-thursday-night-football/football/",
+          "quote": "SportsLogos 2025-10-14: 'Pittsburgh will wear its standard home uniform of black helmets, black jerseys and gold pants'"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "home",
+      "team_key": "bengals_2025",
+      "designated_home": true,
+      "jersey": "white (White Bengal), black numerals outlined orange",
+      "pants": "white, black stripes",
+      "socks": "white",
+      "helmet": "white, black tiger stripes",
+      "note": "all-white White Bengal set",
+      "basis": "Gridiron Uniform Database per-game graphic (jersey, pants, socks, helmet, front and back) viewed by the lead on 2026-10-08",
+      "gud_page": "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=2025",
+      "gud_graphic": "https://www.gridiron-uniforms.com/GUD/images/singles/th/2025_CIN_B.png",
+      "text_sources": [
+        {
+          "url": "https://www.bengals.com/news/bengals-uniform-combination-week-7-2025-steelers-white-bengal",
+          "quote": "bengals.com 2025-10-13: 'Jersey: White', 'Pants: White w/ Black Stripes'"
+        }
+      ],
+      "confidence": "high"
+    }
+  ],
+  "overrides": [
+    {
+      "moment": "helmet_catch",
+      "side": "away",
+      "kit": "retail_current",
+      "reason": "worn: white jersey over GRAY pants; the retail 2004 Giants road kit is white over gray (style 0 has white pants)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2007",
+        "https://en.wikipedia.org/wiki/Super_Bowl_XLII"
+      ]
+    },
+    {
+      "moment": "manningham",
+      "side": "away",
+      "kit": "retail_current",
+      "reason": "worn: white jersey over GRAY pants; the retail 2004 Giants road kit is white over gray (style 0 has white pants)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NYG&year=2011",
+        "https://www.boston.com/sports/new-england-patriots/2012/01/23/patriots_opt_fo/?amp=1"
+      ]
+    },
+    {
+      "moment": "toe_tap",
+      "side": "home",
+      "kit": "retail_current",
+      "reason": "worn: red jersey, white pants, white helmet; the retail 2004 Cardinals home kit is red over white with a white helmet (style 0 has maroon pants)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=ARZ&year=2008",
+        "https://archives-new.honoluluadvertiser.com/article/2009/Jan/21/br/hawaii90121042.html"
+      ]
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "home",
+      "kit": "retail_current",
+      "reason": "worn: Honolulu blue over SILVER pants (the 2009-2016 set, the 2003 design); the retail 2004 Lions kit is that look (style 0 has blue pants)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=DET&year=2015"
+      ]
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "away",
+      "kit": 10,
+      "reason": "worn: white jersey over midnight green pants; Eagles style 10 is the u3d alternate 'white jersey with midnight green pants' (both kits)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2010"
+      ]
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "away",
+      "kit": 2,
+      "reason": "worn: the white modern throwback over yellow pants with royal helmet and gold horns, the 1999 road look; Rams style 2 (1998-1999) is that road kit (style 0 road has royal pants)",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=LAR&year=2021",
+        "https://foxla.com/sports/super-bowl-lvi-la-rams-to-wear-popular-throwback-unis-for-big-game"
+      ]
+    },
+    {
+      "moment": "philly_special",
+      "side": "home",
+      "kit": 11,
+      "era_kit": "G1",
+      "reason": "worn: white, navy numerals / navy / silver; built G1 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NE&year=2017",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2017_NE_A2.png"
+      ]
+    },
+    {
+      "moment": "philly_special",
+      "side": "away",
+      "kit": 14,
+      "era_kit": "G1b",
+      "reason": "worn: midnight green, white numerals / white / midnight green; built G1b from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PHI&year=2017",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2017_PHI_D2.png"
+      ]
+    },
+    {
+      "moment": "ambush",
+      "side": "away",
+      "kit": 6,
+      "era_kit": "G2",
+      "reason": "worn: white, black numerals / old gold / gold; built G2 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2009",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2009_NO_2.png"
+      ]
+    },
+    {
+      "moment": "catch_three",
+      "side": "away",
+      "kit": 6,
+      "era_kit": "G2",
+      "reason": "worn: white, black numerals trimmed gold / old gold / gold; built G2 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=NO&year=2011",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2011_NO_1.png"
+      ]
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "away",
+      "kit": 1,
+      "era_kit": "G3",
+      "reason": "worn: white, purple numerals / black / black; built G3 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/2012_BAL_S.png"
+      ]
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "away",
+      "kit": 1,
+      "era_kit": "G3",
+      "reason": "worn: white, purple numerals / black / black; built G3 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=BAL&year=2012",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2012_BAL_A.png"
+      ]
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "away",
+      "kit": 4,
+      "era_kit": "G4",
+      "reason": "worn: black, gold numerals / gold / black; built G4 from existing native parts",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=PIT&year=2025",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2025_PIT_D.png"
+      ]
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "home",
+      "kit": 5,
+      "era_kit": "G4",
+      "reason": "worn: all-white White Bengal, paired with the built black Steelers road kit G4",
+      "sources": [
+        "http://www.gridiron-uniforms.com/GUD/controller/controller.php?action=teams-season&team_id=CIN&year=2025",
+        "https://www.gridiron-uniforms.com/GUD/images/singles/th/2025_CIN_B.png"
+      ]
+    }
+  ],
+  "a5_fit": [
+    {
+      "moment": "the_miss",
+      "side": "away",
+      "fit": "close",
+      "why": "retail 1998-2003 road set (white, silver pants, red socks)"
+    },
+    {
+      "moment": "the_miss",
+      "side": "home",
+      "fit": "exact",
+      "why": "retail 2004 look is the 1996-2005 design: purple, white pants"
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "away",
+      "fit": "close",
+      "why": "white over gray yes; 2005 numerals and trim differ slightly from the 2000-04 retail road"
+    },
+    {
+      "moment": "helmet_catch",
+      "side": "home",
+      "fit": "exact",
+      "why": "navy over silver, silver helmet"
+    },
+    {
+      "moment": "toe_tap",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over gold, black helmet"
+    },
+    {
+      "moment": "toe_tap",
+      "side": "home",
+      "fit": "close",
+      "why": "red, white pants, white helmet yes; numerals and trim are the 1996-2004 design"
+    },
+    {
+      "moment": "manningham",
+      "side": "away",
+      "fit": "close",
+      "why": "white over gray yes; 2005 numerals and trim differ slightly"
+    },
+    {
+      "moment": "manningham",
+      "side": "home",
+      "fit": "exact",
+      "why": "navy over silver, silver helmet"
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "away",
+      "fit": "close",
+      "why": "white over navy pants yes (retail road); Nike cut and 2012+ details differ"
+    },
+    {
+      "moment": "comeback_28_3",
+      "side": "home",
+      "fit": "close",
+      "why": "red over white pants, black helmet; retail 2003-2019 design"
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over purple"
+    },
+    {
+      "moment": "fourth_and_18",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: blue over white"
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "away",
+      "fit": "exact",
+      "why": "retail 1987-2002 set"
+    },
+    {
+      "moment": "music_city_miracle",
+      "side": "home",
+      "fit": "exact",
+      "why": "retail 2004 look is the 1999 design: navy, white pants"
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over silver, silver helmet"
+    },
+    {
+      "moment": "tuck_rule",
+      "side": "home",
+      "fit": "exact",
+      "why": "navy over silver"
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "away",
+      "fit": "close",
+      "why": "white over white, silver helmet (style 0 road)"
+    },
+    {
+      "moment": "super_bowl_shootout",
+      "side": "home",
+      "fit": "exact",
+      "why": "navy over silver"
+    },
+    {
+      "moment": "ambush",
+      "side": "away",
+      "fit": "close",
+      "why": "G2: white over OLD GOLD pants; style 0 road has black pants",
+      "era_kit": "G2",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "ambush",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: royal over white"
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "away",
+      "fit": "exact",
+      "why": "Eagles style 10: white over midnight green"
+    },
+    {
+      "moment": "new_meadowlands_miracle",
+      "side": "home",
+      "fit": "exact",
+      "why": "retail 2004 look: blue over gray"
+    },
+    {
+      "moment": "beast_quake",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over black"
+    },
+    {
+      "moment": "beast_quake",
+      "side": "home",
+      "fit": "exact",
+      "why": "retail 2004 look is the 2002-2011 Seahawks blue set"
+    },
+    {
+      "moment": "catch_three",
+      "side": "away",
+      "fit": "close",
+      "why": "G2: white over OLD GOLD pants; style 0 road has black pants",
+      "era_kit": "G2",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "catch_three",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: red over gold"
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "away",
+      "fit": "close",
+      "why": "G3: white over BLACK pants; the retail road kit has white pants, style 0 purple",
+      "era_kit": "G3",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "mile_high_miracle",
+      "side": "home",
+      "fit": "close",
+      "why": "style 0: orange over white (2012 Nike set vs the 2024 redesign details)"
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "away",
+      "fit": "close",
+      "why": "G3: white over BLACK pants; the retail road kit has white pants, style 0 purple",
+      "era_kit": "G3",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "goal_line_stand",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: red over gold"
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "away",
+      "fit": "close",
+      "why": "style 0 road: white over silver (worn pants are silver-blue)"
+    },
+    {
+      "moment": "dez_caught_it",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: green over gold"
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "away",
+      "fit": "close",
+      "why": "white over navy pants yes (retail road); Nike cut and 2012+ details differ"
+    },
+    {
+      "moment": "butler_goal_line",
+      "side": "home",
+      "fit": "close",
+      "why": "style 0: navy over navy (the 2026 set is the 2012 family)"
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over gold"
+    },
+    {
+      "moment": "miracle_in_motown",
+      "side": "home",
+      "fit": "close",
+      "why": "retail 2004 look: Honolulu blue over silver"
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over black"
+    },
+    {
+      "moment": "minneapolis_miracle",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: purple over white"
+    },
+    {
+      "moment": "philly_special",
+      "side": "away",
+      "fit": "close",
+      "why": "G1b: worn midnight GREEN; the engine gives the away side its white kit",
+      "era_kit": "G1b",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "philly_special",
+      "side": "home",
+      "fit": "close",
+      "why": "G1: worn WHITE over navy pants; the engine gives the home side its navy kit",
+      "era_kit": "G1",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over gold"
+    },
+    {
+      "moment": "jet_chip_wasp",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: red over white"
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "away",
+      "fit": "close",
+      "why": "style 0 road: white over white (worn white helmet)"
+    },
+    {
+      "moment": "thirteen_seconds",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: red over white"
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "away",
+      "fit": "close",
+      "why": "Rams style 2 (1999 road): white, gold pants, royal helmet; 2021 marks differ"
+    },
+    {
+      "moment": "donald_fourth_down",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: black over white with tiger stripes"
+    },
+    {
+      "moment": "comeback_33",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white"
+    },
+    {
+      "moment": "comeback_33",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: purple over white"
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "away",
+      "fit": "exact",
+      "why": "style 0 road: white over gold"
+    },
+    {
+      "moment": "overtime_in_vegas",
+      "side": "home",
+      "fit": "exact",
+      "why": "style 0 home: red over white"
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "away",
+      "fit": "close",
+      "why": "G4: worn BLACK over gold (the Bengals took white); the engine gives the away side its white kit",
+      "era_kit": "G4",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    },
+    {
+      "moment": "unc_bowl",
+      "side": "home",
+      "fit": "close",
+      "why": "G4: worn all-white White Bengal; style 0 home is black. Bengals style 5 (White Bengal, built) is NOT selected: the visiting Steelers would be white too until G4 gives them a black away kit",
+      "era_kit": "G4",
+      "a5k": "built from existing kit parts; colours corrected; tailoring retains donor era"
+    }
+  ],
+  "a5": {
+    "compiled": "2026-10-08",
+    "by": "a5 (Sonnet 5.5): GUD per-game graphics viewed by the lead, SB texts from four Haiku 5.5 shards",
+    "note": "a1x's worn_in_game texts are kept untouched; a5_worn supersedes them (graphics, not text searches). Designated home equals the moment's home side in all 26 games."
+  }
+}

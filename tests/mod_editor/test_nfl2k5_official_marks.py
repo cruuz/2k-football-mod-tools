@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tests"), str(Path(__file__).parent)]
 from mod_editor.core import nfl2k5_official_marks as official
+from mod_editor.core import nfl2k5_marks_store as store
 from mod_editor.core import nfl2k5_espn_marks as marks, nfl2k5_espn_wipes_boards as wipes
 from mod_editor.core import mod_build, nfl2k5_build_settings as settings
 from official_marks_fixture import synthetic_pack
@@ -24,6 +25,9 @@ class PackBoundaryTests(unittest.TestCase):
         env = mock.patch.dict(os.environ, {official.ENVIRONMENT: ""})
         env.start()
         self.addCleanup(env.stop)
+        registry = mock.patch.object(store, "state_root", return_value=self.root / "registry")
+        registry.start()
+        self.addCleanup(registry.stop)
 
     def test_absent_pack_metadata_still_loads_and_write_refuses_before_open(self):
         for module in (marks, wipes):

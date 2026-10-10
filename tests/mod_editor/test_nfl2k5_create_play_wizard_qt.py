@@ -30,12 +30,41 @@ class CreatePlayWizardTests(unittest.TestCase):
         QMessageBox.critical = staticmethod(lambda _p, _t, text, *a, **k: cls.warnings.append(str(text)))
         from mod_editor.studio.facade import Nfl2k5StudioFacade
         from mod_editor.studio.session import StudioSession
+        from mod_editor.core.nfl2k5_source_cache import Nfl2k5SourceCache
+        from dataclasses import replace
         from functools import partial
+        import shutil
         import tempfile
         temporary = tempfile.TemporaryDirectory()
         cls.addClassCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+
+        class FixtureCache(Nfl2k5SourceCache):
+            def index(self, source_xiso, progress=None):
+                cache = super().index(source_xiso, progress)
+                # Preserve the recognized cache identity and confinement checks.
+                # Copy only pack 0 and metadata; other game packs stay read-only.
+                cache_root = root / cache.root.name
+                cache_root.mkdir(mode=0o700)
+                originals = cache_root / "originals"
+                originals.mkdir(parents=True, mode=0o700)
+                inventory = cache_root / cache.inventory.relative_to(cache.root)
+                inventory.parent.mkdir(parents=True, mode=0o700)
+                shutil.copyfile(cache.inventory, inventory)
+                pack0 = cache_root / cache.pack0.relative_to(cache.root)
+                pack0.parent.mkdir(parents=True, mode=0o700)
+                shutil.copyfile(cache.pack0, pack0)
+                for name in "123456789ABCDEF":
+                    (pack0.parent / name).symlink_to(cache.pack0.parent / name)
+                shutil.copyfile(cache.root / "cache.json", cache_root / "cache.json")
+                for path in (inventory, pack0, cache_root / "cache.json"):
+                    path.chmod(0o600)
+                return replace(cache, root=cache_root, pack0=pack0,
+                               inventory=inventory, originals=originals)
+
         cls.facade = Nfl2k5StudioFacade(
-            session_factory=partial(StudioSession, root=pathlib.Path(temporary.name)))
+            source_cache=FixtureCache(),
+            session_factory=partial(StudioSession, root=root))
         cls.facade.load_source(SRC, lambda *a: None)
 
     def test_full_flow_stages_replacements(self):

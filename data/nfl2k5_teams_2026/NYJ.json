@@ -190,7 +190,7 @@
     "collar_trim": [
      {
       "colour": "jersey_green",
-      "width": 2.2
+      "width": 12
      }
     ],
     "collar_shield": true,
@@ -455,5 +455,19 @@
    "Nahshon Wright": "#15110F",
    "Demario Davis": "#15110F"
   }
+ },
+ "u2c_b77": {
+  "job": "b77 u2c (sonnet-5.5), 2026-10-08",
+  "checked_against": "newyorkjets.com 2026 galleries: wk1 at TEN, wk2 vs GB, wk3 at DET, wk4 at CHI (all white jersey; green pants wk1 and wk4)",
+  "changes": {
+   "away.torso.collar_trim[0].width": "2.2 -> 12 px: the 2026 road jersey has a wide green V collar band about 4 cm thick (wk4 at CHI #29 front), v0.5 a thin 0.6 cm line. The home green jersey's collar was not photographed in 2026 yet (the Jets wore white all four weeks), so it is left as in v0.5"
+  },
+  "unchanged_because_right": [
+   "road green numbers",
+   "green pants with white stripe",
+   "white socks",
+   "sleeve stripes",
+   "helmet"
+  ]
  }
 }

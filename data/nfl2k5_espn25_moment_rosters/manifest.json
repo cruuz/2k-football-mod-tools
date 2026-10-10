@@ -25851,11 +25851,11 @@
       "year": 1971
     },
     {
-      "applied_sha256": "a180f7bb2d883d535405e0fbf910d8ca37b9b9d40138dc6e0ca977f7b71e6780",
+      "applied_sha256": "253d44d7df1b1fd262aa26f994c2abffc8bbffa754ded38f9ac490447a2bd80d",
       "chosen_moment": 5,
       "code": "07",
       "csv": "h-07-1977-cowboys-3.csv",
-      "csv_sha256": "d1d02f76e0eea53a3ff32f326f469111ffc55763a3300301367e13eccdc15811",
+      "csv_sha256": "54ff5a7be6ff646917afdb817447d8920276fa67fa09001a5a98dda23068f413",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-07-1977-cowboys-3.iff",
@@ -27148,7 +27148,10 @@
           "source_position": "P",
           "source_season": 1979,
           "source_status": "ACT",
-          "source_team": "DAL"
+          "source_team": "DAL",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -40415,11 +40418,11 @@
       "year": 1970
     },
     {
-      "applied_sha256": "3dc5b03bf0e271f8b99e2470a877b6970ed25c7de8c2b30e5839b066db3e8781",
+      "applied_sha256": "6e466ab1401c6ba5ac2746052cce74a82b7f53a422a3eaa0a6b84c44d92ca3f2",
       "chosen_moment": 2,
       "code": "13",
       "csv": "h-13-1969-chiefs-4.csv",
-      "csv_sha256": "a58bcbd98a5e2623cec724051869f9e5328d1310113ac01163cba09a8602bfb2",
+      "csv_sha256": "414bd8ff78d2eb9c2df49a562f50528abd046c6ea610cb4345adc8bcc29a496d",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-13-1969-chiefs-4.iff",
@@ -41796,7 +41799,10 @@
           "source_position": "P",
           "source_season": 1971,
           "source_status": "ACT",
-          "source_team": "KC"
+          "source_team": "KC",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": true,
@@ -41833,7 +41839,10 @@
           "source_position": "P",
           "source_season": 1975,
           "source_status": "ACT",
-          "source_team": "KC"
+          "source_team": "KC",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -48710,11 +48719,11 @@
       "year": 1984
     },
     {
-      "applied_sha256": "c0703a395b9e556bacb2ae3503ce0cedb0849915547163ae136ab45a9f0667d4",
+      "applied_sha256": "e3734f23d95fd763dfcfd01df1a012f3ea5741de82861ed113e6c029f24a8d75",
       "chosen_moment": 22,
       "code": "16",
       "csv": "h-16-2001-patriots-0.csv",
-      "csv_sha256": "29cff9b6662459196464d73635fdcc4e5ca68c13aff706cfe8e520a7b3f3fbd9",
+      "csv_sha256": "58c4d90f0bc39759761b0eb960b912ea3a9b53a64c098c91935f9c7c5586cdd5",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-16-2001-patriots-0.iff",
@@ -50135,7 +50144,10 @@
           "source_position": "P",
           "source_season": 2001,
           "source_status": "TRC",
-          "source_team": "NE"
+          "source_team": "NE",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -50777,11 +50789,11 @@
       "year": 2001
     },
     {
-      "applied_sha256": "075b839bbfecd8732815d71dd16eccaafbcbe98f7e4e0040dfee21c2ae19f238",
+      "applied_sha256": "8f59ff18d210fa05d6122918be9c7f25cadcc3675f24406a2487d072cfd7a116",
       "chosen_moment": 6,
       "code": "17",
       "csv": "h-17-1991-saints-4.csv",
-      "csv_sha256": "965e7d37d13d08ae667899f109e95c31ab0245f85bb93e1bd5b6b97ef4e38b5a",
+      "csv_sha256": "226a98754561a8a510843b6a9ab31743cd7530f090512750711daf5d95ca4564",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-17-1991-saints-4.iff",
@@ -52011,7 +52023,10 @@
           "source_position": "K",
           "source_season": 1980,
           "source_status": "ACT",
-          "source_team": "NO"
+          "source_team": "NO",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -56972,11 +56987,11 @@
       "year": 2003
     },
     {
-      "applied_sha256": "58b4d7f857605a2acc1c25e1243be7e70bab78ad124ad12433321bf6aba13016",
+      "applied_sha256": "63f11401608b616574275506b110bd862aee72b6fe6d4972d84a59147702ea9e",
       "chosen_moment": 1,
       "code": "19",
       "csv": "h-19-1968-jets-4.csv",
-      "csv_sha256": "3cdec1e2c0aebacc7075d2fafa69eed443ed0c4bfa5811b72f20f0fb275f7b4e",
+      "csv_sha256": "b63cd36d5ea40b2cc68293e9f3de1078ba7ae8c54c44196d5db968ac63756e4d",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-19-1968-jets-4.iff",
@@ -58392,7 +58407,10 @@
           "source_position": "P",
           "source_season": 1968,
           "source_status": "ACT",
-          "source_team": "NYJ"
+          "source_team": "NYJ",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -67317,11 +67335,11 @@
       "year": 2004
     },
     {
-      "applied_sha256": "d1b3a7e308fd3bc1c2c5f75d8ef13f42611c443645b6a58801e824d721308cad",
+      "applied_sha256": "86d902f0e5a76148a09052f2d2a1767145ba7271810fa93c1081147dc37cc0b6",
       "chosen_moment": 3,
       "code": "22",
       "csv": "h-22-1975-steelers-1.csv",
-      "csv_sha256": "bff40c2e883802496790121f422b1b703002825fb303c98e53286812295cba0d",
+      "csv_sha256": "761172728ecbf38a25faa21b573af9e9d4d38a56fd94c0b6e6d1fb0f941c690a",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-22-1975-steelers-1.iff",
@@ -68626,7 +68644,10 @@
           "source_position": "P",
           "source_season": 1972,
           "source_status": "ACT",
-          "source_team": "PIT"
+          "source_team": "PIT",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -69378,11 +69399,11 @@
       "year": 1975
     },
     {
-      "applied_sha256": "342b9f08f63aacf8830cb9eb44a27ed73ac2e6ff0faee92dbb0e6222e712f477",
+      "applied_sha256": "ec406b3e9c58fd92e00bfe6f188658679323c6cd8ec8859f666691565439843e",
       "chosen_moment": 21,
       "code": "23",
       "csv": "h-23-1999-rams-2.csv",
-      "csv_sha256": "08b75a48c4b281628514af630339c109d19ca7aa6ca00a1a593b35332af816a5",
+      "csv_sha256": "16c0ab3af6954f0d87fa1e0518961e25f8090e967f7efdef2cc241ff3985bd43",
       "editorial_qb_preference": null,
       "excluded_source_names": [
         {
@@ -70797,7 +70818,10 @@
           "source_position": "P",
           "source_season": 1999,
           "source_status": "RES",
-          "source_team": "STL"
+          "source_team": "STL",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,
@@ -88093,11 +88117,11 @@
       "year": 1982
     },
     {
-      "applied_sha256": "ff8a3941b2f4888a26b3e0bb1790cf1505b87567cfed156bd12f72521a7c8021",
+      "applied_sha256": "7c4208048765a4a17ae6e7adb59acca6d4df77f476dbd79ae0b5aca3c48a4b38",
       "chosen_moment": 10,
       "code": "30",
       "csv": "h-30-1986-browns-1.csv",
-      "csv_sha256": "45fcd2f45f0e1db11c3182a6c559ef348f025d0da4d18403bcff592dc4b513af",
+      "csv_sha256": "5e863905d36f2260881276a177cacb642faf2d2528ed9c7687b456bc78743b54",
       "editorial_qb_preference": null,
       "excluded_source_names": [],
       "filename": "h-30-1986-browns-1.iff",
@@ -89213,7 +89237,10 @@
           "source_position": "K",
           "source_season": 1986,
           "source_status": "ACT",
-          "source_team": "CLE"
+          "source_team": "CLE",
+          "hand": "Right",
+          "hand_basis": "noah_default_right",
+          "decision_source": "Noah 2026-10-08"
         },
         {
           "adjacent_season_filler": false,

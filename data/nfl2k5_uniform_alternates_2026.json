@@ -1,0 +1,4820 @@
+{
+ "schema": "nfl2k5_uniform_alternates_2026/v1",
+ "note": "Recipes for 2026 alternates in free uniform style slots (data/nfl2k5_uniform_slots_2026.json). build_type 'derive': every texture of the donor (the team's shipped 2026 kit) goes into both kits of the slot, then the recolours, socks and atlas rules below. Colours are measured from the donor art (#FF5014 is the shell orange of the 2026 Bengals helmet art, 06A0 helmet02); boxes are native texture pixels (x0, y0, x1, y1). Built by tools/b77/u3s_alternates.py, applied to the disc by tools/b77/u3s_repair.py.",
+ "alternates": {
+  "CIN:5": {
+   "team": "CIN",
+   "code": "06",
+   "style": 5,
+   "set": "White Bengal",
+   "label": [
+    2026,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "06A0"
+    },
+    "A": {
+     "donor": "06A0"
+    }
+   },
+   "recolour": [
+    {
+     "from": [
+      "#FF5014",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "tolerance": 0.1,
+     "components": [
+      "helmet_helmet02"
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ]
+     ],
+     "why": "shell C (the league's helmet): white shell; the black tiger stripes, their anti-aliased edges and the shading toward black are rebuilt from the same blend weights; the front bumper plate (BENGALS and its small mark) is left as shipped"
+    },
+    {
+     "from": [
+      "#FF5014",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "tolerance": 0.1,
+     "components": [
+      "helmet_helmet00"
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ],
+      [
+       185,
+       169,
+       218,
+       213
+      ]
+     ],
+     "why": "shell A: the same, and its NFL shield decal is left as shipped"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": [
+      "#FF5014",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#FFFFFF",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "the far-away player's helmet side"
+    }
+   ],
+   "socks": {
+    "colour": "#FFFFFF",
+    "why": "white socks (AtoZ Sports 2026-07-17; bengals.com White Bengal gallery)"
+   },
+   "splayer_socks": "#FFFFFF",
+   "card_facemask": "000000",
+   "unchanged": "jersey, sleeves, pants (white with black tiger strokes), numbers (black with an orange outline), name letters, gloves, shoes, set marks, facemask (black) and turtleneck word: the 2026 road kit 06A0 as shipped",
+   "sources": [
+    {
+     "url": "https://www.bengals.com/news/white-bengal-2026-sunday-night-football-steelers-week-10",
+     "supports": "2026-07-17: White Bengal returns Nov. 15 vs Pittsburgh on Sunday Night Football; the white helmet and uniform combination, worn six times, most recently on Thursday Night Football vs the Steelers in 2025"
+    },
+    {
+     "url": "https://atozsports.com/nfl/cincinnati-bengals-news/white-bengal-game-week-11-vs-pittsburgh-steelers-2026/",
+     "supports": "white jerseys, white pants and white socks with the white helmet (secondary)"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/bengals/uq1otbufer9zm3apbh4a.jpg",
+     "supports": "bengals.com gallery, 2025 week 7 vs PIT (Ja'Marr Chase): white helmet with black tiger stripes and black facemask, white jersey with black tiger stripes on the shoulders, black numbers, white pants with black stripes"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/bengals/lv7sccjuv8ex80asl1fu.jpg",
+     "supports": "bengals.com gallery, 2025 week 7 (Tee Higgins): white socks, white pants with black tiger strokes"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/bengals/ml8sbtasrni1ajjtyvyf.jpg",
+     "supports": "bengals.com gallery (Jordan Battle, #27): full White Bengal kit from the front"
+    }
+   ],
+   "moment_note": "The 2025 Steelers at Bengals Anniversary moment (SITU row 51, Oct 16 2025, a White Bengal game) uses kit 8 (m1's spare: the retail 2004 look); pointing its home kit field at 4 would show this uniform (a1's file, not changed here).",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "no numbers on the back of the 2026 Bengals helmets (the White Bengal photos show none); the 2026 kit's white helmet digits would also not fit the slot's 784-byte digit textures",
+   "slot_note": "style 5 (2004 Alternate 2): both kits have two-tone jersey-number budgets; style 4's road kit only fits one-colour numbers (u3s compile, 2026-10-08)",
+   "retail_pair": [
+    2004,
+    2
+   ]
+  },
+  "IND:2": {
+   "team": "IND",
+   "code": "11",
+   "style": 2,
+   "set": "White Out (all-white)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1988,
+    1991
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "11A0"
+    },
+    "A": {
+     "donor": "11A0"
+    }
+   },
+   "recolour": [],
+   "unchanged": "everything is the 2026 road kit 11A0 as shipped (white jersey, white pants, the standard helmet), in both kits, so the Colts can wear white at home; style 2 was the 1988 - 1991 Uniform, the same design as 1 (1995) and 5 (1968 - 1970), which stay",
+   "sources": [
+    {
+     "url": "https://www.colts.com/news/indianapolis-colts-alternate-uniform-schedule-2026-nike-rivalries-white-out-indiana-nights-houston-texans-dallas-cowboys-cincinnati-bengals-tickets",
+     "supports": "White Out at home in Week 9, Nov 8 vs Dallas: a white jersey and white pant combination (via u3 sourcing, reports/u3_uniforms_2026/IND.json); the helmet and socks are not stated, so the 2026 road kit's are kept"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "White Out vs the Dallas Cowboys on Nov 8 (secondary)"
+    }
+   ],
+   "label_note": "the plan numbers the Colts' alternates by index: 2 White Out (2026 Alternate 1), 3 Anvil Strike (2), 4 Indiana Nights (3)"
+  },
+  "WAS:9": {
+   "team": "WAS",
+   "code": "29",
+   "style": 9,
+   "set": "Hail Raiser (all-black)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "new",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/WAS_9.json",
+   "kits": {
+    "H": {
+     "donor": "29H9"
+    },
+    "A": {
+     "donor": "29A9"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF111114",
+    "turtleneck": "FF121215"
+   },
+   "card_facemask": "111114",
+   "unchanged": "equipment (gloves, shoes, pads) stays the slot's own retail art",
+   "estimates": "names gold and socks black (not stated by the club; photos show gold trim on the numbers); the helmet decal is the primary W without the spear",
+   "sources": [
+    {
+     "url": "https://www.commanders.com/news/washington-commanders-new-uniforms-five-things-to-know",
+     "supports": "Hail Raiser alternate: black helmet, two stripes on each sleeve and the pants, solid block numbers, worn no more than four times"
+    },
+    {
+     "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/commanders-to-wear-alternate-uniforms-twice-in-2026",
+     "supports": "black jerseys and pants with a black helmet and a spear piercing the W logo; two home uses in 2026"
+    },
+    {
+     "url": "https://www.commanders.com/news/commanders-2026-uniform-inspired-franchise-history",
+     "supports": "Hail Raiser card: burgundy numerals with gold trim on black, burgundy and gold sleeve stripes, gold swoosh, black helmet with a three-stripe design and a black facemask, black pants with a burgundy and a gold stripe"
+    }
+   ]
+  },
+  "SEA:4": {
+   "team": "SEA",
+   "code": "26",
+   "style": 4,
+   "set": "Primary combos: navy with wolf grey pants (home), all white (road)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "derive",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/SEA_4.json",
+   "kits": {
+    "H": {
+     "donor": "26H4"
+    },
+    "A": {
+     "donor": "26A4"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF00143F",
+    "turtleneck": "FF001649"
+   },
+   "card_facemask": "00143F",
+   "unchanged": "the 2026 primary jerseys and helmets (home navy, road white) as authored in 26H0/26A0; only the pants change; equipment stays the slot's own retail art",
+   "estimates": "the pants stripe colours (navy edged in green) are not described by the club",
+   "sources": [
+    {
+     "url": "https://seahawks.com/news/seahawks-to-wear-college-navy-and-wolf-grey-uniforms-vs-cardinals-in-week-2",
+     "supports": "2026 week 2 at Arizona: college navy jerseys with wolf grey pants"
+    },
+    {
+     "url": "https://seahawks.com/news/seahawks-to-wear-all-white-uniform-combination-in-week-3-at-commanders",
+     "supports": "2026 week 3 at Washington: the white jerseys and white pants set"
+    }
+   ]
+  },
+  "TB:6": {
+   "team": "TB",
+   "code": "27",
+   "style": 6,
+   "set": "All-pewter Color Rush",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/TB_6.json",
+   "kits": {
+    "H": {
+     "donor": "27H6"
+    },
+    "A": {
+     "donor": "27A6"
+    }
+   },
+   "recolour": [],
+   "unchanged": "facemask (black) and turtleneck word of the slot (the same as the 2026 kits); equipment stays the slot's own retail art",
+   "estimates": "the helmet shell (pewter, as the primary road helmet), stripe widths, swoosh and name colours, collar: the club names none of them",
+   "sources": [
+    {
+     "url": "https://www.buccaneers.com/news/bucs-pewter-uniforms-unveiled-week-15-2026",
+     "supports": "week 15 vs New Orleans: pewter jersey with matching pants, red and white stripes along the sides, solid pewter socks, red pirate ship logos on each shoulder, red Buccaneers wordmark on the chest; worn three times"
+    },
+    {
+     "url": "https://news.sportslogos.net/?p=101282",
+     "supports": "white numbers with a red outline, a two-colour pants stripe, contrasting cuffs"
+    }
+   ]
+  },
+  "TB:2": {
+   "team": "TB",
+   "code": "27",
+   "style": 2,
+   "set": "White '76 jersey (creamsicle white, Bucco Bruce)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1992,
+    1996
+   ],
+   "build_type": "modernize",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/TB_2.json",
+   "kits": {
+    "H": {
+     "donor": "27A3"
+    },
+    "A": {
+     "donor": "27A3"
+    }
+   },
+   "recolour": [],
+   "unchanged": "everything of the retail 1976-91 road kit 27A3 (white jersey with orange numbers outlined in red, red-orange-red sleeve stripes, white pants with orange and red stripes, white Bucco Bruce helmet, striped socks, orange facemask) in both kits; the 2026 marks are added to the torso (NFL shield under the collar), the sleeves (swoosh) and the pants (swoosh and shield)",
+   "estimates": "swoosh colour (orange); the facemask colour (the retail set's orange) is not stated by the club",
+   "sources": [
+    {
+     "url": "https://www.buccaneers.com/news/bucs-wear-76-jerseys-week-13-chargers-game",
+     "supports": "2026 week 13 vs the Chargers ('Creamsicle Game'): the white uniforms based on the 1976 inaugural design, worn again after fans asked"
+    },
+    {
+     "url": "https://www.pewterreport.com/?p=1533214",
+     "supports": "white Bucco Bruce helmets with the '76 jerseys"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Tampa_Bay_Buccaneers",
+     "supports": "the 1976 white jersey: orange block numbers outlined in red, red-orange-red sleeve stripes"
+    }
+   ]
+  },
+  "PIT:5": {
+   "team": "PIT",
+   "code": "22",
+   "style": 5,
+   "set": "1933 gold throwback",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1959,
+    1960
+   ],
+   "build_type": "new",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/PIT_5.json",
+   "kits": {
+    "H": {
+     "donor": "22H5"
+    },
+    "A": {
+     "donor": "22A5"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF9598A2",
+    "turtleneck": "FFF4B418"
+   },
+   "card_facemask": "9598A2",
+   "unchanged": "facemask grey (the slot's own word); equipment stays the slot's own retail art",
+   "estimates": "the back of the jersey (not photographed: plain gold with chevron bands), the stripe pitch and the chevron bands; the numbers are black on both sides and the front number sits on a plain gold plate (the club's front numbers are white with black trim; the road slot's number textures hold 560 to 1,000 bytes, a two-tone number does not fit, measured with tools/b77/u3s_alternates.py compile); the city crest on the left chest is not drawn",
+   "sources": [
+    {
+     "url": "https://www.steelers.com/1933throwback/",
+     "supports": "matte yellow helmet with a gray mask, gold jersey with black chest stripes, white block numbers with black trim on the front and oversized black block numbers on the back, beige pants echoing the 1933 khaki uniform"
+    },
+    {
+     "url": "https://news.sportslogos.net/2025/07/21/pittsburgh-steelers-reprise-1933-throwback-uniforms-with-new-gold-helmets/football/",
+     "supports": "gold helmets with the throwback, vintage black stripes, khaki pants"
+    },
+    {
+     "url": "https://steelersnow.com/rooney-reveals-steelers-throwback-uniforms-for-2026/",
+     "supports": "the throwbacks will be worn for one of the feature games in 2026"
+    }
+   ]
+  },
+  "SF:7": {
+   "team": "SF",
+   "code": "25",
+   "style": 7,
+   "set": "Black Rivalries 'For the Faithful'",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "new",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/SF_7.json",
+   "kits": {
+    "H": {
+     "donor": "25H7"
+    },
+    "A": {
+     "donor": "25A7"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FFC4A55E",
+    "turtleneck": "FF111113"
+   },
+   "card_facemask": "C4A55E",
+   "unchanged": "equipment stays the slot's own retail art",
+   "estimates": "the numeral colour (ESPN: gold with red; Wikipedia: red with gold trim: red with gold trim is drawn), the saloon face (Rye, an open-licence look-alike), the Faithful script, sleeve bar widths, swoosh colour, socks and the pants stripes (the club names none of them)",
+   "sources": [
+    {
+     "url": "https://africa.espn.com/nfl/story/_/id/46091459/nfl-nike-2025-rivalries-uniform-gear-series-unveiling-nfc-west-afc-east",
+     "supports": "all-black uniform designed against a black backdrop, saloon font, classic red stripes along the sleeves, red stripes down the pants (jersey photo r1537673)"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_San_Francisco_49ers",
+     "supports": "black helmet with gold facemasks and red stripes; saloon-style numbers in red with gold trim"
+    },
+    {
+     "url": "https://www.49erswebzone.com/articles/201593-uniform-schedule-including-throwbacks-rivalries/",
+     "supports": "week 14 home game vs the Rams in 2026"
+    }
+   ]
+  },
+  "TEN:7": {
+   "team": "TEN",
+   "code": "28",
+   "style": 7,
+   "set": "Music City Rivalries",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "new",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/TEN_7.json",
+   "kits": {
+    "H": {
+     "donor": "28H7"
+    },
+    "A": {
+     "donor": "28A7"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF111114",
+    "turtleneck": "FF0C2340"
+   },
+   "card_facemask": "111114",
+   "unchanged": "equipment stays the slot's own retail art",
+   "estimates": "the number colours (the hero graphic shows a Titans Blue outline with a white inner line on a navy fill), the Music City script (Pacifico look-alike), helmet stripes, facemask colour, pants line colours, socks and sleeves (the club does not describe them)",
+   "sources": [
+    {
+     "url": "https://tennesseetitans.com/news/titans-to-wear-music-city-rivalries-uniform-nov-15-vs-jaguars",
+     "supports": "week 10 vs Jacksonville: navy jerseys and pants, Titans Blue helmet shell, neon-inspired numbers, Music City script across the chest plate, 6-string stripe on the pants"
+    },
+    {
+     "url": "https://www.nbcsportsphiladelphia.com/news/sports/nfl/nfl-new-uniforms-jerseys-2026-tracker-pictures/4378875/",
+     "supports": "jerseys released Aug 25 2026 (secondary)"
+    }
+   ],
+   "hard_edges": {
+    "components": [
+     "digit_jersey_*",
+     "digit_arm_*"
+    ],
+    "colours": 1,
+    "why": "the slot's number textures hold 1,024 to 2,144 bytes (the 1 is 1,056); a soft-edged or multi-colour number does not fit (QualityBudgetError, measured). The jersey-navy fill is left transparent (the jersey shows through, as on the club's neon numbers) and the outline is one flat light blue with hard edges (the white inner line of the club's numbers is not kept), which fits",
+    "clear": "#0F2748"
+   }
+  },
+  "SEA:3": {
+   "team": "SEA",
+   "code": "26",
+   "style": 3,
+   "set": "Rivalries (wolf grey, iridescent green)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "new",
+   "spec": "data/nfl2k5_uniform_alt_specs_2026/SEA_3.json",
+   "kits": {
+    "H": {
+     "donor": "26H3"
+    },
+    "A": {
+     "donor": "26A3"
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF00143F",
+    "turtleneck": "FF001649"
+   },
+   "card_facemask": "00143F",
+   "unchanged": "equipment stays the slot's own retail art",
+   "estimates": "the soundwave shapes (short tapered blades hung from the shoulder seams; the club shows a wave pattern), the number tones (dark green with a lighter inline for the iridescent look), the helmet logo (a chrome-toned hawk; the gallery shows no side logo), pants stripes, socks",
+   "sources": [
+    {
+     "url": "https://www.seahawks.com/news/2025-seahawks-nike-rivalries-uniform-announcement",
+     "supports": "wolf grey jerseys and pants, iridescent green numerals with a reflective 12 pattern, soundwave graphics on the shoulders and down the pant legs, iridescent green metallic chrome helmet, 12 As One on the back of the helmet, 12s patch"
+    },
+    {
+     "url": "https://www.seahawks.com/news/seahawks-to-wear-rivalries-uniforms-against-rams-during-first-head-to-head-rivalries-game-in-week-16",
+     "supports": "2026 week 16, Fri Dec 25 vs the Rams at home: both teams wear Rivalries uniforms"
+    },
+    {
+     "url": "https://www.seahawks.com/news/2025-seahawks-nike-rivalries-uniform-announcement",
+     "supports": "club Rivalries photo gallery (gallery images g00-g47 in the job refs): wolf grey jersey and pants, dark green numerals, navy facemask, navy socks"
+    }
+   ]
+  },
+  "ARI:6": {
+   "team": "ARI",
+   "code": "00",
+   "style": 6,
+   "set": "All-black alternate",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "00H0",
+     "file_donors": {
+      "pants": "00A0",
+      "sleeve": "00A0",
+      "splayer": "00A0"
+     }
+    },
+    "A": {
+     "donor": "00H0",
+     "file_donors": {
+      "pants": "00A0",
+      "sleeve": "00A0",
+      "splayer": "00A0"
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#A0233F",
+      "#000000"
+     ],
+     "to": [
+      "#17171A",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "the red home jersey becomes black (the 2023 release: all black for the alternate); the white ARIZONA wordmark, the collar and the shield stay"
+    },
+    {
+     "components": [
+      "pants",
+      "sleeve"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#A9AEB3",
+      "#A0233F"
+     ],
+     "to": [
+      "#17171A",
+      "#A9AEB3",
+      "#A0233F"
+     ],
+     "tolerance": 0.1,
+     "why": "the white road pants and sleeve (red and silver stripes, the silver CARDINALS sleeve band) become black; the stripes stay as the release and the club photo show them"
+    },
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       24,
+       62
+      ],
+      [
+       0,
+       112,
+       28,
+       152
+      ],
+      [
+       0,
+       192,
+       34,
+       232
+      ],
+      [
+       88,
+       0,
+       130,
+       16
+      ],
+      [
+       88,
+       236,
+       130,
+       256
+      ],
+      [
+       100,
+       220,
+       118,
+       236
+      ],
+      [
+       116,
+       205,
+       148,
+       225
+      ],
+      [
+       74,
+       10,
+       88,
+       24
+      ],
+      [
+       42,
+       52,
+       58,
+       66
+      ],
+      [
+       42,
+       190,
+       58,
+       204
+      ],
+      [
+       74,
+       230,
+       88,
+       244
+      ]
+     ],
+     "from": [
+      "#FFFFFF",
+      "#000000",
+      "#A0233F"
+     ],
+     "to": [
+      "#1E1E22",
+      "#000000",
+      "#A0233F"
+     ],
+     "tolerance": 0.12,
+     "why": "shell C (the league helmet): the white shell becomes black; the bird heads, hardware and the accessories column are left as shipped"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       34,
+       34
+      ],
+      [
+       0,
+       36,
+       16,
+       52
+      ],
+      [
+       0,
+       116,
+       26,
+       141
+      ],
+      [
+       0,
+       196,
+       24,
+       220
+      ],
+      [
+       0,
+       220,
+       32,
+       256
+      ],
+      [
+       98,
+       28,
+       126,
+       46
+      ],
+      [
+       98,
+       104,
+       142,
+       150
+      ],
+      [
+       100,
+       108,
+       128,
+       128
+      ],
+      [
+       40,
+       225,
+       50,
+       245
+      ],
+      [
+       36,
+       15,
+       48,
+       28
+      ],
+      [
+       210,
+       0,
+       256,
+       256
+      ]
+     ],
+     "from": [
+      "#FFFFFF",
+      "#000000",
+      "#A0233F"
+     ],
+     "to": [
+      "#1E1E22",
+      "#000000",
+      "#A0233F"
+     ],
+     "tolerance": 0.12,
+     "why": "shell A: the same, flags and hardware left"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": [
+      "#FFFFFF",
+      "#000000",
+      "#A0233F"
+     ],
+     "to": [
+      "#17171A",
+      "#000000",
+      "#A0233F"
+     ],
+     "tolerance": 0.15,
+     "why": "far-player atlas pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "to": "#17171A",
+     "why": "far-player atlas sleeve",
+     "kind": "greys",
+     "saturation": 0.2
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "greys",
+     "to": "#17171A",
+     "saturation": 0.45,
+     "why": "far-player atlas torso: the folds' shading kept on a black jersey"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "greys",
+     "to": "#1E1E22",
+     "saturation": 0.45,
+     "why": "far-player helmet side"
+    }
+   ],
+   "socks": {
+    "colour": "#141416",
+    "why": "ESTIMATE: no source states the 2026 socks of the black alternate; black socks complete the all-black look (arizonasports.com lists the set as all black)"
+   },
+   "splayer_socks": "#141416",
+   "unif": {
+    "facemask": "FF000000"
+   },
+   "card_facemask": "000000",
+   "unchanged": "digits and name letters (white with silver outline) and the sleeve/shoulder marks are the 2026 home kit 00H0 as shipped; pants and sleeve carry the road kit's red and silver stripes",
+   "sources": [
+    {
+     "url": "https://www.azcardinals.com/news/longform/new-uniforms-for-the-arizona-cardinals-2023",
+     "supports": "2023 release: all black for the alternate, silver-outlined numbers, red and silver striping on shoulders and pants, black helmet with red flakes and the larger logo"
+    },
+    {
+     "url": "https://www.azcardinals.com/news/arizona-cardinals-reveal-alternate-black-helmets-for-2022",
+     "supports": "2022 release: black helmet with red sparkles, metallic-looking bird head, black facemask, worn with the alternate jerseys"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/cardinals/oupkplqw4lyezcccedw5.jpg",
+     "supports": "club graphic for Week 5 vs Lions Oct 11 (2026 black alternate game per arizonasports.com): glossy black helmet with the colour bird head and black facemask, black jersey with the red and silver CARDINALS sleeve band"
+    },
+    {
+     "url": "https://arizonasports.com/nfl/arizona-cardinals/cardinals-uniform-schedule-upcoming-season",
+     "supports": "2026 games: Oct 11 vs DET, Nov 29 vs WAS (secondary; returned 403 to the checker)"
+    }
+   ]
+  },
+  "BAL:2": {
+   "team": "BAL",
+   "code": "02",
+   "style": 2,
+   "set": "Purple Rising (home) + White Noise (road)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1995,
+    1996
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "02H0",
+     "file_donors": {
+      "pants": "02A0",
+      "splayer": "02H0"
+     }
+    },
+    "A": {
+     "donor": "02A0",
+     "file_donors": {
+      "pants": "02H0",
+      "splayer": "02A0",
+      "helmet_*": "02H0",
+      "digit_helmet_*": "02H0",
+      "logo": "02H0",
+      "chiclet": "02H0",
+      "flipchip": "02H0"
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#B8962E",
+     "reference": 0.42,
+     "box": [
+      140,
+      15,
+      190,
+      200
+     ],
+     "why": "the centre talon stripes (purple in the 2026 black helmet art)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#B8962E",
+     "reference": 0.42,
+     "box": [
+      140,
+      15,
+      190,
+      200
+     ],
+     "why": "the centre talon stripes (purple in the 2026 black helmet art)"
+    },
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "kind": "darks",
+     "to": "#3A2380",
+     "threshold": 0.12,
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       24,
+       62
+      ],
+      [
+       0,
+       112,
+       28,
+       152
+      ],
+      [
+       0,
+       192,
+       34,
+       232
+      ],
+      [
+       88,
+       0,
+       130,
+       16
+      ],
+      [
+       88,
+       236,
+       130,
+       256
+      ],
+      [
+       100,
+       220,
+       118,
+       236
+      ],
+      [
+       116,
+       205,
+       148,
+       225
+      ],
+      [
+       74,
+       10,
+       88,
+       24
+      ],
+      [
+       42,
+       52,
+       58,
+       66
+      ],
+      [
+       42,
+       190,
+       58,
+       204
+      ],
+      [
+       74,
+       230,
+       88,
+       244
+      ]
+     ],
+     "why": "shell: the black helmet becomes the metallic purple Purple Rising shell; the profile Ravens logo (primary logo) is left; gold talon stripes (official: metallic purple shell, gold talon stripes down the middle)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "kind": "darks",
+     "to": "#3A2380",
+     "threshold": 0.12,
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       34,
+       34
+      ],
+      [
+       0,
+       36,
+       16,
+       52
+      ],
+      [
+       0,
+       190,
+       34,
+       256
+      ],
+      [
+       98,
+       28,
+       126,
+       46
+      ],
+      [
+       98,
+       104,
+       142,
+       150
+      ]
+     ],
+     "why": "shell: the black helmet becomes the metallic purple Purple Rising shell; the profile Ravens logo (primary logo) is left; gold talon stripes (official: metallic purple shell, gold talon stripes down the middle)"
+    },
+    {
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#FEFEFE",
+      "#1C0C40"
+     ],
+     "to": [
+      "#B8962E",
+      "#1C0C40"
+     ],
+     "tolerance": 0.12,
+     "why": "Purple Rising numbers are gold (CBS Sports: gold numbers on the alternate purple jersey); the purple stroke stays",
+     "kit": "H"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#2E1666",
+     "range": [
+      0.6,
+      1.0
+     ],
+     "saturation": 0.2,
+     "why": "far-player atlas: the home kit's white pants become purple (H kit only)",
+     "kit": "H"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#F2F2F6",
+     "reference": 0.4,
+     "why": "far-player atlas: the road kit's purple pants become white (A kit only)",
+     "kit": "A"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "darks",
+     "to": "#3A2380",
+     "threshold": 0.12,
+     "why": "far-player helmet side"
+    }
+   ],
+   "socks": {
+    "colour": "#3A2380",
+    "kit": "H",
+    "why": "ESTIMATE: purple socks complete the all-purple combination (the official release calls it all purple; the club's gallery shows purple socks)"
+   },
+   "unif": {
+    "facemask": "FFB8962E"
+   },
+   "card_facemask": "B8962E",
+   "sources": [
+    {
+     "url": "https://www.baltimoreravens.com/news/ravens-new-uniforms-jerseys-helmets-next-flight-collection-midnight-purple-matte-black-wings-talon-stripes",
+     "supports": "Purple Rising helmet: metallic purple painted shell, gold talon stripes down the middle, gold facemask, primary Ravens logo"
+    },
+    {
+     "url": "https://www.baltimoreravens.com/news/ravens-uniforms-puple-rising-darkness-falls-theme-games-gate-giveaways-2026",
+     "supports": "Purple Rising all-purple combination, Nov 5 vs JAX"
+    },
+    {
+     "url": "https://www.baltimoreravens.com/news/ravens-uniforms-white-noise-whiteout-purple-rising-helmet-jesse-minter-home-opener-debut-2026",
+     "supports": "White Noise: white jersey and pants with the Purple Rising helmet"
+    },
+    {
+     "url": "https://www.cbssports.com/nfl/news/nfl-ravens-uniform-change-new-helmets/",
+     "supports": "gold numbers on the alternate purple jersey"
+    }
+   ],
+   "splayer_socks": {
+    "H": "#3A2380"
+   }
+  },
+  "BAL:3": {
+   "team": "BAL",
+   "code": "02",
+   "style": 3,
+   "set": "Darkness (all-black, matte black helmet)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "02H0",
+     "file_donors": {
+      "pants": "02A0"
+     }
+    },
+    "A": {
+     "donor": "02H0",
+     "file_donors": {
+      "pants": "02A0"
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#111114",
+     "reference": 0.42,
+     "box": [
+      140,
+      15,
+      190,
+      200
+     ],
+     "why": "the centre talon stripes (purple in the 2026 black helmet art)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#111114",
+     "reference": 0.42,
+     "box": [
+      140,
+      15,
+      190,
+      200
+     ],
+     "why": "the centre talon stripes (purple in the 2026 black helmet art)"
+    },
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "kind": "darks",
+     "to": "#26262B",
+     "threshold": 0.12,
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       24,
+       62
+      ],
+      [
+       0,
+       112,
+       28,
+       152
+      ],
+      [
+       0,
+       192,
+       34,
+       232
+      ],
+      [
+       88,
+       0,
+       130,
+       16
+      ],
+      [
+       88,
+       236,
+       130,
+       256
+      ],
+      [
+       100,
+       220,
+       118,
+       236
+      ],
+      [
+       116,
+       205,
+       148,
+       225
+      ],
+      [
+       74,
+       10,
+       88,
+       24
+      ],
+      [
+       42,
+       52,
+       58,
+       66
+      ],
+      [
+       42,
+       190,
+       58,
+       204
+      ],
+      [
+       74,
+       230,
+       88,
+       244
+      ]
+     ],
+     "why": "shell: matte black (a little lifted from the art's pure black: the club photos read dark grey); the centre talon stripes go black (official: black talon stripes)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "kind": "darks",
+     "to": "#26262B",
+     "threshold": 0.12,
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       34,
+       34
+      ],
+      [
+       0,
+       36,
+       16,
+       52
+      ],
+      [
+       0,
+       190,
+       34,
+       256
+      ],
+      [
+       98,
+       28,
+       126,
+       46
+      ],
+      [
+       98,
+       104,
+       142,
+       150
+      ]
+     ],
+     "why": "shell: matte black (a little lifted from the art's pure black: the club photos read dark grey); the centre talon stripes go black (official: black talon stripes)"
+    },
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#DCDCDC",
+      "#000000"
+     ],
+     "to": [
+      "#4A2D9C",
+      "#000000"
+     ],
+     "tolerance": 0.08,
+     "why": "the neck trim reads purple (the Midnight Purple collar band of the club photos)"
+    },
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#2E1666",
+      "#000000"
+     ],
+     "to": [
+      "#0E0E10",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "black jersey"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "kind": "tone",
+     "from_bg": "#2E1666",
+     "to_bg": "#0E0E10",
+     "tint": "#7A5CC8",
+     "distance": 0.14,
+     "why": "black sleeve with a tone-on-tone shield (official: secondary shield logo in black and Midnight Purple)"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#2E1666",
+      "#5A3C9E",
+      "#000000"
+     ],
+     "to": [
+      "#0E0E10",
+      "#5A3C9E",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "black pants; the talon stripes stay purple (club photo: purple stripe on black pants)"
+    },
+    {
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#1C0C40",
+      "#FEFEFE"
+     ],
+     "to": [
+      "#5B3EA8",
+      "#FEFEFE"
+     ],
+     "tolerance": 0.12,
+     "why": "white numbers with a Midnight Purple stroke (club photos 7, 8, 13)"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#0E0E10",
+     "reference": 0.4,
+     "why": "far-player atlas torso"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "hue",
+     "hue": "purple",
+     "to": "#0E0E10",
+     "reference": 0.4,
+     "why": "far-player atlas sleeve"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#0E0E10",
+     "range": [
+      0.6,
+      1.0
+     ],
+     "saturation": 0.2,
+     "why": "far-player atlas pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "darks",
+     "to": "#26262B",
+     "threshold": 0.12,
+     "why": "far-player helmet side"
+    }
+   ],
+   "socks": {
+    "colour": "#141416",
+    "why": "ESTIMATE: black socks complete the all-black combination (the official release says all-black; no source states the socks)"
+   },
+   "splayer_socks": "#141416",
+   "unif": {
+    "facemask": "FF000000"
+   },
+   "card_facemask": "000000",
+   "deviation": "the Darkness helmet's two-tone front-facing Ravens logo with red eyes is NOT drawn: the shipped profile Ravens logo stays on the helmet (the front-facing mark needs new art; see the report)",
+   "sources": [
+    {
+     "url": "https://www.baltimoreravens.com/news/ravens-new-uniforms-jerseys-helmets-next-flight-collection-midnight-purple-matte-black-wings-talon-stripes",
+     "supports": "Darkness: matte black helmet with black talon stripes and a two-toned front-facing Ravens logo with red eyes; Midnight Purple stroke on numbers"
+    },
+    {
+     "url": "https://www.baltimoreravens.com/news/ravens-uniforms-puple-rising-darkness-falls-theme-games-gate-giveaways-2026",
+     "supports": "Darkness Falls, Nov 16 vs LAC: all-black combination"
+    },
+    {
+     "url": "https://www.cbssports.com/nfl/news/nfl-ravens-uniform-change-new-helmets/",
+     "supports": "Darkness helmet only with black jersey and black pants"
+    }
+   ]
+  },
+  "CIN:6": {
+   "team": "CIN",
+   "code": "06",
+   "style": 6,
+   "set": "Open in Orange (orange alternate)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    0,
+    0
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "06A0",
+     "file_donors": {
+      "digit_jersey_*": "06H0",
+      "digit_arm_*": "06H0",
+      "names": "06H0"
+     }
+    },
+    "A": {
+     "donor": "06A0",
+     "file_donors": {
+      "digit_jersey_*": "06H0",
+      "digit_arm_*": "06H0",
+      "names": "06H0"
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "box": [
+      125,
+      80,
+      225,
+      105
+     ],
+     "from": [
+      "#FB4F14",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "tolerance": 0.12,
+     "why": "the chest BENGALS wordmark reads black on the orange jersey (bengals.com photos 0 and 5)"
+    },
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#FEFEFE",
+      "#000000"
+     ],
+     "to": [
+      "#FA5014",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "the white road jersey becomes orange (club photos of the Open in Orange combination: orange jersey)"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#FEFEFE",
+      "#000000"
+     ],
+     "to": [
+      "#FA5014",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "orange sleeves; the black tiger stripes stay (black stripes on the orange shoulders in the photos)"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#000000",
+      "#FEFEFE"
+     ],
+     "to": [
+      "#FA5014",
+      "#FEFEFE"
+     ],
+     "tolerance": 0.12,
+     "why": "white pants with orange stripes (AtoZ Sports; bengals.com photos): the road pants' black tiger strokes turn orange"
+    },
+    {
+     "components": [
+      "digit_jersey_*",
+      "digit_arm_*"
+     ],
+     "from": [
+      "#FA4E14",
+      "#FEFEFE"
+     ],
+     "to": [
+      "#000000",
+      "#FEFEFE"
+     ],
+     "tolerance": 0.12,
+     "why": "white numbers with a black outline (bengals.com photos 5 and 7)"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "greys",
+     "to": "#FA5014",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas torso"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "greys",
+     "to": "#FA5014",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas sleeve"
+    }
+   ],
+   "socks": {
+    "colour": "#FA5014",
+    "why": "orange socks (AtoZ Sports, Sept 8, 2026; bengals.com photos)"
+   },
+   "splayer_socks": "#FA5014",
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "no numbers on the back of the 2026 Bengals helmets",
+   "card_facemask": "000000",
+   "unchanged": "helmet (orange shell, black tiger stripes, black facemask), logos, name letters (white) and equipment are the 2026 road kit 06A0 as shipped",
+   "slot_note": "retail orphan kit 6 (an orange set with art and no label, both kits two-tone number budgets); enabling it needs the year pair written by the repair (enable_styles)",
+   "sources": [
+    {
+     "url": "https://atozsports.com/nfl/cincinnati-bengals-news/open-in-orange-uniform-combination-white-pants/",
+     "supports": "Sept 13 vs Tampa Bay: orange jerseys, white pants with orange stripes, orange socks"
+    },
+    {
+     "url": "https://www.nbcsportsphiladelphia.com/nfl/nfl-week-1-uniforms-helmets-jerseys-pants-teams-games/749870/",
+     "supports": "Week 1 pregame listing: orange helmets, orange jerseys, white pants (alternate)"
+    },
+    {
+     "url": "https://www.bengals.com/photos/bengals-2026-open-in-orange-uniform-combination-photos",
+     "supports": "club photo page: Orange-White-Orange; photos show the orange jersey with black shoulder tiger stripes, white numbers, white pants with orange stripes, orange socks and the orange tiger-stripe helmet"
+    }
+   ]
+  },
+  "ATL:9": {
+   "team": "ATL",
+   "code": "01",
+   "style": 9,
+   "set": "1966-inspired throwback (red helmet, black jersey)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1966,
+    1967
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "01H9"
+    },
+    "A": {
+     "donor": "01H9"
+    }
+   },
+   "marks": {
+    "torso": {
+     "collar_shield": true
+    },
+    "sleeve": {
+     "swoosh": "#FFFFFF"
+    },
+    "pants": {
+     "swoosh": "#000000",
+     "hip_shield": true
+    }
+   },
+   "recolour": [],
+   "unchanged": "the slot's own retail 1966-67 art IS this throwback (black jersey, white numbers trimmed red, white-trimmed falcon crest on the sleeves, white pants with one red stripe between two black, red helmet with the black centre stripe trimmed white, tri-colour socks, grey facemask); only the 2026 maker swoosh and the NFL shield are added and the retail maker marks cleared. The road kit takes the same black design (plan: same design as home).",
+   "sources": [
+    {
+     "url": "https://www.atlantafalcons.com/news/falcons-2026-uniform-schedule",
+     "supports": "2026 throwbacks: Wk 7 vs SF (Oct 25) and Wk 13 vs DET (Dec 6) at home"
+    },
+    {
+     "url": "https://www.atlantafalcons.com/news/heartbeat-of-history-red-helmets-throwback-uniforms-2026",
+     "supports": "the red-helmet throwbacks remain a special feature in 2026; club photos of the black jersey with white number outlined red and the red helmet"
+    },
+    {
+     "url": "https://www.atlantafalcons.com/news/what-you-need-to-know-about-falcons-classic-red-helmet-how-it-fits-into-2022",
+     "supports": "2022 official release: black jersey, white numbers with red trim, white pants with one red stripe bordered by two black, red helmet, grey facemask, tri-colour socks"
+    },
+    {
+     "url": "https://www.ajc.com/sports/2026/04/seeing-red-falcons-release-updated-uniforms-for-2026/",
+     "supports": "throwback described as black jersey, white pants, red helmet in 2026 coverage"
+    }
+   ]
+  },
+  "CAR:2": {
+   "team": "CAR",
+   "code": "04",
+   "style": 2,
+   "set": "Blue alternate jersey with the black alternate helmet",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "modernize",
+   "kits": {
+    "H": {
+     "donor": "04H2"
+    },
+    "A": {
+     "donor": "04H2"
+    }
+   },
+   "marks": {
+    "torso": {
+     "collar_shield": true
+    },
+    "sleeve": {
+     "swoosh": "#FFFFFF"
+    },
+    "pants": {
+     "swoosh": "#FFFFFF",
+     "hip_shield": true
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       24,
+       62
+      ],
+      [
+       0,
+       112,
+       28,
+       152
+      ],
+      [
+       0,
+       192,
+       34,
+       232
+      ],
+      [
+       88,
+       0,
+       130,
+       16
+      ],
+      [
+       88,
+       236,
+       130,
+       256
+      ],
+      [
+       100,
+       220,
+       118,
+       236
+      ],
+      [
+       116,
+       205,
+       148,
+       225
+      ],
+      [
+       74,
+       10,
+       88,
+       24
+      ],
+      [
+       42,
+       52,
+       58,
+       66
+      ],
+      [
+       42,
+       190,
+       58,
+       204
+      ],
+      [
+       74,
+       230,
+       88,
+       244
+      ]
+     ],
+     "from": [
+      "#B8BCBE",
+      "#000000"
+     ],
+     "to": [
+      "#222226",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "the silver shell becomes the black alternate shell (the logo has no white elements; hardware and the accessories column stay)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       0,
+       0,
+       34,
+       34
+      ],
+      [
+       0,
+       36,
+       16,
+       52
+      ],
+      [
+       0,
+       116,
+       26,
+       141
+      ],
+      [
+       0,
+       190,
+       34,
+       256
+      ],
+      [
+       98,
+       28,
+       126,
+       46
+      ],
+      [
+       98,
+       104,
+       142,
+       150
+      ]
+     ],
+     "from": [
+      "#B8BCBE",
+      "#000000"
+     ],
+     "to": [
+      "#222226",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "the silver shell becomes the black alternate shell (the logo has no white elements; hardware and the accessories column stay)"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#B8BCBE",
+      "#000000"
+     ],
+     "to": [
+      "#0E0E10",
+      "#000000"
+     ],
+     "tolerance": 0.12,
+     "why": "black pants (WBTV and NBC Week 1: blue jersey, black pants, black socks, black helmet); the blue stripe stays"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#0E0E10",
+     "range": [
+      0.4,
+      0.9
+     ],
+     "saturation": 0.25,
+     "min_luma": 0.3,
+     "why": "far-player atlas pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "greys",
+     "to": "#222226",
+     "range": [
+      0.35,
+      1.0
+     ],
+     "saturation": 0.25,
+     "min_luma": 0.3,
+     "why": "far-player helmet side"
+    }
+   ],
+   "socks": {
+    "colour": "#16161A",
+    "why": "black socks (WBTV 2026-09-11: Week 1 blue jersey, black pants, black socks, black helmet)"
+   },
+   "splayer_socks": "#16161A",
+   "unif": {
+    "facemask": "FF000000"
+   },
+   "card_facemask": "000000",
+   "unchanged": "the slot's own retail 2003 blue alternate jersey (Panther blue, white numbers outlined black, black and silver sleeve stripes) is the same uniform; the road kit takes the same design (plan: same design as home). Sleeve stripes and the exact 2026 collar trim are as retail (not separately described by the 2026 sources).",
+   "sources": [
+    {
+     "url": "https://www.panthers.com/news/carolina-panthers-release-the-2026-jersey-schedule-uniforms-alternates",
+     "supports": "alternate blue jerseys at home in Weeks 1 (vs CHI), 7 (vs TB) and 14 (vs NO)"
+    },
+    {
+     "url": "https://www.wbtv.com/2026/09/11/panthers-making-uniform-history-franchise-2026-heres-how/",
+     "supports": "Week 1 combination: blue jerseys, black pants, black socks and the black alternate helmets"
+    },
+    {
+     "url": "https://www.nbcsportsphiladelphia.com/nfl/nfl-week-1-uniforms-helmets-jerseys-pants-teams-games/749870/",
+     "supports": "Week 1 pregame listing: black pants"
+    },
+    {
+     "url": "https://static.clubs.nfl.com/image/upload/t_new_photo_album/panthers/",
+     "supports": "panthers.com jersey schedule gallery (photo 5): blue jersey, white numbers with dark outline, black helmet with blue centre stripe"
+    }
+   ]
+  },
+  "ARI:7": {
+   "team": "ARI",
+   "code": "00",
+   "style": 7,
+   "set": "Rivalries (sand and copper)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "spec",
+   "kits": {
+    "H": {
+     "donor": "00A0"
+    },
+    "A": {
+     "donor": "00A0"
+    }
+   },
+   "spec": {
+    "albedo": {
+     "sand": "#E9DFC9",
+     "sand_helmet": "#EFE6D3",
+     "copper": "#B87333",
+     "dkred": "#8A1C2B",
+     "numred": "#B5202E"
+    },
+    "kits": {
+     "H": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "sand",
+        "chest_mark": {
+         "colour": "dkred"
+        },
+        "sleeve_swooshes": {
+         "colour": "copper"
+        }
+       },
+       "sleeve": {
+        "base_colour": "sand"
+       },
+       "pants": {
+        "base_colour": "sand",
+        "base_from": "00A0",
+        "stripe": [
+         [
+          "copper",
+          2
+         ],
+         [
+          "red",
+          4
+         ],
+         [
+          "copper",
+          2
+         ]
+        ],
+        "swoosh_colour": "red"
+       },
+       "digits": {
+        "fill": "numred",
+        "outline": "numred",
+        "outline_frac": 0.0
+       },
+       "arm_digits": "none",
+       "nameplate": {
+        "fill": "numred"
+       },
+       "helmet_digits": {
+        "glyph_donor": "00H0",
+        "fill": "numred"
+       },
+       "helmet": {
+        "shell": "sand_helmet",
+        "decal": {
+         "facing": "front",
+         "why": "b77 sh1: the cardinal faces the FRONT on both sides; the same-image decal left it facing the rear on the left"
+        }
+       }
+      }
+     },
+     "A": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "sand",
+        "chest_mark": {
+         "colour": "dkred"
+        },
+        "sleeve_swooshes": {
+         "colour": "copper"
+        }
+       },
+       "sleeve": {
+        "base_colour": "sand"
+       },
+       "pants": {
+        "base_colour": "sand",
+        "base_from": "00A0",
+        "stripe": [
+         [
+          "copper",
+          2
+         ],
+         [
+          "red",
+          4
+         ],
+         [
+          "copper",
+          2
+         ]
+        ],
+        "swoosh_colour": "red"
+       },
+       "digits": {
+        "fill": "numred",
+        "outline": "numred",
+        "outline_frac": 0.0
+       },
+       "arm_digits": "none",
+       "nameplate": {
+        "fill": "numred"
+       },
+       "helmet_digits": {
+        "glyph_donor": "00H0",
+        "fill": "numred"
+       },
+       "helmet": {
+        "shell": "sand_helmet",
+        "decal": {
+         "facing": "front",
+         "why": "b77 sh1: the cardinal faces the FRONT on both sides; the same-image decal left it facing the rear on the left"
+        }
+       }
+      }
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "kind": "speckle",
+     "base": "#E9DFC9",
+     "tint": "#A67550",
+     "density": 0.012,
+     "strength": 0.4,
+     "distance": 0.12,
+     "seed": "ari7_torso",
+     "why": "the sandstorm texture (the 2025 release: sandblasted look; club photos show copper-brown flecks on the cream fabric)"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "kind": "speckle",
+     "base": "#E9DFC9",
+     "tint": "#A67550",
+     "density": 0.012,
+     "strength": 0.4,
+     "distance": 0.12,
+     "seed": "ari7_sleeve",
+     "why": "the sandstorm texture (the 2025 release: sandblasted look; club photos show copper-brown flecks on the cream fabric)"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "kind": "speckle",
+     "base": "#E9DFC9",
+     "tint": "#A67550",
+     "density": 0.012,
+     "strength": 0.4,
+     "distance": 0.12,
+     "seed": "ari7_pants",
+     "why": "the sandstorm texture (the 2025 release: sandblasted look; club photos show copper-brown flecks on the cream fabric)"
+    },
+    {
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "kind": "speckle",
+     "base": "#EFE6D3",
+     "tint": "#A67550",
+     "density": 0.012,
+     "strength": 0.4,
+     "distance": 0.1,
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "seed": "ari7_helmet",
+     "why": "sandblasted matte shell with a speckled texture"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "greys",
+     "to": "#E9DFC9",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas torso"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "greys",
+     "to": "#E9DFC9",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas sleeve"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#E9DFC9",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "greys",
+     "to": "#EFE6D3",
+     "range": [
+      0.55,
+      1.0
+     ],
+     "saturation": 0.3,
+     "min_luma": 0.25,
+     "why": "far-player atlas helmet"
+    }
+   ],
+   "socks": {
+    "colour": "#A0233F",
+    "why": "red socks (club game photos of the Rivalries uniform vs SEA, 2025-09-25)"
+   },
+   "splayer_socks": "#A0233F",
+   "unif": {
+    "facemask": "FFA0233F"
+   },
+   "card_facemask": "A0233F",
+   "sources": [
+    {
+     "url": "https://www.azcardinals.com/news/longform/arizona-cardinals-unveil-rivalries-uniforms-nike-sand-copper-red-2025",
+     "supports": "2025 release: tan, red and copper; sandblasted matte helmet with a 3D birdhead with a copper beak; state outline on the jersey"
+    },
+    {
+     "url": "https://www.azcardinals.com/photos/cardinals-top-pics-vs-seahawks",
+     "supports": "club game photos of the Rivalries uniform: cream jersey with brown flecks, red numbers with a copper trim, cream pants with red side stripes, red socks, cream helmet with the red cardinal head, red facemask"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "sand-coloured uniforms and helmet with a speckled texture, copper pants stripes, red facemask; 2026 Week 2 vs SEA"
+    }
+   ],
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "blank_why": "the 2026 Rivalries helmet photos show no back numbers; the slot's helmet-digit textures (800 bytes) cannot hold a two-colour glyph",
+   "digits_note": "the copper trim of the numerals is not drawn: slot 7's jersey-number textures are 640-800 bytes (one colour); two-colour numbers do not fit (compile refused them); sleeve (TV) numbers are not drawn: the club's Rivalries photos show none and the slot's 944-byte arm-digit textures refused the glyph 6"
+  },
+  "BUF:3": {
+   "team": "BUF",
+   "code": "03",
+   "style": 3,
+   "set": "Red alternate jersey (Week 18)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    1984,
+    1986
+   ],
+   "build_type": "spec",
+   "kits": {
+    "H": {
+     "donor": "03H0"
+    },
+    "A": {
+     "donor": "03H0"
+    }
+   },
+   "spec": {
+    "albedo": {
+     "red_alt": "#D4112B"
+    },
+    "kits": {
+     "H": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "red_alt",
+        "neck_donor": "03H3",
+        "collar_trim": [
+         {
+          "colour": "white",
+          "width": 1.4
+         },
+         {
+          "colour": "jersey_royal",
+          "width": 1.0
+         }
+        ]
+       },
+       "sleeve": {
+        "base_colour": "red_alt",
+        "decorations": [
+         {
+          "rect": [
+           0,
+           36.0,
+           128,
+           40.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           40.5,
+           128,
+           43.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           43.0,
+           128,
+           47.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           47.5,
+           128,
+           50.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           50.0,
+           128,
+           54.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           100.0,
+           128,
+           104.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           104.5,
+           128,
+           107.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           107.0,
+           128,
+           111.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           111.5,
+           128,
+           114.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           114.0,
+           128,
+           118.5
+          ],
+          "colour": "white"
+         }
+        ]
+       },
+       "digits": {
+        "fill": "white",
+        "outline": "jersey_royal",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "white"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     },
+     "A": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "red_alt",
+        "neck_donor": "03H3",
+        "collar_trim": [
+         {
+          "colour": "white",
+          "width": 1.4
+         },
+         {
+          "colour": "jersey_royal",
+          "width": 1.0
+         }
+        ]
+       },
+       "sleeve": {
+        "base_colour": "red_alt",
+        "decorations": [
+         {
+          "rect": [
+           0,
+           36.0,
+           128,
+           40.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           40.5,
+           128,
+           43.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           43.0,
+           128,
+           47.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           47.5,
+           128,
+           50.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           50.0,
+           128,
+           54.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           100.0,
+           128,
+           104.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           104.5,
+           128,
+           107.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           107.0,
+           128,
+           111.5
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           0,
+           111.5,
+           128,
+           114.0
+          ],
+          "colour": "jersey_royal"
+         },
+         {
+          "rect": [
+           0,
+           114.0,
+           128,
+           118.5
+          ],
+          "colour": "white"
+         }
+        ]
+       },
+       "digits": {
+        "fill": "white",
+        "outline": "jersey_royal",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "white"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#D4112B",
+     "reference": 0.45,
+     "why": "far-player atlas torso: the royal jersey becomes red"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#D4112B",
+     "reference": 0.45,
+     "why": "far-player atlas sleeve: the royal jersey becomes red"
+    }
+   ],
+   "socks": {
+    "colour": "#D4112B",
+    "why": "red socks (2024 precedent, official Dec 17, 2024 release; the 2026 sources do not name socks)"
+   },
+   "splayer_socks": "#D4112B",
+   "unif": {
+    "facemask": "FFFFFEFF"
+   },
+   "card_facemask": "FFFFFF",
+   "estimates": "the 2026 sources name only the red jersey; pants (white), helmet (white) and socks (red) follow the 2024 combination the club photographed (red jersey, white pants, red socks, white helmet); the numbers (white with a royal outline) and the sleeve stripes (white and royal) are read from the 2024 photos",
+   "sources": [
+    {
+     "url": "https://www.buffalobills.com/news/buffalo-bills-announce-2026-home-game-themes-starting-with-inaugural-season-celebration",
+     "supports": "2026 home list: Week 18 vs NYJ, Red Alternate Jersey"
+    },
+    {
+     "url": "https://www.buffalobills.com/news/buffalo-bills-to-wear-red-alternate-jersey-with-white-pants-in-week-16",
+     "supports": "2024 release: red jerseys, white pants, red socks and white helmets; photo gallery showing the white numbers with royal outline and white and royal sleeve stripes"
+    }
+   ],
+   "helmet_note": "helmet: the 2026 white helmet as shipped (03H0): the 2024 red-alternate combination wore the white helmet"
+  },
+  "BUF:8": {
+   "team": "BUF",
+   "code": "03",
+   "style": 8,
+   "set": "Nickel City all-gray with The Charge helmet",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "spec",
+   "kits": {
+    "H": {
+     "donor": "03H0"
+    },
+    "A": {
+     "donor": "03H0"
+    }
+   },
+   "spec": {
+    "albedo": {
+     "nickel": "#8D9096",
+     "nickel_pants": "#A3A5AA",
+     "gray_light": "#C9CBCF",
+     "gray_dark": "#6B6E74"
+    },
+    "kits": {
+     "H": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "nickel",
+        "neck_donor": "03H8",
+        "chest_mark": null,
+        "collar_trim": [
+         {
+          "colour": "jersey_royal",
+          "width": 1.6
+         }
+        ],
+        "decorations": [
+         {
+          "mark": "logo_full",
+          "center": [
+           196,
+           84
+          ],
+          "width": 12
+         }
+        ],
+        "sleeve_swooshes": {
+         "colour": "white"
+        }
+       },
+       "sleeve": {
+        "base_colour": "nickel",
+        "decorations": [
+         {
+          "rect": [
+           0,
+           36.0,
+           128,
+           40.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           40.5,
+           128,
+           43.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           43.0,
+           128,
+           47.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           47.5,
+           128,
+           50.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           50.0,
+           128,
+           54.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           100.0,
+           128,
+           104.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           104.5,
+           128,
+           107.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           107.0,
+           128,
+           111.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           111.5,
+           128,
+           114.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           114.0,
+           128,
+           118.5
+          ],
+          "colour": "gray_light"
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "nickel_pants",
+        "stripe": [
+         [
+          "gray_dark",
+          5
+         ],
+         [
+          "gray_light",
+          8
+         ],
+         [
+          "gray_dark",
+          5
+         ]
+        ],
+        "swoosh_colour": "white",
+        "base_from": "03H3"
+       },
+       "digits": {
+        "fill": "jersey_royal",
+        "outline": "red",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "white"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     },
+     "A": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "nickel",
+        "neck_donor": "03H8",
+        "chest_mark": null,
+        "collar_trim": [
+         {
+          "colour": "jersey_royal",
+          "width": 1.6
+         }
+        ],
+        "decorations": [
+         {
+          "mark": "logo_full",
+          "center": [
+           196,
+           84
+          ],
+          "width": 12
+         }
+        ],
+        "sleeve_swooshes": {
+         "colour": "white"
+        }
+       },
+       "sleeve": {
+        "base_colour": "nickel",
+        "decorations": [
+         {
+          "rect": [
+           0,
+           36.0,
+           128,
+           40.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           40.5,
+           128,
+           43.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           43.0,
+           128,
+           47.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           47.5,
+           128,
+           50.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           50.0,
+           128,
+           54.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           100.0,
+           128,
+           104.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           104.5,
+           128,
+           107.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           107.0,
+           128,
+           111.5
+          ],
+          "colour": "gray_light"
+         },
+         {
+          "rect": [
+           0,
+           111.5,
+           128,
+           114.0
+          ],
+          "colour": "gray_dark"
+         },
+         {
+          "rect": [
+           0,
+           114.0,
+           128,
+           118.5
+          ],
+          "colour": "gray_light"
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "nickel_pants",
+        "stripe": [
+         [
+          "gray_dark",
+          5
+         ],
+         [
+          "gray_light",
+          8
+         ],
+         [
+          "gray_dark",
+          5
+         ]
+        ],
+        "swoosh_colour": "white",
+        "base_from": "03H3"
+       },
+       "digits": {
+        "fill": "jersey_royal",
+        "outline": "red",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "white"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ]
+     ],
+     "from": [
+      "#F3F4F7",
+      "#000000"
+     ],
+     "to": [
+      "#00338D",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "The Charge: the white shell becomes royal blue; the buffalo's own royal and white outline vanish into it, leaving the red charge streak of the primary logo along the side (NFL.com: no bison outline)"
+    },
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      140,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ]
+     ],
+     "from": [
+      "#C8102E",
+      "#000000"
+     ],
+     "to": [
+      "#00338D",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "no helmet stripe is described: the centre stripe's red becomes the shell colour"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ],
+      [
+       185,
+       169,
+       218,
+       213
+      ]
+     ],
+     "from": [
+      "#F3F4F7",
+      "#000000"
+     ],
+     "to": [
+      "#00338D",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "The Charge: the white shell becomes royal blue; the buffalo's own royal and white outline vanish into it, leaving the red charge streak of the primary logo along the side (NFL.com: no bison outline)"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      140,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ],
+      [
+       185,
+       169,
+       218,
+       213
+      ]
+     ],
+     "from": [
+      "#C8102E",
+      "#000000"
+     ],
+     "to": [
+      "#00338D",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "no helmet stripe is described: the centre stripe's red becomes the shell colour"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#8D9096",
+     "reference": 0.45,
+     "why": "far-player atlas torso: the royal jersey becomes grey"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#8D9096",
+     "reference": 0.45,
+     "why": "far-player atlas sleeve: the royal jersey becomes grey"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#A3A5AA",
+     "range": [
+      0.6,
+      1.0
+     ],
+     "saturation": 0.2,
+     "why": "far-player atlas pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "kind": "greys",
+     "to": "#0F3FB0",
+     "range": [
+      0.4,
+      0.95
+     ],
+     "saturation": 0.25,
+     "min_luma": 0.35,
+     "why": "far-player helmet side: royal"
+    }
+   ],
+   "socks": {
+    "colour": "#0B3A9E",
+    "why": "ESTIMATE: royal socks (club photos 5 and 10 of the Nickel City gallery show royal socks; the release does not state them)"
+   },
+   "splayer_socks": "#0B3A9E",
+   "unif": {
+    "facemask": "FF0B3A9E"
+   },
+   "card_facemask": "0B3A9E",
+   "deviation": "the numbers are royal with a red outline only (the club's are outlined in red and white: one outline in the art tool); The Charge helmet keeps the primary logo's red streak on both sides of the royal shell (the club's rear V is not drawn)",
+   "sources": [
+    {
+     "url": "https://www.buffalobills.com/news/buffalo-bills-unveil-new-nickel-city-uniforms-leading-into-the-inaugural-season-of-highmark-stadium",
+     "supports": "all-gray pant and jersey combo with a royal blue helmet (The Charge), metallic flake finish"
+    },
+    {
+     "url": "https://www.nfl.com/news/bills-reveal-alternate-uniforms-helmet-ahead-of-2026-season",
+     "supports": "gray jerseys and pants in differing shades, blue block numbers outlined in red and white, gray sleeve stripes, Bills logo patch on the left chest, red charging streak on the helmet"
+    },
+    {
+     "url": "https://spectrumlocalnews.com/nys/buffalo/news/2026/08/05/buffalo-bills-reveal-dates-for-new--nickel-city--alternative-uniforms",
+     "supports": "Wk 3 vs LAC (Sept 27) and Wk 15 vs CHI (Dec 19), home"
+    }
+   ]
+  },
+  "BUF:9": {
+   "team": "BUF",
+   "code": "03",
+   "style": 9,
+   "set": "Cold Front all-white Rivalries",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "spec",
+   "kits": {
+    "H": {
+     "donor": "03A0"
+    },
+    "A": {
+     "donor": "03A0"
+    }
+   },
+   "spec": {
+    "albedo": {
+     "ice_white": "#F4F7FB",
+     "frost": "#DCE6F2",
+     "ice_blue": "#C7D5E8",
+     "ice_silver": "#AEB9C8"
+    },
+    "kits": {
+     "H": {
+      "from": "away",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "ice_white",
+        "neck_donor": "03H9",
+        "collar_trim": [
+         {
+          "colour": "jersey_royal",
+          "width": 1.2
+         }
+        ],
+        "chest_mark": {
+         "mark": "wordmark",
+         "colour": "jersey_royal",
+         "center": [
+          161,
+          93
+         ],
+         "width": 17
+        },
+        "sleeve_swooshes": {
+         "colour": "jersey_royal"
+        }
+       },
+       "sleeve": {
+        "base_colour": "ice_white",
+        "decorations": [
+         {
+          "mark": "buf_frost_logo",
+          "center": [
+           57.5,
+           24
+          ],
+          "width": 34,
+          "mirror": false
+         },
+         {
+          "mark": "buf_frost_logo",
+          "center": [
+           70.5,
+           88
+          ],
+          "width": 34,
+          "mirror": true
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "ice_white",
+        "stripe": [
+         [
+          "ice_blue",
+          5
+         ],
+         [
+          "white",
+          8
+         ],
+         [
+          "ice_blue",
+          5
+         ]
+        ],
+        "swoosh_colour": "jersey_royal"
+       },
+       "digits": {
+        "fill": "frost",
+        "outline": "jersey_royal",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "jersey_royal"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     },
+     "A": {
+      "from": "away",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "base_colour": "ice_white",
+        "neck_donor": "03H9",
+        "collar_trim": [
+         {
+          "colour": "jersey_royal",
+          "width": 1.2
+         }
+        ],
+        "chest_mark": {
+         "mark": "wordmark",
+         "colour": "jersey_royal",
+         "center": [
+          161,
+          93
+         ],
+         "width": 17
+        },
+        "sleeve_swooshes": {
+         "colour": "jersey_royal"
+        }
+       },
+       "sleeve": {
+        "base_colour": "ice_white",
+        "decorations": [
+         {
+          "mark": "buf_frost_logo",
+          "center": [
+           57.5,
+           24
+          ],
+          "width": 34,
+          "mirror": false
+         },
+         {
+          "mark": "buf_frost_logo",
+          "center": [
+           70.5,
+           88
+          ],
+          "width": 34,
+          "mirror": true
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "ice_white",
+        "stripe": [
+         [
+          "ice_blue",
+          5
+         ],
+         [
+          "white",
+          8
+         ],
+         [
+          "ice_blue",
+          5
+         ]
+        ],
+        "swoosh_colour": "jersey_royal"
+       },
+       "digits": {
+        "fill": "frost",
+        "outline": "jersey_royal",
+        "outline_frac": 0.03
+       },
+       "nameplate": {
+        "fill": "jersey_royal"
+       },
+       "keep_retail": [
+        "helmet_"
+       ]
+      }
+     }
+    },
+    "derived_marks": {
+     "buf_frost_logo.png": {
+      "from": "buf_logo_mask.png",
+      "fill": "#DCE6F2",
+      "outline": {
+       "colour": "#0B3A9E",
+       "px": 2
+      }
+     }
+    },
+    "marks": {
+     "buf_frost_logo": "buf_frost_logo.png"
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ]
+     ],
+     "from": [
+      "#00338D",
+      "#000000"
+     ],
+     "to": [
+      "#AEB9C8",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "frosty metallic buffalo: the royal buffalo and stripe halves become frost silver"
+    },
+    {
+     "components": [
+      "helmet_helmet02"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ]
+     ],
+     "from": [
+      "#C8102E",
+      "#000000"
+     ],
+     "to": [
+      "#0B3A9E",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "the red charge streak and stripe become the bright royal blue of the Cold Front outline (no red: 'Red was removed')"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ],
+      [
+       185,
+       169,
+       218,
+       213
+      ]
+     ],
+     "from": [
+      "#00338D",
+      "#000000"
+     ],
+     "to": [
+      "#AEB9C8",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "frosty metallic buffalo: the royal buffalo and stripe halves become frost silver"
+    },
+    {
+     "components": [
+      "helmet_helmet00"
+     ],
+     "box": [
+      0,
+      0,
+      190,
+      256
+     ],
+     "exclude": [
+      [
+       190,
+       59,
+       256,
+       108
+      ],
+      [
+       185,
+       169,
+       218,
+       213
+      ]
+     ],
+     "from": [
+      "#C8102E",
+      "#000000"
+     ],
+     "to": [
+      "#0B3A9E",
+      "#000000"
+     ],
+     "tolerance": 0.14,
+     "why": "the red charge streak and stripe become the bright royal blue of the Cold Front outline (no red: 'Red was removed')"
+    },
+    {
+     "components": [
+      "torso"
+     ],
+     "kind": "speckle",
+     "base": "#F4F7FB",
+     "tint": "#BFD0E6",
+     "density": 0.02,
+     "strength": 0.5,
+     "distance": 0.06,
+     "seed": "buf9_torso",
+     "why": "the cracked-ice speckled white texture of the shoulders (Cold Front release)"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "kind": "speckle",
+     "base": "#F4F7FB",
+     "tint": "#BFD0E6",
+     "density": 0.02,
+     "strength": 0.5,
+     "distance": 0.06,
+     "seed": "buf9_sleeve",
+     "why": "the cracked-ice speckled white texture of the shoulders (Cold Front release)"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#E8EEF6",
+     "reference": 0.45,
+     "why": "far-player atlas torso: the royal jersey becomes ice white"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "kind": "hue",
+     "hue": "blue",
+     "to": "#E8EEF6",
+     "reference": 0.45,
+     "why": "far-player atlas sleeve: the royal jersey becomes ice white"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "kind": "greys",
+     "to": "#F2F5FA",
+     "range": [
+      0.9,
+      1.0
+     ],
+     "saturation": 0.2,
+     "why": "far-player atlas pants"
+    }
+   ],
+   "socks": {
+    "colour": "#F4F7FB",
+    "why": "white socks (the Cold Front gallery photos 6 and 7: white socks; not stated in the release)"
+   },
+   "splayer_socks": "#F4F7FB",
+   "unif": {
+    "facemask": "FFFFFEFF"
+   },
+   "card_facemask": "FFFFFF",
+   "deviation": "the chrome low-poly buffalo is drawn as a frost silhouette with a royal border (no chrome shading); the pants carry a faint ice-blue stripe (the release only says 'unique elements'); facemask white per the gallery",
+   "sources": [
+    {
+     "url": "https://www.buffalobills.com/news/buffalo-bills-unveil-new-cold-front-uniforms-as-part-of-nike-s-rivalries-program",
+     "supports": "all-white Cold Front: no red, frosty metallic numbers with a bright royal blue border, speckled white shoulders, chrome buffalo on each sleeve, white pants, white helmet with a cracked-ice stripe and frosty buffalo logos outlined in royal"
+    },
+    {
+     "url": "https://www.buffalobills.com/news/buffalo-bills-announce-2026-home-game-themes-starting-with-inaugural-season-celebration",
+     "supports": "2026 Rivalries game: Week 11 vs MIA at home"
+    }
+   ]
+  },
+  "CHI:4": {
+   "team": "CHI",
+   "code": "05",
+   "style": 4,
+   "set": "Rivalries (Christmas Day vs GB)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "spec",
+   "kits": {
+    "H": {
+     "donor": "05H0"
+    },
+    "A": {
+     "donor": "05H0"
+    }
+   },
+   "spec": {
+    "albedo": {
+     "orange_bright": "#E2551A"
+    },
+    "derived_marks": {
+     "c_navy_white.png": {
+      "layers": [
+       {
+        "from": "c_layer_white.png",
+        "fill": "#FFFFFF"
+       },
+       {
+        "from": "c_layer_navy.png",
+        "fill": "#0D1A32"
+       }
+      ]
+     }
+    },
+    "marks": {
+     "c_navy_white": "c_navy_white.png"
+    },
+    "kits": {
+     "H": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "neck_donor": "05H4",
+        "sleeve_swooshes": {
+         "colour": "white"
+        },
+        "decorations": [
+         {
+          "mark": "gsh_outline",
+          "colour": "orange_bright",
+          "center": [
+           203,
+           82
+          ],
+          "width": 15
+         },
+         {
+          "mark": "gsh_fill",
+          "colour": "navy",
+          "center": [
+           203,
+           82
+          ],
+          "width": 15
+         }
+        ]
+       },
+       "sleeve": {
+        "base_colour": "navy",
+        "decorations": [
+         {
+          "rect": [
+           30,
+           8,
+           38,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           32,
+           8,
+           36,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           30,
+           70,
+           38,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           32,
+           70,
+           36,
+           122
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           60,
+           8,
+           68,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           62,
+           8,
+           66,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           60,
+           70,
+           68,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           62,
+           70,
+           66,
+           122
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           90,
+           8,
+           98,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           92,
+           8,
+           96,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           90,
+           70,
+           98,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           92,
+           70,
+           96,
+           122
+          ],
+          "colour": "orange_bright"
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "orange_bright",
+        "stripe": [
+         [
+          "navy",
+          3
+         ],
+         [
+          "white",
+          4
+         ],
+         [
+          "navy",
+          3
+         ]
+        ],
+        "swoosh_colour": "navy"
+       },
+       "digits": {
+        "fill": "orange_bright",
+        "outline": "white",
+        "outline_frac": 0.045
+       },
+       "nameplate": {
+        "fill": "orange_bright",
+        "outline": "white",
+        "outline_frac": 0.066
+       },
+       "helmet_digits": {
+        "fill": "white"
+       },
+       "helmet": {
+        "shell": "orange_bright",
+        "stripe": "orange_bright",
+        "decal": {
+         "mark": "c_navy_white",
+         "scale": 1.0
+        }
+       }
+      }
+     },
+     "A": {
+      "from": "home",
+      "drop": [
+       "splayer"
+      ],
+      "merge": {
+       "torso": {
+        "neck_donor": "05H4",
+        "sleeve_swooshes": {
+         "colour": "white"
+        },
+        "decorations": [
+         {
+          "mark": "gsh_outline",
+          "colour": "orange_bright",
+          "center": [
+           203,
+           82
+          ],
+          "width": 15
+         },
+         {
+          "mark": "gsh_fill",
+          "colour": "navy",
+          "center": [
+           203,
+           82
+          ],
+          "width": 15
+         }
+        ]
+       },
+       "sleeve": {
+        "base_colour": "navy",
+        "decorations": [
+         {
+          "rect": [
+           30,
+           8,
+           38,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           32,
+           8,
+           36,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           30,
+           70,
+           38,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           32,
+           70,
+           36,
+           122
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           60,
+           8,
+           68,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           62,
+           8,
+           66,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           60,
+           70,
+           68,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           62,
+           70,
+           66,
+           122
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           90,
+           8,
+           98,
+           60
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           92,
+           8,
+           96,
+           60
+          ],
+          "colour": "orange_bright"
+         },
+         {
+          "rect": [
+           90,
+           70,
+           98,
+           122
+          ],
+          "colour": "white"
+         },
+         {
+          "rect": [
+           92,
+           70,
+           96,
+           122
+          ],
+          "colour": "orange_bright"
+         }
+        ]
+       },
+       "pants": {
+        "base_colour": "orange_bright",
+        "stripe": [
+         [
+          "navy",
+          3
+         ],
+         [
+          "white",
+          4
+         ],
+         [
+          "navy",
+          3
+         ]
+        ],
+        "swoosh_colour": "navy"
+       },
+       "digits": {
+        "fill": "orange_bright",
+        "outline": "white",
+        "outline_frac": 0.045
+       },
+       "nameplate": {
+        "fill": "orange_bright",
+        "outline": "white",
+        "outline_frac": 0.066
+       },
+       "helmet_digits": {
+        "fill": "white"
+       },
+       "helmet": {
+        "shell": "orange_bright",
+        "stripe": "orange_bright",
+        "decal": {
+         "mark": "c_navy_white",
+         "scale": 1.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "recolour": [],
+   "unif": {
+    "facemask": "FF111111"
+   },
+   "card_facemask": "111111",
+   "deviation": "the GSH patch is drawn on the chest at an estimated spot; the sleeve stripes are three white-orange-white vertical stripes per arm (the club's taper is not drawn); the 'Monsters of the Midway' collar inscription and the rear-bumper stars are not drawn; helmet facemask black per the club photos",
+   "sources": [
+    {
+     "url": "https://www.chicagobears.com/news/bears-unveil-rivalries-uniform",
+     "supports": "navy jersey with orange numerals outlined in white (1948 font), vertical sleeve stripes, GSH patch on the front, orange helmet with a navy C outlined in white, orange pants with a double navy and white stripe; Christmas Day vs GB"
+    },
+    {
+     "url": "https://chicago.suntimes.com/bears/2026/08/25/bears-new-nike-rivalry-uniform-unveil-christmas-day-packers-2026",
+     "supports": "orange pants, same shell as the 2022 orange helmet, socks navy with orange stripes"
+    }
+   ]
+  },
+  "LAC:10": {
+   "team": "LAC",
+   "code": "24",
+   "style": 10,
+   "set": "Gold pants combos",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    2
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "24H0"
+    },
+    "A": {
+     "donor": "24A0",
+     "take": {
+      "24H0": [
+       "pants"
+      ]
+     }
+    }
+   },
+   "recolour": [],
+   "unchanged": "home: the shipped 2026 home kit 24H0 as it is (powder blue jersey, gold pants with the white bolt outlined in powder blue, powder blue socks, white helmet with gold facemask); road: the 2026 road kit 24A0 (white jersey, powder blue numbers outlined in gold, white helmet, powder blue socks) with the gold pants of 24H0",
+   "sources": [
+    {
+     "url": "https://www.chargers.com/news/2026-uniform-schedule",
+     "supports": "2026 table: home powder blue jersey with gold pants and powder blue socks (Wk 2 vs Raiders, Wk 15 vs 49ers); road white jersey with gold pants and powder blue socks (Wk 6 at Chiefs, Wk 16 at Dolphins)"
+    },
+    {
+     "url": "https://chargers.com/team/history/uniform-history/2020-present",
+     "supports": "road pants: gold with a white lightning bolt outlined in powder blue; helmet white with gold facemask"
+    }
+   ],
+   "slot_note": "style 10 (2003 Alternate 2, the 2003 powder blue throwback); tier 3: a pants combination of the primary set, built because the plan gives it a slot"
+  },
+  "LAC:11": {
+   "team": "LAC",
+   "code": "24",
+   "style": 11,
+   "set": "Super Chargers (all-navy)",
+   "label": [
+    2026,
+    3
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "24H0",
+     "take": {
+      "24H11": [
+       "helmet_helmet00",
+       "helmet_helmet02",
+       "splayer",
+       "logo",
+       "chiclet",
+       "flipchip",
+       "digit_helmet_*"
+      ]
+     }
+    },
+    "A": {
+     "donor": "24H0",
+     "take": {
+      "24H11": [
+       "helmet_helmet00",
+       "helmet_helmet02",
+       "splayer",
+       "logo",
+       "chiclet",
+       "flipchip",
+       "digit_helmet_*"
+      ]
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#0080C6",
+      "#FFC20E",
+      "#FFFFFF",
+      "#DCDCDC"
+     ],
+     "to": [
+      "#12295A",
+      "#FFFFFF",
+      "#FFC20E",
+      "#DCDCDC"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "navy jersey; the shoulder bolts swap gold fill and white edge for a white fill with a gold outline (chargers.com Super Chargers gallery, photos 028 and 034)"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#0080C6",
+      "#FFFFFF"
+     ],
+     "to": [
+      "#12295A",
+      "#FFFFFF"
+     ],
+     "tolerance": 0.1,
+     "why": "navy sleeve, white swoosh stays"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFC20E",
+      "#0A82BF",
+      "#FFFFFF",
+      "#001E43"
+     ],
+     "to": [
+      "#12295A",
+      "#FFC20E",
+      "#FFFFFF",
+      "#001E43"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "navy pants; the bolt's powder outline becomes gold; the white swoosh and shield stay"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "include": [
+      [
+       133,
+       15,
+       152,
+       214
+      ],
+      [
+       360,
+       15,
+       379,
+       214
+      ]
+     ],
+     "from": [
+      "#FFFFFF",
+      "#12295A",
+      "#FFC20E"
+     ],
+     "to": [
+      "#12295A",
+      "#12295A",
+      "#FFC20E"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "the bolt's white fill becomes navy: a gold-outlined navy bolt on the navy pants (photo 034)"
+    }
+   ],
+   "unif": {
+    "facemask": "FF002A5D",
+    "turtleneck": "FF072248"
+   },
+   "card_facemask": "002A5D",
+   "unchanged": "jersey numbers (white with a gold outline, as the 2026 home kit), name letters (white), gloves, sleeves, shoes and the other equipment: the 2026 home kit 24H0; helmets (navy shell, white bolt with a gold outline), helmet digits, the far-player atlas and the three set marks: the slot's own retail navy set (the same design)",
+   "sources": [
+    {
+     "url": "https://www.chargers.com/photos/navy-alternate-uniform-super-chargers-2025",
+     "supports": "club gallery: navy jersey with white numbers outlined in gold, white shoulder bolts outlined in gold (photos 028, 029), navy helmet with a white bolt outlined in gold and a white number (030, 009), navy pants with a gold-outlined bolt (034), navy socks, white gloves and shoes"
+    },
+    {
+     "url": "https://www.chargers.com/news/navy-super-chargers-uniform-games-2026",
+     "supports": "2026: all-navy Super Chargers worn Wk 9 vs HOU, Wk 12 vs NE (SNF), Wk 17 vs KC"
+    },
+    {
+     "url": "https://amp.nfl.com/news/chargers-reveal-gold-navy-alternate-uniforms-powder-blue-pants-2025-season",
+     "supports": "a new all-navy uniform with a navy helmet, white numbers under the bolt"
+    }
+   ],
+   "estimates": "navy #12295A is the median of the club photos' jersey (18,41,90), an estimate of the club's navy under studio light; the facemask word is the slot's retail navy FF002A5D (the 2020 navy alternate had a navy facemask per the official page; the 2025 helmet's facemask reads dark in the photos)",
+   "slot_note": "style 11 (2004 Alternate 1 = the 2004 navy alternate); label 2026 Alternate 3 in cycle order (9, 10, 11)",
+   "socks": {
+    "colour": "#12295A",
+    "why": "navy socks (club gallery photo 034 and 2026 table: navy socks)"
+   },
+   "splayer_socks": "#12295A"
+  },
+  "LAC:9": {
+   "team": "LAC",
+   "code": "24",
+   "style": 9,
+   "set": "Charger Power (gold jersey)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "24A0",
+     "take": {
+      "24H0": [
+       "digit_jersey_*",
+       "names"
+      ]
+     }
+    },
+    "A": {
+     "donor": "24A0",
+     "take": {
+      "24H0": [
+       "digit_jersey_*",
+       "names"
+      ]
+     }
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FFC20E",
+      "#0080C6",
+      "#DCDCDC"
+     ],
+     "to": [
+      "#FFC20E",
+      "#FFFFFF",
+      "#0080C6",
+      "#DCDCDC"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "gold jersey; the 2026 road kit's shoulder bolts (gold fill, powder outline) swap to a white fill with the powder outline (club game photos 000, 003, 005)"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#0080C6"
+     ],
+     "to": [
+      "#FFC20E",
+      "#0080C6"
+     ],
+     "tolerance": 0.1,
+     "why": "gold sleeve, powder swoosh stays (photo 005)"
+    },
+    {
+     "components": [
+      "digit_jersey_0",
+      "digit_jersey_1",
+      "digit_jersey_2",
+      "digit_jersey_3",
+      "digit_jersey_4",
+      "digit_jersey_5",
+      "digit_jersey_6",
+      "digit_jersey_7",
+      "digit_jersey_8",
+      "digit_jersey_9"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#FFC20E"
+     ],
+     "to": [
+      "#FFFFFF",
+      "#0080C6"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "white numbers outlined in powder blue on the gold jersey (photos 000, 005)"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": "#FFFFFF",
+     "to": "#FFC20E",
+     "tolerance": 0.2,
+     "why": "the far-away player's jersey torso"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": "#FFFFFF",
+     "to": "#FFC20E",
+     "tolerance": 0.2,
+     "why": "the far-away player's sleeves"
+    }
+   ],
+   "socks": {
+    "colour": "#FFC20E",
+    "why": "gold socks (chargers.com 2026 table, Wk 13; photo 000)"
+   },
+   "splayer_socks": "#FFC20E",
+   "unif": {
+    "turtleneck": "FFFFC20E"
+   },
+   "card_facemask": "FFC20E",
+   "unchanged": "pants (white with the gold bolt outlined in powder blue), helmet (the standard white helmet with the gold bolt, gold facemask: facemask word FFC20E), helmet numbers, gloves, shoes and equipment: the 2026 road kit 24A0 as shipped, in both kits (the design is the same at home and on the road)",
+   "sources": [
+    {
+     "url": "https://www.chargers.com/news/2026-uniform-schedule",
+     "supports": "2026: Charger Power worn at Tampa Bay (Wk 13): gold jersey, white pants, gold socks"
+    },
+    {
+     "url": "https://www.chargers.com/photos/gold-alternate-uniform-charger-power-2025",
+     "supports": "club gallery, game photos 000, 003, 005 (2025 vs Colts, Herbert and Derwin James): gold jersey with white numbers outlined in blue, shoulder bolts white with a blue edge, white pants with a gold bolt outlined in blue, white helmet with a gold facemask, powder-blue swoosh"
+    },
+    {
+     "url": "https://amp.nfl.com/news/chargers-reveal-gold-navy-alternate-uniforms-powder-blue-pants-2025-season",
+     "supports": "the first yellow jersey in club history with a matching gold facemask"
+    }
+   ],
+   "estimates": "gold is the shipped 2026 gold #FFC20E (the photos' gold reads a little warmer under stadium light); the blue of the number outline and the bolts is the shipped powder blue #0080C6; the turtleneck word is set to gold (the photos show a gold collar, not measured); names are white (not visible in the photos)",
+   "slot_note": "style 9 (2003 Alternate 1); label 2026 Alternate 1 in cycle order"
+  },
+  "JAX:6": {
+   "team": "JAX",
+   "code": "12",
+   "style": 6,
+   "set": "Bold City (Rivalries)",
+   "label": [
+    2026,
+    2
+   ],
+   "retail_pair": [
+    2003,
+    4
+   ],
+   "build_type": "new",
+   "paint": "bold_city",
+   "kits": {
+    "H": {
+     "donor": "12A0"
+    },
+    "A": {
+     "donor": "12A0"
+    }
+   },
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "recolour": [
+    {
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#141414"
+     ],
+     "to": [
+      "#EDE6D0",
+      "#141414"
+     ],
+     "moved": 0,
+     "tolerance": 0.1,
+     "why": "cream jersey base"
+    }
+   ],
+   "socks": {
+    "colour": "#FFFFFF",
+    "why": "white socks (jaguars.com Rivalries page; gallery photos 02, 06)"
+   },
+   "splayer_socks": "#FFFFFF",
+   "unif": {
+    "facemask": "FFB09652",
+    "turtleneck": "FF206481"
+   },
+   "card_facemask": "B09652",
+   "sources": [
+    {
+     "url": "https://www.jaguars.com/news/nike-the-nfl-and-jacksonville-jaguars-reveal-the-team-s-2026-rivalries-uniform",
+     "supports": "club gallery (44 photos, scratch refs/jax/art): cream jersey with a black script Jaguars chest wordmark edged in gold, black numbers with gold stitching and a teal shadow, Bold City script and Since 95 inside the collar, black leopard-print pants with a wide teal stripe between gold bars, white socks, glossy teal helmet with the jaguar head, 904 on the bumper and a gold facemask"
+    },
+    {
+     "url": "https://www.jaguars.com/team/rivalries",
+     "supports": "Jersey White (cream), pants black, helmet glossy teal with 904, facemask gold, socks white; first teal helmets in club history; debut Nov 1 vs the Colts"
+    }
+   ],
+   "estimates": "cream #EDE6D0, teal #037C8C (the shipped 2026 Jaguars teal, which the photos match), gold #B59A55 and the facemask word FFB09652 are measured by eye from the club photos; the leopard print is a procedural stand-in for the fabric (no photo gives usable spots); collar trim details (teal and black wedges at the shoulders) are not painted; names stay the donor's black letters",
+   "slot_note": "style 6 (2003 Alternate 4); label 2026 Alternate 2 in cycle order (JAX 5 black alternate is 1)"
+  },
+  "MIA:10": {
+   "team": "MIA",
+   "code": "14",
+   "style": 10,
+   "set": "Rivalries (AFC East)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    3
+   ],
+   "build_type": "new",
+   "paint": "rivalries_mia",
+   "kits": {
+    "H": {
+     "donor": "14H0"
+    },
+    "A": {
+     "donor": "14H0"
+    }
+   },
+   "blank": [
+    "digit_helmet_*"
+   ],
+   "recolour": [
+    {
+     "components": [
+      "torso",
+      "sleeve"
+     ],
+     "from": [
+      "#04949C"
+     ],
+     "to": [
+      "#181B24"
+     ],
+     "moved": 0,
+     "tolerance": 0.1,
+     "why": "near-black jersey (photo median 28,31,40)"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#04949C",
+      "#046C6C"
+     ],
+     "to": [
+      "#181B24",
+      "#181B24",
+      "#181B24"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "exclude": [
+      [
+       120,
+       16,
+       160,
+       256
+      ],
+      [
+       350,
+       16,
+       390,
+       256
+      ]
+     ],
+     "why": "dark pants"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "include": [
+      [
+       120,
+       16,
+       160,
+       256
+      ],
+      [
+       350,
+       16,
+       390,
+       256
+      ]
+     ],
+     "from": [
+      "#FFFFFF",
+      "#04949C",
+      "#F45C1C"
+     ],
+     "to": [
+      "#181B24",
+      "#2E9AB0",
+      "#2E9AB0"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "the pants stripe keeps aqua; the orange edge becomes aqua (photo 7142: an aqua stripe at the leg)"
+    },
+    {
+     "components": [
+      "digit_jersey_0",
+      "digit_jersey_1",
+      "digit_jersey_2",
+      "digit_jersey_3",
+      "digit_jersey_4",
+      "digit_jersey_5",
+      "digit_jersey_6",
+      "digit_jersey_7",
+      "digit_jersey_8",
+      "digit_jersey_9",
+      "digit_arm_0",
+      "digit_arm_1",
+      "digit_arm_2",
+      "digit_arm_3",
+      "digit_arm_4",
+      "digit_arm_5",
+      "digit_arm_6",
+      "digit_arm_7",
+      "digit_arm_8",
+      "digit_arm_9"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#F45C1C"
+     ],
+     "to": [
+      "#3F9CC0",
+      "#86C4DC"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "aqua numerals with a lighter reflective edge (photos 7137 to 7142)"
+    },
+    {
+     "components": [
+      "names"
+     ],
+     "from": "#FFFFFF",
+     "to": "#3F9CC0",
+     "tolerance": 0.2,
+     "why": "aqua name letters"
+    },
+    {
+     "components": [
+      "helmet_helmet02",
+      "helmet_helmet00"
+     ],
+     "from": "#FFFFFF",
+     "to": "#10131B",
+     "tolerance": 0.25,
+     "exclude": [
+      [
+       190,
+       60,
+       256,
+       107
+      ]
+     ],
+     "why": "dark glossy shell; the logo's white elements go dark too (SportsLogos: no white elements); the aqua and orange stripes stay"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": "#04949C",
+     "to": "#181B24",
+     "tolerance": 0.25,
+     "why": "far-player jersey"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": "#04949C",
+     "to": "#181B24",
+     "tolerance": 0.25,
+     "why": "far-player sleeves"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": "#FFFFFF",
+     "to": "#181B24",
+     "tolerance": 0.25,
+     "why": "far-player pants"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "helmet",
+     "from": "#FFFFFF",
+     "to": "#10131B",
+     "tolerance": 0.25,
+     "why": "far-player helmet"
+    }
+   ],
+   "socks": {
+    "colour": "#181B24",
+    "why": "dark socks (photos 7139, 7141: black socks)"
+   },
+   "splayer_socks": "#181B24",
+   "unif": {
+    "facemask": "FF111418",
+    "turtleneck": "FF181B24"
+   },
+   "card_facemask": "111418",
+   "sources": [
+    {
+     "url": "https://news.sportslogos.net/2025/09/29/miami-dolphins-to-debut-nike-rivalries-uniforms-on-monday-night-football/football/",
+     "supports": "club studio photos IMG_7129 (Jets x Dolphins Monday night), IMG_7137, 7139, 7141, 7142 (scratch refs/mia): near-black jersey, aqua numerals with a lighter reflective edge, orange MIAMI wordmark across the chest, orange V-neck trim, aqua shoulder fins, black pants with an aqua leg stripe, black helmet with an aqua and orange centre stripe and 305 on the bumper, white chin strap"
+    },
+    {
+     "url": "https://www.si.com/nfl/dolphins/onsi/dolphins-deliver-some-uniform-news-01ky7taabj5s",
+     "supports": "2026: Rivalries uniforms against Buffalo on January 3"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Logos_and_uniforms_of_the_Miami_Dolphins",
+     "supports": "dark blue base, aqua numerals with orange trim, orange wordmark, dark helmet with aqua and orange striping and a recoloured logo"
+    }
+   ],
+   "estimates": "base #181B24 (the photos' near-black, a navy-or-black conflict in the sources; the photos read black), aqua numerals #3F9CC0 and edge #86C4DC (measured from the photo's reflective film), orange #E8761E; the aqua shoulder fins of the club photos are NOT painted (their place in the torso layout was not found), nor the long-sleeve details; the helmet's facemask is dark (photos), word FF111418; helmet logo is the 2026 logo with its white elements darkened, not the reflective redraw",
+   "slot_note": "style 10 (2004 Alternate 3 = the 2004 navy alternate); label 2026 Alternate 1"
+  },
+  "LV:4": {
+   "team": "LV",
+   "code": "20",
+   "style": 4,
+   "set": "White throwback (1970-style road)",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2004,
+    1
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "20A0"
+    },
+    "A": {
+     "donor": "20A0"
+    }
+   },
+   "recolour": [],
+   "unchanged": "white jersey, silver pants with the black stripe, silver helmet with the shield, black socks, black name letters, equipment: the 2026 road kit 20A0 as shipped, in both kits; the numbers (jersey and sleeve) are redrawn silver with a 2 px black outline on the donor's glyph shapes, hard-edged because the slot's 640 to 992 byte number textures do not hold two anti-aliased colours (probe: 6 of 10 digits failed with the soft edge)",
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/Las_Vegas_Raiders",
+     "supports": "Logos and uniforms: in 1970 the white jerseys carried silver numerals with a black outline and black names; since 2018 the Raiders wear that white throwback jersey with silver pants and black socks, in a style reminiscent of the 1970 road set"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "2026 preview: the Raiders have the option to wear their silver number throwbacks at some point this season, typically in one road game against a divisional opponent"
+    }
+   ],
+   "confidence": "low: text sources only (no photo of the 2026 throwback was found; no 2026 game is named). The look is the club's own 2026 road kit with the numbers swapped, which is what the sources describe; if the throwback's pants stripe or helmet differ in 2026 they are not captured.",
+   "slot_note": "style 4 (2004 Alternate 1, the 2004 silver set); label 2026 Alternate 1",
+   "paint": "raiders_throwback"
+  },
+  "JAX:5": {
+   "team": "JAX",
+   "code": "12",
+   "style": 5,
+   "set": "Black alternate",
+   "label": [
+    2026,
+    1
+   ],
+   "retail_pair": [
+    2003,
+    3
+   ],
+   "build_type": "derive",
+   "kits": {
+    "H": {
+     "donor": "12H0"
+    },
+    "A": {
+     "donor": "12H0"
+    }
+   },
+   "recolour": [
+    {
+     "components": [
+      "torso"
+     ],
+     "from": [
+      "#047C8C",
+      "#141414",
+      "#DCDCDC"
+     ],
+     "to": [
+      "#141414",
+      "#141414",
+      "#DCDCDC"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "black jersey"
+    },
+    {
+     "components": [
+      "sleeve"
+     ],
+     "from": [
+      "#047C8C",
+      "#141414"
+     ],
+     "to": [
+      "#141414",
+      "#047C8C"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "black sleeve with the teal trims (jaguars.com uniform history: black jersey, white numbers, teal sleeve trims); the 2026 teal jersey's black bands become teal"
+    },
+    {
+     "components": [
+      "pants"
+     ],
+     "from": [
+      "#FFFFFF",
+      "#040404"
+     ],
+     "to": [
+      "#141414",
+      "#040404"
+     ],
+     "moved": null,
+     "tolerance": 0.1,
+     "why": "black pants (all-black alternate)"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "torso",
+     "from": "#047C8C",
+     "to": "#141414",
+     "tolerance": 0.25,
+     "why": "far-player jersey"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "sleeve",
+     "from": "#047C8C",
+     "to": "#141414",
+     "tolerance": 0.25,
+     "why": "far-player sleeves"
+    },
+    {
+     "components": [
+      "splayer"
+     ],
+     "region": "pants",
+     "from": "#FFFFFF",
+     "to": "#141414",
+     "tolerance": 0.25,
+     "why": "far-player pants"
+    }
+   ],
+   "socks": {
+    "colour": "#141414",
+    "why": "black socks (all-black alternate; the socks are not described in any source)"
+   },
+   "splayer_socks": "#141414",
+   "unif": {
+    "facemask": "FF000000",
+    "turtleneck": "FF141414"
+   },
+   "card_facemask": "141414",
+   "unchanged": "white numbers and name letters, helmet (the standard black gloss helmet with the jaguar head and a black facemask), equipment, set marks: the 2026 teal home kit 12H0 as shipped",
+   "sources": [
+    {
+     "url": "https://www.jaguars.com/team/history/uniforms",
+     "supports": "official history: a black jersey with white numbers and teal sleeve trims, a Jaguars logo on the shoulder (the 2018 to 2024 set)"
+    },
+    {
+     "url": "https://news.sportslogos.net/2026/09/09/previewing-the-nfls-new-uniforms-helmets-and-logos-for-the-2026-27-season/football/",
+     "supports": "the club's Sept 6 2026 post showed its teal home, all-black alternates and white road uniforms (no game date)"
+    }
+   ],
+   "confidence": "low: no dated 2026 game and no photo of the 2026 black alternate was found; pants, socks and helmet are the all-black assumption (a 2025 secondary summary says the black set was dropped that year). Built on the club's own 2026 teal kit, so only the colours are assumed.",
+   "slot_note": "style 5 (2003 Alternate 3, the 2003 black alternate); label 2026 Alternate 1; JAX 6 reads Alternate 2"
+  }
+ }
+}

@@ -4,7 +4,9 @@
  "name": "Dallas Cowboys",
  "asset_code": "07",
  "season": 2026,
- "sources_uw": {"sleeve_swoosh_2026": "nike.com's Cowboys Game jersey (White, george-pickens 67NMDCG): the royal swoosh on the upper sleeve, the stripes at the cuff (u1's donor stripes can move 3 rows before art reaches the island's bottom: they clear the swoosh but stay higher than the real cuff stripes)"},
+ "sources_uw": {
+  "sleeve_swoosh_2026": "nike.com's Cowboys Game jersey (White, george-pickens 67NMDCG): the royal swoosh on the upper sleeve, the stripes at the cuff (u1's donor stripes can move 3 rows before art reaches the island's bottom: they clear the swoosh but stay higher than the real cuff stripes)"
+ },
  "status": "Phase B (job d5, 2026-09-23). Sort: KEPT its 2004 look (the 2026 standard white and navy sets are the 2004 designs). Colours sourced (2026 Record and Fact Book, Cowboys media guide via the repository palette); authored albedo values keep the retail shades where they already match (INFERRED).",
  "sources": {
   "uniform_schedule": "https://www.dallascowboys.com/news/dallas-cowboys-reveal-uniform-schedule-for-2026-season",
@@ -40,7 +42,8 @@
   "ez_blue": "#1A2C66",
   "ez_silver": "#A9B1B6",
   "banner_navy": "#0B2455",
-  "banner_royal": "#0A34A0"
+  "banner_royal": "#0A34A0",
+  "seafoam_blue": "#9DB9C1"
  },
  "marks": {
   "star": "star_full.png",
@@ -84,7 +87,7 @@
     "stripe_colour": "royal"
    },
    "pants": {
-    "base_colour": "seafoam",
+    "base_colour": "seafoam_blue",
     "stripe": [
      [
       "royal",
@@ -162,9 +165,9 @@
       "colour": "wordmark_silver",
       "center": [
        162,
-       94.2
+       102.2
       ],
-      "width": 44
+      "width": 28
      }
     ]
    },
@@ -579,5 +582,21 @@
     ]
    }
   }
+ },
+ "u2b_b77": {
+  "job": "b77 u2b (sonnet-5.5), 2026-10-08",
+  "checked_against": "dallascowboys.com 2026 galleries: week 4 at HOU (navy road, front #88), week 3 vs BAL in Rio and week 1 at NYG (white home)",
+  "changes": {
+   "away.torso.cowboys_wordmark": "COWBOYS chest wordmark 28 px wide at centre y 102.2 (was 44 wide at y 94.2): about 0.3 front-number heights wide and about 0.04 above the number on the week 4 photo (v0.5: 0.57 wide, 0.12 above)",
+   "home.pants.base_colour": "seafoam_blue #9DB9C1 (was seafoam #9DB3AE): the home pants read pale silver-blue in the week 1 and week 3 photos (NBC week 1: 'silver-blue pants'); estimate from photo samples, lit areas about (150,185,195)"
+  },
+  "unchanged_because_right": [
+   "numbers, outlines and fonts (royal on white, white with navy and silver trim on navy)",
+   "pants stripes royal-white-royal and navy-white-navy",
+   "royal and navy socks",
+   "silver helmet with the navy star and navy-white-navy stripe",
+   "sleeve stripe art (ragged edge is the texture's nearest-neighbour edge, same layout as the photo)",
+   "road collar white piping is not drawn: the neck opening is white tee in game, so a white trim would not show"
+  ]
  }
 }

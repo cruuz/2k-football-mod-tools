@@ -182,6 +182,11 @@ class NativeChoicesTests(unittest.TestCase):
             self.assertEqual((row['name'], int(row['va'], 0), row['size']), (site.label, site.va, site.size))
             self.assertEqual(row['written_sha256'], hashlib.sha256(site.after).hexdigest())
         self.assertEqual(doc['minimal_composition']['edge_modern_pools_sha256'], hashlib.sha256(self.patched).hexdigest())
+        self.assertEqual(doc['minimal_composition']['pool_changed_bytes'], self.receipt['changed_bytes'])
+        self.assertEqual(doc['minimal_composition']['pool_sections_repinned'], self.receipt['sections_repinned'])
+        combined, receipt = mode.apply(self.patched)
+        self.assertEqual(doc['minimal_composition']['with_inline_mycareer_sha256'], hashlib.sha256(combined).hexdigest())
+        self.assertEqual(doc['minimal_composition']['mycareer_content_bytes'], receipt['code_bytes'])
 
     def test_contracts_position_editor_accepts_only_complete_pools_companion(self):
         from mod_editor.core import nfl2k5_franchise_edit_player as edit

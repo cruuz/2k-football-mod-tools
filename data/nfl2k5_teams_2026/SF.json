@@ -157,9 +157,9 @@
      "colour": "white",
      "center": [
       161,
-      90.5
+      100
      ],
-     "width": 20
+     "width": 30
     },
     "sleeve_swooshes": {
      "colour": "white"
@@ -352,9 +352,9 @@
      "colour": "jersey_red",
      "center": [
       161,
-      90.5
+      100
      ],
-     "width": 20
+     "width": 30
     },
     "sleeve_swooshes": {
      "colour": "jersey_red"
@@ -947,5 +947,8 @@
     ]
    }
   }
+ },
+ "u2d_b77": {
+  "both": "49ERS chest wordmark 20 to 30 px wide and 9.5 rows lower (photo week 3 vs ARI #85: 0.37 of the two-digit number width, 0.08 above the number; v0.5 0.16 and 0.20). Kits otherwise checked against week 1 (white, gold pants, white socks) and week 3 (red) club photos"
  }
 }

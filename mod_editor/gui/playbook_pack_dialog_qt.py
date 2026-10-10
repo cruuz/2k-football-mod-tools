@@ -116,9 +116,44 @@ def install_blockers(preview: pack_mod.PackPreview) -> tuple[str, ...]:
     return tuple(reasons)
 
 
+#: The 2004 team names behind the 32 retail book keys (the keys Build and the pack format use).
+BOOK_SET_TEAM_NAMES: dict[str, str] = {
+    "ARZ": "Arizona Cardinals", "ATL": "Atlanta Falcons", "BAL": "Baltimore Ravens",
+    "BUF": "Buffalo Bills", "CAR": "Carolina Panthers", "CHI": "Chicago Bears",
+    "CIN": "Cincinnati Bengals", "CLE": "Cleveland Browns", "DAL": "Dallas Cowboys",
+    "DEN": "Denver Broncos", "DET": "Detroit Lions", "GB": "Green Bay Packers",
+    "HOU": "Houston Texans", "IND": "Indianapolis Colts", "JAX": "Jacksonville Jaguars",
+    "KC": "Kansas City Chiefs", "MIA": "Miami Dolphins", "MIN": "Minnesota Vikings",
+    "NE": "New England Patriots", "NO": "New Orleans Saints", "NYG": "New York Giants",
+    "NYJ": "New York Jets", "OAK": "Oakland Raiders", "PHI": "Philadelphia Eagles",
+    "PIT": "Pittsburgh Steelers", "SD": "San Diego Chargers", "SEA": "Seattle Seahawks",
+    "SF": "San Francisco 49ers", "STL": "St. Louis Rams", "TB": "Tampa Bay Buccaneers",
+    "TEN": "Tennessee Titans", "WAS": "Washington",
+}
+
+#: One sentence that says what Modern and Classic mean, shown beside both book-set controls.
+BOOK_SET_EXPLAINER = (
+    "Modern is the SOFTDRINK 2026 playbook (offense and defense together). Classic is the original "
+    "2004 book. The choice is used when you press Make my disc; for the 2004 books, build from your "
+    "original retail disc."
+)
+
+
+def book_set_status_text(info: dict[str, object] | None) -> str:
+    """The line "Modern 32, Classic 0" for a book-set reader's status (None: no disc yet)."""
+
+    if not info:
+        return "Open your game disc (top right) to choose modern or classic books."
+    text = f"Modern {info['modern_count']}, Classic {info['classic_count']}"
+    incomplete = tuple(info.get("incomplete_teams") or ())
+    if incomplete:
+        text += f", half-set {len(incomplete)} ({', '.join(incomplete)})"
+    return text
+
+
 from PyQt5.QtCore import Qt  # noqa: E402
 from PyQt5.QtWidgets import (  # noqa: E402
-    QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
+    QAbstractItemView, QCheckBox, QComboBox, QDialog, QGridLayout, QPushButton, QDialogButtonBox, QFileDialog, QFormLayout,
     QHBoxLayout, QLabel, QLineEdit, QMessageBox, QProgressBar, QTableWidget,
     QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget,
 )
@@ -325,6 +360,59 @@ class PlaybookPackExportDialog(QDialog):
         self.accept()
 
 
+class BookSetTeamsDialog(QDialog):
+    """Tick the teams that get the modern SOFTDRINK book; the rest keep the classic 2004 book."""
+
+    def __init__(self, info: dict[str, object], parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("Choose teams for the modern books")
+        modern = set(info.get("modern_teams") or ())
+        half = set(info.get("incomplete_teams") or ())
+        layout = QVBoxLayout(self)
+        intro = QLabel("Tick every team that should get the modern SOFTDRINK book. " + BOOK_SET_EXPLAINER)
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        grid = QGridLayout()
+        self.checks: dict[str, QCheckBox] = {}
+        for index, team in enumerate(pack_mod.TEAM_BOOKS):
+            label = f"{team}  {BOOK_SET_TEAM_NAMES.get(team, '')}".rstrip()
+            if team in half:
+                label += " (half set)"
+            box = QCheckBox(label)
+            box.setChecked(team in modern)
+            box.toggled.connect(lambda _on: self._count())
+            self.checks[team] = box
+            grid.addWidget(box, index % 8, index // 8)
+        layout.addLayout(grid)
+        row = QHBoxLayout()
+        self.all_button = QPushButton("All 32")
+        self.none_button = QPushButton("None")
+        self.all_button.clicked.connect(lambda: self._set_all(True))
+        self.none_button.clicked.connect(lambda: self._set_all(False))
+        self.count_label = QLabel("")
+        row.addWidget(self.all_button)
+        row.addWidget(self.none_button)
+        row.addWidget(self.count_label, 1)
+        layout.addLayout(row)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttons.button(QDialogButtonBox.Ok).setText("Use these books")
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+        layout.addWidget(self.buttons)
+        self._count()
+
+    def _set_all(self, on: bool) -> None:
+        for box in self.checks.values():
+            box.setChecked(on)
+
+    def _count(self) -> None:
+        picked = len(self.selected_teams())
+        self.count_label.setText(f"Modern {picked}, Classic {len(self.checks) - picked}")
+
+    def selected_teams(self) -> tuple[str, ...]:
+        return tuple(team for team, box in self.checks.items() if box.isChecked())
+
+
 def choose_pack_to_open(parent: QWidget | None = None, directory: str = "") -> Path | None:
     name, _filter = QFileDialog.getOpenFileName(
         parent, "Open a playbook pack", directory,
@@ -347,6 +435,7 @@ def choose_pack_to_save(parent: QWidget | None = None, suggested: str = "") -> P
 
 
 __all__ = [
+    "BOOK_SET_EXPLAINER", "BOOK_SET_TEAM_NAMES", "BookSetTeamsDialog", "book_set_status_text",
     "ENGINE_LIMITS_TEXT", "PLAN_COLUMNS", "PlaybookPackExportDialog",
     "PlaybookPackInstallDialog", "budget_bars", "choose_pack_to_open", "choose_pack_to_save",
     "install_blockers", "pack_summary_lines", "plan_table_rows", "team_choices",

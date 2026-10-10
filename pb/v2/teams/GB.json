@@ -1,0 +1,683 @@
+{
+ "team": "GB",
+ "status": "DESIGN (sourced inputs)",
+ "identity": "LaFleur wide zone and verticals",
+ "staff": "Matt LaFleur / Adam Stenavich",
+ "family": "wide_zone",
+ "feature": "TE1",
+ "key_players": "Josh Jacobs; Tucker Kraft",
+ "depth_step": 2,
+ "keep_in_menu": {
+  "I-Form Pro": [
+   "Flea Flicker"
+  ],
+  "Singleback Doubles": [
+   "End Around"
+  ]
+ },
+ "keep_in_menu_note": "b77 p48o: GB fields 31 formations in 145 play slots; with all three core gadgets one shotgun menu would hold 7 plays, so GB keeps the Flea Flicker and End Around (no toss Reverse) and skips Gun Empty Bunch",
+ "tendencies": {
+  "shotgun_pct": 62.94,
+  "pistol_pct": 7.25,
+  "play_action_pct": 25.45,
+  "motion_pct": 55.19,
+  "personnel": {
+   "12": 325,
+   "21": 31,
+   "11": 562,
+   "13": 14,
+   "other": 61
+  }
+ },
+ "formations": {
+  "prefer": [
+   "Gun Doubles",
+   "Gun Trey",
+   "Singleback Doubles",
+   "Singleback Ace",
+   "Pistol Doubles",
+   "Gun Trips"
+  ],
+  "avoid": [
+   "Gun Empty Bunch"
+  ],
+  "exact": [
+   "Singleback Doubles",
+   "Gun Doubles",
+   "I-Form Pro",
+   "Singleback Ace",
+   "Gun Trey",
+   "Goal Line",
+   "I-Form Tight",
+   "Singleback Trey",
+   "Gun Trips",
+   "Ace Wing",
+   "Gun Empty Trey",
+   "Gun Wing",
+   "Gun Bunch",
+   "Strong I",
+   "Heavy Wing",
+   "Singleback Y Trips",
+   "Gun Split Backs",
+   "Singleback Bunch",
+   "Singleback Doubles Tight",
+   "Gun Y Trips",
+   "Gun Doubles Tight",
+   "Pistol Doubles",
+   "Gun Ace Wing",
+   "Gun Ace",
+   "Pistol Ace",
+   "Pistol Strong",
+   "Singleback Wing",
+   "Gun Empty Y",
+   "Split Backs",
+   "Gun Split Pro",
+   "I-Form Twins"
+  ]
+ },
+ "boost": {
+  "Counter": 1,
+  "Dagger": 5,
+  "Drive": 2,
+  "Outside Zone": 5,
+  "PA Boot": 3,
+  "PA Boot Leak": 3,
+  "Sail": 1,
+  "Stick": 1,
+  "TE Screen": 1,
+  "Y Cross": 2,
+  "Yankee": 2
+ },
+ "preference_shift": {},
+ "signature": [
+  {
+   "formation": "Ace Wing",
+   "concept": "Drive",
+   "name": "Wing Drive",
+   "overrides": {
+    "routes": {
+     "S3": [
+      "route",
+      "Shallow",
+      5
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Boot",
+   "name": "Boot Over",
+   "overrides": {
+    "routes": {
+     "S1": [
+      "route",
+      "Deep Cross",
+      13
+     ]
+    }
+   }
+  },
+  {
+   "formation": "Gun Doubles",
+   "concept": "Quick Outs",
+   "name": "GB Quick Outs",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "S2",
+     "S1",
+     "W1",
+     "W2"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trey",
+   "concept": "Bench",
+   "name": "GB Bench",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S1",
+     "B",
+     "S2"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Doubles",
+   "concept": "Smash",
+   "name": "GB Smash",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W2",
+     "S1",
+     "S2",
+     "W1"
+    ]
+   }
+  },
+  {
+   "formation": "Singleback Ace",
+   "concept": "PA Shot",
+   "name": "GB PA Shot",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "S2",
+     "W2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Pistol Doubles",
+   "concept": "Post Wheel",
+   "name": "GB Post Wheel",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "W2",
+     "S2",
+     "S1"
+    ]
+   }
+  },
+  {
+   "formation": "Gun Trips",
+   "concept": "Stick Nod",
+   "name": "GB Stick Nod",
+   "overrides": {
+    "depth_step": 3.6666666666666665,
+    "reads": [
+     "W1",
+     "B",
+     "S1",
+     "S3"
+    ]
+   }
+  }
+ ],
+ "menu_adds": {},
+ "sources": {
+  "profile": "pb/research/team_profiles.json (https://www.packers.com/news/packers-announce-coaching-staff-changes-march-19-2026)",
+  "tendencies": "pb/research/tendencies_2025.json (nflverse / FTN 2025)",
+  "design": "boosts, preferences and signature plays are DESIGN (beta 77 p48o)",
+  "depth_step": "2025 aDOT 8.78 yd (NGS air yards, pb/research/situational_2025.json); league tertiles below 7.33 -> 0, below 8.17 -> 1, else 2 (b77 p6s)",
+  "p6x_plan": "reports/p6s_TEAM_PLAN.json (Opus p6s plan; frozen copy in p6x scratch plan.json)",
+  "p6x_design": "DESIGN: planned concept/formation pairs; eligible-receiver read permutations, modest depth variants, and screen clear-out depth variants. CPU groups and ratings fitted to sourced 2025 charting with fit_cpu.py (default seed and iterations). Blocking and screen target/timing retained."
+ },
+ "personnel_groups": {
+  "Flush": {
+   "twin_of": "11",
+   "code": 9,
+   "name": "Kings Long"
+  }
+ },
+ "formation_groups": {
+  "Singleback Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "I-Form Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Goal Line": {
+   "own": "Jacks",
+   "mask": [
+    "Jacks"
+   ]
+  },
+  "I-Form Tight": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Trey": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Trips": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Empty Trey": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Gun Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings"
+   ]
+  },
+  "Strong I": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Heavy Wing": {
+   "own": "Jokers",
+   "mask": [
+    "Jokers"
+   ]
+  },
+  "Singleback Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Split Backs": {
+   "own": "Queens",
+   "mask": [
+    "Queens"
+   ]
+  },
+  "Singleback Bunch": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Singleback Doubles Tight": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Y Trips": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Doubles Tight": {
+   "own": "Kings Long",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Pistol Doubles": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Ace Wing": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Gun Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Pistol Ace": {
+   "own": "Ace",
+   "mask": [
+    "Ace"
+   ]
+  },
+  "Pistol Strong": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Singleback Wing": {
+   "own": "Kings",
+   "mask": [
+    "Kings",
+    "Kings Long"
+   ]
+  },
+  "Gun Empty Y": {
+   "own": "Straight",
+   "mask": [
+    "Straight"
+   ]
+  },
+  "Split Backs": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "Gun Split Pro": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  },
+  "I-Form Twins": {
+   "own": "Pro",
+   "mask": [
+    "Pro"
+   ]
+  }
+ },
+ "node_cap": 2300,
+ "p6x_design": {
+  "status": "DESIGN",
+  "planned_plays": [
+   {
+    "formation": "Gun Doubles",
+    "concept": "Quick Outs",
+    "name": "GB Quick Outs",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "S2",
+      "S1",
+      "W1",
+      "W2"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.4% (league 18.8)"
+   },
+   {
+    "formation": "Gun Trey",
+    "concept": "Bench",
+    "name": "GB Bench",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S1",
+      "B",
+      "S2"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.4% (league 18.8)"
+   },
+   {
+    "formation": "Singleback Doubles",
+    "concept": "Smash",
+    "name": "GB Smash",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W2",
+      "S1",
+      "S2",
+      "W1"
+     ]
+    },
+    "reason": "targets QUICK OUT 23.4% (league 18.8)"
+   },
+   {
+    "formation": "Singleback Ace",
+    "concept": "PA Shot",
+    "name": "GB PA Shot",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "S2",
+      "W2",
+      "S1"
+     ]
+    },
+    "reason": "adot 8.78 (league 7.8)"
+   },
+   {
+    "formation": "Pistol Doubles",
+    "concept": "Post Wheel",
+    "name": "GB Post Wheel",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "W2",
+      "S2",
+      "S1"
+     ]
+    },
+    "reason": "adot 8.78 (league 7.8)"
+   },
+   {
+    "formation": "Gun Trips",
+    "concept": "Stick Nod",
+    "name": "GB Stick Nod",
+    "overrides": {
+     "depth_step": 3.6666666666666665,
+     "reads": [
+      "W1",
+      "B",
+      "S1",
+      "S3"
+     ]
+    },
+    "reason": "adot 8.78 (league 7.8)"
+   }
+  ],
+  "dropped_plays": [],
+  "twins": [
+   {
+    "record": "Flush (else Queens)",
+    "twin_of": "11",
+    "code": 9,
+    "name": "Kings Long",
+    "reason": "3rd and 7+: 11 personnel 95.5%"
+   }
+  ]
+ },
+ "formation_ratings": {
+  "Singleback Doubles": [
+   0,
+   0,
+   0
+  ],
+  "Gun Doubles": [
+   4,
+   4,
+   0
+  ],
+  "I-Form Pro": [
+   4,
+   2,
+   4
+  ],
+  "Singleback Ace": [
+   4,
+   1,
+   4
+  ],
+  "Gun Trey": [
+   3,
+   4,
+   0
+  ],
+  "Goal Line": [
+   4,
+   4,
+   5
+  ],
+  "I-Form Tight": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Trey": [
+   0,
+   0,
+   4
+  ],
+  "Gun Trips": [
+   4,
+   4,
+   0
+  ],
+  "Ace Wing": [
+   4,
+   0,
+   4
+  ],
+  "Gun Empty Trey": [
+   4,
+   4,
+   0
+  ],
+  "Gun Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Bunch": [
+   4,
+   4,
+   0
+  ],
+  "Strong I": [
+   4,
+   3,
+   4
+  ],
+  "Heavy Wing": [
+   4,
+   4,
+   4
+  ],
+  "Singleback Y Trips": [
+   0,
+   1,
+   0
+  ],
+  "Gun Split Backs": [
+   4,
+   2,
+   1
+  ],
+  "Singleback Bunch": [
+   0,
+   0,
+   1
+  ],
+  "Singleback Doubles Tight": [
+   0,
+   0,
+   4
+  ],
+  "Gun Y Trips": [
+   4,
+   0,
+   1
+  ],
+  "Gun Doubles Tight": [
+   4,
+   4,
+   0
+  ],
+  "Pistol Doubles": [
+   4,
+   4,
+   1
+  ],
+  "Gun Ace Wing": [
+   3,
+   0,
+   1
+  ],
+  "Gun Ace": [
+   2,
+   0,
+   1
+  ],
+  "Pistol Ace": [
+   2,
+   0,
+   2
+  ],
+  "Pistol Strong": [
+   4,
+   4,
+   2
+  ],
+  "Singleback Wing": [
+   0,
+   4,
+   0
+  ],
+  "Gun Empty Y": [
+   4,
+   4,
+   4
+  ],
+  "Split Backs": [
+   2,
+   4,
+   4
+  ],
+  "Gun Split Pro": [
+   4,
+   4,
+   1
+  ],
+  "I-Form Twins": [
+   2,
+   4,
+   4
+  ]
+ }
+}

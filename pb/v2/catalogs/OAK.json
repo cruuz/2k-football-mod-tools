@@ -1,0 +1,4244 @@
+{
+ "team": "OAK",
+ "formations": [
+  {
+   "formation_index": 0,
+   "name": "Singleback Doubles",
+   "personnel": "11",
+   "align": "uc",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    4,
+    0,
+    3
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Outside Zone",
+    "OAK Curl Flat",
+    "PA Boot",
+    "Slant Flat",
+    "Dagger",
+    "Mesh",
+    "Smash",
+    "End Around",
+    "Counter",
+    "Scissors",
+    "Draw"
+   ]
+  },
+  {
+   "formation_index": 1,
+   "name": "Gun Doubles",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    2,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Dagger",
+    "OAK Quick Outs",
+    "OAK RB Screen",
+    "Slant Flat",
+    "Mesh",
+    "Smash",
+    "Draw",
+    "Counter",
+    "Scissors"
+   ]
+  },
+  {
+   "formation_index": 2,
+   "name": "I-Form Pro",
+   "personnel": "21",
+   "align": "uc",
+   "group": "Pro",
+   "group_code": 4,
+   "group_mask": [
+    "Pro"
+   ],
+   "tag": "base",
+   "situation_target": [
+    2,
+    0,
+    3
+   ],
+   "donor": "Weak I Twins",
+   "donor_index": 15,
+   "donor_situation": [
+    2,
+    1,
+    4
+   ],
+   "cpu_situation": [
+    4,
+    2,
+    4
+   ],
+   "donor_type": 2,
+   "menu": [
+    "Inside Zone",
+    "Outside Zone",
+    "Stretch Weak",
+    "PA Boot",
+    "Power",
+    "Iso",
+    "Counter",
+    "Yankee",
+    "Flea Flicker",
+    "Toss"
+   ]
+  },
+  {
+   "formation_index": 3,
+   "name": "Singleback Ace",
+   "personnel": "12",
+   "align": "uc",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace"
+   ],
+   "tag": "base",
+   "situation_target": [
+    2,
+    1,
+    3
+   ],
+   "donor": "Pair Slot",
+   "donor_index": 9,
+   "donor_situation": [
+    2,
+    2,
+    3
+   ],
+   "cpu_situation": [
+    4,
+    1,
+    4
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Outside Zone",
+    "Y Cross Bender",
+    "PA Boot",
+    "Y Cross",
+    "Dagger",
+    "Counter",
+    "Duo",
+    "Levels",
+    "Y Pivot"
+   ]
+  },
+  {
+   "formation_index": 4,
+   "name": "Gun Trey",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Triple",
+   "donor_index": 2,
+   "donor_situation": [
+    2,
+    1,
+    0
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Y Cross",
+    "OAK Texas",
+    "Stick",
+    "Drive",
+    "Flood",
+    "Draw",
+    "Counter",
+    "Levels",
+    "Snag",
+    "Stick Nod"
+   ]
+  },
+  {
+   "formation_index": 5,
+   "name": "I-Form Tight",
+   "personnel": "22",
+   "align": "uc",
+   "group": "Jokers",
+   "group_code": 2,
+   "group_mask": [
+    "Jokers"
+   ],
+   "tag": "short",
+   "situation_target": [
+    0,
+    2,
+    4
+   ],
+   "donor": "I Jacks",
+   "donor_index": 14,
+   "donor_situation": [
+    0,
+    4,
+    4
+   ],
+   "cpu_situation": [
+    3,
+    3,
+    4
+   ],
+   "donor_type": 2,
+   "menu": [
+    "Inside Zone",
+    "PA Boot",
+    "Power",
+    "Outside Zone",
+    "PA Boot Leak",
+    "Iso",
+    "Counter",
+    "Duo",
+    "Yankee",
+    "QB Sneak"
+   ]
+  },
+  {
+   "formation_index": 6,
+   "name": "Singleback Trey",
+   "personnel": "11",
+   "align": "uc",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    0,
+    0,
+    2
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Y Cross",
+    "Stick",
+    "Drive",
+    "Counter",
+    "Flood",
+    "Levels",
+    "Toss",
+    "Scissors"
+   ]
+  },
+  {
+   "formation_index": 7,
+   "name": "Gun Trips",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings Long",
+   "group_code": 9,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    3,
+    0
+   ],
+   "donor": "Triple",
+   "donor_index": 2,
+   "donor_situation": [
+    2,
+    1,
+    0
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Stick",
+    "Y Cross",
+    "Drive",
+    "Flood",
+    "Draw",
+    "Levels",
+    "Snag",
+    "Stick Nod"
+   ]
+  },
+  {
+   "formation_index": 8,
+   "name": "Ace Wing",
+   "personnel": "12",
+   "align": "uc",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace",
+    "Ace Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    2,
+    1,
+    2
+   ],
+   "donor": "Tight Triple",
+   "donor_index": 0,
+   "donor_situation": [
+    3,
+    2,
+    2
+   ],
+   "cpu_situation": [
+    4,
+    0,
+    1
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Outside Zone",
+    "PA Boot Leak",
+    "Drive",
+    "Y Cross",
+    "Counter",
+    "PA Boot",
+    "Flood",
+    "Y Pivot",
+    "Stick",
+    "Levels"
+   ]
+  },
+  {
+   "formation_index": 9,
+   "name": "Gun Empty Trey",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings Long",
+   "group_code": 9,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "empty",
+   "situation_target": [
+    4,
+    3,
+    0
+   ],
+   "donor": "Bunch Empty",
+   "donor_index": 21,
+   "donor_situation": [
+    4,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    0
+   ],
+   "donor_type": 0,
+   "menu": [
+    "Stick",
+    "Spacing",
+    "QB Draw",
+    "Snag",
+    "Mesh",
+    "Four Verticals",
+    "Comebacks",
+    "Hank",
+    "Y Cross"
+   ]
+  },
+  {
+   "formation_index": 10,
+   "name": "Gun Wing",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    0,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Slant Flat",
+    "Dagger",
+    "Mesh",
+    "Counter",
+    "Smash",
+    "Y Pivot",
+    "Draw",
+    "Comebacks"
+   ]
+  },
+  {
+   "formation_index": 11,
+   "name": "Gun Bunch",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Triple",
+   "donor_index": 2,
+   "donor_situation": [
+    2,
+    1,
+    0
+   ],
+   "cpu_situation": [
+    2,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Snag",
+    "Mesh",
+    "Flood",
+    "Drive",
+    "Spacing",
+    "Double Slants",
+    "Mesh Wheel",
+    "Draw",
+    "Sail",
+    "Bench"
+   ]
+  },
+  {
+   "formation_index": 12,
+   "name": "Strong I",
+   "personnel": "21",
+   "align": "uc",
+   "group": "Pro",
+   "group_code": 4,
+   "group_mask": [
+    "Pro"
+   ],
+   "tag": "base",
+   "situation_target": [
+    2,
+    0,
+    3
+   ],
+   "donor": "Weak I Pro",
+   "donor_index": 16,
+   "donor_situation": [
+    3,
+    1,
+    3
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    4
+   ],
+   "donor_type": 2,
+   "menu": [
+    "Power",
+    "PA Boot",
+    "Iso",
+    "Toss",
+    "Counter",
+    "Inside Zone",
+    "Yankee",
+    "PA Crossers",
+    "Flood"
+   ]
+  },
+  {
+   "formation_index": 13,
+   "name": "Heavy Wing",
+   "personnel": "22",
+   "align": "uc",
+   "group": "Jokers",
+   "group_code": 2,
+   "group_mask": [
+    "Jokers"
+   ],
+   "tag": "short",
+   "situation_target": [
+    0,
+    3,
+    4
+   ],
+   "donor": "Weak I Jokers",
+   "donor_index": 17,
+   "donor_situation": [
+    0,
+    4,
+    4
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    4
+   ],
+   "donor_type": 2,
+   "menu": [
+    "Outside Zone",
+    "PA Boot Leak",
+    "PA Boot",
+    "Power",
+    "Counter",
+    "Yankee",
+    "Duo",
+    "Toss",
+    "QB Sneak"
+   ]
+  },
+  {
+   "formation_index": 14,
+   "name": "Singleback Y Trips",
+   "personnel": "12",
+   "align": "uc",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace",
+    "Ace Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Ace Trips",
+   "donor_index": 4,
+   "donor_situation": [
+    3,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    0,
+    1,
+    3
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Y Cross",
+    "Drive",
+    "Stick",
+    "Counter",
+    "PA Boot",
+    "Flood",
+    "Y Pivot",
+    "Levels"
+   ]
+  },
+  {
+   "formation_index": 15,
+   "name": "Singleback Bunch",
+   "personnel": "11",
+   "align": "uc",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    0,
+    0,
+    1
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Outside Zone",
+    "Snag",
+    "Mesh",
+    "PA Boot",
+    "Flood",
+    "Inside Zone",
+    "Spacing",
+    "Double Slants",
+    "Bench",
+    "Sail"
+   ]
+  },
+  {
+   "formation_index": 16,
+   "name": "Singleback Doubles Tight",
+   "personnel": "11",
+   "align": "uc",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Triple",
+   "donor_index": 2,
+   "donor_situation": [
+    2,
+    1,
+    0
+   ],
+   "cpu_situation": [
+    0,
+    0,
+    2
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Drive",
+    "PA Boot",
+    "Outside Zone",
+    "Mesh",
+    "Dagger",
+    "Slant Flat",
+    "Smash",
+    "Reverse",
+    "Counter",
+    "Comebacks",
+    "Draw"
+   ]
+  },
+  {
+   "formation_index": 17,
+   "name": "Gun Y Trips",
+   "personnel": "12",
+   "align": "gun",
+   "group": "Ace Long",
+   "group_code": 8,
+   "group_mask": [
+    "Ace",
+    "Ace Long"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Gun: Ace Doubles",
+   "donor_index": 23,
+   "donor_situation": [
+    3,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    4,
+    0,
+    1
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Y Cross",
+    "Stick",
+    "Drive",
+    "Draw",
+    "Flood",
+    "Y Pivot",
+    "Levels",
+    "Snag"
+   ]
+  },
+  {
+   "formation_index": 18,
+   "name": "Gun Doubles Tight",
+   "personnel": "11",
+   "align": "gun",
+   "group": "Kings Long",
+   "group_code": 9,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Doubles",
+   "donor_index": 5,
+   "donor_situation": [
+    2,
+    1,
+    1
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Drive",
+    "OAK Mesh Wheel",
+    "Mesh",
+    "Slant Flat",
+    "Dagger",
+    "Mesh Wheel",
+    "Smash",
+    "Draw",
+    "Counter",
+    "Comebacks"
+   ]
+  },
+  {
+   "formation_index": 19,
+   "name": "Gun Ace Wing",
+   "personnel": "12",
+   "align": "gun",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace",
+    "Ace Long"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Gun: Ace Doubles",
+   "donor_index": 23,
+   "donor_situation": [
+    3,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    4,
+    0,
+    1
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Y Cross",
+    "Stick",
+    "Drive",
+    "Counter",
+    "Y Pivot",
+    "Draw",
+    "Flood",
+    "Levels",
+    "Snag"
+   ]
+  },
+  {
+   "formation_index": 20,
+   "name": "Gun Ace",
+   "personnel": "12",
+   "align": "gun",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace"
+   ],
+   "tag": "pass",
+   "situation_target": [
+    4,
+    2,
+    1
+   ],
+   "donor": "Gun: Ace Doubles",
+   "donor_index": 23,
+   "donor_situation": [
+    3,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    1,
+    0,
+    1
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Stick",
+    "Drive",
+    "Duo",
+    "Counter",
+    "Y Pivot",
+    "Y Cross",
+    "Levels",
+    "Draw"
+   ]
+  },
+  {
+   "formation_index": 21,
+   "name": "Ace Jumbo",
+   "personnel": "22",
+   "align": "uc",
+   "group": "Jokers",
+   "group_code": 2,
+   "group_mask": [
+    "Jokers"
+   ],
+   "tag": "short",
+   "situation_target": [
+    0,
+    2,
+    4
+   ],
+   "donor": "I Jacks",
+   "donor_index": 14,
+   "donor_situation": [
+    0,
+    4,
+    4
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    4
+   ],
+   "donor_type": 2,
+   "menu": [
+    "Inside Zone",
+    "Outside Zone",
+    "PA Boot Leak",
+    "PA Boot",
+    "Duo",
+    "Counter",
+    "Yankee",
+    "Power",
+    "Toss",
+    "QB Sneak"
+   ]
+  },
+  {
+   "formation_index": 22,
+   "name": "Pistol Ace",
+   "personnel": "12",
+   "align": "pistol",
+   "group": "Ace",
+   "group_code": 3,
+   "group_mask": [
+    "Ace"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    1,
+    2
+   ],
+   "donor": "Gun: Ace Doubles",
+   "donor_index": 23,
+   "donor_situation": [
+    3,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    2,
+    0,
+    2
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "PA Boot",
+    "Outside Zone",
+    "Y Cross",
+    "Dagger",
+    "Counter",
+    "Duo",
+    "Yankee",
+    "Levels"
+   ]
+  },
+  {
+   "formation_index": 23,
+   "name": "Singleback Wing",
+   "personnel": "11",
+   "align": "uc",
+   "group": "Kings",
+   "group_code": 6,
+   "group_mask": [
+    "Kings",
+    "Kings Long"
+   ],
+   "tag": "base",
+   "situation_target": [
+    3,
+    2,
+    1
+   ],
+   "donor": "Triple",
+   "donor_index": 2,
+   "donor_situation": [
+    2,
+    1,
+    0
+   ],
+   "cpu_situation": [
+    0,
+    0,
+    0
+   ],
+   "donor_type": 1,
+   "menu": [
+    "Inside Zone",
+    "Outside Zone",
+    "PA Boot",
+    "Dagger",
+    "Slant Flat",
+    "Mesh",
+    "Counter",
+    "Y Pivot",
+    "Smash",
+    "Draw"
+   ]
+  },
+  {
+   "formation_index": 24,
+   "name": "Gun Empty Bunch",
+   "personnel": "00",
+   "align": "gun",
+   "group": "5 Wide",
+   "group_code": 10,
+   "group_mask": [
+    "5 Wide"
+   ],
+   "tag": "empty",
+   "situation_target": [
+    4,
+    3,
+    0
+   ],
+   "donor": "Bunch Empty",
+   "donor_index": 21,
+   "donor_situation": [
+    4,
+    2,
+    1
+   ],
+   "cpu_situation": [
+    1,
+    1,
+    0
+   ],
+   "donor_type": 0,
+   "menu": [
+    "Snag",
+    "Stick",
+    "Mesh",
+    "Spacing",
+    "QB Draw",
+    "Double Slants",
+    "Four Verticals",
+    "Hank",
+    "Bubble Screen"
+   ]
+  }
+ ],
+ "plays": [
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 47,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Trey",
+    "Singleback Trey",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 48,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Singleback Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 49,
+   "name": "OAK Curl Flat",
+   "concept": "Curl Flat",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    9,
+    6,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 50,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Singleback Doubles Tight",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 51,
+   "name": "Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Wing",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 52,
+   "name": "Dagger",
+   "concept": "Dagger",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Wing",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 53,
+   "name": "Mesh",
+   "concept": "Mesh",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Wing",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 54,
+   "name": "Smash",
+   "concept": "Smash",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Wing",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 55,
+   "name": "End Around",
+   "concept": "End Around",
+   "family": "trick",
+   "header": "reverse",
+   "play_type": "reverse",
+   "personnel": "11",
+   "preference": 4,
+   "flags": "0x0000980e",
+   "primary_slot": 8,
+   "reads": [],
+   "tags": [
+    "gadget"
+   ],
+   "formations": [
+    "Singleback Doubles"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 56,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Trey",
+    "Singleback Trey",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 57,
+   "name": "Scissors",
+   "concept": "Scissors",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 58,
+   "name": "Draw",
+   "concept": "Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Trey",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 59,
+   "name": "OAK Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Doubles"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 60,
+   "name": "OAK RB Screen",
+   "concept": "RB Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0000640e",
+   "primary_slot": 10,
+   "reads": [
+    10
+   ],
+   "tags": [
+    "screen"
+   ],
+   "formations": [
+    "Gun Doubles"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 61,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro",
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 62,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 63,
+   "name": "Stretch Weak",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 64,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 65,
+   "name": "Power",
+   "concept": "Power",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro",
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 66,
+   "name": "Iso",
+   "concept": "Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro",
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 67,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro",
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 68,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    8
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 69,
+   "name": "Flea Flicker",
+   "concept": "Flea Flicker",
+   "family": "trick",
+   "header": "flea",
+   "play_type": "flea",
+   "personnel": "21",
+   "preference": 4,
+   "flags": "0x0600380e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7
+   ],
+   "tags": [
+    "shot",
+    "gadget"
+   ],
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 70,
+   "name": "Toss",
+   "concept": "Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "21",
+   "preference": 2,
+   "flags": "0x0200840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Pro",
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 71,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Gun Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 72,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 73,
+   "name": "Y Cross Bender",
+   "concept": "Y Cross",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 74,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7,
+    8,
+    6
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 75,
+   "name": "Y Cross",
+   "concept": "Y Cross",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Gun Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 77,
+   "name": "Dagger",
+   "concept": "Dagger",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 78,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Gun Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 79,
+   "name": "Duo",
+   "concept": "Duo",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Gun Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 80,
+   "name": "Levels",
+   "concept": "Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    8,
+    7,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace",
+    "Gun Ace",
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 81,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 82,
+   "name": "Y Cross",
+   "concept": "Y Cross",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Singleback Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 83,
+   "name": "OAK Texas",
+   "concept": "Texas",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 84,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 85,
+   "name": "Drive",
+   "concept": "Drive",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Singleback Trey",
+    "Gun Trips",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 86,
+   "name": "Flood",
+   "concept": "Flood",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Singleback Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 87,
+   "name": "Levels",
+   "concept": "Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 8,
+   "reads": [
+    8,
+    7,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Singleback Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 88,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    8,
+    6,
+    10,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 89,
+   "name": "Stick Nod",
+   "concept": "Stick Nod",
+   "family": "shot",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    10
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "Gun Trey",
+    "Gun Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 90,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 91,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 92,
+   "name": "Power",
+   "concept": "Power",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 93,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 94,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 95,
+   "name": "Iso",
+   "concept": "Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 96,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 97,
+   "name": "Duo",
+   "concept": "Duo",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 98,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 99,
+   "name": "QB Sneak",
+   "concept": "QB Sneak",
+   "family": "run",
+   "header": "qb_sneak",
+   "play_type": "sneak",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0400820e",
+   "primary_slot": 0,
+   "reads": [],
+   "tags": [
+    "short",
+    "goal"
+   ],
+   "formations": [
+    "I-Form Tight",
+    "Heavy Wing",
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 101,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 102,
+   "name": "Toss",
+   "concept": "Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0200840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 103,
+   "name": "Scissors",
+   "concept": "Scissors",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    9,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 104,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Gun Trips",
+    "Gun Wing",
+    "Gun Bunch",
+    "Singleback Bunch",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 105,
+   "name": "Draw",
+   "concept": "Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Gun Trips",
+    "Gun Wing",
+    "Gun Bunch",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 106,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 107,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7,
+    8,
+    6
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 108,
+   "name": "Drive",
+   "concept": "Drive",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips",
+    "Gun Y Trips",
+    "Gun Ace Wing",
+    "Gun Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 109,
+   "name": "Y Cross",
+   "concept": "Y Cross",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    8,
+    6,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips",
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 110,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 112,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7,
+    8,
+    6
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 113,
+   "name": "Flood",
+   "concept": "Flood",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips",
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 114,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 115,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 116,
+   "name": "Levels",
+   "concept": "Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Wing",
+    "Singleback Y Trips",
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 117,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    10,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 118,
+   "name": "Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 119,
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "run",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "11",
+   "preference": 3,
+   "flags": "0x0000860e",
+   "primary_slot": 0,
+   "reads": [],
+   "tags": [
+    "long"
+   ],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 120,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    6,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 121,
+   "name": "Mesh",
+   "concept": "Mesh",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    8,
+    6,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 122,
+   "name": "Four Verticals",
+   "concept": "Four Verticals",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 123,
+   "name": "Comebacks",
+   "concept": "Comebacks",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    7,
+    9,
+    6
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 124,
+   "name": "Hank",
+   "concept": "Hank",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 10,
+   "reads": [
+    10,
+    6,
+    8,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 125,
+   "name": "Y Cross",
+   "concept": "Y Cross",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 126,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Gun Wing",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 127,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    10,
+    7,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 128,
+   "name": "Comebacks",
+   "concept": "Comebacks",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Wing",
+    "Singleback Doubles Tight",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 129,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    8,
+    10,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 130,
+   "name": "Mesh",
+   "concept": "Mesh",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch",
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 131,
+   "name": "Flood",
+   "concept": "Flood",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch",
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 133,
+   "name": "Drive",
+   "concept": "Drive",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 8,
+   "reads": [
+    8,
+    6,
+    10,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 134,
+   "name": "Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 136,
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch",
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 137,
+   "name": "Mesh Wheel",
+   "concept": "Mesh Wheel",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    10,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 138,
+   "name": "Sail",
+   "concept": "Sail",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    10,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch",
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 139,
+   "name": "Bench",
+   "concept": "Bench",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Bunch",
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 140,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 141,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    8
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 142,
+   "name": "PA Crossers",
+   "concept": "PA Crossers",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 144,
+   "name": "Flood",
+   "concept": "Flood",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    10,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Strong I"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 145,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 146,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 147,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    7,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 148,
+   "name": "Power",
+   "concept": "Power",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 149,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 150,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 8,
+   "reads": [
+    8,
+    7
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 151,
+   "name": "Duo",
+   "concept": "Duo",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 152,
+   "name": "Toss",
+   "concept": "Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 2,
+   "flags": "0x0200840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Heavy Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 154,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Y Trips",
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 155,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Singleback Bunch",
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 156,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    8,
+    10,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 158,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 161,
+   "name": "Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    7,
+    9,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 184,
+   "name": "Reverse",
+   "concept": "Reverse",
+   "family": "trick",
+   "header": "reverse",
+   "play_type": "reverse",
+   "personnel": "11",
+   "preference": 4,
+   "flags": "0x0000980e",
+   "primary_slot": 8,
+   "reads": [],
+   "tags": [
+    "gadget"
+   ],
+   "formations": [
+    "Singleback Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 185,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 186,
+   "name": "Draw",
+   "concept": "Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 187,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 188,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6,
+    9,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Y Trips",
+    "Gun Ace Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 191,
+   "name": "OAK Mesh Wheel",
+   "concept": "Mesh Wheel",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    6,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 192,
+   "name": "Mesh Wheel",
+   "concept": "Mesh Wheel",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    8,
+    10,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 193,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    8,
+    6
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 209,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    8,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 210,
+   "name": "Draw",
+   "concept": "Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "12",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Gun Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 211,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 212,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 213,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 214,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "pa",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 216,
+   "name": "Duo",
+   "concept": "Duo",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 217,
+   "name": "Counter",
+   "concept": "Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 2,
+   "flags": "0x0000840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 218,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 219,
+   "name": "Power",
+   "concept": "Power",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 1,
+   "flags": "0x0000820e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 220,
+   "name": "Toss",
+   "concept": "Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "22",
+   "preference": 2,
+   "flags": "0x0200840e",
+   "primary_slot": 10,
+   "reads": [],
+   "tags": [],
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 221,
+   "name": "Yankee",
+   "concept": "Yankee",
+   "family": "shot",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "preference": 1,
+   "flags": "0x0020620e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    8
+   ],
+   "tags": [
+    "shot"
+   ],
+   "formations": [
+    "Pistol Ace"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 222,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    10,
+    7,
+    9
+   ],
+   "tags": [],
+   "formations": [
+    "Singleback Wing"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 223,
+   "name": "Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 8,
+   "reads": [
+    8,
+    9,
+    6,
+    7
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 224,
+   "name": "Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 7,
+   "reads": [
+    7,
+    6,
+    9,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 225,
+   "name": "Mesh",
+   "concept": "Mesh",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    10,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 226,
+   "name": "Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    6,
+    7,
+    8,
+    10
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 227,
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "run",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "00",
+   "preference": 3,
+   "flags": "0x0000860e",
+   "primary_slot": 0,
+   "reads": [],
+   "tags": [
+    "long"
+   ],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 228,
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0400220e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    7,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 229,
+   "name": "Four Verticals",
+   "concept": "Four Verticals",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 6,
+   "reads": [
+    6,
+    9,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 230,
+   "name": "Hank",
+   "concept": "Hank",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 1,
+   "flags": "0x0000620e",
+   "primary_slot": 9,
+   "reads": [
+    9,
+    7,
+    10,
+    8
+   ],
+   "tags": [],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  },
+  {
+   "status": "DESIGN",
+   "team": "OAK",
+   "play_index": 231,
+   "name": "Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "00",
+   "preference": 2,
+   "flags": "0x0400240e",
+   "primary_slot": 7,
+   "reads": [
+    7
+   ],
+   "tags": [
+    "screen"
+   ],
+   "formations": [
+    "Gun Empty Bunch"
+   ]
+  }
+ ],
+ "menu_sizes": [
+  12,
+  10,
+  10,
+  10,
+  11,
+  10,
+  9,
+  9,
+  10,
+  9,
+  9,
+  11,
+  9,
+  9,
+  9,
+  10,
+  12,
+  9,
+  11,
+  10,
+  9,
+  10,
+  9,
+  10,
+  9
+ ],
+ "node_budget": {
+  "cap": 2300,
+  "before": 1909,
+  "after": 1909,
+  "retained": 1272,
+  "swaps": [],
+  "released": []
+ },
+ "target_policy": {
+  "data": "pb/research/targets_2026.json",
+  "sha256": "627233ad349d76e683e504c66fdb2698185b090842a4be5874618d073dcc273c",
+  "weeks": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "rule": "Direct reads descend by observed share within authored depth bands; ties, screens, gadgets, moving pockets and delayed releases retain authored order."
+ }
+}

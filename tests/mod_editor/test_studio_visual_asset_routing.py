@@ -25,7 +25,14 @@ reachable once a user touched socks rather than jerseys.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -97,6 +104,9 @@ class _SessionHarness(unittest.TestCase):
     """One session over the real catalogs, with the game IO stubbed out."""
 
     def setUp(self) -> None:
+        required_asset = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required_asset.exists():
+            self.skipTest(f"Missing asset: {required_asset}")
         self.temporary = tempfile.TemporaryDirectory(prefix="visual-routing-")
         self.root = Path(self.temporary.name)
         cache_root = self.root / "private-source-cache"

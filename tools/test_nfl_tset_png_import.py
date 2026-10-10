@@ -123,6 +123,16 @@ def main() -> int:
         for clean, mud in zip(palette, dark)
     )
 
+    wet = derive_mud_palette(palette, "wet_93")
+    assert all(
+        mud == ((clean[0] * 93 + 50) // 100, (clean[1] * 93 + 50) // 100,
+                (clean[2] * 93 + 50) // 100, clean[3])
+        for clean, mud in zip(palette, wet)
+    )
+    # W1: a white texel stays within the retail wet range (252 -> 234; retail white away jersey 252 -> 236).
+    assert derive_mud_palette([(252, 252, 252, 255)], "wet_93") == [(234, 234, 234, 255)]
+    assert derive_mud_palette([(0, 0, 0, 255)], "wet_93") == [(0, 0, 0, 255)]
+
     # Exact second-PNG mode accepts a genuinely shared mapping and rejects a
     # single source image whose colors conflict for an already shared index.
     exact_mud = [
