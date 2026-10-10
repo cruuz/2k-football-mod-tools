@@ -35,12 +35,18 @@ def recipe(team: str) -> dict:
     return json.loads((DATA / f"{team}.json").read_text(encoding="utf-8"))
 
 
+def base_recipe_text(team: str) -> str:
+    reference = f"local/b77-base:data/nfl2k5_teams_2026/{team}.json"
+    if subprocess.run(["git", "rev-parse", "--verify", "local/b77-base"], cwd=ROOT,
+                      capture_output=True).returncode:
+        raise unittest.SkipTest(f"Missing local reference: {reference}")
+    out = subprocess.run(["git", "show", reference], cwd=ROOT,
+                         capture_output=True, text=True, check=True)
+    return out.stdout
+
+
 def base_recipe(team: str) -> dict:
-    out = subprocess.run(["git", "show", f"local/b77-base:data/nfl2k5_teams_2026/{team}.json"], cwd=ROOT,
-                         capture_output=True, text=True)
-    if out.returncode:
-        raise unittest.SkipTest("local/b77-base is not available")
-    return json.loads(out.stdout)
+    return json.loads(base_recipe_text(team))
 
 
 class Recipes(unittest.TestCase):
@@ -89,9 +95,7 @@ class Recipes(unittest.TestCase):
 
     def test_untouched_teams_are_byte_identical_to_the_base_recipes(self):
         for team in ("LV", "LAC", "MIN"):
-            self.assertEqual((DATA / f"{team}.json").read_text(), (
-                subprocess.run(["git", "show", f"local/b77-base:data/nfl2k5_teams_2026/{team}.json"], cwd=ROOT,
-                               capture_output=True, text=True).stdout))
+            self.assertEqual((DATA / f"{team}.json").read_text(), base_recipe_text(team))
 
     def test_every_changed_recipe_records_what_was_checked(self):
         for team in ("MIA", "LAR", "NYJ", "NYG", "NO"):
@@ -150,7 +154,7 @@ class Repair(unittest.TestCase):
         original = np.random.default_rng(7).integers(0, 256, 4096, dtype=np.uint8).tobytes()
         replacement = bytes(64)
         with tempfile.TemporaryDirectory() as td:
-            tmp = Path(td)
+            tmp = Path(td).resolve()
             path = self.manifest(tmp, original, 1024, replacement, "18H0.IFF")
             manifest = repair.load_manifest(path)
             (tmp / "in").mkdir()
@@ -173,7 +177,7 @@ class Repair(unittest.TestCase):
     def test_loose_mode_does_not_take_card_resources(self):
         original = bytes(range(256)) * 4
         with tempfile.TemporaryDirectory() as td:
-            tmp = Path(td)
+            tmp = Path(td).resolve()
             path = self.manifest(tmp, original, 16, b"\1" * 16, "outer:3102")
             (tmp / "in").mkdir()
             with self.assertRaisesRegex(ValueError, "kit packages only"):

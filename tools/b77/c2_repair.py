@@ -40,6 +40,7 @@ ROOT = Path(__file__).resolve().parents[2]
 for _entry in (str(ROOT), str(ROOT / "tools")):
     if _entry not in sys.path:
         sys.path.insert(0, _entry)
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_commentary_final as final  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from nfl_outer import ALIGNMENT, HEADER_SIZE, PACK_SLOT_COUNT  # noqa: E402
@@ -92,7 +93,7 @@ def sha(data: bytes) -> str:
 
 
 def pread(fd: int, size: int, offset: int) -> bytes:
-    data = os.pread(fd, size, offset)
+    data = platform_compat.pread(fd, size, offset)
     require(len(data) == size, f"short read of {size} bytes at 0x{offset:x}")
     return data
 
@@ -184,7 +185,7 @@ def copy_with_edits(source: Path, target: Path, edits: list[tuple[int, bytes]]) 
                 written += os.write(dst, block[written:])
             position += len(block)
         for offset, data in sorted(edits):
-            require(os.pwrite(dst, data, offset) == len(data), "short write")
+            require(platform_compat.pwrite(dst, data, offset) == len(data), "short write")
         os.fsync(dst)
         # scope proof: stream both files; the copy must equal the source with exactly the declared edits applied
         declared = sorted(edits)

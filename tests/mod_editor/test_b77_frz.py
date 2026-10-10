@@ -21,24 +21,27 @@ class DiscRepairTests(unittest.TestCase):
     def test_stream_copy_preserves_offsets_and_surrounding_bytes(self):
         with tempfile.TemporaryDirectory() as folder:
             source,target = Path(folder)/'source',Path(folder)/'target'
-            source.write_bytes(b'HEADabcdefTAIL')
+            payload = b'ab\r\n\x1a\xff'  # Windows text mode must not translate binary disc bytes.
+            source.write_bytes(b'HEAD'+payload+b'TAIL')
             target.write_bytes(b'x'*20)
-            a,b = os.open(source,os.O_RDONLY),os.open(target,os.O_RDWR)
+            binary = getattr(os, 'O_BINARY', 0)
+            a,b = os.open(source,os.O_RDONLY | binary),os.open(target,os.O_RDWR | binary)
             try:
                 digest = bisect.stream_write(a,b,4,7,6)
             finally:
                 os.close(a)
                 os.close(b)
-            self.assertEqual(digest,bisect.sha(b'abcdef'))
-            self.assertEqual(target.read_bytes(),b'x'*7+b'abcdef'+b'x'*7)
-            self.assertEqual(source.read_bytes(),b'HEADabcdefTAIL')
+            self.assertEqual(digest,bisect.sha(payload))
+            self.assertEqual(target.read_bytes(),b'x'*7+payload+b'x'*7)
+            self.assertEqual(source.read_bytes(),b'HEAD'+payload+b'TAIL')
 
     def test_short_source_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             source,target = Path(folder)/'source',Path(folder)/'target'
             source.write_bytes(b'abc')
             target.write_bytes(b'x'*20)
-            a,b = os.open(source,os.O_RDONLY),os.open(target,os.O_RDWR)
+            binary = getattr(os, 'O_BINARY', 0)
+            a,b = os.open(source,os.O_RDONLY | binary),os.open(target,os.O_RDWR | binary)
             try:
                 with self.assertRaisesRegex(ValueError,'short source read'):
                     bisect.stream_write(a,b,0,0,20)

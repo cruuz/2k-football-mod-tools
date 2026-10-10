@@ -131,7 +131,7 @@ class SpecHelpersTests(unittest.TestCase):
             self.assertEqual(tuple(layered[5, 5, :3]), (0x0D, 0x1A, 0x32))
 
 
-@unittest.skipUnless(ua.UNIFORM_MARKS.is_file(), "the pinned NFL shield and swoosh masters are not present")
+@unittest.skipUnless(ua.UNIFORM_MARKS.is_file(), f"Missing asset: {ua.UNIFORM_MARKS}")
 class MarksTests(unittest.TestCase):
     """The 'modernize' step on synthetic retail-size textures: marks appear where the 2026 jerseys carry them."""
 

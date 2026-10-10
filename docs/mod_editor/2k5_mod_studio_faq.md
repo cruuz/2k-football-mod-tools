@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 76
+# 2K5 Mod Studio FAQ, beta 77
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.
@@ -173,7 +173,7 @@ help and current changelog for any separate CPU decision control.
 ## What about weather, sunset, coin-toss deferral or conceding the clock?
 
 BigTimeEmpire, maumau78 and CER requested these changes. Read the corresponding controls in
-your installed build and the [beta 76 changelog](2k5_mod_studio_changelog.md) for what has landed
+your installed build and the [beta 77 changelog](2k5_mod_studio_changelog.md) for what has landed
 and its limits. Weather artwork or a stored environment field alone does not provide dynamic
 weather, footprints, franchise weather selection, wind gameplay, or a clock-concession rule.
 Do not infer those features from a texture browser or an unrelated accelerated-clock option.

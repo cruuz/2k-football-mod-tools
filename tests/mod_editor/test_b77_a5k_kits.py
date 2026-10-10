@@ -55,7 +55,8 @@ class RecipeTests(unittest.TestCase):
             with self.assertRaises(ValueError):repair.validate_pack(raw,spec)
 
 
-@unittest.skipUnless((PRIVATE/'compiled/native_manifest.json').exists(),'private compiled kit evidence required')
+@unittest.skipUnless((PRIVATE/'compiled/native_manifest.json').exists(),
+                     f"Missing asset: {PRIVATE/'compiled/native_manifest.json'}")
 class NativeKitTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -134,11 +135,15 @@ class NativeKitTests(unittest.TestCase):
         with self.assertRaises(ValueError):repair.selection_patches(bytes(mixed))
 
 
-@unittest.skipUnless((PRIVATE/'compiled/repair_manifest.json').exists(),'private stacked pack evidence required')
+@unittest.skipUnless((PRIVATE/'compiled/repair_manifest.json').exists(),
+                     f"Missing asset: {PRIVATE/'compiled/repair_manifest.json'}")
 class StackedTests(unittest.TestCase):
     def test_manifest_owns_only_target_kits_cards_labels_and_moment_words(self):
+        baseline = PRIVATE/'baseline/vc_53450030'
+        if not (baseline/'0').is_file():
+            self.skipTest(f"Missing asset: {baseline/'0'}")
         manifest=json.loads((PRIVATE/'compiled/repair_manifest.json').read_text())
-        with repair.bump._Image.open(PRIVATE/'baseline/vc_53450030',writable=False) as image:
+        with repair.bump._Image.open(baseline,writable=False) as image:
             groups=repair.patches_for(image,manifest,PRIVATE/'compiled')
             self.assertEqual(set(groups),set(manifest['packs']))
             wrong=copy.deepcopy(manifest);wrong['resources']['16H12.IFF']=wrong['resources'].pop('16H11.IFF')

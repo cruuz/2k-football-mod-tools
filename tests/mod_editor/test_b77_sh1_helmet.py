@@ -448,7 +448,7 @@ class Repair(unittest.TestCase):
         original = np.random.default_rng(9).integers(0, 256, 8192, dtype=np.uint8).tobytes()
         replacement = bytes(range(64)) * 4
         with tempfile.TemporaryDirectory() as td:
-            tmp = Path(td)
+            tmp = Path(td).resolve()
             path = self.manifest(tmp, original, 2048, replacement, "26H0.IFF")
             manifest = repair.load_manifest(path)
             (tmp / "in").mkdir()
@@ -471,7 +471,7 @@ class Repair(unittest.TestCase):
     def test_loose_mode_does_not_take_card_resources(self):
         original = bytes(range(256)) * 4
         with tempfile.TemporaryDirectory() as td:
-            tmp = Path(td)
+            tmp = Path(td).resolve()
             path = self.manifest(tmp, original, 16, b"\1" * 16, "outer:3105")
             (tmp / "in").mkdir()
             with self.assertRaisesRegex(ValueError, "kit packages only"):

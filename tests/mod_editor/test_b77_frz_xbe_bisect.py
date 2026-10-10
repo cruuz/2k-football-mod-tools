@@ -50,6 +50,12 @@ class CopyTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.directory = Path(self.tmp.name)
+        # The copy fixtures are tiny; exercise the I/O faults independently of
+        # the host's free space. ScopeTests checks the real reserve policy.
+        usage = b.shutil.disk_usage(self.directory)._replace(free=60 * 1024**3)
+        space = mock.patch.object(b.shutil, "disk_usage", return_value=usage)
+        space.start()
+        self.addCleanup(space.stop)
         self.source = self.directory / "source.iso"
         self.output = self.directory / "variant.iso"
         self.raw = bytes(range(256)) * 8
@@ -80,22 +86,22 @@ class CopyTests(unittest.TestCase):
             self.assertFalse(self.output.exists())
 
     def test_short_source_read_removes_only_own_partial_copy(self):
-        pread = os.pread
+        pread = b.platform_compat.pread
         def short(fd, size, offset):
             raw = pread(fd, size, offset)
             return raw[:-1] if size == len(self.raw) else raw
-        with mock.patch.object(b.os, "pread", side_effect=short):
+        with mock.patch.object(b.platform_compat, "pread", side_effect=short):
             with self.assertRaisesRegex(ValueError, "short source read"):
                 b.copy_with_xbe(self.source, self.output, b"yyyy", 0, self.raw[:4])
         self.assertFalse(self.output.exists())
         self.assertEqual(self.source.read_bytes(), self.raw)
 
     def test_readback_corruption_is_rejected(self):
-        pread = os.pread
+        pread = b.platform_compat.pread
         def corrupt(fd, size, offset):
             raw = pread(fd, size, offset)
             return b"!" + raw[1:] if raw.startswith(b"yyyy") else raw
-        with mock.patch.object(b.os, "pread", side_effect=corrupt):
+        with mock.patch.object(b.platform_compat, "pread", side_effect=corrupt):
             with self.assertRaisesRegex(ValueError, "read-back"):
                 b.copy_with_xbe(self.source, self.output, b"yyyy", 0, self.raw[:4])
         self.assertFalse(self.output.exists())

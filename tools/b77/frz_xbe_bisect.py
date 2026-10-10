@@ -18,6 +18,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 import nfl_uniform_color_xiso_direct_patch as xiso
+from mod_editor.core import platform_compat
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from mod_editor.core import nfl2k5_xbe_space as space
@@ -209,14 +210,14 @@ def read_xbe(path):
     fd = os.open(path, os.O_RDONLY | BINARY)
     try:
         size = os.fstat(fd).st_size
-        if os.pread(fd, 4, 0) == b"XBEH":
+        if platform_compat.pread(fd, 4, 0) == b"XBEH":
             require(size <= 32 * 1024**2, "oversized XBE")
             offset, length = 0, size
         else:
             files, _ = xiso.parse_xdvdfs(fd, size)
             entry = files["default.xbe"]
             offset, length = entry.byte_offset, entry.size
-        raw = os.pread(fd, length, offset)
+        raw = platform_compat.pread(fd, length, offset)
         require(len(raw) == length, "short XBE read")
         return raw, offset
     finally:
@@ -257,14 +258,14 @@ def copy_with_xbe(source, output, replacement, offset, original):
     completed = False
     try:
         identity = os.fstat(src)
-        require(os.pread(src, len(original), offset) == original, "source XBE changed")
+        require(platform_compat.pread(src, len(original), offset) == original, "source XBE changed")
         dst = os.open(output, os.O_RDWR | os.O_CREAT | os.O_EXCL | BINARY, 0o644)
         input_hash, output_hash, outside_hash = (hashlib.sha256() for _ in range(3))
         for at in range(0, size, CHUNK):
             if at % (256 * 1024**2) == 0:
                 check_room(output.parent, size - at)
             wanted = min(CHUNK, size - at)
-            raw = os.pread(src, wanted, at)
+            raw = platform_compat.pread(src, wanted, at)
             require(len(raw) == wanted, "short source read")
             input_hash.update(raw)
             lo, hi = max(at, offset), min(at + wanted, offset + len(replacement))
@@ -275,8 +276,8 @@ def copy_with_xbe(source, output, replacement, offset, original):
             else:
                 patched = raw
                 outside_hash.update(raw)
-            require(os.pwrite(dst, patched, at) == len(patched), "short output write")
-            got = os.pread(dst, wanted, at)
+            require(platform_compat.pwrite(dst, patched, at) == len(patched), "short output write")
+            got = platform_compat.pread(dst, wanted, at)
             require(got == patched, "disc read-back differs")
             output_hash.update(got)
         os.fsync(dst)

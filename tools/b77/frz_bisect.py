@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT/'tools')]
 from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
 import nfl_uniform_color_xiso_direct_patch as xiso
+from mod_editor.core import platform_compat
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_abilities_runtime as abilities
@@ -93,7 +94,7 @@ def revert_primary(before, final):
 def read_xbe(source,path):
     files,_ = xiso.parse_xdvdfs(source._fd,path.stat().st_size)
     file = files['default.xbe']
-    return os.pread(source._fd,file.size,file.byte_offset),files
+    return platform_compat.pread(source._fd,file.size,file.byte_offset),files
 
 
 def check_room(parent,required):
@@ -107,10 +108,10 @@ def stream_write(source_fd,target_fd,source_offset,target_offset,size):
     h = hashlib.sha256()
     for offset in range(0,size,4*1024**2):
         wanted = min(4*1024**2,size-offset)
-        raw = os.pread(source_fd,wanted,source_offset+offset)
+        raw = platform_compat.pread(source_fd,wanted,source_offset+offset)
         if len(raw) != wanted:
             raise ValueError('short source read')
-        if os.pwrite(target_fd,raw,target_offset+offset) != len(raw):
+        if platform_compat.pwrite(target_fd,raw,target_offset+offset) != len(raw):
             raise ValueError('short output write')
         h.update(raw)
     return h.hexdigest()
@@ -164,7 +165,7 @@ def repair_disc(v05,v06,prepared,variant,output):
     with OuterImage(v05) as old,OuterImage(v06) as new:
         _,files = read_xbe(old,v05)
         _,new_files = read_xbe(new,v06)
-        fd = os.open(output,os.O_RDWR)
+        fd = os.open(output,os.O_RDWR | getattr(os, 'O_BINARY', 0))
         try:
             if variant == 'A':
                 indices = [5]+[BOOK_ENTRIES[key] for key in books_keys()]
@@ -179,7 +180,7 @@ def repair_disc(v05,v06,prepared,variant,output):
                 raw = (prepared/'C.default.xbe').read_bytes() if variant=='C' else read_xbe(new,v06)[0]
                 if len(raw) != file.size:
                     raise ValueError('XBE size differs')
-                os.pwrite(fd,raw,file.byte_offset)
+                platform_compat.pwrite(fd,raw,file.byte_offset)
                 rows.append(dict(file='default.xbe',sha256=sha(raw),size=len(raw)))
             elif variant == 'D':
                 for name,file in files.items():
@@ -206,7 +207,7 @@ def repair_disc(v05,v06,prepared,variant,output):
                         raise ValueError('commentary rollback is not the one-byte c2 edit')
                     offset = old.image_offset(old.entries[3].virtual_offset+at+c2.EXPECTED_ID_OFFSET)
                     restored = before[c2.EXPECTED_ID_OFFSET:c2.EXPECTED_ID_OFFSET+1]
-                    os.pwrite(fd,restored,offset)
+                    platform_compat.pwrite(fd,restored,offset)
                     rows.append(dict(restored='c2 cue-table byte',image_offset=offset,size=1,sha256=sha(restored)))
                 else:
                     from mod_editor.core.nfl2k5_bump_texture_writer import logical_name_for
@@ -218,9 +219,9 @@ def repair_disc(v05,v06,prepared,variant,output):
                         segments,cursor = [],0
                         for pack,local,length in old._segments(entry.virtual_offset,entry.size):
                             offset = pack.image_offset+local
-                            if os.pwrite(fd,raw[cursor:cursor+length],offset) != length:
+                            if platform_compat.pwrite(fd,raw[cursor:cursor+length],offset) != length:
                                 raise ValueError('short kit-resource write')
-                            if os.pread(fd,length,offset) != raw[cursor:cursor+length]:
+                            if platform_compat.pread(fd,length,offset) != raw[cursor:cursor+length]:
                                 raise ValueError('kit-resource read-back differs')
                             segments.append(dict(image_offset=offset,size=length))
                             cursor += length
