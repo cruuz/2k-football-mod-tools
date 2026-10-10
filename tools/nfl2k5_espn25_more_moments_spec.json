@@ -1533,11 +1533,11 @@
       "history": "Super Bowl XXXVIII: Jake Delhomme found Ricky Proehl for a touchdown to tie Carolina and New England at 29. John Kasay's kickoff went out of bounds, giving Tom Brady the ball at his own 40. Brady moved the Patriots into range, and Adam Vinatieri made a 41-yard field goal with four seconds left. New England beat the Panthers 32-29 at Reliant Stadium.",
       "goal": "Answer Jake Delhomme with Tom Brady and win Super Bowl XXXVIII.",
       "game_id": "2003_21_CAR_NE",
-      "start_play_id": 4078,
+      "start_play_id": 4297,
       "zone": "CT",
       "away": "panthers_2003",
       "home": "patriots_2003",
-      "user_side": "away",
+      "user_side": "home",
       "stadium_index": 31,
       "stadium_note": "Reliant Stadium, Houston: the real venue (the retail 'Reliant Stadium').",
       "kits": {
@@ -1547,7 +1547,7 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII"
       ],
-      "notes": "The user plays Carolina's tying drive, a different finish from the retail VINATIERI STRIKES AGAIN. Night: kickoff 5:25 p.m. CST (the 2003 wall-clock field reads as local time).",
+      "notes": "The user leads Brady's final drive after Kasay's out-of-bounds kickoff, matching the intro and objective. Night: kickoff 5:25 p.m. CST (the 2003 wall-clock field reads as local time).",
       "conditions": {
         "time_of_day": "night"
       }
