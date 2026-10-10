@@ -130,9 +130,11 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(lg.F4_REQUESTS, ((lg.OWNER, "code", 160, 16), (lg.OWNER, "read_only", 240, 16)))
         tool = REPO / "tools" / "nfl2k5_letter_grades_assemble.py"
         try:
-            subprocess.run(["as", "--version"], capture_output=True, check=True)
+            version = subprocess.run(["as", "--version"], capture_output=True, text=True, check=True).stdout
         except (OSError, subprocess.CalledProcessError):
             self.skipTest("GNU as is not installed")
+        if "GNU" not in version or not sys.platform.startswith("linux"):
+            self.skipTest("needs GNU as emitting ELF32 objects (Linux binutils); macOS and Windows runners lack it")
         result = subprocess.run([sys.executable, str(tool), "--check"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
 

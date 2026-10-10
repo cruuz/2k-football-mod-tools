@@ -58,7 +58,8 @@ class Orientation(unittest.TestCase):
     def test_denver_source_puts_the_mane_below_the_head_in_the_upper_native_island(self):
         spec = art.Spec(ROOT/'data/nfl2k5_teams_2026/DEN.json')
         kit = spec.data['kits']['home']
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp_raw:
+            tmp = str(Path(tmp_raw).resolve())
             base = Path(tmp);folder = base/kit['selector'];folder.mkdir()
             atlas = np.full((256,256,4), [8,18,74,255], np.uint8)
             atlas[60:90,55:110,:3] = 245;atlas[165:195,55:110,:3] = 245
@@ -98,7 +99,8 @@ class Orientation(unittest.TestCase):
             self.assertGreater(yy[green].mean(), yy[blue].mean()) if name == 'upper' else self.assertLess(yy[green].mean(), yy[blue].mean())
 
     def test_card_input_rejects_a_second_v_flip_and_swapped_islands(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp_raw:
+            tmp = str(Path(tmp_raw).resolve())
             p = Path(tmp)/'g.json'; d = geometry()
             p.write_text(json.dumps(d), newline='\n')
             self.assertEqual(cards.native_shellc(p)['uv_origin'], 'native_top_left')
@@ -155,7 +157,8 @@ class NativePalette(unittest.TestCase):
 class Repair(unittest.TestCase):
     def test_denver_repair_owns_shell_a_and_refuses_shell_c(self):
         span, _ = template()
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp_raw:
+            tmp = str(Path(tmp_raw).resolve())
             base = Path(tmp);(base/'same.span').write_bytes(span)
             raw = span*33
             for index,label,allowed in [(11,'helmet00',True),(12,'helmet02',False)]:
@@ -168,7 +171,8 @@ class Repair(unittest.TestCase):
                         repair.validate_resource('08H0.IFF',raw,[patch],base)
 
     def test_manifest_refuses_other_kits_and_changed_scope(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp_raw:
+            tmp = str(Path(tmp_raw).resolve())
             p = Path(tmp)/'manifest.json'
             doc = dict(schema=repair.SCHEMA, scope_sha256=repair.sha(repair.SCOPE.read_bytes()),
                        resources={'26H0.IFF': [{'offset': 1}]})
@@ -184,7 +188,8 @@ class Repair(unittest.TestCase):
 
     def test_sealed_span_is_idempotent_preserves_neighbors_and_refuses_tampering(self):
         b = repair.shared._b765()
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp_raw:
+            tmp = str(Path(tmp_raw).resolve())
             base = Path(tmp);(base/'part.span').write_bytes(b'new')
             p = dict(offset=3, length=3, replacement='part.span', before_sha256=repair.sha(b'old'), after_sha256=repair.sha(b'new'))
             result, receipt = b.apply_spans(b'abcoldXYZ', [p], base)
