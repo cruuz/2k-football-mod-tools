@@ -299,6 +299,73 @@ class SyntheticImageTests(unittest.TestCase):
 
 @unittest.skipUnless(RETAIL_PACKS.is_dir(), "retail packs not present")
 class RetailPackSmokeTests(unittest.TestCase):
+    def test_category_compaction_preserves_retail_personnel_recognition(self) -> None:
+        from mod_editor.core.nfl2k5_formation_play_writer import compact_unused_categories
+
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            for name in pr.BOOK_NAMES:
+                entry = archive.entries[pr.BOOK_ENTRIES[name]]
+                raw = archive.read_entry(entry.index)
+                before = pr.parse_book(name, entry, raw)
+                after_raw, _ = compact_unused_categories(raw)
+                after = pr.parse_book(name, entry, after_raw)
+                self.assertEqual(before.relocated_table_sha256(), pr.RELOCATED_RETAIL_TABLE_SHA256[name])
+                self.assertEqual(pr.book_state(after), "retail", name)
+                # Explicit caller pins remain authoritative.
+                if before.table_sha256() != after.table_sha256():
+                    self.assertEqual(pr.book_state(after, retail=pr.RETAIL_TABLE_SHA256), "foreign", name)
+
+    def test_relocated_retail_guard_rejects_changed_types_slots_and_order(self) -> None:
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            original = pr.load_books(archive, ["KC"])[0]
+            entry = archive.entries[pr.BOOK_ENTRIES["KC"]]
+        rows = [(c.name, c.formation_type, c.codes[:]) for c in original.categories]
+        # Delete an offense row so none of these cases can use the old indexed pin.
+        del rows[next(i for i, row in enumerate(rows) if pr.rule_for(row[2]) == "untouched")]
+        relocated = pr.parse_book("KC", entry, build_book("KC", rows))
+        self.assertNotEqual(relocated.table_sha256(), pr.RETAIL_TABLE_SHA256["KC"])
+        self.assertEqual(pr.book_state(relocated), "retail")
+        self.assertEqual(pr.book_state(relocated, retail=pr.RETAIL_TABLE_SHA256), "foreign")
+        defensive = [i for i, row in enumerate(rows) if pr.rule_for(row[2]) != "untouched"]
+        first = defensive[0]
+        duplicate = next(i for i in defensive if any(rows[i][1:] == rows[j][1:] for j in defensive if j < i))
+        without_duplicate = rows[:duplicate] + rows[duplicate + 1:]
+        self.assertEqual(pr.book_state(pr.parse_book("KC", entry, build_book("KC", without_duplicate))), "retail")
+        for mutation in ("type", "slot", "order", "missing"):
+            bad = [(name, kind, slots[:]) for name, kind, slots in rows]
+            if mutation == "type":
+                name, kind, slots = bad[first]
+                bad[first] = (name, kind ^ 1, slots)
+            elif mutation == "slot":
+                bad[first][2][0] ^= 0x20
+            elif mutation == "missing":
+                del bad[first]
+            else:
+                second = next(i for i in defensive[1:] if bad[i][1:] != bad[first][1:])
+                bad[first], bad[second] = bad[second], bad[first]
+            with self.subTest(mutation=mutation):
+                self.assertEqual(pr.book_state(pr.parse_book("KC", entry, build_book("KC", bad))), "foreign")
+
+    def test_modern_kc_offense_and_defense_compose_with_pool_recode(self) -> None:
+        from mod_editor.core import mod_build, nfl2k5_playbook_pack as packs
+
+        xbe = (RETAIL_PACKS.parent / "default.xbe").read_bytes()
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            entry = archive.entries[pr.BOOK_ENTRIES["KC"]]
+            raw = archive.read_entry(entry.index)
+        for path in mod_build.softdrink_book_paths(["KC"]):
+            pack = packs.load_pack(path)
+            book = packs.parse_playbook_resource(raw, asset_id="book:KC")
+            if packs.book_fingerprint(raw[pr.RESOURCE_HEADER_SIZE:]) != pack.base.book_fingerprint:
+                pack, _ = packs.retarget_pack(pack, "KC", book, raw[pr.RESOURCE_HEADER_SIZE:])
+            raw = packs.apply_pack_to_resource(raw, pack, asset_id="book:KC", xbe=xbe).replacement
+        book = pr.parse_book("KC", entry, raw)
+        self.assertNotEqual(book.table_sha256(), pr.RETAIL_TABLE_SHA256["KC"])
+        self.assertEqual(pr.book_state(book), "retail")
+        table, changes = pr.recoded_table(book)
+        self.assertNotEqual(table, book.table_bytes())
+        self.assertTrue(all(not any((c & 0x1F) == pr.KIND_OLB for c in new) for _, new, _ in changes))
+
     def test_retail_packs_read_retail_and_every_book_recodes_cleanly(self) -> None:
         st = pr.status(RETAIL_PACKS)
         self.assertEqual(st["status"], "retail")

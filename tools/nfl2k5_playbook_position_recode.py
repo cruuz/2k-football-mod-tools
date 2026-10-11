@@ -433,6 +433,17 @@ class Book:
     def table_sha256(self, table: bytes | None = None) -> str:
         return hashlib.sha256(self.defensive_records(table)).hexdigest()
 
+    def relocated_table_sha256(self) -> str:
+        """Hash the ordered distinct records without category-table indices.
+
+        Menu compaction moves records and can retire an unused duplicate such as
+        Bear sharing 4-3's personnel. Every distinct type/personnel record must
+        still match the retail sequence; new or changed records are refused.
+        """
+        records = self.defensive_records()
+        distinct = dict.fromkeys(records[i + 1:i + 13] for i in range(0, len(records), 13))
+        return hashlib.sha256(b"".join(distinct)).hexdigest()
+
 
 def _utf16z(body: bytes, offset: int) -> str:
     end = offset
@@ -521,6 +532,46 @@ RETAIL_TABLE_SHA256: Mapping[str, str] = {
     "WAS": "f56eaacfec458fb24ad3f737e82e49051fe7581b740f6c5e9dd43cef9a4987d8",
     "WCO": "e6bb5d305e90800feaa2b2a1f4fe58cee1a82f92ff8387314c6a10f99b1af744",
 }
+# Distinct retail records in order, excluding relocatable table indices and duplicates.
+RELOCATED_RETAIL_TABLE_SHA256: Mapping[str, str] = {
+    "ARZ": "1af4d126f5ac2ce1925acef2d30d62e7f5d93aa94706f7decabf1ac6ec01e908",
+    "ATL": "9868944a28e95eb36ebf895a5ddaea1a82df9387c0f317c8fc955812a552336a",
+    "BAL": "8d350d7d9c8379c87d1693d2c80059bbbe9a4e712ec1e84f75267e6e2b879a45",
+    "BUF": "fc0d8c95bcc192ec55fca2fc1773d9b54a45ce9885f092eadeb33650d2ec9ea1",
+    "CAR": "fae3d45d720ddaa1e0119792d7b91f1be5a8ff243d906a69b7fd48cc955c2156",
+    "CHI": "1dc277c3f07ec966b2f1d947968fa724ead42641407864e4ade043ddb4a39a28",
+    "CIN": "6dca7f3a22443c24ff08d123951f875959f80d580d60560169ed4f6092c6f8b1",
+    "CLE": "c4da3abfea91fd488b584fb472cc92d1023325046871c157e459e6db901f2bf1",
+    "DAL": "45b8f8ec8428ea44fb5a7759a82a1d3835f4a4e1c649886e26c2107cf29b097a",
+    "DEN": "b4842555326b9ffda7b6f1c74f1613262b7402db9540a6b3eda21c42b56efdec",
+    "DET": "8f1427036448f77303817385768084269c7c18bc5c351a2cc8a194564b31bfb5",
+    "Editor": "be9408b6bb41a761874ca35845bb899f2eddc3925f95554622ed3be1f3f7aaf2",
+    "GB": "bc83e558cbe572bf80e69dbf4550886199990b54cb172919774679d956ead780",
+    "GEN": "04d71c51657181646eaccce4d9dbb7a6590a0fe3b903ec3c176ca95235020c9e",
+    "HOU": "732dba2a66a03dfd9e2edba2589888a7a084b4b28ed044bc50913a72e2168cd3",
+    "IND": "9511ec189f07182657b32a1d5d93504e09c9058ef0ce93cd9de84a37ab1d0458",
+    "JAX": "f8dc2ec8ac4d9176bbd070c31fcb4ec9e32919310bcf87dcbfaf3d36b7fea512",
+    "KC": "3a3278a1097b347f48cdc1bb678bc4d87994a1c70848dbe40134f17413df7fc3",
+    "MIA": "dcc47b6b76b73d089d4b0d55e05c897d47db30ad715cc37dd1cd4ab403076f49",
+    "MIN": "eca8b207e0772d5353b1f900656071df382c83f5279f9f5d89787bb6ee13d174",
+    "NE": "6426aa558fe3af981890805fee826b4e3e51e2e693042c57ad192e226240d166",
+    "NO": "eb0fb505cb6b92b60edd0d95a704b97e136f97735834367e109efad02e0daa43",
+    "NYG": "ab240e035c73945a90a51e27518469e44dcecd4d65c7fed888bc89f79123faac",
+    "NYJ": "f922c610ce6191303457227b6687046ff3e766d61a03ec8d15cbcb29ca2849e2",
+    "OAK": "dacfadd3a8c00ce884264e80bc0ba925d730bb292c8eb23cf579ea2f6f474aed",
+    "PHI": "98ca6f3570acf83b35a47e1545a176b99c213c3ad38865101e7534669590f876",
+    "PIT": "8158394ab419b6c21cfd452acf9b7a8be88658be775fbf92d90fd41dd98f1fcc",
+    "PRACTICE": "0fd63b2c3b0ac9891f4f15168868f96562dc53c5856be08836cd163b6d5976c6",
+    "reference": "e4f06f548ac3706ebc3f907128539f7c01c558f2c4d1da4c628a55f8edd09f4e",
+    "SD": "50d87c6794a5d6abe877ea6ebf2880452357da4cc4a17e94a35e678d0d35ca3d",
+    "SEA": "fe0116549cddc01d14bda063beef1794baaa1f3316bb61f9dda3e3bddbcf1f8f",
+    "SF": "dbdf02025e87dfc44cd4cca16f3d45342e5c2fbf0769e4aa37ca860170646b1e",
+    "STL": "50c3efc616531a25993c9f804e372800fac029a6a4b2558fd5301660d80b3b45",
+    "TB": "4d91809d74b936f9030a53420acec5654102a3dda3782cfaba3ed1b017f9ed36",
+    "TEN": "3cfd0bf9c7b692e7e673f838962e7eab62eadad99ddf507ab54f8298ba4f0daf",
+    "WAS": "fe0116549cddc01d14bda063beef1794baaa1f3316bb61f9dda3e3bddbcf1f8f",
+    "WCO": "27e47f71689cc594cc0d6593cfe7239d60f5fb9644f3c76e8873ce3636a7e8f5",
+}
 # sha256 of the same records after the default recode (prevent_two_edges=False)
 APPLIED_TABLE_SHA256: Mapping[str, str] = {
     "ARZ": "86c40eb534457658f2ec727a752669dc46420b12752ccdb5134e1c4c190e0aab",
@@ -580,6 +631,8 @@ def book_state(book: Book, retail: Mapping[str, str] | None = None, applied: Map
 
     digest = book.table_sha256()
     if (RETAIL_TABLE_SHA256 if retail is None else retail).get(book.name) == digest:
+        return "retail"
+    if retail is None and RELOCATED_RETAIL_TABLE_SHA256.get(book.name) == book.relocated_table_sha256():
         return "retail"
     if (APPLIED_TABLE_SHA256 if applied is None else applied).get(book.name) == digest:
         return "applied"
