@@ -211,7 +211,10 @@ class NativeTests(unittest.TestCase):
         m.record(0x177990, "progress", pop=4)
         rec = m.roster([(5, self.population())])[0]
         m.put(CLASS, 0)
-        m.call(0x14EFE0, stack=(4,))
+        # All 128 fields require more than the small direct-call default.
+        # Machine.call now refuses a truncated replay instead of treating it
+        # as a completed native function.
+        m.call(0x14EFE0, stack=(4,), budget=10_000_000)
         return {((w >> 16) & 0x7F, (w >> 23) & 31, bool(w & 0x20000000)): (w & 0xFFFF, bool(w & 0x40000000))
                 for w in m.stream(rec) if not w & 0x10000000}
 

@@ -53,7 +53,7 @@ honors_page_bio:
     mov eax, 0x00320760
     jmp eax
 
-/* 0x116E5F, FUN_00116920's tail jump to the rushing title (reached only for week index 16, after the MVP,
+/* 0x116E5F, FUN_00116920's tail jump to the rushing title (reached in the final regular week, after the MVP,
    OPOY, DPOY, rookie and best-at-position awards): run the tail, then record the season's winners. */
 honors_season_hook:
     mov eax, 0x001160C0

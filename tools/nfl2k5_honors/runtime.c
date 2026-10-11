@@ -241,7 +241,7 @@ static void set_honor(u32 player, u32 h) {
     CLASS_SET(saved);
 }
 
-/* After the game's season awards (week index 16, FUN_00116920 and its rushing-title tail). */
+/* After the final regular week's awards (FUN_00116920 and its rushing-title tail). */
 void commit_season(void) {
     if (G(LEAGUE_MODE) != 2)
         return;

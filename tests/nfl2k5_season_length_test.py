@@ -59,6 +59,10 @@ def build_synthetic_xbe() -> bytes:
         for site in season.group_sites(group):
             off = _raw_offset(site.va)
             buf[off: off + site.size] = site.retail
+    # V1I is separate from the legacy calendar group's identity so shipped
+    # overlays remain recognizable, but its native branch is still guarded.
+    off = _raw_offset(season.AWARDS_WEEK_VA) - 2
+    buf[off:off + 9] = bytes.fromhex("83fd100f85ef000000")
     for index, (_va, raw, size) in SECTIONS.items():
         header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
         buf[header + 36: header + 56] = _section_digest(bytes(buf), raw, size)
@@ -164,13 +168,15 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(receipt["preseason_weeks"], 4)
         self.assertEqual(season.read_year(patched), 2026)
         self.assertEqual(receipt["sections_repinned"], [0, 12, 13])
-        self.assertEqual(len(receipt["edits"]), 17 + 2 + 143 + 13 + 3)
+        self.assertEqual(len(receipt["edits"]), 17 + 2 + 143 + 13 + 3 + 1)
+        self.assertEqual(patched[_raw_offset(season.AWARDS_WEEK_VA)], 17)
         self.assertFalse(receipt["runtime_verified"])
         for index, (_va, raw, size) in SECTIONS.items():
             header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
             self.assertEqual(patched[header + 36: header + 56], _section_digest(patched, raw, size))
         # only the sites and the three digests changed
         expected = set()
+        expected.add(_raw_offset(season.AWARDS_WEEK_VA))
         for group in season.GROUPS:
             for site in season.group_sites(group):
                 off = _raw_offset(site.va)

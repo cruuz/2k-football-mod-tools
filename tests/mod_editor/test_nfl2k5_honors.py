@@ -214,7 +214,7 @@ class Machine:
         self.text = []
         self._ctx = {}
         self._hooks = {}
-        self.uc.hook_add(u.UC_HOOK_CODE, self._dispatch)
+        self._dispatch_handle = self.uc.hook_add(u.UC_HOOK_CODE, self._dispatch)
 
     # memory helpers
     def put(self, va, value):
@@ -257,7 +257,7 @@ class Machine:
         self.reg("ESP", sp + 4 + pop)
         self.reg("EIP", ret)
 
-    def call(self, va, ecx=0, edx=0, stack=(), eax=None):
+    def call(self, va, ecx=0, edx=0, stack=(), eax=None, budget=2_000_000):
         sp = self.SP
         for value in reversed(list(stack)):
             sp -= 4
@@ -271,7 +271,9 @@ class Machine:
             self.reg("EAX", eax)
         for name in ("EBX", "ESI", "EDI", "EBP"):
             self.reg(name, 0x0BADF00D)
-        self.uc.emu_start(va, self.STOP, count=2_000_000)
+        self.uc.emu_start(va, self.STOP, count=budget)
+        if self.reg("EIP") != self.STOP:
+            raise AssertionError(f"instruction budget exhausted at {self.reg('EIP'):#x}, entry {va:#x}")
         return self.reg("EAX")
 
     # text capture
