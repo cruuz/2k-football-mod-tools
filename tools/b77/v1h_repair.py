@@ -3,7 +3,8 @@
 
 Writes a new default.xbe and a byte-scope receipt. The v1f defensive-menu
 repair changes playbook resources, so apply this executable to the v1f disc.
-No input file is modified. Other executables require a rebuild from source.
+No input file is modified. Stacked inputs require the exact shipped executable
+as a reference; only its recognized MyCareer revision may be replaced.
 """
 from __future__ import annotations
 
@@ -24,9 +25,24 @@ V06_SHA256 = "f67e6fc1cb76c9ea1f1ad504e4a6491ff126483d66a9da8ddb92950bbaf740ba"
 REPAIRED_SHA256 = "b544c801652d7060d85e8d8e581eb3d554f2bee9488ebeba68e91bb6c1cdc80c"
 
 
-def repair(payload: bytes) -> tuple[bytes, dict]:
+def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, dict]:
     digest = sha(payload)
-    if digest not in (V06_SHA256, REPAIRED_SHA256):
+    if reference is not None:
+        if sha(reference) != V06_SHA256:
+            raise ValueError("unrecognized v0.6 reference executable")
+        canonical, _ = repair(reference)
+        if space.layout(payload)["allocations"] != space.layout(reference)["allocations"]:
+            raise ValueError("stacked owner allocations differ from the reference")
+        ref_code, ref_state = mode.legacy.allocations(reference)
+        ref_image = XbeImage(reference)
+        private = [(ref_code["raw"], ref_code["size"])]
+        private += [(ref_image.offset(va, len(after)), len(after))
+                    for _name, va, _before, after in mode.sites(
+                        ref_code["va"], ref_state["va"], season_birth_dates=True)]
+        if not any(all(payload[at:at + size] == candidate[at:at + size]
+                       for at, size in private) for candidate in (reference, canonical)):
+            raise ValueError("mixed or foreign MyCareer code or hooks in stacked input")
+    elif digest not in (V06_SHA256, REPAIRED_SHA256):
         raise ValueError(f"unrecognized v0.6 executable: {digest}")
     if space.status(payload) != "applied":
         raise ValueError("invalid allocator seals")
@@ -53,7 +69,7 @@ def repair(payload: bytes) -> tuple[bytes, dict]:
             spans.append((at, 20))
             buf[at:at + 20] = section_digest(bytes(buf), section)
     result = bytes(buf)
-    if sha(result) != REPAIRED_SHA256 or mode.status(result) != "applied":
+    if (reference is None and sha(result) != REPAIRED_SHA256) or mode.status(result) != "applied":
         raise ValueError("repair template differs from the validated revision")
     if space.status(result) != "applied" or space._read_scale_directory(result) != requests:
         raise ValueError("allocator postcondition failed")
@@ -75,6 +91,7 @@ def repair(payload: bytes) -> tuple[bytes, dict]:
                    code=code, primary_state=state, extra_state_va=hex(mode.EXTRA_VA),
                    code_padding=code["va"] + mode.TAG_OFFSET - labels["content_end"],
                    preserved_reservations=preserved,
+                   reference_sha256=sha(reference) if reference is not None else None,
                    stack_with="v1f defensive-menu playbook repair")
     return result, receipt
 
@@ -84,11 +101,15 @@ def main():
     parser.add_argument("--xbe", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--reference-xbe", type=Path,
+                        help="exact shipped v0.6 executable, required to validate a stacked input")
     args = parser.parse_args()
     target = args.out_dir / "default.xbe"
-    if args.xbe.resolve() in (target.resolve(), args.receipt.resolve()):
+    if any(path.resolve() in (target.resolve(), args.receipt.resolve())
+           for path in (args.xbe, args.reference_xbe) if path is not None):
         parser.error("input and outputs must be different files")
-    result, receipt = repair(read(args.xbe))
+    result, receipt = repair(read(args.xbe),
+                             reference=read(args.reference_xbe) if args.reference_xbe else None)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     write_new(target, result)
     write_new(args.receipt, (json.dumps(receipt, indent=2) + "\n").encode())

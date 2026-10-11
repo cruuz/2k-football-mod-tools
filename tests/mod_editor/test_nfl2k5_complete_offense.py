@@ -123,6 +123,8 @@ class PipelineTests(unittest.TestCase):
                  patch.object(mod_build,'check_playbook_pack_fit',return_value=None), \
                  patch.object(mod_build,'_check_playbook_menus',side_effect=menus), \
                  patch.object(mod_build,'_check_playbook_scoring',side_effect=scoring), \
+                 patch('mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image',
+                       return_value={'state': 'synthetic_ordering_fixture', 'changed': False}), \
                  patch('mod_editor.core.xdvdfs_compact.finish_private',
                        side_effect=lambda target, **kw: {'output_bytes': target.stat().st_size}), \
                  patch('mod_editor.core.nfl2k5_disc_extents.validate_image',

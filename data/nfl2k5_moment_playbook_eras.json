@@ -1529,8 +1529,8 @@
    "row": 34,
    "title": "SUPER BOWL XXXVIII: FINALE",
    "date": "February 1, 2004",
-   "user_side": "away",
-   "cpu_side": "home",
+   "user_side": "home",
+   "cpu_side": "away",
    "sides": {
     "away": {
      "franchise_key": "CAR",

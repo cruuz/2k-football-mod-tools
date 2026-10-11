@@ -28,6 +28,38 @@ class RefusalTests(unittest.TestCase):
 
 @unittest.skipUnless(SOURCE.is_file(), "NFL2K5_V06_XBE must name the private v0.6 executable")
 class NativeTests(unittest.TestCase):
+    def test_stack_after_era_and_shotgun_repairs_preserves_both_and_replays(self):
+        from tools.b77 import v1c_repair, a4_repair
+        from mod_editor.core import nfl2k5_stock_books as stock
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        original = SOURCE.read_bytes()
+        stacked, _ = v1c_repair.repair_xbe(original)
+        allocation = stock.allocation(stacked)
+        _kind, weights = stock._installed_kind(XbeImage(stacked), allocation["va"])
+        stacked, _ = a4_repair.repair_xbe(stacked, *weights)
+        with self.assertRaisesRegex(ValueError, "unrecognized"):
+            repair.repair(stacked)
+        result, receipt = repair.repair(stacked, reference=original)
+        self.assertTrue(receipt["scope"]["outside_scope_identical"])
+        self.assertEqual(v1c_repair.repair_xbe(result)[0], result)
+        self.assertEqual(a4_repair.repair_xbe(result, *weights)[0], result)
+        again, replay = repair.repair(result, reference=original)
+        self.assertEqual(again, result)
+        self.assertEqual(replay["scope"]["changed_bytes"], 0)
+
+    def test_stacked_foreign_owner_bytes_refuse_even_after_resealing(self):
+        from mod_editor.core import nfl2k5_era_rules as era
+        original = SOURCE.read_bytes()
+        damaged = bytearray(original)
+        code, _state = repair.mode.legacy.allocations(original)
+        damaged[code["raw"]] ^= 1
+        repair.space._seal_scaleout(damaged, repair.space._read_scale_directory(original))
+        damaged = era._seal(damaged)
+        with self.assertRaisesRegex(ValueError, "mixed or foreign"):
+            repair.repair(damaged, reference=original)
+        with self.assertRaisesRegex(ValueError, "reference"):
+            repair.repair(original, reference=damaged)
+
     def test_pinned_repair_preserves_f5_and_all_unrelated_reservations(self):
         original = SOURCE.read_bytes()
         result, receipt = repair.repair(original)
