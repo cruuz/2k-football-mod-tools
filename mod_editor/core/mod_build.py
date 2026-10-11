@@ -1458,8 +1458,9 @@ def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[st
     with packs._outer_image().OuterImage(target) as archive:
         for entry in archive.entries_with_head(b"PLAY"):
             books += 1
+            raw = archive.read_entry(entry.index)
             problems += [f"book {entry.index}: {problem}"
-                         for problem in inspector.menu_link_problems(archive.read_entry(entry.index))]
+                         for problem in (inspector.menu_link_problems(raw) + inspector.category_menu_problems(raw))]
     if problems:
         raise RuntimeError("A playbook on this build has a formation play menu the game cannot use, so picking that "
                            "formation would hang the play call: " + "; ".join(problems[:4])

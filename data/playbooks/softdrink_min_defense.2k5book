@@ -4,12 +4,12 @@
   "team": "MIN",
   "name": "NFL 2K28 MIN Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Brian Flores (Belichick pressure disguise); 2025 baseline MIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "29b163ddd2e3b3bddd0fcadcd1114e7fd3b076734d72e59c007ab8d48afda5b3",
+  "book_fingerprint": "1f3d1ec029f99dd8dad91736fcd04b2c7143aed288a769c2868251f5896fc1fb",
   "donor_formation_count": 46,
   "donor_play_count": 266,
   "donor_node_count": 1810
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [47, 44, 12, 13, 46, 14, 15, 16, 17, 50, 18],
-   "category_index": 23,
+   "category_index": 19,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 7,
    "situation": [2, 1, 2]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 7,
    "situation": [1, 4, 4]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 12,
+   "category_index": 8,
    "situation": [1, 1, 1]
   },
   {
@@ -150,7 +150,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 15, 82, 16, 17, 50, 18],
-   "category_index": 13,
+   "category_index": 9,
    "situation": [4, 2, 1]
   },
   {
@@ -176,7 +176,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 12,
+   "category_index": 8,
    "situation": [4, 4, 1]
   }
  ],

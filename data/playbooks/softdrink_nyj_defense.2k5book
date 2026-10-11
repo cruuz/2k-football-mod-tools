@@ -4,12 +4,12 @@
   "team": "NYJ",
   "name": "NFL 2K28 NYJ Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Brian Duker (Glenn / Weaver multiple); 2025 baseline MIA. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "608bad5dcd51550817126bad15bc28a0f506b7bb5a47168c92c7336536ad3144",
+  "book_fingerprint": "b293a9f2169f3443f59093f53ec19cb1a1da97ea18ca9cf10609841a70e709c5",
   "donor_formation_count": 41,
   "donor_play_count": 270,
   "donor_node_count": 1951
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 9,
+   "category_index": 8,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 365]
    ],
    "position_codes": [47, 44, 12, 13, 46, 14, 15, 16, 17, 50, 18],
-   "category_index": 23,
+   "category_index": 21,
    "situation": [2, 1, 2]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 9,
+   "category_index": 8,
    "situation": [1, 4, 4]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 9,
    "situation": [1, 1, 1]
   },
   {
@@ -150,7 +150,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 15, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 10,
    "situation": [4, 2, 1]
   }
  ],

@@ -4,12 +4,12 @@
   "team": "PHI",
   "name": "NFL 2K28 PHI Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Vic Fangio (Fangio split coverage); 2025 baseline PHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "2e17c17f492a1feab17597392b0e4971caf11ff978b1d0a3943398463c4b3561",
+  "book_fingerprint": "7b8bcac645acedf684a1d44706ee06a7ba6c513d97659b3443ed3b0228cb338a",
   "donor_formation_count": 41,
   "donor_play_count": 267,
   "donor_node_count": 1902
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 9,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 9,
    "situation": [1, 4, 4]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 10,
    "situation": [1, 1, 1]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 15, 82, 16, 17, 50, 18],
-   "category_index": 12,
+   "category_index": 11,
    "situation": [4, 2, 1]
   }
  ],

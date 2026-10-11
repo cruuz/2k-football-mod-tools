@@ -4,12 +4,12 @@
   "team": "JAX",
   "name": "NFL 2K28 JAX Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Anthony Campanile (Hafley / Flores multiple); 2025 baseline JAX. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "0b5dd07cb00ed7f378db6843f15285a24d5bfac64d94a9f09253cb0e82730570",
+  "book_fingerprint": "f558c40a2194056ff190bdaf41212743f149bde426308a3765cb1d3aad70ec28",
   "donor_formation_count": 41,
   "donor_play_count": 270,
   "donor_node_count": 1932
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 9,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 9,
    "situation": [1, 4, 4]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 10,
    "situation": [1, 1, 1]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 14, 82, 16, 17, 50, 18],
-   "category_index": 12,
+   "category_index": 11,
    "situation": [4, 2, 1]
   }
  ],

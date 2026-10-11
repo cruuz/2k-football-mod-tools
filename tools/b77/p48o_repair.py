@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Native PLAY repair for SOFTDRINK 2K28 v0.5 team books: the v2 offense (beta 77, job p48o).
+"""Native PLAY repairs for SOFTDRINK 2K28 team books (beta 77).
+
+The ``menus`` command repairs pinned v0.6 empty category roots. It preserves
+formation/play records and pools, remapping only the category table and its
+references. It needs no retail image or executable. The older offense rebuild
+below remains available for pinned v0.5 inputs.
 
 Owned disc bytes: PACK0 PLAY entries 307..342 for the 32 team books (Editor 318, GEN 320,
 PRACTICE 334, reference 335 and WCO 343 are refused).  The SOFTDRINK offense rebuilds a
@@ -69,6 +74,9 @@ def repair_resource(payload: bytes, entry_id: int, retail: bytes, xbe: bytes, *,
     row = manifest()["books"].get(str(entry_id))
     if row is None:
         raise ValueError(f"PACK0 entry {entry_id} is not a SOFTDRINK team book this repair owns")
+    menu = row.get('v06_menu_repair', {})
+    if sha(payload) in {menu.get('before_sha256'), menu.get('after_sha256')}:
+        return repair_category_menus(payload, entry_id)
     if sha(retail) != row["retail_sha256"]:
         raise ValueError(f"{row['team']}: retail entry hash differs from the pinned retail book")
     before = sha(payload)
@@ -95,6 +103,32 @@ def repair_resource(payload: bytes, entry_id: int, retail: bytes, xbe: bytes, *,
     return result, receipt
 
 
+def repair_category_menus(payload: bytes, entry_id: int) -> tuple[bytes, dict]:
+    """Pinned v0.6 repair: only retire empty categories and remap references."""
+    from mod_editor.core.nfl2k5_formation_play_writer import compact_unused_categories
+    row = manifest()['books'].get(str(entry_id), {})
+    pin = row.get('v06_menu_repair')
+    before = sha(payload)
+    if not pin or before not in {pin['before_sha256'], pin['after_sha256']}:
+        raise ValueError('Unexpected v0.6 PLAY input SHA256 for category menu repair')
+    result, detail = compact_unused_categories(payload)
+    if sha(result) != pin['after_sha256']:
+        raise ValueError('Category menu repair output differs from its manifest')
+    scopes = detail['scopes']
+    covered = {i for a, b in scopes for i in range(a, b)}
+    outside_before = bytes(b for i, b in enumerate(payload) if i not in covered)
+    outside_after = bytes(b for i, b in enumerate(result) if i not in covered)
+    if outside_before != outside_after:
+        raise ValueError('Category menu repair changed an undeclared byte')
+    return result, dict(schema='b771.category-menus.v1', disc_file='vc_53450030/0',
+                        pack0_entry_id=entry_id, book=row['team'], size=len(payload),
+                        before_sha256=before, after_sha256=sha(result),
+                        status='already_applied' if payload == result else 'applied',
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                        category_menus=detail, outside_scope_identical=True,
+                        outside_scope_sha256=sha(outside_before))
+
+
 def _write_exclusive(path: Path, data: bytes) -> None:
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     fd = os.open(path, flags, 0o600)
@@ -112,6 +146,11 @@ def _read_entry(path: Path) -> bytes:
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
+    menus = sub.add_parser('menus', help='repair only the empty root menus in a pinned v0.6 PLAY entry')
+    menus.add_argument('source', type=Path)
+    menus.add_argument('output', type=Path)
+    menus.add_argument('--entry-id', required=True, type=int)
+    menus.add_argument('--receipt', required=True, type=Path)
     one = sub.add_parser("entry", help="repair one extracted PACK0 PLAY entry")
     one.add_argument("source", type=Path)
     one.add_argument("output", type=Path)
@@ -130,6 +169,16 @@ def main(argv=None):
     allp.add_argument("--xbe", required=True, type=Path)
     allp.add_argument("--out", required=True, type=Path, help="new directory for <entry>.play and receipts")
     args = ap.parse_args(argv)
+    if args.cmd == 'menus':
+        if args.output.exists() or args.receipt.exists() or args.output.absolute() == args.receipt.absolute():
+            ap.error('choose distinct new output and receipt paths')
+        result, receipt = repair_category_menus(_read_entry(args.source), args.entry_id)
+        _write_exclusive(args.output, result)
+        with args.receipt.open('x', encoding='utf-8', newline='\n') as stream:
+            json.dump(receipt, stream, indent=1)
+            stream.write('\n')
+        print(json.dumps(receipt))
+        return
     xbe = args.xbe.read_bytes()
     if args.cmd == "entry":
         if args.output.exists() or args.receipt.exists() or args.output.absolute() == args.receipt.absolute():
@@ -149,6 +198,7 @@ def main(argv=None):
     if args.cmd == "manifest":
         if sha(xbe) != RETAIL_XBE_SHA256:
             ap.error("native scoring needs the retail USA default.xbe")
+        previous = manifest() if MANIFEST.is_file() else {}
         stacked = {}
         # b77 p6s: a regenerated manifest keeps accepting every earlier output of this repair (e.g. the p48o
         # entries) and their own stacked inputs, so the new books apply on top of an already repaired disc
@@ -171,10 +221,14 @@ def main(argv=None):
                 books[str(entry)] = dict(team=team, v05_sha256=sha(raw), retail_sha256=sha(base),
                                          after_sha256=sha(result),
                                          stacked_inputs=sorted(set(stacked.get(str(entry), [])) - {sha(result), sha(raw)}))
+                old_menu = previous.get('books', {}).get(str(entry), {}).get('v06_menu_repair')
+                if old_menu:
+                    books[str(entry)]['v06_menu_repair'] = old_menu
                 print(team, entry, sha(result)[:16], flush=True)
         MANIFEST.write_text(json.dumps(dict(schema=SCHEMA, v05_disc_sha256=
                                             "5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f",
-                                            books=books), indent=1) + "\n", encoding="utf-8", newline="\n")
+                                            books=books, **{k: v for k, v in previous.items()
+                                                           if k == 'v06_disc_sha256'}), indent=1) + "\n", encoding="utf-8", newline="\n")
         return
     args.out.mkdir(parents=False, exist_ok=False)
     rows = []

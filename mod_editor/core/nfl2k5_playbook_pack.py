@@ -1353,7 +1353,7 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
     if pack.schema == OFFENSE_SCHEMA:
         from .nfl2k5_complete_offense import compile_offense
         compiled = compile_offense(resource, pack, asset_id=asset_id)
-        return _score_compiled(compiled, xbe)
+        return _score_compiled(compiled, xbe, resource)
 
     if len(resource) != RESOURCE_SIZE:
         raise PlaybookPackError(
@@ -1373,11 +1373,29 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
         if pack.formations or any(p.replace_index is None for p in pack.plays):
             raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     formation_rows, play_rows, link_rows = pack_requests(pack, asset_id, book)
-    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe)
+    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe, resource)
 
 
-def _score_compiled(compiled, xbe):
+def _score_compiled(compiled, xbe, source):
+    from dataclasses import replace
+    from .nfl2k5_formation_play_writer import compact_unused_categories, _difference_ranges
     from .nfl2k5_play_scoring import require_safe
+    replacement, categories = compact_unused_categories(compiled.replacement, trim_name_tail=True)
+    if replacement != compiled.replacement:
+        spans = _difference_ranges(source, replacement)
+        digest = hashlib.sha256(replacement).hexdigest()
+        compiled = replace(compiled, replacement=replacement, replacement_sha256=digest,
+                           changed_ranges=tuple(spans), changed_byte_count=sum(b-a for a, b in spans),
+                           parsed_replacement=parse_playbook_resource(replacement, asset_id=compiled.asset_id))
+        compiled.report.update(replacement_sha256=digest, category_menus=categories,
+                               changed_ranges=[list(s) for s in spans])
+        for row in compiled.report.get('authored_formations', []):
+            row['category_index'] = categories['index_map'][row['category_index']]
+        for row in compiled.report.get('defense_menus', []):
+            if 'formation_index' in row:
+                row.update(lib.defense_personnel(compiled.parsed_replacement,
+                                                 replacement[RESOURCE_HEADER_SIZE:],
+                                                 row['formation_index']))
     compiled.report['native_scoring'] = require_safe(compiled.replacement, xbe)
     return compiled
 

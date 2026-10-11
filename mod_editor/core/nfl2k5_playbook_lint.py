@@ -78,6 +78,7 @@ SEVERITY = {
     "SCREEN_NO_RELEASE": "warning",
     "FORMATION_OVERLAP": "error", "FORMATION_ILLEGAL": "warning",
     "DEF_STACK": "warning", "DEF_MIDDLE_MUG": "warning", "BACK_PRIMARY_SHARE": "warning",
+    "CATEGORY_EMPTY": "error",
 }
 GOAL_IDS = {
     "HANDOFF_FAR": "P1", "HANDOFF_PLAN_FAR": "P1", "PITCH_FAR": "P1",
@@ -85,6 +86,7 @@ GOAL_IDS = {
     "SCREEN_DEPTH_MARGIN": "P2", "SCREEN_SIDE_CROSS": "P2", "SCREEN_NO_RELEASE": "P2",
     "FORMATION_OVERLAP": "P5", "FORMATION_ILLEGAL": "P5", "DEF_STACK": "P5", "DEF_MIDDLE_MUG": "P5",
     "BACK_PRIMARY_SHARE": "P3",
+    "CATEGORY_EMPTY": "P5",
 }
 # Play-level execution defects the Studio repair rules remove (BACK_PRIMARY_SHARE is a book-level design warning).
 EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
@@ -506,6 +508,8 @@ def lint_views(views: Iterable[PlayView], label: str, native_plan: NativePlan | 
 def lint_resource(resource: bytes, label: str = "book", native_plan: NativePlan | None = None) -> LintReport:
     report = lint_views(resource_views(resource), label, native_plan)
     report.findings.extend(defense_findings(resource))
+    report.findings.extend(Finding("CATEGORY_EMPTY", problem, -1, "(category menu)")
+                           for problem in insp.category_menu_problems(resource))
     return report
 
 

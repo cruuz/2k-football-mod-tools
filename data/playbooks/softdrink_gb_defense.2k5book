@@ -4,12 +4,12 @@
   "team": "GB",
   "name": "NFL 2K28 GB Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Jonathan Gannon (Zimmer / Gannon split coverage); 2025 baseline ARI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "9015cb2e43a314b334543b678e758c73fea581ee976edb0fb789fb2b97cacf5e",
+  "book_fingerprint": "805ccaee5f2813506d81be89ec18d51dd19b46aafebc942930cfc4d7b9892bbd",
   "donor_formation_count": 48,
   "donor_play_count": 264,
   "donor_node_count": 1864

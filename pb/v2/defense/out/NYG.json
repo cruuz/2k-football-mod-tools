@@ -1957,7 +1957,7 @@
   "offense_pack": "data/playbooks/softdrink_giants_modern.2k5book",
   "offense_pack_sha256": "5fe5244c54f83405fecc81ca7cd2f022c8522e162b414c305d4c26a084345621",
   "source_fingerprint": "0321ff56c6a9c9ee2fc5b3b0aa3839ce4c534ba4355c21c662880dac9da80b06",
-  "replacement_sha256": "365f1e7866489e525791a766ef679de7e59200961121d2feecadc3eeb7950bad",
+  "replacement_sha256": "f76b59b30d43a9928038c29b4e8d46ad80ba8c405d913370f7dcf6d74a1ed14f",
   "semantic_sha256": "cfb2881320f8fb59599a1b6b723884a262180460960370fb38aeea098900515e",
   "plays": 65,
   "formations": 4,
@@ -1970,6 +1970,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_nyg_defense.2k5book",
-  "pack_sha256": "871383037d157dd4da52fff1680e0d815ca8b70b071e35bfd5913ca0ece1d0ac"
+  "pack_sha256": "46792e95311a602c0f0fc3b7f4447376f6f79fadd9d145a5adab184c72661512"
  }
 }
