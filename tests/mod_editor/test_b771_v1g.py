@@ -127,7 +127,7 @@ class NativeTests(unittest.TestCase):
         uc.mem_write(base, fixed)
         # Walk the real contiguous text records with the game's lookup. The
         # binding identity is at +0x80, not the start of the following matrix.
-        first, last = 0x430 - 0x80, 0xD30 - 0x80
+        first, last = 0x3A0 - 0x80, 0xD30 - 0x80
         uc.mem_write(descriptor, struct.pack("<3I", 0, (last - first) // 0x90 + 1, base + first))
 
         def lookup(identity_at):
@@ -143,7 +143,7 @@ class NativeTests(unittest.TestCase):
             return record
 
         # Resolve each scene binding through the executable's actual callback table.
-        for identity_at, enum in ((0x940, 11), (0x9D0, 10), (0xA60, 9), (0xAF0, 8)):
+        for identity_at, enum in ((0x3A0, 16), (0x940, 11), (0x9D0, 10), (0xA60, 9), (0xAF0, 8)):
             record = lookup(identity_at)
             identity = struct.unpack_from("<I", body, identity_at)[0]
             binding = xbe.index(struct.pack("<II", identity, 0x319C20))
@@ -154,6 +154,9 @@ class NativeTests(unittest.TestCase):
         for identity_at in (0x940, 0xB80):
             record = lookup(identity_at)
             self.assertEqual(fixed[record + 0x40:record + 0x48], body[record + 0x40:record + 0x48])
+        edge = lookup(0x3A0)
+        self.assertEqual(struct.unpack_from("<f", fixed, edge + 0x40)[0], 64)
+        self.assertEqual(fixed[edge + 0x44:edge + 0x48], body[edge + 0x44:edge + 0x48])
         for identities, previous_id in (((0xA60, 0xCA0), 0x9D0), ((0xAF0, 0xD30), 0xA60)):
             previous = lookup(previous_id)
             for identity_at in identities:

@@ -1007,6 +1007,9 @@ def team_needs_scene_edits() -> tuple[tuple[int, bytes, bytes, str], ...]:
     word = lambda value: struct.pack("<I", value)
     rows = [
         (0x171E, "ILB:\0OLB:\0".encode("utf-16le"), "EDGE:\0LB:\0".encode("utf-16le"), "modern_labels"),
+        # EDGE: is wider than DE:. The final column has room to move its
+        # count right without changing the label, row or callback identity.
+        (0x360, word(0x42200000), word(0x42800000), "edge_count_x"),
         (0x434, word(0x16FC - 0x434 + 1), word(0x171E - 0x434 + 1), "edge_label_pointer"),
         (0xB84, word(0x171E - 0xB84 + 1), word(0x172A - 0xB84 + 1), "lb_label_pointer"),
         # Static labels must retain a valid UTF-16 pointer: the native copier
