@@ -236,7 +236,7 @@ class HostBudgetTests(unittest.TestCase):
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this stale host pin; native code/budget pins stay fixed.
-                '96434e5fe8e686bfa72a475b30cd6aa213e4eb3c9bdfef477f645c29017528a9',
+                '16c656d13c5269069f30ca95f43f4158ee51c578a141f62aede970e555c9bf2a',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

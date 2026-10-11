@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Beta 77 job p48d: put the SOFTDRINK defense v2 into a shipped team PLAY resource (PACK0 entries 307..342).
+"""Beta 77 defense repair for shipped team PLAY resources (PACK0 entries 307..342).
+
+Current manifest rows pin the v0.6 category-menu repair shared with p48o.
+These rows retire unused category roots and remap category references only;
+they preserve every formation, play and node. The bounded defense rebuild
+described below is the older path for explicitly pinned legacy inputs.
 
 Bounded repair, a function of the bytes the defense owns:
   * the defensive formation records the v2 pack re-authors (geometry columns, situation bits 21-29, name pointer),
@@ -17,7 +22,7 @@ like that compile (family 0 plays and offensive formations), so the defense is n
 Usage:
   p48d_repair.py SOURCE.play OUTPUT.play --entry-id 324 --receipt R.json [--retail-image ISO]
                  [--offense-pack P] [--defense-pack P] [--expected-input-sha256 HEX]
-Known inputs are pinned in p48d_repair_manifest.json (v0.5 entry hashes and their exact outputs); a stacked input
+Known inputs are pinned in p48d_repair_manifest.json (input hashes and their exact outputs); a stacked legacy input
 (e.g. after job p48o's offense repair) needs --expected-input-sha256 and the matching offense/defense packs.
 Output creation is exclusive; the input is never overwritten.
 """
@@ -292,6 +297,9 @@ def transform(payload: bytes, source: bytes, ref: bytes, pack: pk.PlaybookPack):
         raise ValueError('Category names changed')
     if ip.menu_link_problems(result):
         raise ValueError('Menu link problems: ' + '; '.join(ip.menu_link_problems(result)))
+    if ip.category_menu_problems(result):
+        raise ValueError('Empty category menus require the p48o rebuild or pinned v0.6 menus repair: '
+                         + '; '.join(ip.category_menu_problems(result)))
     lint = [x.to_json() for x in dlint.lint_resource(result) if x.severity == 'error']
     if lint:
         raise ValueError('Defense linter: ' + json.dumps(lint)[:400])
@@ -332,6 +340,11 @@ def repair_resource(payload: bytes, entry_id: int, *, image: Path = RETAIL_IMAGE
     defense = defense or default_defense(team)
     off_sha, def_sha = sha(offense.read_bytes()), sha(defense.read_bytes())
     manifest = json.loads(MANIFEST.read_text()) if MANIFEST.is_file() else dict(books={})
+    menu_rows = [r for r in manifest['books'].get(str(entry_id), [])
+                 if r.get('repair_kind') == 'category-menus-v1']
+    if any(sha(payload) in (r['input_sha256'], r['output_sha256']) for r in menu_rows):
+        from tools.b77.p48o_repair import repair_category_menus
+        return repair_category_menus(payload, entry_id)
     stacks = [r for r in manifest['books'].get(str(entry_id), [])
               if r['offense_pack_sha256'] == off_sha and r['defense_pack_sha256'] == def_sha]
     before = sha(payload)

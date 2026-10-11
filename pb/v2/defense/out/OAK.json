@@ -1756,8 +1756,8 @@
   "team": "OAK",
   "offense_pack": "data/playbooks/softdrink_oak_modern.2k5book",
   "offense_pack_sha256": "84d5401ecb5f3843083654333b1badc46cd05cf3d475f097925e4961428e0b7d",
-  "source_fingerprint": "8065b86b664f2b56cd2e8f75ee5387f99f526f581bfa09027f5a433c5cf4bb1a",
-  "replacement_sha256": "56f970c18da73f2877279da645032509769bf919339240b8bee400821151cc90",
+  "source_fingerprint": "1654c26c52be79c279aa4fb10595fea6bd66bb7afb1d7194eeabfbe90c19f630",
+  "replacement_sha256": "e7ec9f096c604173f92bf52a3bbf336125dee38b28d6873d95c03f9be147464e",
   "semantic_sha256": "205bdcb972a2599ccd3f80ddf962bf3d979c47c065999eaa5b99357dce01528c",
   "plays": 57,
   "formations": 4,
@@ -1770,6 +1770,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_oak_defense.2k5book",
-  "pack_sha256": "0eab310d50217e2f20c7b78ae85d128c6864eb54ac107c49ae68f7e9ca10f7c8"
+  "pack_sha256": "94b368753105268d01c53bf6580c20b97e2c3753969befbb8a44fac53ac4b8ca"
  }
 }

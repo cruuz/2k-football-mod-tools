@@ -1460,8 +1460,9 @@ def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[st
     with packs._outer_image().OuterImage(target) as archive:
         for entry in archive.entries_with_head(b"PLAY"):
             books += 1
+            raw = archive.read_entry(entry.index)
             problems += [f"book {entry.index}: {problem}"
-                         for problem in inspector.playcall_ui_problems(archive.read_entry(entry.index))]
+                         for problem in (inspector.playcall_ui_problems(raw) + inspector.category_menu_problems(raw))]
     if problems:
         raise RuntimeError("A playbook on this build has unsafe play-call names or menus: " + "; ".join(problems[:4])
                            + (f"; and {len(problems) - 4} more" if len(problems) > 4 else ""))

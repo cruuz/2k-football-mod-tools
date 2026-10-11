@@ -622,6 +622,42 @@ def playcall_ui_problems(resource_or_body: bytes) -> list[str]:
     return problems
 
 
+def category_menu_rows(resource_or_body: bytes) -> list[dict]:
+    """Model the native root preview lookup (0xE10D0, 0xE0BF0, 0xE1060).
+
+    Category masks are distinct from the owning category. The first category
+    with a given code also admits owners whose category has alias flag 0x40.
+    A category without either kind of member returns NULL to 0x181010.
+    """
+    data = bytes(resource_or_body)
+    if len(data) == RESOURCE_HEADER_SIZE + BODY_SIZE:
+        data = data[RESOURCE_HEADER_SIZE:]
+    book = _parse_body(data, asset_id="category-menu", outer_index=-1)
+    codes = [data[CATEGORY_BASE + c.index * CATEGORY_SIZE + 4] for c in book.categories]
+    metadata = [struct.unpack_from("<II", data, FORMATION_AUX_BASE + f.index * FORMATION_AUX_SIZE + 0x48)
+                for f in book.formations]
+    for fi, (owner, mask) in enumerate(metadata):
+        if (owner & 0x3F) >= len(codes) or mask >> len(codes):
+            raise ValidationError(f"Formation {fi} has an out-of-range personnel category")
+    rows = []
+    for c in book.categories:
+        code = codes[c.index] & 0x3F
+        first = next(i for i, v in enumerate(codes) if v & 0x3F == code)
+        members = [fi for fi, (owner, mask) in enumerate(metadata)
+                   if mask & (1 << c.index) or (c.index == first
+                       and codes[owner & 0x3F] & 0xC0 == 0x40
+                       and codes[owner & 0x3F] & 0x3F == code)]
+        rows.append(dict(index=c.index, name=c.name, code=codes[c.index], members=members,
+                         owners=[fi for fi, (owner, _mask) in enumerate(metadata) if owner & 0x3F == c.index]))
+    return rows
+
+
+def category_menu_problems(resource_or_body: bytes) -> list[str]:
+    """Reject root entries whose native preview dereferences a NULL formation."""
+    return [f"category {r['index']} ({r['name']}) has no formation for the native menu preview"
+            for r in category_menu_rows(resource_or_body) if not r['members']]
+
+
 def menu_link_problems(resource_or_body: bytes) -> list[str]:
     """What in a book's formation play menus the game cannot survive or show; empty when the book is sound.
 
@@ -695,6 +731,8 @@ __all__ = [
     "PlaybookNode",
     "PlaybookPlay",
     "corpus_counts",
+    "category_menu_rows",
+    "category_menu_problems",
     "menu_link_problems",
     "playcall_name_problems",
     "playcall_ui_problems",

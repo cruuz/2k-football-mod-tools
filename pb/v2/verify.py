@@ -53,6 +53,14 @@ def decoded_outside_offense(retail: bytes, composed: bytes, v05: bytes, defense_
     fs, ps = ordinary_indices(rb, retail[32:])
     a, b = insp.parse_playbook_resource(composed), insp.parse_playbook_resource(v05)
     ab, bb = composed[32:], v05[32:]
+    def category(body, book, index):
+        off = insp.CATEGORY_BASE + index * insp.CATEGORY_SIZE
+        return book.categories[index].name, body[off + 4:off + 16]
+
+    def membership(body, book, aux):
+        owner, mask = struct.unpack_from('<II', body, aux + 0x48)
+        return (owner & ~0x3F, category(body, book, owner & 0x3F),
+                tuple(sorted(category(body, book, c.index) for c in book.categories if mask & (1 << c.index))))
     plays_diff = [p.index for p in a.plays if p.index not in ps and p.index not in owned_plays and (
         lib.play_chains(ab, p.index) != lib.play_chains(bb, p.index) or p.name != b.plays[p.index].name)]
     forms_diff = []
@@ -62,12 +70,14 @@ def decoded_outside_offense(retail: bytes, composed: bytes, v05: bytes, defense_
         off = insp.FORMATION_BASE + f.index * insp.FORMATION_SIZE
         aux = insp.FORMATION_AUX_BASE + f.index * insp.FORMATION_AUX_SIZE
         if (ab[off + 4:off + insp.FORMATION_SIZE] != bb[off + 4:off + insp.FORMATION_SIZE]
-                or ab[aux:aux + 80] != bb[aux:aux + 80] or f.name != b.formations[f.index].name):
+                or ab[aux:aux + 72] != bb[aux:aux + 72]
+                or membership(ab, a, aux) != membership(bb, b, aux) or f.name != b.formations[f.index].name):
             forms_diff.append(f.index)
     cats_diff = []
+    old_categories = {c.name: category(bb, b, c.index)[1] for c in b.categories}
     for ci in a.categories:
         off = insp.CATEGORY_BASE + ci.index * insp.CATEGORY_SIZE
-        if ab[off + 4:off + 16] != bb[off + 4:off + 16]:
+        if ab[off + 4:off + 16] != old_categories.get(ci.name):
             codes = list(ab[off + 5:off + 16])
             cats_diff.append(dict(index=ci.index, name=ci.name.strip(), offense=lib.is_offense_category(codes)))
     return dict(defense_owned=dict(plays=len(owned_plays), formations=len(owned_forms)),

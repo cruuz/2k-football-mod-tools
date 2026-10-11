@@ -327,6 +327,14 @@ u32 FC mode_ff_ready(u32 manager) {
             body=W((u8 *)body,0x38);
             if(mode_human((u8 *)body)) {
                 S(2740)=body;
+                /* The completed CPU call leaves every offensive actor's
+                 * "arrived at line" bit set. Native reselection only clears
+                 * a prefix of the actor list, so the remaining old bits can
+                 * satisfy 1FEB20 while their new streamed clips still run.
+                 * Retire that readiness before entering a new play call. */
+                for(u8 *p=(u8 *)G(0xE60268);p;p=(u8 *)W(p,0x30))
+                    if(!W(p,0x48) && W(p,0x38)==G(0xE60280))
+                        W((u8 *)W(p,0x10),0x8c)&=~0x01000000U;
                 W((u8 *)W((u8 *)body,12),36)&=~8U;
                 CALL0(0xacb90);
                 CALL0(0x9fbe0);

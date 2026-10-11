@@ -892,6 +892,15 @@ def _scale_allocations(requests):
     out.extend(tail_rows)
     out.append(dict(owner=DIRECTORY_OWNER, kind="read_only", size=PAGE, align=PAGE,
                     va=SCALE_DIRECTORY_VA, raw=SCALE_DIRECTORY))
+    # Check full reservations, including unused code padding and zero-filled
+    # runtime state. Checking emitted bytes alone cannot protect M3's buffers.
+    # Gap and tail placement must obey the same rule as sequential placement.
+    for coordinate in ("va", "raw"):
+        ordered = sorted(out, key=lambda row: row[coordinate])
+        for left, right in zip(ordered, ordered[1:]):
+            _require(left[coordinate] + left["size"] <= right[coordinate],
+                     f"{coordinate} reservation overlap: {left['owner']} {left['kind']} "
+                     f"and {right['owner']} {right['kind']}")
     return out
 
 

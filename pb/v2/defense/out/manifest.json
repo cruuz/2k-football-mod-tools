@@ -1,14 +1,14 @@
 {
  "status": "PROVED OFFLINE (compile, checks, lint); DESIGN (football)",
  "generator": "pb/v2/defense/build.py",
- "version": "2.0.0",
+ "version": "2.0.1",
  "teams": [
   {
    "team": "ARZ",
    "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
    "offense_pack_sha256": "2264ead8e00c5f9985acdca590c11c5a8037f4b12d70133feae321bdd32b02ab",
    "source_fingerprint": "fd722adead9956fdc36b8b57f0ecd6c480ebce5c4aa8ed83cc822502cd94422f",
-   "replacement_sha256": "70b3827cbc0fbc4d93ac69bb3af37490aa4861744526f7d09dfc6f7deae043cd",
+   "replacement_sha256": "ba0853557e7268918c67737eab435b148e8aeffaa27f49780127e9ed5ac64b32",
    "semantic_sha256": "90a4e6ce48bbe7db6ee15adac34628c398ed26b66a717cc3c08379ecda93525c",
    "plays": 64,
    "formations": 4,
@@ -21,14 +21,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_arz_defense.2k5book",
-   "pack_sha256": "882ddd86da50ef61b7b63b89e83e51109bc834a8348bd74ebb89cc5c6767e9c3"
+   "pack_sha256": "d690b8a2da3aa49a4183f4a6900cc01a2dcdacccae5b0b5f7559e37e7e850f16"
   },
   {
    "team": "ATL",
    "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
    "offense_pack_sha256": "34cc7c6c30338e65d66c61b402733bf22fd93451a1820b69d92e78e5ee831bf5",
    "source_fingerprint": "f19a1f2b6844ac54bb3d9c71851b87a13536de3c1be5f33f52ec52678296be30",
-   "replacement_sha256": "0f45c79a5844c19757f8915532fc1c27bd2711b02734f4f44e2e45e28e547e6c",
+   "replacement_sha256": "027dbf4faa9719a26013e40ff553801e653c3d7dcb38ddd84cd042a4e8e4e5fc",
    "semantic_sha256": "700aea95e8642f3659757de60d539160b769a30e1b5e574dd95cf14cf31293a3",
    "plays": 64,
    "formations": 4,
@@ -41,7 +41,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_atl_defense.2k5book",
-   "pack_sha256": "2067d930276528d0a7606795f95ee2e4a4e2ea199487c05a7e1dd8fa2c0652e3"
+   "pack_sha256": "418fe94e057e4c3912df64b967eaea25ab8c6fee2c4e09d32a91e4aecf07fbf3"
   },
   {
    "team": "BAL",
@@ -61,14 +61,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_bal_defense.2k5book",
-   "pack_sha256": "8e33165d6dad439d7ff6d7944c2b0ee449c1f62e3fc358a7406f92996f75bafd"
+   "pack_sha256": "b46be8eb103aa166d3d35f806d2935abd6b66d744464c1bafa77bb9d1448d3d5"
   },
   {
    "team": "BUF",
    "offense_pack": "data/playbooks/softdrink_buf_modern.2k5book",
    "offense_pack_sha256": "8df5b45705a0d41ad6ba0a5fd1b91211fbda8cf8e43274de606470213daa2c50",
-   "source_fingerprint": "163f19e800eb5a35d42ceec8413256001a3bb9afe152d16f06b801a59317bc1a",
-   "replacement_sha256": "69942c2d5f26b630fa6e892f2e38cce8f938d46d50aa4ccaf6136f073f571b5f",
+   "source_fingerprint": "f4c724c448e5124b82e27df7873739281fee4571960d258c321645e25c203d45",
+   "replacement_sha256": "8580d27ea1353f9253945731f87059156b66b552c61ec5004946eec1fe1292a1",
    "semantic_sha256": "ed46331b21b9fadd87591a691112aea87a659ca1d55bd6aabd02a8d75ed712f4",
    "plays": 72,
    "formations": 6,
@@ -81,14 +81,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_buf_defense.2k5book",
-   "pack_sha256": "b5cdbb1d2aec5cefb06f5d5bf4df84431561120a1e9f464a42f5abf4c9268828"
+   "pack_sha256": "36d0f0863811d892492f457d323c4cf0376cbc2eb94e89772f2fef3b40163afc"
   },
   {
    "team": "CAR",
    "offense_pack": "data/playbooks/softdrink_car_modern.2k5book",
    "offense_pack_sha256": "4177fcf63e1636ecfd5353062e56129cea207412dd5745f44164593e648d288f",
    "source_fingerprint": "8aceda0349bf7611e1caecc4042ac37f8c5c750555121c07214a8f01cc2533ec",
-   "replacement_sha256": "042dd01c5d3b7b83b0c77de01c2133c5f0b9d6db6c93f4168166277c0c200694",
+   "replacement_sha256": "a848ae2082cc8aa670e6d37717d781abc33e292f376c86a1814be137e8b2557a",
    "semantic_sha256": "bbb8a35ba9ff5e65ab7ad4ad7d2fb3819994a46cb991292f646977230ee54ad1",
    "plays": 62,
    "formations": 4,
@@ -101,14 +101,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_car_defense.2k5book",
-   "pack_sha256": "b1b02a0552d9499e3931709cede3fb54869fc90128e6b7dda6a9886fa15560f0"
+   "pack_sha256": "21bbac4a61878fe77603d2bb59210edfe0b3d563100a482aae21b8c45c54697e"
   },
   {
    "team": "CHI",
    "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
    "offense_pack_sha256": "d778290293958b6ef7549b9815fbc56fa1494f9b6a0e67f6b58751d640f1eb9b",
    "source_fingerprint": "840215281147f7743a92b47729fb2fe3ae1b3ca922fd9a2240417854c494b5e9",
-   "replacement_sha256": "37aaa902d06ad3805cf324658e38ef65f3cc6fb5771ff23d5656fed225512d5b",
+   "replacement_sha256": "38748e35de9625723437c74107742d007edf89fcd6bce3a74773f843b4bbffe9",
    "semantic_sha256": "4ace3696ac9c237ef1b89a0a6d1fab4f174ba2d86d7cade891a9292635a12311",
    "plays": 64,
    "formations": 4,
@@ -121,14 +121,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_chi_defense.2k5book",
-   "pack_sha256": "6dd2e901fc3b91fc2bf19671f6b733aeb74092e51122938a7b86010c4e432b53"
+   "pack_sha256": "6e173aba2840db2b180ad3b88d7a3a3e3700eb512474ad5f8846caaaa1184a2d"
   },
   {
    "team": "CIN",
    "offense_pack": "data/playbooks/softdrink_cin_modern.2k5book",
    "offense_pack_sha256": "d577f4e11e19f64f0d26dc472df5fe4e3d702694eb5c4e02ef0e239742d60df5",
    "source_fingerprint": "ba43c1e49553e50f19d492b039ec7e96a1dbb6d47450ef9e282d795b61fc6f19",
-   "replacement_sha256": "e354931c6abad1c63db3123f418166d3db81b0d3c6c3809516f204f9b11dc8d3",
+   "replacement_sha256": "0f9692f278b26eacd1de9779483f679c51cee2e5e5abfb4af5ef2940080a6d1c",
    "semantic_sha256": "26a151069f45c4467c5502b29a1b0a0bd8e5e15d02c0b1b492e6d13de459f624",
    "plays": 59,
    "formations": 4,
@@ -141,7 +141,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_cin_defense.2k5book",
-   "pack_sha256": "8876d62ab96af8e0542e9b85082146810aabfacc151b9c96339d38213a4fb528"
+   "pack_sha256": "06969e65b0aeb5541ad433649c0456da5b39082fddb32dc79016738739d7b416"
   },
   {
    "team": "CLE",
@@ -161,14 +161,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_cle_defense.2k5book",
-   "pack_sha256": "0db39951cb76053959bd8031bcfae91cd208b7854ef807afd0ce5e1592981539"
+   "pack_sha256": "01b7990cdbd0b428b5cdeb38ba01ccc79a06cd3526c6c1473023999bd1aa3876"
   },
   {
    "team": "DAL",
    "offense_pack": "data/playbooks/softdrink_dal_modern.2k5book",
    "offense_pack_sha256": "d213cbff6b52a14d3ce6a584f767fc9a40184c02b4375bf03d9e28f69c93faf6",
    "source_fingerprint": "da52124ae798e7834fb9f9272bfadbda2c8ce0d0bb53bf67c440691960f6d06a",
-   "replacement_sha256": "307bc548213ea0469b964dba233e70b86adc41c28182ef2a843cad69df600a74",
+   "replacement_sha256": "31bb65557ad8f6794cb17170f02aae8d39906d23fcbea8b1fec911c9da18eafe",
    "semantic_sha256": "680f49c23e99526c1dbabd69591ca222cd122d674ebbfca743f0e67cbf32ddaf",
    "plays": 76,
    "formations": 5,
@@ -181,14 +181,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_dal_defense.2k5book",
-   "pack_sha256": "c2a1822a6046eabb1fd03680d6e4baf13cc9cccc8dead7fb8a4215e5a26afb77"
+   "pack_sha256": "8aa23bb20cf485177330022a39306ce041a6be3afc43524ac21f2a744d5a8c4a"
   },
   {
    "team": "DEN",
    "offense_pack": "data/playbooks/softdrink_den_modern.2k5book",
    "offense_pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
    "source_fingerprint": "a5d0bbf4818573a5ff427b8ca9ddaa2594eeb1eef7125067a55c8531bd618622",
-   "replacement_sha256": "b0f952c76dc0ba326618a0fb41bd615cb8c48e1a0a7b1cfc052ab62b268ec72d",
+   "replacement_sha256": "bc9f6ef4255f68ad5b67b8cd5df89bf17223753dd0a66ab0b3fde8ae7a618cc5",
    "semantic_sha256": "042a1b30afa9421942815e8260f4d0509a1869ad23138170cb41008f8b47211a",
    "plays": 64,
    "formations": 5,
@@ -201,14 +201,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_den_defense.2k5book",
-   "pack_sha256": "0b161f4ab00c88f267be6534acbe158d74692ef844bd888cbe0a5a7d44846347"
+   "pack_sha256": "6f955aceba85d9140bbf0c0289cf271bd1477381f0f0cdfda5295849da157df8"
   },
   {
    "team": "DET",
    "offense_pack": "data/playbooks/softdrink_det_modern.2k5book",
    "offense_pack_sha256": "079df6e53e7553bd7dac3f2761cdf48d605c588e5986855672944a24c4e84d75",
    "source_fingerprint": "41853872f5516db6dadec6bf08995d1a5ed38a7add58d5a2854dec491d82aff3",
-   "replacement_sha256": "488368750921120dc626a8bc5e3616755d75306620e1a31e697cc686e18dfdcc",
+   "replacement_sha256": "bad20b218aa8c0aa63e93bf96ec8ec70c71b1530ff76693de1e5132196e6d9ae",
    "semantic_sha256": "a3a316f3fcbffaf1e52a32bd125fe205f95b45673ea6997843e46d7b12ac17e2",
    "plays": 64,
    "formations": 4,
@@ -221,14 +221,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_det_defense.2k5book",
-   "pack_sha256": "b99893c62f961df215e79fb2bf02404c7ac92f84ed2926083de0d424b98e155c"
+   "pack_sha256": "5368d0e44763aa8ea88ae61ed22178b76e940dd3364b40815ef752222a6695e4"
   },
   {
    "team": "GB",
    "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
    "offense_pack_sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0",
-   "source_fingerprint": "9015cb2e43a314b334543b678e758c73fea581ee976edb0fb789fb2b97cacf5e",
-   "replacement_sha256": "c16620738b024fd32ae2193b5db2a431e88fe544d9c4b4072f539bce3b45dfa3",
+   "source_fingerprint": "805ccaee5f2813506d81be89ec18d51dd19b46aafebc942930cfc4d7b9892bbd",
+   "replacement_sha256": "d7cd72b0d048b9871f59bee02c4be65f65fd8366d43b9f365f22f50675700b96",
    "semantic_sha256": "55d8cdfefaf1734f22c271cc0958d6f757aba3449fee8705793d0270c3772054",
    "plays": 66,
    "formations": 4,
@@ -241,7 +241,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_gb_defense.2k5book",
-   "pack_sha256": "6db2079743cc6dd6a3a73d626c76dd27dea024cac3af3d5119e0a1c7e7cf3b69"
+   "pack_sha256": "b6581b7eee9fc77e20fd1e95ca692db183e77580bf95d9a3de1b725528320d15"
   },
   {
    "team": "HOU",
@@ -261,14 +261,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_hou_defense.2k5book",
-   "pack_sha256": "be5aedd1089dd1a9b31520e775ea6dfdccbfe577185e1e589ae335362392d647"
+   "pack_sha256": "7714976b7b4b1ed71709ba2ad19093de0dd7e1ca25446ad41158ee35fb135354"
   },
   {
    "team": "IND",
    "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
    "offense_pack_sha256": "7d4229ea711de97a9a7b71c0826177ff62aa973ab76db169dd561517a4f7011a",
    "source_fingerprint": "d6a442e1ffa4d79048bebf9dd5526a66c63721c2b512d8d001e89b6edacb0a48",
-   "replacement_sha256": "9cd3b27c27c29520169be05f119232cdebf9e88cdf172b3c7602006ba530d314",
+   "replacement_sha256": "fbc825e7b6cfd54c11b973210593e3c3857fead7c3684ea8b7a69fd40bf51274",
    "semantic_sha256": "5811fbc48358e9120e46d7add7f1893e6972e35bfdf34596e793bdb55074f1fc",
    "plays": 62,
    "formations": 4,
@@ -281,14 +281,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_ind_defense.2k5book",
-   "pack_sha256": "bd5ec95cc0206f851797031bed59ccbc0ce21f93f56a5745ad7abad5c13e4e99"
+   "pack_sha256": "c5e686b212f5c6e2243dc620a32080053459497a8bc29cc114be119905424d4e"
   },
   {
    "team": "JAX",
    "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
    "offense_pack_sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a",
-   "source_fingerprint": "0b5dd07cb00ed7f378db6843f15285a24d5bfac64d94a9f09253cb0e82730570",
-   "replacement_sha256": "f4863087eb6aa6aa6319cea37ef81e208bfb0e25c600bec6884bfa5752ca5be3",
+   "source_fingerprint": "f558c40a2194056ff190bdaf41212743f149bde426308a3765cb1d3aad70ec28",
+   "replacement_sha256": "dc106476ca612ac902708330f8334b0c4f2c4c0e567ed1c65c943846ebcb6351",
    "semantic_sha256": "a630ff1bc93afd1a7c4ce590602d660fa60628ba924485cddbc86643ae2a87d6",
    "plays": 62,
    "formations": 4,
@@ -301,14 +301,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_jax_defense.2k5book",
-   "pack_sha256": "5610e62136832fe186068316e420b3c566515c21115a9a918cec68005371b609"
+   "pack_sha256": "5cbde2200aad43ce6af11165ffb11d815ecc6583f25374cdcf2b243d93c92662"
   },
   {
    "team": "KC",
    "offense_pack": "data/playbooks/softdrink_kc_modern.2k5book",
    "offense_pack_sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827",
    "source_fingerprint": "71057dc40cca553275f106f3661ab02a54cb04d0da90e7a55709c90e073debb0",
-   "replacement_sha256": "6ce9b45b2fe6dfca5367349a503ac6104a57b3a0af2e87f0f23328602fb40598",
+   "replacement_sha256": "ad682b5680694153ea0e73ec83ad407378fa11d9f10984a5d0d007352f441747",
    "semantic_sha256": "d0941e82d46d3d5362490958c6023d7ad5117e65036c4f7b5c4e35275a42b727",
    "plays": 64,
    "formations": 5,
@@ -321,14 +321,14 @@
    "spy_play": 21,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_kc_defense.2k5book",
-   "pack_sha256": "5ca4873827113ea1c35437f354c1a57cccad4a263b4f88bf9fee08d33932f82d"
+   "pack_sha256": "93bbda3c4a7066e88a0c401a6c852f71757e134b2e473e63d5a5f9e6400705fa"
   },
   {
    "team": "MIA",
    "offense_pack": "data/playbooks/softdrink_mia_modern.2k5book",
    "offense_pack_sha256": "13991509bdcb25d3f3ec84bf23c750f71fbc32df7fc6320789039b5576c65b8d",
-   "source_fingerprint": "f66f8b0274bc4e239309f09bb0988fd54aec8d8d5b00c4ffcba911c8b546c303",
-   "replacement_sha256": "23b7b65f9655e70bfbf92f07af03b76fd2f4d8038ab93e1a004973dbc5de0503",
+   "source_fingerprint": "cb42f79e34730f6161bdb81aaac59b11069a5549fb82f6bce60d43cae926ade3",
+   "replacement_sha256": "1c75d02f72928ada833374f07bbb16860ae689a6537a2f3ea143f0193761aac5",
    "semantic_sha256": "656c5e48bdf6197d4a531fabcd1fdaf793fad74f9ff15189f4af37e0f50a66fe",
    "plays": 72,
    "formations": 4,
@@ -341,14 +341,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_mia_defense.2k5book",
-   "pack_sha256": "faa7a9dbc2dc200551f4575b1b6d9e222b993e21dea835449a1c08188f298a0a"
+   "pack_sha256": "afca81a36816fae5a04fd787876458ae3fd0bef1387e4b4f00f07ee172e3de18"
   },
   {
    "team": "MIN",
    "offense_pack": "data/playbooks/softdrink_min_modern.2k5book",
    "offense_pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
-   "source_fingerprint": "29b163ddd2e3b3bddd0fcadcd1114e7fd3b076734d72e59c007ab8d48afda5b3",
-   "replacement_sha256": "94ace5791e0d99f5b21a2d96e880196fd09fbf3a993630d7923b3227df8d6c64",
+   "source_fingerprint": "1f3d1ec029f99dd8dad91736fcd04b2c7143aed288a769c2868251f5896fc1fb",
+   "replacement_sha256": "046d615faad838649e22fb754a4c9b8fb47dd1a4812eb671d067ce85a1a81369",
    "semantic_sha256": "dcc2bd1880561bcd15549a30f321eae526c4b9752ce1db0032b9e91238df4748",
    "plays": 74,
    "formations": 6,
@@ -361,7 +361,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_min_defense.2k5book",
-   "pack_sha256": "4c9bd667fd5d69fb5236cae3d1e3d9e4d5b86ffb659c57b5f0d3a81a4619bc9c"
+   "pack_sha256": "2531033966089ab1105a5efd3d5909ee2379f886b06364892aa2cbab722c3cef"
   },
   {
    "team": "NE",
@@ -381,14 +381,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_ne_defense.2k5book",
-   "pack_sha256": "221d1592182a315ea396c973789793ee60623a18ff6015f6c11db6810e8cd1b7"
+   "pack_sha256": "60952b12aaba52f09dad73e4a2155ef853bcda983ea8ba777bd0b39f8924c074"
   },
   {
    "team": "NO",
    "offense_pack": "data/playbooks/softdrink_no_modern.2k5book",
    "offense_pack_sha256": "ca64223909dd68b5a09595cf0e8a51d7c833c0638312c27d7f87c30f529f7349",
    "source_fingerprint": "ac886ed0fb9325ad4f5741eee3055231f242b70b4f266063a136b4ac109aa618",
-   "replacement_sha256": "5de15c35bd4af843f2d32dbcf03e9d1a4f6ae3605b32356a5e1eb07b6d030e01",
+   "replacement_sha256": "c7e85a34ecbaf3861a69d83658f72191fec54656b1d78763e22cc6b865504b8b",
    "semantic_sha256": "918f137769949dbe80ee384e76476255bad87784ff3876dd66f10bdfd8db47b8",
    "plays": 64,
    "formations": 4,
@@ -401,14 +401,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_no_defense.2k5book",
-   "pack_sha256": "8cab138070d7b4de03f9e7586af831b529573da3e1b9f35a4693eb5c8c5f6df8"
+   "pack_sha256": "a4a33ab4f642fbcf00920a94b62a89cb5836e316cc73c75241f401cf3b4e6930"
   },
   {
    "team": "NYG",
    "offense_pack": "data/playbooks/softdrink_giants_modern.2k5book",
    "offense_pack_sha256": "5fe5244c54f83405fecc81ca7cd2f022c8522e162b414c305d4c26a084345621",
    "source_fingerprint": "0321ff56c6a9c9ee2fc5b3b0aa3839ce4c534ba4355c21c662880dac9da80b06",
-   "replacement_sha256": "365f1e7866489e525791a766ef679de7e59200961121d2feecadc3eeb7950bad",
+   "replacement_sha256": "f76b59b30d43a9928038c29b4e8d46ad80ba8c405d913370f7dcf6d74a1ed14f",
    "semantic_sha256": "cfb2881320f8fb59599a1b6b723884a262180460960370fb38aeea098900515e",
    "plays": 65,
    "formations": 4,
@@ -421,14 +421,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_nyg_defense.2k5book",
-   "pack_sha256": "871383037d157dd4da52fff1680e0d815ca8b70b071e35bfd5913ca0ece1d0ac"
+   "pack_sha256": "46792e95311a602c0f0fc3b7f4447376f6f79fadd9d145a5adab184c72661512"
   },
   {
    "team": "NYJ",
    "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
    "offense_pack_sha256": "5cbd3597cd68923d242655a53422caa32fbce55d60b5691482ac20f72ffe3c99",
-   "source_fingerprint": "608bad5dcd51550817126bad15bc28a0f506b7bb5a47168c92c7336536ad3144",
-   "replacement_sha256": "b837a1b24d7bf55357a4980e02f8f15d14b7b4432b0fa1951570597f7320b31e",
+   "source_fingerprint": "b293a9f2169f3443f59093f53ec19cb1a1da97ea18ca9cf10609841a70e709c5",
+   "replacement_sha256": "38b60fbb975f1f269a10e22ff1fbd7ac41512900d176463a0e8a2e28cb3541ef",
    "semantic_sha256": "a9db80adc49cdbcba4b585d7bfe26e7de356b32cbfbce3882ca9b3570ec58dc4",
    "plays": 74,
    "formations": 5,
@@ -441,14 +441,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
-   "pack_sha256": "c62a4c12422414d5fe6f69f2b5b73c72e7bcaedcec846b3c82cdd0c12cadce6f"
+   "pack_sha256": "4bd4cfc702c7f5eb575c465df2a883f657ee095b3c2865e97e8a9cca5f2804fc"
   },
   {
    "team": "OAK",
    "offense_pack": "data/playbooks/softdrink_oak_modern.2k5book",
    "offense_pack_sha256": "84d5401ecb5f3843083654333b1badc46cd05cf3d475f097925e4961428e0b7d",
-   "source_fingerprint": "8065b86b664f2b56cd2e8f75ee5387f99f526f581bfa09027f5a433c5cf4bb1a",
-   "replacement_sha256": "56f970c18da73f2877279da645032509769bf919339240b8bee400821151cc90",
+   "source_fingerprint": "1654c26c52be79c279aa4fb10595fea6bd66bb7afb1d7194eeabfbe90c19f630",
+   "replacement_sha256": "e7ec9f096c604173f92bf52a3bbf336125dee38b28d6873d95c03f9be147464e",
    "semantic_sha256": "205bdcb972a2599ccd3f80ddf962bf3d979c47c065999eaa5b99357dce01528c",
    "plays": 57,
    "formations": 4,
@@ -461,14 +461,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_oak_defense.2k5book",
-   "pack_sha256": "0eab310d50217e2f20c7b78ae85d128c6864eb54ac107c49ae68f7e9ca10f7c8"
+   "pack_sha256": "94b368753105268d01c53bf6580c20b97e2c3753969befbb8a44fac53ac4b8ca"
   },
   {
    "team": "PHI",
    "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
    "offense_pack_sha256": "d61766e467351379c85f22e9ed33f7101d2fc5e3d9c08d3d288bdddf56694d10",
-   "source_fingerprint": "2e17c17f492a1feab17597392b0e4971caf11ff978b1d0a3943398463c4b3561",
-   "replacement_sha256": "f30d3be1b94d7315e4ec813f398c0a4c497e7e3aefc1e14789734828d42ea61a",
+   "source_fingerprint": "7b8bcac645acedf684a1d44706ee06a7ba6c513d97659b3443ed3b0228cb338a",
+   "replacement_sha256": "a7508151496b9888399a725b412d08a7e3485767017ba49d9ef633a0d4178c2a",
    "semantic_sha256": "768f3db0d68ee3a06c0a951da5a6042ee77a80eef4020f8b95f60b966be18c83",
    "plays": 66,
    "formations": 4,
@@ -481,7 +481,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_phi_defense.2k5book",
-   "pack_sha256": "0aecb852004a218f8c3de337656200f15dd10deba2b08048319bd6925123f43a"
+   "pack_sha256": "2dc6ad2008b6c31b80cbce0259547273f144298326ea40352f7b30e853df6a67"
   },
   {
    "team": "PIT",
@@ -501,7 +501,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_pit_defense.2k5book",
-   "pack_sha256": "3a087a1b14c81d2574721c14fe705aea266355d31c23d09637dfcd4412e3bef0"
+   "pack_sha256": "ff6e2bcae337e4ce550933d2daa9c89062ff1d1c7fb1347f2de2bc9668af98d8"
   },
   {
    "team": "SD",
@@ -521,14 +521,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_sd_defense.2k5book",
-   "pack_sha256": "918f518aec9ff4879bb64260ddb54bbad4d0f36fe2b78a2b7ddb58df742bec82"
+   "pack_sha256": "4fd6fafd3534152f0362086875855002c5e981c4f3fa8ebc5d2e13ec3bc468db"
   },
   {
    "team": "SEA",
    "offense_pack": "data/playbooks/softdrink_sea_modern.2k5book",
    "offense_pack_sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157",
    "source_fingerprint": "4db6e188be96f6548aaa1d12885dd4797e54686193d3e0fd92c6d926c5e73154",
-   "replacement_sha256": "b8ebafbc3a6ad6380d8122f436584ef3be0075c2771c67694a54ad5184a13015",
+   "replacement_sha256": "40bd0be5dbe960c9190dffa7a7768547b529d54acc08c3ab6f3758966084d507",
    "semantic_sha256": "f4bf143331257167c73599d1d20f12d7fd4d8c821b4794cfc650d9d1d77e6055",
    "plays": 63,
    "formations": 4,
@@ -541,14 +541,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_sea_defense.2k5book",
-   "pack_sha256": "a3b32e13d0d9ae8f9eee28f427f2198781a43d0ba1a0ade753e39935b2c3f554"
+   "pack_sha256": "db3ca6bac691dff11435700761d6cd9d7ab497b592e4fbde76a08d32a2f3b4d8"
   },
   {
    "team": "SF",
    "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
    "offense_pack_sha256": "645a595b9c3554a4aebd4d8c5bd7a06c19b3ce658c1d08bc7263fe02e1cba650",
-   "source_fingerprint": "21aca03e4c63af96617b4ce906ec00a875f7f49a1cd03b9d1b8eadeb67f911bc",
-   "replacement_sha256": "6607e629fef21d8274d0825232a459e3c834d0595a48049db3305effff0e46e9",
+   "source_fingerprint": "b6ad6658c073585a3b1bf685a9d5add9ed41c3c026d3105797cdf25e3bc615f6",
+   "replacement_sha256": "645f224f2b6cf82f1d5a54676dde3361916c1b49304557ef86f1f5dbc131cdbb",
    "semantic_sha256": "1a63e06fb5245ea35c8785e97be841d8b8dd0ed0262cebc1c95fb309f5c16150",
    "plays": 64,
    "formations": 4,
@@ -561,14 +561,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_sf_defense.2k5book",
-   "pack_sha256": "3e6a4f2ffefe5d16bc0e8af43ae918c1204052e90788bc38331a55914e14cae2"
+   "pack_sha256": "658aea4f0b7ce207cd65413ae09385b40e51988b3c17315f74c7613d2e32c101"
   },
   {
    "team": "STL",
    "offense_pack": "data/playbooks/softdrink_stl_modern.2k5book",
    "offense_pack_sha256": "ce87d2237e4336cfe3994079129c68b0af192921aeee72988ac4174247862061",
    "source_fingerprint": "0396eadccabe3ee9e1730b1d24caf0d33c9f02ec9a084f46dfd38a4a2d58dbc5",
-   "replacement_sha256": "2d982de10aab275aa455a3a4094f79abc84f0aa9f25cc39779ffa379a57f8f5b",
+   "replacement_sha256": "ba92529771fad68ceed973120235f414d9a99bccb66c65f8ec1863d796f53da0",
    "semantic_sha256": "f3917b778f4155dcaf6ee51075b7e452f203965c2130c0e7abdc086d39159069",
    "plays": 63,
    "formations": 4,
@@ -581,14 +581,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_stl_defense.2k5book",
-   "pack_sha256": "3b9228401fa7a7433da010dd4f63f468133539d7f0ba319e011ef66fff6384c0"
+   "pack_sha256": "75b5ed84ff9a0186582c087a90d1e0e00e6eab7f7e42388a50962ee341c78361"
   },
   {
    "team": "TB",
    "offense_pack": "data/playbooks/softdrink_tb_modern.2k5book",
    "offense_pack_sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1",
-   "source_fingerprint": "cde2377c42d794ea14ef154943b5a44ac470e63f8b505cb63e5dc720b03796f8",
-   "replacement_sha256": "abf805d73e1d0587ea893c54f42d48f14642d7241bf205dc7e2cbf80ae09b182",
+   "source_fingerprint": "a6c86df0d91a1823cf03bf4a806291efc2ad480e0f45111a8fdc88cd0d7819ea",
+   "replacement_sha256": "1ccd50ba6007c8f93ae0940263b502a5ee618eed346a10d8100c9164f5acb309",
    "semantic_sha256": "f47724b2ac35a9599a06c6881ace511187e40aeb36c15bff3f2eff958dec5eaa",
    "plays": 68,
    "formations": 5,
@@ -601,14 +601,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_tb_defense.2k5book",
-   "pack_sha256": "ff0f8823433ba086bfda5829149b8f7187408837de5aae19b14e2426f1cb74a3"
+   "pack_sha256": "acb28c03e910880d96e1066b85477559eebad6477984ab17e0f91e15674de1e7"
   },
   {
    "team": "TEN",
    "offense_pack": "data/playbooks/softdrink_ten_modern.2k5book",
    "offense_pack_sha256": "40d928443b74679d4ed0adc5ad3ed6068e207c9918b13046664f2c950c04d844",
    "source_fingerprint": "c4d64370e1850ad3f707aad6dd93ccd272836a93286561fca051852ee0061be0",
-   "replacement_sha256": "f7bf9c14a82714d194dece969792ba1eff8603023d8ea12ecd2c5cc4aafe9374",
+   "replacement_sha256": "fa668e684684898dfa25a2b886de974f0aff95106a3a3b9b00f8da51272c2c97",
    "semantic_sha256": "db6de2276a7ea488dbcc48edc6efb28249128245e5a264f3fa1d29d6265dad52",
    "plays": 72,
    "formations": 5,
@@ -621,14 +621,14 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_ten_defense.2k5book",
-   "pack_sha256": "0f1f204f1ecfc5de227e8a615a4bc061d31f1d56ef1a774c8ca47907b958979d"
+   "pack_sha256": "89272b2e9a314b7f0777a49ff7f6975c020c4278221142dbb9a2c29ad022cabb"
   },
   {
    "team": "WAS",
    "offense_pack": "data/playbooks/softdrink_was_modern.2k5book",
    "offense_pack_sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733",
    "source_fingerprint": "c1e9e5365f3233fa4f08cd10f117013bacdb05da480978b67105bfef29eb336a",
-   "replacement_sha256": "0b678c2c90cae18a31ffd9eb27a252dfcdc8a2bfc32509717662de66d074ddf7",
+   "replacement_sha256": "d0bbfa26ff692d2ceadd70348b25702076613b10d4547b05c1e35bb7f6be9661",
    "semantic_sha256": "6665d7782e50d9ae559437ae677fef38a9d61a58585e45e8c57e6f5e7423b28a",
    "plays": 72,
    "formations": 5,
@@ -641,7 +641,7 @@
    "spy_play": null,
    "native_scoring_faults": 0,
    "pack": "data/playbooks/softdrink_was_defense.2k5book",
-   "pack_sha256": "c0a7619c35f3150f27d9112ca844de77ee625f6c2106e03ef0a01fac5d27bd00"
+   "pack_sha256": "808d0c64bd0ebb53a1a9cdd09654e1ef4eb2bf9ac5877831098c00e4de4c195a"
   }
  ]
 }

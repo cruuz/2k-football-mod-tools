@@ -70,6 +70,10 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    # Offensive arrival flags and the streamed-clip prefetch gate.
+    (0x1feb20, 0x7c, "b6b6cdd4ab5eeed24dfe1c5972a48acd34c9ac08be4a313087a6432079d0efeb"),
+    (0x1ff2d0, 0xe2, "ddc7d47e21c94f2e1f09b82cb26140f2758f53ae6d6ff33bc41cf66884ba012f"),
+    (0x1ff920, 0x20, "6033bba345b727c5b52ac1ac07e5b2dce326b4bf1d2101d74cd0cc169fdef43e"),
     (0x9fbe0, 0x41, "c00bfff2b13dd91660707a54bbae6d5d792f750928f56b3dd4e925abfe51621b"),
     (0xacb90, 0x17, "9b2a5dc083a819159900424bbdadfaf7e001024da8f0202e969e8c4bc878606e"),
     (0xaca80, 0x48, "74f13a622b24bf44572181b9f6ff4500667004426695de90e31b10dd89fdf92e"),

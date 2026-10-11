@@ -41,7 +41,7 @@ from mod_editor.core import nfl2k5_play_codec as codec  # noqa: E402
 from mod_editor.core import nfl2k5_defense_lint as dlint  # noqa: E402
 
 OUT = HERE / 'out'
-VERSION = '2.0.0'
+VERSION = '2.0.1'
 AUTHOR = 'SOFTDRINK / Claude Opus 5.5 (p48d)'
 NEUTRAL_START = (0x1B, [0, 0, 0, 0, 0, 0])
 PRESSURE_BIT = 0x10000
@@ -971,7 +971,9 @@ def plan_team(team: str, source: bytes, library: Library, profiles, rates_all) -
         # PROVED OFFLINE (0x2093F0, defensive branch): same-code personnel groups are drawn with equal weight and no
         # formation rating, so a Bear in its own code-13 group is a coin flip on every base-personnel snap.  When the
         # 4-3 group fields the same personnel, the Bear joins it (donor = the 4-3 record: its personnel words) and the
-        # formation ratings pick it on short yardage.
+        # formation ratings pick it on short yardage. The pack compiler MUST
+        # retire the now-unreferenced Bear category and remap category indices;
+        # leaving that root entry present causes the 0x17FEDB preview null read.
         host = next((roles[k] for k in ('base', 'base2') if k in roles and roles[k].type_code == 5
                      and roles[k].codes == bear.codes), None)
         if host is not None:
@@ -1259,6 +1261,8 @@ def compile_and_check(source: bytes, pack: pk.PlaybookPack, xbe: bytes):
     if not check.ok:
         raise ValueError(check.text())
     result = pk.apply_pack_to_resource(source, pack, xbe=xbe)
+    if ip.category_menu_problems(result.replacement):
+        raise ValueError('; '.join(ip.category_menu_problems(result.replacement)))
     lint = [f for f in dlint.lint_resource(result.replacement) if f.severity == 'error']
     return check, result, lint
 

@@ -225,7 +225,7 @@
     4,
     4
    ],
-   "merged_into_category": 10,
+   "merged_into_category": 9,
    "positions": [
     [
      200,
@@ -1880,8 +1880,8 @@
   "team": "JAX",
   "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
   "offense_pack_sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a",
-  "source_fingerprint": "0b5dd07cb00ed7f378db6843f15285a24d5bfac64d94a9f09253cb0e82730570",
-  "replacement_sha256": "f4863087eb6aa6aa6319cea37ef81e208bfb0e25c600bec6884bfa5752ca5be3",
+  "source_fingerprint": "f558c40a2194056ff190bdaf41212743f149bde426308a3765cb1d3aad70ec28",
+  "replacement_sha256": "dc106476ca612ac902708330f8334b0c4f2c4c0e567ed1c65c943846ebcb6351",
   "semantic_sha256": "a630ff1bc93afd1a7c4ce590602d660fa60628ba924485cddbc86643ae2a87d6",
   "plays": 62,
   "formations": 4,
@@ -1894,6 +1894,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_jax_defense.2k5book",
-  "pack_sha256": "5610e62136832fe186068316e420b3c566515c21115a9a918cec68005371b609"
+  "pack_sha256": "5cbde2200aad43ce6af11165ffb11d815ecc6583f25374cdcf2b243d93c92662"
  }
 }

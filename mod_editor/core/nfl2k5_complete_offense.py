@@ -342,6 +342,10 @@ def compile_offense(resource, pack, *, asset_id):
     resource = original
     diffs = writer._difference_ranges(resource, rebuilt)
     require(all(i in owned for a,b in diffs for i in range(a,b)), 'Complete offense changed an unowned byte')
+    rebuilt, category_menus = writer.compact_unused_categories(rebuilt, trim_name_tail=True)
+    final = insp.parse_playbook_resource(rebuilt, asset_id=asset_id)
+    new = rebuilt[32:]
+    diffs = writer._difference_ranges(resource, rebuilt)
     digest = lambda raw: hashlib.sha256(raw).hexdigest()
     report = dict(schema=REPORT_SCHEMA, status='PROVED OFFLINE', asset_id=asset_id,
                   source_sha256=digest(resource), replacement_sha256=digest(rebuilt),
@@ -355,6 +359,7 @@ def compile_offense(resource, pack, *, asset_id):
                   pool_strategy='exact chain/string interning; stable indices',
                   checkdown_routes=checkdown_routes,
                   execution_fixes=dict(schema=lint.FIX_SCHEMA, plays=execution_fixes),
+                  category_menus=category_menus,
                   runtime_witness=False)
     return writer.CompiledFormationPlayResource(asset_id, 'complete-offense:'+asset_id, digest(resource), digest(rebuilt),
         sum(b-a for a,b in diffs), diffs, (), (), tuple(sorted(fs)), tuple(sorted(ps)), rebuilt, final, report)

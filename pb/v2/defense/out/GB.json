@@ -1977,8 +1977,8 @@
   "team": "GB",
   "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
   "offense_pack_sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0",
-  "source_fingerprint": "9015cb2e43a314b334543b678e758c73fea581ee976edb0fb789fb2b97cacf5e",
-  "replacement_sha256": "c16620738b024fd32ae2193b5db2a431e88fe544d9c4b4072f539bce3b45dfa3",
+  "source_fingerprint": "805ccaee5f2813506d81be89ec18d51dd19b46aafebc942930cfc4d7b9892bbd",
+  "replacement_sha256": "d7cd72b0d048b9871f59bee02c4be65f65fd8366d43b9f365f22f50675700b96",
   "semantic_sha256": "55d8cdfefaf1734f22c271cc0958d6f757aba3449fee8705793d0270c3772054",
   "plays": 66,
   "formations": 4,
@@ -1991,6 +1991,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_gb_defense.2k5book",
-  "pack_sha256": "6db2079743cc6dd6a3a73d626c76dd27dea024cac3af3d5119e0a1c7e7cf3b69"
+  "pack_sha256": "b6581b7eee9fc77e20fd1e95ca692db183e77580bf95d9a3de1b725528320d15"
  }
 }

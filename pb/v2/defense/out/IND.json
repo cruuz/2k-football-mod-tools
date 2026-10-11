@@ -1898,7 +1898,7 @@
   "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
   "offense_pack_sha256": "7d4229ea711de97a9a7b71c0826177ff62aa973ab76db169dd561517a4f7011a",
   "source_fingerprint": "d6a442e1ffa4d79048bebf9dd5526a66c63721c2b512d8d001e89b6edacb0a48",
-  "replacement_sha256": "9cd3b27c27c29520169be05f119232cdebf9e88cdf172b3c7602006ba530d314",
+  "replacement_sha256": "fbc825e7b6cfd54c11b973210593e3c3857fead7c3684ea8b7a69fd40bf51274",
   "semantic_sha256": "5811fbc48358e9120e46d7add7f1893e6972e35bfdf34596e793bdb55074f1fc",
   "plays": 62,
   "formations": 4,
@@ -1911,6 +1911,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_ind_defense.2k5book",
-  "pack_sha256": "bd5ec95cc0206f851797031bed59ccbc0ce21f93f56a5745ad7abad5c13e4e99"
+  "pack_sha256": "c5e686b212f5c6e2243dc620a32080053459497a8bc29cc114be119905424d4e"
  }
 }

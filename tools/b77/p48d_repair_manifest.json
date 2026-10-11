@@ -3,418 +3,354 @@
  "books": {
   "307": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "ARZ",
     "input_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
-    "output_sha256": "d36068980a207b03c45dc3b065b5cc614d0c90483c043196a42c8f01b931cd73",
+    "output_sha256": "d6637778dc118dea1c9922a58b3833376ffac6c2cfb85a1c911a117ea9ba4261",
     "offense_pack_sha256": "2264ead8e00c5f9985acdca590c11c5a8037f4b12d70133feae321bdd32b02ab",
-    "defense_pack_sha256": "882ddd86da50ef61b7b63b89e83e51109bc834a8348bd74ebb89cc5c6767e9c3",
-    "node_count": 1823,
-    "changed_bytes": 18386,
-    "scopes": 550
+    "defense_pack_sha256": "d690b8a2da3aa49a4183f4a6900cc01a2dcdacccae5b0b5f7559e37e7e850f16"
    }
   ],
   "308": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "ATL",
     "input_sha256": "e8e870f24a1e7dd76f3a8302868c14ad0844027f713b440c1417c82e03e9283c",
-    "output_sha256": "f862ef69cc81e43f354c3040bbfca632b7ae871c13b91a0d8292a3ae09c2a82f",
+    "output_sha256": "a8d55abcab33a13f7f3c610cf93f5d53cc753f5562fdeac6d96ce9a48795d4f4",
     "offense_pack_sha256": "34cc7c6c30338e65d66c61b402733bf22fd93451a1820b69d92e78e5ee831bf5",
-    "defense_pack_sha256": "2067d930276528d0a7606795f95ee2e4a4e2ea199487c05a7e1dd8fa2c0652e3",
-    "node_count": 1757,
-    "changed_bytes": 17833,
-    "scopes": 521
+    "defense_pack_sha256": "418fe94e057e4c3912df64b967eaea25ab8c6fee2c4e09d32a91e4aecf07fbf3"
    }
   ],
   "309": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "BAL",
     "input_sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f",
-    "output_sha256": "8e4cf9473b00eb1b92a32e527630f3fdb681dff21d8a0af7d83e519ad0148f86",
+    "output_sha256": "5e08a53461beecdc89d38756b997e24a47708466fcf9d98821cf2c8728750d5f",
     "offense_pack_sha256": "fbbccc7cac6540cf27a5e3f2702e3c547b1c6445f626254ab513c8fdca2cf6ce",
-    "defense_pack_sha256": "8e33165d6dad439d7ff6d7944c2b0ee449c1f62e3fc358a7406f92996f75bafd",
-    "node_count": 1866,
-    "changed_bytes": 19584,
-    "scopes": 540
+    "defense_pack_sha256": "b46be8eb103aa166d3d35f806d2935abd6b66d744464c1bafa77bb9d1448d3d5"
    }
   ],
   "310": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "BUF",
     "input_sha256": "7f40466ec93422843ecaca147831f24ff71a607e089730e9b738783f5b377152",
-    "output_sha256": "d97b6cf332c39823df4383988cd953816ea75cec8520ae95a8441707ede0b300",
+    "output_sha256": "d6f74a505925948f1bcc5aaab18b0b6bb099f23bad66e3589da9f62d14b237c4",
     "offense_pack_sha256": "8df5b45705a0d41ad6ba0a5fd1b91211fbda8cf8e43274de606470213daa2c50",
-    "defense_pack_sha256": "b5cdbb1d2aec5cefb06f5d5bf4df84431561120a1e9f464a42f5abf4c9268828",
-    "node_count": 1822,
-    "changed_bytes": 19108,
-    "scopes": 552
+    "defense_pack_sha256": "36d0f0863811d892492f457d323c4cf0376cbc2eb94e89772f2fef3b40163afc"
    }
   ],
   "311": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "CAR",
     "input_sha256": "962e759ad18e62e40552e25d0ce6208ed465462e4bf3b48491ba3509298a1e24",
-    "output_sha256": "4661b522882e11daf2ae204c60819edcaf87e9dcdb56cb93bc056dc1ecd5d7d5",
+    "output_sha256": "576359bcf097d1c2f8c733e4815099f6d3bcb78e827ec7ffcac1add3d9a097ee",
     "offense_pack_sha256": "4177fcf63e1636ecfd5353062e56129cea207412dd5745f44164593e648d288f",
-    "defense_pack_sha256": "b1b02a0552d9499e3931709cede3fb54869fc90128e6b7dda6a9886fa15560f0",
-    "node_count": 1838,
-    "changed_bytes": 19384,
-    "scopes": 557
+    "defense_pack_sha256": "21bbac4a61878fe77603d2bb59210edfe0b3d563100a482aae21b8c45c54697e"
    }
   ],
   "312": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "CHI",
     "input_sha256": "9a9085d91c8a8c98b41923836a6f6375eafce18601d62a2e7155714384c12bea",
-    "output_sha256": "e339bb9fd221b893413285b20cd98c29d2867a7cf65dd4f99cfb085fe8cc05fd",
+    "output_sha256": "b88fe806961b57cb8a262e59ff46747c322588291d7f0f0787e47f780701c9c4",
     "offense_pack_sha256": "d778290293958b6ef7549b9815fbc56fa1494f9b6a0e67f6b58751d640f1eb9b",
-    "defense_pack_sha256": "6dd2e901fc3b91fc2bf19671f6b733aeb74092e51122938a7b86010c4e432b53",
-    "node_count": 1825,
-    "changed_bytes": 18959,
-    "scopes": 547
+    "defense_pack_sha256": "6e173aba2840db2b180ad3b88d7a3a3e3700eb512474ad5f8846caaaa1184a2d"
    }
   ],
   "313": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "CIN",
     "input_sha256": "26bf92c614c870d7f588dd4e83751754a176234cfd913feb48099dc59b5b00c7",
-    "output_sha256": "ac0a56f9b3771bcbbea6a8bb5908c91f924790927b7e8866a08f4eb40d0b4a34",
+    "output_sha256": "bb76093264bd497d91a2aba22b2f8842774bfa45a938b29f515e9bfe26e5c096",
     "offense_pack_sha256": "d577f4e11e19f64f0d26dc472df5fe4e3d702694eb5c4e02ef0e239742d60df5",
-    "defense_pack_sha256": "8876d62ab96af8e0542e9b85082146810aabfacc151b9c96339d38213a4fb528",
-    "node_count": 1861,
-    "changed_bytes": 16918,
-    "scopes": 559
+    "defense_pack_sha256": "06969e65b0aeb5541ad433649c0456da5b39082fddb32dc79016738739d7b416"
    }
   ],
   "314": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "CLE",
     "input_sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd",
-    "output_sha256": "be27752fe3bb6d34fa03dd1c1056b53fc92c49814643de6328db2ae8b35ec76b",
+    "output_sha256": "a69ffacfbd6c0faefe86647b8c83ffb2cb600c0239d2e90cb4eea32bfab05cfd",
     "offense_pack_sha256": "014489ff277de7c04986abf9f03209a66c64965127a08dc6f09fc3924afc7552",
-    "defense_pack_sha256": "0db39951cb76053959bd8031bcfae91cd208b7854ef807afd0ce5e1592981539",
-    "node_count": 1817,
-    "changed_bytes": 18692,
-    "scopes": 556
+    "defense_pack_sha256": "01b7990cdbd0b428b5cdeb38ba01ccc79a06cd3526c6c1473023999bd1aa3876"
    }
   ],
   "315": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "DAL",
     "input_sha256": "30e7d59b713b1cc33925935dd7b774c6357b57be63d116700685e363ccece633",
-    "output_sha256": "fb21a8467f3f45fa9d8d91022a9639a6651351d70a92597fd8ede92c4cebc19c",
+    "output_sha256": "e8e59f2ad50a15bbc77b4274e2bbec65021b48a9effe3b7aa55bc0e253e50658",
     "offense_pack_sha256": "d213cbff6b52a14d3ce6a584f767fc9a40184c02b4375bf03d9e28f69c93faf6",
-    "defense_pack_sha256": "c2a1822a6046eabb1fd03680d6e4baf13cc9cccc8dead7fb8a4215e5a26afb77",
-    "node_count": 1859,
-    "changed_bytes": 19044,
-    "scopes": 541
+    "defense_pack_sha256": "8aa23bb20cf485177330022a39306ce041a6be3afc43524ac21f2a744d5a8c4a"
    }
   ],
   "316": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "DEN",
     "input_sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
-    "output_sha256": "a4e8891656ad6ba1869979fec8f94db03d3186f82c41db5b1128204c9f5a2c48",
+    "output_sha256": "27cf97e5561825b6f0413c96c8f96dab03631cae12ba3a0323bb7535e306231e",
     "offense_pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
-    "defense_pack_sha256": "0b161f4ab00c88f267be6534acbe158d74692ef844bd888cbe0a5a7d44846347",
-    "node_count": 1773,
-    "changed_bytes": 19098,
-    "scopes": 553
+    "defense_pack_sha256": "6f955aceba85d9140bbf0c0289cf271bd1477381f0f0cdfda5295849da157df8"
    }
   ],
   "317": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "DET",
     "input_sha256": "47a4596256f751f4a9610286c9a2db499fd9afdd9ea43e15b3abc6503d3cfafb",
-    "output_sha256": "70cd7f3da08bfd8a5480f755ecc563e7b3e73aa484d6c23b36a372d7bb7f7c61",
+    "output_sha256": "698f84f3d02c1db7df86f0b75ee09cc9ebc3905a44958c1b1c30a33c80bd13cc",
     "offense_pack_sha256": "079df6e53e7553bd7dac3f2761cdf48d605c588e5986855672944a24c4e84d75",
-    "defense_pack_sha256": "b99893c62f961df215e79fb2bf02404c7ac92f84ed2926083de0d424b98e155c",
-    "node_count": 1791,
-    "changed_bytes": 18168,
-    "scopes": 524
+    "defense_pack_sha256": "5368d0e44763aa8ea88ae61ed22178b76e940dd3364b40815ef752222a6695e4"
    }
   ],
   "319": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "GB",
     "input_sha256": "8beb89573ff18514b53270d21fe04aef746fd75ee1ee8c23bb88fe634a456437",
-    "output_sha256": "c9d0c365744354cf86dc75760381714318353064f9cf05bbb6abe72533ed524b",
+    "output_sha256": "be9325deffb09b060fc34392695dfcf1b4d94ed9a8dcc16cb5586171168a7bba",
     "offense_pack_sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0",
-    "defense_pack_sha256": "6db2079743cc6dd6a3a73d626c76dd27dea024cac3af3d5119e0a1c7e7cf3b69",
-    "node_count": 1820,
-    "changed_bytes": 17187,
-    "scopes": 549
+    "defense_pack_sha256": "b6581b7eee9fc77e20fd1e95ca692db183e77580bf95d9a3de1b725528320d15"
    }
   ],
   "321": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "HOU",
     "input_sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a",
-    "output_sha256": "e021e2302ec5b033a8b5515d64602c7a53fbaebba1908aed59871ec9409130a1",
+    "output_sha256": "905c646e21fadd9550f1abf88b9c61f07b3f7aa1b0e2ba53d16f404251b4017a",
     "offense_pack_sha256": "fba36fc3938afb712d7b27e7b5fefd2a1bb78d78e4dda391d602db702fe85202",
-    "defense_pack_sha256": "be5aedd1089dd1a9b31520e775ea6dfdccbfe577185e1e589ae335362392d647",
-    "node_count": 1845,
-    "changed_bytes": 18635,
-    "scopes": 552
+    "defense_pack_sha256": "7714976b7b4b1ed71709ba2ad19093de0dd7e1ca25446ad41158ee35fb135354"
    }
   ],
   "322": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "IND",
     "input_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
-    "output_sha256": "5c102d7b2e1f7de46d40fa5ff9813c27be24b84a304c1a3c105272076270f483",
+    "output_sha256": "c1aaa0470a08250f2b646b1eb029c4d591f3dcc12d97dc267a0a9a718f3e3fd8",
     "offense_pack_sha256": "7d4229ea711de97a9a7b71c0826177ff62aa973ab76db169dd561517a4f7011a",
-    "defense_pack_sha256": "bd5ec95cc0206f851797031bed59ccbc0ce21f93f56a5745ad7abad5c13e4e99",
-    "node_count": 1823,
-    "changed_bytes": 18627,
-    "scopes": 551
+    "defense_pack_sha256": "c5e686b212f5c6e2243dc620a32080053459497a8bc29cc114be119905424d4e"
    }
   ],
   "323": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "JAX",
     "input_sha256": "01b8ce8e9fef0ff66d7fe174169cb34fba2db27b8a910a8f01942db93298568a",
-    "output_sha256": "d829bdaf05052b36bf0abec3e2a9f466de1b46113cbfa756aad0dad2a65863d3",
+    "output_sha256": "98a0e01b59ea6a13f5167bd4070f1a57252d883a2d112b7f86d075103b8d4171",
     "offense_pack_sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a",
-    "defense_pack_sha256": "5610e62136832fe186068316e420b3c566515c21115a9a918cec68005371b609",
-    "node_count": 1882,
-    "changed_bytes": 18191,
-    "scopes": 553
+    "defense_pack_sha256": "5cbde2200aad43ce6af11165ffb11d815ecc6583f25374cdcf2b243d93c92662"
    }
   ],
   "324": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "KC",
     "input_sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666",
-    "output_sha256": "3613229ef2e03d11c785e329e13b0c1e57fee33d8b8e28f90a4e8628a787a9aa",
+    "output_sha256": "1af24c521062068c84220091eeecdedb057785f3f407b42c32e105358a1aaa84",
     "offense_pack_sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827",
-    "defense_pack_sha256": "5ca4873827113ea1c35437f354c1a57cccad4a263b4f88bf9fee08d33932f82d",
-    "node_count": 1768,
-    "changed_bytes": 18426,
-    "scopes": 552
+    "defense_pack_sha256": "93bbda3c4a7066e88a0c401a6c852f71757e134b2e473e63d5a5f9e6400705fa"
    }
   ],
   "325": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "MIA",
     "input_sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928",
-    "output_sha256": "b2fc9047463fff5c55dd0a3835a1f8fef46a67c561478d7b62ddee07e92e55f0",
+    "output_sha256": "05d4f6822fed9affdbf525a202d516f7c852ff26af48ba8d4a90de9a99e2644e",
     "offense_pack_sha256": "13991509bdcb25d3f3ec84bf23c750f71fbc32df7fc6320789039b5576c65b8d",
-    "defense_pack_sha256": "faa7a9dbc2dc200551f4575b1b6d9e222b993e21dea835449a1c08188f298a0a",
-    "node_count": 1943,
-    "changed_bytes": 19486,
-    "scopes": 528
+    "defense_pack_sha256": "afca81a36816fae5a04fd787876458ae3fd0bef1387e4b4f00f07ee172e3de18"
    }
   ],
   "326": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "MIN",
     "input_sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d",
-    "output_sha256": "54d55a9a0399eb53677a09f9074d6d966b76474d3c19f2dc7bad4746aafdc549",
+    "output_sha256": "9443ae9a248267470a9e450592a14a81ea19334888d954f0b8cdacc52f368828",
     "offense_pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
-    "defense_pack_sha256": "4c9bd667fd5d69fb5236cae3d1e3d9e4d5b86ffb659c57b5f0d3a81a4619bc9c",
-    "node_count": 1750,
-    "changed_bytes": 13293,
-    "scopes": 552
+    "defense_pack_sha256": "2531033966089ab1105a5efd3d5909ee2379f886b06364892aa2cbab722c3cef"
    }
   ],
   "327": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "NE",
     "input_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
-    "output_sha256": "12460c3b43cef01f9a134df71aed77b1b180e095812bcdb8071c9dfb87c554a1",
+    "output_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
     "offense_pack_sha256": "7fc382cb6ef22fca85f73208548beff9705d4ad0c22849aec10cb4fc00e0e585",
-    "defense_pack_sha256": "221d1592182a315ea396c973789793ee60623a18ff6015f6c11db6810e8cd1b7",
-    "node_count": 1865,
-    "changed_bytes": 18113,
-    "scopes": 515
+    "defense_pack_sha256": "60952b12aaba52f09dad73e4a2155ef853bcda983ea8ba777bd0b39f8924c074"
    }
   ],
   "328": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "NO",
     "input_sha256": "a5f965679393f5d0d58776eb61acffdbf3c409a8776de949069a5aa86a05a169",
-    "output_sha256": "330de3748f87b0e1b219ed418ab72c2aa5fa0cd545559420d21eac4f8ef27693",
+    "output_sha256": "d0828f60aa41e44815bbbe815fc30680cdfe1c1853226087f4b65c9293a2d6dd",
     "offense_pack_sha256": "ca64223909dd68b5a09595cf0e8a51d7c833c0638312c27d7f87c30f529f7349",
-    "defense_pack_sha256": "8cab138070d7b4de03f9e7586af831b529573da3e1b9f35a4693eb5c8c5f6df8",
-    "node_count": 1886,
-    "changed_bytes": 18879,
-    "scopes": 541
+    "defense_pack_sha256": "a4a33ab4f642fbcf00920a94b62a89cb5836e316cc73c75241f401cf3b4e6930"
    }
   ],
   "329": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "NYG",
     "input_sha256": "d47ce3ed25f85a9dd40abe5641788d78ef410fda012cc9532a45546513f38a57",
-    "output_sha256": "143a34b965d311b27a84143aa39eaa73a1a475b75bc2a448964d423438ed321b",
+    "output_sha256": "5a945343bfba0a340dba4c6569cf5382da80938b3fdfe851ba653457f8eecec8",
     "offense_pack_sha256": "5fe5244c54f83405fecc81ca7cd2f022c8522e162b414c305d4c26a084345621",
-    "defense_pack_sha256": "871383037d157dd4da52fff1680e0d815ca8b70b071e35bfd5913ca0ece1d0ac",
-    "node_count": 1826,
-    "changed_bytes": 19983,
-    "scopes": 551
+    "defense_pack_sha256": "46792e95311a602c0f0fc3b7f4447376f6f79fadd9d145a5adab184c72661512"
    }
   ],
   "330": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "NYJ",
     "input_sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2",
-    "output_sha256": "73592cb4919e34e1a518b3cd4c4a9584918f54aff5941eb5b90faeab9e5a7cc7",
+    "output_sha256": "f3343d2f7d2a75654cd7b21ebc4333a14fd021ed38536ae67392c36eba68679b",
     "offense_pack_sha256": "5cbd3597cd68923d242655a53422caa32fbce55d60b5691482ac20f72ffe3c99",
-    "defense_pack_sha256": "c62a4c12422414d5fe6f69f2b5b73c72e7bcaedcec846b3c82cdd0c12cadce6f",
-    "node_count": 1893,
-    "changed_bytes": 19204,
-    "scopes": 543
+    "defense_pack_sha256": "4bd4cfc702c7f5eb575c465df2a883f657ee095b3c2865e97e8a9cca5f2804fc"
    }
   ],
   "331": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "OAK",
     "input_sha256": "41b532ea2673eefc4820c2d687fdac1650fc99e00b49b2f1abf9c2076afdcfc7",
-    "output_sha256": "fefd4cccbfa974aa31a9223d5fbe8510721bb580c2d3fcff7b91692ddaea84d6",
+    "output_sha256": "931ce91b14f6b494e219396b66b07c4f11304583b598b0930fe11eb5347b0863",
     "offense_pack_sha256": "84d5401ecb5f3843083654333b1badc46cd05cf3d475f097925e4961428e0b7d",
-    "defense_pack_sha256": "0eab310d50217e2f20c7b78ae85d128c6864eb54ac107c49ae68f7e9ca10f7c8",
-    "node_count": 1820,
-    "changed_bytes": 18849,
-    "scopes": 560
+    "defense_pack_sha256": "94b368753105268d01c53bf6580c20b97e2c3753969befbb8a44fac53ac4b8ca"
    }
   ],
   "332": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "PHI",
     "input_sha256": "c11ea05254cc497b0b6c82bd524337680ee8b56e678552c2c4e2f4aca64ac14d",
-    "output_sha256": "b05d6ac1b702951347056ff6cc7043a118fe5a756902613aa58d688685992f5d",
+    "output_sha256": "d88b82a24b48a239a3c7953188143364aba1db53bf8ada2c1de30cdb8aa25e2a",
     "offense_pack_sha256": "d61766e467351379c85f22e9ed33f7101d2fc5e3d9c08d3d288bdddf56694d10",
-    "defense_pack_sha256": "0aecb852004a218f8c3de337656200f15dd10deba2b08048319bd6925123f43a",
-    "node_count": 1853,
-    "changed_bytes": 20171,
-    "scopes": 547
+    "defense_pack_sha256": "2dc6ad2008b6c31b80cbce0259547273f144298326ea40352f7b30e853df6a67"
    }
   ],
   "333": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "PIT",
     "input_sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
-    "output_sha256": "2eeed5a5321ed5a823e32a2e2f43ca18ab8ac58356bad604291b88b4408ac1f3",
+    "output_sha256": "93bd40eace9dedacf2fcc3398e882933109f4ba4e51e5f860c949d337cd6a410",
     "offense_pack_sha256": "4e321c1fcd7fe7dc41d45922040bb8217813b08c7139dc400d8ce21ed9071168",
-    "defense_pack_sha256": "3a087a1b14c81d2574721c14fe705aea266355d31c23d09637dfcd4412e3bef0",
-    "node_count": 1869,
-    "changed_bytes": 18768,
-    "scopes": 531
+    "defense_pack_sha256": "ff6e2bcae337e4ce550933d2daa9c89062ff1d1c7fb1347f2de2bc9668af98d8"
    }
   ],
   "336": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "SD",
     "input_sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420",
-    "output_sha256": "926d26cd2ba9fc6b1414ea1f7b94c55ab75568ca57b1551d22cff9bddfb0675e",
+    "output_sha256": "7fb1ada0ef7e0ea247f2292b2f9a4821ae32de11cabd3dafde0044416756a420",
     "offense_pack_sha256": "a6416f1e57f44192c91adc5f1c97bddc2f62dd097e40703dce97b232494d8cbe",
-    "defense_pack_sha256": "918f518aec9ff4879bb64260ddb54bbad4d0f36fe2b78a2b7ddb58df742bec82",
-    "node_count": 1860,
-    "changed_bytes": 12556,
-    "scopes": 542
+    "defense_pack_sha256": "4fd6fafd3534152f0362086875855002c5e981c4f3fa8ebc5d2e13ec3bc468db"
    }
   ],
   "337": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "SEA",
     "input_sha256": "2244844553ebcfe31ef70fd3b6a49abb4ee18767977fde0ee5a07c0b9cdce933",
-    "output_sha256": "5593782f4c9c34a73846c2906dabe6cf0748aa81afb61eb005289feccc594585",
+    "output_sha256": "010396c6fdf0e760ea3e7d054ff3eee66a1b8a5936643ba2923fc049062493a7",
     "offense_pack_sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157",
-    "defense_pack_sha256": "a3b32e13d0d9ae8f9eee28f427f2198781a43d0ba1a0ade753e39935b2c3f554",
-    "node_count": 1849,
-    "changed_bytes": 19766,
-    "scopes": 553
+    "defense_pack_sha256": "db3ca6bac691dff11435700761d6cd9d7ab497b592e4fbde76a08d32a2f3b4d8"
    }
   ],
   "338": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "SF",
     "input_sha256": "6f4e2dc3c70f720bcda33850b7ce53f9c9971a834e55a98637b829b8290d09fd",
-    "output_sha256": "9fbd322426bbb8a835ac8d8ff97d0524b84438f53199ae7f6fec153cc15fabd7",
+    "output_sha256": "3cb979d22fd1f285410d868ba03e151dc54fcd3d5d671957700d3b94937efef4",
     "offense_pack_sha256": "645a595b9c3554a4aebd4d8c5bd7a06c19b3ce658c1d08bc7263fe02e1cba650",
-    "defense_pack_sha256": "3e6a4f2ffefe5d16bc0e8af43ae918c1204052e90788bc38331a55914e14cae2",
-    "node_count": 1740,
-    "changed_bytes": 17571,
-    "scopes": 511
+    "defense_pack_sha256": "658aea4f0b7ce207cd65413ae09385b40e51988b3c17315f74c7613d2e32c101"
    }
   ],
   "339": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "STL",
     "input_sha256": "02003b8abaee95a596eb5c675897d74d6b8ba1c90925ddd346c2132743c1c3db",
-    "output_sha256": "1556a8b19201b52056479737614a3c37f902668e950fdec1b59dd57875bbfc39",
+    "output_sha256": "d95d72669a901e7cd6fb1fd54a7603c2337790f344c94b23752764b1c755cc04",
     "offense_pack_sha256": "ce87d2237e4336cfe3994079129c68b0af192921aeee72988ac4174247862061",
-    "defense_pack_sha256": "3b9228401fa7a7433da010dd4f63f468133539d7f0ba319e011ef66fff6384c0",
-    "node_count": 1818,
-    "changed_bytes": 12160,
-    "scopes": 555
+    "defense_pack_sha256": "75b5ed84ff9a0186582c087a90d1e0e00e6eab7f7e42388a50962ee341c78361"
    }
   ],
   "340": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "TB",
     "input_sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61",
-    "output_sha256": "a19da967ec7da16cbf878553aa27567ef8511f820a88225177a0f1c92a1bbb05",
+    "output_sha256": "b790924770e9916849e1b61b52ed22804275049ad9f011ac698be1038a956a85",
     "offense_pack_sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1",
-    "defense_pack_sha256": "ff0f8823433ba086bfda5829149b8f7187408837de5aae19b14e2426f1cb74a3",
-    "node_count": 1750,
-    "changed_bytes": 18356,
-    "scopes": 539
+    "defense_pack_sha256": "acb28c03e910880d96e1066b85477559eebad6477984ab17e0f91e15674de1e7"
    }
   ],
   "341": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "TEN",
     "input_sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
-    "output_sha256": "69006781d74fe62102e24cd9941b8c3a61d8f0624213ee24e9616bb96e616fe0",
+    "output_sha256": "8aea8480bf0d7fad735ec4b3619c923ae068bedddcb75f785653b25adacc113f",
     "offense_pack_sha256": "40d928443b74679d4ed0adc5ad3ed6068e207c9918b13046664f2c950c04d844",
-    "defense_pack_sha256": "0f1f204f1ecfc5de227e8a615a4bc061d31f1d56ef1a774c8ca47907b958979d",
-    "node_count": 1817,
-    "changed_bytes": 19823,
-    "scopes": 535
+    "defense_pack_sha256": "89272b2e9a314b7f0777a49ff7f6975c020c4278221142dbb9a2c29ad022cabb"
    }
   ],
   "342": [
    {
-    "stack": "tgt-final",
+    "stack": "v06-menu-freeze",
+    "repair_kind": "category-menus-v1",
     "book": "WAS",
     "input_sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca",
-    "output_sha256": "a4101db7d7efa436a5443d17aed227c630f10a63f472e563811516951b2c517c",
+    "output_sha256": "0478c2e74d4c64ac395edb2d75037c77cd86300db35b360166a3e3ea03bbfcbe",
     "offense_pack_sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733",
-    "defense_pack_sha256": "c0a7619c35f3150f27d9112ca844de77ee625f6c2106e03ef0a01fac5d27bd00",
-    "node_count": 1858,
-    "changed_bytes": 19918,
-    "scopes": 540
+    "defense_pack_sha256": "808d0c64bd0ebb53a1a9cdd09654e1ef4eb2bf9ac5877831098c00e4de4c195a"
    }
   ]
  }
