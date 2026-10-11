@@ -234,13 +234,15 @@ def test_build_compacts_and_failure_preserves_published_target(tmp_path):
     synthetic_disc(source)
     original = payloads(source)
     # This minimal executable fixture deliberately contains no PLAY archive.
-    with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+    with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+         mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
         receipt = mod_build.build(mod_build.BuildPlan(str(source), str(output)))
     assert payloads(output) == original
     assert receipt["disc_compaction"]["bytes_saved"] > 0
     assert receipt["result"]["image_sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
     before = output.read_bytes()
-    with mock.patch.object(xc, "finish_private", side_effect=ValueError("compaction failed")):
+    with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+         mock.patch.object(xc, "finish_private", side_effect=ValueError("compaction failed")):
         with pytest.raises(ValueError, match="compaction failed"):
             mod_build.build(mod_build.BuildPlan(str(source), str(output), overwrite=True))
     assert output.read_bytes() == before

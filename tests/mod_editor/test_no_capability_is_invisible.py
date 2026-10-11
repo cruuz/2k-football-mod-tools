@@ -45,7 +45,7 @@ class VersionTruthTests(unittest.TestCase):
         displayed = f"v1.0 RC{candidate}"
         status = (_REPO_ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(
-            status.startswith(f"# 2K5 Mod Studio — {displayed} Release Status"),
+            status.startswith(f"# 2K5 Mod Studio: {displayed} Release Status"),
             f"STATUS.md does not lead with {displayed}; the app would show a "
             "version that never shipped",
         )
@@ -65,7 +65,7 @@ class VersionTruthTests(unittest.TestCase):
         doc = (
             _REPO_ROOT / "docs" / "mod_editor" / "2k5_mod_studio_getting_started.md"
         ).read_text(encoding="utf-8")
-        self.assertTrue(doc.startswith(f"# 2K5 Mod Studio v1.0 RC{candidate} —"))
+        self.assertTrue(doc.startswith(f"# 2K5 Mod Studio v1.0 RC{candidate}:"))
 
 
 class EveryCapabilityIsReachableTests(unittest.TestCase):

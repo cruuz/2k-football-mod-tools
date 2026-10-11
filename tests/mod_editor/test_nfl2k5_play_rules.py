@@ -132,8 +132,8 @@ class RetailRuleTests(unittest.TestCase):
             (), (play,), pk.OPTION_SCHEMA)
         loaded = pk.loads_pack(pack.dumps())
         self.assertEqual(loaded.dumps(), pack.dumps())
-        self.assertTrue(pk.check_pack(loaded, book, body).ok)
-        self.assertEqual(pk.apply_pack_to_resource(raw, loaded).replacement, compiled.replacement)
+        self.assertTrue(pk.check_pack(loaded, book, body, xbe=EXTRACT / "default.xbe").ok)
+        self.assertEqual(pk.apply_pack_to_resource(raw, loaded, xbe=EXTRACT / "default.xbe").replacement, compiled.replacement)
 
     def test_ol_rules_move_to_another_formation_without_copying_skill_chains(self):
         book, body = self.books['ATL'], self.resources['ATL'][32:]

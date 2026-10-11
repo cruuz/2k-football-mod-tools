@@ -228,6 +228,7 @@ class BuildStepTests(unittest.TestCase):
             stack.enter_context(patch.object(build, "_write_xbe_bytes", side_effect=lambda path, data: None))
             stack.enter_context(patch.object(build, "_check_playbook_scoring",
                                              return_value={"status": "applied", "books": 0, "faults": 0}))
+            stack.enter_context(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
             calls = []
             stack.enter_context(patch.object(rr, "apply", new=lambda path, *args, **kwargs: calls.append(path) or {"log": []}))
             edits = root / "edits.json"
@@ -235,7 +236,7 @@ class BuildStepTests(unittest.TestCase):
             target = root / "built.iso"
             receipt = build.build(build.BuildPlan(str(fixture.path), str(target), roster_edits=str(edits)))
             steps = [s["step"] for s in receipt["steps"]]
-            self.assertEqual(steps, ["copy", "roster_edits", "qb_throw_power", "commentary_final"])  # i1: c2's final commentary pass runs after the last roster writer
+            self.assertEqual(steps, ["copy", "roster_edits", "unc_bowl_uniforms", "qb_throw_power", "commentary_final"])  # i1: c2's final commentary pass runs after the last roster writer
             self.assertEqual(receipt["steps"][-2]["bytes_changed"], 12)
             self.assertEqual(ImageTests().arms(target)[5], [99, 79, 99, 99, 57, 54])
             self.assertEqual(ImageTests().arms(fixture.path)[5], [97, 75, 95, 96, 53, 50])     # the source copy is untouched
@@ -249,11 +250,12 @@ class BuildStepTests(unittest.TestCase):
             stack.enter_context(patch.object(build, "_write_xbe_bytes", side_effect=lambda path, data: None))
             stack.enter_context(patch.object(build, "_check_playbook_scoring",
                                              return_value={"status": "applied", "books": 0, "faults": 0}))
+            stack.enter_context(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
             stack.enter_context(patch.object(rr, "apply", new=lambda path, *args, **kwargs: {"log": []}))
             edits = root / "edits.json"
             edits.write_text(json.dumps({"schema": rr.EDITS_SCHEMA, "edits": []}), encoding="utf-8")
             receipt = build.build(build.BuildPlan(str(fixture.path), str(root / "built.iso"), roster_edits=str(edits)))
-            self.assertEqual([s["step"] for s in receipt["steps"]], ["copy", "roster_edits", "commentary_final"])  # i1: c2 final pass
+            self.assertEqual([s["step"] for s in receipt["steps"]], ["copy", "roster_edits", "unc_bowl_uniforms", "commentary_final"])  # i1: c2 final pass
             self.assertEqual(ImageTests().arms(root / "built.iso")[5], [97, 75, 95, 96, 53, 50])
 
     def test_a_bad_directive_stops_the_build_before_any_copy(self) -> None:
@@ -265,6 +267,7 @@ class BuildStepTests(unittest.TestCase):
             stack.enter_context(patch.object(build, "_write_xbe_bytes", side_effect=lambda path, data: None))
             stack.enter_context(patch.object(build, "_check_playbook_scoring",
                                              return_value={"status": "applied", "books": 0, "faults": 0}))
+            stack.enter_context(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
             edits = root / "edits.json"
             edits.write_text(json.dumps({"schema": rr.EDITS_SCHEMA, "edits": [], "qb_throw_power": {"add": 500}}), encoding="utf-8")
             with self.assertRaises(ValueError):

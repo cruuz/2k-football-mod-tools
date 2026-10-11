@@ -200,6 +200,7 @@ class PackExtentResolverTests(unittest.TestCase):
             # This directory-address fixture has random pack bytes, not PLAY
             # books. The scoring gate has its own real/synthetic archive tests.
             mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}),
+            mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}),
             # Keep the output at its original sectors to isolate the schedule
             # writer. Compaction's separate tests prove the final file move.
             mock.patch("mod_editor.core.xdvdfs_compact.finish_private",

@@ -161,6 +161,9 @@ class CompactBuildTests(unittest.TestCase):
         xdvdfs_compact.finish_private(self.source)
         self.enterContext(patch.object(build, '_check_playbook_scoring',
                                        return_value={'synthetic': True}))
+        # This weather-only archive has no native SITU or uniform entries.
+        self.enterContext(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                                return_value={"synthetic": True}))
         draft=weather.WeatherDraft(self.resource);draft.set_value(5,12,'temperature_f',15)
         self.document=draft.plan();self.plan_file=self.root/'climate.json'
         weather.write_json(self.plan_file,self.document)
@@ -231,7 +234,8 @@ class CompactBuildTests(unittest.TestCase):
         target=self.root/'restored.iso'
         receipt=build.build(build.BuildPlan(str(self.source),str(target)))
         self.assertEqual(build._xbe_bytes(target),self.retail)
-        self.assertEqual(receipt['steps'][-1]['step'],'weather_haze')
+        self.assertEqual([row['step'] for row in receipt['steps']][-2:],
+                         ['weather_haze', 'unc_bowl_uniforms'])
         target.write_bytes(b'KEEP DESTINATION')
         with patch.object(weather,'apply_to_image',side_effect=OSError('simulated final write failure')):
             with self.assertRaises(OSError):build.build(build.BuildPlan(str(self.source),str(target),overwrite=True,weather_plan=str(self.plan_file)))

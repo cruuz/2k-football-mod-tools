@@ -382,6 +382,7 @@ class BuildWiringTests(unittest.TestCase):
         patcher = mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True})
         patcher.start()
         self.addCleanup(patcher.stop)
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
 
     def test_the_sprite_refusal_is_gone_and_the_hires_family_refusal_names_its_reason(self) -> None:
         from nfl2k5_throw_tuning_test import _build_synthetic_xbe

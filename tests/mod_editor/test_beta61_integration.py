@@ -62,7 +62,8 @@ class BuildIntegrationTests(unittest.TestCase):
                     self.assertIsNone(expected)  # no shuffle selected: the library-only validation
                     return {'status': 'validated', 'expected': None}
                 modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild,revalidate_playlist=revalidate_playlist),
-                           'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime)}
+                           'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime),
+                           'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.
@@ -81,7 +82,7 @@ class BuildIntegrationTests(unittest.TestCase):
                     else:
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
-                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library'])
+                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms'])
                         # macOS temp paths resolve under /private/var: compare resolved paths.
                         self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])

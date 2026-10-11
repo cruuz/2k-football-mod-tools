@@ -490,7 +490,8 @@ class StudioBuildTests(unittest.TestCase):
             source.write_bytes(image)
             plan = mod_build.BuildPlan(str(source), str(target), letter_grades=True, throw=False, catch_slider=False,
                                        draft_ai=False, returner_fix=False, realistic_flight=False)
-            with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 receipt = mod_build.build(plan)
             self.assertIn("xbe_space", [step.get("step") for step in receipt["steps"]])
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
@@ -507,7 +508,8 @@ class StudioBuildTests(unittest.TestCase):
             source.write_bytes(image)
             plan = mod_build.BuildPlan(str(source), str(target), letter_grades=False, throw=False, catch_slider=False,
                                        draft_ai=False, returner_fix=False, realistic_flight=False)
-            with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 mod_build.build(plan)
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:

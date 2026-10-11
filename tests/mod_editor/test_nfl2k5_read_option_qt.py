@@ -143,7 +143,7 @@ class OptionQtTests(unittest.TestCase):
             self.assertEqual(requests[0].option_intent, pack.plays[0].option_intent)
             self.assertEqual([n[2] for n in requests[0].assignments[0]], [0x10, 0x10, 0x14, 2, 0x13])
             compiled = writer.compile_formation_play_creations(self.resource, forms, requests, links)
-            self.assertEqual(compiled.replacement, pk.apply_pack_to_resource(self.resource, pack).replacement)
+            self.assertEqual(compiled.replacement, pk.apply_pack_to_resource(self.resource, pack, xbe=EXTRACT / "default.xbe").replacement)
 
     def test_real_facade_staging_emits_no_duplicate_menu_links(self):
         from threading import RLock

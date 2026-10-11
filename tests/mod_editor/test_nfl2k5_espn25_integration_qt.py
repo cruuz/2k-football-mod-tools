@@ -80,6 +80,7 @@ class _Fixture:
                       mock.patch.object(mod_build, "_xbe_bytes", side_effect=lambda _path: xbe.read_bytes()),
                       # The invented SITU/ROST archive contains no native PLAY books.
                       mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}),
+                      mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}),
                       mock.patch.object(mod_build.tt, "_naming_source_preflight", return_value=None),
                       mock.patch.object(build_feedback, "measure", return_value={"message": "measured"})):
             patch.start()
@@ -166,8 +167,8 @@ class BuildPlanTests(unittest.TestCase):
         receipt = mod_build.build(mod_build.BuildPlan(str(fixture.image), str(target), espn25_plan=str(path)),
                                   lambda message, *_: messages.append(message))
         step = next(row for row in receipt["steps"] if row["step"] == "espn25_plan")
-        self.assertEqual([row["step"] for row in receipt["steps"][-2:]],
-                         ["espn25_plan", "commentary_final"],
+        self.assertEqual([row["step"] for row in receipt["steps"][-3:]],
+                         ["espn25_plan", "unc_bowl_uniforms", "commentary_final"],
                          "c2 finalizes commentary after the plan's roster edits")
         self.assertFalse(step["already_applied"])
         self.assertEqual(receipt["result"]["espn25_plan"], "applied")
