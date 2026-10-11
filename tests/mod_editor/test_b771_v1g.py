@@ -37,18 +37,19 @@ class OverviewTests(unittest.TestCase):
         self.assertEqual(receipt["visible_pools"], 16)
         body = fixed[32:]
         self.assertEqual(body[0x171E:0x1732].decode("utf-16le"), "EDGE:\0LB:\0")
-        self.assertEqual(struct.unpack_from("<I", body, 0xC14)[0], 0)
-        for at in (0x950, 0x964, 0x978):
+        label_pointer = struct.unpack_from("<I", body, 0xC14)[0]
+        self.assertNotEqual(label_pointer, 0)
+        self.assertEqual(body[0xC14 + label_pointer - 1:0xC14 + label_pointer + 1], b"\0\0")
+        for at in (0x9E0, 0x9F4, 0xA08):
             self.assertEqual(struct.unpack_from("<f", body, at)[0], 0)
-        for count, label in ((0xA24, 0xC64), (0xAB4, 0xCF4)):
-            self.assertEqual(body[count:count + 4], body[label:label + 4])
+        self.assertEqual(body[0xAB4:0xAB8], body[0xCF4:0xCF8])
         allowed = {32 + at + i for at, old, _new, _label in pools.team_needs_scene_edits() for i in range(len(old))}
         self.assertFalse({i for i, (a, b) in enumerate(zip(raw, fixed)) if a != b} - allowed)
         self.assertEqual(pools.apply_team_needs_scene(fixed)[0], fixed)
 
     def test_partial_foreign_and_binding_drift_refuse(self):
         raw = fixture_scene()
-        for at in (0x434, 0x9D0, 0x171E, 0x950):
+        for at in (0x434, 0x9D0, 0x171E, 0x9E0):
             bad = bytearray(raw)
             bad[32 + at] ^= 1
             with self.assertRaises(ValueError):
@@ -75,6 +76,60 @@ class NativeTests(unittest.TestCase):
         cls.donor = (PRIVATE / "export/resources/22H0.IFF").read_bytes()
         cls.fixed = {"06H5.IFF": uniforms.finish_cincinnati(cls.raw["06H5.IFF"]),
                      "22A4.IFF": uniforms.finish_pittsburgh(cls.raw["22A4.IFF"], cls.donor)}
+
+    def test_native_static_labels_never_pass_null_to_text_copy(self):
+        import unicorn as u
+        from unicorn import x86_const as r
+        xbe = XbeImage((PRIVATE / "default.before.xbe").read_bytes())
+        uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
+        uc.mem_map(0x30000, 0x1000)
+        uc.mem_write(0x30AE0, xbe.read(0x30AE0, 0x35))
+        base, destination, stack, stop = 0x2000000, 0x2010000, 0x2028000, 0x202F000
+        uc.mem_map(base, 0x30000)
+        body = pools.apply_team_needs_scene(fixture_scene())[0][32:]
+        uc.mem_write(base, body)
+        for field, expected in ((0x434, "EDGE:"), (0xB84, "LB:"), (0xC14, "")):
+            encoded = struct.unpack_from("<I", body, field)[0]
+            pointer = base + field + encoded - 1 if encoded else 0
+            uc.mem_write(stack, struct.pack("<2I", stop, 64))
+            uc.mem_write(destination, b"\xff" * 128)
+            uc.reg_write(r.UC_X86_REG_ESP, stack)
+            uc.reg_write(r.UC_X86_REG_ECX, destination)
+            uc.reg_write(r.UC_X86_REG_EDX, pointer)
+            uc.emu_start(0x30AE0, stop, count=1000)
+            self.assertEqual(bytes(uc.mem_read(destination, (len(expected) + 1) * 2)),
+                             (expected + "\0").encode("utf-16le"))
+            self.assertEqual(uc.reg_read(r.UC_X86_REG_EAX), len(expected))
+            self.assertEqual(uc.reg_read(r.UC_X86_REG_ESP), stack + 8)
+
+    def test_real_scene_count_bindings_keep_lb_and_hide_only_olb(self):
+        source = Path(os.environ.get("B771_V06_DISC",
+            "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6 (2026-10-09).xiso.iso"))
+        if not source.is_file():
+            self.skipTest("private v0.6 scene input absent (B771_V06_DISC)")
+        with repair.bump._Image.open(source, writable=False) as image:
+            index = repair.bump._parsed_index(image)
+            entry = index.entries[9]
+            resource = image.read_segments(index.sub_extents(entry, 0, entry.size))
+        chunk = parse_chunks(resource)[7]
+        raw = resource[chunk.offset:chunk.end_offset]
+        body = raw[32:]
+        self.assertEqual(len(body), 20992)
+        fixed = pools.apply_team_needs_scene(raw)[0][32:]
+        xbe = (PRIVATE / "default.before.xbe").read_bytes()
+        # Resolve each scene binding through the executable's actual callback table.
+        for record, enum in ((0x940, 11), (0x9D0, 10), (0xA60, 9), (0xAF0, 8)):
+            identity = struct.unpack_from("<I", body, record)[0]
+            binding = xbe.index(struct.pack("<II", identity, 0x319C20))
+            self.assertEqual(struct.unpack_from("<I", xbe, binding + 8)[0], enum)
+            for axis in (0x10, 0x24, 0x38):
+                self.assertEqual(struct.unpack_from("<f", fixed, record + axis)[0],
+                                 0 if enum == 10 else 1)
+        for record in (0x940, 0xB80, 0xAF0, 0xD30):
+            self.assertEqual(fixed[record + 0x50:record + 0x58], body[record + 0x50:record + 0x58])
+        retired_y = body[0x9D0 + 0x54:0x9D0 + 0x58]
+        for record in (0xA60, 0xCA0):
+            self.assertEqual(fixed[record + 0x54:record + 0x58], retired_y)
 
     def test_owned_hashes_replay_and_unowned_changes_compose(self):
         for name, raw in self.raw.items():

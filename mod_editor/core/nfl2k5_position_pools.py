@@ -1009,18 +1009,20 @@ def team_needs_scene_edits() -> tuple[tuple[int, bytes, bytes, str], ...]:
         (0x171E, "ILB:\0OLB:\0".encode("utf-16le"), "EDGE:\0LB:\0".encode("utf-16le"), "modern_labels"),
         (0x434, word(0x16FC - 0x434 + 1), word(0x171E - 0x434 + 1), "edge_label_pointer"),
         (0xB84, word(0x171E - 0xB84 + 1), word(0x172A - 0xB84 + 1), "lb_label_pointer"),
-        (0xC14, word(0x1728 - 0xC14 + 1), word(0), "hide_olb_label"),
+        # The native text initializer copies every static label before drawing.
+        # A null pointer faults at 0x30AF0; a pointer to the final UTF-16 NUL
+        # keeps the retired label empty while preserving that contract.
+        (0xC14, word(0x1728 - 0xC14 + 1), word(0x1730 - 0xC14 + 1), "hide_olb_label"),
     ]
     for axis in (0x00, 0x14, 0x28):
-        rows.append((0x950 + axis, word(0x3F800000), word(0), f"hide_olb_count_scale_{axis:x}"))
-    # Close the gap in the LB / TE / FB column. Label and count move together.
+        rows.append((0x9E0 + axis, word(0x3F800000), word(0), f"hide_olb_count_scale_{axis:x}"))
+    # The retired OLB row is between LB and TE. FB starts the next column.
+    # Text record +0x54 is its Y position; move the TE label and count together.
     for record, old, new, label in (
-        (0xA00, 0x426F6897, 0x42236897, "te_count"),
-        (0xC40, 0x426F6897, 0x42236897, "te_label"),
-        (0xA90, 0x429DB44C, 0x426F6897, "fb_count"),
-        (0xCD0, 0x429DB44C, 0x426F6897, "fb_label"),
+        (0xA60, 0x429DB44C, 0x426F6897, "te_count"),
+        (0xCA0, 0x429DB44C, 0x426F6897, "te_label"),
     ):
-        rows.append((record + 0x24, word(old), word(new), label + "_y"))
+        rows.append((record + 0x54, word(old), word(new), label + "_y"))
     return tuple(sorted(rows))
 
 

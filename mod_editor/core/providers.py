@@ -790,9 +790,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playoffs14.py": "d8c490d6d37d118355db80de95c924db52f03ba897b4fbd85432d1840a14051d",
         "mod_editor/core/nfl2k5_lineup_iterator.py": "b8b0c21ca736d411fb1288a6f4cddd5c84929b1c57962c455756e51f1eae7c0c",
         "mod_editor/core/nfl2k5_disc_extents.py": "2a1c1fe06a67139bcac469fd2cbc3cced1f523bac96b226094a296793bce3625",
-        "mod_editor/core/nfl2k5_position_pools.py": "b6b0abd035760cb20e350c2a418c6ae284cca240677a7d6868f11fb5dbba45e1",
+        "mod_editor/core/nfl2k5_position_pools.py": "d2f486d33410a3ad22827382339606be3a32d201ca1b76cd38da5028d102402f",
+        "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "8aabee19a2abcb02acb73c9387336c5851bd4ebb096bfbb22346e05089a7ea0b",
-        "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "3728a1d8195819c72f814ac5110755a06598aeb1400f6a53702821a7b275a8b6",
         "mod_editor/core/nfl2k5_practice_squad.py": "c98cf2edff83719ae8948346eec8875f81c234b4f0142a690c30dbfae377d7a4",
@@ -961,6 +961,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/xbox_ima_encoder.py": "2f6c7209674d93c542f4c67fdab2ebfa4aaa8a6a21d6b4a08d07a9996bf79d76"
     }
     data_pins: Mapping[str, str] = {
+        "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
         "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
         "data/nfl2k5_ratings_forty_sources.json": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
         "data/nfl2k5_espn25_more_teams/teams.json": "0484cc4ea617f4d250571ac3551f820368a15456c444326203d31c98eebd8cd3",
