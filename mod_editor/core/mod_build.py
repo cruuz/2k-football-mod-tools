@@ -1445,24 +1445,25 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
 
 
 def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
-    """Refuse the build when any PLAY book on the image has a formation play menu the game cannot walk to its end
-    (``nfl2k5_playbook_inspector.menu_link_problems``: a play listed twice in one formation, which makes the play
-    call's list endless, a repeated selection group 0-2, an unreachable or out-of-range link). None when the
-    modules are not part of this build."""
+    """Refuse unsafe labels or formation menus in every PLAY book on the image.
+
+    Includes the native label slot and no-argument printf contract, duplicate
+    links that hang the list, selection groups and unreachable/out-of-range
+    links. Returns None when the modules are not part of this build.
+    """
     inspector = _core_module("nfl2k5_playbook_inspector")
     packs = _core_module("nfl2k5_playbook_pack")
-    if inspector is None or packs is None or not hasattr(inspector, "menu_link_problems"):
+    if inspector is None or packs is None or not hasattr(inspector, "playcall_ui_problems"):
         return None
-    progress("Checking every playbook's play menus", 0, 0)
+    progress("Checking every playbook's names and play menus", 0, 0)
     books, problems = 0, []
     with packs._outer_image().OuterImage(target) as archive:
         for entry in archive.entries_with_head(b"PLAY"):
             books += 1
             problems += [f"book {entry.index}: {problem}"
-                         for problem in inspector.menu_link_problems(archive.read_entry(entry.index))]
+                         for problem in inspector.playcall_ui_problems(archive.read_entry(entry.index))]
     if problems:
-        raise RuntimeError("A playbook on this build has a formation play menu the game cannot use, so picking that "
-                           "formation would hang the play call: " + "; ".join(problems[:4])
+        raise RuntimeError("A playbook on this build has unsafe play-call names or menus: " + "; ".join(problems[:4])
                            + (f"; and {len(problems) - 4} more" if len(problems) > 4 else ""))
     return {"books": books, "problems": 0}
 

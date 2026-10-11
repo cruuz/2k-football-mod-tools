@@ -67,9 +67,16 @@ def _compile_menu_case(job):
 
 
 def _body(formation_links: dict[int, list[int]], play_count: int = 40, formations: int = 4) -> bytearray:
-    """A bare PLAY body carrying only counts and menu words (names unreadable, which the rule tolerates)."""
+    """A bare body with menu words and valid label pointers for the Build UI gate."""
     body = bytearray(insp.BODY_SIZE)
-    struct.pack_into("<II", body, 0x34, formations, play_count)
+    struct.pack_into("<III", body, 0x34, formations, play_count, 1)
+    body[insp.STRING_BASE:insp.STRING_BASE + 10] = "Test\0".encode("utf-16le")
+    for count, base, stride in ((formations, insp.FORMATION_BASE, insp.FORMATION_SIZE),
+                                (play_count, insp.PLAY_BASE, insp.PLAY_SIZE),
+                                (1, insp.CATEGORY_BASE, insp.CATEGORY_SIZE)):
+        for index in range(count):
+            field = base + index * stride
+            struct.pack_into("<i", body, field, insp.STRING_BASE - field + 1)
     for index in range(formations):
         words = formation_links.get(index, [])
         packed = list(words) + [0x07FF] * (insp.FORMATION_PLAY_LINKS - len(words))

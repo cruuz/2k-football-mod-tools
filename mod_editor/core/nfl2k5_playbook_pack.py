@@ -592,6 +592,10 @@ def _name(value: object, label: str) -> str:
         )
     if any(ord(ch) < 0x20 or ord(ch) > 0x7E for ch in text):
         raise PlaybookPackError(f"{label}: “{text}” may use printable ASCII only.")
+    from .nfl2k5_playbook_inspector import playcall_name_problems
+    problems = playcall_name_problems(text)
+    if problems:
+        raise PlaybookPackError(f"{label}: " + "; ".join(problems))
     return text
 
 
@@ -1378,6 +1382,10 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
 
 def _score_compiled(compiled, xbe):
     from .nfl2k5_play_scoring import require_safe
+    from .nfl2k5_playbook_inspector import playcall_ui_problems
+    problems = playcall_ui_problems(compiled.replacement)
+    if problems:
+        raise PlaybookPackError("Compiled play-call UI is unsafe: " + "; ".join(problems[:3]))
     compiled.report['native_scoring'] = require_safe(compiled.replacement, xbe)
     return compiled
 

@@ -72,6 +72,7 @@ STANCE_STANDING = 1
 RETAIL_BACK_FIRST_READ_SHARE = 0.29         # retail team books: a back is the QB's first read on 10-29% of pass links
 
 SEVERITY = {
+    "PLAYCALL_UI": "error",
     "HANDOFF_FAR": "error", "HANDOFF_PLAN_FAR": "error", "PITCH_FAR": "error",
     "CHECKDOWN_BACKWARD": "error", "BACKWARD_TARGET": "warning",
     "SCREEN_DEPTH_MARGIN": "error", "SCREEN_SIDE_CROSS": "warning",
@@ -80,6 +81,7 @@ SEVERITY = {
     "DEF_STACK": "warning", "DEF_MIDDLE_MUG": "warning", "BACK_PRIMARY_SHARE": "warning",
 }
 GOAL_IDS = {
+    "PLAYCALL_UI": "V1A",
     "HANDOFF_FAR": "P1", "HANDOFF_PLAN_FAR": "P1", "PITCH_FAR": "P1",
     "CHECKDOWN_BACKWARD": "P3", "BACKWARD_TARGET": "P3",
     "SCREEN_DEPTH_MARGIN": "P2", "SCREEN_SIDE_CROSS": "P2", "SCREEN_NO_RELEASE": "P2",
@@ -506,6 +508,8 @@ def lint_views(views: Iterable[PlayView], label: str, native_plan: NativePlan | 
 def lint_resource(resource: bytes, label: str = "book", native_plan: NativePlan | None = None) -> LintReport:
     report = lint_views(resource_views(resource), label, native_plan)
     report.findings.extend(defense_findings(resource))
+    report.findings.extend(Finding("PLAYCALL_UI", problem, -1, "")
+                           for problem in insp.playcall_ui_problems(resource))
     return report
 
 
@@ -527,6 +531,13 @@ def lint_pack(pack, label: str | None = None, *, studio_rules: bool = False,
         views = (as_built(v) for v in views)
     report = lint_views(views, label or pack.book.name, native_plan)
     report.findings.extend(pack_defense_findings(pack))
+    for kind, rows in (("formation", pack.formations), ("play", pack.plays)):
+        for index, row in enumerate(rows):
+            report.findings.extend(Finding("PLAYCALL_UI", f"{kind} {index}: {problem}", -1, "")
+                                   for problem in insp.playcall_name_problems(row.custom_name))
+            if kind == "formation" and row.category_name is not None:
+                report.findings.extend(Finding("PLAYCALL_UI", f"category of formation {index}: {problem}", -1, "")
+                                       for problem in insp.playcall_name_problems(row.category_name))
     return report
 
 

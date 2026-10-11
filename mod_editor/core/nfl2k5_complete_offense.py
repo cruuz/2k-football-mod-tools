@@ -301,7 +301,8 @@ def compile_offense(resource, pack, *, asset_id):
         result[off+1] = min(n, 2)
     rebuilt = repack(bytes(result), names, assignments)
     final = insp.parse_playbook_resource(rebuilt, asset_id=asset_id)
-    require(not insp.menu_link_problems(rebuilt), 'Final offense menus do not terminate')
+    ui_problems = insp.playcall_ui_problems(rebuilt)
+    require(not ui_problems, 'Final offense has unsafe play-call names or menus: ' + '; '.join(ui_problems[:3]))
     new = rebuilt[32:]
     require(len(final.formations) == len(source.formations) and len(final.plays) == len(source.plays), 'Counts changed')
     for p in source.plays:

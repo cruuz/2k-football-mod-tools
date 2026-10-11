@@ -66,7 +66,8 @@ from .nfl2k5_playbook_inspector import (
     PLAY_SIZE,
     RESOURCE_HEADER_SIZE,
     STRING_BASE,
-    menu_link_problems,
+    playcall_name_problems,
+    playcall_ui_problems,
     parse_playbook_resource,
 )
 from .nfl2k5_source_cache import PACK0_RETAIL_BYTE_OFFSET, PACK0_RETAIL_SECTOR, PACK0_SHA256, PACK0_SIZE
@@ -122,6 +123,9 @@ def _clean_custom_name(value: object) -> str | None:
         )
     if any(ord(ch) < 0x20 or ord(ch) > 0x7E for ch in name):
         raise ValidationError("A custom name may use printable ASCII only.")
+    problems = playcall_name_problems(name)
+    if problems:
+        raise ValidationError("A custom name cannot be displayed: " + "; ".join(problems))
     return name
 
 
@@ -1045,11 +1049,11 @@ def compile_formation_play_creations(
         raise ValidationError("Formation/play compilation changed an unowned byte.")
 
     reparsed = parse_playbook_resource(rebuilt, asset_id=asset_id)
-    # Every menu of the finished book must be one the play call can walk to its end (see menu_link_problems).
-    menu_problems = menu_link_problems(rebuilt)
+    # Check both units' labels and menu walks after all edits have been composed.
+    menu_problems = playcall_ui_problems(rebuilt)
     if menu_problems:
         raise ValidationError(
-            "The compiled playbook has a formation play menu the game cannot use: "
+            "The compiled playbook has unsafe play-call names or menus: "
             + "; ".join(menu_problems[:3]) + ("; ..." if len(menu_problems) > 3 else "")
         )
     # Sanity checks
