@@ -74,7 +74,7 @@ MOMENT_COUNT = 51
 
 
 def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False, single_weight=False,
-             legacy_team_pointer=False, weights=None, team_weights=None):
+             legacy_team_pointer=False, legacy_unguarded_live_team=False, weights=None, team_weights=None):
     """The 1,536 owned bytes at ``va``. ``legacy`` is the body of v0.5 and earlier (40 byte alias rows, no shotgun weights);
     ``single_weight`` is the a4 body (one franchise float per franchise, ``team_weights`` = 32 floats); the default is the current
     body, whose weights are ``weights`` (51 moment floats) and ``team_weights`` (32 rows of 7 bin weights in key-row order) or the
@@ -186,7 +186,8 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
         out.extend(gun.team_table_bytes(list(team_weights)))
     else:
         out.extend(gun.stub_bytes(va + STUB_OFFSET, va + WEIGHT_OFFSET, va + TABLE, va + BIN_TABLE_OFFSET,
-                                  legacy_team_pointer=legacy_team_pointer))
+                                  legacy_team_pointer=legacy_team_pointer,
+                                  legacy_unguarded_live_team=legacy_unguarded_live_team))
         out.extend(gun.table_bytes(moment_values))
         out.extend(b"\xcc" * (BIN_TABLE_OFFSET - len(out)))
         out.extend(gun.bin_table_bytes(gun.team_bin_weights(keys=key_order()) if team_weights is None else [list(r) for r in team_weights]))
@@ -223,7 +224,8 @@ def _previous_bodies(va):
 def _installed_kind(image, va):
     """(kind, (moment weights, franchise weights) or None) for the 1,536 bytes at ``va``; anything else raises. Kinds: "empty";
     "previous" (the v0.5 and earlier bodies); "single" (the a4 body, one float per franchise; the weights are its own, 32 floats);
-    "unfixed_bins" (shipped a4pd, missing the live-to-roster dereference);
+    "unfixed_bins" (early a4pd, missing the live-to-roster dereference);
+    "unguarded_bins" (FRZ4 / October 9 v0.6, before the active-team identity guard);
     "current" (fixed per-bin body; the weights are its own, 32 rows of 7)."""
     installed = image.read(va, CODE_SIZE)
     if installed == b"\xcc" * CODE_SIZE:
@@ -235,6 +237,8 @@ def _installed_kind(image, va):
         bins = gun.decode_bin_table(installed[BIN_TABLE_OFFSET:BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE])
         if installed == code_for(va, weights=weights, team_weights=bins):
             return "current", (weights, bins)
+        if installed == code_for(va, weights=weights, team_weights=bins, legacy_unguarded_live_team=True):
+            return "unguarded_bins", (weights, bins)
         if installed == code_for(va, weights=weights, team_weights=bins, legacy_team_pointer=True):
             return "unfixed_bins", (weights, bins)
     except ValueError:
@@ -251,7 +255,7 @@ def _recognize(payload):
     state = "retail" if actual == RETAIL else "applied" if owned and actual == hook(owned["va"]) else "foreign"
     if owned:
         kind, _weights = _installed_kind(image, owned["va"])
-        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "current") else None)
+        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "current") else None)
         if state == "retail":
             require(gun_state == "retail", "shotgun weight site installed without the stock book resolver")
         else:
@@ -259,7 +263,7 @@ def _recognize(payload):
             if kind == "previous":
                 require(gun_state == "retail", "shotgun weight site installed on an earlier resolver body")
                 state = "needs_fix"
-            elif kind in ("single", "unfixed_bins"):
+            elif kind in ("single", "unfixed_bins", "unguarded_bins"):
                 require(gun_state == "applied", "shotgun weight site missing on the earlier a4 resolver body")
                 state = "needs_fix"
             elif gun_state == "retail":
@@ -338,7 +342,7 @@ def apply(payload, *, enabled=True, weights=None, team_weights=None):
         gun.check_rule(image)                     # the shotgun rule must be the retail bytes this owner replaces the constant of
         kind, installed_weights = _installed_kind(image, owned["va"])
         wanted = code_for(owned["va"], weights=values, team_weights=team_values)
-        if kind in ("previous", "single", "unfixed_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
+        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
             # Only this owner admits these exact checked version transitions (an earlier body, or other weights).
             # The generic allocator still refuses arbitrary filled-code edits.
             payload = _write_body(payload, owned, wanted)

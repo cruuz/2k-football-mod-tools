@@ -35,6 +35,7 @@ a historic or Anniversary side (category word 4), a franchise the data marks cla
 retail constant, as do the inside-the-10 and goal-line cases, which the rule never touched. The stub's team test::
 
     mov  eax, [esp+0x20]          ; argument 1 of 0x207EF0 = the live team (its +0x20 is its book)
+    ; Reject an argument other than the current offense or defense live team.
     mov  eax, [eax+0x1c]          ; the live team's roster record, NOT the live object itself
     cmp  dword [eax+0x128], 4     ; category 4: historic or Anniversary side -> ordinary
     mov  edx, [[eax+0x110]+4]     ; roster franchise key string; scan the owner's 32 key rows
@@ -50,7 +51,8 @@ Inside the 10 and at the goal line nothing changes (the stub is only reached bey
 constant. Anniversary mode, category 4 sides and unknown keys are exactly as in the earlier generation. The 51 weights are data (``data/nfl2k5_moment_playbook_eras.json``, key ``gun_weight`` per row): 0.05 for
 every moment whose side keeps a classic book, and for the modern ones a number chosen so the CPU side's shotgun share
 in the analytic selector approaches the sourced real rate of that team-season. The weight applies to both sides of the
-match; it is fitted to the side the CPU plays (the user's own team never uses the lottery).
+match; it is fitted to the side the CPU plays. User play-call recommendations and cached choices also use the same
+selector and the same live-team objects (see tools/b77/v1d_caller_audit.py).
 """
 from __future__ import annotations
 
@@ -147,7 +149,11 @@ BIN_TABLE_SIZE = BIN_ROW_SIZE * TEAM_COUNT
 CUT_SHORT, CUT_SECOND_MID, CUT_THIRD_MID = (struct.unpack("<I", struct.pack("<f", y * YARD))[0] for y in (3.5, 7.5, 6.5))
 
 
-def _stub_head(a, moment_table_va: int, *, live_team: bool = False) -> None:
+OFFENSE_TEAM_POINTER = 0x00E60280
+DEFENSE_TEAM_POINTER = 0x00E60284
+
+
+def _stub_head(a, moment_table_va: int, *, live_team: bool = False, guard_active_team: bool = False) -> None:
     """The Anniversary part and the start of the franchise part, shared by both generations of the stub."""
     a.b("833d" + struct.pack("<I", MODE_WORD).hex() + "08")                 # cmp dword [mode], 8
     a.j8("75", "team")
@@ -161,6 +167,17 @@ def _stub_head(a, moment_table_va: int, *, live_team: bool = False) -> None:
     a.b("85c0")
     a.j8("74", "ordinary")
     if live_team:
+        if guard_active_team:
+            # Every native route supplies one of the two active live teams,
+            # including UI recommendations and the defense's pending choice.
+            # Compare identities before reading through an untrusted argument.
+            # The enclosing retail rule already requires these globals to be
+            # valid. This is not a general heap-pointer validity test.
+            a.b("3b05" + struct.pack("<I", OFFENSE_TEAM_POINTER).hex())
+            a.j8("74", "live")
+            a.b("3b05" + struct.pack("<I", DEFENSE_TEAM_POINTER).hex())
+            a.j8("75", "ordinary")
+            a.label("live")
         # 0x207EF0 receives E5FC20/E5FC60. Their +0x110/+0x128 lie in
         # the PRNG state, so the old stub dereferenced a random integer.
         a.b("8b40" + bytes([ROSTER_OFFSET]).hex() + "85c0")
@@ -206,20 +223,25 @@ def stub_bytes_single(stub_va: int, moment_table_va: int, key_table_va: int, tea
 
 
 def stub_bytes(stub_va: int, moment_table_va: int, key_table_va: int, bin_table_va: int,
-               *, legacy_team_pointer: bool = False) -> bytes:
+               *, legacy_team_pointer: bool = False, legacy_unguarded_live_team: bool = False) -> bytes:
     """The stub (padded to STUB_SPACE) for the given tables.
 
     Mode 8: the moment's weight. Otherwise: the offense team's weight if it is a current franchise (category word not 4) whose
     franchise key (``[[[live_team+0x1c]+0x110]+4]``) is one of the 32 keys of the owner's key rows, in the
     bin of the live down and yards to go; anything else gets the retail constant.
-    ``legacy_team_pointer`` reproduces the faulty shipped a4pd bytes ONLY for exact upgrade recognition."""
+    Only a non-null current offense/defense live team is dereferenced. A roster record, team index or other object
+    falls back to retail. Existing null roster/key and unknown-key fallbacks remain.
+    ``legacy_team_pointer`` reproduces the faulty a4pd bytes; ``legacy_unguarded_live_team`` reproduces FRZ4 / shipped
+    October 9 v0.6. Both are ONLY for exact upgrade recognition and diagnostics."""
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(stub_va)
-    _stub_head(a, moment_table_va, live_team=not legacy_team_pointer)
+    _require(not (legacy_team_pointer and legacy_unguarded_live_team), "choose one legacy encoding")
+    guarded = not (legacy_team_pointer or legacy_unguarded_live_team)
+    _stub_head(a, moment_table_va, live_team=not legacy_team_pointer, guard_active_team=guarded)
     _stub_scan(a, key_table_va)
     a.b("81e9" + struct.pack("<I", key_table_va).hex() + "c1e903" + "6bc9" + bytes([BIN_ROW_SIZE]).hex())   # sub ecx,rows / shr ecx,3 / imul ecx,ecx,14
     a.b("a1" + struct.pack("<I", STATE_POINTER).hex() + "8b4004" + "48")   # mov eax,[state] / mov eax,[eax+4] (down) / dec eax
-    a.j8("74", "first")                                                     # 1st down: bin 0 at any distance
+    a.j8("74", "pick" if guarded else "first")                             # dec made EAX=0: bin 0
     a.b("83f803")                                                           # cmp eax, 3  (down-1 as unsigned: 0 and 5+ fail)
     a.j8("77", "ordinary")
     a.b("5150" + "55" + "8bec" + "83ec20" + "83e4f0")                      # push ecx / push eax / push ebp / mov ebp,esp / sub esp,32 / and esp,-16
@@ -227,7 +249,9 @@ def stub_bytes(stub_va: int, moment_table_va: int, key_table_va: int, bin_table_
     a.call(TOGO_FUNCTION)                                                   # st0 = yards to go (game units)
     a.b("8be5" + "5d")                                                      # mov esp,ebp / pop ebp
     a.b("50" + "d91c24" + "5a" + "58" + "59")                              # push eax / fstp dword [esp] / pop edx (distance bits) / pop eax / pop ecx
-    a.b("83f801" + "b801000000")                                            # cmp eax,1 / mov eax,1  (2nd down: base bin 1)
+    # EAX is in 1..3 here. DEC tests second down; MOV AL retains those flags
+    # and the known-zero upper bytes. Save space for the identity guard.
+    a.b("48b001" if guarded else "83f801b801000000")
     a.j8("75", "third")
     a.b("81fa" + struct.pack("<I", CUT_SHORT).hex())                        # cmp edx, 3.5 yd
     a.j8("76", "pick")
@@ -236,14 +260,15 @@ def stub_bytes(stub_va: int, moment_table_va: int, key_table_va: int, bin_table_
     a.b("40")                                                               # inc eax
     a.j8("eb", "pick")
     a.label("third")
-    a.b("b804000000" + "81fa" + struct.pack("<I", CUT_SHORT).hex())         # mov eax,4 / cmp edx, 3.5 yd
+    a.b(("b004" if guarded else "b804000000") + "81fa" + struct.pack("<I", CUT_SHORT).hex())
     a.j8("76", "pick")
     a.b("40" + "81fa" + struct.pack("<I", CUT_THIRD_MID).hex())             # inc eax / cmp edx, 6.5 yd
     a.j8("76", "pick")
     a.b("40")                                                               # inc eax
-    a.j8("eb", "pick")
-    a.label("first")
-    a.b("31c0")                                                             # xor eax, eax
+    if not guarded:
+        a.j8("eb", "pick")
+        a.label("first")
+        a.b("31c0")                                                         # xor eax, eax
     a.label("pick")
     a.b("8d0c41" + "df81" + struct.pack("<I", bin_table_va).hex())          # lea ecx,[ecx+eax*2] / fild word [ecx + bin table]
     a.b("d80d" + struct.pack("<I", RETAIL_WEIGHT_VA).hex() + "c3")         # fmul dword [0.05] / ret
