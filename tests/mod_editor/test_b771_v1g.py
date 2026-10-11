@@ -40,7 +40,7 @@ class OverviewTests(unittest.TestCase):
         label_pointer = struct.unpack_from("<I", body, 0xC14)[0]
         self.assertNotEqual(label_pointer, 0)
         self.assertEqual(body[0xC14 + label_pointer - 1:0xC14 + label_pointer + 1], b"\0\0")
-        for at in (0x9E0, 0x9F4, 0xA08):
+        for at in (0x950, 0x964, 0x978):
             self.assertEqual(struct.unpack_from("<f", body, at)[0], 0)
         self.assertEqual(body[0xAB4:0xAB8], body[0xCF4:0xCF8])
         allowed = {32 + at + i for at, old, _new, _label in pools.team_needs_scene_edits() for i in range(len(old))}
@@ -49,7 +49,7 @@ class OverviewTests(unittest.TestCase):
 
     def test_partial_foreign_and_binding_drift_refuse(self):
         raw = fixture_scene()
-        for at in (0x434, 0x9D0, 0x171E, 0x9E0):
+        for at in (0x434, 0x9D0, 0x171E, 0x950):
             bad = bytearray(raw)
             bad[32 + at] ^= 1
             with self.assertRaises(ValueError):
@@ -103,6 +103,8 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(uc.reg_read(r.UC_X86_REG_ESP), stack + 8)
 
     def test_real_scene_count_bindings_keep_lb_and_hide_only_olb(self):
+        import unicorn as u
+        from unicorn import x86_const as r
         source = Path(os.environ.get("B771_V06_DISC",
             "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6 (2026-10-09).xiso.iso"))
         if not source.is_file():
@@ -117,19 +119,46 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(len(body), 20992)
         fixed = pools.apply_team_needs_scene(raw)[0][32:]
         xbe = (PRIVATE / "default.before.xbe").read_bytes()
+        uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
+        uc.mem_map(0x151000, 0x1000)
+        uc.mem_write(0x151540, XbeImage(xbe).read(0x151540, 0x27))
+        base, descriptor, stack, stop = 0x2000000, 0x2010000, 0x2028000, 0x202F000
+        uc.mem_map(base, 0x30000)
+        uc.mem_write(base, fixed)
+        # Walk the real contiguous text records with the game's lookup. The
+        # binding identity is at +0x80, not the start of the following matrix.
+        first, last = 0x430 - 0x80, 0xD30 - 0x80
+        uc.mem_write(descriptor, struct.pack("<3I", 0, (last - first) // 0x90 + 1, base + first))
+
+        def lookup(identity_at):
+            identity = struct.unpack_from("<I", body, identity_at)[0]
+            uc.mem_write(stack, struct.pack("<I", stop))
+            uc.reg_write(r.UC_X86_REG_ESP, stack)
+            uc.reg_write(r.UC_X86_REG_ECX, descriptor)
+            uc.reg_write(r.UC_X86_REG_EDX, identity)
+            uc.emu_start(0x151540, stop, count=1000)
+            record = uc.reg_read(r.UC_X86_REG_EAX) - base
+            self.assertEqual(record, identity_at - 0x80)
+            self.assertEqual(uc.reg_read(r.UC_X86_REG_ESP), stack + 4)
+            return record
+
         # Resolve each scene binding through the executable's actual callback table.
-        for record, enum in ((0x940, 11), (0x9D0, 10), (0xA60, 9), (0xAF0, 8)):
-            identity = struct.unpack_from("<I", body, record)[0]
+        for identity_at, enum in ((0x940, 11), (0x9D0, 10), (0xA60, 9), (0xAF0, 8)):
+            record = lookup(identity_at)
+            identity = struct.unpack_from("<I", body, identity_at)[0]
             binding = xbe.index(struct.pack("<II", identity, 0x319C20))
             self.assertEqual(struct.unpack_from("<I", xbe, binding + 8)[0], enum)
-            for axis in (0x10, 0x24, 0x38):
+            for axis in (0x00, 0x14, 0x28):
                 self.assertEqual(struct.unpack_from("<f", fixed, record + axis)[0],
                                  0 if enum == 10 else 1)
-        for record in (0x940, 0xB80, 0xAF0, 0xD30):
-            self.assertEqual(fixed[record + 0x50:record + 0x58], body[record + 0x50:record + 0x58])
-        retired_y = body[0x9D0 + 0x54:0x9D0 + 0x58]
-        for record in (0xA60, 0xCA0):
-            self.assertEqual(fixed[record + 0x54:record + 0x58], retired_y)
+        for identity_at in (0x940, 0xB80):
+            record = lookup(identity_at)
+            self.assertEqual(fixed[record + 0x40:record + 0x48], body[record + 0x40:record + 0x48])
+        for identities, previous_id in (((0xA60, 0xCA0), 0x9D0), ((0xAF0, 0xD30), 0xA60)):
+            previous = lookup(previous_id)
+            for identity_at in identities:
+                record = lookup(identity_at)
+                self.assertEqual(fixed[record + 0x44:record + 0x48], body[previous + 0x44:previous + 0x48])
 
     def test_owned_hashes_replay_and_unowned_changes_compose(self):
         for name, raw in self.raw.items():
