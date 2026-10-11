@@ -53,7 +53,7 @@ def profiles():
     return bytes(out)
 
 
-def specs():
+def specs(revision=2):
     """name, VA, span, dispatch. Every span ends on an instruction boundary."""
     from . import nfl2k5_kick_rules as kr, nfl2k5_overtime as ot
     from . import nfl2k5_coin_defer as coin, nfl2k5_decided_clock as clock
@@ -82,6 +82,10 @@ def specs():
              ("penalty_finish", 0xB156C, 5, "penalty_finish")]
     rows += [("coin_" + n, va, len(raw), "coin_" + n) for n, va, raw, _op in coin.HOOKS]
     rows += [("clock_" + n, va, len(raw), "clock_" + n) for n, va, raw, _op in clock.HOOKS]
+    if revision >= 2:
+        # Classify the successful try before score notifications, drive history
+        # and live points consume it. A run/pass PAT before 1994 is one point.
+        rows += [("try_event", 0x22DFF0, 7, "try_event")]
     return rows
 
 
@@ -106,11 +110,11 @@ def imm(value):
     return struct.pack("<I", value & 0xFFFFFFFF).hex()
 
 
-JUMPS = {"regular_tie", "no_ot", "try_points", "def_interception", "def_recovery", "def_blocked",
+JUMPS = {"regular_tie", "no_ot", "try_points", "try_event", "def_interception", "def_recovery", "def_blocked",
          "try_ai", "fair_catch", "fair_spot", "penalty_finish", "coin_choose", "coin_winner_result", "clock_huddle"}
 
 
-def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
+def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revision=2):
     from . import nfl2k5_overtime as ot, nfl2k5_coin_defer as coin, nfl2k5_kick_rules as kr
     va, state = owned["code"]["va"], owned["data"]["va"]
     symbols = dict(code=va, profiles=owned["read_only"]["va"] + PROFILES, state=state, native_ot_check=ot.cave_labels()["ot_check"])
@@ -129,7 +133,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
     require(len(core) < WRAPPERS, "era core budget")
     a = _Asm(va + WRAPPERS)
     edits = []
-    for ordinal, (name, site, size, dispatch) in enumerate(specs()):
+    for ordinal, (name, site, size, dispatch) in enumerate(specs(revision)):
         before = saved[ordinal]
         require(len(before) == size, "era displaced span size")
         a.label(name)
@@ -214,6 +218,11 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
             a.j32("0f85", name + "_forward")
             a.b("619d8300018b4938")
             a.jmp_abs(site + size)
+        elif dispatch == "try_event":
+            a.b("f6401601")
+            a.j32("0f85", name + "_forward")
+            a.b("619dc7407404000000")
+            a.jmp_abs(site + size)
         elif dispatch.startswith("def_"):
             a.b("f6401602")
             a.j32("0f85", name + "_forward")
@@ -264,7 +273,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
         require(len(raw) <= saved_stride, "era displaced instruction budget")
         constants.extend(raw.ljust(saved_stride, b"\0"))
     require(len(constants) <= RO_SIZE, "era saved-site budget")
-    for name, site, size, dispatch in specs():
+    for name, site, size, dispatch in specs(revision):
         opcode = b"\xe9" if dispatch in JUMPS else b"\xe8"
         after = (opcode + struct.pack("<i", va + WRAPPERS + a.labels[name] - site - 5)).ljust(size, b"\x90")
         edits.append((site, after))
@@ -304,6 +313,25 @@ def underlying_view(payload):
     return _underlying_view(bytes(payload))
 
 
+def _installed_definition(image, owned):
+    """Recognize the exact shipped wrapper or its successor before unwrapping."""
+    body = image.read(owned["code"]["va"], CODE_SIZE)
+    constants = image.read(owned["read_only"]["va"], RO_SIZE)
+    limit = assembly.CODE.index(bytes.fromhex("83f833")) + 2
+    legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
+    saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
+    for revision in (2, 1):
+        if legacy and revision != 1:
+            continue
+        saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
+                 for i, (_n, _va, size, _d) in enumerate(specs(revision))]
+        expected, expected_ro, edits = code_for(owned, saved,
+            profile_data=constants[:1600] if legacy else None, saved_stride=stride, revision=revision)
+        if body == expected and constants == expected_ro:
+            return saved, edits, revision
+    raise ValueError("foreign era rules code, profiles or displaced-site table")
+
+
 @lru_cache(maxsize=2)
 def _underlying_view(payload):
     """Restore only verified era-owned sites for the underlying owners' recognizers."""
@@ -322,14 +350,7 @@ def _underlying_view(payload):
     if body == b"\xcc" * CODE_SIZE:
         require(constants == bytes(RO_SIZE), "foreign dormant era constants")
         return payload
-    limit = assembly.CODE.index(bytes.fromhex("83f833")) + 2
-    legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
-    saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
-    saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
-             for i, (_n, _va, size, _d) in enumerate(specs())]
-    expected, expected_ro, edits = code_for(owned, saved, profile_data=constants[:1600] if legacy else None,
-                                            saved_stride=stride)
-    require(body == expected and constants == expected_ro, "foreign era rules code, profiles or displaced-site table")
+    saved, edits, _revision = _installed_definition(image, owned)
     states = {"underlying" if image.read(site, len(raw)) == raw else
               "applied" if image.read(site, len(after)) == after else "foreign"
               for (site, after), raw in zip(edits, saved)}
@@ -385,6 +406,8 @@ def _prerequisites(payload):
         require(hashlib.sha256(raw).hexdigest() == guard["sha256"],
                 "foreign era dependency at " + hex(guard["va"]))
     for name, site, size, dispatch in specs():
+        if dispatch == "try_event":
+            require(image.read(site, size) == bytes.fromhex("c7407405000000"), "foreign era try event setter")
         if dispatch in ("regular_tie", "no_ot", "try_points", "try_ai", "fair_catch", "fair_spot", "penalty_finish"):
             require(image.read(site, size).hex() == pins[name], "foreign era live site " + name)
         if dispatch in ("def_interception", "def_recovery", "def_blocked"):
@@ -401,8 +424,9 @@ def status(payload):
                 image = XbeImage(payload)
                 body = image.read(owned["code"]["va"], CODE_SIZE)
                 if body != b"\xcc" * CODE_SIZE:
-                    for i, (_name, site, size, _dispatch) in enumerate(specs()):
-                        require(image.read(site, size) == image.read(owned["read_only"]["va"] + SAVED + i * SAVED_STRIDE, size),
+                    saved, edits, _revision = _installed_definition(image, owned)
+                    for (site, _after), raw in zip(edits, saved):
+                        require(image.read(site, len(raw)) == raw,
                                 "foreign disabled era hook")
             return "retail"
         _prerequisites(base)
@@ -420,7 +444,8 @@ def apply(payload, *, enabled=True):
     if before == "applied":
         image = XbeImage(payload)
         owned = places(payload)
-        if image.read(owned["read_only"]["va"], SAVED) == profiles():
+        _saved, _edits, revision = _installed_definition(image, owned)
+        if revision == 2 and image.read(owned["read_only"]["va"], SAVED) == profiles():
             return payload, dict(status="already_applied", owner=OWNER, changed_bytes=0)
         # Restore only validated era sites, then install the expanded table in the same allocation.
         payload = underlying_view(payload)

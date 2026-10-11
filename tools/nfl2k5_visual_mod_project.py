@@ -1138,6 +1138,12 @@ def read_project(path: Path, *, equipment_index: Path | None = None) -> ProjectF
         except Exception as exc:
             label = project_edit_label(record, order) if isinstance(record, dict) else f"Project edit index {order}"
             raise ProjectError(f"{label}: {exc}") from exc
+    digit_targets = [live_art_targets.normalize_selector(
+        edit["asset_code"], edit["side"], edit["variant"], edit["family"], edit["digit"])
+        for edit in edits if edit["kind"] == "live_number_nameplate"]
+    require(len(digit_targets) == len(set(digit_targets)),
+            "project repeats a live digit/nameplate target, including family aliases; "
+            "compose the source layers or extract fresh SOFTDRINK sources")
     model_targets = [edit["target"] for edit in edits if edit["kind"] == model_project.KIND]
     require(len(model_targets) == len(set(model_targets)), "project repeats a model set; keep one checked edit per set")
     identity_teams = [edit["team_index"] for edit in edits

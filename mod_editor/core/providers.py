@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "37e23d3ed64c34ebee61055d85cab9a95bdd91d2eb988c2b9b259b6422814d80"
+    backend_module_sha256 = "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
         "mod_editor/core/nfl2k5_espn25_fields.py": "337b3f2125434cbbe97c3d4fe689304da22a3e7d678bdaa46b57122a8f306ca3",
@@ -559,7 +559,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_venues.py": "7b3f92ee60c1ed050290a6958fb1a4d01c12d25d71f4d4411985b5f78a7122dc",
         "mod_editor/core/nfl2k5_historic_styles.py": "d543c92db41a0b4cc66a9ed971cfd38c65dd81f71fc71abe06ff5397c5174d34",
         "mod_editor/core/nfl2k5_era_rules_code.py": "31a59de504f1d3c80db7823240bc1854324a544e48c572f5cb3518c0a1da6402",
-        "mod_editor/core/nfl2k5_era_rules.py": "84a8aaa784db04719a9395e67fdebf1552785b7d039b08f3f7ba6c9a9e9b495f",
+        "mod_editor/core/nfl2k5_era_rules.py": "92cbe611494bce380e384c3a24e40fe59a43f74923a36a4089c7f1039b69def7",
         "mod_editor/core/nfl2k5_stock_books.py": "4294cb70f22085f2e2123d63b96f05d076c97809e214c48e94c3f86874cc720c",
         "mod_editor/core/nfl2k5_moment_gun_weight.py": "0d1725f53ac18363c9a8eeb4622d947f390b2126287a999b8fcab7140075156a",
         "mod_editor/core/nfl2k5_project_fit.py": "ca9551a8f1d89e6435acba870daa3902ede49a84a2a9e5d1adf5b5eb53eeeb7a",
@@ -913,7 +913,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435",
         "tools/nfl2k5_roster_reclassify.py": "569bd7021f7fa8259a6ffd9c4473e8c1d08e22d9e383593c288f747d2e2fd867",
-        "tools/nfl2k5_visual_mod_project.py": "37e23d3ed64c34ebee61055d85cab9a95bdd91d2eb988c2b9b259b6422814d80",
+        "tools/nfl2k5_visual_mod_project.py": "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007",
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",
@@ -963,9 +963,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
         "data/nfl2k5_ratings_forty_sources.json": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
         "data/nfl2k5_espn25_more_teams/teams.json": "0484cc4ea617f4d250571ac3551f820368a15456c444326203d31c98eebd8cd3",
-        "data/nfl2k5_espn25_more_teams/manifest.json": "5bb9022cf3c1c85573f5506d99c690beecc875ed4a3805c5d1cc9337e09782cc",
+        "data/nfl2k5_espn25_more_teams/manifest.json": "1aefb229e40d438e32210669eb62459bb71aa056bfe23c460dcc86eb0fbc95ba",
         "data/nfl2k5_espn25_more_moments_appearance.json": "2397399d6681a1c05f7e1287d3e4e83ff710e4fdc40b759621593a296643e3f3",
-        "data/nfl2k5_espn25_more_moments.json": "d9b58dbe05268ee35c32f35132cd9a94efd07b832db5aec7a90b38c7edfb652e",
+        "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
         "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",
         "data/nfl2k5_espn25_fields/source/nfl_2008_source.png": "6b8162747a0a58998b342a3a351ba5efbe70cb6ce1350889db9656e74514b119",
         "data/nfl2k5_espn25_fields/source/manifest.json": "8b1addd0e0b8c392519b40cf661e3a65cfcaa4e3267c1c4a326ff316bfec6588",
