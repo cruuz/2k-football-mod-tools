@@ -224,18 +224,19 @@ class LedgerTests(unittest.TestCase):
 
 
 class HostBudgetTests(unittest.TestCase):
-    def test_b69_budget_native_sources_and_progression_caps_are_unchanged(self):
+    def test_b69_budget_reviewed_native_sources_and_progression_caps(self):
         import hashlib
         pins = {
             'tools/mycareer_mode/b69_budget.json':
                 '738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73',
             'tools/mycareer_mode/runtime.c':
-                '5e3085d95c38e3410d7c0b814a11549816aec9968ed61bb155d35d731c0dbf56',
+                '1abd185bb7cb38993c073a0f0ce49d0105a78df654008c36885f7b6bac0e4627',
             'tools/mycareer_mode/runtime.S':
                 '74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
-                # refreshes this stale host pin; native code/budget pins stay fixed.
+                # refreshes this host pin. v1h also repairs the reviewed native C
+                # prefetch path; the budget, assembly and progression pins stay fixed.
                 '16c656d13c5269069f30ca95f43f4158ee51c578a141f62aede970e555c9bf2a',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
