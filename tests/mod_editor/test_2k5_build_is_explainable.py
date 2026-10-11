@@ -237,14 +237,17 @@ class DefenseBuildOrderingTests(unittest.TestCase):
             load_pack=lambda p: SimpleNamespace(schema="v2" if p.name == "defense.2k5book" else "v1", plays=()),
             apply_packs_to_image=lambda target, paths, **kw: events.append(tuple(p.name for p in paths)) or {},
         )
-        pools = SimpleNamespace(status=lambda payload: "retail", apply=lambda payload, **kw: (payload, {}))
+        pools = SimpleNamespace(status=lambda payload: "retail", apply=lambda payload, **kw: (payload, {}),
+                                apply_team_needs_image=lambda target: {"synthetic": True})
         roles = SimpleNamespace(status=lambda source: {"books": {"ATL": "retail"}},
                                 apply=lambda *a, **kw: events.append("roles") or {})
         recode = SimpleNamespace(apply=lambda *a, **kw: events.append("recode") or {})
         roster = SimpleNamespace(apply=lambda *a, **kw: {},
                                  olb_filter_policy=lambda target: {"complete": True, "olb_players": 0,
                                                                    "roster_has_olb": False})
-        modules = {"nfl2k5_playbook_pack": packs, "nfl2k5_position_pools": pools, "nfl2k5_depth_roles": roles}
+        uniforms = SimpleNamespace(apply_to_image=lambda target: {"synthetic": True})
+        modules = {"nfl2k5_playbook_pack": packs, "nfl2k5_position_pools": pools, "nfl2k5_depth_roles": roles,
+                   "nfl2k5_unc_bowl_uniforms": uniforms}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"
@@ -267,7 +270,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         self.assertEqual(events, [("defense.2k5book",), "recode", ("offense.2k5book",), "roles"])
         self.assertEqual([s["step"] for s in receipt["steps"]],
                          ["xbe", "defense_playbook_packs", "position_pools", "playbook_packs", "depth_roles",
-                          "position_pool_filters"])
+                          "position_pool_filters", "unc_bowl_uniforms"])
         self.assertFalse(receipt["steps"][1]["witnessed"])
 
 

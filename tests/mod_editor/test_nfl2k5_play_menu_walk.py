@@ -150,11 +150,23 @@ class BuildGateTests(unittest.TestCase):
             return build._check_playbook_menus(Path("unused.iso"), lambda *a: None)
 
     def test_sound_books_pass_and_a_duplicate_link_refuses_the_build(self):
-        good = b"PLAY" + bytes(0x1C) + bytes(_body({0: [_link(1), _link(2)]}))
-        bad = b"PLAY" + bytes(0x1C) + bytes(_body({0: [_link(1), _link(2), _link(1)]}))
+        from tests.mod_editor.test_nfl2k5_playbook_inspector import _fixture
+        # The final gate now parses category ownership as well as menu links.
+        # Supply a complete structured book, including its membership mask.
+        good = bytearray(_fixture())
+        aux = insp.RESOURCE_HEADER_SIZE + insp.FORMATION_AUX_BASE
+        struct.pack_into("<2H", good, aux, _link(1), _link(0))
+        struct.pack_into("<II", good, aux + 0x48, 0, 1)
+        good = bytes(good)
+        bad = bytearray(good)
+        struct.pack_into("<H", bad, aux + 4, _link(1))
         self.assertEqual(self._gate({307: good, 308: good}), {"books": 2, "problems": 0})
         with self.assertRaisesRegex(RuntimeError, r"book 308: formation 0 .*play 1 is listed twice"):
-            self._gate({307: good, 308: bad})
+            self._gate({307: good, 308: bytes(bad)})
+        empty = bytearray(good)
+        struct.pack_into("<I", empty, aux + 0x4C, 0)
+        with self.assertRaisesRegex(RuntimeError, r"book 308: category 0 .*no formation"):
+            self._gate({307: good, 308: bytes(empty)})
 
 
 class NativeWalkTests(unittest.TestCase):
