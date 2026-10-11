@@ -3589,9 +3589,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                              "roster scan; reclassify every selectable roster before building")
         xbe, filter_receipt = pools_final.apply(_xbe_bytes(target), roster_has_olb=False)
         _write_xbe_bytes(target, xbe)
+        overview_receipt = pools_final.apply_team_needs_image(target)
         receipt["steps"].append({"step": "position_pool_filters", "scan": scan,
                                  "compatibility_override": plan.position_pools_keep_olb,
-                                 "xbe": filter_receipt, "experimental": True, "witnessed": False})
+                                 "xbe": filter_receipt, "team_needs_overview": overview_receipt,
+                                 "experimental": True, "witnessed": False})
         olb_filtered = True
     if plan.modern_naming or plan.reserves_16 or plan.created_teams_extra or plan.crib_reclaim or olb_filtered:
         if plan.hires_pack:
@@ -3665,6 +3667,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["espn25_plan"] = espn.status(target, loaded_espn25_plan)
         if receipt["result"]["espn25_plan"] != "applied":
             raise ValueError("the ESPN Anniversary edits failed their read-back on the copy")
+    if is_image:
+        uniforms = _core_module("nfl2k5_unc_bowl_uniforms")
+        if uniforms is None:
+            raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
+        uniforms_receipt = uniforms.apply_to_image(target)
+        receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
