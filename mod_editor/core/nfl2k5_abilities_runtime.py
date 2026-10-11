@@ -8,7 +8,9 @@ timer, mutable allocation, roster save migration, simulated-game effect, or
 extra week is supplied. The editor
 authors tiers separately. Five existing move flags gain capped live attribute
 bonuses for tiered players. Move locks are opt-in; Speedster permission remains
-required by default.
+required by default for the rating extension, never for sprint. g3 restores
+retail's 1.00 ordinary Speed ceiling; only roster stars can extend it using
+authored Speed 100..127. Command 0x16 (tap speed burst) is always available.
 
 g2 (beta 77): star-only moves. The roster star tag (record word bit 0x0100, the star under a player) plus the
 ability tier (Unranked, Star, Superstar, X-Factor) select one of eight access levels from a four-entry table in the
@@ -16,10 +18,10 @@ owner (``tier_grants``). The flag reader adds that level's grant bits (0x01..0x1
 they are never stored in a roster (all sixteen bits at record +0x52 are assigned) and never counted against a tier's
 flag capacity. Three optional rules put grant bits into the required mask of a command class, so only players whose
 level holds them can use it: ``right_stick_stars_only`` (the right stick: lateral flicks, stutter-step and stop-short
-flicks, the click hurdle), ``charge_stars_only`` (the charge-up meter of live ball carriers) and
+flicks, the click hurdle), ``charge_stars_only`` (the charge-up meter of all live players) and
 ``button_moves_stars_only`` (every other mapped ball-carrier command). All default off; with all off the owner
-behaves as in beta 76.5. CPU carriers follow the same rules as human ones. Speedster and the tier bonuses are
-unchanged.
+keeps retail move access. CPU players follow the same rules as human ones.
+The partial star-access table and the five tier bonuses are unchanged.
 
 Reserve REQUESTS together with every other owner before installing any owner.
 The optional off-week is a ZERO-BASED regular-season row (0..17); None means
@@ -138,7 +140,7 @@ SYMBOLS = {
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail ignores stored ability flags. Patch: "
     "base moves and charge work for every player by default. Optional locks "
-    "require Speedster for speed above 99, each special move's "
+    "require Speedster for a star's authored Speed 100..127 extension, each special move's "
     "ability, and Right-Stick Moves for stick moves. Tiered Juke, Stiff-Arm, "
     "Hurdle, Truck and Spin add 2/4/6 effective points to Agility, Strength, "
     "Jumping, Break Tackle and Pass Rush during live play, capped at 100. "
@@ -153,7 +155,10 @@ HELP_TEXT = (
     "hurdle), charge-ups and button moves (spin, truck, stiff-arm, button jukes) "
     "can each be limited to starred players, and each class of star (no tier, "
     "Star, Superstar, X-Factor) chooses which of those powers it has. CPU players "
-    "follow the same rules. Speedster and the tier bonuses are unchanged. "
+    "follow the same rules. Tap speed burst is universal in every controller "
+    "layout; holding requests charge. The star charge rule covers defenders "
+    "as well as carriers. Ordinary effective Speed keeps retail's 1.00 ceiling; "
+    "the above-retail extension requires a roster star. "
     "No simulated-game effects or guaranteed outcomes."
 )
 
@@ -201,7 +206,7 @@ def _relocate(blob, code_va, relocations=None):
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
 
 
-def _star_classes(blob, stars):
+def _star_classes(blob, stars, *, legacy=False):
     """Install the star rules into a relocated template: the 20 command words, the seven descriptor-family masks
     the initializer falls back to, the 0x5C/0x5D juke immediate, the tier grant table and (charge rule) the charge
     gate."""
@@ -233,6 +238,9 @@ def _star_classes(blob, stars):
     _require(bytes(blob[at:at + 4]) == bytes(4), "abilities tier grant table differs from the template")
     blob[at:at + 4] = bytes(ACCESS_LEVELS[name] | GRANT_BUTTON for name in stars["star_access"])
     if stars["charge_stars_only"]:
+        if not legacy:
+            _star_charge(blob)
+            return
         # The retail charge policy is replaced, for live ball carriers only, by "the carrier's access level holds
         # the charge-up grant". Four one-byte/one-immediate edits in maintain(); consume() keeps retail behaviour.
         head = labels["maintain_head"] + 5            # je maintain_yes after unlocked_moves
@@ -252,6 +260,49 @@ def _star_classes(blob, stars):
         blob[at] = 0xEB
 
 
+def _star_charge(blob):
+    """Replace maintain's policy in its existing slot; keep every hook/label.
+
+    carrier() validates the entity/state/steer pointers even for a defender.
+    Its CF is ignored here. Restrict live player entities on both teams, human
+    or CPU. Never write sprint, throttle, the burst multiplier or burst timer.
+    """
+    labels = assembly.LABELS
+    start, end = labels["maintain"], labels["maintain_yes"]
+    code = bytearray()
+
+    def call(label):
+        code.extend(b"\xe8" + struct.pack("<i", labels[label] - (start + len(code) + 5)))
+
+    def branch(opcode, label):
+        delta = labels[label] - (start + len(code) + 2)
+        _require(-128 <= delta < 128, "star charge branch outside its slot")
+        code.extend(bytes((opcode, delta & 255)))
+
+    call("carrier")
+    code.extend(b"\x85\xf6")                    # test esi,esi (validated state)
+    branch(0x74, "maintain_yes")
+    code.extend(b"\x85\xd2")                    # test edx,edx (validated steer)
+    branch(0x74, "maintain_yes")
+    code.extend(bytes.fromhex("833db802e6000e")) # cmp [phase],14
+    branch(0x75, "maintain_yes")
+    code.extend(bytes.fromhex("837b1c01"))       # cmp [entity+1c],1 (player)
+    branch(0x75, "maintain_yes")
+    code.extend(bytes.fromhex("8b4b3c"))         # mov ecx,[entity+3c] (record)
+    call("effective")
+    code.extend(bytes((0xA8, GRANT_CHARGE)))     # test al,charge grant
+    branch(0x75, "maintain_yes")
+    branch(0xEB, "maintain_clear")
+    _require(len(code) <= end - start, "star charge policy exceeds owner slot")
+    blob[start:end] = code + b"\x90" * (end - start - len(code))
+    # Direct consumption can arrive before the next generate/filter pass.
+    # Validate/clear a stale meter there too. A denied charge then has zero
+    # meter even if a legacy known-move path reaches retail consumption.
+    at = labels["consume"] + 4
+    blob[at:at + 5] = b"\xe8" + struct.pack("<i", start - (at + 5))
+    blob[at + 5] = 0x72                         # jc consume_allowed
+
+
 def _read_stars(content):
     """The star rules a template-shaped owner carries, or None when its bytes are not this template's."""
     labels = assembly.LABELS
@@ -263,14 +314,15 @@ def _read_stars(content):
     except (KeyError, struct.error):
         return None
     return {"right_stick_stars_only": bool(words[0x1A - TABLE_FIRST_COMMAND] & GRANT_STICK),
-            "charge_stars_only": content[labels["maintain_head"] + 5] == 0x90,
+            "charge_stars_only": content[labels["maintain_head"] + 5] in (0x90, 0x85),
             "button_moves_stars_only": bool(words[0x1B - TABLE_FIRST_COMMAND] & GRANT_BUTTON),
             "star_access": names}
 
 
 def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
              lock_special_moves=False, lock_speedster=True, right_stick_stars_only=False,
-             charge_stars_only=False, button_moves_stars_only=False, star_access=DEFAULT_STAR_ACCESS):
+             charge_stars_only=False, button_moves_stars_only=False, star_access=DEFAULT_STAR_ACCESS,
+             _legacy_g2=False):
     _week(abilities_off_week)
     locks = _locks(lock_right_stick=lock_right_stick,
                    lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
@@ -279,20 +331,30 @@ def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
     _require(not (stars["charge_stars_only"] and (locks["lock_right_stick"] or locks["lock_special_moves"])),
              "charge_stars_only replaces the charge policy of the two move locks: turn both locks off")
     blob = bytearray(assembly.CODE)
+    if _legacy_g2:
+        # Exact g2 reader: every label and relocation is retained by g3.
+        blob[assembly.LABELS["speed"]:assembly.LABELS["decode"]] = LEGACY_G2_SPEED
     _relocate(blob, code_va)
     struct.pack_into("<i", blob, assembly.LABELS["config"],
                      -1 if abilities_off_week is None else abilities_off_week)
     struct.pack_into("<I", blob, assembly.LABELS["unlocked_mask"],
                      sum(LOCK_MASKS[key] for key, locked in locks.items() if not locked))
-    _star_classes(blob, stars)
+    _star_classes(blob, stars, legacy=_legacy_g2)
     blob.extend(b"\xcc" * (CODE_SIZE - len(blob)))
     return bytes(blob), {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
 
-# The beta 76.5 / SOFTDRINK v0.5 owner template (what tools/b77/g2_repair.py upgrades). Hooks, tables and every
-# function from `carrier` on are byte-identical to the current template (same labels); only the flag reader, the
-# 1-byte `permissions`/`unlocked_moves` shift and the new grant table differ, so the repair rewrites just the
-# owner's own allocation. LEGACY_V05_SHA256 pins the whole 1344-byte owner of the shipped v0.5 disc.
+LEGACY_G2_SPEED = bytes.fromhex(
+    "51ff742408e8fcffffff599c6083ec0cd91c24c7442404a4707d3fe887feffffa92000000074270fb6413683e86483f81b"
+    "771b83c06489442408db442408d80d04000000d9542404d80c24d91c248b042485c078133d0000807f730c3b442404760b"
+    "8b442404eb0231c0890424d9042483c40c619dc20400"
+)
+
+
+# The beta 76.5 / SOFTDRINK v0.5 template (upgraded by the historical g2 repair).
+# All revisions retain the hook target locations from `carrier` onward. G3
+# changes the speed body and installed star-charge policy in those same slots.
+# LEGACY_V05_SHA256 pins the shipped v0.5 disc's complete 1344-byte owner.
 LEGACY_V05_CODE = bytes.fromhex(
     "31c085c9746183f9ff745c833d00000000ff741f833da076e500027516833da476e50008750da1000000003b05b476e5"
     "0074320fb7415225e01e00005352510fb65153c1ea0674198a923605000089c385db740dfeca78078d4bff21cbebf131"
@@ -361,7 +423,7 @@ def allocation(payload):
 
 
 def _inspect_revision(payload):
-    """(state, settings, revision). revision is "retail", "star-gate" (this template) or "beta-76.5" (the v0.5 reader)."""
+    """Read current universal-sprint, g2 star-gate, beta-76.5 or retail bytes."""
     _require(isinstance(payload, (bytes, bytearray)) and len(payload) >= 4096, "truncated abilities XBE")
     layout = space.layout(payload)  # checks every section digest and allocation seal
     image = XbeImage(payload)
@@ -394,9 +456,12 @@ def _inspect_revision(payload):
                     expected = None
             if expected is not None and content == expected:
                 settings.update(stars)
+                revision = "universal-sprint"
+            elif stars is not None and content == code_for(a["va"], **{**settings, **stars}, _legacy_g2=True)[0]:
+                settings.update(stars)
                 revision = "star-gate"
             else:
-                # The beta 76.5 template has no star rules (it behaves like this one with all of them off).
+                # The beta 76.5 template predates star rules and g3's speed fix.
                 legacy, labels = legacy_code_for(a["va"], **{k: v for k, v in settings.items() if k not in DEFAULT_STARS})
                 _require(content == legacy, "foreign abilities code/table/configuration")
                 revision = "beta-76.5"
@@ -413,7 +478,7 @@ def _inspect(payload):
 
 
 def revision(payload):
-    """retail | star-gate | beta-76.5 | foreign."""
+    """retail | universal-sprint | star-gate | beta-76.5 | foreign."""
     try:
         return _inspect_revision(payload)[2]
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
@@ -445,6 +510,32 @@ def reservations(payload):
     return out
 
 
+def repair_sprint(payload):
+    """Upgrade an exact g2 owner, preserving its settings, allocation and hooks.
+
+    Recompute every section digest and the allocator seals from the actual
+    stacked input. The native g3 CLI supplies stricter whole-file hash/scope
+    checks; Studio also uses this upgrade when rebuilding a g2 executable.
+    """
+    state, settings, rev = _inspect_revision(payload)
+    _require(state == "applied" and rev in ("star-gate", "universal-sprint"),
+             "sprint repair requires the g2 or g3 abilities owner")
+    if rev == "universal-sprint":
+        return payload, {"status": "already_applied", "changed_bytes": 0}
+    _require(space.is_scaleout(payload), "sprint repair requires the sealed v3 allocator")
+    a = allocation(payload)
+    content, _ = code_for(a["va"], **settings)
+    buf = bytearray(payload)
+    buf[a["raw"]:a["raw"] + a["size"]] = content
+    space._seal_scaleout(buf, space._read_scale_directory(payload))
+    for section in _sections(buf):
+        buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+    result = bytes(buf)
+    _require(_inspect_revision(result) == ("applied", settings, "universal-sprint"),
+             "sprint repair postcondition failed")
+    return result, {"status": "applied", "changed_bytes": sum(x != y for x, y in zip(payload, result))}
+
+
 def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
           lock_special_moves=_UNSET, lock_speedster=_UNSET, right_stick_stars_only=_UNSET,
           charge_stars_only=_UNSET, button_moves_stars_only=_UNSET, star_access=_UNSET):
@@ -469,6 +560,9 @@ def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
                    experimental=True, runtime_witnessed=False, changed_bytes=0, edits=[])
     if state == "applied":
         _require(wanted == previous, "different abilities settings; rebuild from supported base")
+        if revision(payload) == "star-gate":
+            result, upgraded = repair_sprint(payload)
+            return result, {**receipt, **upgraded, "revision": "universal-sprint"}
         return payload, {**receipt, "status": "already_applied"}
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                      if space.status(payload) == "retail" else (payload, {}))

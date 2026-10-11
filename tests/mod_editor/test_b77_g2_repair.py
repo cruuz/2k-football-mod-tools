@@ -135,7 +135,11 @@ class StackedTests(unittest.TestCase):
         out, receipt = repair.repair_xbe(gated, None, charge_stars_only=True)
         self.assertTrue(receipt["scope"]["outside_scope_identical"])
         self.assertEqual(abilities.read_settings(out)["charge_stars_only"], True)
-        self.assertLess(receipt["owner_changed_bytes"], 40)
+        # G3's all-player charge policy replaces maintain in its existing
+        # slot and validates direct consumption; no other owner byte changes.
+        self.assertTrue(all(309 <= row["owner_offset"] < row["owner_offset"] + row["size"] <= 383
+                            or 808 <= row["owner_offset"] < row["owner_offset"] + row["size"] <= 815
+                            for row in receipt["owner_changed_runs"]))
 
     def test_retail_is_refused(self):
         with self.assertRaises(ValueError):

@@ -239,15 +239,19 @@ speed:
     pushad
     sub esp, 12
     fstp dword ptr [esp]
-    mov dword ptr [esp+4], 0x3f7d70a4  /* .99 */
+    mov dword ptr [esp+4], 0x3f800000  /* retail's 1.00 ceiling, including sprint */
     call permissions
-    test eax, 0x20
+    test al, 0x20
+    jz speed_bound
+    /* Speedster extends the rating only for a roster star. Base sprint and
+     * the native burst multiplier never depend on either permission. */
+    test byte ptr [ecx+0x53], 1
     jz speed_bound
     movzx eax, byte ptr [ecx+0x36]
-    sub eax, 100
-    cmp eax, 27
+    cmp al, 100
+    jb speed_bound
+    cmp al, 127
     ja speed_bound
-    add eax, 100
     mov [esp+8], eax
     fild dword ptr [esp+8]
     fmul dword ptr [config+4]
