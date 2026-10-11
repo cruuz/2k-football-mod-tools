@@ -908,7 +908,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_commentary_swap.py": "d12b0a4595155acf97545b01fa82791b43357e5a07a1569a58b1135e9faa965d",
         "tools/nfl2k5_jersey_png_workflow.py": "d5042236dc3800e52325a163ad43efd1769ac71f38c05a4d1b8d3532f364184f",
         "tools/nfl2k5_kickoff_alignment.py": "31218fc1e553adf4ab0f7fa59857459da16b828a5bb3679aba3c27d419cfe82b",
-        "tools/nfl2k5_playbook_position_recode.py": "326ea888c7e4c7281d231ea02b495ee8af6289770cf122ba6299f0518126adc9",
+        "tools/nfl2k5_playbook_position_recode.py": "9bfc3137c4bd35eb4360db57d6cb0d4664f31c2e8ae6135830d00defcf1a054d",
         "tools/nfl2k5_scorebug_espn_art.py": "4bd1e9fb9166ddfbe1423f3e2c41ed2424841a0ae476270c2117de2a9e006780",
         "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
