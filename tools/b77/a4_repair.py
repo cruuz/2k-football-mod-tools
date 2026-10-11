@@ -12,12 +12,14 @@ allocation and the one shotgun site it now also installs), so it composes with e
 input), or a stacked integration input named with ``--expected-input-sha256`` (which may already carry the earlier a4 body, one shotgun
 weight per franchise: it is completed in place). Exact shipped a4pd bodies are also upgraded in place:
 the selector's live-team argument must be dereferenced at +0x1c before accessing roster fields.
+The October 9 v0.6 / FRZ4 body is upgraded with an active-team identity guard. Use
+``--preserve-installed-weights`` for a code-only upgrade that retains the shipped tables exactly.
 The v0.5 stock book resolver must be installed.
 
 What changes (everything else is proved identical, byte for byte):
 
 * the 1,536 bytes of the stock book allocation (no allocation moves, none is added): the resolver body is rebuilt so its 32
-  alias rows shrink from 40 to 8 bytes (it composes the same ``E2R-<key>-pb.iff`` string), which frees room for the stub (252 bytes)
+  alias rows shrink from 40 to 8 bytes (it composes the same ``E2R-<key>-pb.iff`` string), which frees room for the stub (256 bytes)
   and 51 float32 shotgun weights for the moments;
 * the stub also serves every franchise team in exhibition, season and franchise games: a table of 32 x 7 weights (uint16 multiples of
   0.05) fitted to 2025 and 2026 nflverse shotgun rates per down and distance bin (1st; 2nd and 1-3 / 4-7 / 8+; 3rd and 4th and
@@ -55,7 +57,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 
 V05_SHA256 = "2b0fbbbb89b5c72aaed7c454bf6e78dd2c97f1e417e2d761e515907ed81471ab"
 MAX_XBE = 16 * 1024 * 1024
-SCHEMA = "b77.a4.xbe-repair.v3"
+SCHEMA = "b77.a4.xbe-repair.v4"
 
 
 def sha(data: bytes) -> str:
@@ -105,6 +107,8 @@ def scope_receipt(before: bytes, after: bytes) -> dict:
 def repair_xbe(payload: bytes, values: list[float], team_values: list[list[float]]) -> tuple[bytes, dict]:
     if stock.status(payload) not in ("needs_fix", "applied"):
         raise ValueError("the stock book resolver (Stock playbooks for historic teams) must be installed first, and unchanged elsewhere")
+    owned = stock.allocation(payload)
+    before_kind, _ = stock._installed_kind(XbeImage(payload), owned["va"])
     after, apply_receipt = stock.apply(payload, weights=values, team_weights=team_values)
     receipt = scope_receipt(payload, after)
     old_allocations = space._scale_allocations(space._read_scale_directory(payload))
@@ -117,7 +121,12 @@ def repair_xbe(payload: bytes, values: list[float], team_values: list[list[float
         weights=[round(v, 4) for v in values],
         team_bin_weights={key: dict(zip(gw.BIN_NAMES, row)) for key, row in zip(stock.key_order(), team_values)},
         live_team_roster_offset=gw.ROSTER_OFFSET,
-        corrects_shipped_a4pd_team_pointer=True,
+        previous_body_kind=before_kind,
+        corrects_shipped_a4pd_team_pointer=before_kind in ("single", "unfixed_bins"),
+        active_team_identity_guard=True,
+        accepted_team_globals=[hex(gw.OFFENSE_TEAM_POINTER), hex(gw.DEFENSE_TEAM_POINTER)],
+        unsupported_team_argument_fallback="retail 0.05 before dereferencing the argument",
+        scrolling_freeze_root_cause_proved=False,
         gameplay_witness=False)
     if not receipt["existing_allocations_unchanged"]:
         raise ValueError("an allocator owner moved")
@@ -130,7 +139,9 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--expected-input-sha256", action="append", default=[],
                         help="sha256 of a stacked integration input (repeatable); the v0.5 executable is always accepted")
-    parser.add_argument("--eras", type=Path, default=gw.DATA)
+    parser.add_argument("--eras", type=Path, help="weight data (default: committed data file)")
+    parser.add_argument("--preserve-installed-weights", action="store_true",
+                        help="upgrade an exact installed per-bin body without changing either weight table")
     parser.add_argument("--refit-books", type=Path, help="directory of the final <KEY>.play entries: refit every weight from them")
     parser.add_argument("--selection-model-dir", type=Path, help="tree with pb/v2/selection_model.py (needed with --refit-books)")
     args = parser.parse_args()
@@ -143,18 +154,37 @@ def main() -> int:
     if sha(payload) not in accepted and stock.status(payload) != "applied":
         raise SystemExit(f"refused: input sha256 {sha(payload)} is not v0.5 and is not named by --expected-input-sha256")
 
-    data = gw.load(args.eras)
+    if args.preserve_installed_weights and (args.eras or args.refit_books):
+        parser.error("--preserve-installed-weights cannot be combined with --eras or --refit-books")
+    data = None if args.preserve_installed_weights else gw.load(args.eras or gw.DATA)
     refit_path = None
     if args.refit_books:
         if not args.selection_model_dir:
             raise SystemExit("--refit-books needs --selection-model-dir")
         from tools.b77 import a4_eras
         data = a4_eras.refit(data, args.refit_books, args.selection_model_dir)
-    values = gw.weights(data)
-    team_values = gw.team_bin_weights(data, keys=stock.key_order())
+    if args.preserve_installed_weights:
+        owned = stock.allocation(payload)
+        if owned is None:
+            parser.error("--preserve-installed-weights requires an installed per-bin body")
+        kind, installed = stock._installed_kind(XbeImage(payload), owned["va"])
+        if kind not in ("current", "unguarded_bins", "unfixed_bins"):
+            parser.error("--preserve-installed-weights requires an exact installed per-bin body")
+        values, team_values = installed
+    else:
+        values = gw.weights(data)
+        team_values = gw.team_bin_weights(data, keys=stock.key_order())
 
     after, receipt = repair_xbe(payload, values, team_values)
-    receipt["eras_data_sha256"] = sha(json.dumps(data, sort_keys=True).encode())
+    receipt["eras_data_sha256"] = sha(json.dumps(data, sort_keys=True).encode()) if data is not None else None
+    receipt["preserved_installed_weights"] = args.preserve_installed_weights
+    if args.preserve_installed_weights:
+        start = owned["raw"]
+        end = start + stock.CODE_SIZE
+        stub_start, stub_end = start + stock.STUB_OFFSET, start + stock.STUB_OFFSET + gw.STUB_SPACE
+        if payload[start:stub_start] != after[start:stub_start] or payload[stub_end:end] != after[stub_end:end]:
+            raise ValueError("code-only upgrade changed resolver, keys, weights or padding outside the stub")
+        receipt["owner_bytes_outside_stub_identical"] = True
     receipt["refit_from_books"] = str(args.refit_books) if args.refit_books else None
     out_dir = args.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)

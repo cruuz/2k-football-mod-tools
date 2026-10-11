@@ -110,7 +110,7 @@ class DataTests(unittest.TestCase):
         self.assertIn((va + sb.BIN_TABLE_OFFSET).to_bytes(4, "little"), stub)       # the franchise bin table
         self.assertIn((va + sb.TABLE).to_bytes(4, "little"), stub)                  # the key rows
         self.assertIn((0xE602EC).to_bytes(4, "little"), stub)                       # the situation object (down)
-        self.assertEqual(len(stub.rstrip(b"\xcc")), 252)
+        self.assertEqual(len(stub.rstrip(b"\xcc")), 256)
         # layout: stub 256 bytes, 51 moment floats, 32 x 7 uint16 bin weights, free tail
         self.assertEqual((sb.STUB_OFFSET, sb.WEIGHT_OFFSET, sb.BIN_TABLE_OFFSET), (608, 864, 1072))
         table = struct.unpack("<51f", code[sb.WEIGHT_OFFSET:sb.WEIGHT_OFFSET + 204])
@@ -454,6 +454,7 @@ class NativeTests(unittest.TestCase):
         live_team = scratch + 512
         cpu.write(live_team, bytes(0x3C))
         cpu.w(live_team + 0x1C, team)
+        cpu.w(gw.OFFENSE_TEAM_POINTER, live_team)
         cpu.w(cpu.STACK + 0x1C, live_team)
         cpu.run(scratch)
         return cpu.f(scratch + 256)
