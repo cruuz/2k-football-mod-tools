@@ -3243,7 +3243,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 xbe, super_bowl_venue=season.SOFI_SB_VENUE if plan.modern_sofi else "s44_los_angeles")
             _write_xbe_bytes(target, xbe)
         elif state == "applied":
-            season_receipt = {"already_applied": True}
+            # Upgrade v0.6's missed annual-awards comparison even though its
+            # existing calendar and 18-week installation already validate.
+            xbe, awards_receipt = season.repair_awards_timing(xbe)
+            season_receipt = {"already_applied": True, "awards_timing": awards_receipt}
+            if not awards_receipt["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
         # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:

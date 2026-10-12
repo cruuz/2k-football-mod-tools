@@ -5,13 +5,14 @@ for MVPs, Super Bowls, DPOY, ROY, etc. ... (and this dynamically updates through
 
 What the retail game has (static RE of the USA ``default.xbe``; job F5 report)
 ---------------------------------------------------------------------------
-* Season awards are computed once a season, in ``FUN_00116920`` when the week index is 16 (``cmp ebp, 0x10`` at
-  0x116D6C), into the season object 0xE5A2F0 (``FUN_000C5C00``): slots ``{player*, team*}`` at +0x5800 MVP,
+* Season awards are computed once a season, in ``FUN_00116920`` when the week index is 16 in retail, 17 with the
+  repaired 18-week season (``cmp ebp, last_week`` at 0x116D6C), into the season object 0xE5A2F0
+  (``FUN_000C5C00``): slots ``{player*, team*}`` at +0x5800 MVP,
   +0x5808 Coach of the Year, +0x5810 OPOY, +0x5818 DPOY, +0x5820 OROY, +0x5828 DROY, +0x5830..+0x5878 the season's
-  best player in ten position groups (QB RB WR TE OL DL LB DB K P; computed, never shown: a cut All-Pro team) and
+  best players at QB, RB/FB, WR, TE, OL, DL, LB, DB and K, plus a return specialist, and
   +0x5880 the rushing title (the ``jmp 0x1160C0`` tail). The Super Bowl MVP is +0x5888, chosen per game by
   ``FUN_001167D0`` when ``FUN_00133A30`` (stage 9, Super Bowl row) is true.
-* Only the current season is kept: no award history, no record book, no Hall of Fame.
+* Those slots retain only the current season's winners. F5 adds player award history, not a record book.
 
 What this owner adds
 --------------------
@@ -46,6 +47,10 @@ except 96..105 and defensive_try writes field 59 only. Proof: tests/mod_editor/t
 Evidence (job F5 report): static RE, then the real code under Unicorn (the card input loop, both page drawers with
 the text calls captured, the award commits through the game's own history writer, the Super Bowl commit, the fold).
 Not witnessed in game.
+
+V1I: the 18-week season owner now advances the annual comparison to row 17.
+The dispatcher runs during the final game commit, before the awards presentation;
+neither opening that presentation nor the pool-capacity fold grants season awards.
 """
 
 from __future__ import annotations
@@ -71,8 +76,10 @@ HELP_TEXT = (
     "awards. Patch: the bumpers (Black/White; LB/RB in xemu) and the triggers flip any Player Card to an honors page: "
     "MVP, offensive and defensive player of the year, rookies of the year, Super Bowls, Super Bowl MVP, Pro Bowls, "
     "All-Pro and rushing titles, with the years. Each honor is saved in the player's career history, so it moves "
-    "with him and survives saves; the game adds this season's winners itself (awards after the regular season, the "
-    "Super Bowl champions and MVP after the game). Pair with the sourced award history for the 2026 rosters.")
+    "with him and survives saves; season awards appear when the final regular-season week is completed, and "
+    "Super Bowl champions and MVP after that game is committed. Pro Bowls are historical seeds only. "
+    "Comeback, weekly/monthly awards and record books are not tracked on this page. Old saves start tracking "
+    "new supported honors without gaining missing past awards. Pair with the sourced history for new franchises.")
 BUILD_CAPTION = UI_LABEL
 
 FIELD0 = 96
@@ -99,10 +106,10 @@ SITE_TABLE = (
     ("history_fold", 0x0014F168, bytes.fromhex("8b04b5c026aa00"), "honors_fold_rule", 0xE8, 7),
 )
 
-# Dependencies the runtime calls or reads, pinned by SHA-256 of their retail bytes. Two spans carry a byte other
+# Dependencies the runtime calls or reads, pinned by SHA-256 of their retail bytes. Three spans carry bytes other
 # patches legitimately change: the Super Bowl row immediate (0x133A41: 0x14 retail, 0x15 with the 18-week season)
-# and the card's year base (0x3204AD..0x3204B0: 2004 + 11 retail, the season year + 11 with the year patch); those
-# bytes are masked before hashing and checked separately.
+# and the card's year base (0x3204AD..0x3204B0: 2004 + 11 retail, the season year + 11 with the year patch), plus
+# the annual-awards week (0x116D6E: 16 retail, 17 after V1I). They are masked and checked separately.
 GUARDS = (
     ('text init', 0x00046920, 0x16, "715bb82c65136312646957ed6be69fef751004cc7d44f88d321e3c4fd01129e2"),
     ('text font', 0x000469B0, 0xD, "df8e500f21e4fa0b671d89bca38e9934bda6334fe78b372e232d4be9c78d290a"),
@@ -126,7 +133,7 @@ GUARDS = (
     ('team first player', 0x000C3E70, 0x10, "d2dca284a4b79a29764b40ba0a6b4917a7f7efa2a22033e1cc8f89bcc193143b"),
     ('team next player', 0x000C3E80, 0x10, "5215f6bb8c45e4866d42661900f17be8b21674bcb0b5ca1c940816a6fab10319"),
     ('season object', 0x000C5C00, 0x6, "edd64758765e448260b1c654bcee0bdb4865c3a2f3bb56dce067d49f5cf25166"),
-    ('season awards', 0x00116D6C, 0xFD, "a2add87556435157a60dd8fc1d077720ee5ad17eccc4de176a23b366f30c8a91"),
+    ('season awards', 0x00116D6C, 0xFD, "e9ac5d72c0e31154ed7b6dca0261da4178e85c9cd41ccffd60a9f3cbbdda2254"),
     ('rushing title', 0x001160C0, 0xB0, "616d08d815f22fbbe6fd1857c3d514cf723cb601b8e299902f896fd80e2c14f9"),
     ('super bowl mvp', 0x001167D0, 0x142, "0dbedbb1c503ac3434d5ee20261a926d02cbeda8e01abab61f9e1d9656558fe1"),
     ('game commit tail', 0x00135694, 0x2C, "b85e12d8dcc3cac82a6e6142babf09fa60961b4a14d9f2f9e2eb41256ef95f37"),
@@ -141,7 +148,7 @@ GUARDS = (
     ('card year getter', 0x003204A7, 0xE, "d5e02722189accc6a0718e4a8ebfbcb227c2a3299af8861dbc95a4cc503c770f"),
 )
 # bytes inside guarded spans that other patches change: (VA, size)
-VARIABLE_BYTES = ((0x00133A41, 1), (0x003204AD, 4))
+VARIABLE_BYTES = ((0x00133A41, 1), (0x003204AD, 4), (0x00116D6E, 1))
 SUPER_BOWL_ROWS = (0x14, 0x15)
 
 
@@ -209,6 +216,7 @@ def _check_guards(image: XbeImage, checked_sites) -> None:
     for name, va, size, digest in GUARDS:
         _require(_guard_digest(image, va, size, checked_sites) == digest, f"foreign honors dependency: {name} ({va:#x})")
     _require(image.read(0x00133A41, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")
+    _require(image.read(0x00116D6E, 1)[0] in (16, 17), "foreign annual-awards week predicate")
     base = struct.unpack("<I", image.read(0x003204AD, 4))[0] - 11
     _require(2004 <= base <= 2100, "foreign Player Card year base")
 
