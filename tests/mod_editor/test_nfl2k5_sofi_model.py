@@ -55,15 +55,25 @@ class Geometry(unittest.TestCase):
                 self.assertLess(max(us) - min(us), 0.25)
 
     def test_fan_spacing_follows_the_seating_row_through_corners(self):
+        # b77 cr1: V runs along the band's own bottom line (not the field wall's arc) at each column's row density,
+        # metres per V unit = the retail texel aspect x that column's person strip height / a quarter strip, so the
+        # corners and upper rows keep the retail proportion; every step lies inside the retail person range.
+        mm = sm.mm
+        lo = mm.CROWD_ASPECT * mm.CROWD_PERSON_M[0] / mm.CROWD_STRIP
+        hi = mm.CROWD_ASPECT * mm.CROWD_PERSON_M[1] / mm.CROWD_STRIP
+        steps = 0
         for mesh in self.model.meshes.values():
             for strip in mesh.groups.get("crowd", ()):
-                # Higher U is the foot of the billboard in the retail atlas.
-                foot_u = max(mesh.UV[i][0] for i in strip)
-                feet = [i for i in strip if abs(mesh.UV[i][0] - foot_u) < 1e-6]
+                feet = strip[0::2] if mesh.P[strip[0]][1] <= mesh.P[strip[1]][1] else strip[1::2]
                 for a, b in zip(feet, feet[1:]):
                     metres = np.linalg.norm(np.array(mesh.P[a]) - mesh.P[b])
                     repeats = abs(mesh.UV[a][1] - mesh.UV[b][1])
-                    self.assertAlmostEqual(metres, repeats * 9.14, places=5)
+                    if metres < 1e-6:
+                        continue
+                    steps += 1
+                    self.assertGreaterEqual(metres / repeats, lo * (1 - 1e-9))
+                    self.assertLessEqual(metres / repeats, hi * (1 + 1e-9))
+        self.assertGreater(steps, 1000)
 
     def test_crowd_fans_continue_across_sector_joins(self):
         """Matched active columns must show the same atlas phase on both sides of a sector join."""

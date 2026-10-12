@@ -214,6 +214,49 @@ def down(p):
     return np.array([0, -1.0, 0])
 
 
+# ------------------------------------------------------------------------------------------------ crowd proportion
+
+#: b77 cr1 (2026-10-12): the crowd people keep the retail proportion. The runtime crowd atlas is square; U runs a
+#: person's height (one person strip is a quarter of U, heads at its low-U edge) and V runs along the row. Measured
+#: over every retail venue's crowd triangles (tools/b77/cr1_crowd_measure.py; 137,510 triangles, 41 distinct retail
+#: stadium scenes): one atlas texel is drawn 1.081 times as wide along the row as it is tall (median), and a whole
+#: person strip stands 1.872 to 3.404 m tall in the world (median 2.203 m). A billboard keeps that aspect at every
+#: column: its people are the retail median size, larger only when the billboard is taller than such a person (up to
+#: the retail maximum), and a billboard shorter than one shows the top of a person (heads kept, the strip cropped from
+#: below), never a squeezed one. V follows each column's person size, accumulated along the band, so a band built in
+#: sector slices still runs unbroken across the joins.
+CROWD_ASPECT = 1.081
+CROWD_PERSON_M = (2.203, 3.404)
+CROWD_STRIP = 0.25
+CROWD_MARGIN = 0.0075
+
+
+def crowd_person_m(length, person=CROWD_PERSON_M):
+    """World height (m) of one whole person strip on a billboard column ``length`` metres tall."""
+    shown = (CROWD_STRIP - 2 * CROWD_MARGIN) / CROWD_STRIP
+    return min(max(length / shown, person[0]), person[1])
+
+
+def crowd_u(quarter, bottom, top, person=CROWD_PERSON_M):
+    """(u at the billboard bottom, u at its top) of one column: heads at the top, the strip cropped from below on a
+    billboard shorter than a person, and the whole strip on one as tall or taller (stretched only past the retail
+    maximum)."""
+    length = math.dist(tuple(bottom), tuple(top))
+    span = min(CROWD_STRIP * length / crowd_person_m(length, person), CROWD_STRIP - 2 * CROWD_MARGIN)
+    return quarter + CROWD_MARGIN + span, quarter + CROWD_MARGIN
+
+
+def crowd_band_v(bot, top, v0, aspect=CROWD_ASPECT, person=CROWD_PERSON_M):
+    """V at each column of one band: ``v0`` at the first, then each step along the bottom line at the mean of its two
+    columns' row densities (metres per V unit = ``aspect`` x the column's person strip height / ``CROWD_STRIP``)."""
+    dens = [aspect * crowd_person_m(math.dist(tuple(b), tuple(t)), person) / CROWD_STRIP for b, t in zip(bot, top)]
+    vs = [float(v0)]
+    for i in range(1, len(dens)):
+        step = math.dist(tuple(bot[i - 1]), tuple(bot[i]))
+        vs.append(vs[-1] + step * 2.0 / (dens[i - 1] + dens[i]))
+    return vs
+
+
 # ------------------------------------------------------------------------------------------------ parameters
 
 PARAMS = dict(
@@ -416,7 +459,7 @@ class MetLife:
         R = max(len(pr) for pr in profiles) - 1
         for b, k in enumerate(range(0, R, q["rows_per_band"])):
             quarter = [0.0, 0.5, 0.25, 0.75][b % 4]
-            bot, top, ub, ut = [], [], [], []
+            bot, top = [], []
             for lp, pr in zip(loop, profiles):
                 last = len(pr) - 1
                 d0, y0 = pr[min(k, last)]
@@ -425,10 +468,15 @@ class MetLife:
                 h = 0.0 if k >= last else (y1 - y0) + q["extra"]
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
-                v = lp.s * q["v_per_m"]
-                ub.append((quarter + 0.2425, v))
-                ut.append((quarter + 0.0075, v))
-            m.grid("crowd", [bot, top], [ub, ut], facing=toward_field)
+            # b77 cr1: V ran with the field wall's arc (lp.s), so the upper rows, three times longer, drew every fan up
+            # to 3.6 times too wide, and U squeezed a whole person into any billboard height. Each column now keeps the
+            # retail proportion (crowd_u, crowd_band_v), the phase carried across the sector joins.
+            phases = self.__dict__.setdefault("_band_phase", {})
+            vs = crowd_band_v(bot, top, phases.get(tuple(np.round(bot[0], 4)), loop[0].s * q["v_per_m"]))
+            phases[tuple(np.round(bot[-1], 4))] = vs[-1]
+            us = [crowd_u(quarter, pb, pt) for pb, pt in zip(bot, top)]
+            m.grid("crowd", [bot, top], [[(u[0], v) for u, v in zip(us, vs)], [(u[1], v) for u, v in zip(us, vs)]],
+                   facing=toward_field)
 
     # -- signage decals (b76-u5b): every sign and Ring of Honor plate is its own strip of geometry at the cell's
     #    own aspect on the dark fascia, following the fascia's curve; no texture is stretched along a band.

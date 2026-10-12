@@ -311,7 +311,7 @@ class SoFi(mm.MetLife):
         cuts = self._aisle_cuts(loop)
         for b, k in enumerate(range(0, R, q["rows_per_band"])):
             quarter = [0.0, 0.5, 0.25, 0.75][b % 4]
-            bot, top, vs = [], [], []
+            bot, top = [], []
             for lp, pr in zip(loop, profiles):
                 last = len(pr) - 1
                 d0, y0 = pr[min(k, last)]
@@ -320,17 +320,19 @@ class SoFi(mm.MetLife):
                 h = 0.0 if k >= last else (1.8 if standing else min((y1 - y0) + q["extra"], 2.8))
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
-                vs.append(lp.s * q["v_per_m"])
-            bot, top, vs = np.array(bot), np.array(top), np.array(vs)
+            bot, top = np.array(bot), np.array(top)
             L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
             # The upper rows and corners are longer than the field-wall line.
             # Using lp.s there stretched the fan atlas several times wider.
             # A bowl built in sector slices continues each band's phase from the slice before, so the fans run
             # unbroken across the sector joins (restarting at the wall line's arc cut them mid-body at every join).
+            # b77 cr1: V at a fixed 9.14 m a unit and U squeezing a whole person into any billboard height drew fans
+            # squashed on the short and tapering bands and stretched on the tall ones. Each column now keeps the retail
+            # proportion (mm.crowd_u, mm.crowd_band_v), the band's V phase still carried across the sector joins.
             phases = self.__dict__.setdefault("_band_phase", {})
-            start = phases.get((standing, tuple(np.round(bot[0], 4))), loop[0].s)
-            vs = (start + L) * q["v_per_m"]
-            phases[(standing, tuple(np.round(bot[-1], 4)))] = start + float(L[-1])
+            v0 = phases.get((standing, tuple(np.round(bot[0], 4))), loop[0].s * q["v_per_m"])
+            vs = np.array(mm.crowd_band_v(bot, top, v0))
+            phases[(standing, tuple(np.round(bot[-1], 4)))] = float(vs[-1])
             aisles = [L[i] + t * (L[i + 1] - L[i]) for i, t in cuts]
             edges = [0.0] + [e for a in aisles for e in (a - half, a + half)] + [L[-1]]
 
@@ -346,7 +348,8 @@ class SoFi(mm.MetLife):
                 cols = [e0] + [x for x in L if e0 + 1e-6 < x < e1 - 1e-6] + [e1]
                 pb, pt = [tuple(at(x, bot)) for x in cols], [tuple(at(x, top)) for x in cols]
                 vv = [float(at(x, vs)) for x in cols]
-                m.grid("crowd", [pb, pt], [[(quarter + 0.2425, v) for v in vv], [(quarter + 0.0075, v) for v in vv]],
+                us = [mm.crowd_u(quarter, b_, t_) for b_, t_ in zip(pb, pt)]
+                m.grid("crowd", [pb, pt], [[(u[0], v) for u, v in zip(us, vv)], [(u[1], v) for u, v in zip(us, vv)]],
                        facing=toward_field)
 
     def _rows_surface(self, m, material, loop, profiles, rows_per_band, vstart=0.0):
