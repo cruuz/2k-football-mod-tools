@@ -31,7 +31,7 @@ ID, so either build order works without changing the stored playbook profiles.
 | Active MyCareer stages 1–6 | Original MyCareer policy |
 | Paired offensive/defensive book | Existing paired-side replay suppression remains |
 
-The six native hooks validate the raw PLAY load, attach at CPU setup, rebind
+The seven native hooks validate both raw PLAY loading paths, attach at CPU setup, rebind
 after controller changes, release at game unload, and route the two portrait
 renderers. Setup runs through the game's `F7B30`/`F6E60`/`F7A90` path. Only the
 eligible CPU setup's local mode register is adapted; global mode never changes.
