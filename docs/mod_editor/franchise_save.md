@@ -205,3 +205,50 @@ The runtime string table (`.bss`) that names stages, stat ids and log kinds is n
 labels need a memory dump or an in-game read.  The 17-row league stat tables, the 600-record ledger,
 the 32 × 2000-byte team blocks and the per-team floats are carried verbatim.  Player season/career stat
 cells live in the arena's history pool (`nfl2k5_roster_records`), not here.
+
+## Upgrade an older SOFTDRINK franchise
+
+On the Franchise page, choose **Upgrade franchise save to the current build**.
+This supports signed Xbox FXG franchises that began with the SOFTDRINK 2026
+roster and still carry its old experience convention. Save and reload any
+pending editor changes first. Select the current build's disc, preview the
+changes, then write a new signed save folder. The original stays untouched;
+a JSON receipt beside the new folder lists every changed field and input/output
+hashes. The preview and disc checks run in the background.
+
+The migration matches imported players by full name and birth date, corrects
+experience consistently with native season rollover, and shifts existing career
+and honors history slots without changing their values or flags. Generated
+players and unmatched identities are preserved. Current book references and
+coach body/portrait IDs come from the selected disc. The source cohort is the
+public f12 identity data bundled at `mod_editor/data/f12_cohort.json`.
+
+Custom or mixed experience counts, history-slot overflow, shared history that
+would need migration, invalid references, unsupported save types and damaged
+signatures are refused. An already-current cohort stays unchanged, including
+native shared history tails created by later in-game saves. Repeating an upgrade
+against the same disc changes nothing. Structural checks cannot guarantee that
+all future games or different executable builds are freeze-free.
+
+The same workflow is available from the command line:
+
+```bash
+python3 tools/nfl2k5_franchise_upgrade.py upgrade \
+  --input /path/to/signed-franchise-folder \
+  --disc /path/to/current-build.iso \
+  --dry-run --receipt /path/to/preview.json
+
+python3 tools/nfl2k5_franchise_upgrade.py upgrade \
+  --input /path/to/signed-franchise-folder \
+  --disc /path/to/current-build.iso \
+  --output /path/to/new-franchise-folder \
+  --receipt /path/to/upgrade.json
+```
+
+Every output and receipt path must be new. Signed ZIP input is also supported;
+output is always a folder with all container metadata retained. To apply new
+coach art to an upgraded franchise, use `coach-sync` in place of `upgrade`,
+select the final disc, and choose new output/receipt paths. That command copies
+only matching coaches' body and portrait IDs; it leaves progress, experience,
+playbooks, coach assignments and coaching statistics unchanged. The command
+never edits an HDD image or installs a save automatically.
