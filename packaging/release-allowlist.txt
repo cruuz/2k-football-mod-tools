@@ -1295,7 +1295,8 @@ data/nfl2k5_modern_coaches/JAX/jacket.png
 data/nfl2k5_modern_coaches/JAX/logo.png
 data/nfl2k5_modern_coaches/JAX/shirt.png
 data/nfl2k5_modern_coaches/KC/accessories.png
-data/nfl2k5_modern_coaches/KC/head.png
+data/nfl2k5_modern_coaches/KC/head_mask.png
+data/nfl2k5_modern_coaches/KC/head_overlay.png
 data/nfl2k5_modern_coaches/KC/jacket.png
 data/nfl2k5_modern_coaches/KC/logo.png
 data/nfl2k5_modern_coaches/KC/shirt.png

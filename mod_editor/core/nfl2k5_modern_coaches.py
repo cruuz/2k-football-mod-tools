@@ -33,6 +33,15 @@ coach record's ``+0x40``. The 2026 portraits of 30 coaches ride with the 2026 le
 128x128, raw fixed spans) and points those two coach records' ``+0x40`` at them (two 16-bit writes in the main
 roster). A roster whose Dallas or Washington coach already names another picture keeps it.
 
+The bodies (b77 co2): the game builds the coach archive name from the coach record's ``+0x18`` (``swprintf``
+``L"c%02d.iff"`` over its low 16 bits, home and away, for the sideline coach and every cutscene coach). Where another
+retail body fits the 2026 coach better, this option points the club's record at it: the 32 club models are permuted
+(``body_code`` per club; a 16-bit write at ``+0x18`` of the coach record, nothing else in the record changes) and each
+model's textures are authored for its new occupant. Kansas City's Andy Reid wears the retail 2004 Reid model (``c21``,
+Philadelphia's in 2004): its own body, head mesh and face texture, his hair and moustache moved to white and grey and
+his glasses painted on (the model has no glasses geometry). That face is derived at build time from the disc's own
+texture (an authored weight mask and glasses overlay, integer arithmetic), so no retail pixels ship.
+
 EXPERIMENTAL and UNWITNESSED: proved offline (decoded textures, byte receipts, renders from the data); the look in
 the game is for Noah's eyes.
 """
@@ -54,10 +63,12 @@ BUILD_KEY = "modern_coaches"
 BUILD_CAPTION = "2026 head coaches (sideline look and faces)"
 HELP_TEXT = (
     "Dresses every club's head coach on the sideline in his 2026 look: the club's 2026 colours on his polo, jacket "
-    "and cap, the 2026 logo on his chest, a modern black headset, and his own face painted from his official "
-    "headshot. His sideline staff wear the same 2026 colours. Dallas and Washington also get their 2026 head "
-    "coach's picture on the Coach Matchup screen (the 2004 disc has none for them). The coach's shape and "
-    "animations are the game's own. Experimental: not yet seen in the game by the SOFTDRINK tester."
+    "and cap, the 2026 logo on his chest, a modern black headset, and his own face from his official headshot, "
+    "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build, and "
+    "Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
+    "sideline staff wear the same 2026 colours. Dallas and Washington also get their 2026 head coach's picture on "
+    "the Coach Matchup screen (the 2004 disc has none for them). The animations are the game's own. Experimental: "
+    "not yet seen in the game by the SOFTDRINK tester."
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -71,6 +82,11 @@ TEXTURES = (("shirt", "shirtShader1"), ("jacket", "jacketShader1"), ("logo", "sh
 SIDELINE = (("d", "sideline_dry"), ("r", "sideline_rain"))
 PACKAGES = tuple(f"{side}{weather}{light}" for side in "ha" for weather in "dr" for light in "ns")
 ART_NAMES = tuple(name for name, _m in TEXTURES) + tuple(name for _w, name in SIDELINE)
+# b77-co2: a head derived at build time from the model's own retail head texture (Reid on c21): an authored weight mask
+# (R = weight 0..255, G = class * 80) and an authored RGBA overlay ship instead of head.png
+HEAD_RECIPE_FILES = ("head_mask", "head_overlay")
+# the coach record field that names the coach model (``c%02d.iff`` of its low 16 bits)
+BODY_FIELD = 0x18
 FILL_SLACKS = (0, 1, 2, 4, 6)
 # Six 2004 coach models wear glasses on the body mesh (z_eyeShadowShader1 primitives on coachBodyGrp1: GB, KC, LAR,
 # LAC, SEA, WAS); the head mesh's own z_eyeShadowShader1 strip samples only u 0.01-0.04 of the same 64x64 texture.
@@ -133,8 +149,12 @@ def _check_pins(document: dict) -> dict:
     for row in teams:
         require(set(row) >= {"team", "code", "archive", "retail_sha256", "applied_sha256", "span_offset", "span_size",
                              "art"}, f"modern coach pin row incomplete: {row.get('team')}")
-        require(set(row["art"]) == set(ART_NAMES), f"{row['team']}: the art set is incomplete")
+        require(set(row["art"]) == set(art_names(row)), f"{row['team']}: the art set is incomplete")
+        require(str(row.get("team_code", "")).isdigit() and str(row.get("body_code", "")).isdigit()
+                and row["archive"] == f"c{row['body_code']}.iff", f"{row['team']}: the coach body is not named")
         require(len(row.get("sideline", ())) == len(PACKAGES), f"{row['team']}: the sideline packages are incomplete")
+    bodies = [row["body_code"] for row in teams]
+    require(len(set(bodies)) == len(bodies), "two clubs name the same coach body")
     for row in document.get("portraits", ()):
         require(set(row) >= {"team", "portrait_id", "retail_photo_id", "outer_index", "chunk_offset", "span_size",
                              "retail_sha256", "applied_sha256", "png", "png_sha256"}, "modern coach portrait pin incomplete")
@@ -147,6 +167,39 @@ def pins() -> dict:
         require(PINS_PATH.is_file(), "the modern coach pins are missing from this build")
         _PINS = _check_pins(json.loads(PINS_PATH.read_text(encoding="utf-8")))
     return _PINS
+
+
+def art_names(row: dict) -> tuple[str, ...]:
+    """The PNG names a pin row ships: the standard set, or the head recipe files in place of head.png."""
+    if row.get("head_recipe"):
+        return tuple(n for n in ART_NAMES if n != "head") + HEAD_RECIPE_FILES
+    return ART_NAMES
+
+
+def derive_head(retail_rgba, mask_rgb, classes: dict, overlay_rgba=None):
+    """A head texture derived from the model's own retail head (integer arithmetic only, so every platform builds the
+    same bytes): in each masked pixel the colour moves toward ``base + (luma - ref) * gain16 // 16 + tint`` of its class
+    (the 2004 strands and shading are kept, only the colour changes), weighted by the mask; then the authored overlay
+    is composited by its alpha."""
+    import numpy as np
+    src = np.asarray(retail_rgba, np.int64)
+    rgb = src[..., :3]
+    luma = (rgb[..., 0] * 299 + rgb[..., 1] * 587 + rgb[..., 2] * 114 + 500) // 1000
+    m = np.asarray(mask_rgb, np.int64)
+    weight = m[..., 0]
+    cls = (m[..., 1] + 40) // 80
+    target = rgb.copy()
+    for key, (base, ref, gain16, tint) in sorted(classes.items(), key=lambda kv: int(kv[0])):
+        sel = cls == int(key)
+        grey = int(base) + ((luma - int(ref)) * int(gain16)) // 16
+        for k in range(3):
+            target[..., k] = np.where(sel, np.clip(grey + int(tint[k]), 0, 255), target[..., k])
+    out = (rgb * (255 - weight[..., None]) + target * weight[..., None] + 127) // 255
+    if overlay_rgba is not None:
+        ov = np.asarray(overlay_rgba, np.int64)
+        alpha = ov[..., 3:4]
+        out = (out * (255 - alpha) + ov[..., :3] * alpha + 127) // 255
+    return np.uint8(np.concatenate([out, src[..., 3:4]], axis=-1))
 
 
 def art_path(team: str, name: str) -> Path:
@@ -248,6 +301,17 @@ def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
     for name, material in TEXTURES:
         tex = rows.get(material)
         require(tex is not None and tex.get("format_name") == "P8", f"{row['archive']}: no P8 texture for {material}")
+        if name == "head" and row.get("head_recipe"):
+            width, height = int(tex["width"]), int(tex["height"])
+            retail_head, _palette = mm.read_p8(decoded, system, tex)       # the model's own retail head (this disc)
+            recipe = row["head_recipe"]
+            rgba = derive_head(retail_head, _rgba(art_path(row["team"], "head_mask"), width, height)[..., :3],
+                               recipe["classes"], _rgba(art_path(row["team"], "head_overlay"), width, height))
+            colours = mm.write_p8(edited, system, tex, rgba, maximum=int(row.get("palette_max", 256)))
+            detail[name] = dict(palette_max=int(row.get("palette_max", 256)), material=material,
+                                texture_index=int(tex["index"]), size=[width, height], mip_levels=int(tex["mip_levels"]),
+                                palette_entries=int(colours), derived=recipe["kind"])
+            continue
         rgba = _rgba(art_path(row["team"], name), int(tex["width"]), int(tex["height"]))
         colours = mm.write_p8(edited, system, tex, rgba, maximum=int(row.get("palette_max", 256)))
         detail[name] = dict(palette_max=int(row.get("palette_max", 256)), material=material, texture_index=int(tex["index"]), size=[int(tex["width"]), int(tex["height"])],
@@ -351,14 +415,29 @@ def _roster(archive):
     return entry.virtual_offset + rr.RESOURCE_HEADER_SIZE, doc
 
 
-def _coach_photo_site(archive, team: str) -> tuple[int, int]:
-    """(virtual offset of the u16 at the club's coach record +0x40, its value)."""
+# the roster's club abbreviations where they differ from the 2026 ones (the 2004 abbreviations stay in the records)
+ROSTER_ABBREVIATIONS = {"WAS": ("WAS", "WSH"), "ARI": ("ARI", "ARZ"), "LAC": ("LAC", "SD"), "LAR": ("LAR", "STL"),
+                        "LV": ("LV", "OAK")}
+
+
+def _coach_field_site(archive, team: str, field: int) -> tuple[int, int]:
+    """(virtual offset of the u16 at the club's coach record + ``field``, its value)."""
     base, doc = _roster(archive)
-    want = {"WAS": ("WAS", "WSH")}.get(team, (team,))
+    want = ROSTER_ABBREVIATIONS.get(team, (team,))
     clubs = [t for t in doc.teams if t.index < 32 and t.abbreviation in want and t.coach_offset is not None]
     require(len(clubs) == 1, f"the roster has no single {team} club with a coach record")
-    at = clubs[0].coach_offset + 0x40
+    at = clubs[0].coach_offset + field
     return base + at, struct.unpack_from("<H", doc.body, at)[0]
+
+
+def _coach_photo_site(archive, team: str) -> tuple[int, int]:
+    """(virtual offset of the u16 at the club's coach record +0x40, its value)."""
+    return _coach_field_site(archive, team, 0x40)
+
+
+def _coach_body_site(archive, team: str) -> tuple[int, int]:
+    """(virtual offset of the u16 at the club's coach record +0x18, its value): the coach model number."""
+    return _coach_field_site(archive, team, BODY_FIELD)
 
 
 def _parts(archive, document: dict) -> list[dict]:
@@ -371,8 +450,14 @@ def _parts(archive, document: dict) -> list[dict]:
         at = entry.virtual_offset + row["span_offset"]
         span = archive.read(at, row["span_size"])
         digest = sha(span)
-        state = "retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"] else "foreign"
+        state = ("retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"]
+                 else "previous" if digest in row.get("superseded_sha256", ()) else "foreign")
         out.append(dict(kind="coach", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
+        if row["body_code"] != row["team_code"]:
+            site, value = _coach_body_site(archive, row["team"])
+            state = ("retail" if value == int(row["team_code"]) else "applied" if value == int(row["body_code"])
+                     else "kept")
+            out.append(dict(kind="body_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
         for pkg in row["sideline"]:
             at, span = _package_span(archive, entries, pkg["package"], pkg["chunk_index"])
             digest = sha(span)
@@ -428,8 +513,17 @@ def _write_all(archive, plan: list[tuple[int, bytes, bytes]]) -> None:
         raise
 
 
-def plan_image(source, *, document: dict | None = None, progress=None) -> tuple[list, list[dict]]:
-    """Compile every retail part of ``source`` (read only): ([(virtual offset, before, after)], receipt rows)."""
+def _retail_archive(retail, name: str) -> bytes:
+    with _outer_image()(retail) as archive:
+        entry = {e.name_id: e for e in archive.entries}.get(name_id(name))
+        require(entry is not None, f"{name} is not on the retail image")
+        return archive.read(entry.virtual_offset, entry.size)
+
+
+def plan_image(source, *, document: dict | None = None, progress=None, retail=None) -> tuple[list, list[dict]]:
+    """Compile every retail part of ``source`` (read only): ([(virtual offset, before, after)], receipt rows).
+    A coach model that holds an earlier version of this option (``previous``) is compiled from ``retail`` (the user's
+    retail USA image) when it is given, and refused otherwise."""
     document = pins() if document is None else _check_pins(document)
     say = progress or (lambda message, done, total: None)
     plan, rows = [], []
@@ -437,16 +531,29 @@ def plan_image(source, *, document: dict | None = None, progress=None) -> tuple[
         parts = _parts(archive, document)
         require(all(p["state"] != "foreign" for p in parts),
                 "a coach model or portrait is neither the retail nor the 2026 bytes; rebuild from a supported USA source")
+        require(retail is not None or all(p["state"] != "previous" for p in parts),
+                "a coach model holds an earlier version of the 2026 coaches; rebuild from a supported USA source")
         entries = {e.name_id: e for e in archive.entries}
         for index, part in enumerate(parts):
             row = part["row"]
             out = dict(kind=part["kind"], team=part["team"], virtual_offset=part["at"], size=part["size"],
                        state_before=part["state"])
-            if part["state"] == "retail" and part["kind"] == "coach":
+            if part["state"] in ("retail", "previous") and part["kind"] == "coach":
                 say(f"2026 head coaches: {part['team']}", index, len(parts))
                 entry = entries[name_id(row["archive"])]
                 raw = archive.read(entry.virtual_offset, entry.size)
-                compiled, detail = compile_archive(raw, row)
+                if part["state"] == "previous":
+                    template = _retail_archive(retail, row["archive"])
+                    require(len(template) == len(raw) and sha(template[row["span_offset"]:row["span_offset"]
+                                                                       + row["span_size"]]) == row["retail_sha256"],
+                            f"{row['archive']}: the retail image does not hold the retail coach")
+                    require(template[:row["span_offset"]] == raw[:row["span_offset"]]
+                            and template[row["span_offset"] + row["span_size"]:]
+                            == raw[row["span_offset"] + row["span_size"]:],
+                            f"{row['archive']}: bytes outside the coach span differ from retail")
+                    compiled, detail = compile_archive(template, row)
+                else:
+                    compiled, detail = compile_archive(raw, row)
                 before = raw[row["span_offset"]:row["span_offset"] + row["span_size"]]
                 after = compiled[row["span_offset"]:row["span_offset"] + row["span_size"]]
                 require(compiled[:row["span_offset"]] == raw[:row["span_offset"]]
@@ -471,6 +578,12 @@ def plan_image(source, *, document: dict | None = None, progress=None) -> tuple[
                 plan.append((part["at"], before, after))
                 out.update(written=True, portrait_id=row["portrait_id"], before_sha256=sha(before), after_sha256=sha(after),
                            changed_bytes=sum(a != b for a, b in zip(before, after)))
+            elif part["state"] == "retail" and part["kind"] == "body_id":
+                before = struct.pack("<H", int(row["team_code"]))
+                after = struct.pack("<H", int(row["body_code"]))
+                plan.append((part["at"], before, after))
+                out.update(written=True, body_before=int(row["team_code"]), body_after=int(row["body_code"]),
+                           archive=row["archive"], changed_bytes=sum(x != y for x, y in zip(before, after)))
             elif part["state"] == "retail" and part["kind"] == "photo_id":
                 before = struct.pack("<H", row["retail_photo_id"])
                 after = struct.pack("<H", int(row["portrait_id"]))
@@ -483,10 +596,11 @@ def plan_image(source, *, document: dict | None = None, progress=None) -> tuple[
     return plan, rows
 
 
-def apply_to_image(target, *, document: dict | None = None, progress=None) -> dict[str, Any]:
-    """Build-only: ``target`` is the caller's disposable output image. Retail or already-2026 parts only."""
+def apply_to_image(target, *, document: dict | None = None, progress=None, retail=None) -> dict[str, Any]:
+    """Build-only: ``target`` is the caller's disposable output image. Retail or already-2026 parts only (an earlier
+    version of this option only with ``retail``, the user's retail USA image)."""
     document = pins() if document is None else _check_pins(document)
-    plan, rows = plan_image(target, document=document, progress=progress)
+    plan, rows = plan_image(target, document=document, progress=progress, retail=retail)
     with _outer_image()(target, writable=True) as archive:
         _write_all(archive, plan)
     state = image_status(target, document=document)
@@ -503,22 +617,31 @@ def verify(source, *, enabled: bool = True, document: dict | None = None) -> dic
 
 # --- pins (development) ------------------------------------------------------------------------------------------
 
-def record_pins(retail_image, teams: dict, portraits: list[dict], hide_glasses=()) -> dict:
-    """The pin document from a retail USA image and the shipped art: retail and compiled digests of every part."""
+def record_pins(retail_image, teams: dict, portraits: list[dict], superseded: dict | None = None) -> dict:
+    """The pin document from a retail USA image and the shipped art: retail and compiled digests of every part.
+    ``teams``: {club: {"team_code": "13", "body_code": "21", "hide_glasses": bool, "head_recipe": dict | None}};
+    ``superseded``: {archive: [applied SHA-256 of earlier versions of this option]}."""
     rows = []
+    superseded = superseded or {}
     with _outer_image()(retail_image) as archive:
         entries = {e.name_id: e for e in archive.entries}
         tx, _fill = _tools()
-        for team, code in teams.items():
-            name = f"c{code}.iff"
+        for team, spec in teams.items():
+            code, body = spec["team_code"], spec["body_code"]
+            name = f"c{body}.iff"
             entry = entries[name_id(name)]
             raw = archive.read(entry.virtual_offset, entry.size)
             chunk = tx.parse_chunks(raw)[0]
-            row = dict(team=team, code=code, archive=name, outer_index=entry.index, outer_size=entry.size,
-                       span_offset=chunk.offset, span_size=0x20 + chunk.stored_size,
+            row = dict(team=team, team_code=code, body_code=body, code=body, archive=name, outer_index=entry.index,
+                       outer_size=entry.size, span_offset=chunk.offset, span_size=0x20 + chunk.stored_size,
                        retail_sha256=sha(raw[chunk.offset:chunk.offset + 0x20 + chunk.stored_size]),
-                       art={n: sha(art_path(team, n).read_bytes()) for n in ART_NAMES},
-                       hide_glasses=team in hide_glasses)
+                       hide_glasses=bool(spec.get("hide_glasses")))
+            if spec.get("head_recipe"):
+                row["head_recipe"] = spec["head_recipe"]
+            row["art"] = {n: sha(art_path(team, n).read_bytes()) for n in art_names(row)}
+            if body != code:
+                _site, value = _coach_body_site(archive, team)
+                require(value == int(code), f"{team}: the retail coach record names body {value}, not {code}")
             for size in PALETTE_LADDER:
                 try:
                     compiled, _detail = compile_archive(raw, dict(row, applied_sha256="", palette_max=size))
@@ -529,6 +652,8 @@ def record_pins(retail_image, teams: dict, portraits: list[dict], hide_glasses=(
             else:
                 raise ModernCoachesError(f"{team}: the 2026 art does not fit {name} at any palette size")
             row["applied_sha256"] = sha(compiled[chunk.offset:chunk.offset + row["span_size"]])
+            row["superseded_sha256"] = [d for d in superseded.get(name, ()) if d not in (row["applied_sha256"],
+                                                                                          row["retail_sha256"])]
             row["fit"] = _detail["fit"]
             row["sideline"] = []
             for variant in PACKAGES:
@@ -569,7 +694,7 @@ def record_pins(retail_image, teams: dict, portraits: list[dict], hide_glasses=(
                               png_sha256=sha((DATA_DIR / p["png"]).read_bytes())))
             _site, value = _coach_photo_site(archive, p["team"])
             require(value == p["retail_photo_id"], f"{p['team']}: the retail coach record names {value}")
-    return dict(schema=PINS_SCHEMA, label=LABEL, teams=rows, portraits=prows)
+    return _check_pins(dict(schema=PINS_SCHEMA, label=LABEL, teams=rows, portraits=prows))
 
 
 def main(argv=None) -> int:

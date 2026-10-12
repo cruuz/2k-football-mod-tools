@@ -1,5 +1,6 @@
-"""2026 head coaches (beta 77 co1): the pins and the shipped art, the Build wiring, and, when a retail USA image is
-present, the real compile of coach scenes and the two portrait slots against their pins.
+"""2026 head coaches (beta 77 co1, co2): the pins and the shipped art, the coach bodies, the Build wiring, and, when a
+retail USA image is present, the real compile of coach scenes (Reid's derived head included), the body ids and the two
+portrait slots against their pins.
 
 The always-on tests read only the repository. The retail checks read the user's own disc image and skip without it
 (point NFL2K5_RETAIL_XISO at the retail USA .xiso.iso).
@@ -27,7 +28,10 @@ HAVE_RETAIL = RETAIL.is_file()
 TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
 SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "accessories": (128, 64), "head": (256, 128),
-         "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
+         "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
+# co2: the club whose coach wears another retail body, and the body (cNN) he wears
+MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "00", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
+         "NYG": "22", "PHI": "18", "PIT": "26", "SEA": "13"}
 
 
 class PinsAndArt(unittest.TestCase):
@@ -40,10 +44,52 @@ class PinsAndArt(unittest.TestCase):
         self.assertEqual([(p["team"], p["portrait_id"], p["retail_photo_id"]) for p in pins["portraits"]],
                          [("DAL", "7031", 7007), ("WAS", "7034", 7029)])
         for row in pins["teams"]:
+            self.assertEqual(row["archive"], f"c{row['body_code']}.iff")
+            self.assertEqual(row["body_code"] != row["team_code"], row["team"] in MOVED, row["team"])
+            self.assertEqual(row["body_code"], MOVED.get(row["team"], row["team_code"]))
             self.assertNotEqual(row["retail_sha256"], row["applied_sha256"])
             self.assertIn(row["palette_max"], mc.PALETTE_LADDER)
             self.assertLessEqual(row["fit"]["scratch_needed"], row["fit"]["scratch_retail"])
             self.assertEqual(row["fit"]["stored_size"] + 0x20, row["span_size"])
+
+    def test_kansas_city_wears_the_2004_reid_model_with_a_derived_head(self):
+        """Noah 2026-10-12: use the existing Andy Reid model for the Chiefs' Andy Reid."""
+        kc = {r["team"]: r for r in mc.pins()["teams"]}["KC"]
+        self.assertEqual((kc["archive"], kc["team_code"]), ("c21.iff", "13"))
+        self.assertEqual(kc["head_recipe"]["kind"], "retail_recolour")
+        self.assertNotIn("head", kc["art"])
+        self.assertFalse(mc.art_path("KC", "head").exists())
+        self.assertEqual(set(mc.HEAD_RECIPE_FILES) & set(kc["art"]), set(mc.HEAD_RECIPE_FILES))
+
+    def test_derive_head_is_integer_and_exact(self):
+        import numpy as np
+        retail = np.zeros((2, 3, 4), np.uint8)
+        retail[..., :3] = [[[100, 60, 40], [200, 150, 120], [10, 20, 30]], [[255, 255, 255], [0, 0, 0], [90, 90, 90]]]
+        retail[..., 3] = 255
+        mask = np.zeros((2, 3, 3), np.uint8)
+        mask[0, 0] = (255, 80, 0)        # full weight, class 1
+        mask[0, 1] = (128, 160, 0)       # half weight, class 2
+        overlay = np.zeros((2, 3, 4), np.uint8)
+        overlay[1, 2] = (50, 60, 70, 255)
+        out = mc.derive_head(retail, mask, {"1": [170, 80, 14, [0, 0, 3]], "2": [122, 110, 12, [6, 2, -2]]}, overlay)
+        luma = (100 * 299 + 60 * 587 + 114 * 40 + 500) // 1000
+        grey = 170 + ((luma - 80) * 14) // 16
+        self.assertEqual(out[0, 0, :3].tolist(), [grey, grey, grey + 3])
+        self.assertEqual(out[0, 2].tolist(), [10, 20, 30, 255])                 # no weight: retail
+        self.assertEqual(out[1, 2].tolist(), [50, 60, 70, 255])                 # opaque overlay
+        self.assertEqual(out[1, 0].tolist(), [255, 255, 255, 255])
+
+    def test_the_bodies_are_one_model_per_club(self):
+        pins = mc.pins()
+        self.assertEqual(sorted(r["body_code"] for r in pins["teams"]),
+                         sorted([f"{i:02d}" for i in range(31)] + ["37"]))
+        self.assertEqual(set(pins["bodies"]), TEAMS)
+        good = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))
+        bad = json.loads(json.dumps(good))
+        bad["teams"][0]["body_code"] = bad["teams"][1]["body_code"]
+        bad["teams"][0]["archive"] = bad["teams"][1]["archive"]
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
 
     def test_the_shipped_art_matches_its_pins_and_sizes(self):
         self.assertTrue(mc.available())
@@ -71,6 +117,8 @@ class PinsAndArt(unittest.TestCase):
             team, name = rel.split("/")
             if team == "portraits":
                 self.assertIn(name, {"7031.png", "7034.png"})
+            elif name[:-4] in mc.HEAD_RECIPE_FILES:
+                self.assertEqual(team, "KC")
             else:
                 self.assertIn(team, TEAMS)
                 self.assertIn(name[:-4], SIZES)
@@ -135,7 +183,7 @@ class RetailCompile(unittest.TestCase):
         pins = {r["team"]: r for r in mc.pins()["teams"]}
         with mc._outer_image()(RETAIL) as archive:
             entries = {e.name_id: e for e in archive.entries}
-            for team in ("KC", "DAL"):            # one at 256 colours, one on the palette ladder
+            for team in ("KC", "DAL", "PIT"):     # Reid's derived head on c21, an unmoved club, a moved one
                 row = pins[team]
                 entry = entries[mc.name_id(row["archive"])]
                 raw = archive.read(entry.virtual_offset, entry.size)
@@ -150,7 +198,7 @@ class RetailCompile(unittest.TestCase):
 
     def test_glasses_hidden_only_where_the_2026_coach_wears_none(self):
         pins = {r["team"]: r for r in mc.pins()["teams"]}
-        self.assertEqual(sorted(t for t, r in pins.items() if r["hide_glasses"]), ["GB", "LAR", "SEA", "WAS"])
+        self.assertEqual(sorted(t for t, r in pins.items() if r["hide_glasses"]), ["GB", "LAR", "PIT", "SEA", "WAS"])
         import numpy as np
         row = pins["WAS"]
         with mc._outer_image()(RETAIL) as archive:
@@ -178,6 +226,18 @@ class RetailCompile(unittest.TestCase):
                 self.assertEqual(mc.sha(after), pkg["applied_sha256"])
                 self.assertEqual(after[:0x20], span[:0x20])
                 self.assertLessEqual(detail["fit"]["scratch_needed"], detail["fit"]["scratch_retail"])
+
+    def test_the_retail_roster_names_each_club_model_and_the_old_pins_read_previous(self):
+        pins = mc.pins()
+        with mc._outer_image()(RETAIL) as archive:
+            for row in pins["teams"]:
+                if row["team"] in MOVED:
+                    _site, value = mc._coach_body_site(archive, row["team"])
+                    self.assertEqual(value, int(row["team_code"]), row["team"])
+        parts = {k: v for k, v in mc.resource_states(RETAIL).items()}
+        self.assertEqual({k for k in parts if k.startswith("body_id:")}, {f"body_id:{t}" for t in MOVED})
+        self.assertEqual(set(parts.values()), {"retail"})
+        self.assertTrue(all(row["superseded_sha256"] for row in pins["teams"]))
 
     def test_portraits_reproduce_their_pins_and_the_roster_names_retail_ids(self):
         with mc._outer_image()(RETAIL) as archive:
