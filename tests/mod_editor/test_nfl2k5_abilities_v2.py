@@ -319,7 +319,10 @@ class EffectReplays(unittest.TestCase):
             m.player(abilities=0,speed=127)
             m.seed_native_speed_cache()
             m.run('speed',ecx=m.R,args=(0x184,))
-            self.assertAlmostEqual(m.pop_float(), .99 if settings['lock_speedster'] else 1.27, places=6)
+            self.assertAlmostEqual(m.pop_float(), 1, places=6)  # non-stars retain retail speed even with locks off
+            m.flags(0x100)
+            m.run('speed',ecx=m.R,args=(0x184,))
+            self.assertAlmostEqual(m.pop_float(), 1 if settings['lock_speedster'] else 1.27, places=6)
             m.flags(0xC000)  # disabling locks must never invent a stored rating ability
             m.f32(0xAA43B8+12*8,.5); m.f32(0xAA43BC+12*8,0)
             m.run(0x17B010,ecx=m.R,edx=12,args=(0x184,))
