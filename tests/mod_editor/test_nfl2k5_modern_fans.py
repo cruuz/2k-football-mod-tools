@@ -23,7 +23,7 @@ from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.core import nfl2k5_build_settings as build_settings  # noqa: E402
 from mod_editor.core import nfl2k5_modern_fans as mf  # noqa: E402
 
-RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", str(ROOT / "ESPN NFL 2K5 (USA).xiso.iso")))
 HAVE_RETAIL = RETAIL.is_file()
 TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
