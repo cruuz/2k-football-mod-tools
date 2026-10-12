@@ -445,6 +445,11 @@ class BuildPlan:
     # gamedata.iff scenes refit in their retail spans plus three in-place executable operands (the upright lines and
     # the ball/upright collision top); scoring unchanged. EXPERIMENTAL / UNWITNESSED, off in every preset
     modern_goalposts: bool = False
+    # b77-co1: the 2026 head coaches: every club's coach model (cNN.iff chunk 0) refit in its retail span with his 2026
+    # sideline look (club colours, 2026 chest logo, unbranded headset) and his face from his official headshot, plus
+    # Dallas and Washington's Coach Matchup pictures (two free portrait slots and two coach-record photo ids).
+    # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_coaches: bool = False
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     historic_rosters_2026: bool = False  # source-gated season roster work; incomplete data must refuse
@@ -588,6 +593,12 @@ del _preset
 for _preset in PRESETS.values():
     _preset["modern_goalposts"] = False
 del _preset
+# b77-co1: the 2026 head coaches are experimental and unwitnessed: on only in the experimental preset, the one the
+# SOFTDRINK 2K28 recipe builds from (job's choice, recorded in the co1 report; Noah asked for them in the shortcut build).
+for _preset in PRESETS.values():
+    _preset["modern_coaches"] = False
+PRESETS["softdrink_experimental"]["modern_coaches"] = True
+del _preset
 # b76-h1: historic teams in Quick Game are off in basic and advanced (a 2004 game keeps its menus).
 for _preset in PRESETS.values():
     _preset["historic_teams_quick_game"] = False
@@ -705,6 +716,11 @@ def _kick_meter_available() -> bool:  # b76-km
     return module is not None and module.available()  # the pins, the art and the geometry must agree
 
 
+def _modern_coaches_available() -> bool:  # b77-co1
+    module = _core_module("nfl2k5_modern_coaches")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
 def _modern_goalposts_available() -> bool:  # b77-v1
     module = _core_module("nfl2k5_modern_goalposts")
     return module is not None and module.available()  # the shipped pins must load
@@ -748,6 +764,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "espn_wipes_boards_2026": _espn_wipes_boards_available(official_marks_pack),  # b76-p2
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
+        "modern_coaches": _modern_coaches_available(),  # b77-co1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -1427,6 +1444,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_goalposts"] = goalposts.image_status(source)
         except (OSError, ValueError):
             out["modern_goalposts"] = "unknown"
+    # b77-co1: the 2026 head coaches (32 coach models, two portrait slots, two coach-record photo ids)
+    coaches = _core_module("nfl2k5_modern_coaches")
+    if coaches is None:
+        out["modern_coaches"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_coaches"] = "needs_image"
+    else:
+        try:
+            out["modern_coaches"] = coaches.image_status(source)
+        except (OSError, ValueError):
+            out["modern_coaches"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -2325,6 +2353,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Kick meter (2026 ESPN style) must be Off or On.")
     if type(plan.modern_goalposts) is not bool:  # b77-v1
         raise ValueError("Modern goalposts must be Off or On.")
+    if type(plan.modern_coaches) is not bool:  # b77-co1
+        raise ValueError("2026 head coaches must be Off or On.")
     if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
             and "scorebug" in plan.hires_families):
         # The Hi-res scorebug family re-lays gamedata.iff around a larger score_buga (chunk 53), which moves the
@@ -2953,6 +2983,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"Modern goalposts cannot read the goalpost scenes: {exc}") from exc
         if goal_state not in ("retail", "applied"):
             raise ValueError("The goalpost, its shadow and the executable's goalpost sites are not the supported retail or already-modern set. Turn Modern goalposts off or rebuild from a supported USA source.")
+    if plan.modern_coaches:  # b77-co1
+        coaches = _core_module("nfl2k5_modern_coaches")
+        if coaches is None or not is_image:
+            raise ValueError("2026 head coaches need a disc image (the coach models live in the archive packs).")
+        progress("Checking the coach models", 0, 0)
+        try:
+            coach_state = coaches.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2026 head coaches cannot read the coach models: {exc}") from exc
+        if coach_state not in ("retail", "applied", "mixed"):
+            raise ValueError("A coach model or coach picture is not the supported retail or already-2026 bytes. Turn 2026 head coaches off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -4007,6 +4048,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         goal_receipt = goalposts.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_goalposts", **goal_receipt})
         receipt["result"]["modern_goalposts"] = goal_receipt["state"]
+    if plan.modern_coaches:  # b77-co1
+        # 32 fixed-span coach scenes (cNN.iff chunk 0), two raw portrait spans in Portrait.iff and two 16-bit coach-record
+        # photo ids in the main roster, found through the copy's own outer table after every relocating pass and every
+        # roster writer above (a roster whose Dallas or Washington coach names another picture keeps it).
+        coaches = _core_module("nfl2k5_modern_coaches")
+        progress("2026 head coaches", 0, 0)
+        coach_receipt = coaches.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_coaches", **coach_receipt})
+        receipt["result"]["modern_coaches"] = coach_receipt["state"]
     if plan.modern_helmets:
         # b76-hm: after every relocating pass, the historic rosters, One-pool positions and the Guardian overlay (the
         # historic fix is field level, the player scenes commute with the overlay's shell B).
