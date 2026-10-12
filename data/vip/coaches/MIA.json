@@ -1,0 +1,10044 @@
+{
+ "schema": "nfl2k5_coach_tendencies/v1",
+ "team": "MIA",
+ "coach": "Jeff Hafley",
+ "provenance": {
+  "team": "MIA",
+  "coach": "Jeff Hafley",
+  "native_book_index": 12,
+  "archive_book": "MIA",
+  "profile_name": "MIA Hafley",
+  "offense_history": [
+   {
+    "team": "MIA",
+    "first_season": 2026,
+    "last_season": 2026,
+    "role": "HC"
+   }
+  ],
+  "defense_history": [
+   {
+    "team": "MIA",
+    "first_season": 2026,
+    "last_season": 2026,
+    "role": "HC"
+   },
+   {
+    "team": "GB",
+    "first_season": 2024,
+    "last_season": 2025,
+    "role": "DC"
+   }
+  ],
+  "sources": [
+   "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach"
+  ],
+  "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+  "limited_hc_history": true
+ },
+ "sources": [
+  {
+   "file": "pbp_2020.parquet",
+   "sha256": "8889f5d8782b5c5dce3c3644acdc0322b228a7e9cb13fa36cbac250e260e9f60",
+   "rows": 47705,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2020-09-10",
+   "last_game": "2021-02-07"
+  },
+  {
+   "file": "pbp_2021.parquet",
+   "sha256": "333ad34378e5339d5172717cc83378e908daf02c8699416ab3e17c2ec10f78d8",
+   "rows": 49922,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2021-09-09",
+   "last_game": "2022-02-13"
+  },
+  {
+   "file": "pbp_2022.parquet",
+   "sha256": "931121d8897779d7944e2a293e92ed8799c8e5cceef84096ac42339003fedc09",
+   "rows": 49434,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2022-09-08",
+   "last_game": "2023-02-12"
+  },
+  {
+   "file": "pbp_2023.parquet",
+   "sha256": "bd3484731408def6b0ec93225bba2bd7b2c65769ca707a2b9444d891abdc6776",
+   "rows": 49665,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2023-09-07",
+   "last_game": "2024-02-11"
+  },
+  {
+   "file": "pbp_2024.parquet",
+   "sha256": "3fd2896bc0b911b615142d2f1fabae54a4bbba5ab7b73b28187b118ef8af6a3b",
+   "rows": 49492,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2024-09-05",
+   "last_game": "2025-02-09"
+  },
+  {
+   "file": "pbp_2025.parquet",
+   "sha256": "c6ecedd6d678cc37ed316b23ef84ee1ec6abb69c514bb11868a7ebd5a367df29",
+   "rows": 48771,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2025-09-04",
+   "last_game": "2026-02-08"
+  },
+  {
+   "file": "play_by_play_2026.csv.gz",
+   "sha256": "cfc874d762e1a2f7d1358a4db0e4f08f3c344d4b2dbbb7ae8eb78b533ced2d5d",
+   "rows": 11155,
+   "duplicate_rows_ignored": 0,
+   "first_game": "2026-09-09",
+   "last_game": "2026-10-05"
+  }
+ ],
+ "charting_sources": [
+  {
+   "file": "ftn_charting_2022.parquet",
+   "sha256": "2846ef9bcc5f7298a5c783fb9a5edc85b3820c0b4943bf60a1217398e412985b",
+   "rows": 41643,
+   "duplicate_rows_ignored": 0,
+   "provider": "FTN via nflverse",
+   "join": "game_id/play_id = nflverse_game_id/nflverse_play_id"
+  },
+  {
+   "file": "ftn_charting_2023.parquet",
+   "sha256": "162f0f48a8fca23f86a334c78e27f8daa7443e6b383beada0416b65c593b2c0e",
+   "rows": 48225,
+   "duplicate_rows_ignored": 0,
+   "provider": "FTN via nflverse",
+   "join": "game_id/play_id = nflverse_game_id/nflverse_play_id"
+  },
+  {
+   "file": "ftn_charting_2024.parquet",
+   "sha256": "9396c95effac1a81cc30efcf9c4c87ab89855548ae605404318ae949d4356119",
+   "rows": 48031,
+   "duplicate_rows_ignored": 0,
+   "provider": "FTN via nflverse",
+   "join": "game_id/play_id = nflverse_game_id/nflverse_play_id"
+  },
+  {
+   "file": "ftn_charting_2025.parquet",
+   "sha256": "2ee4b11962f4c91d426e0edeca5bbded078616ce0efab0710aa2b40b4cfad898",
+   "rows": 47316,
+   "duplicate_rows_ignored": 0,
+   "provider": "FTN via nflverse",
+   "join": "game_id/play_id = nflverse_game_id/nflverse_play_id"
+  },
+  {
+   "file": "ftn_charting_2026.parquet",
+   "sha256": "163f930b5f3532eb5d91399198dff77d965baf7d05d9c4ceddaef89bd66bd28b",
+   "rows": 10996,
+   "duplicate_rows_ignored": 0,
+   "provider": "FTN via nflverse",
+   "join": "game_id/play_id = nflverse_game_id/nflverse_play_id"
+  }
+ ],
+ "participation_sources": [
+  {
+   "file": "pbp_participation_2022.parquet",
+   "sha256": "5f8d349316bf68de487ee0eb926706e65f5a8e37078c1faa37cb07cda2bf9e5e",
+   "rows": 50150,
+   "duplicate_rows_ignored": 0,
+   "provider": "nflverse participation",
+   "join": "game_id/play_id = nflverse_game_id/play_id"
+  },
+  {
+   "file": "pbp_participation_2023.parquet",
+   "sha256": "b157736972248e6f71e0c5ad6c1010b71375a500a63944dc4956c65de263e5a6",
+   "rows": 46168,
+   "duplicate_rows_ignored": 0,
+   "provider": "nflverse participation",
+   "join": "game_id/play_id = nflverse_game_id/play_id"
+  },
+  {
+   "file": "pbp_participation_2024.parquet",
+   "sha256": "5e8cf1f6a11bb2be573c3db1533c28a5658907302d1ad45ca769a4ca35890d7c",
+   "rows": 45919,
+   "duplicate_rows_ignored": 0,
+   "provider": "nflverse participation",
+   "join": "game_id/play_id = nflverse_game_id/play_id"
+  },
+  {
+   "file": "pbp_participation_2025.parquet",
+   "sha256": "3b26b9487267f011fdbafbce133800ce964c963fdb8b27725abf65663cc46e0f",
+   "rows": 45184,
+   "duplicate_rows_ignored": 0,
+   "provider": "nflverse participation",
+   "join": "game_id/play_id = nflverse_game_id/play_id"
+  }
+ ],
+ "charting_join": {
+  "available_unique_rows": 196211,
+  "matched_pbp_rows": 196044,
+  "unmatched_chart_rows": 167
+ },
+ "participation_join": {
+  "available_unique_rows": 187421,
+  "matched_pbp_rows": 186705,
+  "unmatched_rows": 716
+ },
+ "games": 4,
+ "season_calls": {
+  "2026": 210
+ },
+ "overall": {
+  "calls": 210,
+  "pass_rate": {
+   "numerator": 127,
+   "denominator": 210,
+   "rate": 0.6047619047619047
+  },
+  "shotgun": {
+   "numerator": 121,
+   "denominator": 210,
+   "rate": 0.5761904761904761
+  },
+  "no_huddle": {
+   "numerator": 3,
+   "denominator": 210,
+   "rate": 0.014285714285714285
+  },
+  "deep_air20": {
+   "numerator": 24,
+   "denominator": 103,
+   "rate": 0.23300970873786409
+  },
+  "play_action": {
+   "numerator": 33,
+   "denominator": 127,
+   "rate": 0.25984251968503935
+  },
+  "screen": {
+   "numerator": 14,
+   "denominator": 127,
+   "rate": 0.11023622047244094
+  },
+  "joint": {
+   "run_under": {
+    "numerator": 58,
+    "denominator": 210,
+    "rate": 0.2761904761904762
+   },
+   "run_gun": {
+    "numerator": 25,
+    "denominator": 210,
+    "rate": 0.11904761904761904
+   },
+   "pass_under": {
+    "numerator": 31,
+    "denominator": 210,
+    "rate": 0.14761904761904762
+   },
+   "pass_gun": {
+    "numerator": 96,
+    "denominator": 210,
+    "rate": 0.45714285714285713
+   }
+  },
+  "run_location": {
+   "left": {
+    "numerator": 31,
+    "denominator": 82,
+    "rate": 0.3780487804878049
+   },
+   "middle": {
+    "numerator": 32,
+    "denominator": 82,
+    "rate": 0.3902439024390244
+   },
+   "right": {
+    "numerator": 19,
+    "denominator": 82,
+    "rate": 0.23170731707317074
+   }
+  },
+  "run_location_unknown": 1,
+  "run_gap": {
+   "end": {
+    "numerator": 16,
+    "denominator": 50,
+    "rate": 0.32
+   },
+   "guard": {
+    "numerator": 21,
+    "denominator": 50,
+    "rate": 0.42
+   },
+   "tackle": {
+    "numerator": 13,
+    "denominator": 50,
+    "rate": 0.26
+   }
+  },
+  "run_gap_unknown": 33,
+  "run_lane": {
+   "left_inside": {
+    "numerator": 19,
+    "denominator": 82,
+    "rate": 0.23170731707317074
+   },
+   "left_outside": {
+    "numerator": 12,
+    "denominator": 82,
+    "rate": 0.14634146341463414
+   },
+   "middle": {
+    "numerator": 32,
+    "denominator": 82,
+    "rate": 0.3902439024390244
+   },
+   "right_inside": {
+    "numerator": 15,
+    "denominator": 82,
+    "rate": 0.18292682926829268
+   },
+   "right_outside": {
+    "numerator": 4,
+    "denominator": 82,
+    "rate": 0.04878048780487805
+   }
+  },
+  "run_lane_unknown": 1
+ },
+ "native_statistics": {
+  "pass_calls": 127,
+  "run_calls": 83,
+  "score": [
+   {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   {
+    "numerator": 41,
+    "denominator": 100,
+    "rate": 0.41
+   },
+   {
+    "numerator": 33,
+    "denominator": 90,
+    "rate": 0.36666666666666664
+   },
+   {
+    "numerator": 9,
+    "denominator": 20,
+    "rate": 0.45
+   }
+  ],
+  "redzone": {
+   "numerator": 17,
+   "denominator": 27,
+   "rate": 0.6296296296296297
+  },
+  "down_distance": [
+   {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+   },
+   {
+    "numerator": 32,
+    "denominator": 71,
+    "rate": 0.4507042253521127
+   },
+   {
+    "numerator": 5,
+    "denominator": 10,
+    "rate": 0.5
+   },
+   {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   {
+    "numerator": 9,
+    "denominator": 16,
+    "rate": 0.5625
+   },
+   {
+    "numerator": 17,
+    "denominator": 38,
+    "rate": 0.4473684210526316
+   },
+   {
+    "numerator": 1,
+    "denominator": 12,
+    "rate": 0.08333333333333333
+   },
+   {
+    "numerator": 5,
+    "denominator": 6,
+    "rate": 0.8333333333333334
+   },
+   {
+    "numerator": 2,
+    "denominator": 20,
+    "rate": 0.1
+   },
+   {
+    "numerator": 2,
+    "denominator": 13,
+    "rate": 0.15384615384615385
+   },
+   {
+    "numerator": 2,
+    "denominator": 11,
+    "rate": 0.18181818181818182
+   },
+   {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   }
+  ],
+  "distance_bins": "<=2,3..7,8..10,11+ yards; four rows for downs1..4",
+  "score_bins": "lead1..7,lead8..14,lead15+,trail1..7,trail8+,tie"
+ },
+ "situations": {
+  "down1|11+|field|tie|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|11+|field|trail1-8|half1|normal": {
+   "calls": 4,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 3,
+    "denominator": 4,
+    "rate": 0.75
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 4,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|11+|field|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|11+|field|trail9+|half2|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|11+|own1-10|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|11+|red20-6|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|3-5|field|trail1-8|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_outside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|3-5|goal5|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "tackle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|tie|half1|normal": {
+   "calls": 6,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 6,
+    "rate": 0.16666666666666666
+   },
+   "shotgun": {
+    "numerator": 3,
+    "denominator": 6,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 6,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "run_gun": {
+     "numerator": 3,
+     "denominator": 6,
+     "rate": 0.5
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 6,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "middle": {
+     "numerator": 3,
+     "denominator": 5,
+     "rate": 0.6
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 3,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "middle": {
+     "numerator": 3,
+     "denominator": 5,
+     "rate": 0.6
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail1-8|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail1-8|half1|normal": {
+   "calls": 17,
+   "pass_rate": {
+    "numerator": 10,
+    "denominator": 17,
+    "rate": 0.5882352941176471
+   },
+   "shotgun": {
+    "numerator": 5,
+    "denominator": 17,
+    "rate": 0.29411764705882354
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 17,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 8,
+    "rate": 0.25
+   },
+   "play_action": {
+    "numerator": 8,
+    "denominator": 10,
+    "rate": 0.8
+   },
+   "screen": {
+    "numerator": 3,
+    "denominator": 10,
+    "rate": 0.3
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 6,
+     "denominator": 17,
+     "rate": 0.35294117647058826
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 17,
+     "rate": 0.058823529411764705
+    },
+    "pass_under": {
+     "numerator": 6,
+     "denominator": 17,
+     "rate": 0.35294117647058826
+    },
+    "pass_gun": {
+     "numerator": 4,
+     "denominator": 17,
+     "rate": 0.23529411764705882
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 5,
+     "denominator": 7,
+     "rate": 0.7142857142857143
+    },
+    "middle": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "guard": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "tackle": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 3,
+     "denominator": 7,
+     "rate": 0.42857142857142855
+    },
+    "left_outside": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "middle": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail1-8|half2|normal": {
+   "calls": 10,
+   "pass_rate": {
+    "numerator": 4,
+    "denominator": 10,
+    "rate": 0.4
+   },
+   "shotgun": {
+    "numerator": 3,
+    "denominator": 10,
+    "rate": 0.3
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 10,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 3,
+    "denominator": 4,
+    "rate": 0.75
+   },
+   "play_action": {
+    "numerator": 3,
+    "denominator": 4,
+    "rate": 0.75
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 5,
+     "denominator": 10,
+     "rate": 0.5
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 10,
+     "rate": 0.1
+    },
+    "pass_under": {
+     "numerator": 2,
+     "denominator": 10,
+     "rate": 0.2
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 10,
+     "rate": 0.2
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 3,
+     "denominator": 6,
+     "rate": 0.5
+    },
+    "middle": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "right": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "guard": {
+     "numerator": 1,
+     "denominator": 5,
+     "rate": 0.2
+    },
+    "tackle": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    }
+   },
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "left_outside": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "middle": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "right_outside": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail9+|half1|late120": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail9+|half1|normal": {
+   "calls": 5,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 5,
+    "rate": 0.6
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 5,
+    "rate": 0.2
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "play_action": {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 5,
+     "rate": 0.2
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "tackle": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail9+|half2|late120": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|field|trail9+|half2|normal": {
+   "calls": 18,
+   "pass_rate": {
+    "numerator": 12,
+    "denominator": 18,
+    "rate": 0.6666666666666666
+   },
+   "shotgun": {
+    "numerator": 7,
+    "denominator": 18,
+    "rate": 0.3888888888888889
+   },
+   "no_huddle": {
+    "numerator": 1,
+    "denominator": 18,
+    "rate": 0.05555555555555555
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 12,
+    "rate": 0.16666666666666666
+   },
+   "play_action": {
+    "numerator": 4,
+    "denominator": 12,
+    "rate": 0.3333333333333333
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 12,
+    "rate": 0.08333333333333333
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 5,
+     "denominator": 18,
+     "rate": 0.2777777777777778
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 18,
+     "rate": 0.05555555555555555
+    },
+    "pass_under": {
+     "numerator": 6,
+     "denominator": 18,
+     "rate": 0.3333333333333333
+    },
+    "pass_gun": {
+     "numerator": 6,
+     "denominator": 18,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "middle": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "right": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "guard": {
+     "numerator": 2,
+     "denominator": 4,
+     "rate": 0.5
+    },
+    "tackle": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    }
+   },
+   "run_gap_unknown": 2,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "left_outside": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "middle": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "right_inside": {
+     "numerator": 2,
+     "denominator": 6,
+     "rate": 0.3333333333333333
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 6,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|own1-10|tie|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|own1-10|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|own1-10|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|red20-6|trail1-8|half1|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|red20-6|trail1-8|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|red20-6|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|red20-6|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down1|6-10|red20-6|trail9+|half2|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "tackle": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|1-2|field|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_outside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|1-2|field|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|1-2|goal5|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|field|tie|half1|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|field|trail1-8|half1|normal": {
+   "calls": 4,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 4,
+    "rate": 0.75
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 4,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "tackle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|field|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|field|trail9+|half2|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 3,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|own1-10|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|11+|red20-6|trail1-8|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|3-5|field|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "tackle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|3-5|field|trail9+|half2|normal": {
+   "calls": 4,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 1,
+    "denominator": 4,
+    "rate": 0.25
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "tackle": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|tie|half1|normal": {
+   "calls": 5,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 5,
+    "rate": 0.6
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 5,
+    "rate": 0.4
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 5,
+     "rate": 0.2
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 5,
+     "rate": 0.4
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "guard": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail1-8|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail1-8|half1|normal": {
+   "calls": 14,
+   "pass_rate": {
+    "numerator": 7,
+    "denominator": 14,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 7,
+    "denominator": 14,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 14,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 2,
+    "denominator": 7,
+    "rate": 0.2857142857142857
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 7,
+    "rate": 0.14285714285714285
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 5,
+     "denominator": 14,
+     "rate": 0.35714285714285715
+    },
+    "run_gun": {
+     "numerator": 2,
+     "denominator": 14,
+     "rate": 0.14285714285714285
+    },
+    "pass_under": {
+     "numerator": 2,
+     "denominator": 14,
+     "rate": 0.14285714285714285
+    },
+    "pass_gun": {
+     "numerator": 5,
+     "denominator": 14,
+     "rate": 0.35714285714285715
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "middle": {
+     "numerator": 4,
+     "denominator": 7,
+     "rate": 0.5714285714285714
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 3,
+     "denominator": 3,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 4,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "middle": {
+     "numerator": 4,
+     "denominator": 7,
+     "rate": 0.5714285714285714
+    },
+    "right_outside": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail1-8|half2|normal": {
+   "calls": 9,
+   "pass_rate": {
+    "numerator": 5,
+    "denominator": 9,
+    "rate": 0.5555555555555556
+   },
+   "shotgun": {
+    "numerator": 5,
+    "denominator": 9,
+    "rate": 0.5555555555555556
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 9,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "play_action": {
+    "numerator": 3,
+    "denominator": 5,
+    "rate": 0.6
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 9,
+     "rate": 0.2222222222222222
+    },
+    "run_gun": {
+     "numerator": 2,
+     "denominator": 9,
+     "rate": 0.2222222222222222
+    },
+    "pass_under": {
+     "numerator": 2,
+     "denominator": 9,
+     "rate": 0.2222222222222222
+    },
+    "pass_gun": {
+     "numerator": 3,
+     "denominator": 9,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 3,
+     "denominator": 4,
+     "rate": 0.75
+    },
+    "right": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 3,
+   "run_lane": {
+    "middle": {
+     "numerator": 3,
+     "denominator": 4,
+     "rate": 0.75
+    },
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail9+|half1|late120": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail9+|half1|normal": {
+   "calls": 4,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "tackle": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "left_outside": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|field|trail9+|half2|normal": {
+   "calls": 7,
+   "pass_rate": {
+    "numerator": 4,
+    "denominator": 7,
+    "rate": 0.5714285714285714
+   },
+   "shotgun": {
+    "numerator": 4,
+    "denominator": 7,
+    "rate": 0.5714285714285714
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 7,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   "play_action": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 3,
+     "denominator": 7,
+     "rate": 0.42857142857142855
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 4,
+     "denominator": 7,
+     "rate": 0.5714285714285714
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "middle": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 2,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "middle": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|red20-6|trail1-8|half1|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 3,
+    "rate": 0.6666666666666666
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|red20-6|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down2|6-10|red20-6|trail9+|half2|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 2,
+     "denominator": 3,
+     "rate": 0.6666666666666666
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 3,
+     "rate": 0.3333333333333333
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "end": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|1-2|field|tie|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|1-2|field|trail1-8|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|1-2|field|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|1-2|field|trail9+|half2|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|1-2|red20-6|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|field|tie|half1|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|field|trail1-8|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|field|trail1-8|half1|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|field|trail1-8|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|field|trail9+|half2|normal": {
+   "calls": 3,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 3,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 3,
+    "denominator": 3,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 3,
+     "denominator": 3,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|own1-10|trail9+|half2|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|11+|red20-6|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "right": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "guard": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "right_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|field|tie|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|field|trail1-8|half1|normal": {
+   "calls": 6,
+   "pass_rate": {
+    "numerator": 5,
+    "denominator": 6,
+    "rate": 0.8333333333333334
+   },
+   "shotgun": {
+    "numerator": 4,
+    "denominator": 6,
+    "rate": 0.6666666666666666
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 6,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 3,
+    "rate": 0.3333333333333333
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 5,
+    "rate": 0.2
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 6,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "pass_gun": {
+     "numerator": 4,
+     "denominator": 6,
+     "rate": 0.6666666666666666
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|field|trail1-8|half2|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 2,
+     "denominator": 2,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|field|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|field|trail9+|half2|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "left": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {
+    "tackle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_inside": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|red20-6|trail9+|half1|late120": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|3-5|red20-6|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|field|tie|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|field|trail1-8|half1|normal": {
+   "calls": 4,
+   "pass_rate": {
+    "numerator": 3,
+    "denominator": 4,
+    "rate": 0.75
+   },
+   "shotgun": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 4,
+     "rate": 0.25
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 3,
+     "denominator": 4,
+     "rate": 0.75
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|field|trail1-8|half2|normal": {
+   "calls": 5,
+   "pass_rate": {
+    "numerator": 5,
+    "denominator": 5,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 5,
+    "denominator": 5,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 2,
+    "denominator": 4,
+    "rate": 0.5
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 5,
+     "denominator": 5,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|field|trail9+|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|field|trail9+|half2|normal": {
+   "calls": 5,
+   "pass_rate": {
+    "numerator": 5,
+    "denominator": 5,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 5,
+    "denominator": 5,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 3,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 5,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 1,
+    "denominator": 5,
+    "rate": 0.2
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 5,
+     "denominator": 5,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|red20-6|trail1-8|half1|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down3|6-10|red20-6|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down4|1-2|field|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "shotgun": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_location": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "middle": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    },
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down4|1-2|field|trail9+|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down4|11+|field|trail9+|half2|normal": {
+   "calls": 2,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 2,
+    "rate": 0.5
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 2,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 1,
+   "run_gap": {},
+   "run_gap_unknown": 1,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 1
+  },
+  "down4|3-5|field|trail1-8|half1|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  },
+  "down4|3-5|field|trail1-8|half2|normal": {
+   "calls": 1,
+   "pass_rate": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "shotgun": {
+    "numerator": 1,
+    "denominator": 1,
+    "rate": 1.0
+   },
+   "no_huddle": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "deep_air20": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "play_action": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "screen": {
+    "numerator": 0,
+    "denominator": 1,
+    "rate": 0.0
+   },
+   "joint": {
+    "run_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "run_gun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_under": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "pass_gun": {
+     "numerator": 1,
+     "denominator": 1,
+     "rate": 1.0
+    }
+   },
+   "run_location": {},
+   "run_location_unknown": 0,
+   "run_gap": {},
+   "run_gap_unknown": 0,
+   "run_lane": {
+    "left_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "left_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "middle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_inside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "right_outside": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    }
+   },
+   "run_lane_unknown": 0
+  }
+ },
+ "fourth_down": {
+  "numerator": 6,
+  "denominator": 28,
+  "rate": 0.21428571428571427
+ },
+ "fourth_down_situations": {
+  "down4|1-2|field|trail1-8|half1|normal": {
+   "numerator": 1,
+   "denominator": 1,
+   "rate": 1.0
+  },
+  "down4|1-2|field|trail9+|half1|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|1-2|field|trail9+|half2|normal": {
+   "numerator": 1,
+   "denominator": 1,
+   "rate": 1.0
+  },
+  "down4|11+|field|trail1-8|half1|late120": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|11+|field|trail1-8|half1|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|11+|field|trail9+|half2|normal": {
+   "numerator": 2,
+   "denominator": 5,
+   "rate": 0.4
+  },
+  "down4|11+|red20-6|trail1-8|half2|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|3-5|field|trail1-8|half1|normal": {
+   "numerator": 1,
+   "denominator": 3,
+   "rate": 0.3333333333333333
+  },
+  "down4|3-5|field|trail1-8|half2|normal": {
+   "numerator": 1,
+   "denominator": 1,
+   "rate": 1.0
+  },
+  "down4|3-5|field|trail9+|half2|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|3-5|goal5|trail9+|half1|late120": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|6-10|field|tie|half1|normal": {
+   "numerator": 0,
+   "denominator": 3,
+   "rate": 0.0
+  },
+  "down4|6-10|field|trail1-8|half1|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|6-10|field|trail1-8|half2|normal": {
+   "numerator": 0,
+   "denominator": 2,
+   "rate": 0.0
+  },
+  "down4|6-10|field|trail9+|half2|normal": {
+   "numerator": 0,
+   "denominator": 3,
+   "rate": 0.0
+  },
+  "down4|6-10|red20-6|trail1-8|half1|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  },
+  "down4|6-10|red20-6|trail9+|half2|normal": {
+   "numerator": 0,
+   "denominator": 1,
+   "rate": 0.0
+  }
+ },
+ "two_point": {
+  "numerator": 0,
+  "denominator": 4,
+  "rate": 0.0
+ },
+ "native_decision_projections": {
+  "fourth_down": {
+   "numerator": 2,
+   "denominator": 5,
+   "rate": 0.4
+  },
+  "fourth_down_scope": "Fourth-and-1..5, own21..49, more than 120 half seconds; excludes opponent territory; native kicker/clock policy remains active",
+  "two_point": {
+   "numerator": 0,
+   "denominator": 4,
+   "rate": 0.0
+  },
+  "two_point_scope": "Exclude attempts where native 206E70 mandates two; native mandates can differ from NFL choices",
+  "no_huddle": {
+   "numerator": 0,
+   "denominator": 99,
+   "rate": 0.0
+  },
+  "no_huddle_scope": "Q1/Q2, down1..3, >=120 half seconds; native personnel/stoppage gates are additional restrictions"
+ },
+ "play_action": {
+  "numerator": 33,
+  "denominator": 127,
+  "rate": 0.25984251968503935
+ },
+ "screen": {
+  "numerator": 14,
+  "denominator": 127,
+  "rate": 0.11023622047244094
+ },
+ "defense": {
+  "calls": 2436,
+  "opponent_pass_rate": {
+   "numerator": 1454,
+   "denominator": 2436,
+   "rate": 0.59688013136289
+  },
+  "sack_rate": {
+   "numerator": 88,
+   "denominator": 1454,
+   "rate": 0.06052269601100413
+  },
+  "qb_hit_rate": {
+   "numerator": 216,
+   "denominator": 1454,
+   "rate": 0.1485557083906465
+  },
+  "blitz": {
+   "numerator": 345,
+   "denominator": 1454,
+   "rate": 0.23727647867950483
+  },
+  "rush_five_plus": {
+   "numerator": 297,
+   "denominator": 1454,
+   "rate": 0.20426409903713894
+  },
+  "box_count": {
+   "10": {
+    "numerator": 12,
+    "denominator": 2436,
+    "rate": 0.0049261083743842365
+   },
+   "11": {
+    "numerator": 1,
+    "denominator": 2436,
+    "rate": 0.00041050903119868636
+   },
+   "2": {
+    "numerator": 2,
+    "denominator": 2436,
+    "rate": 0.0008210180623973727
+   },
+   "3": {
+    "numerator": 6,
+    "denominator": 2436,
+    "rate": 0.0024630541871921183
+   },
+   "4": {
+    "numerator": 83,
+    "denominator": 2436,
+    "rate": 0.03407224958949097
+   },
+   "5": {
+    "numerator": 243,
+    "denominator": 2436,
+    "rate": 0.09975369458128079
+   },
+   "6": {
+    "numerator": 1327,
+    "denominator": 2436,
+    "rate": 0.5447454844006568
+   },
+   "7": {
+    "numerator": 623,
+    "denominator": 2436,
+    "rate": 0.2557471264367816
+   },
+   "8": {
+    "numerator": 119,
+    "denominator": 2436,
+    "rate": 0.04885057471264368
+   },
+   "9": {
+    "numerator": 20,
+    "denominator": 2436,
+    "rate": 0.008210180623973728
+   }
+  },
+  "man": {
+   "numerator": 344,
+   "denominator": 1322,
+   "rate": 0.26021180030257185
+  },
+  "coverage": {
+   "2_MAN": {
+    "numerator": 29,
+    "denominator": 1322,
+    "rate": 0.02193645990922844
+   },
+   "BLOWN": {
+    "numerator": 1,
+    "denominator": 1322,
+    "rate": 0.0007564296520423601
+   },
+   "COMBO": {
+    "numerator": 16,
+    "denominator": 1322,
+    "rate": 0.012102874432677761
+   },
+   "COVER_0": {
+    "numerator": 26,
+    "denominator": 1322,
+    "rate": 0.019667170953101363
+   },
+   "COVER_1": {
+    "numerator": 289,
+    "denominator": 1322,
+    "rate": 0.21860816944024206
+   },
+   "COVER_2": {
+    "numerator": 388,
+    "denominator": 1322,
+    "rate": 0.2934947049924357
+   },
+   "COVER_3": {
+    "numerator": 393,
+    "denominator": 1322,
+    "rate": 0.2972768532526475
+   },
+   "COVER_4": {
+    "numerator": 90,
+    "denominator": 1322,
+    "rate": 0.0680786686838124
+   },
+   "COVER_6": {
+    "numerator": 68,
+    "denominator": 1322,
+    "rate": 0.05143721633888049
+   },
+   "COVER_9": {
+    "numerator": 22,
+    "denominator": 1322,
+    "rate": 0.01664145234493192
+   }
+  },
+  "man_blitz_joint": {
+   "man_normal": {
+    "numerator": 167,
+    "denominator": 1322,
+    "rate": 0.12632375189107414
+   },
+   "man_pressure": {
+    "numerator": 177,
+    "denominator": 1322,
+    "rate": 0.13388804841149773
+   },
+   "zone_normal": {
+    "numerator": 847,
+    "denominator": 1322,
+    "rate": 0.640695915279879
+   },
+   "zone_pressure": {
+    "numerator": 131,
+    "denominator": 1322,
+    "rate": 0.09909228441754916
+   }
+  },
+  "man_rush5_joint": {
+   "man_normal": {
+    "numerator": 157,
+    "denominator": 1322,
+    "rate": 0.11875945537065052
+   },
+   "man_pressure": {
+    "numerator": 187,
+    "denominator": 1322,
+    "rate": 0.14145234493192133
+   },
+   "zone_normal": {
+    "numerator": 905,
+    "denominator": 1322,
+    "rate": 0.6845688350983359
+   },
+   "zone_pressure": {
+    "numerator": 73,
+    "denominator": 1322,
+    "rate": 0.05521936459909228
+   }
+  }
+ },
+ "native_offense_pools": [
+  {
+   "index": 0,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 1,
+   "observations": {
+    "calls": 111,
+    "pass_rate": {
+     "numerator": 58,
+     "denominator": 111,
+     "rate": 0.5225225225225225
+    },
+    "shotgun": {
+     "numerator": 45,
+     "denominator": 111,
+     "rate": 0.40540540540540543
+    },
+    "no_huddle": {
+     "numerator": 2,
+     "denominator": 111,
+     "rate": 0.018018018018018018
+    },
+    "deep_air20": {
+     "numerator": 12,
+     "denominator": 49,
+     "rate": 0.24489795918367346
+    },
+    "play_action": {
+     "numerator": 29,
+     "denominator": 58,
+     "rate": 0.5
+    },
+    "screen": {
+     "numerator": 6,
+     "denominator": 58,
+     "rate": 0.10344827586206896
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 41,
+      "denominator": 111,
+      "rate": 0.36936936936936937
+     },
+     "run_gun": {
+      "numerator": 12,
+      "denominator": 111,
+      "rate": 0.10810810810810811
+     },
+     "pass_under": {
+      "numerator": 25,
+      "denominator": 111,
+      "rate": 0.22522522522522523
+     },
+     "pass_gun": {
+      "numerator": 33,
+      "denominator": 111,
+      "rate": 0.2972972972972973
+     }
+    },
+    "run_location": {
+     "left": {
+      "numerator": 25,
+      "denominator": 53,
+      "rate": 0.4716981132075472
+     },
+     "middle": {
+      "numerator": 16,
+      "denominator": 53,
+      "rate": 0.3018867924528302
+     },
+     "right": {
+      "numerator": 12,
+      "denominator": 53,
+      "rate": 0.22641509433962265
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {
+     "end": {
+      "numerator": 12,
+      "denominator": 37,
+      "rate": 0.32432432432432434
+     },
+     "guard": {
+      "numerator": 14,
+      "denominator": 37,
+      "rate": 0.3783783783783784
+     },
+     "tackle": {
+      "numerator": 11,
+      "denominator": 37,
+      "rate": 0.2972972972972973
+     }
+    },
+    "run_gap_unknown": 16,
+    "run_lane": {
+     "left_inside": {
+      "numerator": 16,
+      "denominator": 53,
+      "rate": 0.3018867924528302
+     },
+     "left_outside": {
+      "numerator": 9,
+      "denominator": 53,
+      "rate": 0.16981132075471697
+     },
+     "middle": {
+      "numerator": 16,
+      "denominator": 53,
+      "rate": 0.3018867924528302
+     },
+     "right_inside": {
+      "numerator": 9,
+      "denominator": 53,
+      "rate": 0.16981132075471697
+     },
+     "right_outside": {
+      "numerator": 3,
+      "denominator": 53,
+      "rate": 0.05660377358490566
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": null,
+   "target_denominator": 111,
+   "joint": {
+    "run_under": 0.36936936936936937,
+    "run_gun": 0.10810810810810811,
+    "pass_under": 0.22522522522522523,
+    "pass_gun": 0.2972972972972973
+   }
+  },
+  {
+   "index": 2,
+   "observations": {
+    "calls": 14,
+    "pass_rate": {
+     "numerator": 7,
+     "denominator": 14,
+     "rate": 0.5
+    },
+    "shotgun": {
+     "numerator": 7,
+     "denominator": 14,
+     "rate": 0.5
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 14,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 1,
+     "denominator": 6,
+     "rate": 0.16666666666666666
+    },
+    "play_action": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 7,
+     "rate": 0.0
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 4,
+      "denominator": 14,
+      "rate": 0.2857142857142857
+     },
+     "run_gun": {
+      "numerator": 3,
+      "denominator": 14,
+      "rate": 0.21428571428571427
+     },
+     "pass_under": {
+      "numerator": 3,
+      "denominator": 14,
+      "rate": 0.21428571428571427
+     },
+     "pass_gun": {
+      "numerator": 4,
+      "denominator": 14,
+      "rate": 0.2857142857142857
+     }
+    },
+    "run_location": {
+     "left": {
+      "numerator": 3,
+      "denominator": 7,
+      "rate": 0.42857142857142855
+     },
+     "middle": {
+      "numerator": 3,
+      "denominator": 7,
+      "rate": 0.42857142857142855
+     },
+     "right": {
+      "numerator": 1,
+      "denominator": 7,
+      "rate": 0.14285714285714285
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {
+     "end": {
+      "numerator": 3,
+      "denominator": 4,
+      "rate": 0.75
+     },
+     "guard": {
+      "numerator": 1,
+      "denominator": 4,
+      "rate": 0.25
+     }
+    },
+    "run_gap_unknown": 3,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 3,
+      "denominator": 7,
+      "rate": 0.42857142857142855
+     },
+     "middle": {
+      "numerator": 3,
+      "denominator": 7,
+      "rate": 0.42857142857142855
+     },
+     "right_inside": {
+      "numerator": 1,
+      "denominator": 7,
+      "rate": 0.14285714285714285
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 7,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 7,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 3,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 4,
+   "observations": {
+    "calls": 11,
+    "pass_rate": {
+     "numerator": 7,
+     "denominator": 11,
+     "rate": 0.6363636363636364
+    },
+    "shotgun": {
+     "numerator": 9,
+     "denominator": 11,
+     "rate": 0.8181818181818182
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 11,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 3,
+     "denominator": 6,
+     "rate": 0.5
+    },
+    "play_action": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "screen": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 2,
+      "denominator": 11,
+      "rate": 0.18181818181818182
+     },
+     "run_gun": {
+      "numerator": 2,
+      "denominator": 11,
+      "rate": 0.18181818181818182
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 11,
+      "rate": 0.0
+     },
+     "pass_gun": {
+      "numerator": 7,
+      "denominator": 11,
+      "rate": 0.6363636363636364
+     }
+    },
+    "run_location": {
+     "middle": {
+      "numerator": 2,
+      "denominator": 4,
+      "rate": 0.5
+     },
+     "right": {
+      "numerator": 2,
+      "denominator": 4,
+      "rate": 0.5
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {
+     "end": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     },
+     "guard": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     }
+    },
+    "run_gap_unknown": 2,
+    "run_lane": {
+     "middle": {
+      "numerator": 2,
+      "denominator": 4,
+      "rate": 0.5
+     },
+     "right_inside": {
+      "numerator": 1,
+      "denominator": 4,
+      "rate": 0.25
+     },
+     "right_outside": {
+      "numerator": 1,
+      "denominator": 4,
+      "rate": 0.25
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 5,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 6,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 7,
+   "observations": {
+    "calls": 7,
+    "pass_rate": {
+     "numerator": 2,
+     "denominator": 7,
+     "rate": 0.2857142857142857
+    },
+    "shotgun": {
+     "numerator": 4,
+     "denominator": 7,
+     "rate": 0.5714285714285714
+    },
+    "no_huddle": {
+     "numerator": 1,
+     "denominator": 7,
+     "rate": 0.14285714285714285
+    },
+    "deep_air20": {
+     "numerator": 1,
+     "denominator": 2,
+     "rate": 0.5
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 3,
+      "denominator": 7,
+      "rate": 0.42857142857142855
+     },
+     "run_gun": {
+      "numerator": 2,
+      "denominator": 7,
+      "rate": 0.2857142857142857
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 7,
+      "rate": 0.0
+     },
+     "pass_gun": {
+      "numerator": 2,
+      "denominator": 7,
+      "rate": 0.2857142857142857
+     }
+    },
+    "run_location": {
+     "left": {
+      "numerator": 1,
+      "denominator": 5,
+      "rate": 0.2
+     },
+     "middle": {
+      "numerator": 3,
+      "denominator": 5,
+      "rate": 0.6
+     },
+     "right": {
+      "numerator": 1,
+      "denominator": 5,
+      "rate": 0.2
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {
+     "guard": {
+      "numerator": 2,
+      "denominator": 2,
+      "rate": 1.0
+     }
+    },
+    "run_gap_unknown": 3,
+    "run_lane": {
+     "left_inside": {
+      "numerator": 1,
+      "denominator": 5,
+      "rate": 0.2
+     },
+     "middle": {
+      "numerator": 3,
+      "denominator": 5,
+      "rate": 0.6
+     },
+     "right_inside": {
+      "numerator": 1,
+      "denominator": 5,
+      "rate": 0.2
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 5,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 5,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 8,
+   "observations": {
+    "calls": 1,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 1,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 1.0
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     }
+    },
+    "run_location": {
+     "middle": {
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 1.0
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 1,
+    "run_lane": {
+     "middle": {
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 1.0
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 9,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 10,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 11,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 12,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 13,
+   "observations": {
+    "calls": 57,
+    "pass_rate": {
+     "numerator": 47,
+     "denominator": 57,
+     "rate": 0.8245614035087719
+    },
+    "shotgun": {
+     "numerator": 48,
+     "denominator": 57,
+     "rate": 0.8421052631578947
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 57,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 7,
+     "denominator": 35,
+     "rate": 0.2
+    },
+    "play_action": {
+     "numerator": 1,
+     "denominator": 47,
+     "rate": 0.02127659574468085
+    },
+    "screen": {
+     "numerator": 6,
+     "denominator": 47,
+     "rate": 0.1276595744680851
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 6,
+      "denominator": 57,
+      "rate": 0.10526315789473684
+     },
+     "run_gun": {
+      "numerator": 4,
+      "denominator": 57,
+      "rate": 0.07017543859649122
+     },
+     "pass_under": {
+      "numerator": 3,
+      "denominator": 57,
+      "rate": 0.05263157894736842
+     },
+     "pass_gun": {
+      "numerator": 44,
+      "denominator": 57,
+      "rate": 0.7719298245614035
+     }
+    },
+    "run_location": {
+     "left": {
+      "numerator": 1,
+      "denominator": 9,
+      "rate": 0.1111111111111111
+     },
+     "middle": {
+      "numerator": 6,
+      "denominator": 9,
+      "rate": 0.6666666666666666
+     },
+     "right": {
+      "numerator": 2,
+      "denominator": 9,
+      "rate": 0.2222222222222222
+     }
+    },
+    "run_location_unknown": 1,
+    "run_gap": {
+     "guard": {
+      "numerator": 1,
+      "denominator": 3,
+      "rate": 0.3333333333333333
+     },
+     "tackle": {
+      "numerator": 2,
+      "denominator": 3,
+      "rate": 0.6666666666666666
+     }
+    },
+    "run_gap_unknown": 7,
+    "run_lane": {
+     "left_inside": {
+      "numerator": 1,
+      "denominator": 9,
+      "rate": 0.1111111111111111
+     },
+     "middle": {
+      "numerator": 6,
+      "denominator": 9,
+      "rate": 0.6666666666666666
+     },
+     "right_inside": {
+      "numerator": 2,
+      "denominator": 9,
+      "rate": 0.2222222222222222
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 9,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 9,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 1
+   },
+   "fallback": null,
+   "target_denominator": 57,
+   "joint": {
+    "run_under": 0.10526315789473684,
+    "run_gun": 0.07017543859649122,
+    "pass_under": 0.05263157894736842,
+    "pass_gun": 0.7719298245614035
+   }
+  },
+  {
+   "index": 14,
+   "observations": {
+    "calls": 5,
+    "pass_rate": {
+     "numerator": 4,
+     "denominator": 5,
+     "rate": 0.8
+    },
+    "shotgun": {
+     "numerator": 4,
+     "denominator": 5,
+     "rate": 0.8
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 5,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 3,
+     "rate": 0.0
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 1,
+      "denominator": 5,
+      "rate": 0.2
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 5,
+      "rate": 0.0
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 5,
+      "rate": 0.0
+     },
+     "pass_gun": {
+      "numerator": 4,
+      "denominator": 5,
+      "rate": 0.8
+     }
+    },
+    "run_location": {
+     "middle": {
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 1.0
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 1,
+    "run_lane": {
+     "middle": {
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 1.0
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 1,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 15,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 16,
+   "observations": {
+    "calls": 4,
+    "pass_rate": {
+     "numerator": 2,
+     "denominator": 4,
+     "rate": 0.5
+    },
+    "shotgun": {
+     "numerator": 4,
+     "denominator": 4,
+     "rate": 1.0
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 4,
+     "rate": 0.0
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 2,
+     "rate": 0.0
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+     },
+     "run_gun": {
+      "numerator": 2,
+      "denominator": 4,
+      "rate": 0.5
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+     },
+     "pass_gun": {
+      "numerator": 2,
+      "denominator": 4,
+      "rate": 0.5
+     }
+    },
+    "run_location": {
+     "left": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     },
+     "right": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     }
+    },
+    "run_location_unknown": 0,
+    "run_gap": {
+     "guard": {
+      "numerator": 2,
+      "denominator": 2,
+      "rate": 1.0
+     }
+    },
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_inside": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     },
+     "right_inside": {
+      "numerator": 1,
+      "denominator": 2,
+      "rate": 0.5
+     },
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 2,
+      "rate": 0.0
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 2,
+      "rate": 0.0
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 2,
+      "rate": 0.0
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 17,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 18,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  },
+  {
+   "index": 19,
+   "observations": {
+    "calls": 0,
+    "pass_rate": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "shotgun": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "no_huddle": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "deep_air20": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "play_action": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "screen": {
+     "numerator": 0,
+     "denominator": 0,
+     "rate": null
+    },
+    "joint": {
+     "run_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "run_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_under": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "pass_gun": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_location": {},
+    "run_location_unknown": 0,
+    "run_gap": {},
+    "run_gap_unknown": 0,
+    "run_lane": {
+     "left_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "left_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "middle": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_inside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "right_outside": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     }
+    },
+    "run_lane_unknown": 0
+   },
+   "fallback": "coach_overall_fewer_than_32_joint_observations",
+   "target_denominator": 210,
+   "joint": {
+    "run_under": 0.2761904761904762,
+    "run_gun": 0.11904761904761904,
+    "pass_under": 0.14761904761904762,
+    "pass_gun": 0.45714285714285713
+   }
+  }
+ ],
+ "limitations": [
+  "120-second urgency projection; native estimated needed time varies",
+  "Observed thrown depth is not called route depth",
+  "FTN charting covers only matched plays from 2022 onward; unknowns are excluded from each feature denominator",
+  "Coverage charting covers matched 2022\u20132025 plays; coaches with no defense history in those seasons have no coverage estimate",
+  "HC team offense is not necessarily personally called by the HC",
+  "NFL guard/tackle gaps merge into native inside lanes; exact observed run gaps and thrown air depth cannot be reproduced by called-play proxies",
+  "2026 input ends 2026-10-05; team/role intervals override stale coach labels"
+ ]
+}
