@@ -171,9 +171,12 @@ def native_vip(xbe, book, payload, receipt, samples, *, automatic=None):
                 passed=all(r["passed"] for r in rows) and all(f["quantized_match"] for f in aggregate))
 
 
-def retail_control(xbe, book, coach, samples):
-    w = World(xbe)
+def retail_control(xbe, book, coach, samples, *, world_factory=World):
+    w = world_factory(xbe)
     w.load(book)
+    fallback_visits = []
+    w.m.hook_add(w.ucmod.UC_HOOK_CODE, lambda *_: fallback_visits.append(1),
+                 begin=0x20B7B1, end=0x20B7B1)
     address = s.SOURCE + 0x1D000
     w.m.mem_write(address, coach)
     w.call(0x2818D0, ecx=s.META + 0x800, edx=address)
@@ -181,17 +184,35 @@ def retail_control(xbe, book, coach, samples):
     for index in range(20):
         rng = seed(w, 20261012 + index)
         counts = Counter()
+        nullable = []
+        fallback_start = len(fallback_visits)
         for sample in range(samples):
             w.configure(**settings(index))
             w.fput(0xBF1484, rng.random())
             w.call(0x281D90)
             w.m.mem_write(0xBF16F8, bytes(w.m.mem_read(0xC5D4B0, 4)))
             out = s.SOURCE + 0x19100
+            w.m.mem_write(out, bytes(16))
+            before_fallback = len(fallback_visits)
             w.call(0x20B670, ecx=s.TEAM, edx=out)
             _, fv, pv, _ = struct.unpack("<4I", w.m.mem_read(out, 16))
+            if not fv:
+                # Native 20B670 may exhaust four formation searches, then
+                # choose a fallback play at 20B7B1 without a formation.
+                # Keep that observed control outcome; never invent a form
+                # or silently discard the draw from rate denominators.
+                pi, remainder = divmod(pv - s.BOOK - ip.PLAY_BASE, ip.PLAY_SIZE)
+                if len(fallback_visits) == before_fallback or remainder or not 0 <= pi < len(w.book.plays):
+                    raise ValueError(f"Invalid native control fallback {fv:#x}/{pv:#x}")
+                counts["no_formation"] += 1
+                nullable.append(dict(sample=sample, play=pi, native_fallback=True))
+                continue
             category, _, _ = classify(w, fv, pv)
             counts[category] += 1
         rows.append(dict(index=index, samples=samples, counts=dict(counts),
+                         native_fallback_calls=len(fallback_visits) - fallback_start,
+                         no_formation_draws=nullable,
+                         rate_denominator="all draws, including explicitly counted no-formation fallback outcomes",
                          pass_rate=sum(n for k, n in counts.items() if k.startswith("pass")) / samples,
                          shotgun_rate=sum(n for k, n in counts.items() if k.endswith("_gun")) / samples))
     return rows

@@ -18,8 +18,10 @@ from pb.scoring_selectors import World
 class AutoWorld(World):
     HEAP = 0x3100000
 
-    def __init__(self, payload):
+    def __init__(self, payload, *, load_route="resource"):
         super().__init__(payload)
+        assert load_route in ("resource", "copy")
+        self.load_route = load_route
         self.m.mem_map(self.HEAP, 0x10000)
         self.heap_live = {}
         self.heap_events = []
@@ -28,7 +30,7 @@ class AutoWorld(World):
         self.owned = ai.allocations(payload) if ai.status(payload) == "applied" else None
         self.state_va = self.owned["data"]["va"] if self.owned else None
         self.visits.update()
-        for pc in (0x161E30, 0xF7B30, 0xF6E60, 0xF7A90, 0xF7BE0, 0xF71E0, 0x17F1D0, 0x17DFC0):
+        for pc in (0x1665A0, 0xE0D90, 0x161E30, 0xF7B30, 0xF6E60, 0xF7A90, 0xF7BE0, 0xF71E0, 0x17F1D0, 0x17DFC0):
             self.m.hook_add(self.ucmod.UC_HOOK_CODE, lambda _u, a, _n, _d: self.visits.update([hex(a)]), begin=pc, end=pc)
 
         def allocation(m, address, size, _):
@@ -59,10 +61,33 @@ class AutoWorld(World):
         self.m.hook_add(self.ucmod.UC_HOOK_CODE, allocation, begin=0x48700, end=0x48700)
         self.m.hook_add(self.ucmod.UC_HOOK_CODE, release, begin=0x48870, end=0x48870)
 
+    def load_native_book(self, raw):
+        if self.load_route == "copy":
+            super().load_native_book(raw)
+        else:
+            # Completed disc I/O supplies the raw body in the native fixed
+            # team buffer. The resource manager's +14 link points to it.
+            # Execute its real PLAY callback and in-place relocation, the
+            # path witnessed in cold-boot run01; no loader is stubbed.
+            self.m.mem_write(s.BOOK, raw[32:])
+            self.put(s.BOOK + 0x14, s.BOOK)
+            self.put(0xB72918, s.SOURCE + 0x1F000)
+            self.call(0x1665A0, ecx=s.BOOK)
+        self.loader_witness = dict(route=self.load_route,
+            visits={hex(pc): self.visits[hex(pc)] for pc in (0x1665A0, 0xE0D90, 0x161E30)},
+            marker=hex(self.get(s.BOOK + ai.PROFILE_OFFSET + 28)),
+            environment="Completed raw disc I/O and resource-manager body link; native callback/relocation execute")
+
     def _return(self):
         sp = self.m.reg_read(self.r.UC_X86_REG_ESP)
         self.m.reg_write(self.r.UC_X86_REG_EIP, self.get(sp))
         self.m.reg_write(self.r.UC_X86_REG_ESP, sp + 4)
+
+    def initialize_native_plays(self):
+        # E0D90 already executes 1A9A80 for every declared play. The raw-copy
+        # path only relocates pointers, so it needs the normal extra pass.
+        if self.load_route == "copy":
+            super().initialize_native_plays()
 
     def install_roster(self, info, coach):
         root, labels = s.SOURCE + 0x1F000, s.SOURCE + 0x1F400
@@ -98,8 +123,8 @@ class AutoWorld(World):
                     heap_events=self.heap_events, native_visits=dict(self.visits))
 
 
-def bind_automatic(xbe, book, receipt, coach, mode=4):
-    w = AutoWorld(xbe)
+def bind_automatic(xbe, book, receipt, coach, mode=4, *, load_route="resource"):
+    w = AutoWorld(xbe, load_route=load_route)
     w.load(book)
     w.install_roster(receipt["automatic_profile"], coach)
     assert w.get(0xBA04B0) == w.get(0xBA04B4) == 0, "Automatic proof must start with no VIP"
@@ -145,6 +170,15 @@ def bind_automatic(xbe, book, receipt, coach, mode=4):
                        (0x20B8, 0x2118), (0x2186, 0x218A)):
         assert bytes(w.m.mem_read(context + start, end - start)) == expected[start:end], hex(start)
     return w, context
+
+
+def audit_loaders(xbe, book, receipt, coach):
+    rows = []
+    for route in ("resource", "copy"):
+        w, context = bind_automatic(xbe, book, receipt, coach, load_route=route)
+        assert w.loader_witness["marker"] == "0x314b4f43", w.loader_witness
+        rows.append(dict(**w.loader_witness, binding=context, passed=True))
+    return dict(passed=True, cases=rows)
 
 
 def user_choice(world, book_index):
@@ -435,7 +469,7 @@ def run(args):
                   retail_xbe_sha256=hashlib.sha256(retail).hexdigest(),
                   verifier_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                   replay_verifier_sha256=hashlib.sha256(Path(v.__file__).read_bytes()).hexdigest(),
-                  setup="Actual F7B30 game setup, both F6E60 sides, native history decay and statistics binding; no preselected VIP",
+                  setup="Actual disc callback 1665A0/E0D90, F7B30 game setup, both F6E60 sides, native history decay and statistics binding; no preselected VIP; separate 161E30 saved-book copy audit",
                   environment="World's explicit roster/player/kicker inputs, plus bounded heap allocate/free services; no selector, RNG, setup, compatibility or VIP accessor stubs",
                   scope="All supported modes, all offense/defense pools, optional decisions and continuous eligible tempo; synthetic field/clock state",
                   teams={})
@@ -461,7 +495,8 @@ def run(args):
             binder = lambda executable, resource, report: bind_automatic(executable, resource, report, coach)
             try:
                 print(team, "all native setup modes and controls", flush=True)
-                entry = dict(modes=audit_modes(xbe, baseline, retail, book, receipt, coach))
+                entry = dict(loaders=audit_loaders(xbe, book, receipt, coach),
+                             modes=audit_modes(xbe, baseline, retail, book, receipt, coach))
                 print(team, "offense", flush=True)
                 entry["offense"] = v.native_vip(xbe, book, None, receipt, args.samples, automatic=binder)
                 print(team, "defense", flush=True)
@@ -470,10 +505,11 @@ def run(args):
                 entry["decisions"] = v.native_decisions(xbe, book, None, receipt, args.decision_samples,
                                                        args.tempo_samples, automatic=binder)
                 entry["retail_control"] = v.retail_control(retail, stock.read_entry(BOOK_ENTRIES[spec["archive_book"]]),
-                                                           old_coach, args.control_samples)
-                entry["no_feature_control"] = v.retail_control(baseline, book, coach, args.same_book_control_samples)
+                                                           old_coach, args.control_samples, world_factory=AutoWorld)
+                entry["no_feature_control"] = v.retail_control(baseline, book, coach, args.same_book_control_samples,
+                                                               world_factory=AutoWorld)
                 entry["candidate"] = info
-                entry["passed"] = all(entry[k]["passed"] for k in ("modes", "offense", "defense", "decisions"))
+                entry["passed"] = all(entry[k]["passed"] for k in ("loaders", "modes", "offense", "defense", "decisions"))
             except Exception as exc:
                 entry = dict(passed=False, error=f"{type(exc).__name__}: {exc}")
             result["teams"][team] = entry

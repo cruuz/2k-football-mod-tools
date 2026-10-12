@@ -168,6 +168,29 @@ class NativeInstallation(unittest.TestCase):
         cls.source = Path(source).read_bytes()
         cls.patched, cls.receipt = ai.apply(cls.source)
 
+    def test_disc_resource_callback_validates_before_relocation(self):
+        image = os.environ.get("NFL2K5_COACH_AI_IMAGE")
+        if not image:
+            self.skipTest("Set NFL2K5_COACH_AI_IMAGE for native resource loading")
+        from tools.b77.vp2_native import AutoWorld
+        from mod_editor.core import nfl2k5_play_scoring as scoring
+        with OuterImage(image) as archive:
+            raw = archive.read_entry(BOOK_ENTRIES["PHI"])
+        target = json.loads((ROOT / "data/vip/coaches/PHI.json").read_text())
+        tagged, _ = ai.build_profile(raw, target)
+        for route in ("resource", "copy"):
+            with self.subTest(route=route):
+                world = AutoWorld(self.patched, load_route=route)
+                world.load(tagged)
+                self.assertEqual(world.get(scoring.BOOK + ai.PROFILE_OFFSET + 28), 0x314B4F43,
+                                 world.loader_witness)
+                # A changed play byte must stay unvalidated on both paths.
+                stale = bytearray(tagged)
+                stale[32 + 0x3400] ^= 1
+                world = AutoWorld(self.patched, load_route=route)
+                world.load(bytes(stale))
+                self.assertEqual(world.get(scoring.BOOK + ai.PROFILE_OFFSET + 28), 0)
+
     def test_fixed_size_seals_permissions_and_replay(self):
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage

@@ -206,8 +206,10 @@ HOOKS = (
     ("cleanup", 0x6195A, "b92c16e600", 0xE9),
     ("matchup", 0x367BD0, "6bd2588b927824cc00", 0xE9),
     ("viewer", 0x350890, "833d0892cb00ff", 0xE9),
+    ("resource", 0xE0D90, "5355568bf1", 0xE9),
 )
-SYMBOLS = dict(source_continue=0x161E37, setup_continue=0xF6EA8, takeover_native=0xF7AF0,
+SYMBOLS = dict(source_continue=0x161E37, resource_continue=0xE0D95,
+               setup_continue=0xF6EA8, takeover_native=0xF7AF0,
                cleanup_continue=0x6195F, matchup_continue=0x367BD9, matchup_finish=0x367C3D,
                viewer_continue=0x350897, viewer_finish=0x3508C0, setup_original=0xF6E60,
                stats_bind_native=0xF7A90, heap_native=0x38FB0, allocate_native=0x48700,
@@ -353,6 +355,9 @@ def apply(payload):
 
 
 GUARDS = (
+    (0xe0d90, 443, "94205d158baef4714e193ec2766d45a6ee7bb899c6b764966f1ebf9675b881a5"),
+    (0x1665a0, 14, "51b06a9965cc2703be9b2bfb04f71587f78f65743d048629ec7bee538e23989f"),
+    (0x1665f0, 25, "47beeb5ea7af7c4e2220dcc0ce44776f461396ba7b58894d5f065b57cd6c759c"),
     (0x27d050, 35, "e32f59f431754d717c0552ab6956f6bdb0b55080a94b492041f822ff1ef4af09"),
     (0xf7b30, 164, "5ed062a0aa7d1a1ff5a7a455847f4e386967b45fa1723add8a56983fb06a97c2"),
     (0x1b1ee0, 867, "7ea550783ad544a9609cefbcc7ab96f1d79ac7da7e93469c073ce1c4568c0fa8"),

@@ -51,7 +51,9 @@ exact compiled-book SHA-256, raw-book fingerprint and payload checksum. The
 remaining 768 bytes contain offense/defense rings and observed decision,
 statistics and tempo counters. Build-time validation refuses declared strings
 overlapping the tail, foreign bytes, stale tags, wrong identities or invalid
-recorded indices. The native raw loader marks only a valid matching payload;
+recorded indices. Validation runs before both native loading paths: the
+disc resource callback's in-place relocation (`1665A0` → `E0D90`) and the
+saved-book copy/relocation (`161E30`). Each marks only a valid matching payload;
 missing, invalid or unallocatable profiles fall back to ordinary coach AI.
 
 The Studio compiles profiles after final book/roster edits. The book's visible

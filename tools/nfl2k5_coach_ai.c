@@ -64,7 +64,8 @@ static u32 current_photo(const struct Portrait *r) {
     }
     return r->photo;
 }
-/* Called before native 161E30 copies/relocates PLAY. The marker exists only
+/* Called before native E0D90 relocates a disc PLAY resource in place, and
+ * before 161E30 copies/relocates a raw saved book. The marker exists only
  * in RAM, never on disc. Hash every meaningful raw body byte before the tag;
  * the resource-manager linkage/header prefix is deliberately excluded. */
 void FAST coach_validate_source(u8 *book) {

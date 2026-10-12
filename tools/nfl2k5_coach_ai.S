@@ -1,7 +1,7 @@
 /* Preserve the displaced native ABI, including flags and stdcall cleanup. */
 .intel_syntax noprefix
 .text
-.global source, setup, takeover, cleanup, matchup, viewer, setup_native, career_address
+.global source, resource, setup, takeover, cleanup, matchup, viewer, setup_native, career_address
 source:
     pushfd
     pushad
@@ -15,6 +15,18 @@ source:
     mov edi, edx
     mov esi, ecx
     jmp source_continue
+resource:
+    pushfd
+    pushad
+    cld
+    call coach_validate_source
+    popad
+    popfd
+    push ebx
+    push ebp
+    push esi
+    mov esi, ecx
+    jmp resource_continue
 setup:
     pushfd
     pushad

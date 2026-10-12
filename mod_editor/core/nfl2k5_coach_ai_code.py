@@ -52,14 +52,14 @@ CODE = bytes.fromhex(
     "73458b731c85f6743e69dff401000001f383bb2801000000752d8bb34c010000668b480a66398b18"
     "010000751a85f674160fb75e4039d3740e0fb7400e6685c0740539c30f44d38b4dac668955f08d55"
     "b0e8fcffffffeb1083c02c3da00e00000f8546ffffff31c083c4485b5e5f5dc39c60fce8fcffffff"
-    "619d53565789d789cee9fcffffff9c60fc89f98b542440ff74243ce8fcffffff85c07408c7442404"
-    "04000000619d8b4c241c8b048db004ba00e9fcffffffe8fcffffff9c60fce8fcffffff619dc39c60"
-    "fce8fcffffff619db92c16e600e9fcffffff5789cf89c852ff74240c8d4a0151e8fcffffff89f9e8"
-    "fcffffff5fc2040083fa0273369c60fc6bd25883ba7824cc000075258b8a7024cc00ba8c95eb00e8"
-    "fcffffff85c074118944241c619d81ec84000000e9fcffffff619d6bd2588b927824cc00e9fcffff"
-    "ff9c60fc8b0d0892cb0083f904732569c97812000081c1f0fcbd00ba64fbea00e8fcffffff85c074"
-    "0b8944241c619de9fcffffff619d833d0892cb00ffe9fcffffff6690000000006690669066906690"
-    "66906690669066906690669066906690be45751ae25bbe3900001900711b00005300460020005300"
+    "619d53565789d789cee9fcffffff9c60fce8fcffffff619d53555689cee9fcffffff9c60fc89f98b"
+    "542440ff74243ce8fcffffff85c07408c744240404000000619d8b4c241c8b048db004ba00e9fcff"
+    "ffffe8fcffffff9c60fce8fcffffff619dc39c60fce8fcffffff619db92c16e600e9fcffffff5789"
+    "cf89c852ff74240c8d4a0151e8fcffffff89f9e8fcffffff5fc2040083fa0273369c60fc6bd25883"
+    "ba7824cc000075258b8a7024cc00ba8c95eb00e8fcffffff85c074118944241c619d81ec84000000"
+    "e9fcffffff619d6bd2588b927824cc00e9fcffffff9c60fc8b0d0892cb0083f904732569c9781200"
+    "0081c1f0fcbd00ba64fbea00e8fcffffff85c0740b8944241c619de9fcffffff619d833d0892cb00"
+    "ffe9fcffffff66900000000066906690be45751ae25bbe3900001900711b00005300460020005300"
     "680061006e006100680061006e000000000000009c5186c871ad4c0b010005005d1b000043004800"
     "490020004a006f0068006e0073006f006e00000000000000254ed310cf7ba3dd020006005e1b0000"
     "430049004e0020005400610079006c006f0072000000000000000000f94b6a35c031410a03000300"
@@ -104,7 +104,7 @@ RELOCATIONS = (
     (362, 1, 'state', 0),
     (400, 1, 'state', 0),
     (413, 1, 'state', 0),
-    (439, 1, 'code', 2308),
+    (439, 1, 'code', 2328),
     (489, 1, 'state', 0),
     (571, 1, 'state', 0),
     (578, 1, 'state', 0),
@@ -129,11 +129,11 @@ RELOCATIONS = (
     (1464, 1, 'state', 0),
     (1495, 1, 'state', 0),
     (1500, 1, 'state', 0),
-    (1526, 2, 'code', 2138),
+    (1526, 2, 'code', 2158),
     (1557, 1, 'state', 0),
     (1575, 1, 'state', 0),
     (1581, 1, 'state', 0),
-    (1608, 2, 'code', 2138),
+    (1608, 2, 'code', 2158),
     (1639, 1, 'state', 0),
     (1652, 1, 'state', 0),
     (1680, 2, 'free_native', 0),
@@ -145,25 +145,27 @@ RELOCATIONS = (
     (2012, 1, 'code', 0),
     (2036, 2, 'code', 112),
     (2050, 2, 'source_continue', 0),
-    (2068, 2, 'code', 309),
-    (2098, 2, 'setup_continue', 0),
-    (2103, 2, 'takeover_native', 0),
-    (2111, 2, 'code', 1483),
-    (2122, 2, 'code', 1649),
-    (2134, 2, 'cleanup_continue', 0),
-    (2153, 2, 'setup_original', 0),
-    (2160, 2, 'stats_bind_native', 0),
-    (2200, 2, 'code', 1805),
-    (2221, 2, 'matchup_finish', 0),
-    (2237, 2, 'matchup_continue', 0),
-    (2273, 2, 'code', 1805),
-    (2288, 2, 'viewer_finish', 0),
-    (2302, 2, 'viewer_continue', 0),
-    (2308, 1, 'career_state', 0),
+    (2058, 2, 'code', 112),
+    (2070, 2, 'resource_continue', 0),
+    (2088, 2, 'code', 309),
+    (2118, 2, 'setup_continue', 0),
+    (2123, 2, 'takeover_native', 0),
+    (2131, 2, 'code', 1483),
+    (2142, 2, 'code', 1649),
+    (2154, 2, 'cleanup_continue', 0),
+    (2173, 2, 'setup_original', 0),
+    (2180, 2, 'stats_bind_native', 0),
+    (2220, 2, 'code', 1805),
+    (2241, 2, 'matchup_finish', 0),
+    (2257, 2, 'matchup_continue', 0),
+    (2293, 2, 'code', 1805),
+    (2308, 2, 'viewer_finish', 0),
+    (2322, 2, 'viewer_continue', 0),
+    (2328, 1, 'career_state', 0),
 )
 LABELS = {
-    'career_address': 2308,
-    'cleanup': 2118,
+    'career_address': 2328,
+    'cleanup': 2138,
     'coach_cleanup': 1649,
     'coach_portrait': 1805,
     'coach_prepare': 309,
@@ -171,14 +173,15 @@ LABELS = {
     'coach_validate_source': 112,
     'copy': 0,
     'directory': 20,
-    'matchup': 2168,
-    'matchup_miss': 2225,
-    'matchup_original': 2227,
+    'matchup': 2188,
+    'matchup_miss': 2245,
+    'matchup_original': 2247,
     'portraits': 2336,
-    'setup': 2054,
-    'setup_native': 2138,
+    'resource': 2054,
+    'setup': 2074,
+    'setup_native': 2158,
     'source': 2032,
-    'takeover': 2102,
-    'viewer': 2241,
-    'viewer_miss': 2292,
+    'takeover': 2122,
+    'viewer': 2261,
+    'viewer_miss': 2312,
 }
