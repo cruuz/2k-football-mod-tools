@@ -2,8 +2,9 @@
 
 This experimental Studio command builds 32 **user VIP saves** from observed
 coach tendencies and the exact compiled SOFTDRINK playbooks. It supports the
-native, manually selected Quick Game opponent. It does not attach 32 profiles
-automatically in Franchise. Save exports and executable upgrades always use
+native, manually selected Quick Game opponent. The separate
+[automatic CPU coach setting](nfl2k5_coach_ai.md) attaches profiles in ordinary
+Play Now, Season, Franchise and playoff modes. Save exports and executable upgrades always use
 new destinations; no save or disc is installed by these commands.
 
 The implementation lives in `nfl2k5_coach_tendencies.py` and `nfl2k5_vip.py`.
@@ -169,9 +170,12 @@ HDD, is:
 4. Confirm that the CPU side now shows that profile and start the game.
 
 The right stick at Team Select changes the human's assigned VIP. **NFL
-Coaches** is a different choice: it uses ROST coach records rather than these
-learned USR histories. Naming a USR after a coach does not select a coach photo.
-User VIPs display `vip_logo_a1`. ROST coaches display the `%04d` texture named
+Coaches** uses ROST coach records; the automatic setting adds that team's
+profile to its default CPU entry. Without that setting, user VIPs display
+`vip_logo_a1`. With it, generated coach VIPs are recognized by both stable
+authored identity and exact name and use the corresponding coach photo.
+Legacy vp1 IDs remain supported; unknown personal VIPs keep their logo.
+ROST coaches display the `%04d` texture named
 by their u16 portrait ID at coach `+0x40`; celebrity challenge profiles use
 separate named celebrity textures. The private vp1 report contains the exact
 32-team bitmap handoff for the portrait owner.
@@ -181,7 +185,7 @@ separate named celebrity textures. The private vp1 report contains the exact
 | Observed tendency | Native mapping and limit |
 |---|---|
 | Pass/shotgun joint rate | Eight eligible distinct calls in each of 20 offense rings; the ninth slot is the excluded cursor. Native previous-play exclusion remains active. |
-| Down, distance, field, score, clock | Full descriptive PBP cells plus projection to native pools; native estimated time-needed is modeled at 120 seconds. Pools under 32 observations fall back to the coach marginal, then league only if necessary. |
+| Down, distance, field, score, clock | Derived PBP cells projected to native pools; full grids are reproducible with `derive`, while shipped data retains compact compiler inputs. Native estimated time-needed is modeled at 120 seconds. Pools under 32 observations fall back to the coach marginal, then league only if necessary. |
 | Play action/screens | Actual fake/throw and screen assignments. The exact v0.6.1 IND and NYG books have no callable screen; receipts expose the unmet targets. |
 | Deep passing | First-read endpoint at least 20 yards, a called-route proxy for observed thrown air yards. It cannot force the eventual receiver or throw depth. |
 | Run direction/gap | Native `281300` five-lane class, with record flip bit applied. NFL guard/tackle merge into inside; exact post-snap gaps and cutbacks remain unsupported. |

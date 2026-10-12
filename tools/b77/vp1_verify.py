@@ -80,10 +80,13 @@ def bind(world, payload, book_index):
     return context
 
 
-def native_vip(xbe, book, payload, receipt, samples):
-    w = World(xbe)
-    w.load(book)
-    context = bind(w, payload, receipt["book_index"])
+def native_vip(xbe, book, payload, receipt, samples, *, automatic=None):
+    if automatic is None:
+        w = World(xbe)
+        w.load(book)
+        context = bind(w, payload, receipt["book_index"])
+    else:
+        w, context = automatic(xbe, book, receipt)
     checked = set()
     for row in receipt["pools"]:
         for c in row["choices"]:
@@ -194,10 +197,13 @@ def retail_control(xbe, book, coach, samples):
     return rows
 
 
-def native_defense(xbe, book, payload, receipt, samples):
-    w = World(xbe)
-    w.load(book)
-    context = bind(w, payload, receipt["book_index"])
+def native_defense(xbe, book, payload, receipt, samples, *, automatic=None):
+    if automatic is None:
+        w = World(xbe)
+        w.load(book)
+        context = bind(w, payload, receipt["book_index"])
+    else:
+        w, context = automatic(xbe, book, receipt)
     w.call(0xF7A90, ecx=w.defense, edi=w.defense)
     categories = {}
     for form in w.book.formations:
@@ -259,10 +265,13 @@ def native_defense(xbe, book, payload, receipt, samples):
     return dict(rows=rows, passed=all(r["passed"] for r in rows))
 
 
-def native_decisions(xbe, book, payload, receipt, samples, tempo_samples):
-    w = World(xbe)
-    w.load(book)
-    context = bind(w, payload, receipt["book_index"])
+def native_decisions(xbe, book, payload, receipt, samples, tempo_samples, *, automatic=None):
+    if automatic is None:
+        w = World(xbe)
+        w.load(book)
+        context = bind(w, payload, receipt["book_index"])
+    else:
+        w, context = automatic(xbe, book, receipt)
     rows = {}
     states = {"fourth_down": dict(down=4, distance=1, yard=25, margin=0, quarter=2, seconds=300),
               "two_point": dict(down=1, distance=2, yard=98, margin=0, quarter=2, seconds=300, phase=3)}
@@ -310,7 +319,10 @@ def native_decisions(xbe, book, payload, receipt, samples, tempo_samples):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--exports", type=Path, required=True)
+    ap.add_argument("--exports", type=Path)
+    ap.add_argument("--automatic", action="store_true", help="prove native automatic game setup without a selected user VIP")
+    ap.add_argument("--profiles", type=Path, help="prepared automatic PLAY resources and compiler receipts")
+    ap.add_argument("--baseline-xbe", type=Path, help="same mod executable without automatic coach AI")
     ap.add_argument("--image", type=Path, required=True)
     ap.add_argument("--xbe", type=Path, help="exact candidate executable, including the VIP-aware policy")
     ap.add_argument("--retail-image", type=Path, required=True)
@@ -327,6 +339,13 @@ def main():
     if args.out.exists() or min(args.samples, args.control_samples, args.same_book_control_samples,
                                args.defense_samples, args.decision_samples, args.tempo_samples) < 1:
         ap.error("Output must be new; sample counts must be positive")
+    if args.automatic:
+        if args.profiles is None or args.baseline_xbe is None:
+            ap.error("--automatic requires --profiles and --baseline-xbe")
+        from tools.b77.vp2_native import run
+        return run(args)
+    if args.exports is None:
+        ap.error("manual VIP verification requires --exports")
     xbe, retail_xbe = _xbe_bytes(args.xbe or args.image), args.retail_xbe.read_bytes()
     specs = json.loads((ROOT / "data/vip/coach_sources_2026.json").read_text())
     result = dict(schema="nfl2k5_vip_native_replay/v2", status="RUNNING", xbe_sha256=hashlib.sha256(xbe).hexdigest(),

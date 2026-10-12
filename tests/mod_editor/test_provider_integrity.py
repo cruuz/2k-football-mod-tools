@@ -217,7 +217,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [405, 10, 8, 9, 8, 9]  # b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [408, 10, 8, 9, 8, 9]  # b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
             # b771-v1g: + the Unc Bowl compiler and its archive helper; the owned-span document is a data pin.
             # b765 integration: + fixed-size spare-capacity owner for dated FA/historic composition.
             # b765-a1: + the Anniversary archive pack, field compiler and their 38 existing venue-tool dependencies.
@@ -340,6 +340,40 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "reports/specs/nfl2k5_crib_static_position_targets.v1.json": "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
                 "data/nfl2k5_ratings_forty_sources.json": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
                 "data/nfl2k5_espn25_more_teams/teams.json": "0484cc4ea617f4d250571ac3551f820368a15456c444326203d31c98eebd8cd3",
+                "data/vip/coach_sources_2026.json": "54fac5e396a2d76c574d63b94217261c58ef2dbfa4f1906fbbade6e7951c9b63",
+                "data/vip/coach_portraits_2026.json": "aa398aa7b0e695c73b4a809ba5886bb7df95d1c4173adb00f542d6fd0ccfebe1",
+                "data/vip/coaches/ARI.json": "f05194553bd87ea58fd07e8c32a0f6c127ab72c84b337ce23fb28e88adf6bb25",
+                "data/vip/coaches/ATL.json": "47b81905bbcf74fd0fb3e70098e81191d17a47f0c332a2a2f7f9fc2f41f81713",
+                "data/vip/coaches/BAL.json": "3fb8a696df304884656d0c291ef07cc0ec3d29779433e2b2678cf2a2868db404",
+                "data/vip/coaches/BUF.json": "da4cb5baaf325761e3348c56bcdbe5bac43c32eb1be0e9ebe6eb0b7faf18c6dc",
+                "data/vip/coaches/CAR.json": "798f94047b3b14bf8125b101cfa82f334605551d3160f98fb30bdc66a1c4ee28",
+                "data/vip/coaches/CHI.json": "40fa7f7a9ec3365928daa61aa100a106ec424b66031fe8f0c73e795b0c9d8cbb",
+                "data/vip/coaches/CIN.json": "b30981f746a96d80bdd123887a1b02eff23ae2448a9f365956edeaf286bd4eaa",
+                "data/vip/coaches/CLE.json": "721689ead13c3fc10548fc5f81340ba60038729ee65a165103ed15c53317c845",
+                "data/vip/coaches/DAL.json": "fe6d1cefe369f4c8bfd527a2103dba4f38681a68607b69bb75654b4a9ac4d2ad",
+                "data/vip/coaches/DEN.json": "2153ab654d1e5225e7ec0028c7516d55e4fc8450931a8ea5900d8e418a3863a4",
+                "data/vip/coaches/DET.json": "bc91c0d3925209919b5b42c7a8f8d636827cdcefbbbf1a7fe724deab523b6474",
+                "data/vip/coaches/GB.json": "489428faad98e0b90a29d7c79acc63a44a29f68669d758bb7862bfb9797d4ada",
+                "data/vip/coaches/HOU.json": "d30d7c17a2f54c709e65150a3c1f5f7b3787813bdbee8cea87896a55bf4e5bfd",
+                "data/vip/coaches/IND.json": "232fa74ecb56dd02aed9968f35fae349aba6d8081d4e559eb5370bcabde10932",
+                "data/vip/coaches/JAX.json": "5d2d5c5393247cf1fa81ee0acb99e0da9b752d59a8ffa7d6edc819af01ac3a68",
+                "data/vip/coaches/KC.json": "f82aad77da6c424bdf2e2909be3b1d2cd9c5841eefa537792ae7c51227b2d6ed",
+                "data/vip/coaches/LAC.json": "6418953333be5652fc32da4ba72e09e46d4ba2a047b584880c6aece21361f8da",
+                "data/vip/coaches/LAR.json": "396d16b9fbaaf205e1a3b30754e99df50f4c3eb4dbfb4394ef5fb4dc1acdf2b4",
+                "data/vip/coaches/LV.json": "06ccb5edb5fc048201726149e73ca35ef0f4c2bd461a5a243f0f8997252af6ca",
+                "data/vip/coaches/MIA.json": "ca1eaa093d0931f7cb0dcac699ea3d2e06236cd5a5eddd073aa48e7d92c2e1de",
+                "data/vip/coaches/MIN.json": "0679b1718eec1327711876aa8213c89bdf0f159dff77013252f8d9d55a4e3dcc",
+                "data/vip/coaches/NE.json": "24d671a0e130aae21edd1d2b8fc35c3c6928d49123c73701dccb254b0820f4dc",
+                "data/vip/coaches/NO.json": "85f8a3f98d5b3f2e556d626937fdaf76814e157c3e4de1fd4a8935d639e4fce3",
+                "data/vip/coaches/NYG.json": "aa2fc658e75f65c20c26f07794289d31571ecd84397e0be3c307b816eecbbb0d",
+                "data/vip/coaches/NYJ.json": "b3f0c507de82070779956a1fce4e767dd0214deb4e529a4d9744e6531d2185f8",
+                "data/vip/coaches/PHI.json": "881f09f1b31df26633889bbc3e20fe53bb0356bf72f66f1209da602e24ee3890",
+                "data/vip/coaches/PIT.json": "1d0e71ad1a9b9a34adf91062b62acb739a24758c09408680a1eb835420d87c05",
+                "data/vip/coaches/SEA.json": "5e131b080819369335d3edef136e1d509154af25ae15c7519c8863ef8861e578",
+                "data/vip/coaches/SF.json": "002e71db711aef0896f4219f80fa578f23cd59c304da3e2ccd2b1bb41225c34b",
+                "data/vip/coaches/TB.json": "2f1626c3a8047afff41f6fa7a7cad359e9db96c92356a83ed8bc38368057057b",
+                "data/vip/coaches/TEN.json": "34a02ba96970f7b88597cd0a129394e908317f92154e0cb20332a85af831419f",
+                "data/vip/coaches/WAS.json": "a3975b14cc02719a2152b8f6764d80d091ad4c3a987ee6fb6ff6a157f6544b28",
                 "data/nfl2k5_espn25_more_teams/manifest.json": "1aefb229e40d438e32210669eb62459bb71aa056bfe23c460dcc86eb0fbc95ba",
                 "data/nfl2k5_espn25_more_moments_appearance.json": "2397399d6681a1c05f7e1287d3e4e83ff710e4fdc40b759621593a296643e3f3",
                 "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",

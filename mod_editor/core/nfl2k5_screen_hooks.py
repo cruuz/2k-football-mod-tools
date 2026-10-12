@@ -90,6 +90,8 @@ def _inspect_owner(payload, image):
 
 def _check_dependencies(image, checked_sites):
     """Normalize only hook spans already checked against their complete owner."""
+    from . import nfl2k5_coach_ai as coach_ai
+    checked_sites = checked_sites + coach_ai.normalized_sites(image.data)
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _name, address, before, _after in checked_sites:

@@ -179,6 +179,8 @@ def _recognize(payload):
     original_rows = b"".join(struct.pack("<13I", *r) for r in ROWS)
     for at in TABLES:
         require(image.read(at,len(original_rows)) == original_rows, "foreign native Options rows")
+    from . import nfl2k5_coach_ai as coach_ai
+    neighbors = coach_ai.normalized_sites(payload)
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va,size))
         if va == 0x1665A0:
@@ -194,7 +196,7 @@ def _recognize(payload):
             if image.read(stock.SITE, len(stock.RETAIL)) != stock.RETAIL:
                 require(stock.status(payload) == "applied", "foreign stock book decision")
                 raw[stock.SITE-va:stock.SITE-va+len(stock.RETAIL)] = stock.RETAIL
-        for _, at, before, after in edits:
+        for _, at, before, after in edits + neighbors:
             if va <= at and at+len(before) <= va+size:
                 require(bytes(raw[at-va:at-va+len(before)]) in (before,after), "foreign pair prerequisite")
                 raw[at-va:at-va+len(before)] = before

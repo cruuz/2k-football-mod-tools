@@ -6779,6 +6779,70 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_coach_ai apply vip-aware-source.xbe new-coach-ai.xbe",
+        "module": "mod_editor/core/nfl2k5_coach_ai.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/nfl2k5_coach_ai.md",
+        "tests/mod_editor/test_nfl2k5_coach_ai.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Experimental and OFF in every preset. Native setup, replay and portrait routing have component checks; full-game and franchise reload witness remain pending."
+      },
+      "id": "nfl2k5.gameplay.coach_ai",
+      "input_constraints": [
+        "A supported USA disc and exact final compiled NFL playbooks, with roster kind, team asset and coach portrait identities matching the 2026 directory. Rebuild after book edits; stale or foreign profile tails refuse.",
+        "Includes VIP-aware Modern 2. Modes 4..7 only; humans, active MyCareer, special/scenario routes and non-current teams retain native behavior. Paired playbooks retain native replay suppression.",
+        "Uses 896 existing tail bytes per NFL PLAY resource, 5120 RX bytes and 128 RW bytes, plus at most two 8608-byte heap contexts. No USR slots or save-format changes.",
+        "Portrait textures are separate input art. Missing textures retain the native fallback."
+      ],
+      "portme": [
+        "Keep coach_ai disabled in presets until the requested Play Now and franchise witnesses are reviewed."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mod_editor/nfl2k5_coach_ai.md"
+        ],
+        "scope": "Component verification executes native setup, selectors, takeover and both portrait renderers with explicitly declared environment fixtures. This does not establish full-game behavior or texture presence.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in every preset; explicit opt-in",
+            "name": "coach_ai",
+            "required": true
+          }
+        ],
+        "notes": "Resources are compiled after final playbooks; native binding consumes no resident user VIP slot."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Six pinned native hook spans, allocator-owned RX/RW, and 32 fixed 896-byte PLAY resource tails; no archive growth or save writes",
+        "retail_file": "User-owned NFL 2K5 USA disc"
+      },
+      "summary": "Current NFL CPU teams use observed 2026 coach playcalling profiles in Play Now, Season, Franchise and playoffs. Explicit Coach Matchup choices win; generated coach VIP entries use the coach portrait.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Automatic 2026 CPU coach profiles (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coach_ai"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_modern_rules.py apply source.xbe --output new-rules.xbe --cpu-defer",
         "module": "tools/nfl2k5_modern_rules.py",
         "operation": "write"

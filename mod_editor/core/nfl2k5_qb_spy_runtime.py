@@ -266,6 +266,8 @@ def _inspect(payload, *, check_deep_zone=True):
     if check_deep_zone and image.read(va, len(old)) != old:
         _require(deep_zone.status(payload) == "applied", "Foreign deep-zone planner neighbor")
     neighbors.append(("deep_zone_planner", va, old, None))
+    from . import nfl2k5_coach_ai as coach_ai
+    neighbors += coach_ai.normalized_sites(payload)
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _name, address, before, _after in sites(code_va) + neighbors:

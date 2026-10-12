@@ -71,6 +71,9 @@ def main():
     derive.add_argument("--participation", type=Path, action="append", default=[], help="optional nflverse coverage participation parquet/CSV")
     derive.add_argument("--coaches", type=Path, default=ROOT / "data/vip/coach_sources_2026.json")
     derive.add_argument("--out", type=Path, required=True)
+    compact = commands.add_parser("compact", help="retain build inputs and provenance; omit full situation grids")
+    compact.add_argument("--source", type=Path, required=True)
+    compact.add_argument("--out", type=Path, required=True)
     export = commands.add_parser("export")
     export.add_argument("--tendencies", type=Path, required=True)
     export.add_argument("--image", type=Path, required=True, help="exact compiled game disc; read only")
@@ -89,6 +92,27 @@ def main():
     args = ap.parse_args()
     if args.out.exists():
         ap.error("--out must be a new path")
+    if args.command == "compact":
+        from mod_editor.core.nfl2k5_coach_ai import compact_tendency
+        rows = []
+        prepared = []
+        for path in sorted(args.source.glob("*.json")):
+            before = path.read_bytes()
+            value = compact_tendency(json.loads(before))
+            # Keep compact JSON auditable by the release text gate: bounded
+            # whitespace-free tokens, without reintroducing full pretty grids.
+            after = (json.dumps(value, separators=(", ", ":"), allow_nan=False) + "\n").encode()
+            prepared.append((path.name, after))
+            rows.append(dict(team=value["team"], before_bytes=len(before), after_bytes=len(after),
+                             before_sha256=hashlib.sha256(before).hexdigest(), after_sha256=hashlib.sha256(after).hexdigest()))
+        vip.require(prepared, "No tendency inputs to compact")
+        args.out.mkdir(parents=True)
+        for name, content in prepared:
+            (args.out / name).write_bytes(content)
+        print(json.dumps(dict(schema="nfl2k5_coach_compaction/v1", profiles=rows,
+                              before_bytes=sum(r["before_bytes"] for r in rows),
+                              after_bytes=sum(r["after_bytes"] for r in rows)), indent=2))
+        return
     if args.command == "upgrade-executable":
         from mod_editor.core import nfl2k5_cpu_money_downs as money
         result, receipt = money.upgrade_to_modern2(_xbe_bytes(args.xbe))

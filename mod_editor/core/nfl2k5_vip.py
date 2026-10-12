@@ -24,6 +24,15 @@ OFFENSE, POOLS, POOL_SIZE, RECORD_SIZE = 0x3C, 20, 0x80, 14
 SCHEMA = "nfl2k5_vip_offense/v1"
 
 
+def coach_identity(team: str, name: str) -> int:
+    """Stable authored identity, independent of a rebuilt playbook's bytes.
+
+    The coach portrait router also accepts the original vp1 book-derived IDs.
+    Exact book pins remain in the profile receipt and automatic PLAY payload.
+    """
+    return int.from_bytes(hashlib.sha256(("nfl2k5_coach_vip/v2\0" + team + "\0" + name).encode()).digest()[:4], "little") or 1
+
+
 class VipError(ValueError):
     pass
 
@@ -581,7 +590,9 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
                               denominator=denominator, numerator=numerator, native_roll=native_roll,
                               continuous_eligible_rate=effective,
                               scope="Conditional native policy; not an unconditional full-game frequency")
+    struct.pack_into("<I", data, 0, coach_identity(tendency["team"], name))
     receipt.update(schema="nfl2k5_coach_vip/v1", status="EXPERIMENTAL_NATIVE_VIP_CANDIDATE", defense_pools=defense,
+                   identity_scheme="stable_team_and_profile_name_v2",
                    decisions=decisions,
                    defense_mapping="Five-plus first-assignment rushers and four-plus man assignments in the effective front/coverage union; call proxies, not post-snap outcomes",
                    changed_bytes=sum(a != b for a, b in zip(template.payload, data)),
