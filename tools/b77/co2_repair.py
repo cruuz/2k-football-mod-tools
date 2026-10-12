@@ -12,6 +12,10 @@ co1 parts (coachshirt chunks, portraits 7031/7034, two photo ids) when they are 
   disc_scope.json        full byte compare of input and output: every changed byte inside an owned range
   disc_studio_equality.json  each written span equals the Studio's compile from the RETAIL disc (pins included)
 
+--in-place (a later pass on this job's own output, so no second copy): --input and --output name the same file; the
+scope receipt is then the SHA-256 of the whole image with every owned range zeroed, before and after the writes
+(equal: no byte outside the owned ranges changed).
+
   python3 tools/b77/co2_repair.py --input IN.iso --input-sha256 HEX --output OUT.iso --receipts DIR --retail RETAIL.iso
 """
 from __future__ import annotations
@@ -50,6 +54,30 @@ def owned_ranges(image: Path, parts: list[dict]) -> list[tuple[int, int, str]]:
     return sorted(out)
 
 
+def masked_sha(path: Path, ranges: list[tuple[int, int, str]]) -> str:
+    """SHA-256 of the image with every owned range zeroed."""
+    spans = sorted((s, e) for s, e, _l in ranges)
+    h = hashlib.sha256()
+    k = 0
+    with open(path, "rb") as f:
+        offset = 0
+        while True:
+            block = bytearray(f.read(BLOCK * 8))
+            if not block:
+                break
+            end = offset + len(block)
+            while k < len(spans) and spans[k][1] <= offset:
+                k += 1
+            j = k
+            while j < len(spans) and spans[j][0] < end:
+                s, e = max(spans[j][0], offset), min(spans[j][1], end)
+                block[s - offset:e - offset] = bytes(e - s)
+                j += 1
+            h.update(block)
+            offset = end
+    return h.hexdigest()
+
+
 def changed_runs(a: Path, b: Path) -> list[tuple[int, int]]:
     runs = []
     with open(a, "rb") as fa, open(b, "rb") as fb:
@@ -81,6 +109,7 @@ def main(argv=None) -> int:
     ap.add_argument("--input-sha256", required=True)
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--receipts", type=Path, required=True)
+    ap.add_argument("--in-place", action="store_true", help="write into --input itself (this job's own output)")
     ap.add_argument("--retail", type=Path, required=True,
                     help="retail USA image: the template for coach scenes that hold the co1 version, and the "
                          "Studio-equality receipt")
@@ -89,15 +118,20 @@ def main(argv=None) -> int:
     digest = file_sha(a.input)
     if digest != a.input_sha256:
         raise SystemExit(f"input is {digest}, not the expected {a.input_sha256}")
-    if a.output.exists():
-        raise SystemExit(f"{a.output} exists; refusing to overwrite")
-    tmp = a.output.with_name(a.output.name + ".partial")
-    shutil.copyfile(a.input, tmp)
-    if file_sha(tmp) != digest:
-        raise SystemExit("the copy differs from the input")
-    os.replace(tmp, a.output)
+    if a.in_place:
+        if a.input.resolve() != a.output.resolve():
+            raise SystemExit("--in-place needs --input and --output to be the same file")
+    else:
+        if a.output.exists():
+            raise SystemExit(f"{a.output} exists; refusing to overwrite")
+        tmp = a.output.with_name(a.output.name + ".partial")
+        shutil.copyfile(a.input, tmp)
+        if file_sha(tmp) != digest:
+            raise SystemExit("the copy differs from the input")
+        os.replace(tmp, a.output)
     before_status = mc.resource_states(a.output)
     plan, rows = mc.plan_image(a.output, retail=a.retail)
+    masked_before = masked_sha(a.output, owned_ranges(a.output, rows)) if a.in_place else None
     with mc._outer_image()(a.output, writable=True) as archive:
         mc._write_all(archive, plan)
     after_status = mc.image_status(a.output)
@@ -116,9 +150,22 @@ def main(argv=None) -> int:
         states=sorted({r["state_before"] for r in replay_rows})), indent=1) + "\n", newline="\n")
     if replay_plan:
         raise SystemExit("the replay planned writes: not idempotent")
-    runs = changed_runs(a.input, a.output)
-    outside = []
-    for s, e in runs:
+    if a.in_place:
+        masked_after = masked_sha(a.output, ranges)
+        changed = sum(r["changed_bytes"] for r in rows)
+        scope = dict(schema="b77_co2_disc_scope/v1", mode="in_place", input_sha256=digest,
+                     output_sha256=file_sha(a.output), owned_ranges=len(ranges),
+                     owned_bytes=sum(e - s for s, e, _l in ranges), changed_bytes_in_owned=changed,
+                     masked_sha256_before=masked_before, masked_sha256_after=masked_after,
+                     changed_outside_owned=0 if masked_before == masked_after else None)
+        (a.receipts / "disc_scope.json").write_text(json.dumps(scope, indent=1) + "\n", newline="\n")
+        if masked_before != masked_after:
+            raise SystemExit("bytes outside the owned ranges changed")
+        runs, outside = [], []
+    else:
+        runs = changed_runs(a.input, a.output)
+        outside = []
+    for s, e in (runs if not a.in_place else []):
         pos = s
         while pos < e:
             hit = [(rs, re_) for rs, re_, _l in ranges if rs <= pos < re_]
@@ -127,12 +174,13 @@ def main(argv=None) -> int:
                 pos += 1
             else:
                 pos = min(e, hit[0][1])
-    changed = sum(e - s for s, e in runs)
-    scope = dict(schema="b77_co2_disc_scope/v1", input_sha256=digest, output_sha256=file_sha(a.output),
-                 changed_runs=len(runs), changed_bytes=changed, owned_ranges=len(ranges),
-                 owned_bytes=sum(e - s for s, e, _l in ranges), changed_outside_owned=len(outside),
-                 first_outside=outside[:10])
-    (a.receipts / "disc_scope.json").write_text(json.dumps(scope, indent=1) + "\n", newline="\n")
+    if not a.in_place:
+        changed = sum(e - s for s, e in runs)
+        scope = dict(schema="b77_co2_disc_scope/v1", input_sha256=digest, output_sha256=file_sha(a.output),
+                     changed_runs=len(runs), changed_bytes=changed, owned_ranges=len(ranges),
+                     owned_bytes=sum(e - s for s, e, _l in ranges), changed_outside_owned=len(outside),
+                     first_outside=outside[:10])
+        (a.receipts / "disc_scope.json").write_text(json.dumps(scope, indent=1) + "\n", newline="\n")
     if outside:
         raise SystemExit(f"{len(outside)} changed bytes outside the owned ranges")
     if a.retail:
@@ -182,7 +230,11 @@ def main(argv=None) -> int:
     out_sha = scope["output_sha256"]
     a.output.with_name(a.output.name + ".sha256").write_text(f"{out_sha}  {a.output.name}\n", newline="\n")
     print(f"APPLIED {len(plan)} writes, {write_receipt['changed_bytes']} changed bytes; replay 0 writes")
-    print(f"SCOPE {len(runs)} runs, {changed} bytes changed, {len(outside)} outside {len(ranges)} owned ranges")
+    if a.in_place:
+        print(f"SCOPE in place: masked image SHA-256 {scope['masked_sha256_before'][:16]} before = "
+              f"{scope['masked_sha256_after'][:16]} after; {changed} bytes changed inside {len(ranges)} owned ranges")
+    else:
+        print(f"SCOPE {len(runs)} runs, {changed} bytes changed, {len(outside)} outside {len(ranges)} owned ranges")
     print(f"OUTPUT {a.output} {out_sha}")
     return 0
 

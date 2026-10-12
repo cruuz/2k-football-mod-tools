@@ -20,9 +20,9 @@ texture packs, not this repository):
 Matchup / VIP pictures for the two clubs whose 2004 coach had none (7007 and 7029 resolve to `nophoto`). The module
 writes them into two retail portrait slots no roster record uses and points those coach records' `+0x40` at them.
 
-Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Twelve clubs' coaches wear
+Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Fourteen clubs' coaches wear
 another retail body that fits their build better (`pins.json` `bodies`: the model and why; `body_code` per club), and
-the module writes those twelve 16-bit body ids. Kansas City's Andy Reid wears the 2004 Reid model (`c21`) with its own
+the module writes those fourteen 16-bit body ids. Kansas City's Andy Reid wears the 2004 Reid model (`c21`) with its own
 face, derived at build time from the disc (no retail pixels ship): hair and moustache white and grey, glasses painted.
 Each model's shirt, jacket, headset and head are authored for the club that now wears it.
 

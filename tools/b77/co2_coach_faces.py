@@ -81,35 +81,35 @@ CTX: dict = {}
 PARAMS = {
     "ARI": {"body": "12", "hair": [95, 70, 50]},
     "ATL": {"body": "01", "hair": [92, 86, 80], "extra": {"beard_grey": 60}},
-    "BAL": {"body": "02", "hair": [45, 35, 30]},
+    "BAL": {"body": "02", "hair": [45, 35, 30], "extra": {"photo_weight": 0.8, "stubble": 1.0}},
     "BUF": {"body": "03", "hair": [70, 52, 40]},
     "CAR": {"body": "09", "hair": [30, 25, 22]},
     "CHI": {"body": "37", "hair": [120, 90, 66]},
     "CIN": {"body": "06", "hair": [62, 46, 36], "extra": {"mouth": "template"}},
     "CLE": {"body": "00", "hair": [188, 183, 178], "density": 0.85},
-    "DAL": {"body": "07", "hair": [52, 39, 31]},
+    "DAL": {"body": "07", "hair": [52, 39, 31], "extra": {"stubble": 1.0}},
     "DEN": {"body": "08", "hair": [168, 163, 158]},
     "DET": {"body": "04", "hair": [150, 145, 140], "density": 0.8, "extra": {"beard_grey": 62}},
-    "GB": {"body": "10", "hair": [42, 33, 28], "hide_glasses": True, "extra": {"philtrum": 0.8}},
+    "GB": {"body": "10", "hair": [42, 33, 28], "hide_glasses": True, "extra": {"philtrum": 0.8, "mouth": "template", "stubble": 1.0}},
     "HOU": {"body": "05", "bald": True, "skin_group": "dark"},
     "IND": {"body": "11", "hair": [56, 41, 31]},
     "JAX": {"body": "30", "hair": [150, 120, 95]},
     "KC": {"body": "21", "derived": "retail_recolour"},
     "LV": {"body": "20", "hair": [46, 36, 30], "extra": {"philtrum": 0.5}},
-    "LAC": {"body": "24", "hair": [168, 163, 162], "extra": {"eye_band": True}},
+    "LAC": {"body": "24", "hair": [168, 163, 162], "extra": {"eye_band": True, "eye_band_up": 7}},
     "LAR": {"body": "23", "hair": [130, 95, 66], "hide_glasses": True},
-    "MIA": {"body": "14", "hair": [110, 85, 66]},
-    "MIN": {"body": "15", "hair": [110, 85, 66]},
+    "MIA": {"body": "14", "hair": [110, 85, 66], "extra": {"mouth": "template", "stubble": 1.0}},
+    "MIN": {"body": "28", "hair": [78, 58, 44], "extra": {"mouth": "template"}},
     "NE": {"body": "16", "hair": [150, 145, 140], "density": 0.85, "extra": {"beard_grey": 55, "beard_strength": 0.4}},
     "NO": {"body": "17", "hair": [56, 43, 35]},
-    "NYG": {"body": "22", "hair": [160, 155, 150], "density": 0.9},
+    "NYG": {"body": "22", "hair": [160, 155, 150], "density": 0.9, "extra": {"mouth": "template"}},
     "NYJ": {"body": "19", "hair": [140, 135, 130], "density": 0.45, "skin_group": "dark", "extra": {"beard_grey": 0, "beard_light": True}},
     "PHI": {"body": "18", "hair": [60, 45, 36]},
     "PIT": {"body": "26", "hair": [186, 181, 176], "density": 0.9, "hide_glasses": True, "extra": {"hair_top": True}},
     "SEA": {"body": "13", "hair": [60, 45, 36], "hide_glasses": True},
     "SF": {"body": "25", "hair": [40, 31, 26]},
     "TB": {"body": "27", "bald": True, "skin_group": "dark", "extra": {"beard_grey": 0, "beard_light": True}},
-    "TEN": {"body": "28", "bald": True},
+    "TEN": {"body": "15", "bald": True},
     "WAS": {"body": "29", "bald": True, "hide_glasses": True, "extra": {"beard_grey": 70}}
 }
 
@@ -193,7 +193,7 @@ def retail_skin_lab(codes):
         vals.append(np.median(lab(t)[cheek], axis=0))
     return np.median(vals, axis=0)
 
-def paint(code, photo_path, *, skin_group, hair=None, bald=False, density=1.0, photo_weight=0.45, lift=0.0, beard_keep=1.0, eye_band=False, sym=0.85, beard_grey=None, philtrum=0.0, beard_light=False, beard_strength=1.0, mouth='photo', hair_top=False, eye_band_up=0):
+def paint(code, photo_path, *, skin_group, hair=None, bald=False, density=1.0, photo_weight=0.45, lift=0.0, beard_keep=1.0, eye_band=False, sym=0.85, beard_grey=None, philtrum=0.0, beard_light=False, beard_strength=1.0, mouth='photo', hair_top=False, eye_band_up=0, stubble=0.0, hairline_rows=0):
     T = retail_head(code)
     H, W = T.shape[0] * M, T.shape[1] * M
     tpl = art.up(T)[..., :3]
@@ -265,6 +265,7 @@ def paint(code, photo_path, *, skin_group, hair=None, bald=False, density=1.0, p
     own = ndimage.binary_opening(own, structure=np.ones((2, 2)))
     own = own | CTX['canon_hair']
     own = ndimage.binary_fill_holes(ndimage.binary_closing(own, structure=np.ones((4, 4))))
+    own[0] |= own[1]; own[-1] |= own[-2]; own[:, 0] |= own[:, 1]; own[:, -1] |= own[:, -2]     # the edge rows the opening lost
     for x0, y0, x1, y1 in ATLAS_BOXES:
         own[y0:y1, x0:x1] = False
     hair_t = np.asarray(cv2.resize(own.astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST)).astype(bool)
@@ -311,6 +312,16 @@ def paint(code, photo_path, *, skin_group, hair=None, bald=False, density=1.0, p
             pw = ndimage.gaussian_filter(ph.astype(np.float64), M) * philtrum
             out_face[..., 0] += np.clip(skinL - out_face[..., 0], 0, None) * pw
             out_face[..., 1:] += (tgt[1:] - out_face[..., 1:]) * pw[..., None]
+    if stubble:
+        # stubble and beard as hair, not mud: in the lower face the photo's warm chroma around the skin tone is halved,
+        # and pixels darker than the skin go toward a low-contrast dark grey
+        lower2 = poly_mask(tl[[132, 58, 172, 136, 150, 149, 176, 148, 152, 377, 400, 378, 379, 365, 397, 288, 361, 323, 425, 266, 2, 36, 205, 93]], (H, W))
+        zw = ndimage.gaussian_filter(lower2.astype(np.float64), 2 * M) * stubble
+        skinL2 = ST + tgt[0] - ts[0]
+        out_face[..., 1:] = tgt[1:] + (out_face[..., 1:] - tgt[1:]) * (1 - 0.5 * zw)[..., None]
+        dk = np.clip((skinL2 - out_face[..., 0] - 1) / 10, 0, 1) * zw
+        out_face[..., 1:] = out_face[..., 1:] * (1 - 0.8 * dk)[..., None] + tgt[1:] * 0.2 * dk[..., None] * 0
+        out_face[..., 0] = skinL2 - (skinL2 - out_face[..., 0]) * (1 - 0.35 * dk)
     inner = ndimage.binary_dilation(poly_mask(tl[INNER_LIPS], (H, W)), iterations=M)
     outer = ndimage.binary_dilation(poly_mask(tl[OUTER_LIPS], (H, W)), iterations=M)
     src_lab = out_face.copy()
@@ -333,6 +344,13 @@ def paint(code, photo_path, *, skin_group, hair=None, bald=False, density=1.0, p
     blended = cv2.seamlessClone(np.uint8(np.clip(src, 0, 255)), np.uint8(np.clip(rec_rgb, 0, 255)),
                                 np.uint8(fm) * 255, center, cv2.NORMAL_CLONE).astype(np.float64)
     out = blended
+    if hairline_rows and hair is not None:
+        # a 2004 model whose coach was receding: his hair down to this row across the face columns
+        ear = ((xx / M - 137.5) / 10.0) ** 2 + ((yy / M - 36.0) / 20.0) ** 2 < 1
+        crown = ((yy < hairline_rows * M) & (xx < 190 * M)) | ((xx > 104 * M) & (xx < 190 * M) & (yy < 44 * M) & ~ear)
+        crown &= ~ndimage.binary_erosion(face, iterations=6 * M) | (yy < hairline_rows * M)
+        hl_mask = ndimage.gaussian_filter(crown.astype(np.float64), 1.5 * M) * density
+        out = out * (1 - hl_mask[..., None]) + rgb_of(hcol) * hl_mask[..., None]
     tpl_rgb = tpl
     for x0, y0, x1, y1 in ATLAS_BOXES:
         sl_ = (slice(y0 * M, y1 * M), slice(x0 * M, x1 * M)); out[sl_] = rec_rgb[sl_]

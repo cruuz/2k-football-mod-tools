@@ -40,7 +40,7 @@ BODIES = {
     "LAR": ("23", "lean McVay: his club's average body"),
     "LV": ("20", "lean Kubiak: his club's lean body"),
     "MIA": ("14", "lean Hafley: his club's average body"),
-    "MIN": ("15", "tall, lean O'Connell: his club's average body"),
+    "MIN": ("28", "tall, lean O'Connell: average body with a full-hair 2004 head (c28); his club's c15 has a bald crown"),
     "NE": ("16", "stocky Vrabel: his club's heavy-ish body"),
     "NO": ("17", "lean Kellen Moore: his club's average body"),
     "NYG": ("22", "average John Harbaugh: average capped body (c22) instead of the lean c18"),
@@ -50,7 +50,7 @@ BODIES = {
     "SEA": ("13", "average-build Macdonald: average body (c13, glasses hidden) instead of the heavy c26"),
     "SF": ("25", "lean Shanahan: his club's average body"),
     "TB": ("27", "big Bowles: his club's average capped body"),
-    "TEN": ("28", "average, muscular Saleh: his club's average body"),
+    "TEN": ("15", "shaved-head Saleh: average body (c15) whose 2004 head is bald on top"),
     "WAS": ("29", "lean, athletic Quinn: his club's lean body (glasses hidden)"),
 }
 # bodies whose glasses geometry stays visible: only Jim Harbaugh (LAC, c24) wears glasses among the occupants of the
