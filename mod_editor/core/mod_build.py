@@ -450,6 +450,10 @@ class BuildPlan:
     # Dallas and Washington's Coach Matchup pictures (two free portrait slots and two coach-record photo ids).
     # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
     modern_coaches: bool = False
+    # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
+    # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
+    # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_fans: bool = False
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     historic_rosters_2026: bool = False  # source-gated season roster work; incomplete data must refuse
@@ -599,6 +603,12 @@ for _preset in PRESETS.values():
     _preset["modern_coaches"] = False
 PRESETS["softdrink_experimental"]["modern_coaches"] = True
 del _preset
+# b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
+# 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
+for _preset in PRESETS.values():
+    _preset["modern_fans"] = False
+PRESETS["softdrink_experimental"]["modern_fans"] = True
+del _preset
 # b76-h1: historic teams in Quick Game are off in basic and advanced (a 2004 game keeps its menus).
 for _preset in PRESETS.values():
     _preset["historic_teams_quick_game"] = False
@@ -721,6 +731,11 @@ def _modern_coaches_available() -> bool:  # b77-co1
     return module is not None and module.available()  # the pins and the shipped art must agree
 
 
+def _modern_fans_available() -> bool:  # b77-fr1
+    module = _core_module("nfl2k5_modern_fans")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
 def _modern_goalposts_available() -> bool:  # b77-v1
     module = _core_module("nfl2k5_modern_goalposts")
     return module is not None and module.available()  # the shipped pins must load
@@ -765,6 +780,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
+        "modern_fans": _modern_fans_available(),  # b77-fr1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -1455,6 +1471,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_coaches"] = coaches.image_status(source)
         except (OSError, ValueError):
             out["modern_coaches"] = "unknown"
+    # b77-fr1: the 2026 fans (the 32 clubs' crowd texture sets of the crowd-reaction cutaways)
+    fans = _core_module("nfl2k5_modern_fans")
+    if fans is None:
+        out["modern_fans"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_fans"] = "needs_image"
+    else:
+        try:
+            out["modern_fans"] = fans.image_status(source)
+        except (OSError, ValueError):
+            out["modern_fans"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -2355,6 +2382,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern goalposts must be Off or On.")
     if type(plan.modern_coaches) is not bool:  # b77-co1
         raise ValueError("2026 head coaches must be Off or On.")
+    if type(plan.modern_fans) is not bool:  # b77-fr1
+        raise ValueError("2026 fans must be Off or On.")
     if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
             and "scorebug" in plan.hires_families):
         # The Hi-res scorebug family re-lays gamedata.iff around a larger score_buga (chunk 53), which moves the
@@ -2994,6 +3023,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"2026 head coaches cannot read the coach models: {exc}") from exc
         if coach_state not in ("retail", "applied", "mixed"):
             raise ValueError("A coach model or coach picture is not the supported retail or already-2026 bytes. Turn 2026 head coaches off or rebuild from a supported USA source.")
+    if plan.modern_fans:  # b77-fr1
+        fans = _core_module("nfl2k5_modern_fans")
+        if fans is None or not is_image:
+            raise ValueError("2026 fans need a disc image (the crowd texture sets live in the archive packs).")
+        progress("Checking the crowd texture sets", 0, 0)
+        try:
+            fan_state = fans.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2026 fans cannot read the crowd texture sets: {exc}") from exc
+        if fan_state not in ("retail", "applied", "mixed"):
+            raise ValueError("A crowd texture is not the supported retail or already-2026 bytes. Turn 2026 fans off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -4057,6 +4097,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         coach_receipt = coaches.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_coaches", **coach_receipt})
         receipt["result"]["modern_coaches"] = coach_receipt["state"]
+    if plan.modern_fans:  # b77-fr1
+        # the 32 clubs' crowd texture sets (four families of 85 outers, standalone TXTR chunks), fixed spans found
+        # through the copy's own outer and chunk tables after every relocating pass
+        fans = _core_module("nfl2k5_modern_fans")
+        progress("2026 fans", 0, 0)
+        fan_receipt = fans.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_fans", **fan_receipt})
+        receipt["result"]["modern_fans"] = fan_receipt["state"]
     if plan.modern_helmets:
         # b76-hm: after every relocating pass, the historic rosters, One-pool positions and the Guardian overlay (the
         # historic fix is field level, the player scenes commute with the overlay's shell B).

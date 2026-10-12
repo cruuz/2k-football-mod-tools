@@ -57,6 +57,7 @@ FEATURE_KEYS += ("espn_wipes_boards_2026",)  # b76-p2: ESPN 2026 wipes and board
 FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN bar's look
 FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
 FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
+FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off
 FEATURE_KEYS += ("historic_teams_quick_game",)  # b76-h1: historic teams in Quick Game Team Select
 FEATURE_KEYS += ("historic_rosters_2026",)  # ht: held until all source/routing gaps are resolved
