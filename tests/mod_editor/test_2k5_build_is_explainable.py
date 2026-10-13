@@ -247,7 +247,8 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                                    "roster_has_olb": False})
         uniforms = SimpleNamespace(apply_to_image=lambda target: {"synthetic": True})
         modules = {"nfl2k5_playbook_pack": packs, "nfl2k5_position_pools": pools, "nfl2k5_depth_roles": roles,
-                   "nfl2k5_unc_bowl_uniforms": uniforms}
+                   "nfl2k5_unc_bowl_uniforms": uniforms,
+                   "nfl2k5_nyg_numbers": SimpleNamespace(apply_to_image=lambda target: {"state": "other_uniform"})}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"

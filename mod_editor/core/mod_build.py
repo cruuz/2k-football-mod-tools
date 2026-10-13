@@ -3762,6 +3762,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
         uniforms_receipt = uniforms.apply_to_image(target)
         receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
+        # b772-ny1: finish the known NYG home art after the project's uniform
+        # layers. The native shoulder anNN textures use the plain jersey mips.
+        numbers = _core_module("nfl2k5_nyg_numbers")
+        if numbers is None:
+            raise RuntimeError("the Giants shoulder-number repair module is not available in this build")
+        number_receipt = numbers.apply_to_image(target)
+        if number_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "nyg_shoulder_numbers", **number_receipt})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
