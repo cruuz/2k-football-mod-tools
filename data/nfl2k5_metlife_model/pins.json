@@ -56,7 +56,18 @@
    "system": 777600,
    "video": 875008,
    "scratch": 16,
-   "shapes": 53
+   "shapes": 53,
+   "shadow": {
+    "offset": 1472064,
+    "length": 4240,
+    "skin_sha256": "5ffd036505facdab7cec0937362c9fa7d1a4f68001a37a971b326e6bc1d88a3e",
+    "model_sha256": "c61d39dd9b75cb8881617166d1b886f02933f15068612a1ec8b80925eca91286",
+    "sun": [
+     -0.579228,
+     0.573576,
+     0.579228
+    ]
+   }
   },
   {
    "name": "s18ar.iff",
@@ -182,7 +193,18 @@
    "system": 768256,
    "video": 875008,
    "scratch": 16,
-   "shapes": 53
+   "shapes": 53,
+   "shadow": {
+    "offset": 1553088,
+    "length": 4240,
+    "skin_sha256": "5ffd036505facdab7cec0937362c9fa7d1a4f68001a37a971b326e6bc1d88a3e",
+    "model_sha256": "c61d39dd9b75cb8881617166d1b886f02933f15068612a1ec8b80925eca91286",
+    "sun": [
+     -0.579228,
+     0.573576,
+     0.579228
+    ]
+   }
   },
   {
    "name": "s19ar.iff",

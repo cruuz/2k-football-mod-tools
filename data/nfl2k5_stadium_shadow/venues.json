@@ -1,0 +1,10 @@
+{
+ "schema": "nfl2k5_stadium_shadow_venues/v1",
+ "note": "The sun each retail afternoon shadow texture was baked with, found by casting the retail stadium scene of the same bundle and matching the retail texture over the field (texels within the detail window). A modern stadium's shadow is cast from its own scene under this sun.",
+ "venues": {
+  "s18": {"venue": "MetLife Stadium (Giants)", "retail": "Giants Stadium", "sun": {"azimuth_deg": 315, "elevation_deg": 35},
+          "fit": "retail s18ad: 97.97 percent of the 80 x 164 detail-window texels agree (azimuth 309..319, elevation 33..39 scanned in 1 degree steps; next best 94.5)"},
+  "s19": {"venue": "MetLife Stadium (Jets)", "retail": "Giants Stadium", "sun": {"azimuth_deg": 315, "elevation_deg": 35},
+          "fit": "retail s19ad carries the same shadow texture as s18ad (decoded SHA-256 d75fe9c34471...)"}
+ }
+}

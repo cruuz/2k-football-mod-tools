@@ -213,6 +213,10 @@ def venues():
             if seen is not None:
                 require(seen.get("light") in ("day", "afternoon", "night", "dome") and len(seen.get("rgb") or ()) == 3
                         and seen.get("source"), f"{prefix}: a {key} target needs a light, an RGB and a source")
+        for light, measured in (row.get("response") or {}).items():
+            rgb = measured.get("rgb") or ()
+            require(light in LIGHT_CLASSES and len(rgb) == 3 and all(0.5 <= float(v) <= 3.0 for v in rgb)
+                    and measured.get("source"), f"{prefix}: a measured {light} response needs an RGB and a source")
     return rows
 
 
@@ -406,6 +410,14 @@ def field_response(look, cls, layout="grid"):
     return base * (QUAD_RESPONSE if layout == "quad" else 1.0)
 
 
+def venue_response(prefix, cls):
+    """The per-channel response measured in game for one venue under one light (the venue row's ``response``), or None
+    when the venue uses the look's table. Beta 77 st1: MetLife's afternoon field (s18ad, s19ad) drew about 1.4 times
+    its target with the inferred afternoon value, so its rows carry the response measured on the v0.6.1 disc."""
+    measured = (venues()[prefix].get("response") or {}).get(cls)
+    return tuple(float(v) for v in measured["rgb"]) if measured else None
+
+
 def apron_response(cls):
     """The measured in-game response of the outside grass (per channel) for a light class."""
     if cls == "afternoon":
@@ -421,8 +433,9 @@ def solve_map_mean(look, cls, rig, *, colour_settings=None, tint=(255, 255, 255)
     gain = rig_gain(rig, colour_settings)
     factor = screen_factor(rig)
     target = target or target_rgb(look, cls)
-    m = [t / max(1e-6, g * f * (ti / 255.0) * (ve / 255.0) * response)
-         for t, g, f, ti, ve in zip(target, gain, factor, tint, vertex)]
+    resp = tuple(response) if isinstance(response, (tuple, list)) else (response,) * 3
+    m = [t / max(1e-6, g * f * (ti / 255.0) * (ve / 255.0) * r)
+         for t, g, f, ti, ve, r in zip(target, gain, factor, tint, vertex, resp)]
     # a map stays a plausible green whatever the rig: the blue calibration under the warm retail rigs is the model's
     # weakest part (FABLE_B70_COLOR_REPORT: blue collapses on screen), so red and blue never pass green
     m[0] = min(m[0], MAP_RED_OVER_GREEN * m[1])
@@ -767,9 +780,10 @@ def _texture_row_at(rec, record_offset):
 
 
 def paint_field(decoded, rec, system, *, look, cls, rig, colour_settings=None, tint=(255, 255, 255), cap=256,
-                detail=2, target=None):
+                detail=2, target=None, response=None):
     """The modern surface on one decoded field scene (sizes and layout kept). Returns (decoded, receipt).
 
+    ``response`` is a venue's own measured response (venue_response); None uses the look's table.
     Idempotent: a field this function already painted comes out byte-identical (the end zones were recoloured on the
     first pass; a writer that composes this painter calls it after its own end-zone art)."""
     ml = _ml()
@@ -778,7 +792,7 @@ def paint_field(decoded, rec, system, *, look, cls, rig, colour_settings=None, t
     receipt = dict(look=look, light=cls, rig=rig)
     target = tuple(target or target_rgb(look, cls))
     layout = field_layout(out, rec)
-    response = field_response(look, cls, layout)
+    response = field_response(look, cls, layout) if response is None else tuple(response)
     vertex = _grass_vertex_tint(out, rec)
     mean = solve_map_mean(look, cls, rig, colour_settings=colour_settings, tint=tint, vertex=vertex, response=response,
                           target=target)
@@ -1098,7 +1112,7 @@ def _fit(span, decoded, *, optimal):
 
 
 def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 255), target=None,
-               full_detail=False):
+               full_detail=False, response=None):
     """(new field span of the same size, receipt): paint, then refit inside the fixed VC-LZ span with the retail
     wrapper, stepping the pattern detail and the palette down (FIT_LADDER) when a span misses."""
     ml = _ml()
@@ -1112,7 +1126,7 @@ def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 25
         for detail, cap in (((2, 256),) if full_detail else FIT_LADDER):
             painted, receipt = paint_field(decoded, rec, chunk.system_bytes, look=look, cls=cls, rig=rig,
                                            colour_settings=colour_settings, tint=tint, cap=cap, detail=detail,
-                                           target=target)
+                                           target=target, response=response)
             if painted == decoded:
                 return bytes(span), dict(receipt, refit=False, palette_cap=cap)
             try:
@@ -1170,7 +1184,8 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
             rec, decoded = ml._scene(span, chunk)
             painted, receipt = paint_field(decoded, rec, chunk.system_bytes, look=look, cls=cls, rig=rig,
                                             colour_settings=colour_settings, tint=tint, cap=256, detail=2,
-                                            target=venue_target(prefix, look, cls))
+                                            target=venue_target(prefix, look, cls),
+                                            response=venue_response(prefix, cls))
             after, fit = colour.fit_fixed_span(span, painted)
             return after, dict(receipt, refit=True, palette_cap=256, **fit)
         rebuilt, loan_receipt = midfield.refit_washington_field(data, name, painter, normal_span=new_normal)
@@ -1179,7 +1194,7 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
     else:
         new_field, frec = field_span(bytes(data[at:at + size]), look=look, cls=cls, rig=rig,
                                      colour_settings=colour_settings, tint=tint, target=venue_target(prefix, look, cls),
-                                     **field_args)
+                                     response=venue_response(prefix, cls), **field_args)
         out[at:at + size] = new_field
         at, size = sites["normal"]
         normal_args = dict(preserve_full=True) if preserve_full_normal else {}
