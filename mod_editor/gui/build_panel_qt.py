@@ -1275,6 +1275,10 @@ class BuildPanel(QWidget):
         self.modern_fans_check = self._option(
             r, "modern_fans", fans.BUILD_CAPTION, fans.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_officials as officials  # b77-rf1
+        self.modern_officials_check = self._option(
+            r, "modern_officials", officials.BUILD_CAPTION, officials.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_intro_videos as intro_videos
         self.trim_intro_videos_check = self._option(
             r, "trim_intro_videos", intro_videos.BUILD_CAPTION, intro_videos.HELP_TEXT,
@@ -2209,6 +2213,16 @@ class BuildPanel(QWidget):
         self._set_badge("modern_fans", "EXPERIMENTAL / UNWITNESSED" if fan_ok else
                         "Already in this source (Off cannot restore it)" if fan_done else
                         "Needs a supported USA disc image with the retail crowd texture sets")
+        # b77-rf1: 2025-26 officials
+        official_state = state.get("modern_officials")
+        official_ok = bool(self._available.get("modern_officials", False) and is_image
+                           and official_state in ("retail", "mixed"))
+        official_done = bool(self._available.get("modern_officials", False) and is_image and official_state == "applied")
+        self.modern_officials_check.setEnabled(official_ok)
+        self.modern_officials_check.setChecked(official_done)
+        self._set_badge("modern_officials", "EXPERIMENTAL / UNWITNESSED" if official_ok else
+                        "Already in this source (Off cannot restore it)" if official_done else
+                        "Needs a supported USA disc image with the retail referee model")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -2500,6 +2514,7 @@ class BuildPanel(QWidget):
             "modern_goalposts": self.modern_goalposts_check,  # b77-v1
             "modern_coaches": self.modern_coaches_check,  # b77-co1
             "modern_fans": self.modern_fans_check,  # b77-fr1
+            "modern_officials": self.modern_officials_check,  # b77-rf1
             "trim_intro_videos": self.trim_intro_videos_check,
             "custom_intro": self.custom_intro_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
@@ -2628,6 +2643,7 @@ class BuildPanel(QWidget):
             modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
             modern_coaches=self._modern_coaches_changed(),  # b77-co1
             modern_fans=self._modern_fans_changed(),  # b77-fr1
+            modern_officials=self._modern_officials_changed(),  # b77-rf1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
             custom_intro=(self.custom_intro_field.text().strip() if self.custom_intro_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
@@ -2693,6 +2709,8 @@ class BuildPanel(QWidget):
         if p.modern_coaches:  # b77-co1
             return True
         if p.modern_fans:  # b77-fr1
+            return True
+        if p.modern_officials:  # b77-rf1
             return True
         return bool(self.softdrink_project_check.isChecked() or self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression or p.franchise_economy
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
@@ -2773,6 +2791,8 @@ class BuildPanel(QWidget):
                 if key == "modern_coaches" and not self._modern_coaches_changed():  # b77-co1
                     continue
                 if key == "modern_fans" and not self._modern_fans_changed():  # b77-fr1
+                    continue
+                if key == "modern_officials" and not self._modern_officials_changed():  # b77-rf1
                     continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
@@ -3490,6 +3510,12 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("modern_fans")
         return bool(self.modern_fans_check.isEnabled() and state in ("retail", "mixed")
                     and self.modern_fans_check.isChecked())
+
+    def _modern_officials_changed(self):  # b77-rf1
+        """Only turning the option on counts: Off leaves an already-2025-26 source as it is."""
+        state = (self._state or {}).get("modern_officials")
+        return bool(self.modern_officials_check.isEnabled() and state in ("retail", "mixed")
+                    and self.modern_officials_check.isChecked())
 
     def _modern_goalposts_changed(self):  # b77-v1
         """Only turning the option on counts: Off leaves an already-modern source as it is."""

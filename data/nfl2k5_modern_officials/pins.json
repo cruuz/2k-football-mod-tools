@@ -1,0 +1,1022 @@
+{
+ "schema": "nfl2k5_modern_officials_pins/v1",
+ "label": "EXPERIMENTAL / UNWITNESSED",
+ "archive": "gamedata.iff",
+ "art": {
+  "shirt": "e8a1103601c057adc3b2ab9c38ef472ab203ef1ac7a6f0d6d114661abbdda231",
+  "pants": "cf294999a730f4b6a9cd6c807ea3e4782689bb9f6d97793bcee5fdbdc69cd96f",
+  "hat_white": "f836d6f67dce843a191ee38fe84562057dec22d079804f03a8a68732bc17ed45",
+  "hat_black": "1314752a7dce7acdc8be8c1d8d04552312d69f38caea16965dce1efd700b87d0",
+  "numbers/ref_R": "d135ae12000caa04cce4a98594d3a4e2f0fc65bc935f1c1500c9342a6abbb85f",
+  "numbers/ref_U": "b07081db788b50a1c33f297e4e342c684fbfe5ad4bb57f7cc100651d52f0a469",
+  "numbers/ref_HL": "dcdbffd0ce41a558786c675ce5efd5acea87969ff173e4f0f01c2a965b91305a",
+  "numbers/ref_LJ": "835bdd5bd6bdca29d4e7ad3038409c1ffb932b77ea18dab2fc80d92213f3bf3d",
+  "numbers/ref_FJ": "9368d17c8850609a2a75dddb72194469f132e29f071f42691e5f07b4bd07f014",
+  "numbers/ref_SJ": "a8ddc5bbcc3b23377cb1d8d81754b54ea2ed39e3d95e652f02b8ba0d34ac49bc",
+  "numbers/ref_BJ": "cf5b2593c1a394749697328763d581b3d55f82be16e40a4c01e7c74dd72049ba"
+ },
+ "parts": [
+  {
+   "part": "scene:referee",
+   "kind": "SCNE",
+   "name": "referee",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 109,
+   "chunk_offset": 2130560,
+   "span_size": 166448,
+   "retail_sha256": "dedac07b52e75bfee9c04eeba45e85d113a102879de0ebd1a5a08fd94e6673d5",
+   "palette_max": 256,
+   "applied_sha256": "f52ba1ff72a42dd76e1e12957cd546cb5d990432e8ad8318d1f732f8d19faebf",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 166416,
+    "stored_size": 166416,
+    "padding_bytes": 0,
+    "scratch_needed": 60,
+    "scratch_retail": 352,
+    "matches_expanded": 12061
+   },
+   "uv_lanes": [
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1433,
+     "retail": [
+      4507,
+      30082
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1434,
+     "retail": [
+      -31890,
+      32702
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1435,
+     "retail": [
+      3409,
+      12094
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1436,
+     "retail": [
+      -32347,
+      1695
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1437,
+     "retail": [
+      7403,
+      -1719
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1438,
+     "retail": [
+      -32702,
+      -13270
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1439,
+     "retail": [
+      14497,
+      -13044
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1440,
+     "retail": [
+      19760,
+      8973
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "numbers",
+     "vertex": 1441,
+     "retail": [
+      32702,
+      -11254
+     ],
+     "applied": [
+      -2004,
+      -660
+     ]
+    },
+    {
+     "shape": "ref_low",
+     "material": "numbers",
+     "vertex": 418,
+     "retail": [
+      -32702,
+      -102
+     ],
+     "applied": [
+      -869,
+      4344
+     ]
+    },
+    {
+     "shape": "ref_low",
+     "material": "numbers",
+     "vertex": 419,
+     "retail": [
+      -32649,
+      28989
+     ],
+     "applied": [
+      -869,
+      4344
+     ]
+    },
+    {
+     "shape": "ref_low",
+     "material": "numbers",
+     "vertex": 420,
+     "retail": [
+      14120,
+      -115
+     ],
+     "applied": [
+      -869,
+      4344
+     ]
+    },
+    {
+     "shape": "ref_low",
+     "material": "numbers",
+     "vertex": 421,
+     "retail": [
+      10379,
+      28978
+     ],
+     "applied": [
+      -869,
+      4344
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1291,
+     "retail": [
+      -10027,
+      -18310
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1292,
+     "retail": [
+      -12099,
+      -18349
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1293,
+     "retail": [
+      -9929,
+      -18782
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1294,
+     "retail": [
+      -11400,
+      -19657
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1295,
+     "retail": [
+      -9791,
+      -19035
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1296,
+     "retail": [
+      -13460,
+      -18149
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1297,
+     "retail": [
+      -13460,
+      -18149
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1298,
+     "retail": [
+      -15507,
+      -19655
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1299,
+     "retail": [
+      -14823,
+      -18348
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1300,
+     "retail": [
+      -16989,
+      -18780
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1301,
+     "retail": [
+      -16897,
+      -18308
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1302,
+     "retail": [
+      -17111,
+      -19033
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1317,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1318,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1319,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1320,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1321,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1322,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1323,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1324,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1325,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1326,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1327,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1328,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1329,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1330,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1331,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1332,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1333,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1334,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1335,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1336,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1337,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1338,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1339,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1340,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1341,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1342,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1343,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1344,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1345,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1346,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1347,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1348,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1349,
+     "retail": [
+      10694,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1350,
+     "retail": [
+      7890,
+      14703
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1351,
+     "retail": [
+      10694,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    },
+    {
+     "shape": "ref_high",
+     "material": "shirt",
+     "vertex": 1352,
+     "retail": [
+      7890,
+      12875
+     ],
+     "applied": [
+      -2400,
+      5846
+     ]
+    }
+   ]
+  },
+  {
+   "part": "tset:rhat",
+   "kind": "TSET",
+   "name": "rhat",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 121,
+   "chunk_offset": 2807968,
+   "span_size": 6880,
+   "retail_sha256": "32581ce145bc390563f49497a43cb7471d7b49e06d983485513f9a874b449f10",
+   "palette_max": 256,
+   "applied_sha256": "90be45a2d46d8334a9caa387e1cdbfc72d8d45f93d1fef5e65581b4c6596339d",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 6848,
+    "stored_size": 6848,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 341
+   }
+  },
+  {
+   "part": "txtr:ref_R",
+   "kind": "TXTR",
+   "name": "ref_R",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 131,
+   "chunk_offset": 2963152,
+   "span_size": 3872,
+   "retail_sha256": "6fb06b6ad84ba2fd3f046c8e523df8e5bea21ef5baaec3653173c5809b37806e",
+   "palette_max": 256,
+   "applied_sha256": "e79f385f056b4c718e3e2e7fa787d5e991935f6c7c6dce0b832bd08ad7656447",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 3840,
+    "stored_size": 3840,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 23
+   }
+  },
+  {
+   "part": "txtr:ref_U",
+   "kind": "TXTR",
+   "name": "ref_U",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 133,
+   "chunk_offset": 2971664,
+   "span_size": 3712,
+   "retail_sha256": "8ac51473839ced2aadc4dfa6cbd4fda0a0d2d6ba7f4418bf44b1921cd5434fe9",
+   "palette_max": 256,
+   "applied_sha256": "3d97916d974478fc1cc1d4f606908c64df6c2f1c4ab82f69c7d89b3d62def135",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 3679,
+    "stored_size": 3680,
+    "padding_bytes": 1,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 28
+   }
+  },
+  {
+   "part": "txtr:ref_HL",
+   "kind": "TXTR",
+   "name": "ref_HL",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 129,
+   "chunk_offset": 2954864,
+   "span_size": 4064,
+   "retail_sha256": "ef255089da1d43b77897249010911bfcba745db17a10357aefa475d598cd3e89",
+   "palette_max": 256,
+   "applied_sha256": "b7a67dc7a3df2c56606b72445f32daaf65f566d5235ee72d43d6731e02e06a05",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 4032,
+    "stored_size": 4032,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 24
+   }
+  },
+  {
+   "part": "txtr:ref_LJ",
+   "kind": "TXTR",
+   "name": "ref_LJ",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 130,
+   "chunk_offset": 2958928,
+   "span_size": 4224,
+   "retail_sha256": "34aac9c09c52825687f63751ed5488b8ef70f64365bb190c73210a18e8cce020",
+   "palette_max": 256,
+   "applied_sha256": "890414b8c72d63487f62435c644496648b2ae42541ef0bc6e487eed0421cbf6a",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 4191,
+    "stored_size": 4192,
+    "padding_bytes": 1,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 21
+   }
+  },
+  {
+   "part": "txtr:ref_FJ",
+   "kind": "TXTR",
+   "name": "ref_FJ",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 128,
+   "chunk_offset": 2950912,
+   "span_size": 3952,
+   "retail_sha256": "380ea307af93d9191940d9d113f7d6562c79ee267626780167f5f1213bf10955",
+   "palette_max": 256,
+   "applied_sha256": "471324a14b41d7471c47de59bc25a34e61d201b973b1beeee00dc808c865ecf0",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 3920,
+    "stored_size": 3920,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 24
+   }
+  },
+  {
+   "part": "txtr:ref_SJ",
+   "kind": "TXTR",
+   "name": "ref_SJ",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 132,
+   "chunk_offset": 2967024,
+   "span_size": 4640,
+   "retail_sha256": "0fdbd010b37ca54c434d2cec43c795b41fd6f9d6893266052ecbc8f23f8bb067",
+   "palette_max": 256,
+   "applied_sha256": "348a72f6e34d7218554e4802f634817afaa7430d2eee660318a3ccaacaf2940f",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 4608,
+    "stored_size": 4608,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 29
+   }
+  },
+  {
+   "part": "txtr:ref_BJ",
+   "kind": "TXTR",
+   "name": "ref_BJ",
+   "outer_index": 346,
+   "outer_id": "0x00b6926c",
+   "chunk_index": 127,
+   "chunk_offset": 2947136,
+   "span_size": 3776,
+   "retail_sha256": "7534581b478d38105a95688cc34b700f23a6d51b03a21d286ea41356768518f0",
+   "palette_max": 256,
+   "applied_sha256": "1cb4163393e86d79b726fdd24d38add41a41710f425990b185483ab4770b0a4e",
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 3744,
+    "stored_size": 3744,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 16,
+    "matches_expanded": 26
+   }
+  }
+ ]
+}
