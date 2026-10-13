@@ -56,6 +56,7 @@ PROP_PREFIXES = ("sideline", "env_", "Bench", "Fan", "Heater", "towels", "Snow",
                  "yardside")
 #: a triangle wholly below this height (metres) lies on the ground and casts nothing
 GROUND_M = 0.3
+
 STRIP, QUADS, TRIANGLES, FAN, QUAD_STRIP = 6, 8, 5, 7, 9
 
 
@@ -122,8 +123,10 @@ def _triangles(words):
     return [t for t in out if len(set(t)) == 3]
 
 
-def occluders(decoded, system_bytes):
-    """(N, 3, 3) float64 world triangles in metres of a decoded stadium scene that can cast onto the field."""
+def occluders(decoded, system_bytes, skip=()):
+    """(N, 3, 3) float64 world triangles in metres of a decoded stadium scene that can cast onto the field; ``skip``
+    names materials that let the sun through (a venue's translucent roof panels). Retail's bakes cast every other
+    material, the alpha-tested ones included (its light towers' lattices read solid)."""
     import numpy as np
     from . import nfl2k5_scne_builder as sb
     scene = sb.parse(decoded, system_bytes)
@@ -139,7 +142,7 @@ def occluders(decoded, system_bytes):
         pos = np.asarray(sb.shape_positions(shape), dtype=np.float64) / 100.0
         for sub in shape.submeshes:
             name = scene.materials[sub.material].name or ""
-            if name.startswith(PROP_PREFIXES):
+            if name.startswith(PROP_PREFIXES) or name in skip:
                 continue
             idx = _triangles(sub.words)
             if idx:
@@ -210,9 +213,9 @@ def alpha_levels(counts):
     return keep
 
 
-def cast(decoded, system_bytes, sun):
+def cast(decoded, system_bytes, sun, skip=()):
     """The shadow alpha (SIZE x SIZE uint8, row = v, column = u) of one decoded stadium scene under ``sun``."""
-    return alpha_levels(coverage(occluders(decoded, system_bytes), sun))
+    return alpha_levels(coverage(occluders(decoded, system_bytes, skip), sun))
 
 
 # --- the TXTR -------------------------------------------------------------------------------------------------------
@@ -296,12 +299,20 @@ def bundle_shadow(bundle, prefix, sun=None):
     in place of the bundle's shadow texture. A bundle without a shadow texture comes back unchanged with None."""
     if shadow_chunk(bundle) is None:
         return bytes(bundle), None
+    import numpy as np
     tx, ml = _tools()
     chunk = ml.bundle_scenes(bundle)["stadium"]
     decoded, _ = tx.decode_chunk(bundle, chunk)
-    sun = tuple(sun) if sun is not None else venue_sun(prefix)
-    alpha = cast(decoded, chunk.system_bytes, sun)
+    row = venues().get(prefix, {})
+    if row.get("roof") == "closed":
+        # a roofed field is lit by the stadium's own lights: no sun shadow, as retail's domes have none
+        sun = None
+        alpha = np.full((SIZE, SIZE), 254, dtype=np.uint8)
+        alpha[CENTRE - WINDOW_V:CENTRE + WINDOW_V, CENTRE - WINDOW_U:CENTRE + WINDOW_U] = 0
+    else:
+        sun = tuple(sun) if sun is not None else venue_sun(prefix)
+        alpha = cast(decoded, chunk.system_bytes, sun, skip=tuple(row.get("translucent", ())))
     out, receipt = write_shadow(bundle, alpha)
     lit = int((alpha[CENTRE - 75:CENTRE + 75, CENTRE - 33:CENTRE + 33] == 0).sum())
-    return out, dict(receipt, sun=[round(v, 6) for v in sun], stadium_sha256=sha(decoded), alpha_sha256=sha(alpha.tobytes()),
-                     field_lit_texels=lit)
+    return out, dict(receipt, sun=None if sun is None else [round(v, 6) for v in sun], roof=row.get("roof", "open"),
+                     stadium_sha256=sha(decoded), alpha_sha256=sha(alpha.tobytes()), field_lit_texels=lit)
