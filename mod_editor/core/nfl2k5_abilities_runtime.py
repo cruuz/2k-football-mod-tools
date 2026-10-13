@@ -11,6 +11,8 @@ bonuses for tiered players. Move locks are opt-in; Speedster permission remains
 required by default for the rating extension, never for sprint. g3 restores
 retail's 1.00 ordinary Speed ceiling; only roster stars can extend it using
 authored Speed 100..127. Command 0x16 (tap speed burst) is always available.
+The ordinary initial burst no longer shrinks with a returner's Break Tackle;
+condition and the separate charged-burst calculation retain native behavior.
 
 g2 (beta 77): star-only moves. The roster star tag (record word bit 0x0100, the star under a player) plus the
 ability tier (Unranked, Star, Superstar, X-Factor) select one of eight access levels from a four-entry table in the
@@ -33,6 +35,7 @@ import hashlib
 import struct
 
 from . import nfl2k5_abilities_runtime_code as assembly
+from . import nfl2k5_tap_burst as tap_burst
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -507,6 +510,9 @@ def reservations(payload):
     for name, (va, before) in HOOKS.items():
         out.append(dict(owner=OWNER, start=hex(va), end=hex(va + len(before)), size=len(before),
                         basis="pinned live " + name + "; not a cave"))
+    if tap_burst.status(payload) == "applied":
+        out.append(dict(owner=OWNER, start=hex(tap_burst.START), end=hex(tap_burst.END),
+                        size=len(tap_burst.AFTER), basis="ordinary tap burst; pinned initializer"))
     return out
 
 
@@ -562,8 +568,13 @@ def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
         _require(wanted == previous, "different abilities settings; rebuild from supported base")
         if revision(payload) == "star-gate":
             result, upgraded = repair_sprint(payload)
-            return result, {**receipt, **upgraded, "revision": "universal-sprint"}
-        return payload, {**receipt, "status": "already_applied"}
+            result, burst = tap_burst.apply(result)
+            return result, {**receipt, **upgraded, "revision": "universal-sprint", "tap_burst": burst,
+                            "edits": upgraded.get("edits", []) + burst["edits"],
+                            "changed_bytes": space.count_differing_bytes(payload, result)}
+        result, burst = tap_burst.apply(payload)
+        return result, {**receipt, "status": burst["status"], "tap_burst": burst,
+                        "edits": burst["edits"], "changed_bytes": burst["changed_bytes"]}
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                      if space.status(payload) == "retail" else (payload, {}))
     a = allocation(allocated)
@@ -579,9 +590,9 @@ def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
                           before=before.hex(), after=after.hex()))
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
-    result = bytes(buf)
+    result, burst = tap_burst.apply(bytes(buf))
     _require(status(result) == "applied", "abilities installation postcondition failed")
-    return result, {**receipt, "status": "applied", "edits": edits,
+    return result, {**receipt, "status": "applied", "edits": edits + burst["edits"], "tap_burst": burst,
                     "allocation": allocation_receipt, "code_install": install_receipt,
                     "code_va": hex(a["va"]), "code_bytes": CODE_SIZE, "data_bytes": 0,
                     "reservations": reservations(result),
