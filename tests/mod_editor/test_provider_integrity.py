@@ -326,7 +326,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             {
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
-                "data/nfl2k5_kit_fixes_2026.json": "f0b32e04dfe0fcb11317dc073d9570ae29cab3210f801c07db9152820afbf023",
+                "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",

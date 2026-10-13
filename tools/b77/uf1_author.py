@@ -169,9 +169,11 @@ def recipes():
                      {"op": "enclosed", "box": [104, 0, 216, 70], "edge": ["#060606"], "color": "#060606",
                       "tolerance": 40}],
                  ["uw2-NO-away-0-neckline-panel"], "front black V-neck band widened to the 2026 width"))
-    add("37H0", (1, hou_patch(centre=(192, 77)), ["uw2-HOU-home-0-anniversary-chest"],
+    add("37H0", (1, hou_patch((193, 76), "#1C2433", "#FFFFFF", "#FFFFFF", "#A71930"),
+                 ["uw2-HOU-home-0-anniversary-chest"],
                  "Texans 25th-season patch on the upper left chest"))
-    add("37A0", (1, hou_patch(centre=(192, 77)), ["uw2-HOU-away-0-2026-anniversary-patch"],
+    add("37A0", (1, hou_patch((193, 76), "#FFFFFF", "#A71930", "#03202F", "#A71930"),
+                 ["uw2-HOU-away-0-2026-anniversary-patch"],
                  "Texans 25th-season patch on the upper left chest"))
     add("25H0", (1, sf_patch(centre=(194, 76)), ["uw2-SF-home-0-anniversary-chest"],
                  "49ers 80 YEARS patch on the upper left chest"))
@@ -334,13 +336,14 @@ TEXAS = [(0.30, 0.00), (0.47, 0.00), (0.47, 0.32), (0.62, 0.38), (0.80, 0.40), (
          (0.22, 0.62), (0.12, 0.68), (0.00, 0.55), (0.00, 0.40), (0.30, 0.40)]
 
 
-def hou_patch(centre, width=21.0, height=19.0):
+def hou_patch(centre, jersey, outline, digits, shadow, width=26.0, height=23.0):
+    """Texans 25th season: a Texas outline with a large 25 and a red drop shadow (2026 weeks 1 and 2)."""
     cx, cy = centre
     x0, y0 = cx - width / 2, cy - height / 2
     shape = [(x0 + u * width, y0 + v * height) for u, v in TEXAS]
-    ops = [poly(offset_polygon(shape, 1.0), "#A71930"), poly(shape, "#FFFFFF")]
-    ops += text("25", cx - 6.0 + 0.7, cy - 3.6 + 0.7, 9.0, "#A71930")       # red drop shadow
-    ops += text("25", cx - 6.0, cy - 3.6, 9.0, "#03202F")
+    ops = [poly(offset_polygon(shape, 1.1), outline), poly(shape, jersey)]
+    ops += text("25", cx - 7.6 + 0.9, cy - 5.0 + 0.9, 11.0, shadow)
+    ops += text("25", cx - 7.6, cy - 5.0, 11.0, digits)
     return ops
 
 
