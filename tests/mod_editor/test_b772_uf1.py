@@ -206,6 +206,14 @@ class NativeDisc(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown or partially"):
             fixes.compile_resource("26H0", bytes(partial))
 
+    def test_studio_keeps_a_users_replaced_texture_and_finishes_the_rest(self):
+        rows = [r for r in fixes.spec()["textures"] if r["selector"] == "26H0"]
+        user = bytearray(self.raws["26H0"])
+        user[rows[0]["offset"] + rows[0]["length"] - 1] ^= 1          # the user's own art for that chunk
+        parts, receipt = fixes.compile_resource("26H0", bytes(user), strict=False)
+        self.assertEqual(receipt["skipped_textures"], [rows[0]["chunk"]])
+        self.assertEqual(sorted(at for at, _ in parts), sorted(r["offset"] for r in rows[1:]))
+
     def test_a_users_own_kit_is_left_alone(self):
         spec = fixes.spec()
         other = dict(spec, textures=[dict(r, before_sha256="0" * 64, after_sha256="1" * 64) for r in spec["textures"]])

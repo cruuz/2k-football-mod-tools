@@ -794,7 +794,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "8aabee19a2abcb02acb73c9387336c5851bd4ebb096bfbb22346e05089a7ea0b",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",
-        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "0ec2dfceb9b89f5aae9a2fb6c1600a8bea813bf4337a6eeb9408bc9df3ccc439",
+        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "c68ef7649c389b4fe4c2a4ac1bb58122f7bf4242258c2b0d21da25690d3d53e5",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "3728a1d8195819c72f814ac5110755a06598aeb1400f6a53702821a7b275a8b6",
         "mod_editor/core/nfl2k5_practice_squad.py": "c98cf2edff83719ae8948346eec8875f81c234b4f0142a690c30dbfae377d7a4",

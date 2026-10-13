@@ -11,12 +11,17 @@ exact integer arithmetic so every platform gets the same bytes) and averaged
 down onto the texture's existing native pixels. Only the touched texels and
 their mip parents change. The compile keeps the native format, size, mip count,
 descriptors, wrapper and stored allocation of every chunk: P8 indices against
-the chunk's own palette, with spare palette slots used for colours it lacks,
-and the ``_mud`` twin palette kept at its existing rule (wet_93 for jersey, pants and sleeve; darken_60 for socks).
+the chunk's own palette. Colours the palette lacks take unused entries, then
+entries only the repainted texels used, then (only for a full palette) a
+near-identical twin entry folded into its neighbour, so a protected texel
+moves by at most one level. The ``_mud`` twin palette keeps its existing
+entries byte for byte; new entries follow its rule (wet_93 for jersey, pants
+and sleeve; darken_60 for socks).
 
 The Studio runs this after its uniform layers. Exact input and output pins
-limit it to the known SOFTDRINK kit spans: retail kits and other user recipes
-are left alone, and a partly repaired kit is refused.
+limit it to the known SOFTDRINK kit spans: retail kits and textures a user's
+own recipe replaced are left alone. The native repair (strict) refuses any
+kit that is not exactly the pinned input or the pinned output.
 """
 from __future__ import annotations
 
@@ -621,18 +626,28 @@ def compile_resource(selector, raw, *, strict=True, document=None):
                        else "after" if digest == row["after_sha256"] else "other"))
     kinds = {s[3] for s in states}
     if kinds == {"after"}:
-        return [], dict(selector=selector, state="applied", changed_bytes=0, parts=[])
-    if kinds != {"before"}:
-        # A kit with only some textures in a known state, or some repaired and some not, is corruption or a
-        # partial repair; a kit with none known is a user's own recipe and is left alone outside strict mode.
-        require(not strict and kinds == {"other"}, selector + ": unknown or partially repaired input hashes")
-        return [], dict(selector=selector, state="other_uniform", changed_bytes=0, parts=[])
-    replacements, parts = [], []
+        return [], dict(selector=selector, state="applied", changed_bytes=0, parts=[], skipped_textures=[])
+    if strict:
+        # The native repair accepts only the pinned unrepaired kit: anything else is corruption or a partial repair.
+        require(kinds == {"before"}, selector + ": unknown or partially repaired input hashes")
+    elif kinds == {"other"}:
+        return [], dict(selector=selector, state="other_uniform", changed_bytes=0, parts=[],
+                        skipped_textures=[r["chunk"] for r, *_ in states])
+    # Studio builds: each pinned texture is independent. A texture the user's own recipe replaced (unknown hash)
+    # keeps the user's art; the known SOFTDRINK ones are finished.
+    replacements, parts, skipped = [], [], []
     for row, chunk, span, state in states:
+        if state != "before":
+            if state == "other":
+                skipped.append(row["chunk"])
+            continue
         if row["kind"] == "copy_video":
             donor = _chunk_for(raw, row["donor_chunk"])
             donor_span = raw[donor.offset:donor.end_offset]
-            require(sha(donor_span) == row["donor_sha256"], selector + ": donor digit differs from its pin")
+            if sha(donor_span) != row["donor_sha256"]:
+                require(not strict, selector + ": donor digit differs from its pin")
+                skipped.append(row["chunk"])
+                continue
             new, detail = copy_video(span, donor_span, row)
         else:
             new, detail = compile_texture(span, row)
@@ -642,7 +657,7 @@ def compile_resource(selector, raw, *, strict=True, document=None):
                           before_sha256=sha(span), after_sha256=sha(new),
                           changed_bytes=sum(a != b for a, b in zip(span, new)), defects=row.get("defects", []),
                           **detail))
-    return replacements, dict(selector=selector, state="applied",
+    return replacements, dict(selector=selector, state="applied", skipped_textures=skipped,
                               changed_bytes=sum(p["changed_bytes"] for p in parts), parts=parts)
 
 
@@ -683,8 +698,7 @@ def apply_to_image(path, *, strict=False, document=None):
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
             return dict(state="other_uniform", written_spans=0, written_bytes=0, changed_bytes=0, kits=[])
-        # A user's own kit recipe (every pinned texture of that package unknown) is left alone; a package with
-        # some textures known and some not was refused above.
+        # A user's own kit recipe (pinned textures with unknown hashes) keeps its art; see compile_resource.
         for entry, replacements, receipt in plans:
             for offset, data in replacements:
                 segments = index.sub_extents(entry, offset, len(data))
