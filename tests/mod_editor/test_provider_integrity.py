@@ -196,6 +196,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "from mod_editor.core.nfl2k5_unc_bowl_uniforms import PINS; "
                 "import json; assert json.loads(PINS.read_text())['schema'] == 'nfl2k5_unc_bowl_uniforms/v1'; "
                 "from mod_editor.core.nfl2k5_nyg_numbers import pins; assert len(pins()['digits']) == 10; "
+                "from mod_editor.core.nfl2k5_kit_fixes_2026 import spec; assert len(spec()['textures']) == 60; "
                 "assert build_settings({'modern_color_settings': default_settings()})['modern_color_settings']['values']['turf.value_lift'] == 2.8",
                 str(module.parents[1])], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -218,7 +219,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [406, 10, 8, 9, 8, 9]  # b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [407, 10, 8, 9, 8, 9]  # b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
             # b771-v1g: + the Unc Bowl compiler and its archive helper; the owned-span document is a data pin.
             # b765 integration: + fixed-size spare-capacity owner for dated FA/historic composition.
             # b765-a1: + the Anniversary archive pack, field compiler and their 38 existing venue-tool dependencies.
@@ -261,6 +262,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 adapters = frozenset({
                     "mod_editor/core/nfl2k5_unc_bowl_uniforms.py",
                     "mod_editor/core/nfl2k5_nyg_numbers.py",
+                    "mod_editor/core/nfl2k5_kit_fixes_2026.py",
                     "mod_editor/core/nfl2k5_anniversary_pack.py",
                     # Studio dynamically selects these reviewed field owners after surface compilation.
                     "mod_editor/core/nfl2k5_midfield_art.py",
@@ -324,6 +326,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             {
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
+                "data/nfl2k5_kit_fixes_2026.json": "f0b32e04dfe0fcb11317dc073d9570ae29cab3210f801c07db9152820afbf023",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",

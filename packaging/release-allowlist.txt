@@ -590,6 +590,8 @@ mod_editor/core/nfl2k5_unc_bowl_uniforms.py
 data/nfl2k5_unc_bowl_uniforms_pins.json
 mod_editor/core/nfl2k5_nyg_numbers.py
 data/nfl2k5_nyg_numbers_pins.json
+mod_editor/core/nfl2k5_kit_fixes_2026.py
+data/nfl2k5_kit_fixes_2026.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
 mod_editor/core/nfl2k5_letter_grades.py

@@ -1,0 +1,13060 @@
+{
+ "schema": "nfl2k5_kit_fixes_2026/v1",
+ "source": "uf1 (b772): uw2's in-game review of the 64 current kits against dated 2025/26 club photos, each finding checked by uf1 against the decoded native textures",
+ "method": "Vector art in native texel coordinates, drawn at 4x (4x4 samples per texel, exact integer arithmetic) and averaged onto the existing native pixels; existing palette plus spare slots, wet_93 mud twin, fixed spans.",
+ "textures": [
+  {
+   "selector": "00A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1508992,
+   "offset": 167504,
+   "length": 11568,
+   "before_sha256": "d02c703556e6032670c4261ccf043b332daf08acea1d739e2c6056005d53ade2",
+   "after_sha256": "c14456e6a80dac13f0d1613e2c503968d27b1d76127b6cb25b22b5a9caeb8f88",
+   "defects": [
+    "uw2-ARI-away-0-sleeves"
+   ],
+   "note": "red/silver/red panel and its CARDINALS wordmark moved up",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A0233F",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       20.5
+      ],
+      [
+       0,
+       20.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A9AEB3",
+     "points": [
+      [
+       0,
+       20.5
+      ],
+      [
+       128,
+       20.5
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       0,
+       29.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A0233F",
+     "points": [
+      [
+       0,
+       29.5
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       128,
+       32.0
+      ],
+      [
+       0,
+       32.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A0233F",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       84.5
+      ],
+      [
+       0,
+       84.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A9AEB3",
+     "points": [
+      [
+       0,
+       84.5
+      ],
+      [
+       128,
+       84.5
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       0,
+       93.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A0233F",
+     "points": [
+      [
+       0,
+       93.5
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       128,
+       96.0
+      ],
+      [
+       0,
+       96.0
+      ]
+     ]
+    },
+    {
+     "op": "copy",
+     "src": [
+      45,
+      42,
+      82,
+      47
+     ],
+     "dst": [
+      45,
+      23
+     ],
+     "skip_col": 20
+    },
+    {
+     "op": "copy",
+     "src": [
+      45,
+      106,
+      82,
+      111
+     ],
+     "dst": [
+      45,
+      87
+     ],
+     "skip_col": 20
+    }
+   ]
+  },
+  {
+   "selector": "02A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1564944,
+   "offset": 163216,
+   "length": 11056,
+   "before_sha256": "4e2555a1bedc9259ce3ead38f4cfbe35efaadc59790e1129ef7ecd2e50471652",
+   "after_sha256": "6f3d0ed90d6621fbc64fd501d530fa244427f0db8a5e74f65f87f8ebd9de5fa3",
+   "defects": [
+    "uw2-BAL-away-0-sleeve-cuff"
+   ],
+   "note": "purple cuff band added at the hem",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#2E1667",
+     "points": [
+      [
+       0,
+       51
+      ],
+      [
+       128,
+       51
+      ],
+      [
+       128,
+       58
+      ],
+      [
+       0,
+       58
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#2E1667",
+     "points": [
+      [
+       0,
+       115
+      ],
+      [
+       128,
+       115
+      ],
+      [
+       128,
+       122
+      ],
+      [
+       0,
+       122
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "03A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1512272,
+   "offset": 146800,
+   "length": 11312,
+   "before_sha256": "d6512ccfc40e0bbea39e845c18021a901c3ff06f09b03fa655aaef962c23081a",
+   "after_sha256": "7a3209353ebc50389b864433f74d9e18aa4ba5722d38e0cf13e8195bebc7ae78",
+   "defects": [
+    "uw2-BUF-away-0-sleeve-bands"
+   ],
+   "note": "royal/red/royal stack moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0B3A9E",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       24.0
+      ],
+      [
+       0,
+       24.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C8102E",
+     "points": [
+      [
+       0,
+       26.0
+      ],
+      [
+       128,
+       26.0
+      ],
+      [
+       128,
+       31.0
+      ],
+      [
+       0,
+       31.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0B3A9E",
+     "points": [
+      [
+       0,
+       33.0
+      ],
+      [
+       128,
+       33.0
+      ],
+      [
+       128,
+       39.0
+      ],
+      [
+       0,
+       39.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0B3A9E",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       88.0
+      ],
+      [
+       0,
+       88.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C8102E",
+     "points": [
+      [
+       0,
+       90.0
+      ],
+      [
+       128,
+       90.0
+      ],
+      [
+       128,
+       95.0
+      ],
+      [
+       0,
+       95.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0B3A9E",
+     "points": [
+      [
+       0,
+       97.0
+      ],
+      [
+       128,
+       97.0
+      ],
+      [
+       128,
+       103.0
+      ],
+      [
+       0,
+       103.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "05A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1530672,
+   "offset": 168768,
+   "length": 12160,
+   "before_sha256": "c0479dbf40f9bfe471ba222e2c874b5ada0e2af475abeb58c4b749405a33da37",
+   "after_sha256": "9e50f92a14aece04e96704c23004e37aef1e72fee2004515301dcea5e786941c",
+   "defects": [
+    "uw2-CHI-away-0-sleeve-bands"
+   ],
+   "note": "navy/orange/navy bands moved up and widened, GSH moved with them",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       17.0
+      ],
+      [
+       128,
+       17.0
+      ],
+      [
+       128,
+       23.3
+      ],
+      [
+       0,
+       23.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       28.5
+      ],
+      [
+       128,
+       28.5
+      ],
+      [
+       128,
+       35.4
+      ],
+      [
+       0,
+       35.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       40.0
+      ],
+      [
+       128,
+       40.0
+      ],
+      [
+       128,
+       46.9
+      ],
+      [
+       0,
+       46.9
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       81.0
+      ],
+      [
+       128,
+       81.0
+      ],
+      [
+       128,
+       87.3
+      ],
+      [
+       0,
+       87.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       92.5
+      ],
+      [
+       128,
+       92.5
+      ],
+      [
+       128,
+       99.4
+      ],
+      [
+       0,
+       99.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       104.0
+      ],
+      [
+       128,
+       104.0
+      ],
+      [
+       128,
+       110.9
+      ],
+      [
+       0,
+       110.9
+      ]
+     ]
+    },
+    {
+     "op": "copy",
+     "src": [
+      55,
+      104,
+      85,
+      123
+     ],
+     "dst": [
+      55,
+      85
+     ],
+     "skip_col": 20
+    }
+   ]
+  },
+  {
+   "selector": "05H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1498832,
+   "offset": 146736,
+   "length": 10720,
+   "before_sha256": "5129cf6de62776e167929c964bdd504f5d0592d90c865444e366926b514e81f9",
+   "after_sha256": "6f31c6ce29d381e4d62e3385b474f3c4a2750637ad1a5bceebd12d82285ca44d",
+   "defects": [
+    "uw2-CHI-home-0-sleeve-bands"
+   ],
+   "note": "three white-edged orange bands moved up and widened, GSH moved with them",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       17.0
+      ],
+      [
+       128,
+       17.0
+      ],
+      [
+       128,
+       18.3
+      ],
+      [
+       0,
+       18.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       18.3
+      ],
+      [
+       128,
+       18.3
+      ],
+      [
+       128,
+       23.1
+      ],
+      [
+       0,
+       23.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       23.1
+      ],
+      [
+       128,
+       23.1
+      ],
+      [
+       128,
+       24.4
+      ],
+      [
+       0,
+       24.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       28.2
+      ],
+      [
+       128,
+       28.2
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       0,
+       29.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       29.5
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       128,
+       34.3
+      ],
+      [
+       0,
+       34.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       34.3
+      ],
+      [
+       128,
+       34.3
+      ],
+      [
+       128,
+       35.6
+      ],
+      [
+       0,
+       35.6
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       39.4
+      ],
+      [
+       128,
+       39.4
+      ],
+      [
+       128,
+       40.7
+      ],
+      [
+       0,
+       40.7
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       40.7
+      ],
+      [
+       128,
+       40.7
+      ],
+      [
+       128,
+       45.5
+      ],
+      [
+       0,
+       45.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       45.5
+      ],
+      [
+       128,
+       45.5
+      ],
+      [
+       128,
+       46.8
+      ],
+      [
+       0,
+       46.8
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0D1A32",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       81.0
+      ],
+      [
+       128,
+       81.0
+      ],
+      [
+       128,
+       82.3
+      ],
+      [
+       0,
+       82.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       82.3
+      ],
+      [
+       128,
+       82.3
+      ],
+      [
+       128,
+       87.1
+      ],
+      [
+       0,
+       87.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       87.1
+      ],
+      [
+       128,
+       87.1
+      ],
+      [
+       128,
+       88.4
+      ],
+      [
+       0,
+       88.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       92.2
+      ],
+      [
+       128,
+       92.2
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       0,
+       93.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       93.5
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       128,
+       98.3
+      ],
+      [
+       0,
+       98.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       98.3
+      ],
+      [
+       128,
+       98.3
+      ],
+      [
+       128,
+       99.6
+      ],
+      [
+       0,
+       99.6
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       103.4
+      ],
+      [
+       128,
+       103.4
+      ],
+      [
+       128,
+       104.7
+      ],
+      [
+       0,
+       104.7
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#C83803",
+     "points": [
+      [
+       0,
+       104.7
+      ],
+      [
+       128,
+       104.7
+      ],
+      [
+       128,
+       109.5
+      ],
+      [
+       0,
+       109.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       109.5
+      ],
+      [
+       128,
+       109.5
+      ],
+      [
+       128,
+       110.8
+      ],
+      [
+       0,
+       110.8
+      ]
+     ]
+    },
+    {
+     "op": "copy",
+     "src": [
+      55,
+      104,
+      85,
+      123
+     ],
+     "dst": [
+      55,
+      85
+     ],
+     "skip_col": 20
+    }
+   ]
+  },
+  {
+   "selector": "08A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1546416,
+   "offset": 166320,
+   "length": 10464,
+   "before_sha256": "aa0f6c7a3e5bfd6daaac8bcf2d787d0e07960afc6d79d7f9a5def6610062cc4b",
+   "after_sha256": "fd87ec94ade3bf2118f1e40909e68193e3bfc0b3db3a8caab3fc12b80a252e04",
+   "defects": [
+    "uw2-DEN-away-0-shoulder-panel"
+   ],
+   "note": "orange mountain panel with navy band on the sleeve cap; hem bands removed",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       45
+      ],
+      [
+       128,
+       45
+      ],
+      [
+       128,
+       64
+      ],
+      [
+       0,
+       64
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       109
+      ],
+      [
+       128,
+       109
+      ],
+      [
+       128,
+       128
+      ],
+      [
+       0,
+       128
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FC4C02",
+     "points": [
+      [
+       6.0,
+       0
+      ],
+      [
+       122.0,
+       0
+      ],
+      [
+       122.0,
+       9.0
+      ],
+      [
+       6.0,
+       24.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       6.0,
+       24.0
+      ],
+      [
+       122.0,
+       9.0
+      ],
+      [
+       122.0,
+       14.5
+      ],
+      [
+       6.0,
+       29.5
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      40,
+      0,
+      88,
+      18
+     ],
+     "from": [
+      "#0A2343"
+     ],
+     "color": "#FFFFFF",
+     "tolerance": 40,
+     "match": "original"
+    },
+    {
+     "op": "poly",
+     "color": "#FC4C02",
+     "points": [
+      [
+       121.0,
+       64
+      ],
+      [
+       5.0,
+       64
+      ],
+      [
+       5.0,
+       73.0
+      ],
+      [
+       121.0,
+       88.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       121.0,
+       88.0
+      ],
+      [
+       5.0,
+       73.0
+      ],
+      [
+       5.0,
+       78.5
+      ],
+      [
+       121.0,
+       93.5
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      40,
+      64,
+      88,
+      82
+     ],
+     "from": [
+      "#0A2343"
+     ],
+     "color": "#FFFFFF",
+     "tolerance": 40,
+     "match": "original"
+    }
+   ]
+  },
+  {
+   "selector": "08A0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1546416,
+   "offset": 77888,
+   "length": 88432,
+   "before_sha256": "7124af7fcd8e01e92f1790320ea2417a0e811978548a2109a1fa3ef989c1faef",
+   "after_sha256": "51f6f624800ab0646a0d04aaedcefddbbfe16239c3b1bb3961fd1a428c0705c4",
+   "defects": [
+    "uw2-DEN-away-0-pants-stripe"
+   ],
+   "note": "white side stripe on the navy pants under the orange hip accent",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       137.5,
+       10.0
+      ],
+      [
+       146.5,
+       10.0
+      ],
+      [
+       146.5,
+       256.0
+      ],
+      [
+       137.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       137.0,
+       10.0
+      ],
+      [
+       147.0,
+       10.0
+      ],
+      [
+       147.0,
+       256.0
+      ],
+      [
+       137.0,
+       256.0
+      ]
+     ],
+     "protect": {
+      "box": [
+       130,
+       0,
+       154,
+       256
+      ],
+      "colors": [
+       "#FC4C02"
+      ],
+      "tolerance": 30
+     }
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       364.5,
+       10.0
+      ],
+      [
+       373.5,
+       10.0
+      ],
+      [
+       373.5,
+       256.0
+      ],
+      [
+       364.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       364.0,
+       10.0
+      ],
+      [
+       374.0,
+       10.0
+      ],
+      [
+       374.0,
+       256.0
+      ],
+      [
+       364.0,
+       256.0
+      ]
+     ],
+     "protect": {
+      "box": [
+       357,
+       0,
+       381,
+       256
+      ],
+      "colors": [
+       "#FC4C02"
+      ],
+      "tolerance": 30
+     }
+    }
+   ]
+  },
+  {
+   "selector": "08H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1524864,
+   "offset": 146144,
+   "length": 7488,
+   "before_sha256": "0dde168eeca9f0a0e35570c87d7fcc30edb5f068afe42e3fd003d98474d6a1cd",
+   "after_sha256": "818667b7ce5937b3a5a1cde1ade23d5a322294148e240afc7d546013add143e9",
+   "defects": [
+    "uw2-DEN-home-0-shoulder-panel"
+   ],
+   "note": "white mountain panel with navy band on the sleeve cap; hem bands removed",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FC4C02",
+     "points": [
+      [
+       0,
+       45
+      ],
+      [
+       128,
+       45
+      ],
+      [
+       128,
+       64
+      ],
+      [
+       0,
+       64
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FC4C02",
+     "points": [
+      [
+       0,
+       109
+      ],
+      [
+       128,
+       109
+      ],
+      [
+       128,
+       128
+      ],
+      [
+       0,
+       128
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       6.0,
+       0
+      ],
+      [
+       122.0,
+       0
+      ],
+      [
+       122.0,
+       9.0
+      ],
+      [
+       6.0,
+       24.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       6.0,
+       24.0
+      ],
+      [
+       122.0,
+       9.0
+      ],
+      [
+       122.0,
+       14.5
+      ],
+      [
+       6.0,
+       29.5
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      40,
+      0,
+      88,
+      18
+     ],
+     "from": [
+      "#FFFFFF"
+     ],
+     "color": "#0A2343",
+     "tolerance": 40,
+     "match": "original"
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       121.0,
+       64
+      ],
+      [
+       5.0,
+       64
+      ],
+      [
+       5.0,
+       73.0
+      ],
+      [
+       121.0,
+       88.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       121.0,
+       88.0
+      ],
+      [
+       5.0,
+       73.0
+      ],
+      [
+       5.0,
+       78.5
+      ],
+      [
+       121.0,
+       93.5
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      40,
+      64,
+      88,
+      82
+     ],
+     "from": [
+      "#FFFFFF"
+     ],
+     "color": "#0A2343",
+     "tolerance": 40,
+     "match": "original"
+    }
+   ]
+  },
+  {
+   "selector": "08H0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1524864,
+   "offset": 63248,
+   "length": 82896,
+   "before_sha256": "3ccd7c49f5613eda622de84c4c1898f5700b3fab2899c680e2557b7b30865ed9",
+   "after_sha256": "47ef1269aaa4183dda1f38e6058500f72d5e06b085abf6ee410bbe88d39d754c",
+   "defects": [
+    "uw2-DEN-home-0-pants-stripe"
+   ],
+   "note": "navy side stripe widened under the orange hip accent",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       136.5,
+       10.0
+      ],
+      [
+       147.5,
+       10.0
+      ],
+      [
+       147.5,
+       256.0
+      ],
+      [
+       136.5,
+       256.0
+      ]
+     ],
+     "protect": {
+      "box": [
+       130,
+       0,
+       154,
+       256
+      ],
+      "colors": [
+       "#FC4C02"
+      ],
+      "tolerance": 30
+     }
+    },
+    {
+     "op": "poly",
+     "color": "#0A2343",
+     "points": [
+      [
+       363.5,
+       10.0
+      ],
+      [
+       374.5,
+       10.0
+      ],
+      [
+       374.5,
+       256.0
+      ],
+      [
+       363.5,
+       256.0
+      ]
+     ],
+     "protect": {
+      "box": [
+       357,
+       0,
+       381,
+       256
+      ],
+      "colors": [
+       "#FC4C02"
+      ],
+      "tolerance": 30
+     }
+    }
+   ]
+  },
+  {
+   "selector": "09A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1544224,
+   "offset": 166272,
+   "length": 12336,
+   "before_sha256": "bfd159e170230be4c1df74467cf25c42f2b487fb68982c2262c6de280951fe0a",
+   "after_sha256": "2638cd8e60948078b99bbb706afbe6ac57c2c1dbc781089d2aae9e8eeb5e1c2d",
+   "defects": [
+    "uw2-DET-away-0-sleeve-layout"
+   ],
+   "note": "two broad blue bands with silver trim moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       19.0
+      ],
+      [
+       0,
+       19.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       19.0
+      ],
+      [
+       128,
+       19.0
+      ],
+      [
+       128,
+       29.0
+      ],
+      [
+       0,
+       29.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       29.0
+      ],
+      [
+       128,
+       29.0
+      ],
+      [
+       128,
+       30.0
+      ],
+      [
+       0,
+       30.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       31.5
+      ],
+      [
+       128,
+       31.5
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       0,
+       32.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       32.5
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       128,
+       42.5
+      ],
+      [
+       0,
+       42.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       42.5
+      ],
+      [
+       128,
+       42.5
+      ],
+      [
+       128,
+       43.5
+      ],
+      [
+       0,
+       43.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       83.0
+      ],
+      [
+       0,
+       83.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       83.0
+      ],
+      [
+       128,
+       83.0
+      ],
+      [
+       128,
+       93.0
+      ],
+      [
+       0,
+       93.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       93.0
+      ],
+      [
+       128,
+       93.0
+      ],
+      [
+       128,
+       94.0
+      ],
+      [
+       0,
+       94.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       95.5
+      ],
+      [
+       128,
+       95.5
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       0,
+       96.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       96.5
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       128,
+       106.5
+      ],
+      [
+       0,
+       106.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       106.5
+      ],
+      [
+       128,
+       106.5
+      ],
+      [
+       128,
+       107.5
+      ],
+      [
+       0,
+       107.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "09H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1533088,
+   "offset": 161872,
+   "length": 11536,
+   "before_sha256": "91e05c1b2265e971fd3ec8f531ab5fd79f7ba96bfd3390c8f0109f7e24014f66",
+   "after_sha256": "cb2687daaa09969ad4702f8fa3b4c7d3a2e2954d15de6f85bc4bdcba3ea55a24",
+   "defects": [
+    "uw2-DET-home-0-sleeve-bands"
+   ],
+   "note": "silver panel with white lines moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       19.5
+      ],
+      [
+       0,
+       19.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       19.5
+      ],
+      [
+       128,
+       19.5
+      ],
+      [
+       128,
+       30.0
+      ],
+      [
+       0,
+       30.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       30.0
+      ],
+      [
+       128,
+       30.0
+      ],
+      [
+       128,
+       31.5
+      ],
+      [
+       0,
+       31.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       31.5
+      ],
+      [
+       128,
+       31.5
+      ],
+      [
+       128,
+       42.0
+      ],
+      [
+       0,
+       42.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       42.0
+      ],
+      [
+       128,
+       42.0
+      ],
+      [
+       128,
+       43.5
+      ],
+      [
+       0,
+       43.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0076B6",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       83.5
+      ],
+      [
+       0,
+       83.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       83.5
+      ],
+      [
+       128,
+       83.5
+      ],
+      [
+       128,
+       94.0
+      ],
+      [
+       0,
+       94.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       94.0
+      ],
+      [
+       128,
+       94.0
+      ],
+      [
+       128,
+       95.5
+      ],
+      [
+       0,
+       95.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0B7BC",
+     "points": [
+      [
+       0,
+       95.5
+      ],
+      [
+       128,
+       95.5
+      ],
+      [
+       128,
+       106.0
+      ],
+      [
+       0,
+       106.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       106.0
+      ],
+      [
+       128,
+       106.0
+      ],
+      [
+       128,
+       107.5
+      ],
+      [
+       0,
+       107.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "10H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1492832,
+   "offset": 152416,
+   "length": 10272,
+   "before_sha256": "3648ba5a35650886e201e8e8b7a32e1a45e68d6069e2062c9c887ae4252949c4",
+   "after_sha256": "bab1a88e611ca87c76a05eee52cb202bcfcfba1fb417642572cac3dff30f7e20",
+   "defects": [
+    "uw2-GB-home-0-sleeve-bands"
+   ],
+   "note": "gold/white/gold stack moved up from the hem",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#26413A",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       0,
+       25.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#2D4539",
+     "points": [
+      [
+       0,
+       25.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       128,
+       25.75
+      ],
+      [
+       0,
+       25.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       25.75
+      ],
+      [
+       128,
+       25.75
+      ],
+      [
+       128,
+       31.75
+      ],
+      [
+       0,
+       31.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#2D4539",
+     "points": [
+      [
+       0,
+       31.75
+      ],
+      [
+       128,
+       31.75
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       0,
+       32.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       32.5
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       128,
+       39.5
+      ],
+      [
+       0,
+       39.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#26413A",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       0,
+       89.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#2D4539",
+     "points": [
+      [
+       0,
+       89.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       128,
+       89.75
+      ],
+      [
+       0,
+       89.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       89.75
+      ],
+      [
+       128,
+       89.75
+      ],
+      [
+       128,
+       95.75
+      ],
+      [
+       0,
+       95.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#2D4539",
+     "points": [
+      [
+       0,
+       95.75
+      ],
+      [
+       128,
+       95.75
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       0,
+       96.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       96.5
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       128,
+       103.5
+      ],
+      [
+       0,
+       103.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1539552,
+   "offset": 173520,
+   "length": 11552,
+   "before_sha256": "a0be6fe41f3fe3cf9cfe3e251e4ae15548a0d2f3265aba80b921f4c8daab7d3e",
+   "after_sha256": "5b71d48407c2eead0fe269ffbdd83e3ea9aaf7d7f6585abd766a3ebe3b8ab022",
+   "defects": [
+    "uw2-KC-away-0-sleeve-bands"
+   ],
+   "note": "red/gold/red stack moved up from the hem",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#E31837",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       24.5
+      ],
+      [
+       0,
+       24.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       24.5
+      ],
+      [
+       128,
+       24.5
+      ],
+      [
+       128,
+       30.5
+      ],
+      [
+       0,
+       30.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#E31837",
+     "points": [
+      [
+       0,
+       30.5
+      ],
+      [
+       128,
+       30.5
+      ],
+      [
+       128,
+       37.0
+      ],
+      [
+       0,
+       37.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#E31837",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       88.5
+      ],
+      [
+       0,
+       88.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       88.5
+      ],
+      [
+       128,
+       88.5
+      ],
+      [
+       128,
+       94.5
+      ],
+      [
+       0,
+       94.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#E31837",
+     "points": [
+      [
+       0,
+       94.5
+      ],
+      [
+       128,
+       94.5
+      ],
+      [
+       128,
+       101.0
+      ],
+      [
+       0,
+       101.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 4,
+   "texture": "socks00",
+   "kind": "tset",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1528096,
+   "offset": 176784,
+   "length": 6720,
+   "before_sha256": "41906eb75be8879410e932ff4836bf3d7d0bda8038ffd96680e19a364ff625f6",
+   "after_sha256": "ef54bc74e8807a918ecdf37cb746bba70012cb1d1539297947ddc00d34b3c829",
+   "defects": [
+    "uw2-KC-home-0-sock-bands"
+   ],
+   "note": "white/gold band and white foot under the red sock (2026 week 1)",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       41
+      ],
+      [
+       64,
+       41
+      ],
+      [
+       64,
+       43
+      ],
+      [
+       0,
+       43
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFB612",
+     "points": [
+      [
+       0,
+       43
+      ],
+      [
+       64,
+       43
+      ],
+      [
+       64,
+       47.5
+      ],
+      [
+       0,
+       47.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       47.5
+      ],
+      [
+       64,
+       47.5
+      ],
+      [
+       64,
+       64
+      ],
+      [
+       0,
+       64
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "15A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1534192,
+   "offset": 167600,
+   "length": 11520,
+   "before_sha256": "6b25067bd996cb84944d35bc1d9717d6118e5ba6b3685d574aaa3d5d4a295abf",
+   "after_sha256": "d95d7a208f4acab325036cea53440a31885fa75419e8b02f062eb1a8a19cb645",
+   "defects": [
+    "uw2-MIN-away-0-sleeve-bands"
+   ],
+   "note": "purple over gold band moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4F2683",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       0,
+       25.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC62F",
+     "points": [
+      [
+       0,
+       25.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       128,
+       32.0
+      ],
+      [
+       0,
+       32.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4F2683",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       0,
+       89.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC62F",
+     "points": [
+      [
+       0,
+       89.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       128,
+       96.0
+      ],
+      [
+       0,
+       96.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "15H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1513424,
+   "offset": 151472,
+   "length": 10368,
+   "before_sha256": "c6ece0901629a53094b07ebb8c725698367f4af9aa59911e1dfab99419a1e65b",
+   "after_sha256": "9075612c2c378eeaa86f1ac53a0fe8dadb84f8b583ddfcb9170fb8c5063533f6",
+   "defects": [
+    "uw2-MIN-home-0-sleeve-bands"
+   ],
+   "note": "white over gold band moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#4F2683",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       0,
+       25.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC62F",
+     "points": [
+      [
+       0,
+       25.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       128,
+       32.0
+      ],
+      [
+       0,
+       32.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4F2683",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       0,
+       89.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC62F",
+     "points": [
+      [
+       0,
+       89.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       128,
+       96.0
+      ],
+      [
+       0,
+       96.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "17A0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1530272,
+   "offset": 112,
+   "length": 77888,
+   "before_sha256": "3977fb9bd9d0c38c72729d1b80c6816cab6a47f99953d8edb9d8a313af0642c0",
+   "after_sha256": "e2c0bdd2b7987e1b764f3101d07852b456134a68a3305660f85089c17a2491b6",
+   "defects": [
+    "uw2-NO-away-0-neckline-panel"
+   ],
+   "note": "front black V-neck band widened to the 2026 width",
+   "ops": [
+    {
+     "op": "grow",
+     "box": [
+      104,
+      0,
+      216,
+      70
+     ],
+     "from": [
+      "#060606"
+     ],
+     "into": [
+      "*"
+     ],
+     "except": [
+      "#DCDCDC"
+     ],
+     "color": "#060606",
+     "radius": 4.5,
+     "tolerance": 14
+    },
+    {
+     "op": "enclosed",
+     "box": [
+      104,
+      0,
+      216,
+      70
+     ],
+     "edge": [
+      "#060606"
+     ],
+     "color": "#060606",
+     "tolerance": 40
+    }
+   ]
+  },
+  {
+   "selector": "18A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1517680,
+   "offset": 164720,
+   "length": 10464,
+   "before_sha256": "e0809aa029f7eceb312b10782f844a1ca854f3a32b001fe7ba47bbd62336f0df",
+   "after_sha256": "6527ece3636676da019c54548a51f96d170c0a0a6598d832576e2691dbeb8dea",
+   "defects": [
+    "uw2-NYG-away-0-sleeves"
+   ],
+   "note": "red thin/broad/thin stack moved up from the hem",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       19.5
+      ],
+      [
+       128,
+       19.5
+      ],
+      [
+       128,
+       22.0
+      ],
+      [
+       0,
+       22.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       25.0
+      ],
+      [
+       128,
+       25.0
+      ],
+      [
+       128,
+       36.5
+      ],
+      [
+       0,
+       36.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       39.5
+      ],
+      [
+       128,
+       39.5
+      ],
+      [
+       128,
+       42.0
+      ],
+      [
+       0,
+       42.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       83.5
+      ],
+      [
+       128,
+       83.5
+      ],
+      [
+       128,
+       86.0
+      ],
+      [
+       0,
+       86.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       89.0
+      ],
+      [
+       128,
+       89.0
+      ],
+      [
+       128,
+       100.5
+      ],
+      [
+       0,
+       100.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B81A35",
+     "points": [
+      [
+       0,
+       103.5
+      ],
+      [
+       128,
+       103.5
+      ],
+      [
+       128,
+       106.0
+      ],
+      [
+       0,
+       106.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "18A7",
+   "chunk": 33,
+   "texture": "an48",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 461616,
+   "length": 1008,
+   "before_sha256": "07874be38fe25393e430fe46b8604fb93a6cd2ef97876f65e9a714bef244a50b",
+   "after_sha256": "9d7de3cabe1d62e244cacf98bdc108cb76f1ac0bfaae1aee260aade14fef2063",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 13,
+   "donor_texture": "48",
+   "donor_sha256": "aefc81969b7eec77acddb632115d749d0c5f637346682da3711b0be2dc75a7ea"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 34,
+   "texture": "an49",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 462624,
+   "length": 800,
+   "before_sha256": "7d5969eba984de91fe70ded1a426cf766ad2046e1a060b106bd6a3f9e613c554",
+   "after_sha256": "b9213337df07b6905a946bb19a2fbf57161aed010fb845e72697f4b4e7aea6b1",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 14,
+   "donor_texture": "49",
+   "donor_sha256": "bdadfec7b4bdcfec1b5a785e3386a5a5d81b28d32bbc59407842142cda4fde8a"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 35,
+   "texture": "an50",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 463424,
+   "length": 1312,
+   "before_sha256": "467868d016d503243980b87773cf60c8c1b195dbdf593eccd65464422100b23d",
+   "after_sha256": "47888d2b2d213b4fee4249f78eace4d5737b21a03e0006f9baff61446e642ccd",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 15,
+   "donor_texture": "50",
+   "donor_sha256": "fe376e6fa335d64c8922163ad444d6e7ca442ec0aba60655c5a79726af4c9597"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 36,
+   "texture": "an51",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 464736,
+   "length": 1328,
+   "before_sha256": "28980f26d20823d92a40a5ea50b9311e79cbc8581bc5495c07e1fe33f36332e7",
+   "after_sha256": "523f52fda88ded8baf877592f9bd9212861df43820dd2f828c76b9195f22f04b",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 16,
+   "donor_texture": "51",
+   "donor_sha256": "6e81537f392148132dbfceef30f1061de610c92c80dde0a889a78151fab267f4"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 37,
+   "texture": "an52",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 466064,
+   "length": 1232,
+   "before_sha256": "119d987c6bb5fc30501005b49b355f93a262d1f0759ad9de37fa76e09ed6db83",
+   "after_sha256": "23c4bfd3e5e80617a5b3d932a66f90d45c0b0aa1c41abae7cc3ddf94d40c5da1",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 17,
+   "donor_texture": "52",
+   "donor_sha256": "30198f974a16642b43cb13c895b4184734976681fbc61356d37613c9a864ce06"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 38,
+   "texture": "an53",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 467296,
+   "length": 1184,
+   "before_sha256": "ceee3183c5e721e800b17a8e4454f273e88b27d90b46656a0a457dd7d0124ce2",
+   "after_sha256": "1a43144122a0165e30313aad8df37a4c1c8368baf087e95909fafacde31de247",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 18,
+   "donor_texture": "53",
+   "donor_sha256": "16508f10e666f632732608e21145ae9372f14af61ebf2ba53de34de71a3dbb7d"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 39,
+   "texture": "an54",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 468480,
+   "length": 1216,
+   "before_sha256": "838cf6c7d7fcf1ed31390b623d859749768876665a5cac1053650b080a23ecdf",
+   "after_sha256": "7622ffd91b200533c8ec7c8e0b1747bd60df24efdf773d72bc27f3915c7d95b8",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 19,
+   "donor_texture": "54",
+   "donor_sha256": "6b286e3bccf0e6032b68e134ac828f69a09c3c6b4854008a24facfe08e6cfd68"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 40,
+   "texture": "an55",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 469696,
+   "length": 1312,
+   "before_sha256": "fa14ca479cb9391d61121e9df896a8b15ab65b8af514f68b9957d7b9856a2c3b",
+   "after_sha256": "a6e939df8b7c873983bf790f2cf9e0f3b966bf8257622472df131c5ea48fc0c3",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 20,
+   "donor_texture": "55",
+   "donor_sha256": "3774a5a845370e92ea887211f0a6cb26ef471ffb4580994a728738ea04a570d5"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 41,
+   "texture": "an56",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 471008,
+   "length": 1184,
+   "before_sha256": "191247e62fc9a605eae4008b1f70c60937a33d3668bfea89bed2a0bcc0a3b1f3",
+   "after_sha256": "05871bd0aff6da1e067211c3c5343849a83ffd0f4e685689e003c5ac62a57cd4",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 21,
+   "donor_texture": "56",
+   "donor_sha256": "69c0d6e74a497125de7b8ff3d72e49acd0466d0478d223e279828bd59a4b8f5b"
+  },
+  {
+   "selector": "18A7",
+   "chunk": 42,
+   "texture": "an57",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505216,
+   "offset": 472192,
+   "length": 1216,
+   "before_sha256": "205b1364767352db58ef8c0dca6f25fb52d97c0ecda1ed1fffa26e3af4f38dee",
+   "after_sha256": "a549395852f09503f977cb4efdf6118a393d0860e014315176658070dce92fb7",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 22,
+   "donor_texture": "57",
+   "donor_sha256": "6e3182d4376eb098cfab3f6a422ab438a7f3ef68c94448fe851e24bf198e4d63"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 33,
+   "texture": "an48",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 461616,
+   "length": 1008,
+   "before_sha256": "07874be38fe25393e430fe46b8604fb93a6cd2ef97876f65e9a714bef244a50b",
+   "after_sha256": "9d7de3cabe1d62e244cacf98bdc108cb76f1ac0bfaae1aee260aade14fef2063",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 13,
+   "donor_texture": "48",
+   "donor_sha256": "aefc81969b7eec77acddb632115d749d0c5f637346682da3711b0be2dc75a7ea"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 34,
+   "texture": "an49",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 462624,
+   "length": 800,
+   "before_sha256": "7d5969eba984de91fe70ded1a426cf766ad2046e1a060b106bd6a3f9e613c554",
+   "after_sha256": "b9213337df07b6905a946bb19a2fbf57161aed010fb845e72697f4b4e7aea6b1",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 14,
+   "donor_texture": "49",
+   "donor_sha256": "bdadfec7b4bdcfec1b5a785e3386a5a5d81b28d32bbc59407842142cda4fde8a"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 35,
+   "texture": "an50",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 463424,
+   "length": 1312,
+   "before_sha256": "467868d016d503243980b87773cf60c8c1b195dbdf593eccd65464422100b23d",
+   "after_sha256": "47888d2b2d213b4fee4249f78eace4d5737b21a03e0006f9baff61446e642ccd",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 15,
+   "donor_texture": "50",
+   "donor_sha256": "fe376e6fa335d64c8922163ad444d6e7ca442ec0aba60655c5a79726af4c9597"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 36,
+   "texture": "an51",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 464736,
+   "length": 1328,
+   "before_sha256": "28980f26d20823d92a40a5ea50b9311e79cbc8581bc5495c07e1fe33f36332e7",
+   "after_sha256": "523f52fda88ded8baf877592f9bd9212861df43820dd2f828c76b9195f22f04b",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 16,
+   "donor_texture": "51",
+   "donor_sha256": "6e81537f392148132dbfceef30f1061de610c92c80dde0a889a78151fab267f4"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 37,
+   "texture": "an52",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 466064,
+   "length": 1232,
+   "before_sha256": "119d987c6bb5fc30501005b49b355f93a262d1f0759ad9de37fa76e09ed6db83",
+   "after_sha256": "23c4bfd3e5e80617a5b3d932a66f90d45c0b0aa1c41abae7cc3ddf94d40c5da1",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 17,
+   "donor_texture": "52",
+   "donor_sha256": "30198f974a16642b43cb13c895b4184734976681fbc61356d37613c9a864ce06"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 38,
+   "texture": "an53",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 467296,
+   "length": 1184,
+   "before_sha256": "ceee3183c5e721e800b17a8e4454f273e88b27d90b46656a0a457dd7d0124ce2",
+   "after_sha256": "1a43144122a0165e30313aad8df37a4c1c8368baf087e95909fafacde31de247",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 18,
+   "donor_texture": "53",
+   "donor_sha256": "16508f10e666f632732608e21145ae9372f14af61ebf2ba53de34de71a3dbb7d"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 39,
+   "texture": "an54",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 468480,
+   "length": 1216,
+   "before_sha256": "838cf6c7d7fcf1ed31390b623d859749768876665a5cac1053650b080a23ecdf",
+   "after_sha256": "7622ffd91b200533c8ec7c8e0b1747bd60df24efdf773d72bc27f3915c7d95b8",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 19,
+   "donor_texture": "54",
+   "donor_sha256": "6b286e3bccf0e6032b68e134ac828f69a09c3c6b4854008a24facfe08e6cfd68"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 40,
+   "texture": "an55",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 469696,
+   "length": 1312,
+   "before_sha256": "fa14ca479cb9391d61121e9df896a8b15ab65b8af514f68b9957d7b9856a2c3b",
+   "after_sha256": "a6e939df8b7c873983bf790f2cf9e0f3b966bf8257622472df131c5ea48fc0c3",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 20,
+   "donor_texture": "55",
+   "donor_sha256": "3774a5a845370e92ea887211f0a6cb26ef471ffb4580994a728738ea04a570d5"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 41,
+   "texture": "an56",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 471008,
+   "length": 1184,
+   "before_sha256": "191247e62fc9a605eae4008b1f70c60937a33d3668bfea89bed2a0bcc0a3b1f3",
+   "after_sha256": "05871bd0aff6da1e067211c3c5343849a83ffd0f4e685689e003c5ac62a57cd4",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 21,
+   "donor_texture": "56",
+   "donor_sha256": "69c0d6e74a497125de7b8ff3d72e49acd0466d0478d223e279828bd59a4b8f5b"
+  },
+  {
+   "selector": "18H7",
+   "chunk": 42,
+   "texture": "an57",
+   "kind": "copy_video",
+   "size": [
+    64,
+    64,
+    4
+   ],
+   "resource_size": 1505296,
+   "offset": 472192,
+   "length": 1216,
+   "before_sha256": "205b1364767352db58ef8c0dca6f25fb52d97c0ecda1ed1fffa26e3af4f38dee",
+   "after_sha256": "a549395852f09503f977cb4efdf6118a393d0860e014315176658070dce92fb7",
+   "defects": [
+    "ny1-NYG-style7-shoulder-outline"
+   ],
+   "note": "shoulder digit takes the chest digit's red-outlined palette and mip chain",
+   "donor_chunk": 22,
+   "donor_texture": "57",
+   "donor_sha256": "6e3182d4376eb098cfab3f6a422ab438a7f3ef68c94448fe851e24bf198e4d63"
+  },
+  {
+   "selector": "19A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1513936,
+   "offset": 165824,
+   "length": 8240,
+   "before_sha256": "a1431e43b87b0b789df4ec851932050165121abe2face96fdee299ffcf6a975b",
+   "after_sha256": "c7b2f0ffe0999ad173593fcff7e4d55b5c327ef8280883e3fed39fd30651e679",
+   "defects": [
+    "uw2-NYJ-away-0-shoulder-sleeve-layout"
+   ],
+   "note": "two broad green bars moved up and widened (the shoulder-top TV numbers stay: 2026 photos show them)",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       26.0
+      ],
+      [
+       0,
+       26.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       30.0
+      ],
+      [
+       128,
+       30.0
+      ],
+      [
+       128,
+       38.0
+      ],
+      [
+       0,
+       38.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       90.0
+      ],
+      [
+       0,
+       90.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       94.0
+      ],
+      [
+       128,
+       94.0
+      ],
+      [
+       128,
+       102.0
+      ],
+      [
+       0,
+       102.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "19H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1507904,
+   "offset": 156112,
+   "length": 10960,
+   "before_sha256": "2180e7924ff2327920f4dc7c74b3c65d1136540e63cae7c80f94c3e7c376c68a",
+   "after_sha256": "a98dbd140a563337f039eb70611b59dd4d3cfa2739d6c662cc294848abbf78f2",
+   "defects": [
+    "uw2-NYJ-home-0-sleeve-layout"
+   ],
+   "note": "two broad white bars moved up and widened (the shoulder-top TV numbers stay: 2026 photos show them)",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       26.0
+      ],
+      [
+       0,
+       26.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       30.0
+      ],
+      [
+       128,
+       30.0
+      ],
+      [
+       128,
+       38.0
+      ],
+      [
+       0,
+       38.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#145F47",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       90.0
+      ],
+      [
+       0,
+       90.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       94.0
+      ],
+      [
+       128,
+       94.0
+      ],
+      [
+       128,
+       102.0
+      ],
+      [
+       0,
+       102.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "23A0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1527600,
+   "offset": 112,
+   "length": 80880,
+   "before_sha256": "643f9cbeef6f3a596036eb4da884e5602d2faf2b713a3f0227b4597254a494e3",
+   "after_sha256": "c94c20bc46eb3aa65d7cd72a0b519d037e5962e8881d0e03db9decceee646427",
+   "defects": [
+    "uw2-LAR-away-0-front-yoke"
+   ],
+   "note": "the shoulder horns on the white torso are royal blue (2026 unveil and week 4 photos); the yellow stays on the sleeves",
+   "ops": [
+    {
+     "op": "recolor",
+     "box": [
+      44,
+      8,
+      100,
+      92
+     ],
+     "from": [
+      "#FFD100"
+     ],
+     "color": "#003594",
+     "tolerance": 120
+    },
+    {
+     "op": "recolor",
+     "box": [
+      224,
+      8,
+      296,
+      92
+     ],
+     "from": [
+      "#FFD100"
+     ],
+     "color": "#003594",
+     "tolerance": 120
+    },
+    {
+     "op": "recolor",
+     "box": [
+      264,
+      14,
+      320,
+      92
+     ],
+     "from": [
+      "#FFD100"
+     ],
+     "color": "#003594",
+     "tolerance": 120
+    },
+    {
+     "op": "recolor",
+     "box": [
+      458,
+      14,
+      506,
+      92
+     ],
+     "from": [
+      "#FFD100"
+     ],
+     "color": "#003594",
+     "tolerance": 120
+    },
+    {
+     "op": "recolor",
+     "box": [
+      44,
+      8,
+      100,
+      92
+     ],
+     "from": [
+      "#FFF4C1",
+      "#FFEFA0"
+     ],
+     "color": "#8C9BC9",
+     "tolerance": 40
+    },
+    {
+     "op": "recolor",
+     "box": [
+      224,
+      8,
+      296,
+      92
+     ],
+     "from": [
+      "#FFF4C1",
+      "#FFEFA0"
+     ],
+     "color": "#8C9BC9",
+     "tolerance": 40
+    },
+    {
+     "op": "recolor",
+     "box": [
+      264,
+      14,
+      320,
+      92
+     ],
+     "from": [
+      "#FFF4C1",
+      "#FFEFA0"
+     ],
+     "color": "#8C9BC9",
+     "tolerance": 40
+    },
+    {
+     "op": "recolor",
+     "box": [
+      458,
+      14,
+      506,
+      92
+     ],
+     "from": [
+      "#FFF4C1",
+      "#FFEFA0"
+     ],
+     "color": "#8C9BC9",
+     "tolerance": 40
+    }
+   ]
+  },
+  {
+   "selector": "24H0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1533312,
+   "offset": 112,
+   "length": 68464,
+   "before_sha256": "bfc1451b977ea80d87009f4306e80891a9aa2345cff74f631b5fc123c95025a6",
+   "after_sha256": "67afb394c2034852b33170215dfbc3c4de62ec2b231fc5ff7a7122427dbfe174",
+   "defects": [
+    "uw2-LAC-home-0-shoulder-bolt"
+   ],
+   "note": "broad gold shoulder bolt with two angular steps and a white border, on the old bolt's path",
+   "ops": [
+    {
+     "op": "recolor",
+     "box": [
+      60,
+      0,
+      104,
+      100
+     ],
+     "from": [
+      "#0080C6"
+     ],
+     "color": "#0080C6",
+     "tolerance": 10,
+     "invert": true
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       56.578,
+       -1.7
+      ],
+      [
+       86.313,
+       -1.7
+      ],
+      [
+       83.996,
+       34.42
+      ],
+      [
+       94.964,
+       32.433
+      ],
+      [
+       87.843,
+       64.96
+      ],
+      [
+       96.337,
+       63.063
+      ],
+      [
+       88.991,
+       100.846
+      ],
+      [
+       76.278,
+       63.478
+      ],
+      [
+       67.834,
+       65.612
+      ],
+      [
+       71.403,
+       34.721
+      ],
+      [
+       61.29,
+       36.554
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC210",
+     "points": [
+      [
+       58.5,
+       0.0
+      ],
+      [
+       84.5,
+       0.0
+      ],
+      [
+       82.161,
+       36.48
+      ],
+      [
+       92.758,
+       34.56
+      ],
+      [
+       85.612,
+       67.2
+      ],
+      [
+       94.209,
+       65.28
+      ],
+      [
+       88.66,
+       96.0
+      ],
+      [
+       77.402,
+       61.44
+      ],
+      [
+       69.806,
+       63.36
+      ],
+      [
+       73.354,
+       32.64
+      ],
+      [
+       62.758,
+       34.56
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      220,
+      0,
+      266,
+      100
+     ],
+     "from": [
+      "#0080C6"
+     ],
+     "color": "#0080C6",
+     "tolerance": 10,
+     "invert": true
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       267.422,
+       -1.7
+      ],
+      [
+       237.687,
+       -1.7
+      ],
+      [
+       240.004,
+       34.42
+      ],
+      [
+       229.036,
+       32.433
+      ],
+      [
+       236.157,
+       64.96
+      ],
+      [
+       227.663,
+       63.063
+      ],
+      [
+       235.009,
+       100.846
+      ],
+      [
+       247.722,
+       63.478
+      ],
+      [
+       256.166,
+       65.612
+      ],
+      [
+       252.597,
+       34.721
+      ],
+      [
+       262.71,
+       36.554
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC210",
+     "points": [
+      [
+       265.5,
+       0.0
+      ],
+      [
+       239.5,
+       0.0
+      ],
+      [
+       241.839,
+       36.48
+      ],
+      [
+       231.242,
+       34.56
+      ],
+      [
+       238.388,
+       67.2
+      ],
+      [
+       229.791,
+       65.28
+      ],
+      [
+       235.34,
+       96.0
+      ],
+      [
+       246.598,
+       61.44
+      ],
+      [
+       254.194,
+       63.36
+      ],
+      [
+       250.646,
+       32.64
+      ],
+      [
+       261.242,
+       34.56
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      286,
+      0,
+      320,
+      100
+     ],
+     "from": [
+      "#0080C6"
+     ],
+     "color": "#0080C6",
+     "tolerance": 10,
+     "invert": true
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       314.844,
+       -1.7
+      ],
+      [
+       284.932,
+       -1.7
+      ],
+      [
+       300.194,
+       34.283
+      ],
+      [
+       288.398,
+       32.277
+      ],
+      [
+       307.207,
+       64.767
+      ],
+      [
+       298.06,
+       62.876
+      ],
+      [
+       319.172,
+       100.688
+      ],
+      [
+       318.491,
+       63.596
+      ],
+      [
+       328.052,
+       65.811
+      ],
+      [
+       313.336,
+       34.865
+      ],
+      [
+       323.93,
+       36.666
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC210",
+     "points": [
+      [
+       313.5,
+       0.0
+      ],
+      [
+       287.5,
+       0.0
+      ],
+      [
+       302.972,
+       36.48
+      ],
+      [
+       291.684,
+       34.56
+      ],
+      [
+       310.58,
+       67.2
+      ],
+      [
+       301.292,
+       65.28
+      ],
+      [
+       317.9,
+       96.0
+      ],
+      [
+       316.716,
+       61.44
+      ],
+      [
+       325.004,
+       63.36
+      ],
+      [
+       310.396,
+       32.64
+      ],
+      [
+       321.684,
+       34.56
+      ]
+     ]
+    },
+    {
+     "op": "recolor",
+     "box": [
+      458,
+      0,
+      492,
+      100
+     ],
+     "from": [
+      "#0080C6"
+     ],
+     "color": "#0080C6",
+     "tolerance": 10,
+     "invert": true
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       463.156,
+       -1.7
+      ],
+      [
+       493.068,
+       -1.7
+      ],
+      [
+       477.806,
+       34.283
+      ],
+      [
+       489.602,
+       32.277
+      ],
+      [
+       470.793,
+       64.767
+      ],
+      [
+       479.94,
+       62.876
+      ],
+      [
+       458.828,
+       100.688
+      ],
+      [
+       459.509,
+       63.596
+      ],
+      [
+       449.948,
+       65.811
+      ],
+      [
+       464.664,
+       34.865
+      ],
+      [
+       454.07,
+       36.666
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFC210",
+     "points": [
+      [
+       464.5,
+       0.0
+      ],
+      [
+       490.5,
+       0.0
+      ],
+      [
+       475.028,
+       36.48
+      ],
+      [
+       486.316,
+       34.56
+      ],
+      [
+       467.42,
+       67.2
+      ],
+      [
+       476.708,
+       65.28
+      ],
+      [
+       460.1,
+       96.0
+      ],
+      [
+       461.284,
+       61.44
+      ],
+      [
+       452.996,
+       63.36
+      ],
+      [
+       467.604,
+       32.64
+      ],
+      [
+       456.316,
+       34.56
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "25A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1547600,
+   "offset": 164496,
+   "length": 11808,
+   "before_sha256": "06e763fecfe5e33a1f3c97dbed2b3a92a58cac697790a6e8ef4c5a165be81041",
+   "after_sha256": "f83a106f3b770ec3218e5fec9aa8a64eae48b254cb21060c9c0682791f401a24",
+   "defects": [
+    "uw2-SF-away-0-sleeve-bands"
+   ],
+   "note": "three red stripes moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       23.5
+      ],
+      [
+       0,
+       23.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       27.5
+      ],
+      [
+       128,
+       27.5
+      ],
+      [
+       128,
+       33.0
+      ],
+      [
+       0,
+       33.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       37.0
+      ],
+      [
+       128,
+       37.0
+      ],
+      [
+       128,
+       42.5
+      ],
+      [
+       0,
+       42.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       87.5
+      ],
+      [
+       0,
+       87.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       91.5
+      ],
+      [
+       128,
+       91.5
+      ],
+      [
+       128,
+       97.0
+      ],
+      [
+       0,
+       97.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       101.0
+      ],
+      [
+       128,
+       101.0
+      ],
+      [
+       128,
+       106.5
+      ],
+      [
+       0,
+       106.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "25A0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1547600,
+   "offset": 112,
+   "length": 84928,
+   "before_sha256": "c45521ceba466d56b62d70db0d5eb87d7eaae641e5d76c3807ecda7c6434e786",
+   "after_sha256": "980df20b08852e8b2694a47460b8a2e7839e45f45480a5ca5f251c66985551fe",
+   "defects": [
+    "uw2-SF-away-0-anniversary-chest"
+   ],
+   "note": "49ers 80 YEARS patch on the upper left chest",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#B3995D",
+     "points": [
+      [
+       186.5,
+       68.0
+      ],
+      [
+       201.5,
+       68.0
+      ],
+      [
+       203.5,
+       70.0
+      ],
+      [
+       203.5,
+       82.0
+      ],
+      [
+       201.5,
+       84.0
+      ],
+      [
+       186.5,
+       84.0
+      ],
+      [
+       184.5,
+       82.0
+      ],
+      [
+       184.5,
+       70.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       187.8,
+       69.3
+      ],
+      [
+       200.2,
+       69.3
+      ],
+      [
+       202.2,
+       71.3
+      ],
+      [
+       202.2,
+       80.7
+      ],
+      [
+       200.2,
+       82.7
+      ],
+      [
+       187.8,
+       82.7
+      ],
+      [
+       185.8,
+       80.7
+      ],
+      [
+       185.8,
+       71.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       70.2
+      ],
+      [
+       192.9,
+       70.2
+      ],
+      [
+       192.9,
+       72.0
+      ],
+      [
+       186.9,
+       72.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       73.56
+      ],
+      [
+       192.9,
+       73.56
+      ],
+      [
+       192.9,
+       75.24000000000001
+      ],
+      [
+       186.9,
+       75.24000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       76.8
+      ],
+      [
+       192.9,
+       76.8
+      ],
+      [
+       192.9,
+       78.60000000000001
+      ],
+      [
+       186.9,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       70.2
+      ],
+      [
+       188.82,
+       70.2
+      ],
+      [
+       188.82,
+       78.60000000000001
+      ],
+      [
+       186.9,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       190.98000000000002,
+       70.2
+      ],
+      [
+       192.9,
+       70.2
+      ],
+      [
+       192.9,
+       78.60000000000001
+      ],
+      [
+       190.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       72.0
+      ],
+      [
+       193.98000000000002,
+       72.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       76.8
+      ],
+      [
+       199.98000000000002,
+       76.8
+      ],
+      [
+       199.98000000000002,
+       78.60000000000001
+      ],
+      [
+       193.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       70.2
+      ],
+      [
+       195.9,
+       70.2
+      ],
+      [
+       195.9,
+       78.60000000000001
+      ],
+      [
+       193.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       198.06000000000003,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       78.60000000000001
+      ],
+      [
+       198.06000000000003,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#AA0000",
+     "points": [
+      [
+       202.5,
+       73.4
+      ],
+      [
+       209.0,
+       73.4
+      ],
+      [
+       207.7,
+       75.4
+      ],
+      [
+       209.0,
+       77.4
+      ],
+      [
+       202.5,
+       77.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#AA0000",
+     "points": [
+      [
+       190.8,
+       80.4
+      ],
+      [
+       197.2,
+       80.4
+      ],
+      [
+       197.2,
+       82.4
+      ],
+      [
+       190.8,
+       82.4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "25H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1530144,
+   "offset": 146368,
+   "length": 10848,
+   "before_sha256": "09b24eba765dd17ed2519ee1cd864ed291a12aab9fab00f50e887c158cdbc875",
+   "after_sha256": "be6bccaff1ed9338c7ad19ee6a8fa7dbe627c5c562a93b47582931cb36dc39a9",
+   "defects": [
+    "uw2-SF-home-0-sleeve-bands"
+   ],
+   "note": "three white stripes moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       18.0
+      ],
+      [
+       128,
+       18.0
+      ],
+      [
+       128,
+       23.5
+      ],
+      [
+       0,
+       23.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       27.5
+      ],
+      [
+       128,
+       27.5
+      ],
+      [
+       128,
+       33.0
+      ],
+      [
+       0,
+       33.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       37.0
+      ],
+      [
+       128,
+       37.0
+      ],
+      [
+       128,
+       42.5
+      ],
+      [
+       0,
+       42.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B0080E",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       82.0
+      ],
+      [
+       128,
+       82.0
+      ],
+      [
+       128,
+       87.5
+      ],
+      [
+       0,
+       87.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       91.5
+      ],
+      [
+       128,
+       91.5
+      ],
+      [
+       128,
+       97.0
+      ],
+      [
+       0,
+       97.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       101.0
+      ],
+      [
+       128,
+       101.0
+      ],
+      [
+       128,
+       106.5
+      ],
+      [
+       0,
+       106.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "25H0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1530144,
+   "offset": 112,
+   "length": 66800,
+   "before_sha256": "4ca6b03eef54e748f8ad005a64afbe9b8996cd971bfdced9bd26872f15b9bf82",
+   "after_sha256": "f3b4ae2665db0274fc5622acee7c7934ea0862264d4c064161db738b868e7619",
+   "defects": [
+    "uw2-SF-home-0-anniversary-chest"
+   ],
+   "note": "49ers 80 YEARS patch on the upper left chest",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#B3995D",
+     "points": [
+      [
+       186.5,
+       68.0
+      ],
+      [
+       201.5,
+       68.0
+      ],
+      [
+       203.5,
+       70.0
+      ],
+      [
+       203.5,
+       82.0
+      ],
+      [
+       201.5,
+       84.0
+      ],
+      [
+       186.5,
+       84.0
+      ],
+      [
+       184.5,
+       82.0
+      ],
+      [
+       184.5,
+       70.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       187.8,
+       69.3
+      ],
+      [
+       200.2,
+       69.3
+      ],
+      [
+       202.2,
+       71.3
+      ],
+      [
+       202.2,
+       80.7
+      ],
+      [
+       200.2,
+       82.7
+      ],
+      [
+       187.8,
+       82.7
+      ],
+      [
+       185.8,
+       80.7
+      ],
+      [
+       185.8,
+       71.3
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       70.2
+      ],
+      [
+       192.9,
+       70.2
+      ],
+      [
+       192.9,
+       72.0
+      ],
+      [
+       186.9,
+       72.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       73.56
+      ],
+      [
+       192.9,
+       73.56
+      ],
+      [
+       192.9,
+       75.24000000000001
+      ],
+      [
+       186.9,
+       75.24000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       76.8
+      ],
+      [
+       192.9,
+       76.8
+      ],
+      [
+       192.9,
+       78.60000000000001
+      ],
+      [
+       186.9,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       186.9,
+       70.2
+      ],
+      [
+       188.82,
+       70.2
+      ],
+      [
+       188.82,
+       78.60000000000001
+      ],
+      [
+       186.9,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       190.98000000000002,
+       70.2
+      ],
+      [
+       192.9,
+       70.2
+      ],
+      [
+       192.9,
+       78.60000000000001
+      ],
+      [
+       190.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       72.0
+      ],
+      [
+       193.98000000000002,
+       72.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       76.8
+      ],
+      [
+       199.98000000000002,
+       76.8
+      ],
+      [
+       199.98000000000002,
+       78.60000000000001
+      ],
+      [
+       193.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       193.98000000000002,
+       70.2
+      ],
+      [
+       195.9,
+       70.2
+      ],
+      [
+       195.9,
+       78.60000000000001
+      ],
+      [
+       193.98000000000002,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#1A1A1A",
+     "points": [
+      [
+       198.06000000000003,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       70.2
+      ],
+      [
+       199.98000000000002,
+       78.60000000000001
+      ],
+      [
+       198.06000000000003,
+       78.60000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#AA0000",
+     "points": [
+      [
+       202.5,
+       73.4
+      ],
+      [
+       209.0,
+       73.4
+      ],
+      [
+       207.7,
+       75.4
+      ],
+      [
+       209.0,
+       77.4
+      ],
+      [
+       202.5,
+       77.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#AA0000",
+     "points": [
+      [
+       190.8,
+       80.4
+      ],
+      [
+       197.2,
+       80.4
+      ],
+      [
+       197.2,
+       82.4
+      ],
+      [
+       190.8,
+       82.4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "26A0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1521392,
+   "offset": 112,
+   "length": 79488,
+   "before_sha256": "30fd7320e6a1f6976171ce31f6447c798c1a9b496d9c40729eadcf37dc6849d8",
+   "after_sha256": "a7f3eaad5be8b1a42897f2e0c0e1568b05c217ba4e3124b020c1806b903e9c75",
+   "defects": [
+    "uw2-SEA-away-0-chest-bands"
+   ],
+   "note": "navy upper-chest bands widened to the 2026 proportion; SEAHAWKS wordmark kept",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0A2A4E",
+     "points": [
+      [
+       46,
+       57
+      ],
+      [
+       64,
+       54
+      ],
+      [
+       92,
+       51
+      ],
+      [
+       112,
+       46
+      ],
+      [
+       120,
+       44
+      ],
+      [
+       122,
+       50
+      ],
+      [
+       104,
+       62
+      ],
+      [
+       80,
+       70
+      ],
+      [
+       64,
+       74
+      ],
+      [
+       48,
+       72
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0A2A4E",
+     "points": [
+      [
+       274,
+       57
+      ],
+      [
+       256,
+       54
+      ],
+      [
+       228,
+       51
+      ],
+      [
+       208,
+       46
+      ],
+      [
+       200,
+       44
+      ],
+      [
+       198,
+       50
+      ],
+      [
+       216,
+       62
+      ],
+      [
+       240,
+       70
+      ],
+      [
+       256,
+       74
+      ],
+      [
+       272,
+       72
+      ]
+     ],
+     "protect": {
+      "box": [
+       204,
+       43,
+       264,
+       72
+      ],
+      "colors": [
+       "#0A2A4E"
+      ],
+      "tolerance": 30
+     }
+    }
+   ]
+  },
+  {
+   "selector": "26A0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1521392,
+   "offset": 79600,
+   "length": 77664,
+   "before_sha256": "9dc546030979213e34bfef1fdb25b36a3ee370766cab4f1a281665804858fa74",
+   "after_sha256": "13f5832be670e5d0aa1fbc46acd419c9eef2d7f311a69a94a7a13f533711d32e",
+   "defects": [
+    "uw2-SEA-away-0-pants-pattern"
+   ],
+   "note": "broad navy stripe with white feathers",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       137.5,
+       10.0
+      ],
+      [
+       146.5,
+       10.0
+      ],
+      [
+       146.5,
+       256.0
+      ],
+      [
+       137.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#002244",
+     "points": [
+      [
+       136.0,
+       10.0
+      ],
+      [
+       148.0,
+       10.0
+      ],
+      [
+       148.0,
+       256.0
+      ],
+      [
+       136.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       364.5,
+       10.0
+      ],
+      [
+       373.5,
+       10.0
+      ],
+      [
+       373.5,
+       256.0
+      ],
+      [
+       364.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#002244",
+     "points": [
+      [
+       363.0,
+       10.0
+      ],
+      [
+       375.0,
+       10.0
+      ],
+      [
+       375.0,
+       256.0
+      ],
+      [
+       363.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       20.0
+      ],
+      [
+       142,
+       23.6
+      ],
+      [
+       147.2,
+       20.0
+      ],
+      [
+       147.2,
+       22.2
+      ],
+      [
+       142,
+       25.8
+      ],
+      [
+       136.8,
+       22.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       30.0
+      ],
+      [
+       142,
+       33.6
+      ],
+      [
+       147.2,
+       30.0
+      ],
+      [
+       147.2,
+       32.2
+      ],
+      [
+       142,
+       35.8
+      ],
+      [
+       136.8,
+       32.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       40.0
+      ],
+      [
+       142,
+       43.6
+      ],
+      [
+       147.2,
+       40.0
+      ],
+      [
+       147.2,
+       42.2
+      ],
+      [
+       142,
+       45.8
+      ],
+      [
+       136.8,
+       42.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       50.0
+      ],
+      [
+       142,
+       53.6
+      ],
+      [
+       147.2,
+       50.0
+      ],
+      [
+       147.2,
+       52.2
+      ],
+      [
+       142,
+       55.8
+      ],
+      [
+       136.8,
+       52.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       60.0
+      ],
+      [
+       142,
+       63.6
+      ],
+      [
+       147.2,
+       60.0
+      ],
+      [
+       147.2,
+       62.2
+      ],
+      [
+       142,
+       65.8
+      ],
+      [
+       136.8,
+       62.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       70.0
+      ],
+      [
+       142,
+       73.6
+      ],
+      [
+       147.2,
+       70.0
+      ],
+      [
+       147.2,
+       72.2
+      ],
+      [
+       142,
+       75.8
+      ],
+      [
+       136.8,
+       72.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       80.0
+      ],
+      [
+       142,
+       83.6
+      ],
+      [
+       147.2,
+       80.0
+      ],
+      [
+       147.2,
+       82.2
+      ],
+      [
+       142,
+       85.8
+      ],
+      [
+       136.8,
+       82.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       90.0
+      ],
+      [
+       142,
+       93.6
+      ],
+      [
+       147.2,
+       90.0
+      ],
+      [
+       147.2,
+       92.2
+      ],
+      [
+       142,
+       95.8
+      ],
+      [
+       136.8,
+       92.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       100.0
+      ],
+      [
+       142,
+       103.6
+      ],
+      [
+       147.2,
+       100.0
+      ],
+      [
+       147.2,
+       102.2
+      ],
+      [
+       142,
+       105.8
+      ],
+      [
+       136.8,
+       102.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       110.0
+      ],
+      [
+       142,
+       113.6
+      ],
+      [
+       147.2,
+       110.0
+      ],
+      [
+       147.2,
+       112.2
+      ],
+      [
+       142,
+       115.8
+      ],
+      [
+       136.8,
+       112.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       120.0
+      ],
+      [
+       142,
+       123.6
+      ],
+      [
+       147.2,
+       120.0
+      ],
+      [
+       147.2,
+       122.2
+      ],
+      [
+       142,
+       125.8
+      ],
+      [
+       136.8,
+       122.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       130.0
+      ],
+      [
+       142,
+       133.6
+      ],
+      [
+       147.2,
+       130.0
+      ],
+      [
+       147.2,
+       132.2
+      ],
+      [
+       142,
+       135.8
+      ],
+      [
+       136.8,
+       132.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       140.0
+      ],
+      [
+       142,
+       143.6
+      ],
+      [
+       147.2,
+       140.0
+      ],
+      [
+       147.2,
+       142.2
+      ],
+      [
+       142,
+       145.8
+      ],
+      [
+       136.8,
+       142.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       150.0
+      ],
+      [
+       142,
+       153.6
+      ],
+      [
+       147.2,
+       150.0
+      ],
+      [
+       147.2,
+       152.2
+      ],
+      [
+       142,
+       155.8
+      ],
+      [
+       136.8,
+       152.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       160.0
+      ],
+      [
+       142,
+       163.6
+      ],
+      [
+       147.2,
+       160.0
+      ],
+      [
+       147.2,
+       162.2
+      ],
+      [
+       142,
+       165.8
+      ],
+      [
+       136.8,
+       162.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       170.0
+      ],
+      [
+       142,
+       173.6
+      ],
+      [
+       147.2,
+       170.0
+      ],
+      [
+       147.2,
+       172.2
+      ],
+      [
+       142,
+       175.8
+      ],
+      [
+       136.8,
+       172.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       180.0
+      ],
+      [
+       142,
+       183.6
+      ],
+      [
+       147.2,
+       180.0
+      ],
+      [
+       147.2,
+       182.2
+      ],
+      [
+       142,
+       185.8
+      ],
+      [
+       136.8,
+       182.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       190.0
+      ],
+      [
+       142,
+       193.6
+      ],
+      [
+       147.2,
+       190.0
+      ],
+      [
+       147.2,
+       192.2
+      ],
+      [
+       142,
+       195.8
+      ],
+      [
+       136.8,
+       192.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       200.0
+      ],
+      [
+       142,
+       203.6
+      ],
+      [
+       147.2,
+       200.0
+      ],
+      [
+       147.2,
+       202.2
+      ],
+      [
+       142,
+       205.8
+      ],
+      [
+       136.8,
+       202.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       210.0
+      ],
+      [
+       142,
+       213.6
+      ],
+      [
+       147.2,
+       210.0
+      ],
+      [
+       147.2,
+       212.2
+      ],
+      [
+       142,
+       215.8
+      ],
+      [
+       136.8,
+       212.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       220.0
+      ],
+      [
+       142,
+       223.6
+      ],
+      [
+       147.2,
+       220.0
+      ],
+      [
+       147.2,
+       222.2
+      ],
+      [
+       142,
+       225.8
+      ],
+      [
+       136.8,
+       222.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       230.0
+      ],
+      [
+       142,
+       233.6
+      ],
+      [
+       147.2,
+       230.0
+      ],
+      [
+       147.2,
+       232.2
+      ],
+      [
+       142,
+       235.8
+      ],
+      [
+       136.8,
+       232.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       136.8,
+       240.0
+      ],
+      [
+       142,
+       243.6
+      ],
+      [
+       147.2,
+       240.0
+      ],
+      [
+       147.2,
+       242.2
+      ],
+      [
+       142,
+       245.8
+      ],
+      [
+       136.8,
+       242.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       20.0
+      ],
+      [
+       369,
+       23.6
+      ],
+      [
+       374.2,
+       20.0
+      ],
+      [
+       374.2,
+       22.2
+      ],
+      [
+       369,
+       25.8
+      ],
+      [
+       363.8,
+       22.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       30.0
+      ],
+      [
+       369,
+       33.6
+      ],
+      [
+       374.2,
+       30.0
+      ],
+      [
+       374.2,
+       32.2
+      ],
+      [
+       369,
+       35.8
+      ],
+      [
+       363.8,
+       32.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       40.0
+      ],
+      [
+       369,
+       43.6
+      ],
+      [
+       374.2,
+       40.0
+      ],
+      [
+       374.2,
+       42.2
+      ],
+      [
+       369,
+       45.8
+      ],
+      [
+       363.8,
+       42.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       50.0
+      ],
+      [
+       369,
+       53.6
+      ],
+      [
+       374.2,
+       50.0
+      ],
+      [
+       374.2,
+       52.2
+      ],
+      [
+       369,
+       55.8
+      ],
+      [
+       363.8,
+       52.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       60.0
+      ],
+      [
+       369,
+       63.6
+      ],
+      [
+       374.2,
+       60.0
+      ],
+      [
+       374.2,
+       62.2
+      ],
+      [
+       369,
+       65.8
+      ],
+      [
+       363.8,
+       62.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       70.0
+      ],
+      [
+       369,
+       73.6
+      ],
+      [
+       374.2,
+       70.0
+      ],
+      [
+       374.2,
+       72.2
+      ],
+      [
+       369,
+       75.8
+      ],
+      [
+       363.8,
+       72.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       80.0
+      ],
+      [
+       369,
+       83.6
+      ],
+      [
+       374.2,
+       80.0
+      ],
+      [
+       374.2,
+       82.2
+      ],
+      [
+       369,
+       85.8
+      ],
+      [
+       363.8,
+       82.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       90.0
+      ],
+      [
+       369,
+       93.6
+      ],
+      [
+       374.2,
+       90.0
+      ],
+      [
+       374.2,
+       92.2
+      ],
+      [
+       369,
+       95.8
+      ],
+      [
+       363.8,
+       92.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       100.0
+      ],
+      [
+       369,
+       103.6
+      ],
+      [
+       374.2,
+       100.0
+      ],
+      [
+       374.2,
+       102.2
+      ],
+      [
+       369,
+       105.8
+      ],
+      [
+       363.8,
+       102.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       110.0
+      ],
+      [
+       369,
+       113.6
+      ],
+      [
+       374.2,
+       110.0
+      ],
+      [
+       374.2,
+       112.2
+      ],
+      [
+       369,
+       115.8
+      ],
+      [
+       363.8,
+       112.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       120.0
+      ],
+      [
+       369,
+       123.6
+      ],
+      [
+       374.2,
+       120.0
+      ],
+      [
+       374.2,
+       122.2
+      ],
+      [
+       369,
+       125.8
+      ],
+      [
+       363.8,
+       122.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       130.0
+      ],
+      [
+       369,
+       133.6
+      ],
+      [
+       374.2,
+       130.0
+      ],
+      [
+       374.2,
+       132.2
+      ],
+      [
+       369,
+       135.8
+      ],
+      [
+       363.8,
+       132.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       140.0
+      ],
+      [
+       369,
+       143.6
+      ],
+      [
+       374.2,
+       140.0
+      ],
+      [
+       374.2,
+       142.2
+      ],
+      [
+       369,
+       145.8
+      ],
+      [
+       363.8,
+       142.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       150.0
+      ],
+      [
+       369,
+       153.6
+      ],
+      [
+       374.2,
+       150.0
+      ],
+      [
+       374.2,
+       152.2
+      ],
+      [
+       369,
+       155.8
+      ],
+      [
+       363.8,
+       152.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       160.0
+      ],
+      [
+       369,
+       163.6
+      ],
+      [
+       374.2,
+       160.0
+      ],
+      [
+       374.2,
+       162.2
+      ],
+      [
+       369,
+       165.8
+      ],
+      [
+       363.8,
+       162.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       170.0
+      ],
+      [
+       369,
+       173.6
+      ],
+      [
+       374.2,
+       170.0
+      ],
+      [
+       374.2,
+       172.2
+      ],
+      [
+       369,
+       175.8
+      ],
+      [
+       363.8,
+       172.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       180.0
+      ],
+      [
+       369,
+       183.6
+      ],
+      [
+       374.2,
+       180.0
+      ],
+      [
+       374.2,
+       182.2
+      ],
+      [
+       369,
+       185.8
+      ],
+      [
+       363.8,
+       182.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       190.0
+      ],
+      [
+       369,
+       193.6
+      ],
+      [
+       374.2,
+       190.0
+      ],
+      [
+       374.2,
+       192.2
+      ],
+      [
+       369,
+       195.8
+      ],
+      [
+       363.8,
+       192.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       200.0
+      ],
+      [
+       369,
+       203.6
+      ],
+      [
+       374.2,
+       200.0
+      ],
+      [
+       374.2,
+       202.2
+      ],
+      [
+       369,
+       205.8
+      ],
+      [
+       363.8,
+       202.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       210.0
+      ],
+      [
+       369,
+       213.6
+      ],
+      [
+       374.2,
+       210.0
+      ],
+      [
+       374.2,
+       212.2
+      ],
+      [
+       369,
+       215.8
+      ],
+      [
+       363.8,
+       212.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       220.0
+      ],
+      [
+       369,
+       223.6
+      ],
+      [
+       374.2,
+       220.0
+      ],
+      [
+       374.2,
+       222.2
+      ],
+      [
+       369,
+       225.8
+      ],
+      [
+       363.8,
+       222.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       230.0
+      ],
+      [
+       369,
+       233.6
+      ],
+      [
+       374.2,
+       230.0
+      ],
+      [
+       374.2,
+       232.2
+      ],
+      [
+       369,
+       235.8
+      ],
+      [
+       363.8,
+       232.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       363.8,
+       240.0
+      ],
+      [
+       369,
+       243.6
+      ],
+      [
+       374.2,
+       240.0
+      ],
+      [
+       374.2,
+       242.2
+      ],
+      [
+       369,
+       245.8
+      ],
+      [
+       363.8,
+       242.2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "26A0",
+   "chunk": 12,
+   "texture": "helmet02",
+   "kind": "txtr",
+   "size": [
+    256,
+    256,
+    6
+   ],
+   "resource_size": 1521392,
+   "offset": 404480,
+   "length": 37392,
+   "before_sha256": "52209d0e05c9698ff7324dda2f645301fd548330b35d0aafd10b79009c60b5d7",
+   "after_sha256": "96047e4d5bdcd4fe4ad2db2c728f92a0f28195f27c7744e18c486f749b3b084e",
+   "defects": [
+    "uw2-SEA-away-0-helmet-crown"
+   ],
+   "note": "crown carbon pattern lifted to the 2026 gray",
+   "ops": [
+    {
+     "op": "recolor",
+     "box": [
+      138,
+      18,
+      192,
+      182
+     ],
+     "from": [
+      "#405361"
+     ],
+     "color": "#9AA2A8",
+     "tolerance": 14
+    },
+    {
+     "op": "recolor",
+     "box": [
+      138,
+      18,
+      192,
+      182
+     ],
+     "from": [
+      "#203B58"
+     ],
+     "color": "#56616C",
+     "tolerance": 10
+    }
+   ]
+  },
+  {
+   "selector": "26H0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1524800,
+   "offset": 112,
+   "length": 71056,
+   "before_sha256": "76a17da208fc9250e0c7b17e0d00734dbe9e2e11291c6c802695c9f2d70c9b47",
+   "after_sha256": "16923bbe61f56226b056dfc8ea8f646ee92402b941baae0996afb4b86bbbadae",
+   "defects": [
+    "uw2-SEA-home-0-chest-bands"
+   ],
+   "note": "wolf-gray upper-chest bands widened to the 2026 proportion; SEAHAWKS wordmark kept",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#A5ACAF",
+     "points": [
+      [
+       46,
+       57
+      ],
+      [
+       64,
+       54
+      ],
+      [
+       92,
+       51
+      ],
+      [
+       112,
+       46
+      ],
+      [
+       120,
+       44
+      ],
+      [
+       122,
+       50
+      ],
+      [
+       104,
+       62
+      ],
+      [
+       80,
+       70
+      ],
+      [
+       64,
+       74
+      ],
+      [
+       48,
+       72
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A5ACAF",
+     "points": [
+      [
+       274,
+       57
+      ],
+      [
+       256,
+       54
+      ],
+      [
+       228,
+       51
+      ],
+      [
+       208,
+       46
+      ],
+      [
+       200,
+       44
+      ],
+      [
+       198,
+       50
+      ],
+      [
+       216,
+       62
+      ],
+      [
+       240,
+       70
+      ],
+      [
+       256,
+       74
+      ],
+      [
+       272,
+       72
+      ]
+     ],
+     "protect": {
+      "box": [
+       204,
+       43,
+       264,
+       72
+      ],
+      "colors": [
+       "#A5ACAF"
+      ],
+      "tolerance": 30
+     }
+    }
+   ]
+  },
+  {
+   "selector": "26H0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1524800,
+   "offset": 71168,
+   "length": 87920,
+   "before_sha256": "b20448e88a4a2429a729f2d274b681a846b1909d3b973c771302de13b3f64eaa",
+   "after_sha256": "195e4d39fc2208ca161624ba69650f27607e4457f625fef8057359d379aecc69",
+   "defects": [
+    "uw2-SEA-home-0-pants-feather-stripe"
+   ],
+   "note": "broad action-green stripe with navy feathers",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       137.5,
+       10.0
+      ],
+      [
+       146.5,
+       10.0
+      ],
+      [
+       146.5,
+       256.0
+      ],
+      [
+       137.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#69BE28",
+     "points": [
+      [
+       136.0,
+       10.0
+      ],
+      [
+       148.0,
+       10.0
+      ],
+      [
+       148.0,
+       256.0
+      ],
+      [
+       136.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       364.5,
+       10.0
+      ],
+      [
+       373.5,
+       10.0
+      ],
+      [
+       373.5,
+       256.0
+      ],
+      [
+       364.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#69BE28",
+     "points": [
+      [
+       363.0,
+       10.0
+      ],
+      [
+       375.0,
+       10.0
+      ],
+      [
+       375.0,
+       256.0
+      ],
+      [
+       363.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       20.0
+      ],
+      [
+       142,
+       23.6
+      ],
+      [
+       147.2,
+       20.0
+      ],
+      [
+       147.2,
+       22.2
+      ],
+      [
+       142,
+       25.8
+      ],
+      [
+       136.8,
+       22.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       30.0
+      ],
+      [
+       142,
+       33.6
+      ],
+      [
+       147.2,
+       30.0
+      ],
+      [
+       147.2,
+       32.2
+      ],
+      [
+       142,
+       35.8
+      ],
+      [
+       136.8,
+       32.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       40.0
+      ],
+      [
+       142,
+       43.6
+      ],
+      [
+       147.2,
+       40.0
+      ],
+      [
+       147.2,
+       42.2
+      ],
+      [
+       142,
+       45.8
+      ],
+      [
+       136.8,
+       42.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       50.0
+      ],
+      [
+       142,
+       53.6
+      ],
+      [
+       147.2,
+       50.0
+      ],
+      [
+       147.2,
+       52.2
+      ],
+      [
+       142,
+       55.8
+      ],
+      [
+       136.8,
+       52.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       60.0
+      ],
+      [
+       142,
+       63.6
+      ],
+      [
+       147.2,
+       60.0
+      ],
+      [
+       147.2,
+       62.2
+      ],
+      [
+       142,
+       65.8
+      ],
+      [
+       136.8,
+       62.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       70.0
+      ],
+      [
+       142,
+       73.6
+      ],
+      [
+       147.2,
+       70.0
+      ],
+      [
+       147.2,
+       72.2
+      ],
+      [
+       142,
+       75.8
+      ],
+      [
+       136.8,
+       72.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       80.0
+      ],
+      [
+       142,
+       83.6
+      ],
+      [
+       147.2,
+       80.0
+      ],
+      [
+       147.2,
+       82.2
+      ],
+      [
+       142,
+       85.8
+      ],
+      [
+       136.8,
+       82.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       90.0
+      ],
+      [
+       142,
+       93.6
+      ],
+      [
+       147.2,
+       90.0
+      ],
+      [
+       147.2,
+       92.2
+      ],
+      [
+       142,
+       95.8
+      ],
+      [
+       136.8,
+       92.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       100.0
+      ],
+      [
+       142,
+       103.6
+      ],
+      [
+       147.2,
+       100.0
+      ],
+      [
+       147.2,
+       102.2
+      ],
+      [
+       142,
+       105.8
+      ],
+      [
+       136.8,
+       102.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       110.0
+      ],
+      [
+       142,
+       113.6
+      ],
+      [
+       147.2,
+       110.0
+      ],
+      [
+       147.2,
+       112.2
+      ],
+      [
+       142,
+       115.8
+      ],
+      [
+       136.8,
+       112.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       120.0
+      ],
+      [
+       142,
+       123.6
+      ],
+      [
+       147.2,
+       120.0
+      ],
+      [
+       147.2,
+       122.2
+      ],
+      [
+       142,
+       125.8
+      ],
+      [
+       136.8,
+       122.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       130.0
+      ],
+      [
+       142,
+       133.6
+      ],
+      [
+       147.2,
+       130.0
+      ],
+      [
+       147.2,
+       132.2
+      ],
+      [
+       142,
+       135.8
+      ],
+      [
+       136.8,
+       132.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       140.0
+      ],
+      [
+       142,
+       143.6
+      ],
+      [
+       147.2,
+       140.0
+      ],
+      [
+       147.2,
+       142.2
+      ],
+      [
+       142,
+       145.8
+      ],
+      [
+       136.8,
+       142.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       150.0
+      ],
+      [
+       142,
+       153.6
+      ],
+      [
+       147.2,
+       150.0
+      ],
+      [
+       147.2,
+       152.2
+      ],
+      [
+       142,
+       155.8
+      ],
+      [
+       136.8,
+       152.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       160.0
+      ],
+      [
+       142,
+       163.6
+      ],
+      [
+       147.2,
+       160.0
+      ],
+      [
+       147.2,
+       162.2
+      ],
+      [
+       142,
+       165.8
+      ],
+      [
+       136.8,
+       162.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       170.0
+      ],
+      [
+       142,
+       173.6
+      ],
+      [
+       147.2,
+       170.0
+      ],
+      [
+       147.2,
+       172.2
+      ],
+      [
+       142,
+       175.8
+      ],
+      [
+       136.8,
+       172.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       180.0
+      ],
+      [
+       142,
+       183.6
+      ],
+      [
+       147.2,
+       180.0
+      ],
+      [
+       147.2,
+       182.2
+      ],
+      [
+       142,
+       185.8
+      ],
+      [
+       136.8,
+       182.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       190.0
+      ],
+      [
+       142,
+       193.6
+      ],
+      [
+       147.2,
+       190.0
+      ],
+      [
+       147.2,
+       192.2
+      ],
+      [
+       142,
+       195.8
+      ],
+      [
+       136.8,
+       192.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       200.0
+      ],
+      [
+       142,
+       203.6
+      ],
+      [
+       147.2,
+       200.0
+      ],
+      [
+       147.2,
+       202.2
+      ],
+      [
+       142,
+       205.8
+      ],
+      [
+       136.8,
+       202.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       210.0
+      ],
+      [
+       142,
+       213.6
+      ],
+      [
+       147.2,
+       210.0
+      ],
+      [
+       147.2,
+       212.2
+      ],
+      [
+       142,
+       215.8
+      ],
+      [
+       136.8,
+       212.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       220.0
+      ],
+      [
+       142,
+       223.6
+      ],
+      [
+       147.2,
+       220.0
+      ],
+      [
+       147.2,
+       222.2
+      ],
+      [
+       142,
+       225.8
+      ],
+      [
+       136.8,
+       222.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       230.0
+      ],
+      [
+       142,
+       233.6
+      ],
+      [
+       147.2,
+       230.0
+      ],
+      [
+       147.2,
+       232.2
+      ],
+      [
+       142,
+       235.8
+      ],
+      [
+       136.8,
+       232.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       136.8,
+       240.0
+      ],
+      [
+       142,
+       243.6
+      ],
+      [
+       147.2,
+       240.0
+      ],
+      [
+       147.2,
+       242.2
+      ],
+      [
+       142,
+       245.8
+      ],
+      [
+       136.8,
+       242.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       20.0
+      ],
+      [
+       369,
+       23.6
+      ],
+      [
+       374.2,
+       20.0
+      ],
+      [
+       374.2,
+       22.2
+      ],
+      [
+       369,
+       25.8
+      ],
+      [
+       363.8,
+       22.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       30.0
+      ],
+      [
+       369,
+       33.6
+      ],
+      [
+       374.2,
+       30.0
+      ],
+      [
+       374.2,
+       32.2
+      ],
+      [
+       369,
+       35.8
+      ],
+      [
+       363.8,
+       32.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       40.0
+      ],
+      [
+       369,
+       43.6
+      ],
+      [
+       374.2,
+       40.0
+      ],
+      [
+       374.2,
+       42.2
+      ],
+      [
+       369,
+       45.8
+      ],
+      [
+       363.8,
+       42.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       50.0
+      ],
+      [
+       369,
+       53.6
+      ],
+      [
+       374.2,
+       50.0
+      ],
+      [
+       374.2,
+       52.2
+      ],
+      [
+       369,
+       55.8
+      ],
+      [
+       363.8,
+       52.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       60.0
+      ],
+      [
+       369,
+       63.6
+      ],
+      [
+       374.2,
+       60.0
+      ],
+      [
+       374.2,
+       62.2
+      ],
+      [
+       369,
+       65.8
+      ],
+      [
+       363.8,
+       62.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       70.0
+      ],
+      [
+       369,
+       73.6
+      ],
+      [
+       374.2,
+       70.0
+      ],
+      [
+       374.2,
+       72.2
+      ],
+      [
+       369,
+       75.8
+      ],
+      [
+       363.8,
+       72.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       80.0
+      ],
+      [
+       369,
+       83.6
+      ],
+      [
+       374.2,
+       80.0
+      ],
+      [
+       374.2,
+       82.2
+      ],
+      [
+       369,
+       85.8
+      ],
+      [
+       363.8,
+       82.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       90.0
+      ],
+      [
+       369,
+       93.6
+      ],
+      [
+       374.2,
+       90.0
+      ],
+      [
+       374.2,
+       92.2
+      ],
+      [
+       369,
+       95.8
+      ],
+      [
+       363.8,
+       92.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       100.0
+      ],
+      [
+       369,
+       103.6
+      ],
+      [
+       374.2,
+       100.0
+      ],
+      [
+       374.2,
+       102.2
+      ],
+      [
+       369,
+       105.8
+      ],
+      [
+       363.8,
+       102.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       110.0
+      ],
+      [
+       369,
+       113.6
+      ],
+      [
+       374.2,
+       110.0
+      ],
+      [
+       374.2,
+       112.2
+      ],
+      [
+       369,
+       115.8
+      ],
+      [
+       363.8,
+       112.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       120.0
+      ],
+      [
+       369,
+       123.6
+      ],
+      [
+       374.2,
+       120.0
+      ],
+      [
+       374.2,
+       122.2
+      ],
+      [
+       369,
+       125.8
+      ],
+      [
+       363.8,
+       122.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       130.0
+      ],
+      [
+       369,
+       133.6
+      ],
+      [
+       374.2,
+       130.0
+      ],
+      [
+       374.2,
+       132.2
+      ],
+      [
+       369,
+       135.8
+      ],
+      [
+       363.8,
+       132.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       140.0
+      ],
+      [
+       369,
+       143.6
+      ],
+      [
+       374.2,
+       140.0
+      ],
+      [
+       374.2,
+       142.2
+      ],
+      [
+       369,
+       145.8
+      ],
+      [
+       363.8,
+       142.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       150.0
+      ],
+      [
+       369,
+       153.6
+      ],
+      [
+       374.2,
+       150.0
+      ],
+      [
+       374.2,
+       152.2
+      ],
+      [
+       369,
+       155.8
+      ],
+      [
+       363.8,
+       152.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       160.0
+      ],
+      [
+       369,
+       163.6
+      ],
+      [
+       374.2,
+       160.0
+      ],
+      [
+       374.2,
+       162.2
+      ],
+      [
+       369,
+       165.8
+      ],
+      [
+       363.8,
+       162.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       170.0
+      ],
+      [
+       369,
+       173.6
+      ],
+      [
+       374.2,
+       170.0
+      ],
+      [
+       374.2,
+       172.2
+      ],
+      [
+       369,
+       175.8
+      ],
+      [
+       363.8,
+       172.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       180.0
+      ],
+      [
+       369,
+       183.6
+      ],
+      [
+       374.2,
+       180.0
+      ],
+      [
+       374.2,
+       182.2
+      ],
+      [
+       369,
+       185.8
+      ],
+      [
+       363.8,
+       182.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       190.0
+      ],
+      [
+       369,
+       193.6
+      ],
+      [
+       374.2,
+       190.0
+      ],
+      [
+       374.2,
+       192.2
+      ],
+      [
+       369,
+       195.8
+      ],
+      [
+       363.8,
+       192.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       200.0
+      ],
+      [
+       369,
+       203.6
+      ],
+      [
+       374.2,
+       200.0
+      ],
+      [
+       374.2,
+       202.2
+      ],
+      [
+       369,
+       205.8
+      ],
+      [
+       363.8,
+       202.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       210.0
+      ],
+      [
+       369,
+       213.6
+      ],
+      [
+       374.2,
+       210.0
+      ],
+      [
+       374.2,
+       212.2
+      ],
+      [
+       369,
+       215.8
+      ],
+      [
+       363.8,
+       212.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       220.0
+      ],
+      [
+       369,
+       223.6
+      ],
+      [
+       374.2,
+       220.0
+      ],
+      [
+       374.2,
+       222.2
+      ],
+      [
+       369,
+       225.8
+      ],
+      [
+       363.8,
+       222.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       230.0
+      ],
+      [
+       369,
+       233.6
+      ],
+      [
+       374.2,
+       230.0
+      ],
+      [
+       374.2,
+       232.2
+      ],
+      [
+       369,
+       235.8
+      ],
+      [
+       363.8,
+       232.2
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2A4C",
+     "points": [
+      [
+       363.8,
+       240.0
+      ],
+      [
+       369,
+       243.6
+      ],
+      [
+       374.2,
+       240.0
+      ],
+      [
+       374.2,
+       242.2
+      ],
+      [
+       369,
+       245.8
+      ],
+      [
+       363.8,
+       242.2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "26H0",
+   "chunk": 12,
+   "texture": "helmet02",
+   "kind": "txtr",
+   "size": [
+    256,
+    256,
+    6
+   ],
+   "resource_size": 1524800,
+   "offset": 405664,
+   "length": 37392,
+   "before_sha256": "52209d0e05c9698ff7324dda2f645301fd548330b35d0aafd10b79009c60b5d7",
+   "after_sha256": "96047e4d5bdcd4fe4ad2db2c728f92a0f28195f27c7744e18c486f749b3b084e",
+   "defects": [
+    "uw2-SEA-home-0-helmet-crown"
+   ],
+   "note": "crown carbon pattern lifted to the 2026 gray",
+   "ops": [
+    {
+     "op": "recolor",
+     "box": [
+      138,
+      18,
+      192,
+      182
+     ],
+     "from": [
+      "#405361"
+     ],
+     "color": "#9AA2A8",
+     "tolerance": 14
+    },
+    {
+     "op": "recolor",
+     "box": [
+      138,
+      18,
+      192,
+      182
+     ],
+     "from": [
+      "#203B58"
+     ],
+     "color": "#56616C",
+     "tolerance": 10
+    }
+   ]
+  },
+  {
+   "selector": "27A0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1523504,
+   "offset": 77536,
+   "length": 76384,
+   "before_sha256": "fe38b142123b60709812bcb11c121f075508f052c60d915ce96f19eccd09176d",
+   "after_sha256": "482b8428862d605e7de72b185d6ce03e416d13431e24671f03d81808aed98c04",
+   "defects": [
+    "uw2-TB-away-0-pants-stripe"
+   ],
+   "note": "broad red side stripe with orange and black borders (2026 week 1)",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#4B4641",
+     "points": [
+      [
+       137.5,
+       10.0
+      ],
+      [
+       146.5,
+       10.0
+      ],
+      [
+       146.5,
+       256.0
+      ],
+      [
+       137.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0E0E0E",
+     "points": [
+      [
+       135.0,
+       10.0
+      ],
+      [
+       136.5,
+       10.0
+      ],
+      [
+       136.5,
+       256.0
+      ],
+      [
+       135.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#DC4405",
+     "points": [
+      [
+       136.5,
+       10.0
+      ],
+      [
+       138.0,
+       10.0
+      ],
+      [
+       138.0,
+       256.0
+      ],
+      [
+       136.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B21C35",
+     "points": [
+      [
+       138.0,
+       10.0
+      ],
+      [
+       146.0,
+       10.0
+      ],
+      [
+       146.0,
+       256.0
+      ],
+      [
+       138.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#DC4405",
+     "points": [
+      [
+       146.0,
+       10.0
+      ],
+      [
+       147.5,
+       10.0
+      ],
+      [
+       147.5,
+       256.0
+      ],
+      [
+       146.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0E0E0E",
+     "points": [
+      [
+       147.5,
+       10.0
+      ],
+      [
+       149.0,
+       10.0
+      ],
+      [
+       149.0,
+       256.0
+      ],
+      [
+       147.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4B4641",
+     "points": [
+      [
+       364.5,
+       10.0
+      ],
+      [
+       373.5,
+       10.0
+      ],
+      [
+       373.5,
+       256.0
+      ],
+      [
+       364.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0E0E0E",
+     "points": [
+      [
+       362.0,
+       10.0
+      ],
+      [
+       363.5,
+       10.0
+      ],
+      [
+       363.5,
+       256.0
+      ],
+      [
+       362.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#DC4405",
+     "points": [
+      [
+       363.5,
+       10.0
+      ],
+      [
+       365.0,
+       10.0
+      ],
+      [
+       365.0,
+       256.0
+      ],
+      [
+       363.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#B21C35",
+     "points": [
+      [
+       365.0,
+       10.0
+      ],
+      [
+       373.0,
+       10.0
+      ],
+      [
+       373.0,
+       256.0
+      ],
+      [
+       365.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#DC4405",
+     "points": [
+      [
+       373.0,
+       10.0
+      ],
+      [
+       374.5,
+       10.0
+      ],
+      [
+       374.5,
+       256.0
+      ],
+      [
+       373.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0E0E0E",
+     "points": [
+      [
+       374.5,
+       10.0
+      ],
+      [
+       376.0,
+       10.0
+      ],
+      [
+       376.0,
+       256.0
+      ],
+      [
+       374.5,
+       256.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "28A0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1518544,
+   "offset": 151696,
+   "length": 11728,
+   "before_sha256": "db532cc35dc2e070f40db4626abd0cf288de22bdf302d9c9578f5295ba86489e",
+   "after_sha256": "d16425ebd2eabfb43a8a56e99d9a90d0869ca930dc9047936bc5b3949c06c271",
+   "defects": [
+    "uw2-TEN-away-0-sleeve-bands"
+   ],
+   "note": "light blue pinstriped band with red edges moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       17.0
+      ],
+      [
+       128,
+       17.0
+      ],
+      [
+       128,
+       19.0
+      ],
+      [
+       0,
+       19.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       20.5
+      ],
+      [
+       128,
+       20.5
+      ],
+      [
+       128,
+       22.75
+      ],
+      [
+       0,
+       22.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       22.75
+      ],
+      [
+       128,
+       22.75
+      ],
+      [
+       128,
+       23.5
+      ],
+      [
+       0,
+       23.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       23.5
+      ],
+      [
+       128,
+       23.5
+      ],
+      [
+       128,
+       25.75
+      ],
+      [
+       0,
+       25.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       25.75
+      ],
+      [
+       128,
+       25.75
+      ],
+      [
+       128,
+       26.5
+      ],
+      [
+       0,
+       26.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       26.5
+      ],
+      [
+       128,
+       26.5
+      ],
+      [
+       128,
+       28.75
+      ],
+      [
+       0,
+       28.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       28.75
+      ],
+      [
+       128,
+       28.75
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       0,
+       29.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       29.5
+      ],
+      [
+       128,
+       29.5
+      ],
+      [
+       128,
+       31.75
+      ],
+      [
+       0,
+       31.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       31.75
+      ],
+      [
+       128,
+       31.75
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       0,
+       32.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       32.5
+      ],
+      [
+       128,
+       32.5
+      ],
+      [
+       128,
+       34.75
+      ],
+      [
+       0,
+       34.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       34.75
+      ],
+      [
+       128,
+       34.75
+      ],
+      [
+       128,
+       35.5
+      ],
+      [
+       0,
+       35.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       35.5
+      ],
+      [
+       128,
+       35.5
+      ],
+      [
+       128,
+       37.0
+      ],
+      [
+       0,
+       37.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       38.5
+      ],
+      [
+       128,
+       38.5
+      ],
+      [
+       128,
+       40.5
+      ],
+      [
+       0,
+       40.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       81.0
+      ],
+      [
+       128,
+       81.0
+      ],
+      [
+       128,
+       83.0
+      ],
+      [
+       0,
+       83.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       84.5
+      ],
+      [
+       128,
+       84.5
+      ],
+      [
+       128,
+       86.75
+      ],
+      [
+       0,
+       86.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       86.75
+      ],
+      [
+       128,
+       86.75
+      ],
+      [
+       128,
+       87.5
+      ],
+      [
+       0,
+       87.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       87.5
+      ],
+      [
+       128,
+       87.5
+      ],
+      [
+       128,
+       89.75
+      ],
+      [
+       0,
+       89.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       89.75
+      ],
+      [
+       128,
+       89.75
+      ],
+      [
+       128,
+       90.5
+      ],
+      [
+       0,
+       90.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       90.5
+      ],
+      [
+       128,
+       90.5
+      ],
+      [
+       128,
+       92.75
+      ],
+      [
+       0,
+       92.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       92.75
+      ],
+      [
+       128,
+       92.75
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       0,
+       93.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       93.5
+      ],
+      [
+       128,
+       93.5
+      ],
+      [
+       128,
+       95.75
+      ],
+      [
+       0,
+       95.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       95.75
+      ],
+      [
+       128,
+       95.75
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       0,
+       96.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       96.5
+      ],
+      [
+       128,
+       96.5
+      ],
+      [
+       128,
+       98.75
+      ],
+      [
+       0,
+       98.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       98.75
+      ],
+      [
+       128,
+       98.75
+      ],
+      [
+       128,
+       99.5
+      ],
+      [
+       0,
+       99.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       99.5
+      ],
+      [
+       128,
+       99.5
+      ],
+      [
+       128,
+       101.0
+      ],
+      [
+       0,
+       101.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       102.5
+      ],
+      [
+       128,
+       102.5
+      ],
+      [
+       128,
+       104.5
+      ],
+      [
+       0,
+       104.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "28H0",
+   "chunk": 3,
+   "texture": "sleeve00",
+   "kind": "tset",
+   "size": [
+    128,
+    128,
+    5
+   ],
+   "resource_size": 1518112,
+   "offset": 152016,
+   "length": 11152,
+   "before_sha256": "1c2b7d9b4f0828439eafc3240d093ba86c7d8d3147b6c42f991f9465cf3b8161",
+   "after_sha256": "5cabcf134844e5828209011a2b9de25b124645e66c8e142373cab243560222ca",
+   "defects": [
+    "uw2-TEN-home-0-sleeve-bands"
+   ],
+   "note": "pinstriped field with red/white borders moved up and widened",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       16
+      ],
+      [
+       128,
+       16
+      ],
+      [
+       128,
+       62
+      ],
+      [
+       0,
+       62
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       16.5
+      ],
+      [
+       128,
+       16.5
+      ],
+      [
+       128,
+       18.75
+      ],
+      [
+       0,
+       18.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       18.75
+      ],
+      [
+       128,
+       18.75
+      ],
+      [
+       128,
+       20.75
+      ],
+      [
+       0,
+       20.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       20.75
+      ],
+      [
+       128,
+       20.75
+      ],
+      [
+       128,
+       23.0
+      ],
+      [
+       0,
+       23.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       23.0
+      ],
+      [
+       128,
+       23.0
+      ],
+      [
+       128,
+       23.75
+      ],
+      [
+       0,
+       23.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       23.75
+      ],
+      [
+       128,
+       23.75
+      ],
+      [
+       128,
+       26.0
+      ],
+      [
+       0,
+       26.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       26.0
+      ],
+      [
+       128,
+       26.0
+      ],
+      [
+       128,
+       26.75
+      ],
+      [
+       0,
+       26.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       26.75
+      ],
+      [
+       128,
+       26.75
+      ],
+      [
+       128,
+       29.0
+      ],
+      [
+       0,
+       29.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       29.0
+      ],
+      [
+       128,
+       29.0
+      ],
+      [
+       128,
+       29.75
+      ],
+      [
+       0,
+       29.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       29.75
+      ],
+      [
+       128,
+       29.75
+      ],
+      [
+       128,
+       32.0
+      ],
+      [
+       0,
+       32.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       32.0
+      ],
+      [
+       128,
+       32.0
+      ],
+      [
+       128,
+       32.75
+      ],
+      [
+       0,
+       32.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       32.75
+      ],
+      [
+       128,
+       32.75
+      ],
+      [
+       128,
+       35.0
+      ],
+      [
+       0,
+       35.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       35.0
+      ],
+      [
+       128,
+       35.0
+      ],
+      [
+       128,
+       35.75
+      ],
+      [
+       0,
+       35.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       35.75
+      ],
+      [
+       128,
+       35.75
+      ],
+      [
+       128,
+       37.25
+      ],
+      [
+       0,
+       37.25
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       37.25
+      ],
+      [
+       128,
+       37.25
+      ],
+      [
+       128,
+       39.25
+      ],
+      [
+       0,
+       39.25
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       39.25
+      ],
+      [
+       128,
+       39.25
+      ],
+      [
+       128,
+       41.5
+      ],
+      [
+       0,
+       41.5
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       80
+      ],
+      [
+       128,
+       80
+      ],
+      [
+       128,
+       126
+      ],
+      [
+       0,
+       126
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       80.5
+      ],
+      [
+       128,
+       80.5
+      ],
+      [
+       128,
+       82.75
+      ],
+      [
+       0,
+       82.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       82.75
+      ],
+      [
+       128,
+       82.75
+      ],
+      [
+       128,
+       84.75
+      ],
+      [
+       0,
+       84.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       84.75
+      ],
+      [
+       128,
+       84.75
+      ],
+      [
+       128,
+       87.0
+      ],
+      [
+       0,
+       87.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       87.0
+      ],
+      [
+       128,
+       87.0
+      ],
+      [
+       128,
+       87.75
+      ],
+      [
+       0,
+       87.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       87.75
+      ],
+      [
+       128,
+       87.75
+      ],
+      [
+       128,
+       90.0
+      ],
+      [
+       0,
+       90.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       90.0
+      ],
+      [
+       128,
+       90.0
+      ],
+      [
+       128,
+       90.75
+      ],
+      [
+       0,
+       90.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       90.75
+      ],
+      [
+       128,
+       90.75
+      ],
+      [
+       128,
+       93.0
+      ],
+      [
+       0,
+       93.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       93.0
+      ],
+      [
+       128,
+       93.0
+      ],
+      [
+       128,
+       93.75
+      ],
+      [
+       0,
+       93.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       93.75
+      ],
+      [
+       128,
+       93.75
+      ],
+      [
+       128,
+       96.0
+      ],
+      [
+       0,
+       96.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       96.0
+      ],
+      [
+       128,
+       96.0
+      ],
+      [
+       128,
+       96.75
+      ],
+      [
+       0,
+       96.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       96.75
+      ],
+      [
+       128,
+       96.75
+      ],
+      [
+       128,
+       99.0
+      ],
+      [
+       0,
+       99.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       0,
+       99.0
+      ],
+      [
+       128,
+       99.0
+      ],
+      [
+       128,
+       99.75
+      ],
+      [
+       0,
+       99.75
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       0,
+       99.75
+      ],
+      [
+       128,
+       99.75
+      ],
+      [
+       128,
+       101.25
+      ],
+      [
+       0,
+       101.25
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       0,
+       101.25
+      ],
+      [
+       128,
+       101.25
+      ],
+      [
+       128,
+       103.25
+      ],
+      [
+       0,
+       103.25
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       0,
+       103.25
+      ],
+      [
+       128,
+       103.25
+      ],
+      [
+       128,
+       105.5
+      ],
+      [
+       0,
+       105.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "28H0",
+   "chunk": 2,
+   "texture": "pants00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1518112,
+   "offset": 64528,
+   "length": 87488,
+   "before_sha256": "9f0ca4b01a37a8faa61136d9dc2d5e4335c55afb0ce9168faf3d8b98822ae4be",
+   "after_sha256": "cd3e3af0df401bb4576b54bc6d21fd9a9cba8b05e478572aeecb774c12e8a46c",
+   "defects": [
+    "uw2-TEN-home-0-pants-stripe"
+   ],
+   "note": "broad light-blue pinstriped side panel with white/red borders",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       134.5,
+       10.0
+      ],
+      [
+       149.5,
+       10.0
+      ],
+      [
+       149.5,
+       256.0
+      ],
+      [
+       134.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       128.0,
+       10.0
+      ],
+      [
+       130.5,
+       10.0
+      ],
+      [
+       130.5,
+       256.0
+      ],
+      [
+       128.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       130.5,
+       10.0
+      ],
+      [
+       133.0,
+       10.0
+      ],
+      [
+       133.0,
+       256.0
+      ],
+      [
+       130.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       133.0,
+       10.0
+      ],
+      [
+       135.4,
+       10.0
+      ],
+      [
+       135.4,
+       256.0
+      ],
+      [
+       133.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       135.4,
+       10.0
+      ],
+      [
+       136.3,
+       10.0
+      ],
+      [
+       136.3,
+       256.0
+      ],
+      [
+       135.4,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       136.3,
+       10.0
+      ],
+      [
+       138.70000000000002,
+       10.0
+      ],
+      [
+       138.70000000000002,
+       256.0
+      ],
+      [
+       136.3,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       138.70000000000002,
+       10.0
+      ],
+      [
+       139.60000000000002,
+       10.0
+      ],
+      [
+       139.60000000000002,
+       256.0
+      ],
+      [
+       138.70000000000002,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       139.60000000000002,
+       10.0
+      ],
+      [
+       142.00000000000003,
+       10.0
+      ],
+      [
+       142.00000000000003,
+       256.0
+      ],
+      [
+       139.60000000000002,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       142.00000000000003,
+       10.0
+      ],
+      [
+       142.90000000000003,
+       10.0
+      ],
+      [
+       142.90000000000003,
+       256.0
+      ],
+      [
+       142.00000000000003,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       142.90000000000003,
+       10.0
+      ],
+      [
+       145.30000000000004,
+       10.0
+      ],
+      [
+       145.30000000000004,
+       256.0
+      ],
+      [
+       142.90000000000003,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       145.30000000000004,
+       10.0
+      ],
+      [
+       146.20000000000005,
+       10.0
+      ],
+      [
+       146.20000000000005,
+       256.0
+      ],
+      [
+       145.30000000000004,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       146.20000000000005,
+       10.0
+      ],
+      [
+       148.60000000000005,
+       10.0
+      ],
+      [
+       148.60000000000005,
+       256.0
+      ],
+      [
+       146.20000000000005,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       148.60000000000005,
+       10.0
+      ],
+      [
+       149.50000000000006,
+       10.0
+      ],
+      [
+       149.50000000000006,
+       256.0
+      ],
+      [
+       148.60000000000005,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       149.50000000000006,
+       10.0
+      ],
+      [
+       151.00000000000006,
+       10.0
+      ],
+      [
+       151.00000000000006,
+       256.0
+      ],
+      [
+       149.50000000000006,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       151.00000000000006,
+       10.0
+      ],
+      [
+       153.50000000000006,
+       10.0
+      ],
+      [
+       153.50000000000006,
+       256.0
+      ],
+      [
+       151.00000000000006,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       153.50000000000006,
+       10.0
+      ],
+      [
+       156.00000000000006,
+       10.0
+      ],
+      [
+       156.00000000000006,
+       256.0
+      ],
+      [
+       153.50000000000006,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       361.5,
+       10.0
+      ],
+      [
+       376.5,
+       10.0
+      ],
+      [
+       376.5,
+       256.0
+      ],
+      [
+       361.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       355.0,
+       10.0
+      ],
+      [
+       357.5,
+       10.0
+      ],
+      [
+       357.5,
+       256.0
+      ],
+      [
+       355.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       357.5,
+       10.0
+      ],
+      [
+       360.0,
+       10.0
+      ],
+      [
+       360.0,
+       256.0
+      ],
+      [
+       357.5,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       360.0,
+       10.0
+      ],
+      [
+       362.4,
+       10.0
+      ],
+      [
+       362.4,
+       256.0
+      ],
+      [
+       360.0,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       362.4,
+       10.0
+      ],
+      [
+       363.29999999999995,
+       10.0
+      ],
+      [
+       363.29999999999995,
+       256.0
+      ],
+      [
+       362.4,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       363.29999999999995,
+       10.0
+      ],
+      [
+       365.69999999999993,
+       10.0
+      ],
+      [
+       365.69999999999993,
+       256.0
+      ],
+      [
+       363.29999999999995,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       365.69999999999993,
+       10.0
+      ],
+      [
+       366.5999999999999,
+       10.0
+      ],
+      [
+       366.5999999999999,
+       256.0
+      ],
+      [
+       365.69999999999993,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       366.5999999999999,
+       10.0
+      ],
+      [
+       368.9999999999999,
+       10.0
+      ],
+      [
+       368.9999999999999,
+       256.0
+      ],
+      [
+       366.5999999999999,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       368.9999999999999,
+       10.0
+      ],
+      [
+       369.89999999999986,
+       10.0
+      ],
+      [
+       369.89999999999986,
+       256.0
+      ],
+      [
+       368.9999999999999,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       369.89999999999986,
+       10.0
+      ],
+      [
+       372.29999999999984,
+       10.0
+      ],
+      [
+       372.29999999999984,
+       256.0
+      ],
+      [
+       369.89999999999986,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       372.29999999999984,
+       10.0
+      ],
+      [
+       373.1999999999998,
+       10.0
+      ],
+      [
+       373.1999999999998,
+       256.0
+      ],
+      [
+       372.29999999999984,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       373.1999999999998,
+       10.0
+      ],
+      [
+       375.5999999999998,
+       10.0
+      ],
+      [
+       375.5999999999998,
+       256.0
+      ],
+      [
+       373.1999999999998,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#0C2340",
+     "points": [
+      [
+       375.5999999999998,
+       10.0
+      ],
+      [
+       376.4999999999998,
+       10.0
+      ],
+      [
+       376.4999999999998,
+       256.0
+      ],
+      [
+       375.5999999999998,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#4495D2",
+     "points": [
+      [
+       376.4999999999998,
+       10.0
+      ],
+      [
+       377.9999999999998,
+       10.0
+      ],
+      [
+       377.9999999999998,
+       256.0
+      ],
+      [
+       376.4999999999998,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       377.9999999999998,
+       10.0
+      ],
+      [
+       380.4999999999998,
+       10.0
+      ],
+      [
+       380.4999999999998,
+       256.0
+      ],
+      [
+       377.9999999999998,
+       256.0
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#D50A0A",
+     "points": [
+      [
+       380.4999999999998,
+       10.0
+      ],
+      [
+       382.9999999999998,
+       10.0
+      ],
+      [
+       382.9999999999998,
+       256.0
+      ],
+      [
+       380.4999999999998,
+       256.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "29A0",
+   "chunk": 12,
+   "texture": "helmet02",
+   "kind": "txtr",
+   "size": [
+    256,
+    256,
+    6
+   ],
+   "resource_size": 1534176,
+   "offset": 409760,
+   "length": 37872,
+   "before_sha256": "9655a0912f3a08f32943e807fac8905b0adb68c840d3933927f991970882aef8",
+   "after_sha256": "3dc38ecd789ab1cc0620b1572e7395f142df4dd5204a656e90c9c1a403386f32",
+   "defects": [
+    "uw2-WAS-away-0-helmet-w"
+   ],
+   "note": "the W strokes filled solid gold, both sides",
+   "ops": [
+    {
+     "op": "enclosed",
+     "box": [
+      47,
+      57,
+      113,
+      96
+     ],
+     "edge": [
+      "#FFB612"
+     ],
+     "color": "#FFB612",
+     "tolerance": 70
+    },
+    {
+     "op": "enclosed",
+     "box": [
+      47,
+      160,
+      113,
+      199
+     ],
+     "edge": [
+      "#FFB612"
+     ],
+     "color": "#FFB612",
+     "tolerance": 70
+    }
+   ]
+  },
+  {
+   "selector": "29H0",
+   "chunk": 12,
+   "texture": "helmet02",
+   "kind": "txtr",
+   "size": [
+    256,
+    256,
+    6
+   ],
+   "resource_size": 1529008,
+   "offset": 407568,
+   "length": 37872,
+   "before_sha256": "9655a0912f3a08f32943e807fac8905b0adb68c840d3933927f991970882aef8",
+   "after_sha256": "3dc38ecd789ab1cc0620b1572e7395f142df4dd5204a656e90c9c1a403386f32",
+   "defects": [
+    "uw2-WAS-home-0-helmet-logo-fill"
+   ],
+   "note": "the W strokes filled solid gold, both sides",
+   "ops": [
+    {
+     "op": "enclosed",
+     "box": [
+      47,
+      57,
+      113,
+      96
+     ],
+     "edge": [
+      "#FFB612"
+     ],
+     "color": "#FFB612",
+     "tolerance": 70
+    },
+    {
+     "op": "enclosed",
+     "box": [
+      47,
+      160,
+      113,
+      199
+     ],
+     "edge": [
+      "#FFB612"
+     ],
+     "color": "#FFB612",
+     "tolerance": 70
+    }
+   ]
+  },
+  {
+   "selector": "37A0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1514192,
+   "offset": 112,
+   "length": 78416,
+   "before_sha256": "ba1c9c24f171a7362c56712730bc22e831bad7c21baaf6007d6ff0c22214cd8c",
+   "after_sha256": "fe14d5c736583ae189d2f294d086852a1fcf2da476f4b9f45ec98314f6fc7dd0",
+   "defects": [
+    "uw2-HOU-away-0-2026-anniversary-patch"
+   ],
+   "note": "Texans 25th-season patch on the upper left chest",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.8,
+       66.5
+      ],
+      [
+       192.37,
+       66.5
+      ],
+      [
+       192.37,
+       72.878
+      ],
+      [
+       194.744,
+       73.737
+      ],
+      [
+       198.461,
+       74.111
+      ],
+      [
+       203.5,
+       75.251
+      ],
+      [
+       203.5,
+       79.622
+      ],
+      [
+       201.696,
+       81.954
+      ],
+      [
+       198.838,
+       83.545
+      ],
+      [
+       197.033,
+       84.851
+      ],
+      [
+       195.989,
+       87.685
+      ],
+      [
+       192.459,
+       86.814
+      ],
+      [
+       190.177,
+       83.717
+      ],
+      [
+       188.223,
+       81.596
+      ],
+      [
+       186.114,
+       80.421
+      ],
+      [
+       183.848,
+       81.651
+      ],
+      [
+       180.5,
+       78.37
+      ],
+      [
+       180.5,
+       74.1
+      ],
+      [
+       186.8,
+       74.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       187.8,
+       67.5
+      ],
+      [
+       191.37,
+       67.5
+      ],
+      [
+       191.37,
+       73.58
+      ],
+      [
+       194.52,
+       74.72
+      ],
+      [
+       198.3,
+       75.1
+      ],
+      [
+       202.5,
+       76.05
+      ],
+      [
+       202.5,
+       79.28
+      ],
+      [
+       201.03,
+       81.18
+      ],
+      [
+       198.3,
+       82.7
+      ],
+      [
+       196.2,
+       84.22
+      ],
+      [
+       195.36,
+       86.5
+      ],
+      [
+       193.05,
+       85.93
+      ],
+      [
+       190.95,
+       83.08
+      ],
+      [
+       188.85,
+       80.8
+      ],
+      [
+       186.12,
+       79.28
+      ],
+      [
+       184.02,
+       80.42
+      ],
+      [
+       181.5,
+       77.95
+      ],
+      [
+       181.5,
+       75.1
+      ],
+      [
+       187.8,
+       75.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       76.02857142857144
+      ],
+      [
+       186.7,
+       76.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       191.07142857142856,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       78.72857142857144
+      ],
+      [
+       191.07142857142856,
+       78.72857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       77.7
+      ],
+      [
+       193.1285714285714,
+       77.7
+      ],
+      [
+       193.1285714285714,
+       79.50000000000001
+      ],
+      [
+       186.7,
+       79.50000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       77.7
+      ],
+      [
+       188.75714285714284,
+       77.7
+      ],
+      [
+       188.75714285714284,
+       83.10000000000001
+      ],
+      [
+       186.7,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       81.17142857142858
+      ],
+      [
+       193.1285714285714,
+       81.17142857142858
+      ],
+      [
+       193.1285714285714,
+       83.10000000000001
+      ],
+      [
+       186.7,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       74.10000000000001
+      ],
+      [
+       200.7142857142857,
+       74.10000000000001
+      ],
+      [
+       200.7142857142857,
+       76.02857142857144
+      ],
+      [
+       194.28571428571428,
+       76.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       74.10000000000001
+      ],
+      [
+       196.34285714285713,
+       74.10000000000001
+      ],
+      [
+       196.34285714285713,
+       78.72857142857144
+      ],
+      [
+       194.28571428571428,
+       78.72857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       79.50000000000001
+      ],
+      [
+       194.28571428571428,
+       79.50000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       198.65714285714284,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       83.10000000000001
+      ],
+      [
+       198.65714285714284,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       81.17142857142858
+      ],
+      [
+       200.7142857142857,
+       81.17142857142858
+      ],
+      [
+       200.7142857142857,
+       83.10000000000001
+      ],
+      [
+       194.28571428571428,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       75.32857142857144
+      ],
+      [
+       186.0,
+       75.32857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       190.37142857142857,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       78.02857142857144
+      ],
+      [
+       190.37142857142857,
+       78.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       77.0
+      ],
+      [
+       192.42857142857142,
+       77.0
+      ],
+      [
+       192.42857142857142,
+       78.80000000000001
+      ],
+      [
+       186.0,
+       78.80000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       77.0
+      ],
+      [
+       188.05714285714285,
+       77.0
+      ],
+      [
+       188.05714285714285,
+       82.4
+      ],
+      [
+       186.0,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       80.47142857142858
+      ],
+      [
+       192.42857142857142,
+       80.47142857142858
+      ],
+      [
+       192.42857142857142,
+       82.4
+      ],
+      [
+       186.0,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       73.4
+      ],
+      [
+       200.0142857142857,
+       73.4
+      ],
+      [
+       200.0142857142857,
+       75.32857142857144
+      ],
+      [
+       193.5857142857143,
+       75.32857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       73.4
+      ],
+      [
+       195.64285714285714,
+       73.4
+      ],
+      [
+       195.64285714285714,
+       78.02857142857144
+      ],
+      [
+       193.5857142857143,
+       78.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       78.80000000000001
+      ],
+      [
+       193.5857142857143,
+       78.80000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       197.95714285714286,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       82.4
+      ],
+      [
+       197.95714285714286,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       80.47142857142858
+      ],
+      [
+       200.0142857142857,
+       80.47142857142858
+      ],
+      [
+       200.0142857142857,
+       82.4
+      ],
+      [
+       193.5857142857143,
+       82.4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "selector": "37H0",
+   "chunk": 1,
+   "texture": "jersey00",
+   "kind": "tset",
+   "size": [
+    512,
+    256,
+    6
+   ],
+   "resource_size": 1508576,
+   "offset": 112,
+   "length": 64720,
+   "before_sha256": "f609ba17f62750c3be26a0cceb72e1ab8cee1cf07f43aeaa2f2c1938516a451f",
+   "after_sha256": "2071c6fa306e3f0e2ac72a78e91c9c12e539fbe3700fba1528f0eed5995d72ca",
+   "defects": [
+    "uw2-HOU-home-0-anniversary-chest"
+   ],
+   "note": "Texans 25th-season patch on the upper left chest",
+   "ops": [
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.8,
+       66.5
+      ],
+      [
+       192.37,
+       66.5
+      ],
+      [
+       192.37,
+       72.878
+      ],
+      [
+       194.744,
+       73.737
+      ],
+      [
+       198.461,
+       74.111
+      ],
+      [
+       203.5,
+       75.251
+      ],
+      [
+       203.5,
+       79.622
+      ],
+      [
+       201.696,
+       81.954
+      ],
+      [
+       198.838,
+       83.545
+      ],
+      [
+       197.033,
+       84.851
+      ],
+      [
+       195.989,
+       87.685
+      ],
+      [
+       192.459,
+       86.814
+      ],
+      [
+       190.177,
+       83.717
+      ],
+      [
+       188.223,
+       81.596
+      ],
+      [
+       186.114,
+       80.421
+      ],
+      [
+       183.848,
+       81.651
+      ],
+      [
+       180.5,
+       78.37
+      ],
+      [
+       180.5,
+       74.1
+      ],
+      [
+       186.8,
+       74.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#FFFFFF",
+     "points": [
+      [
+       187.8,
+       67.5
+      ],
+      [
+       191.37,
+       67.5
+      ],
+      [
+       191.37,
+       73.58
+      ],
+      [
+       194.52,
+       74.72
+      ],
+      [
+       198.3,
+       75.1
+      ],
+      [
+       202.5,
+       76.05
+      ],
+      [
+       202.5,
+       79.28
+      ],
+      [
+       201.03,
+       81.18
+      ],
+      [
+       198.3,
+       82.7
+      ],
+      [
+       196.2,
+       84.22
+      ],
+      [
+       195.36,
+       86.5
+      ],
+      [
+       193.05,
+       85.93
+      ],
+      [
+       190.95,
+       83.08
+      ],
+      [
+       188.85,
+       80.8
+      ],
+      [
+       186.12,
+       79.28
+      ],
+      [
+       184.02,
+       80.42
+      ],
+      [
+       181.5,
+       77.95
+      ],
+      [
+       181.5,
+       75.1
+      ],
+      [
+       187.8,
+       75.1
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       76.02857142857144
+      ],
+      [
+       186.7,
+       76.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       191.07142857142856,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       74.10000000000001
+      ],
+      [
+       193.1285714285714,
+       78.72857142857144
+      ],
+      [
+       191.07142857142856,
+       78.72857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       77.7
+      ],
+      [
+       193.1285714285714,
+       77.7
+      ],
+      [
+       193.1285714285714,
+       79.50000000000001
+      ],
+      [
+       186.7,
+       79.50000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       77.7
+      ],
+      [
+       188.75714285714284,
+       77.7
+      ],
+      [
+       188.75714285714284,
+       83.10000000000001
+      ],
+      [
+       186.7,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       186.7,
+       81.17142857142858
+      ],
+      [
+       193.1285714285714,
+       81.17142857142858
+      ],
+      [
+       193.1285714285714,
+       83.10000000000001
+      ],
+      [
+       186.7,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       74.10000000000001
+      ],
+      [
+       200.7142857142857,
+       74.10000000000001
+      ],
+      [
+       200.7142857142857,
+       76.02857142857144
+      ],
+      [
+       194.28571428571428,
+       76.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       74.10000000000001
+      ],
+      [
+       196.34285714285713,
+       74.10000000000001
+      ],
+      [
+       196.34285714285713,
+       78.72857142857144
+      ],
+      [
+       194.28571428571428,
+       78.72857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       79.50000000000001
+      ],
+      [
+       194.28571428571428,
+       79.50000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       198.65714285714284,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       77.7
+      ],
+      [
+       200.7142857142857,
+       83.10000000000001
+      ],
+      [
+       198.65714285714284,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#A71930",
+     "points": [
+      [
+       194.28571428571428,
+       81.17142857142858
+      ],
+      [
+       200.7142857142857,
+       81.17142857142858
+      ],
+      [
+       200.7142857142857,
+       83.10000000000001
+      ],
+      [
+       194.28571428571428,
+       83.10000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       75.32857142857144
+      ],
+      [
+       186.0,
+       75.32857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       190.37142857142857,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       73.4
+      ],
+      [
+       192.42857142857142,
+       78.02857142857144
+      ],
+      [
+       190.37142857142857,
+       78.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       77.0
+      ],
+      [
+       192.42857142857142,
+       77.0
+      ],
+      [
+       192.42857142857142,
+       78.80000000000001
+      ],
+      [
+       186.0,
+       78.80000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       77.0
+      ],
+      [
+       188.05714285714285,
+       77.0
+      ],
+      [
+       188.05714285714285,
+       82.4
+      ],
+      [
+       186.0,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       186.0,
+       80.47142857142858
+      ],
+      [
+       192.42857142857142,
+       80.47142857142858
+      ],
+      [
+       192.42857142857142,
+       82.4
+      ],
+      [
+       186.0,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       73.4
+      ],
+      [
+       200.0142857142857,
+       73.4
+      ],
+      [
+       200.0142857142857,
+       75.32857142857144
+      ],
+      [
+       193.5857142857143,
+       75.32857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       73.4
+      ],
+      [
+       195.64285714285714,
+       73.4
+      ],
+      [
+       195.64285714285714,
+       78.02857142857144
+      ],
+      [
+       193.5857142857143,
+       78.02857142857144
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       78.80000000000001
+      ],
+      [
+       193.5857142857143,
+       78.80000000000001
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       197.95714285714286,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       77.0
+      ],
+      [
+       200.0142857142857,
+       82.4
+      ],
+      [
+       197.95714285714286,
+       82.4
+      ]
+     ]
+    },
+    {
+     "op": "poly",
+     "color": "#03202F",
+     "points": [
+      [
+       193.5857142857143,
+       80.47142857142858
+      ],
+      [
+       200.0142857142857,
+       80.47142857142858
+      ],
+      [
+       200.0142857142857,
+       82.4
+      ],
+      [
+       193.5857142857143,
+       82.4
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
