@@ -125,8 +125,8 @@ def _triangles(words):
 
 def occluders(decoded, system_bytes, skip=()):
     """(N, 3, 3) float64 world triangles in metres of a decoded stadium scene that can cast onto the field; ``skip``
-    names materials that let the sun through (a venue's translucent roof panels). Retail's bakes cast every other
-    material, the alpha-tested ones included (its light towers' lattices read solid)."""
+    names materials that cast nothing (a venue's translucent roof panels, cables too thin for a 0.73 m texel). Retail's
+    bakes cast every other material, the alpha-tested ones included (its light towers' lattices read solid)."""
     import numpy as np
     from . import nfl2k5_scne_builder as sb
     scene = sb.parse(decoded, system_bytes)
@@ -193,17 +193,25 @@ def coverage(tris, sun):
     return counts
 
 
-def alpha_levels(counts):
+#: tried in order until the texture fits its span: (softened, levels): the softened retail ramp, then hard edges
+#: on the ramp (edge texels only), then hard edges on two levels
+FIT_LADDER = ((True, LEVELS), (False, LEVELS), (False, (0, 254)))
+
+
+def alpha_levels(counts, soft=True, levels=LEVELS):
     """The retail format: a light [1, 6, 1] softening across texels (retail edges are about a texel soft: 7.5 percent
     of the window's texels sit between the end levels, 3.9 unsoftened and 9.8 with this), then the nearest of the
     sixteen retail alpha levels, all in integers. Outside the window stays full shadow."""
     import numpy as np
     full = SUPERSAMPLE * SUPERSAMPLE
     c = np.asarray(counts, dtype=np.int64)
-    p = np.pad(c, 1, mode="edge")
-    h = p[:, :-2] + 6 * p[:, 1:-1] + p[:, 2:]
-    b = h[:-2, :] + 6 * h[1:-1, :] + h[2:, :]                 # 0 .. 64 * full
-    levels = np.asarray(LEVELS, dtype=np.int64)
+    if soft:
+        p = np.pad(c, 1, mode="edge")
+        h = p[:, :-2] + 6 * p[:, 1:-1] + p[:, 2:]
+        b = h[:-2, :] + 6 * h[1:-1, :] + h[2:, :]             # 0 .. 64 * full
+    else:
+        b = 64 * c
+    levels = np.asarray(levels, dtype=np.int64)
     # nearest level to 254 * b / (64 * full): compare |254 * b - level * 64 * full| exactly (first level on a tie)
     err = np.abs(254 * b[..., None] - levels[None, None, :] * (64 * full))
     out = levels[err.argmin(axis=-1)].astype(np.uint8)
@@ -213,9 +221,9 @@ def alpha_levels(counts):
     return keep
 
 
-def cast(decoded, system_bytes, sun, skip=()):
+def cast(decoded, system_bytes, sun, skip=(), soft=True, levels=LEVELS):
     """The shadow alpha (SIZE x SIZE uint8, row = v, column = u) of one decoded stadium scene under ``sun``."""
-    return alpha_levels(coverage(occluders(decoded, system_bytes, skip), sun))
+    return alpha_levels(coverage(occluders(decoded, system_bytes, skip), sun), soft, levels)
 
 
 # --- the TXTR -------------------------------------------------------------------------------------------------------
@@ -309,10 +317,120 @@ def bundle_shadow(bundle, prefix, sun=None):
         sun = None
         alpha = np.full((SIZE, SIZE), 254, dtype=np.uint8)
         alpha[CENTRE - WINDOW_V:CENTRE + WINDOW_V, CENTRE - WINDOW_U:CENTRE + WINDOW_U] = 0
+        out, receipt = write_shadow(bundle, alpha)
+        rung = 0
     else:
         sun = tuple(sun) if sun is not None else venue_sun(prefix)
-        alpha = cast(decoded, chunk.system_bytes, sun, skip=tuple(row.get("translucent", ())))
-    out, receipt = write_shadow(bundle, alpha)
+        counts = coverage(occluders(decoded, chunk.system_bytes, tuple(row.get("no_cast", ()))), sun)
+        misses = []
+        for rung, (soft, levels) in enumerate(FIT_LADDER):
+            alpha = alpha_levels(counts, soft, levels)
+            try:
+                out, receipt = write_shadow(bundle, alpha)
+                break
+            except StadiumShadowError as exc:
+                misses.append(str(exc)[:80])
+        else:
+            raise StadiumShadowError(f"{prefix}: the shadow does not fit its span on any rung: {misses}")
     lit = int((alpha[CENTRE - 75:CENTRE + 75, CENTRE - 33:CENTRE + 33] == 0).sum())
-    return out, dict(receipt, sun=None if sun is None else [round(v, 6) for v in sun], roof=row.get("roof", "open"),
+    return out, dict(receipt, sun=None if sun is None else [round(v, 6) for v in sun], roof=row.get("roof", "open"), fit_rung=rung,
                      stadium_sha256=sha(decoded), alpha_sha256=sha(alpha.tobytes()), field_lit_texels=lit)
+
+
+# --- the build step -------------------------------------------------------------------------------------------------
+#: the Build options whose stadium models replace a retail stadium, and the venue prefixes each one owns
+OPTION_VENUES = {
+    "modern_metlife_model": ("s18", "s19"), "modern_state_farm": ("s00",), "modern_highmark": ("s03",),
+    "modern_att": ("s07",), "modern_lambeau": ("s10",), "modern_everbank": ("s12",), "modern_hard_rock": ("s14",),
+    "modern_gillette": ("s16",), "modern_allegiant": ("s20",), "modern_sofi": ("s23", "s24", "s40"),
+    "modern_levis": ("s25",), "modern_usbank": ("s15",), "modern_lucas_oil": ("s11",), "modern_mercedes_benz": ("s01",),
+}
+TIMES, WEATHERS = "dan", "drs"
+
+
+def venue_bundles(archive, prefixes):
+    """{bundle name: entry} of the venues' bundles that carry a shadow texture (the afternoon dry ones, and s07's day)."""
+    tx, ml = _tools()
+    byid = {e.name_id: e for e in archive.entries}
+    out = {}
+    for prefix in prefixes:
+        for t in TIMES:
+            for w in WEATHERS:
+                name = f"{prefix}{t}{w}.iff"
+                e = byid.get(ml.name_id(name))
+                if e is None:
+                    continue
+                if shadow_chunk(archive.read(e.virtual_offset, e.size)) is not None:
+                    out[name] = e
+    return out
+
+
+def image_report(source, prefixes):
+    """{bundle name: "applied" | "retail" | "other"}: does each shadow equal the cast of the stadium beside it?"""
+    tx, ml = _tools()
+    rows = {}
+    with ml._outer_image()(str(source)) as archive:
+        for name, e in sorted(venue_bundles(archive, prefixes).items()):
+            data = archive.read(e.virtual_offset, e.size)
+            cast_bundle, _rec = bundle_shadow(data, name[:3])
+            rows[name] = "applied" if cast_bundle == data else "other"
+    return rows
+
+
+def apply_to_image(target, prefixes, *, progress=None):
+    """Build step (after every stadium writer, before Modern playing surfaces): each listed venue's shadow texture is
+    cast from the stadium scene its bundle now carries, inside the texture's fixed span. Modern colour's and the 2026
+    venue art's receipts take the new bundle hashes so both still recognize their work; the stadium options pin their
+    stretches, which this step does not touch."""
+    from copy import deepcopy
+    from . import nfl2k5_modern_color as colour
+    tx, ml = _tools()
+    say = progress or (lambda message, done, total: None)
+    try:
+        colour_receipt = colour.read_image_receipt(target)
+    except (OSError, ValueError):
+        colour_receipt = None
+    new_colour = deepcopy(colour_receipt) if colour_receipt else None
+    try:
+        from . import nfl2k5_modern_venues_2026 as mv
+        venues_receipt = mv.read_receipt(target)
+    except (ImportError, OSError, ValueError):
+        mv, venues_receipt = None, None
+    new_venues = deepcopy(venues_receipt) if venues_receipt else None
+    receipt = dict(label=LABEL, runtime_witnessed=False, bundles={})
+    with ml._outer_image()(str(target), writable=True) as archive:
+        todo = venue_bundles(archive, prefixes)
+        for k, (name, e) in enumerate(sorted(todo.items())):
+            say(f"Stadium shadows: {name}", k, len(todo))
+            before = archive.read(e.virtual_offset, e.size)
+            after, rec = bundle_shadow(before, name[:3])
+            require(len(after) == len(before), f"{name}: the bundle changed size")
+            at, length = rec["offset"], rec["length"]
+            require(after[:at] == before[:at] and after[at + length:] == before[at + length:],
+                    f"{name}: bytes outside the shadow span changed")
+            if after != before:
+                archive.write(e.virtual_offset + at, after[at:at + length])
+            require(archive.read(e.virtual_offset, e.size) == after, f"{name}: write-back differs")
+            receipt["bundles"][name] = dict(rec, written=after != before)
+            if new_colour is not None and name in new_colour.get("bundle_pins", {}):
+                row = new_colour["bundle_pins"][name]
+                new_colour["bundle_pins"][name] = dict(row, applied_sha256=sha(after), sites=[
+                    dict(site, applied=sha(after[site["offset"]:site["offset"] + site["size"]])) for site in row["sites"]])
+            for key in ("modern_metlife", "modern_arrowhead"):
+                combined = (new_colour or {}).get(key)
+                if isinstance(combined, dict) and name in (combined.get("bundles") or {}):
+                    row = combined["bundles"][name]
+                    combined["bundles"][name] = dict(row, applied_sha256=sha(after), sites=[
+                        dict(site, applied=sha(after[site["offset"]:site["offset"] + site["size"]]))
+                        for site in row.get("sites", [])])
+            if new_venues is not None and name in (new_venues.get("bundles") or {}):
+                new_venues["bundles"][name] = dict(new_venues["bundles"][name], applied_sha256=sha(after))
+    if new_colour is not None and new_colour != colour_receipt:
+        new_colour["stadium_shadow"] = dict(bundles=sorted(receipt["bundles"]))
+        colour._save_image_receipt(target, new_colour)
+    if new_venues is not None and new_venues != venues_receipt:
+        mv._save_receipt(target, new_venues)
+    say("Stadium shadows: done", 1, 1)
+    receipt["state"] = "applied" if set(image_report(target, prefixes).values()) <= {"applied"} else "foreign"
+    require(receipt["state"] == "applied", "a shadow does not read back as the cast of its stadium")
+    return receipt

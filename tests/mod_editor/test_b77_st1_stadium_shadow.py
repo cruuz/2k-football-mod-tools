@@ -94,6 +94,56 @@ class Venues(unittest.TestCase):
             self.assertTrue(rows[prefix]["fit"])
 
 
+class Stage2(unittest.TestCase):
+    def test_every_modern_venue_with_a_shadow_texture_has_a_row(self):
+        rows = sh.venues()
+        for option, prefixes in sh.OPTION_VENUES.items():
+            for prefix in prefixes:
+                if prefix in ("s01", "s11", "s15", "s23"):      # retail domes: no shadow texture in any bundle
+                    continue
+                self.assertIn(prefix, rows, f"{option} {prefix}")
+                row = rows[prefix]
+                self.assertTrue(row.get("roof") == "closed" or "sun" in row, prefix)
+
+    def test_closed_roofs_are_the_indoor_modern_venues(self):
+        closed = sorted(p for p, row in sh.venues().items() if row.get("roof") == "closed")
+        self.assertEqual(closed, ["s07", "s20", "s24", "s40"])
+
+    def test_a_closed_roof_lights_the_whole_window(self):
+        from unittest import mock
+        found = (None, None, None)
+        captured = {}
+
+        def fake_write(bundle, alpha):
+            captured["alpha"] = alpha
+            return bytes(bundle), dict(offset=0, length=0, before_sha256="", after_sha256="", decoded_sha256="")
+        tx, ml = mock.Mock(), mock.Mock()
+        ml.bundle_scenes.return_value = {"stadium": mock.Mock(system_bytes=0)}
+        tx.decode_chunk.return_value = (b"", None)
+        with mock.patch.object(sh, "shadow_chunk", return_value=found), \
+                mock.patch.object(sh, "_tools", return_value=(tx, ml)), \
+                mock.patch.object(sh, "write_shadow", side_effect=fake_write):
+            sh.bundle_shadow(b"x", "s20")
+        a = captured["alpha"]
+        w = (slice(sh.CENTRE - sh.WINDOW_V, sh.CENTRE + sh.WINDOW_V), slice(sh.CENTRE - sh.WINDOW_U, sh.CENTRE + sh.WINDOW_U))
+        self.assertTrue((a[w] == 0).all())
+        self.assertEqual(int(a[0, 0]), 254)
+
+    def test_the_fit_ladder_ends_on_two_levels(self):
+        self.assertEqual(sh.FIT_LADDER[0], (True, sh.LEVELS))
+        self.assertEqual(sh.FIT_LADDER[-1], (False, (0, 254)))
+        tris = wall(-30.0, -70.0, 70.0, 20.0)
+        hard = sh.alpha_levels(sh.coverage(tris, sh.sun_vector(270, 45)), False, (0, 254))
+        self.assertEqual(set(np.unique(hard).tolist()), {0, 254})
+
+    def test_the_build_runs_the_step_after_the_stadium_writers_and_before_surfaces(self):
+        text = (ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8")
+        step = text.index('stadium_shadow.apply_to_image(target')
+        self.assertLess(text.index('everbank.apply_to_image(target'), step)
+        self.assertLess(text.index('practice.apply_to_image(target'), step)
+        self.assertLess(step, text.index('surfaces.apply_to_image(target'))
+
+
 class Surfaces(unittest.TestCase):
     def test_only_metlife_afternoon_has_a_measured_response(self):
         measured = {(p, light) for p, row in ms.venues().items() for light in (row.get("response") or {})}

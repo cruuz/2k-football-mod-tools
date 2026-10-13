@@ -2,9 +2,117 @@
  "schema": "nfl2k5_stadium_shadow_venues/v1",
  "note": "The sun each retail afternoon shadow texture was baked with, found by casting the retail stadium scene of the same bundle and matching the retail texture over the field (texels within the detail window). A modern stadium's shadow is cast from its own scene under this sun.",
  "venues": {
-  "s18": {"venue": "MetLife Stadium (Giants)", "retail": "Giants Stadium", "sun": {"azimuth_deg": 315, "elevation_deg": 35},
-          "fit": "retail s18ad: 97.97 percent of the 80 x 164 detail-window texels agree (azimuth 309..319, elevation 33..39 scanned in 1 degree steps; next best 94.5)"},
-  "s19": {"venue": "MetLife Stadium (Jets)", "retail": "Giants Stadium", "sun": {"azimuth_deg": 315, "elevation_deg": 35},
-          "fit": "retail s19ad carries the same shadow texture as s18ad (decoded SHA-256 d75fe9c34471...)"}
+  "s00": {
+   "venue": "State Farm Stadium",
+   "retail": "Sun Devil Stadium",
+   "sun": {
+    "azimuth_deg": 340,
+    "elevation_deg": 43
+   },
+   "fit": "retail s00ad: 96.71 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)",
+   "note": "the roof is drawn open (docs/state_farm_model) and the row stays outdoor: the open roof's frame casts onto the field"
+  },
+  "s03": {
+   "venue": "Highmark Stadium (2026)",
+   "retail": "Ralph Wilson Stadium",
+   "sun": {
+    "azimuth_deg": 269,
+    "elevation_deg": 28
+   },
+   "fit": "retail s03ad: 96.30 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)"
+  },
+  "s07": {
+   "venue": "AT&T Stadium",
+   "retail": "Texas Stadium",
+   "roof": "closed",
+   "note": "the row is indoor and the roof is drawn closed (docs/att_model): no sun shadow, as retail's domes; retail's ad and dd textures were Texas Stadium's roof opening"
+  },
+  "s10": {
+   "venue": "Lambeau Field (2026)",
+   "retail": "Lambeau Field (2004)",
+   "sun": {
+    "azimuth_deg": 46,
+    "elevation_deg": 33
+   },
+   "fit": "retail s10ad: 97.99 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)"
+  },
+  "s12": {
+   "venue": "EverBank Stadium",
+   "retail": "Alltel Stadium",
+   "sun": {
+    "azimuth_deg": 188,
+    "elevation_deg": 31
+   },
+   "fit": "retail s12ad: 97.39 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)"
+  },
+  "s14": {
+   "venue": "Hard Rock Stadium",
+   "retail": "Pro Player Stadium",
+   "sun": {
+    "azimuth_deg": 34,
+    "elevation_deg": 42
+   },
+   "fit": "retail s14ad: 96.68 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)",
+   "note": "the ETFE ring round the canopy opening lets the sun through, and the cables are thinner than a 0.73 m texel (docs/hard_rock_model)",
+   "no_cast": [
+    "hr_etfe",
+    "hr_cable"
+   ]
+  },
+  "s16": {
+   "venue": "Gillette Stadium",
+   "retail": "Gillette Stadium (2004)",
+   "sun": {
+    "azimuth_deg": 257,
+    "elevation_deg": 42
+   },
+   "fit": "retail s16ad: 97.52 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)"
+  },
+  "s18": {
+   "venue": "MetLife Stadium (Giants)",
+   "retail": "Giants Stadium",
+   "sun": {
+    "azimuth_deg": 315,
+    "elevation_deg": 35
+   },
+   "fit": "retail s18ad: 97.97 percent of the 80 x 164 detail-window texels agree (azimuth 309..319, elevation 33..39 scanned in 1 degree steps; next best 94.5)"
+  },
+  "s19": {
+   "venue": "MetLife Stadium (Jets)",
+   "retail": "Giants Stadium",
+   "sun": {
+    "azimuth_deg": 315,
+    "elevation_deg": 35
+   },
+   "fit": "retail s19ad carries the same shadow texture as s18ad (decoded SHA-256 d75fe9c34471...)"
+  },
+  "s20": {
+   "venue": "Allegiant Stadium",
+   "retail": "Network Associates Coliseum",
+   "roof": "closed",
+   "note": "the fixed ETFE roof covers the building and the row is indoor (docs/allegiant_model): no sun shadow, as retail's domes"
+  },
+  "s24": {
+   "venue": "SoFi Stadium (Chargers)",
+   "retail": "Qualcomm Stadium",
+   "roof": "closed",
+   "note": "the translucent canopy covers the field and the row is indoor on a SoFi build: diffuse light, no sun shadow, as retail's domes"
+  },
+  "s25": {
+   "venue": "Levi's Stadium",
+   "retail": "3Com Park (Candlestick)",
+   "sun": {
+    "azimuth_deg": 237,
+    "elevation_deg": 28
+   },
+   "fit": "retail s25ad: 83.19 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)",
+   "note": "the weakest fit: retail's Candlestick texture does not match its own scene as closely as the others (83 percent at best; mirrored textures fit worse)"
+  },
+  "s40": {
+   "venue": "SoFi Stadium (Super Bowl LXI row)",
+   "retail": "Super Bowl 2005 site",
+   "roof": "closed",
+   "note": "the SoFi build makes the row indoor: no sun shadow, as retail's domes"
+  }
  }
 }

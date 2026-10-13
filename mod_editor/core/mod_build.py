@@ -4024,6 +4024,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                                    team_logo=plan.modern_practice_field_team_logo)
         receipt["steps"].append({"step": "modern_practice_field", **practice_receipt})
         receipt["result"]["modern_practice_field"] = "applied"
+    stadium_shadow = _core_module("nfl2k5_stadium_shadow")
+    shadow_venues = sorted({p for key, venues in (stadium_shadow.OPTION_VENUES.items() if stadium_shadow else ())
+                            if getattr(plan, key, False) is True for p in venues})
+    if shadow_venues:
+        # b77 st1: after every stadium writer and before Modern playing surfaces: each modern stadium's afternoon field
+        # shadow is cast from the stadium its bundle now carries, under the retail venue's sun (a closed roof casts
+        # none, as retail's domes); the shadow texture's fixed span only, and Modern colour's and the 2026 venue art's
+        # receipts take the new bundle hashes.
+        progress("Stadium shadows", 0, 0)
+        shadow_receipt = stadium_shadow.apply_to_image(target, shadow_venues, progress=progress)
+        receipt["steps"].append({"step": "stadium_shadows", **shadow_receipt})
+        receipt["result"]["stadium_shadows"] = shadow_receipt["state"]
     if plan.modern_surfaces:
         # b76-tf: LAST of the stadium writers (after Modern colour, Arrowhead, MetLife and its model, the 2026 venue art,
         # SoFi and Highmark): repaints each home field's surface over whatever they left, refits every field in its

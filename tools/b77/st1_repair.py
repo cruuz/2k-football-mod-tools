@@ -39,8 +39,14 @@ if str(ROOT) not in sys.path:
 
 PINS_SCHEMA = "b77_st1_pins/v1"
 ALG_MANIFEST = Path(__file__).with_name("alg_repair_manifest.json")
-#: the bundles this repair owns and why: MetLife's afternoon dry bundles (shadow + field)
-BUNDLES = {"s18ad.iff": ("shadow", "field"), "s19ad.iff": ("shadow", "field")}
+#: the bundles each stage owns and the spans it writes. Stage 1: MetLife's afternoon dry bundles (shadow + field).
+#: Stage 2: every other modern stadium bundle that carries a shadow texture (shadow only).
+STAGES = {
+    "1": {"s18ad.iff": ("shadow", "field"), "s19ad.iff": ("shadow", "field")},
+    "2": {n: ("shadow",) for n in ("s00ad.iff", "s03ad.iff", "s07ad.iff", "s07dd.iff", "s10ad.iff", "s12ad.iff",
+                                   "s14ad.iff", "s16ad.iff", "s20ad.iff", "s24ad.iff", "s25ad.iff", "s40ad.iff")},
+}
+BUNDLES = {}
 INDOOR = {"s18": False, "s19": False}
 
 
@@ -94,11 +100,10 @@ def spans_of(bundle, kinds):
     return out
 
 
-def repair_bundle(name, data, settings):
+def repair_bundle(name, data, settings, kinds):
     """(new bytes, receipt): the shadow cast from the bundle's own stadium scene, then Modern surfaces' painter."""
     from mod_editor.core import nfl2k5_modern_surfaces as ms
     from mod_editor.core import nfl2k5_stadium_shadow as shadow
-    kinds = BUNDLES[name]
     prefix = name[:3]
     spans = spans_of(data, kinds)
     out = bytes(data)
@@ -126,11 +131,11 @@ def repair_bundle(name, data, settings):
     return out, receipt
 
 
-def _entries(archive):
+def _entries(archive, names):
     from mod_editor.core import nfl2k5_modern_metlife as ml
     byid = {e.name_id: e for e in archive.entries}
     out = {}
-    for name in BUNDLES:
+    for name in names:
         e = byid.get(ml.name_id(name))
         require(e is not None, f"{name}: not in the archive")
         out[name] = e
@@ -140,18 +145,22 @@ def _entries(archive):
 def cmd_record(a):
     from mod_editor.core import nfl2k5_modern_metlife as ml
     settings = colour_settings()
+    stage = STAGES[a.stage]
     rows = []
     with ml._outer_image()(str(a.disc)) as archive:
-        for name, e in _entries(archive).items():
+        for name, e in _entries(archive, stage).items():
             data = archive.read(e.virtual_offset, e.size)
-            out, rec = repair_bundle(name, data, settings)
-            again, _ = repair_bundle(name, out, settings)
+            out, rec = repair_bundle(name, data, settings, stage[name])
+            again, _ = repair_bundle(name, out, settings, stage[name])
             require(again == out, f"{name}: the repair is not idempotent")
-            rows.append(dict(name=name, outer_index=e.index, name_id=e.name_id, size=e.size, input_sha256=sha(data),
-                             output_sha256=sha(out), spans=rec["spans"], shadow_sun=rec.get("shadow", {}).get("sun"),
+            shadow = rec.get("shadow") or {}
+            rows.append(dict(name=name, kinds=list(stage[name]), outer_index=e.index, name_id=e.name_id, size=e.size,
+                             input_sha256=sha(data), output_sha256=sha(out), spans=rec["spans"],
+                             shadow_sun=shadow.get("sun"), shadow_roof=shadow.get("roof"),
+                             shadow_fit_rung=shadow.get("fit_rung"), field_lit_texels=shadow.get("field_lit_texels"),
                              field=rec.get("field")))
             print(name, "pinned", sha(data)[:12], "->", sha(out)[:12], flush=True)
-    write_json(a.out, dict(schema=PINS_SCHEMA, input_disc=dict(name=Path(a.disc).name, sha256=a.disc_sha256),
+    write_json(a.out, dict(schema=PINS_SCHEMA, stage=a.stage, input_disc=dict(name=Path(a.disc).name, sha256=a.disc_sha256),
                            colour_settings_sha256=json.loads(read_file(ALG_MANIFEST))["colour_settings_sha256"],
                            bundles=rows))
     return 0
@@ -169,14 +178,14 @@ def cmd_apply(a):
     settings = colour_settings()
     plan = []
     with ml._outer_image()(str(a.disc)) as archive:
-        for name, e in _entries(archive).items():
+        for name, e in _entries(archive, rows).items():
             r = rows[name]
             require(e.index == r["outer_index"] and e.size == r["size"], f"{name}: archive entry differs")
             data = archive.read(e.virtual_offset, e.size)
             have = sha(data)
             require(have in (r["input_sha256"], r["output_sha256"]), f"{name}: the bundle is neither the pinned input "
                     "nor the pinned output")
-            out, rec = repair_bundle(name, data, settings)
+            out, rec = repair_bundle(name, data, settings, tuple(r.get("kinds", ("shadow", "field"))))
             require(sha(out) == r["output_sha256"], f"{name}: the Studio functions no longer give the pinned output")
             plan.append((name, e, data, out, rec))
     # the whole batch is verified in memory; only now write the owned spans
@@ -254,13 +263,33 @@ def cmd_studio(a):
     from mod_editor.core import nfl2k5_metlife_model as mm
     from mod_editor.core import nfl2k5_modern_metlife as ml
     from mod_editor.core import nfl2k5_modern_surfaces as ms
+    from mod_editor.core import nfl2k5_stadium_shadow as shadow
     rows, _doc = load_pins(a.pins)
     settings = colour_settings()
+    checks = []
+    if not set(rows) <= {"s18ad.iff", "s19ad.iff"}:
+        # Stage 2: the Studio's build step casts each shadow from the stadium the bundle carries; it leaves these
+        # bundles byte for byte, and the stadium chunks are the input disc's
+        with ml._outer_image()(str(a.disc)) as archive, ml._outer_image()(str(a.base)) as base:
+            for name, e in _entries(archive, rows).items():
+                data = archive.read(e.virtual_offset, e.size)
+                before = base.read(e.virtual_offset, e.size)
+                require(sha(data) == rows[name]["output_sha256"], f"{name}: the disc does not carry the repair")
+                again, rec = shadow.bundle_shadow(data, name[:3])
+                c = ml.bundle_scenes(data)["stadium"]
+                row = dict(name=name, studio_step_leaves_it=again == data,
+                           stadium_chunk_equal=data[c.offset:c.offset + 32 + c.stored_size]
+                           == before[c.offset:c.offset + 32 + c.stored_size], roof=rec["roof"], sun=rec["sun"])
+                require(row["studio_step_leaves_it"] and row["stadium_chunk_equal"], f"{name}: {row}")
+                checks.append(row)
+                print(name, row, flush=True)
+        write_json(a.receipt, dict(schema="b77_st1_studio_equality/v1", disc=str(a.disc), bundles=checks))
+        print("VERIFIED", len(checks))
+        return 0
     retail = mm._read_retail(a.retail)
     pins = {p["name"]: p for p in mm.model_pins()["bundles"]}
-    checks = []
     with ml._outer_image()(str(a.disc)) as archive:
-        for name, e in _entries(archive).items():
+        for name, e in _entries(archive, rows).items():
             data = archive.read(e.virtual_offset, e.size)
             require(sha(data) == rows[name]["output_sha256"], f"{name}: the disc does not carry the repair")
             skin = mm.skin_bundle(retail[name], name, retail[ml.dry_name(name)])
@@ -287,7 +316,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("record"); s.add_argument("--disc", required=True); s.add_argument("--out", required=True)
-    s.add_argument("--disc-sha256", required=True)
+    s.add_argument("--disc-sha256", required=True); s.add_argument("--stage", choices=sorted(STAGES), default="1")
     s = sub.add_parser("apply"); s.add_argument("--disc", required=True); s.add_argument("--pins", required=True)
     s.add_argument("--receipt", required=True)
     s = sub.add_parser("scope"); s.add_argument("--before", required=True); s.add_argument("--after", required=True)
@@ -295,6 +324,7 @@ def main(argv=None):
     s.add_argument("--before-sha256", default=""); s.add_argument("--after-sha256", default="")
     s = sub.add_parser("studio"); s.add_argument("--disc", required=True); s.add_argument("--retail", required=True)
     s.add_argument("--pins", required=True); s.add_argument("--receipt", required=True)
+    s.add_argument("--base", help="stage 2: the input disc, to compare the stadium chunks")
     a = p.parse_args(argv)
     return dict(record=cmd_record, apply=cmd_apply, scope=cmd_scope, studio=cmd_studio)[a.cmd](a) or 0
 
