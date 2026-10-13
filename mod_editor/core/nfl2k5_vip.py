@@ -386,6 +386,11 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
     struct.pack_into("<i", data, CONTEXT + 0x34, book_index)
     # Suppress the template's Coach's Pick fallback lottery for these pools.
     struct.pack_into("<HH", data, CONTEXT + 0xDF6, 1, 0)
+    # Native 17E9FD also uses DF6 as the audible denominator, with E02 as
+    # numerator. Retaining a personal template's numerator after setting DF6
+    # to one makes every eligible snap audible away from the authored play.
+    # PBP does not measure audibles, so neutralize this mapped counter.
+    struct.pack_into("<H", data, CONTEXT + 0xE02, 0)
     pool_receipts = []
     for i, target in enumerate(targets):
         require(target.get("index") == i, "Pool indices must be ordered 0..19")
@@ -412,7 +417,8 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
                 data[start + 2 + index * RECORD_SIZE] = int(choice["flipped"])
                 data[start + 2 + index * RECORD_SIZE + 7] = choice["formation"]
                 data[start + 2 + index * RECORD_SIZE + 8] = choice["play"]
-    spans = ((0, 30), (CONTEXT + 0x34, 4), (CONTEXT + OFFENSE, POOLS * POOL_SIZE), (CONTEXT + 0xDF6, 4))
+    spans = ((0, 30), (CONTEXT + 0x34, 4), (CONTEXT + OFFENSE, POOLS * POOL_SIZE),
+             (CONTEXT + 0xDF6, 4), (CONTEXT + 0xE02, 2))
     changed = [i for i, (a, b) in enumerate(zip(template.payload, data)) if a != b]
     require(all(any(start <= i < start + length for start, length in spans) for i in changed), "Edit escaped byte scope")
     result = VipSave.decode(bytes(data))
@@ -424,6 +430,7 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
                    pools=pool_receipts, attachment="manual Quick Game VIP Coaches; unpaired exact book only",
                    secondary_fit=secondary_fit,
                    portrait="vip_logo_a1", native_replay_verified=False,
+                   audible_policy="Disabled: unmeasured template numerator cleared because Coach's Pick shares its denominator",
                    preserved_template_features=["defense", "no_huddle_and_timing", "fourth_down", "two_point", "onside", "Crib", "preferences", "statistics"],
                    secondary_mapping="PA fake/throw chain, screen assignment, first-read endpoint; native 281300 five run lanes with NFL guard/tackle collapsed to inside; exact gaps remain unsupported",
                    unsupported_target_mappings=["actual_throw_depth", "actual_run_gap_after_snap", "defensive_calls"])
@@ -451,13 +458,47 @@ class DefenseChoice:
     coverage_name: str
 
 
+def vip_defense_formations(book, body):
+    """Formations reachable by native VIP menu navigation, ADFC0/E10D0.
+
+    The menu visits the first matching formation in each defensive personnel
+    category. A later formation sharing that category can be callable by the
+    low-level selector yet unreachable by VIP playback's menu navigation.
+    Mirror E0BF0 membership and E1060's first-category fallback here; no native
+    execution dependency is needed by the compiler.
+    """
+    flags = {c.index: body[ip.CATEGORY_BASE + c.index * ip.CATEGORY_SIZE + 4]
+             for c in book.categories}
+    first = {}
+    for index, value in flags.items():
+        first.setdefault(value & 63, index)
+    reachable = set()
+    # Native defensive menu filter at 510304; 25 terminates the list.
+    for index, value in flags.items():
+        code = value & 63
+        if code not in (13, 14, 15, 12, 11, 16, 18, 20):
+            continue
+        for formation in book.formations:
+            aux = ip.FORMATION_AUX_BASE + formation.index * ip.FORMATION_AUX_SIZE
+            own, membership = struct.unpack_from("<II", body, aux + 0x48)
+            own_flags = flags.get(own & 63, 0)
+            fallback = (index == first[code] and own_flags & 0xC0 == 0x40
+                        and own_flags & 63 == code)
+            if membership & (1 << index) or fallback:
+                reachable.add(formation.index)
+                break
+    return reachable
+
+
 def defense_choices_from_book(resource):
     """Use executable assignments; imported labels and header bits can disagree."""
     book = ip.parse_playbook_resource(resource)
     body = resource[32:]
+    reachable = vip_defense_formations(book, body)
     result = []
     for formation in book.formations:
-        if library.formation_record(body, formation.index).type_code not in (5, 6):
+        if (formation.index not in reachable or
+                library.formation_record(body, formation.index).type_code not in (5, 6)):
             continue
         used = set()
         for front, cover in library.defense_pairs(book, body, formation.index):
@@ -531,6 +572,7 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
         defense.append(dict(index=index, choices=[vars(c) for c in selected],
                             quantized=defense_metrics(selected),
                             targets={k: target.get(k) for k in ("man", "rush_five_plus")},
+                            formation_scope="native_vip_menu_reachable",
                             situation_fallback="coach_overall_charted_pass_defense"))
     struct.pack_into("<HH", data, CONTEXT + 0xDFA, 1, 0)
     receipt["allowed_spans"] += [dict(offset=CONTEXT + 0xA3C, size=15 * 62), dict(offset=CONTEXT + 0xDFA, size=4)]

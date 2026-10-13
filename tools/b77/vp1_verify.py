@@ -226,6 +226,22 @@ def native_defense(xbe, book, payload, receipt, samples, *, automatic=None):
     else:
         w, context = automatic(xbe, book, receipt)
     w.call(0xF7A90, ecx=w.defense, edi=w.defense)
+    # ADFC0 navigates only E10D0's first formation per personnel category.
+    # A callable selector result alone does not prove that the VIP menu can
+    # reach it. In particular a later Bear 46 sharing the 4-3 category cannot
+    # be selected by that path.
+    menu_formations = set()
+    category = w.call(0xE0A50, ecx=s.BOOK, edx=0x510304)
+    while category:
+        formation = w.call(0xE10D0, ecx=s.BOOK, edx=category)
+        if formation:
+            menu_formations.add((formation - s.BOOK - ip.FORMATION_BASE) // ip.FORMATION_SIZE)
+        category = w.call(0xE0AA0, ecx=s.BOOK, edx=0x510304, args=(category,))
+    authored = {c["formation"] for p in receipt["defense_pools"] for c in p["choices"]}
+    if authored - menu_formations:
+        raise ValueError(f"Defensive VIP menu cannot reach formations {sorted(authored - menu_formations)}")
+    if vip.vip_defense_formations(w.book, book[32:]) != menu_formations:
+        raise ValueError("Compiler defensive menu model differs from native enumeration")
     categories = {}
     for form in w.book.formations:
         fv = s.BOOK + ip.FORMATION_BASE + form.index * ip.FORMATION_SIZE
@@ -283,7 +299,8 @@ def native_defense(xbe, book, payload, receipt, samples, *, automatic=None):
                          opponent_category=group_categories[known - 1] if known else None,
                          counts=dict(counts), features=features,
                          passed=counts["fallback"] == 0 and all(f["quantized_match"] and f["target_match"] for f in features.values())))
-    return dict(rows=rows, passed=all(r["passed"] for r in rows))
+    return dict(rows=rows, menu_formations=sorted(menu_formations),
+                authored_formations=sorted(authored), passed=all(r["passed"] for r in rows))
 
 
 def native_decisions(xbe, book, payload, receipt, samples, tempo_samples, *, automatic=None):

@@ -6783,7 +6783,7 @@
         "module": "mod_editor/core/nfl2k5_coach_ai.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/mod_editor/nfl2k5_coach_ai.md",
         "tests/mod_editor/test_nfl2k5_coach_ai.py"
@@ -6793,7 +6793,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Experimental and OFF in every preset. Native setup, replay and portrait routing have component checks; full-game and franchise reload witness remain pending."
+        "reason": "Enabled in the SOFTDRINK experimental release preset with an editable opt-out. Cold xemu acceptance covers Play Now, explicit choices, portraits, imported VIP calls and franchise save/cold reload/next-game continuation; see the bounded runtime scope."
       },
       "id": "nfl2k5.gameplay.coach_ai",
       "input_constraints": [
@@ -6803,7 +6803,7 @@
         "Portrait textures are separate input art. Missing textures retain the native fallback."
       ],
       "portme": [
-        "Keep coach_ai disabled in presets until the requested Play Now and franchise witnesses are reviewed."
+        "Broaden live coverage beyond the witnessed DAL/WAS Play Now and IND/TEN/DEN franchise routes; all 32 teams and modes 4..7 have component checks."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -6815,13 +6815,13 @@
         "evidence": [
           "docs/mod_editor/nfl2k5_coach_ai.md"
         ],
-        "scope": "Component verification executes native setup, selectors, takeover and both portrait renderers with explicitly declared environment fixtures. This does not establish full-game behavior or texture presence.",
-        "status": "not-tested"
+        "scope": "Cold xemu on co2 + VIP-aware Modern 2 + coach AI: DAL/WAS Play Now full half, fourth downs, PAT/kickoffs, human/CPU controller reassignment, explicit NFL Coach and imported VIP retention, matching coach portraits, bounded imported call sample; full IND at TEN franchise game in native mode 7, signed save, cold reload with result retained, and DEN at TEN continuation. Sampled profile calls match; native hurry-up, special teams and used-pool fallbacks remain separate. Other live routes, overtime, long-run rates and physical Xbox hardware are unproven. All 32 teams and modes 4..7 have component checks.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "boolean; false in every preset; explicit opt-in",
+            "allowed": "boolean; true in the SOFTDRINK experimental release preset; explicit false is preserved",
             "name": "coach_ai",
             "required": true
           }
@@ -6833,7 +6833,7 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "Six pinned native hook spans, allocator-owned RX/RW, and 32 fixed 896-byte PLAY resource tails; no archive growth or save writes",
+        "resource": "Eight pinned native hook spans, allocator-owned RX/RW, and 32 fixed 896-byte PLAY resource tails; no archive growth or save writes",
         "retail_file": "User-owned NFL 2K5 USA disc"
       },
       "summary": "Current NFL CPU teams use observed 2026 coach playcalling profiles in Play Now, Season, Franchise and playoffs. Explicit Coach Matchup choices win; generated coach VIP entries use the coach portrait.",

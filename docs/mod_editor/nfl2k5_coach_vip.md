@@ -124,10 +124,20 @@ quantized rates, byte scope, missing plays, and retained template features.
 The signed save remains exactly 20,720 bytes. `EXTRA` is the existing Studio
 title-key HMAC-SHA1 signature. Twelve UTF-16 units are available for the name.
 
+Defensive histories use formations reachable by native VIP menu navigation.
+That path selects the first formation in each personnel category. A later
+formation sharing the category, such as Bear 46 behind 4-3 Wide, can pass the
+low-level play selector but fail during menu navigation. The compiler excludes
+such choices and fits the same observed coverage and pressure targets to the
+remaining calls. Regenerate coach exports made before this correction.
+
 The writer preserves unknown bytes. It changes identity/name, matching book
 index, the 20 offense and 15 defense histories, Coach's Pick counters,
 derived run/pass situation statistics, and supported optional decision
-counters. Crib progress, preferences, snap/play-call timing, onside behavior,
+counters. It clears the unmeasured audible numerator: native audible logic
+shares the denominator reset when disabling Coach's Pick. Keeping a personal
+template's numerator otherwise makes audibles certain and replaces the
+authored selections. Crib progress, preferences, snap/play-call timing, onside behavior,
 and unmapped historical statistics remain from the template. Those retained
 statistics must not be presented as the real coach's career record. The live
 Coach Matchup preview still displays those retained record/direction values;
@@ -193,7 +203,7 @@ separate named celebrity textures. The private vp1 report contains the exact
 | Optional fourth downs | Counter from fourth-and-1..5, own 21..49, more than 120 half seconds. Native field/clock/kicker guards still apply. This is not an unconditional go percentage. |
 | Optional two-point attempts | Counter after excluding the retail mandatory chart's cases from the observations. The game's mandatory decisions remain separate. |
 | No huddle | Counter calibrated for the native burst of one initial call plus 2–4 extra calls; target uses eligible first-half PBP. Full-game rate depends on other native gates. |
-| Audibles/presnap calls | The format records these, but they are not inferred from ordinary PBP. Presnap adjustment flags are neutral apart from the proven orientation flip; no coach-specific audible behavior is claimed. |
+| Audibles/presnap calls | The format records these, but they are not inferred from ordinary PBP. The audible numerator is cleared to keep an unrelated template from replacing authored calls. Presnap adjustment flags are neutral apart from the proven orientation flip; no coach-specific audible behavior is claimed. |
 
 Small rings, formation availability and shared pass/shotgun constraints can
 prevent a precise secondary-feature fit. All residuals are reported. Selection
@@ -243,14 +253,14 @@ reported against a 0.15 target band and 0.07 quantized band. Those coarse
 bands do not excuse an absent feature: missing screens and unsupported
 outcome mappings remain explicit limitations even when a numeric band passes.
 
-The generated NYG Harbaugh save loaded successfully at cold boot and was
+An earlier generated NYG Harbaugh save loaded successfully at cold boot and was
 selected on the CPU side of Coach Matchup in a copied-HDD xemu session.
 Both human and generated VIP displayed the shared logo. That session used
 the original v0.6.1 disc and verifies save loading/selection, not the repaired
 decision policy or a full match.
 
-The final 32-team sweep passed all declared bands across 2,016,000 native
-draws, with zero ordinary offense/defense fallbacks. Across 640 offense pools,
+The original 32-team component sweep passed all declared bands across 2,016,000 native
+draws, with zero ordinary offense/defense fallbacks in those fresh-pool trials. Across 640 offense pools,
 mean pass-rate error was 3.319 percentage points for the generated VIP versus
 17.866 for retail and 17.892 for the same book without a VIP. Shotgun errors
 were 4.901, 60.584 and 36.358 points respectively. The largest individual
@@ -261,3 +271,20 @@ All 32 final saves also passed the native loader and serializer in all four
 slots on both retail and upgraded executables (256 exact round trips).
 Consult the private `vp1/REPORT.md` and its evidence JSONs for per-situation
 tables, original failures and corrected reruns, and live-menu observations.
+
+The subsequent vt1 cold-boot checks use the co2 portraits and corrected
+menu-reachable defensive pools. DAL and WAS imports load successfully and
+show their matching 2026 portraits in Coach Matchup and the detailed VIP
+viewer. An explicit DAL VIP survives setup and controller reassignment.
+After clearing the template audible numerator, a 480-second gameplay sample
+contains 16 profile-to-field call matches, eight offense and eight defense,
+with no invalid sampled authored record. The detailed screen shows Audible
+0%. These are sampled call changes, not a snap census or a long-run rate
+proof. Native hurry-up, special teams and used-pool fallback calls are
+reported separately, not counted as profile matches.
+
+The corrected defensive component sweep covers all 32 teams, 480,000 draws
+and 1,033 distinct native menu combinations. The unchanged offensive menu
+check covers 2,599 distinct choices. See the private `vt1/REPORT.md` for
+frame references, the three original live failures and their corrected
+retests, and remaining native fallback limits.

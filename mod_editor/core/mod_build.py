@@ -216,7 +216,7 @@ class BuildPlan:
     deep_zone_facing: bool = False        # deep-zone corners keep facing the QB on a slower drop; experimental, off in every preset
     deep_zone_bail: bool = False          # three-deep press start with a directional bail (ends at seven yards alone); experimental, off in every preset
     deep_zone_bail_calls: tuple = ()      # staged press-bail authoring calls (asset selector + formation/front/coverage indices); staging is not wired yet, must stay empty
-    coach_ai: bool = False  # automatic 2026 CPU coach profiles; opt-in pending gameplay acceptance
+    coach_ai: bool = False  # bare plans stay neutral; the SOFTDRINK release preset enables this
     playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); composes with read option / QB spy since beta 66 (paired-root contract); experimental, off in every preset
     cpu_money_downs: str = "retail"      # CPU fourth downs, two-point tries and overtime: retail / modern / aggressive / modern2; experimental; Basic is retail, Advanced and Experimental use modern2 (b77 p9)
     coin_defer: bool = False
@@ -633,6 +633,8 @@ PRESETS["softdrink_experimental"]["honors_page"] = True
 PRESETS["softdrink_basic"]["honors_history"] = ""
 PRESETS["softdrink_advanced"]["honors_history"] = "builtin"
 PRESETS["softdrink_experimental"]["honors_history"] = "builtin"
+# vt1: the SOFTDRINK release includes the 2026 coach profiles; the Build toggle remains editable.
+PRESETS["softdrink_experimental"]["coach_ai"] = True
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}

@@ -1,4 +1,4 @@
-"""Opt-in automatic current-NFL coach playback and generated-coach portraits.
+"""Automatic current-NFL coach playback and generated-coach portraits.
 
 Profiles are authored targets compiled against exact PLAY bytes, never bundled
 retail resources. The reserved tail stays inside the original resource span.
@@ -25,7 +25,8 @@ BUILD_CAPTION = "Automatic 2026 CPU coach profiles (experimental)"
 HELP_TEXT = ("Retail: CPU teams use their native coach tendencies. Patch: use automatic 2026 coach "
              "profiles for current NFL CPU teams in Play Now, Season, Franchise and playoffs. "
              "Explicit Coach Matchup choices win. Rebuilds profiles for the final playbooks and "
-             "includes VIP-aware Modern 2. Experimental; off in every preset.")
+             "includes VIP-aware Modern 2. Enabled in the SOFTDRINK experimental preset; "
+             "turn this setting off to keep native coach tendencies.")
 
 
 class CoachAIError(ValueError):
@@ -207,9 +208,10 @@ HOOKS = (
     ("matchup", 0x367BD0, "6bd2588b927824cc00", 0xE9),
     ("viewer", 0x350890, "833d0892cb00ff", 0xE9),
     ("resource", 0xE0D90, "5355568bf1", 0xE9),
+    ("controller_commit", 0x1569CF, "e89cfeffff", 0xE8),
 )
 SYMBOLS = dict(source_continue=0x161E37, resource_continue=0xE0D95,
-               setup_continue=0xF6EA8, takeover_native=0xF7AF0,
+               setup_continue=0xF6EA8, takeover_native=0xF7AF0, controller_native=0x156870,
                cleanup_continue=0x6195F, matchup_continue=0x367BD9, matchup_finish=0x367C3D,
                viewer_continue=0x350897, viewer_finish=0x3508C0, setup_original=0xF6E60,
                stats_bind_native=0xF7A90, heap_native=0x38FB0, allocate_native=0x48700,
@@ -368,6 +370,9 @@ GUARDS = (
     (0xf6e60, 424, "b5ff5abdc7060a2c7be8209ba21846fd3c8a1c16e2c573c9f019805f25c0901e"),
     (0xf7a90, 96, "bb9c6572069d2280f3e69431c63f9b0d7903d2f7b30b273a53680783ea4953e5"),
     (0xf7be0, 35, "c192858ca8b8d6c6bdfbd094bbddd1210150432ddb3190a28e62928f09b7743b"),
+    (0x1569c0, 21, "0897f8631a01920c8c39c8c37e4cdd193e23c2bc408ebf5b495d918dd88a13ba"),
+    (0x156877, 316, "4037b7405eb067341328ee33523156aef4ca2338dc2ffb0baeeb1bfca33b2f4e"),
+    (0x771f0, 10, "e94fedfd4b5865214b4dba8cd6a7c2c893a66c4f4443c731313408e2834410fa"),
     (0x61950, 170, "d85a7efb8fb54926be24d716ef2bea7b50b5129525cef1c4300a5620544c8414"),
     (0xf71e0, 19, "5c08a7153ba0c9a94ddeb94b8a76215462a00393acb1b490c146c15397ef10d5"),
     (0x367bd0, 151, "6f3fcf016d199541c45aa8f12d6b8e44c9d5f706ae7156f5b31858ae806a067a"),

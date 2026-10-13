@@ -121,6 +121,23 @@ class RealSaveTests(unittest.TestCase):
         with OuterImage(image) as archive:
             cls.book = archive.read_entry(BOOK_ENTRIES["NYG"])
 
+    def test_defense_choices_are_reachable_by_native_vip_menu(self):
+        from pb.scoring_selectors import World
+        from mod_editor.core import nfl2k5_play_scoring as s
+        world = World(self.xbe)
+        world.load(self.book)
+        reachable = set()
+        category = world.call(0xE0A50, ecx=s.BOOK, edx=0x510304)
+        while category:
+            formation = world.call(0xE10D0, ecx=s.BOOK, edx=category)
+            if formation:
+                reachable.add((formation - s.BOOK - v.ip.FORMATION_BASE) // v.ip.FORMATION_SIZE)
+            category = world.call(0xE0AA0, ecx=s.BOOK, edx=0x510304, args=(category,))
+        authored = {choice.formation for choice in v.defense_choices_from_book(self.book)}
+        self.assertTrue(authored)
+        self.assertFalse(authored - reachable, "VIP navigation cannot select these defensive formations")
+        self.assertEqual(v.vip_defense_formations(world.book, self.book[32:]), reachable)
+
     def test_real_save_roundtrip_and_no_ts_magic_requirement(self):
         payload = self.original.payload
         self.assertEqual(v.VipSave.decode(payload).encode(), payload)
@@ -147,6 +164,22 @@ class RealSaveTests(unittest.TestCase):
                 v.write_signed(output, self.original, self.xbe)
             self.assertEqual(v.load_signed(output, self.xbe).payload, result.payload)
         self.assertEqual((self.folder / "SAVEGAME.DAT").read_bytes(), self.original.payload)
+
+    def test_shared_coach_pick_denominator_does_not_force_template_audibles(self):
+        source = bytearray(self.original.payload)
+        struct.pack_into("<H", source, v.CONTEXT + 0xDF6, 400)
+        struct.pack_into("<3H", source, v.CONTEXT + 0xE00, 17, 2, 23)
+        template = v.VipSave.decode(bytes(source))
+        tendency = dict(schema=t.SCHEMA, team="NYG", coach="John Harbaugh",
+                        native_offense_pools=[dict(index=i, joint=dict.fromkeys(v.CATEGORIES, 0.25)) for i in range(20)])
+        result, receipt = v.build_offense(template, self.book, tendency, "NYG Harbaugh", 15)
+        self.assertEqual(struct.unpack_from("<HH", result.payload, v.CONTEXT + 0xDF6), (1, 0))
+        # 17E9FD draws 0..DF6-1 and audibles when the roll is below E02.
+        # The old output (DF6=1, E02=2) therefore audibled on every eligible call.
+        self.assertEqual(struct.unpack_from("<3H", result.payload, v.CONTEXT + 0xE00), (17, 0, 23))
+        self.assertIn(dict(offset=v.CONTEXT + 0xE02, size=2), receipt["allowed_spans"])
+        self.assertIn("unmeasured", receipt["audible_policy"])
+        self.assertEqual(template.payload, bytes(source))
 
     def test_full_coach_export_preserves_unknown_bytes_and_exposes_missing_plays(self):
         tendency = json.loads((ROOT / "data/vip/coaches/NYG.json").read_text())

@@ -14,6 +14,7 @@ struct Portrait { u32 identity, legacy; u16 book, asset, photo, alternate, name[
 struct State {
     u8 *context[2], *book[2], *explicit_choice[2];
     u32 fingerprint[2], attachments[2], reason[2], active[2];
+    u32 pending_rebind;
 };
 extern struct State state;
 extern const u32 career_address;
@@ -167,10 +168,14 @@ u32 FAST coach_prepare(u8 *team, u32 side, u8 *label) {
     state.active[side]=r->book+1;
     return 1;
 }
-/* Native controller reassignment has already cleared both sides and reset
- * their statistics. Keep the human native path; rebind only CPU sides. */
+/* F7BE0 clears bindings before 1569C0 publishes new controller ownership.
+ * Do not consume the old human flags. The commit hook runs after both native
+ * ownership updates and only after a reset, not on every lineup refresh. */
+void coach_defer_rebind(void) { state.pending_rebind=1; }
 void coach_rebind(void) {
     u32 side;
+    if (!state.pending_rebind) return;
+    state.pending_rebind=0;
     for (side=0;side<2;side++) {
         u8 *team=(u8 *)(0xe5fc20+side*64),*p=state.explicit_choice[side];
         state.active[side]=0;

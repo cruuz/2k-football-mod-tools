@@ -1,7 +1,7 @@
 /* Preserve the displaced native ABI, including flags and stdcall cleanup. */
 .intel_syntax noprefix
 .text
-.global source, resource, setup, takeover, cleanup, matchup, viewer, setup_native, career_address
+.global source, resource, setup, takeover, controller_commit, cleanup, matchup, viewer, setup_native, career_address
 source:
     pushfd
     pushad
@@ -49,10 +49,21 @@ takeover:
     pushfd
     pushad
     cld
-    call coach_rebind
+    call coach_defer_rebind
     popad
     popfd
     ret
+controller_commit:
+    /* Preserve the native stdcall team argument and its ret 4 cleanup. */
+    push dword ptr [esp+4]
+    call controller_native
+    pushfd
+    pushad
+    cld
+    call coach_rebind
+    popad
+    popfd
+    ret 4
 cleanup:
     pushfd
     pushad

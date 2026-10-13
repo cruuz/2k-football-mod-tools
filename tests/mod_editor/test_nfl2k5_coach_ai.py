@@ -19,11 +19,18 @@ from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
 
 
 class BuildContract(unittest.TestCase):
-    def test_off_by_default_and_roundtrips(self):
+    def test_release_preset_enabled_and_opt_out_roundtrips(self):
         from mod_editor.core.mod_build import PRESETS, BuildPlan, _validated_r62_plan_options
         self.assertFalse(settings.defaults()["coach_ai"])
         self.assertTrue(settings.build_settings({"coach_ai": True})["coach_ai"])
-        self.assertTrue(all(not preset.get("coach_ai", False) for preset in PRESETS.values()))
+        self.assertTrue(PRESETS["softdrink_experimental"]["coach_ai"])
+        self.assertFalse(PRESETS["softdrink_basic"]["coach_ai"])
+        self.assertFalse(PRESETS["softdrink_advanced"]["coach_ai"])
+        enabled = {key: value for key, value in PRESETS["softdrink_experimental"].items()
+                   if key in settings.FEATURE_KEYS}
+        self.assertTrue(settings.build_settings(enabled)["coach_ai"])
+        opted_out = settings.build_settings({**enabled, "coach_ai": False})
+        self.assertFalse(settings.build_settings(json.loads(json.dumps(opted_out)))["coach_ai"])
         with self.assertRaises(ValueError):
             settings.build_settings({"coach_ai": 1})
         plan = BuildPlan("source.xiso.iso", "new.xiso.iso", coach_ai=True)
@@ -168,6 +175,24 @@ class NativeInstallation(unittest.TestCase):
         cls.source = Path(source).read_bytes()
         cls.patched, cls.receipt = ai.apply(cls.source)
 
+    def test_controller_rebind_waits_for_native_ownership_refresh(self):
+        image = os.environ.get("NFL2K5_COACH_AI_IMAGE")
+        if not image:
+            self.skipTest("Set NFL2K5_COACH_AI_IMAGE for controller transition checks")
+        from tools.b77.vp2_native import audit_lifecycle
+        from mod_editor.core import nfl2k5_roster_records as rr
+        with OuterImage(image) as archive:
+            raw = archive.read_entry(BOOK_ENTRIES["DAL"])
+            roster = rr.RosterDocument(archive.read_entry(5)[32:])
+        target = json.loads((ROOT / "data/vip/coaches/DAL.json").read_text())
+        tagged, receipt = ai.build_profile(raw, target)
+        at = roster.teams[receipt["book_index"]].coach_offset
+        result = audit_lifecycle(self.patched, tagged, receipt, roster.body[at:at + 0xA8])
+        self.assertTrue(result["passed"])
+        self.assertTrue(result["humans_cleared"])
+        self.assertTrue(result["cpu_rebound"])
+        self.assertTrue(result["explicit_choice_survived"])
+
     def test_disc_resource_callback_validates_before_relocation(self):
         image = os.environ.get("NFL2K5_COACH_AI_IMAGE")
         if not image:
@@ -208,7 +233,7 @@ class NativeInstallation(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
         from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
-        for address, before in ((0xF7B31, None), (0xF6E9D, bytes.fromhex(ai.HOOKS[1][2])),
+        for address, before in ((0xF7B31, None), (0x1569C1, None), (0xF6E9D, bytes.fromhex(ai.HOOKS[1][2])),
                                 (ai.allocations(self.patched)["code"]["va"] + 200, None)):
             payload = bytearray(self.patched)
             offset = XbeImage(payload).offset(address, len(before) if before else 1)

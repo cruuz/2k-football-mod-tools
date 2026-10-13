@@ -1,10 +1,18 @@
 # Automatic 2026 CPU coach profiles
 
-`coach_ai` is an experimental Studio Build setting, **OFF in every preset**.
+`coach_ai` is an experimental Studio Build setting, **ON in the SOFTDRINK
+experimental release preset**. The Build toggle remains editable and an
+explicit `false` is preserved in saved settings. Bare plans, Basic and Advanced
+retain their previous defaults.
 When enabled, current NFL CPU teams use their observed coach profile without
 loading a USR or making a Coach Matchup selection. It includes VIP-aware Modern
-2. The human side keeps its ordinary native behavior. Full-game and franchise
-reload validation are pending; component execution is not a gameplay witness.
+2. The human side keeps its ordinary native behavior. Cold xemu checks cover
+an uninterrupted Play Now half, a PAT, kickoffs and controller reassignment.
+Explicit NFL Coach and imported-VIP choices are retained. A full franchise
+game, native save, cold reload and ordinary plays in the next game also pass.
+Corrected imported VIP gameplay has a bounded call sample. Live coverage is
+limited to the teams and modes listed below; component execution alone is
+not a gameplay witness.
 
 The automatic profile is associated with the team's existing NFL Coach entry.
 That entry already uses its roster portrait. An explicit different NFL Coach
@@ -13,7 +21,7 @@ Matchup and the VIP viewer; recognition requires both an authored identity and
 the exact profile name. Legacy vp1 IDs remain accepted. Unknown personal VIPs
 retain their existing logo. Portrait textures are separate art inputs; this
 feature does not repaint them, and a missing portrait keeps native fallback.
-The co1 art build moves Dallas and Washington to portrait slots 7031 and 7034.
+The co2 art build moves Dallas and Washington to portrait slots 7031 and 7034.
 Both those IDs and the original int2 IDs (7007/7029) are recognized for their
 respective coach. Authored VIP rendering follows the loaded roster's supported
 ID, so either build order works without changing the stored playbook profiles.
@@ -31,17 +39,33 @@ ID, so either build order works without changing the stored playbook profiles.
 | Active MyCareer stages 1–6 | Original MyCareer policy |
 | Paired offensive/defensive book | Existing paired-side replay suppression remains |
 
-The seven native hooks validate both raw PLAY loading paths, attach at CPU setup, rebind
+The eight native hooks validate both raw PLAY loading paths, attach at CPU setup, rebind
 after controller changes, release at game unload, and route the two portrait
 renderers. Setup runs through the game's `F7B30`/`F6E60`/`F7A90` path. Only the
 eligible CPU setup's local mode register is adapted; global mode never changes.
 Native selectors and mandatory decision charts remain intact.
 
+The profile influences ordinary calls and the native decision statistics; it
+does not make every snap an exact history replay. Native hurry-up sequences
+bypass the ordinary VIP selector. The game also marks used pools and can
+choose a native fallback on later calls. Special teams and eligible audibles
+keep their existing paths. Live call comparisons must separate those paths
+from sampled profile selections; short games do not prove long-run rates.
+The native fallback can also name a secondary formation that its own menu
+cannot reach. A franchise sample targeted non-authored Bear 46 and executed
+4-3 Over instead; the same menu limit exists in the retail executable. The
+authored pools exclude unreachable formations, but do not replace that
+independent native fallback path.
+
 The owner reserves 5,120 RX bytes and 128 RW bytes. It allocates at most two
 8,608-byte playback contexts through the native heap. Neither uses a resident
 USR slot or changes a save format. Published owned pointers are cleared before
 freeing. Controller takeover removes the automatic profile from the human
-side and rebinds CPU sides. Full franchise save/load remains a live-test item.
+side and rebinds CPU sides. The native VIP reset precedes the ownership update:
+the reset hook queues a rebind, and the second hook commits it only after both
+teams' human flags have been updated. Routine lineup refreshes do not rebind
+or reset profile history. The witnessed franchise save/load retains the
+completed result and creates fresh owned contexts in the next game.
 
 ## Exact-book data
 
@@ -60,6 +84,12 @@ The Studio compiles profiles after final book/roster edits. The book's visible
 name is insufficient: rebuild after any book edit. Existing tagged resources
 must still match their pins before regeneration. Custom-team and changed-coach
 inputs outside the authored directory refuse instead of receiving a guess.
+
+Defensive pools also require native VIP menu reachability. The menu visits
+only the first formation in a personnel category, so a callable secondary
+formation can otherwise turn into a different play during navigation. The
+compiler filters those formations before fitting coverage and pressure rates.
+The native verifier checks menu traversal as well as low-level selection.
 
 `data/vip/coaches/*.json` occupies 1,496,799 bytes, reduced from 25,478,735.
 It retains every native compiler input, measured count, provenance and source
@@ -108,9 +138,31 @@ Generated executables, profiles, discs and save templates are never shipped.
 
 ## Verification
 
+Cold xemu acceptance on co2 + VIP-aware Modern 2 + coach AI covers:
+
+- DAL/WAS Play Now, native mode 4, through a complete half and the Q3
+  kickoff: fourth downs, a touchdown, PAT, field goals, punts and kickoffs.
+  CPU profiles remain distinct; controller takeover leaves the human side
+  untouched, and explicit NFL Coach and imported-VIP choices survive.
+- Imported DAL/WAS coach portraits on Coach Matchup and detailed VIP pages.
+  The corrected explicit DAL VIP sample has 16 profile-to-field call
+  matches. The automatic Play Now sample has 51.
+- IND at TEN in an existing 2027 franchise, native mode 7, through a full
+  two-minute-quarter game, final TEN 7, IND 0, with 46 profile-to-field call
+  matches. Native Save MyNFL writes a valid signed save. Cold reload shows
+  TEN 1-0 and the 7-0 result, then advances to DEN at TEN and ordinary plays
+  with both teams' own automatic contexts active.
+
+The private `vt1/REPORT.md` records frame paths, hashes, original failures,
+corrected retests and unmatched calls. Call counts are sampled retained
+changes, not a complete snap census or proof of long-run rates. All 32 teams
+and modes 4-7 have native component checks; other teams, Season/playoffs as
+distinct live routes, overtime, long-term franchise progression and physical
+Xbox hardware are not established by this live sample.
+
 ```sh
 python3 tools/nfl2k5_coach_ai_assemble.py --check
-python3 -m tests.mod_editor.test_nfl2k5_coach_ai
+python3 tests/mod_editor/test_nfl2k5_coach_ai.py
 python3 packaging/repin.py --apply --include-tests
 python3 packaging/repin.py --check --include-tests
 ```

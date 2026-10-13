@@ -63,7 +63,7 @@ FEATURE_KEYS += ("kickoff_return_blocking",)  # b76-vb3 E1: return blockers clai
 FEATURE_KEYS += ("espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules")  # b76-m1: 25 more ESPN 25th Anniversary moments
 FEATURE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")  # b76-k1: 128 MB memory (K128), the roster heap, the early form
 FEATURE_KEYS += ("letter_grades",)  # b77-f4: letter grades in Franchise (allocator owner, late)
-FEATURE_KEYS += ("coach_ai",)  # vp2: default off
+FEATURE_KEYS += ("coach_ai",)  # preserved as an explicit editable Build setting
 FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors page (allocator owner, late) and its award history
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 

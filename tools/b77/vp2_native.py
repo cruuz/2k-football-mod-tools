@@ -30,7 +30,7 @@ class AutoWorld(World):
         self.owned = ai.allocations(payload) if ai.status(payload) == "applied" else None
         self.state_va = self.owned["data"]["va"] if self.owned else None
         self.visits.update()
-        for pc in (0x1665A0, 0xE0D90, 0x161E30, 0xF7B30, 0xF6E60, 0xF7A90, 0xF7BE0, 0xF71E0, 0x17F1D0, 0x17DFC0):
+        for pc in (0x1665A0, 0xE0D90, 0x161E30, 0xF7B30, 0xF6E60, 0xF7A90, 0xF7BE0, 0x1569C0, 0x156870, 0xF71E0, 0x17F1D0, 0x17DFC0):
             self.m.hook_add(self.ucmod.UC_HOOK_CODE, lambda _u, a, _n, _d: self.visits.update([hex(a)]), begin=pc, end=pc)
 
         def allocation(m, address, size, _):
@@ -121,6 +121,32 @@ class AutoWorld(World):
         return dict(bindings=[self.get(0xBA04B0 + side * 4) for side in (0, 1)],
                     state=list(struct.unpack("<14I", self.m.mem_read(self.state_va, 56))) if self.state_va else None,
                     heap_events=self.heap_events, native_visits=dict(self.visits))
+
+    def change_controllers(self, humans):
+        """Real reset precedes real flag refresh, as witnessed in vt1.
+
+        Controller-side assignments and one linked actor per side are explicit
+        environment inputs. Neither native ownership writer nor accessor is
+        replaced. In particular, do not prewrite the new team human flags.
+        """
+        self.call(0xF7BE0)
+        if self.state_va:
+            assert self.get(self.state_va + 56) == 1
+            assert self.get(0xBA04B0) == self.get(0xBA04B4) == 0
+        for port in range(8):
+            self.put(0xE5FE88 + port * 0x1C,
+                     port + 1 if port < 2 and humans[port] else 0)
+        for side in (0, 1):
+            actor = s.SOURCE + 0x1B000 + side * 0x400
+            control = actor + 0x200
+            self.m.mem_write(actor, bytes(0x400))
+            self.put(actor + 12, control)
+            self.put(control, side)
+            self.put(0xE5FC20 + side * 64 + 4, actor)
+        self.call(0x1569C0)
+        assert [self.get(0xE5FC20 + side * 64 + 0x30) for side in (0, 1)] == list(map(int, humans))
+        if self.state_va:
+            assert self.get(self.state_va + 56) == 0
 
 
 def bind_automatic(xbe, book, receipt, coach, mode=4, *, load_route="resource"):
@@ -229,7 +255,7 @@ def audit_modes(xbe, baseline, retail, book, receipt, coach, *, draws=16):
         w.m.mem_write(cp + 0x40, struct.pack("<H", 7999))
         assert w.setup(mode, team=0xE5FC60) == 0, "Explicit NFL Coach was overridden"
         assert w.get(s.META + 0x100) == 0xBA0590
-        w.call(0xF7BE0)
+        w.change_controllers((True, False))
         assert w.get(0xBA04B4) == 0, "An old VIP displaced the newer NFL Coach choice after controller reassignment"
         controls = []
         for label, executable in (("no_feature", baseline), ("retail", retail)):
@@ -344,18 +370,15 @@ def audit_lifecycle(xbe, book, receipt, coach):
     home = w.setup(7, side=0, team=0xE5FC20)
     away = w.setup(7, side=1, team=0xE5FC60)
     assert home and away and home != away and len(w.heap_live) == 2
-    w.put(0xE5FC20 + 0x30, 1)
-    w.call(0xF7BE0)
+    w.change_controllers((True, False))
     assert w.get(0xBA04B0) == 0 and w.get(0xBA04B4) == away
     assert w.get(w.get(0xE5FC20 + 12)) != home + 0x20B8
-    w.put(0xE5FC20 + 0x30, 0)
-    w.put(0xE5FC60 + 0x30, 1)
-    w.call(0xF7BE0)
+    w.change_controllers((False, True))
     assert w.get(0xBA04B0) == home and w.get(0xBA04B4) == 0
     chosen = user_choice(w, receipt["book_index"])
     w.put(0xBA04B0, chosen)
     assert w.setup(7, side=0, team=0xE5FC20) == chosen
-    w.call(0xF7BE0)
+    w.change_controllers((False, True))
     assert w.get(0xBA04B0) == chosen, "Controller transition discarded explicit CPU VIP"
     before = w.diagnostic()
     cleanup = w.owned["code"]["va"] + assembly.LABELS["coach_cleanup"]
@@ -370,7 +393,7 @@ def audit_lifecycle(xbe, book, receipt, coach):
                 explicit_choice_survived=True, contexts_freed=True, statistics_unpublished_before_free=True,
                 next_game_reallocated=True,
                 before_cleanup=before, after_reload=w.diagnostic(),
-                scope="Actual F7BE0 controller path; owned unload callback and next setup; full franchise save/load is live-only")
+                scope="Actual F7BE0 reset then 1569C0 ownership refresh with old flags at reset; owned unload and next setup; full franchise save/load is live-only")
 
 
 def audit_portraits(xbe):
