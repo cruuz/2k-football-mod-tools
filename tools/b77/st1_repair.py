@@ -44,7 +44,8 @@ ALG_MANIFEST = Path(__file__).with_name("alg_repair_manifest.json")
 STAGES = {
     "1": {"s18ad.iff": ("shadow", "field"), "s19ad.iff": ("shadow", "field")},
     "2": {n: ("shadow",) for n in ("s00ad.iff", "s03ad.iff", "s07ad.iff", "s07dd.iff", "s10ad.iff", "s12ad.iff",
-                                   "s14ad.iff", "s16ad.iff", "s20ad.iff", "s24ad.iff", "s25ad.iff", "s40ad.iff")},
+                                   "s14ad.iff", "s16ad.iff", "s20ad.iff", "s24ad.iff", "s25ad.iff", "s32ad.iff",
+                                   "s40ad.iff")},
 }
 BUNDLES = {}
 INDOOR = {"s18": False, "s19": False}

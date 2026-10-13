@@ -108,6 +108,16 @@
    "fit": "retail s25ad: 83.19 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)",
    "note": "the weakest fit: retail's Candlestick texture does not match its own scene as closely as the others (83 percent at best; mirrored textures fit worse)"
   },
+  "s32": {
+   "venue": "Modern practice facility",
+   "retail": "The Practice Facility",
+   "sun": {
+    "azimuth_deg": 306,
+    "elevation_deg": 22
+   },
+   "fit": "retail s32ad: 86.14 percent of the 80 x 164 detail-window texels agree (10 degree scan, then 2 and 1 degree refinements)",
+   "note": "loaded by Practice, franchise Free Practice and MyCareer practice; the facility's light poles, towers and buildings cast the shadow"
+  },
   "s40": {
    "venue": "SoFi Stadium (Super Bowl LXI row)",
    "retail": "Super Bowl 2005 site",

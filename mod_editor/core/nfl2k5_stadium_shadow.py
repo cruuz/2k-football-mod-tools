@@ -344,6 +344,7 @@ OPTION_VENUES = {
     "modern_att": ("s07",), "modern_lambeau": ("s10",), "modern_everbank": ("s12",), "modern_hard_rock": ("s14",),
     "modern_gillette": ("s16",), "modern_allegiant": ("s20",), "modern_sofi": ("s23", "s24", "s40"),
     "modern_levis": ("s25",), "modern_usbank": ("s15",), "modern_lucas_oil": ("s11",), "modern_mercedes_benz": ("s01",),
+    "modern_practice_field": ("s32",),
 }
 TIMES, WEATHERS = "dan", "drs"
 

@@ -300,6 +300,34 @@
    "field": null
   },
   {
+   "name": "s32ad.iff",
+   "kinds": [
+    "shadow"
+   ],
+   "outer_index": 3221,
+   "name_id": 1807472568,
+   "size": 1142640,
+   "input_sha256": "2c2a9771fab1df2322a40c83628e0755a289851e7272e9f24710bbce46834ba0",
+   "output_sha256": "b6188cb443a03ddf039f4ab18ea3a2a8e2d33503777ea2e2de917e3449520f02",
+   "spans": {
+    "shadow": {
+     "offset": 1073840,
+     "length": 3024,
+     "before_sha256": "ddd1697dbb99059bce07a366fc8be42e6884a158d32af3d64b1d3be9db7ce828",
+     "after_sha256": "0c876fe2e66277bf5e1da9f60766b003c647c0905a4b9922180aa2bc2be32355"
+    }
+   },
+   "shadow_sun": [
+    -0.750107,
+    0.374607,
+    0.544985
+   ],
+   "shadow_roof": "open",
+   "shadow_fit_rung": 0,
+   "field_lit_texels": 9688,
+   "field": null
+  },
+  {
    "name": "s40ad.iff",
    "kinds": [
     "shadow"
