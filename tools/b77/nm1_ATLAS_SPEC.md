@@ -53,6 +53,13 @@ corresponding uppercase glyph records without changing roster strings. Thus
 `St. Brown`, `O'Connell`, `Smith-Njigba` render as uppercase names retaining
 their punctuation and spaces. Other ASCII characters are blank advances.
 
+Validation limits: advances are integers from 1 through 32. `cap_height`,
+`line_advance` and `baseline` are also integers from 1 through 32. Quad coordinates
+are finite numbers from -32 through 64. Rect coordinates are integers within
+the atlas, and each non-space rect is at most 32 by 24 pixels. The metrics file
+must be at most 64 KiB and the PNG at most 512 KiB. Every non-space glyph must
+contain visible ink with the transparent margin described above.
+
 An optional easy packing grid is eight columns of 32 by 24 cells, five rows,
 ordered A-Z, 0-9, apostrophe, hyphen, period, space. Rectangles can be tighter
 than their cells. Grid cell i starts at `(32*(i%8), 24*(i//8))`. The final eight
