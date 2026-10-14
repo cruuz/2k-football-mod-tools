@@ -1775,6 +1775,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_practice_squad_screen_code",
         "mod_editor.core.nfl2k5_abilities_runtime",
         "mod_editor.core.nfl2k5_abilities_runtime_code",
+        "mod_editor.core.nfl2k5_human_tap_burst",
         "mod_editor.core.nfl2k5_qb_spy_runtime",
         "mod_editor.core.nfl2k5_qb_spy_runtime_code",
         "mod_editor.core.nfl2k5_calendar_engine",

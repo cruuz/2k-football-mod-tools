@@ -508,5 +508,11 @@
   "data",
   128,
   16
+ ],
+ [
+  "nfl2k5_human_tap_burst",
+  "code",
+  512,
+  16
  ]
 ]

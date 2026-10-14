@@ -41,7 +41,7 @@ class DikeSprintTests(unittest.TestCase):
         keys = ("lock_speedster", "lock_right_stick", "lock_special_moves",
                 "right_stick_stars_only", "charge_stars_only",
                 "button_moves_stars_only", "star_access")
-        cls.source = abilities.apply(retail, **{k: settings[k] for k in keys})[0]
+        cls.source = abilities.apply_rating_rules(retail, **{k: settings[k] for k in keys})[0]
 
     def test_installed_rules_and_source_replay(self):
         self.assertEqual(abilities.revision(self.base), "universal-sprint")
@@ -49,7 +49,7 @@ class DikeSprintTests(unittest.TestCase):
         settings = abilities.read_settings(self.base)
         for name in ("charge_stars_only", "right_stick_stars_only", "lock_speedster"):
             self.assertTrue(settings[name])
-        self.assertEqual(abilities.apply(self.base)[0], self.base)
+        self.assertEqual(abilities.apply_rating_rules(self.base)[0], self.base)
 
     def test_dike_taps_survive_all_layouts_and_role_scales(self):
         machines = [SprintMachine(raw) for raw in (self.base, self.source)]

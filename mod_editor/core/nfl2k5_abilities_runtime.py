@@ -36,6 +36,7 @@ import struct
 
 from . import nfl2k5_abilities_runtime_code as assembly
 from . import nfl2k5_tap_burst as tap_burst
+from . import nfl2k5_human_tap_burst as human_tap_burst
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -43,7 +44,7 @@ from .nfl2k5_cave_oracle import XbeImage
 OWNER = "nfl2k5_abilities_runtime"
 MODEL_VERSION = 2
 CODE_SIZE = (len(assembly.CODE) + 15) & -16
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
+REQUESTS = ((OWNER, "code", CODE_SIZE, 16),) + human_tap_burst.REQUESTS
 BUDGET = 1536
 assert CODE_SIZE <= BUDGET
 _UNSET = object()
@@ -513,7 +514,11 @@ def reservations(payload):
     if tap_burst.status(payload) == "applied":
         out.append(dict(owner=OWNER, start=hex(tap_burst.START), end=hex(tap_burst.END),
                         size=len(tap_burst.AFTER), basis="ordinary tap burst; pinned initializer"))
-    return out
+    # The public abilities writer owns the native hooks; the allocator names
+    # the separate code child, as it does for other composite runtime writers.
+    hooks = {va for _, va, _ in human_tap_burst.HOOKS}
+    return out + [dict(r, owner=OWNER) if int(r["start"], 0) in hooks else r
+                  for r in human_tap_burst.reservations(payload)]
 
 
 def repair_sprint(payload):
@@ -542,10 +547,14 @@ def repair_sprint(payload):
     return result, {"status": "applied", "changed_bytes": sum(x != y for x, y in zip(payload, result))}
 
 
-def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
+def apply_rating_rules(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
           lock_special_moves=_UNSET, lock_speedster=_UNSET, right_stick_stars_only=_UNSET,
           charge_stars_only=_UNSET, button_moves_stars_only=_UNSET, star_access=_UNSET):
-    """Install both phases; omitted replay option retains the installed week.
+    """Install rating/permission phases and sp1, without the sp2 movement layer.
+
+    Historical pinned repairs use this entry point to preserve their exact output.
+    Studio builds use apply(), which also installs human tap bursts.
+    An omitted replay option retains the installed week.
 
     An explicit None removes the week only on a clean base. Configuration
     changes on an installed image refuse before any byte is changed.
@@ -599,6 +608,18 @@ def apply(payload, *, abilities_off_week=_UNSET, lock_right_stick=_UNSET,
                     "source_sha256": hashlib.sha256(payload).hexdigest(),
                     "result_sha256": hashlib.sha256(result).hexdigest(),
                     "changed_bytes": sum(x != y for x, y in zip(payload, result)) + len(result) - len(payload)}
+
+
+def apply(payload, **settings):
+    """Install rating/ability rules, sp1 returns, and Speed-scaled human taps."""
+    native, receipt = apply_rating_rules(payload, **settings)
+    result, human = human_tap_burst.apply(native)
+    return result, {**receipt, "status": "applied" if result != payload else "already_applied",
+                    "human_tap_burst": human,
+                    "edits": receipt.get("edits", []) + human["edits"],
+                    "reservations": reservations(result),
+                    "changed_bytes": space.count_differing_bytes(payload, result) + len(result) - len(payload),
+                    "result_sha256": hashlib.sha256(result).hexdigest()}
 
 
 # SHA-256 pins of complete dependency spans, normalizing only HOOKS above.
