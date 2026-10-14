@@ -106,7 +106,7 @@ class TemplateTests(unittest.TestCase):
         # owner after it (the last late owner, so honors keeps its place)
         late = space.LATE_OWNERS
         self.assertEqual(late[0], "nfl2k5_k128")
-        self.assertEqual(late[-2:], ("nfl2k5_honors", "nfl2k5_coach_ai"))
+        self.assertEqual(late[-3:], ("nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_moment_coaches"))
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in

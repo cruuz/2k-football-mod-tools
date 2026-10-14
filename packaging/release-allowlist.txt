@@ -3169,3 +3169,6 @@ data/vip/coaches/TEN.json
 data/vip/coaches/WAS.json
 docs/mod_editor/nfl2k5_coach_vip.md
 docs/mod_editor/nfl2k5_coach_ai.md
+mod_editor/core/nfl2k5_moment_coaches.py
+data/nfl2k5_moment_coaches.json
+docs/mod_editor/nfl2k5_moment_coaches.md

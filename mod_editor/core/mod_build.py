@@ -4262,6 +4262,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+    if plan.espn25_more_moments:
+        progress("Restoring historical Anniversary coaches", 0, 51)
+        historical_coaches = _core_module("nfl2k5_moment_coaches")
+        coach_source = require_step_source(_retail_source or source, "Historical Anniversary coaches")
+        coach_receipt = historical_coaches.apply_to_image(target, coach_source)
+        receipt["steps"].append({"step": "moment_coaches", **coach_receipt})
+        receipt["result"]["moment_coaches"] = "applied"
     # Use the completed venue models and edited SITU, after all other resource passes.
     if plan.espn25_named_previews:
         progress("Building period Anniversary fields", 0, 51)
