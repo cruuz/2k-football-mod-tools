@@ -57,8 +57,13 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(replay, self.after)
         self.assertEqual(receipt['changed_bytes'], 0)
         self.assertEqual(receipt['status'], 'already_repaired')
-        self.assertEqual(abilities.apply(self.before)[0], self.after)
-        self.assertEqual(abilities.apply(self.after)[0], self.after)
+        # The current Studio also installs sp1's ordinary-burst initializer;
+        # historical g3 remains pinned to its own original owner-only delta.
+        from mod_editor.core import nfl2k5_tap_burst
+        latest = nfl2k5_tap_burst.apply(self.after)[0]
+        self.assertEqual(abilities.apply(self.before)[0], latest)
+        self.assertEqual(abilities.apply(self.after)[0], latest)
+        self.assertEqual(abilities.apply(latest)[0], latest)
         self.assertEqual(repair._legacy(self.after, abilities._inspect_revision(self.after)[1]), self.before)
 
     def test_unknown_hash_even_for_repaired_owner_is_refused(self):
