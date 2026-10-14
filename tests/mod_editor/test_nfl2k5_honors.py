@@ -102,10 +102,11 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(len([h for _o, h in honors.SEASON_SLOTS if h == "all_pro"]), 10)
 
     def test_late_owner_order_and_placement(self):
-        # the honors owner is the last late owner (after K128, F4's letter grades, F4b, V1b's goalposts)
+        # the honors owner follows K128, F4's letter grades, F4b and V1b's goalposts; b772-vt1 appends the coach AI
+        # owner after it (the last late owner, so honors keeps its place)
         late = space.LATE_OWNERS
         self.assertEqual(late[0], "nfl2k5_k128")
-        self.assertEqual(late[-1], "nfl2k5_honors")
+        self.assertEqual(late[-2:], ("nfl2k5_honors", "nfl2k5_coach_ai"))
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
