@@ -357,11 +357,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_letter_grades as letter_grades  # b77-f4
     from . import nfl2k5_letter_grades_progress as letter_grades_progress  # b77-f4b
     from . import nfl2k5_period_goalposts as period  # b77-v1b: the late allocator owner of the period uprights
+    from . import nfl2k5_honors as honors  # b772-i3: in the union so the later coach AI owner lands where builds put it
     from . import nfl2k5_team_names_2026 as team_names
     from . import nfl2k5_kick_meter_2026 as kick_meter  # b76-km: the wind digits' font lookup
     from . import nfl2k5_modern_goalposts as goalposts  # b77-v1: the upright lines and collision top
     from . import nfl2k5_franchise_economy as economy  # b76-fc3: the 2026 economy, chained with the practice squad
-    all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + seven.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + accelerated_clock.REQUESTS + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS + widescreen_menus.REQUESTS + team_logo_swap.REQUESTS + k128.REQUESTS + letter_grades.REQUESTS + period.REQUESTS + coach_ai.REQUESTS
+    all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + seven.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + accelerated_clock.REQUESTS + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS + widescreen_menus.REQUESTS + team_logo_swap.REQUESTS + k128.REQUESTS + letter_grades.REQUESTS + period.REQUESTS + honors.REQUESTS + coach_ai.REQUESTS
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
     probe_requests = (("synthetic_scaleout", "code", synthetic_owner_bytes, space.PAGE),) if synthetic_owner_bytes else ()
@@ -395,6 +396,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
         # owner is still installed and observed with the union below (coach_ai.apply); its PLAY profiles
         # are not executable bytes.
         preset["coach_ai"] = False
+        # b772-i3: the union below also carries the honors owner (dormant_union order: honors, then coach AI). Without
+        # it the late-owner placement put coach AI at honors' MyCareer-gap and RW-tail addresses (0x14E1640 /
+        # 0x14BBF80) instead of the 0x14E2040 / 0x14BBF70 every real build and tests/nfl2k5_allocator_stack use.
         plan = build.BuildPlan(source=str(xiso), target=str(target), **preset)
         with ExitStack() as stack:
             # v7 requires its matching atlas. Observe its actual fixed-span
