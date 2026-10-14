@@ -127,6 +127,35 @@ class Decision(unittest.TestCase):
             self.assertFalse(target.exists())
 
 
+class StudioGui(unittest.TestCase):
+    def test_the_completion_dialog_and_the_build_summary_carry_the_line(self):
+        """The Build page's completion notice (QMessageBox) and its Copy Build summary text both end with the line."""
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        try:
+            from PyQt5.QtWidgets import QApplication, QMessageBox
+        except ImportError:
+            self.skipTest("PyQt5 not installed")
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        app = QApplication.instance() or QApplication([])
+        panel = BuildPanel(available={})
+        try:
+            step = {"step": "coach_ai_resources", "status": "skipped", "requested": True, "applied": False,
+                    "decided": "before any write", "checked": 32, "mismatches": ["x"], "user_notes": [MESSAGE]}
+            receipt = {"target": "output.xiso.iso", "steps": [step], "result": {"path": "output.xiso.iso"},
+                       "outcome": {"status": "changed", "message": "The copy differs from your source."},
+                       "coach_ai_skipped": MESSAGE}
+            with mock.patch.object(QMessageBox, "information") as shown, mock.patch.object(panel, "apply_state"):
+                panel._done(receipt)
+            title, body = shown.call_args[0][1:3]
+            self.assertEqual(title, "Disc ready")
+            self.assertIn(MESSAGE, body.splitlines())
+            self.assertIn(MESSAGE, panel._last_build_summary.splitlines())
+            self.assertIn(MESSAGE, panel.status_label.text())
+        finally:
+            panel.deleteLater()
+            app.processEvents()
+
+
 @unittest.skipUnless(HAVE_RETAIL, "retail USA image not present (NFL2K5_RETAIL_XISO)")
 class RetailRosters(unittest.TestCase):
     def test_a_retail_dump_does_not_carry_the_2026_coaches(self):
