@@ -91,6 +91,15 @@ SoFi and Highmark). It repaints what they left, updates Modern colour's receipt 
 Arrowhead rows) and the 2026 venue receipt, and writes `<image>.surfaces.json`. The painter is idempotent, so a
 writer may compose it itself and the post-pass then leaves the same bytes.
 
+## Venue responses measured in game (Beta 77 st1)
+
+A venue row may carry `response`: a per-channel response for one light class measured in game, which replaces the
+look's table value for that venue and light (`venue_response`). MetLife (s18, s19) carries the afternoon one: on the
+v0.6.1 disc the afternoon field drew (92.5, 135.5, 84.5) at the play camera against its target (82.5, 102.6, 66.9),
+about 1.4 times too bright; halving the colour map showed the screen value is A x map - C (C about 20), and the
+response that lands the target is (1.4744, 1.7017, 1.6134) against the inferred 1.30. The afternoon bundles also
+carry the stadium shadow (`nfl2k5_stadium_shadow`): the field in that shadow reads about 0.45 of the sunlit field.
+
 ## The game's measured response (PROVED IN GAME, tf-v2)
 
 Candidate B (tf-v1) was read in eight lab runs (tf lab 3 and ig's smoke lab, stock xemu at 1x, 2026-09-27): the median

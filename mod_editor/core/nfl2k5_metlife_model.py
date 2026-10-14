@@ -48,6 +48,7 @@ from PIL import Image
 from . import nfl2k5_modern_metlife as ml
 from . import nfl2k5_scne_builder as sb
 from . import nfl2k5_stadium_environment as env
+from . import nfl2k5_stadium_shadow as shadow
 
 OWNER = "nfl2k5_metlife_model"
 LABEL = "EXPERIMENTAL / UNWITNESSED"
@@ -1439,8 +1440,13 @@ def model_bundle(skin_bundle, filename, model=None, *, cameras=True):
     sb.require(back == decoded, "model chunk read-back differs")
     back_cam, _ = tx.decode_chunk(out, chunks[cam_chunk.index])
     sb.require(back_cam == new_cam, "intro cameras read-back differs")
+    # b77 st1: the afternoon bundles' field shadow is cast from this model under Giants Stadium's retail sun (the
+    # retail texture was the old stadium's shadow); a bundle without a shadow texture is left as it is
+    out, shadow_receipt = shadow.bundle_shadow(out, filename[:3])
+    sb.require(len(out) == len(skin_bundle), "model bundle changed size")
     return out, dict(info, shapes=len(sc.shapes), materials=len(sc.materials), textures=len(sc.textures),
-                     markers=len(sc.markers), cameras_borrowed=extra, cameras_scratch=cam_info.get("scratch"))
+                     markers=len(sc.markers), cameras_borrowed=extra, cameras_scratch=cam_info.get("scratch"),
+                     shadow=shadow_receipt)
 
 
 def skin_bundle(retail, filename, retail_dry):
@@ -1536,6 +1542,24 @@ def _stretch(bundle):
     return off, bytes(bundle[off:end])
 
 
+def _shadow_span(bundle):
+    """(offset, bytes) of the afternoon bundles' shadow texture span (b77 st1), or None."""
+    found = shadow.shadow_chunk(bundle)
+    if found is None:
+        return None
+    chunk = found[0]
+    return chunk.offset, bytes(bundle[chunk.offset:chunk.offset + 32 + chunk.stored_size])
+
+
+def _sites(pin):
+    """[(offset, length, skin sha, model sha)] a pin owns: the stretch, and the shadow span when the bundle has one."""
+    out = [(pin["offset"], pin["length"], pin["skin_sha256"], pin["model_sha256"])]
+    if "shadow" in pin:
+        sp = pin["shadow"]
+        out.append((sp["offset"], sp["length"], sp["skin_sha256"], sp["model_sha256"]))
+    return out
+
+
 def model_pins():
     global _PINS
     if _PINS is None:
@@ -1558,10 +1582,19 @@ def record_pins(source, out_path=PINS_PATH, *, progress=None):
             m_off, model_stretch = _stretch(model)
             sb.require(m_off == off and len(model_stretch) == len(skin_stretch), f"{name}: stretch differs")
             e = entries[name]
-            bundles.append(dict(name=name, outer=e.index, name_id=e.name_id, size=e.size, offset=off,
-                                length=len(skin_stretch), skin_sha256=sha(skin_stretch),
-                                model_sha256=sha(model_stretch), system=info["system"], video=info["video"],
-                                scratch=info["scratch"], shapes=info["shapes"]))
+            row = dict(name=name, outer=e.index, name_id=e.name_id, size=e.size, offset=off,
+                       length=len(skin_stretch), skin_sha256=sha(skin_stretch),
+                       model_sha256=sha(model_stretch), system=info["system"], video=info["video"],
+                       scratch=info["scratch"], shapes=info["shapes"])
+            skin_shadow, model_shadow = _shadow_span(skin), _shadow_span(model)
+            sb.require((skin_shadow is None) == (model_shadow is None), f"{name}: shadow texture presence differs")
+            if skin_shadow is not None:
+                sb.require(skin_shadow[0] == model_shadow[0] and len(skin_shadow[1]) == len(model_shadow[1]),
+                           f"{name}: shadow span moved")
+                row["shadow"] = dict(offset=skin_shadow[0], length=len(skin_shadow[1]),
+                                     skin_sha256=sha(skin_shadow[1]), model_sha256=sha(model_shadow[1]),
+                                     sun=info["shadow"]["sun"])
+            bundles.append(row)
         crowds = []
         for outer in crowd.TARGETS:
             e = archive.entries[outer]
@@ -1586,8 +1619,9 @@ def image_status(source):
             e = archive.entries[pin["outer"]]
             if e.name_id != pin["name_id"] or e.size != pin["size"]:
                 return "foreign"
-            have = sha(archive.read(e.virtual_offset + pin["offset"], pin["length"]))
-            states.add("applied" if have == pin["model_sha256"] else "skin" if have == pin["skin_sha256"] else "other")
+            for at, length, skin_sha, model_sha in _sites(pin):
+                have = sha(archive.read(e.virtual_offset + at, length))
+                states.add("applied" if have == model_sha else "skin" if have == skin_sha else "other")
         crowd_states = set()
         for pin in pins["crowd"]:
             e = archive.entries[pin["outer"]]
@@ -1660,15 +1694,14 @@ def apply_to_image(target, *, retail_source, progress=None):
         for name in ml.VARIANTS:
             pin = by_name[name]
             skin, model, info = built[name]
-            off, model_stretch = _stretch(model)
-            sb.require(off == pin["offset"] and sha(model_stretch) == pin["model_sha256"],
-                       f"{name}: the compiled model differs from its pin")
             e = archive.entries[pin["outer"]]
-            at = e.virtual_offset + off
-            sb.require(sha(archive.read(at, pin["length"])) == pin["skin_sha256"], f"{name}: not the skin")
-            archive.write(at, model_stretch)
-            sb.require(archive.read(at, len(model_stretch)) == model_stretch, f"{name}: write-back differs")
-            receipt["bundles"].append(dict(name=name, outer=pin["outer"], offset=off, size=len(model_stretch)))
+            for at, length, skin_sha, model_sha in _sites(pin):
+                span = bytes(model[at:at + length])
+                sb.require(sha(span) == model_sha, f"{name}: the compiled model differs from its pin")
+                sb.require(sha(archive.read(e.virtual_offset + at, length)) == skin_sha, f"{name}: not the skin")
+                archive.write(e.virtual_offset + at, span)
+                sb.require(archive.read(e.virtual_offset + at, length) == span, f"{name}: write-back differs")
+                receipt["bundles"].append(dict(name=name, outer=pin["outer"], offset=at, size=length))
             written[name] = archive.read(e.virtual_offset, e.size)
         for pin in pins["crowd"]:
             e = archive.entries[pin["outer"]]

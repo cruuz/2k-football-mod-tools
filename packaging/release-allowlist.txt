@@ -1095,6 +1095,10 @@ tests/mod_editor/test_nfl2k5_modern_venues_2026_st3.py
 mod_editor/core/nfl2k5_scne_builder.py
 mod_editor/core/nfl2k5_metlife_model.py
 mod_editor/core/nfl2k5_metlife_crowd.py
+# Beta 77 st1: afternoon field shadows cast by the modern stadium models (the retail sun per venue)
+mod_editor/core/nfl2k5_stadium_shadow.py
+data/nfl2k5_stadium_shadow/venues.json
+tests/mod_editor/test_b77_st1_stadium_shadow.py
 data/nfl2k5_metlife_model/footprint.json
 data/nfl2k5_metlife_model/pins.json
 data/nfl2k5_metlife_model/art/crowd_hats18.png
