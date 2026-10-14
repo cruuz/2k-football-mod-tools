@@ -84,9 +84,9 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 100679)  # b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 105799)  # b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84562)  # b77-f5: + the 16-byte honors state block (legacy RW tail)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84690)  # b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])

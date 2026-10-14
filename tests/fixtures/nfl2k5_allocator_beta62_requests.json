@@ -496,5 +496,17 @@
   "read_only",
   2176,
   16
+ ],
+ [
+  "nfl2k5_coach_ai",
+  "code",
+  5120,
+  16
+ ],
+ [
+  "nfl2k5_coach_ai",
+  "data",
+  128,
+  16
  ]
 ]
