@@ -454,6 +454,11 @@ class BuildPlan:
     # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
     # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
     modern_fans: bool = False
+    # b77-rf1: the 2025-26 NFL officials: the referee scene (shirt, pants, a UV-only plan that retires the 2004
+    # front-chest number patch and moves the collar off the back-number swatch), the caps TSET and the seven number
+    # textures of gamedata.iff (HL drawn as DJ), refit in their retail spans. EXPERIMENTAL / UNWITNESSED: on only in
+    # the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_officials: bool = False
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     historic_rosters_2026: bool = False  # source-gated season roster work; incomplete data must refuse
@@ -609,6 +614,12 @@ for _preset in PRESETS.values():
     _preset["modern_fans"] = False
 PRESETS["softdrink_experimental"]["modern_fans"] = True
 del _preset
+# b77-rf1: the 2025-26 officials are experimental and unwitnessed: on only in the experimental preset, the one the
+# SOFTDRINK 2K28 recipe builds from (job's choice, recorded in the rf1 report; Noah: "the refs need updated").
+for _preset in PRESETS.values():
+    _preset["modern_officials"] = False
+PRESETS["softdrink_experimental"]["modern_officials"] = True
+del _preset
 # b76-h1: historic teams in Quick Game are off in basic and advanced (a 2004 game keeps its menus).
 for _preset in PRESETS.values():
     _preset["historic_teams_quick_game"] = False
@@ -736,6 +747,11 @@ def _modern_fans_available() -> bool:  # b77-fr1
     return module is not None and module.available()  # the pins and the shipped art must agree
 
 
+def _modern_officials_available() -> bool:  # b77-rf1
+    module = _core_module("nfl2k5_modern_officials")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
 def _modern_goalposts_available() -> bool:  # b77-v1
     module = _core_module("nfl2k5_modern_goalposts")
     return module is not None and module.available()  # the shipped pins must load
@@ -781,6 +797,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
         "modern_fans": _modern_fans_available(),  # b77-fr1
+        "modern_officials": _modern_officials_available(),  # b77-rf1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
@@ -1482,6 +1499,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_fans"] = fans.image_status(source)
         except (OSError, ValueError):
             out["modern_fans"] = "unknown"
+    # b77-rf1: the 2025-26 officials (the referee scene, the caps and the number textures of gamedata.iff)
+    officials = _core_module("nfl2k5_modern_officials")
+    if officials is None:
+        out["modern_officials"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_officials"] = "needs_image"
+    else:
+        try:
+            out["modern_officials"] = officials.image_status(source)
+        except (OSError, ValueError):
+            out["modern_officials"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -2384,6 +2412,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("2026 head coaches must be Off or On.")
     if type(plan.modern_fans) is not bool:  # b77-fr1
         raise ValueError("2026 fans must be Off or On.")
+    if type(plan.modern_officials) is not bool:  # b77-rf1
+        raise ValueError("2025-26 officials must be Off or On.")
     if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
             and "scorebug" in plan.hires_families):
         # The Hi-res scorebug family re-lays gamedata.iff around a larger score_buga (chunk 53), which moves the
@@ -3034,6 +3064,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"2026 fans cannot read the crowd texture sets: {exc}") from exc
         if fan_state not in ("retail", "applied", "mixed"):
             raise ValueError("A crowd texture is not the supported retail or already-2026 bytes. Turn 2026 fans off or rebuild from a supported USA source.")
+    if plan.modern_officials:  # b77-rf1
+        officials = _core_module("nfl2k5_modern_officials")
+        if officials is None or not is_image:
+            raise ValueError("2025-26 officials need a disc image (the referee model lives in the archive packs).")
+        progress("Checking the officials", 0, 0)
+        try:
+            official_state = officials.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2025-26 officials cannot read the referee model: {exc}") from exc
+        if official_state not in ("retail", "applied", "mixed"):
+            raise ValueError("The referee model, the caps or a number texture is not the supported retail or already-2025-26 bytes. Turn 2025-26 officials off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -4117,6 +4158,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         fan_receipt = fans.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_fans", **fan_receipt})
         receipt["result"]["modern_fans"] = fan_receipt["state"]
+    if plan.modern_officials:  # b77-rf1
+        # the referee scene, the caps TSET and the seven number TXTR chunks of gamedata.iff: fixed spans found by kind
+        # and name through the copy's own outer and chunk tables after every pass that re-lays gamedata.iff
+        officials = _core_module("nfl2k5_modern_officials")
+        progress("2025-26 officials", 0, 0)
+        official_receipt = officials.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_officials", **official_receipt})
+        receipt["result"]["modern_officials"] = official_receipt["state"]
     if plan.modern_helmets:
         # b76-hm: after every relocating pass, the historic rosters, One-pool positions and the Guardian overlay (the
         # historic fix is field level, the player scenes commute with the overlay's shell B).
