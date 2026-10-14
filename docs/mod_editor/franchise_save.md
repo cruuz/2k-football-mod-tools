@@ -252,3 +252,32 @@ select the final disc, and choose new output/receipt paths. That command copies
 only matching coaches' body and portrait IDs; it leaves progress, experience,
 playbooks, coach assignments and coaching statistics unchanged. The command
 never edits an HDD image or installs a save automatically.
+
+The upgrade also restores missing TEAM entries for imported seasons before
+2026 when the disc and save match on full name, birth date, season and all
+regular-season counters. It preserves existing TEAM entries. It does not infer
+a historical club from today's roster membership: trades make that unreliable.
+The receipt lists every season that still lacks historical evidence.
+
+Use `team-history` in place of `upgrade` to run only that repair. Completed
+seasons played inside the franchise can additionally use `--team-history
+/path/to/evidence.json`. This optional document has schema
+`nfl2k5_franchise_team_evidence/v1`, a `sources` object and a `rows` array.
+Each source needs a description and the SHA-256 of the evidence supporting the
+club assignment. Each row supplies `first`, `last`, `birth_date` (ISO date),
+`season`, `team` (the save's abbreviation), `source` (a source key), and
+`stats_sha256`. Obtain that counter fingerprint with
+`nfl2k5_franchise_upgrade.season_stats_sha256(words, slot)` on the decoded save's
+history stream. Evidence must establish the club for that particular saved
+season; real NFL roster data cannot establish trades made in a franchise.
+
+The repair refuses mismatched counters, ambiguous identities, conflicts with
+recorded teams and insufficient history space. It inserts entries using the
+game's bounded history pool, preserving existing counters and native holes.
+Shared streams are copied so their other owners remain unchanged; those cases
+require more than one word of free space per repaired row. Unused native pool
+space may contain stale bytes left by earlier compaction.
+Replaying the same repair changes zero bytes. It benefits existing saves and
+does not require a disc rebuild. Current rows and newly recorded seasons use
+the executable's TEAM patch. A Total row is blank; folded history, unknown past
+clubs and a current free agent without recorded participation may show `--`.

@@ -47,6 +47,9 @@ def preview_text(plan):
         elif step["operation"] == "coach_sync":
             lines.append(f"Coach appearances: {len(step['changes'])} fields changed")
             lines += [f"  {c['coach']}: {c['field']} {c['before']} → {c['after']}" for c in step["changes"]]
+        elif step["operation"] == "team_history":
+            lines.append(f"Historical teams restored: {len(step['changes'])}; "
+                         f"rows without historical evidence: {step['unresolved_rows']}")
     warnings = len(receipt["validation"]["after"]["findings"])
     lines += [f"Structural checks passed; {warnings} existing notices retained in the receipt.",
               f"Total changed fields: {receipt['changed_fields']}", "",
