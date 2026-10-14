@@ -682,6 +682,7 @@ class CaveReferenceTests(unittest.TestCase):
 
     def test_abilities_have_only_pinned_hooks_and_named_grown_code(self):
         from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_tap_burst as tap_burst
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         manifest = self.manifest
@@ -691,7 +692,12 @@ class CaveReferenceTests(unittest.TestCase):
         for record in abilities.reservations(self.patched):
             start, end = int(record["start"], 0), int(record["end"], 0)
             if start < space.CODE_VA:
-                self.assertLess(end - start, CAVE_MIN)
+                if (start, end) == (tap_burst.START, tap_burst.END):
+                    # b772-sp1: the ordinary tap-burst initializer is rewritten in place, same length, pinned before
+                    # and after (no cave and no new entry); every other retail-space record stays a short hook
+                    self.assertEqual(end - start, len(tap_burst.AFTER))
+                else:
+                    self.assertLess(end - start, CAVE_MIN)
                 self.assertEqual(manifest.overlaps(start, end, exclude_owner=abilities.OWNER), [])
                 self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
             else:
