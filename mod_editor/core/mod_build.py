@@ -2267,6 +2267,10 @@ def _apply_roster_history(plan, target, receipt, progress):
         if records is None:
             raise RuntimeError("the roster records module is not available in this build")
         edits_document = records.read_edits(Path(plan.roster_edits))
+        # Dated refreshes own final membership and depth. Defer them until all
+        # historic imports, player tags and QB rating adjustments have run.
+        if "roster_refresh" in edits_document:
+            edits_document = {k: v for k, v in edits_document.items() if k != "roster_refresh"}
         modern_history = edits_document.get("franchise_history")
         from . import nfl2k5_free_agents
         if plan.season_2026 and plan.position_pools and nfl2k5_free_agents.is_pack_input(edits_document):
@@ -2312,6 +2316,22 @@ def _apply_roster_history(plan, target, receipt, progress):
         honors_receipt = honors_history.apply(target, plan.honors_history, base_year=epoch,
                                               progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "honors_history", **honors_receipt})
+
+
+def _apply_roster_refresh(plan, target, receipt, progress):
+    if not plan.roster_edits:
+        return
+    records = _core_module("nfl2k5_roster_records")
+    document = records.read_edits(Path(plan.roster_edits))
+    if "roster_refresh" not in document:
+        return
+    if not plan.position_pools:
+        raise ValueError("Dated roster refresh requires modern position pools")
+    progress("Applying the dated roster refresh", 0, 0)
+    result = records.apply(target, {"schema": records.EDITS_SCHEMA, "edits": [],
+                                   "roster_refresh": document["roster_refresh"]},
+                           scheme="one_pool", progress=lambda msg: progress(msg, 0, 0))
+    receipt["steps"].append({"step": "roster_refresh", **result})
 
 
 @official.build_scope
@@ -3888,6 +3908,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             progress("Raising every quarterback's Throw Power", 0, 0)
             qb_receipt = qb_module.apply_image(target, qb_directive, progress=lambda message: progress(message, 0, 0))
             receipt["steps"].append({"step": "qb_throw_power", **qb_receipt})
+    _apply_roster_refresh(plan, target, receipt, progress)
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)
