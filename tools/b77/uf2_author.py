@@ -197,7 +197,31 @@ LETTERS = {
     "G": [(0, 0.6, 1.6, 6.4), (0.6, 0, 5, 1.4), (0.6, 5.6, 4.4, 7), (3.4, 3.4, 5, 6.4), (2.6, 3.0, 5, 4.3)],
     "S": [(0.6, 0, 5, 1.4), (0, 0.6, 1.6, 3.6), (0.6, 2.8, 4.4, 4.2), (3.4, 3.4, 5, 6.4), (0, 5.6, 4.4, 7)],
     "H": [(0, 0, 1.6, 7), (3.4, 0, 5, 7), (0, 2.8, 5, 4.2)],
+    "T": [(0, 0, 5, 1.4), (1.7, 0, 3.3, 7)],
+    "K": [(0, 0, 1.6, 7)],
+    "W": [(0, 0, 1.4, 7), (3.6, 0, 5, 7), (1.8, 3.2, 3.2, 7), (0, 5.6, 5, 7)],
 }
+EXTRA_STROKES = {  # diagonal strokes (polygons in glyph units)
+    "K": [[(1.4, 3.0), (3.6, 0), (5, 0), (2.2, 3.8)], [(2.2, 3.0), (5, 7), (3.4, 7), (1.4, 4.2)]],
+}
+
+
+def slanted_word(text, ox, oy, height, colour, angle, gap=0.8):
+    """Block letters rotated by ``angle`` degrees (clockwise on the texture) about the top-left origin."""
+    unit = height / 7.0
+    ca, sa = math.cos(math.radians(angle)), math.sin(math.radians(angle))
+    def tr(x, y):
+        return (ox + x * ca - y * sa, oy + x * sa + y * ca)
+    ops, cx = [], 0.0
+    for ch in text:
+        for x0, y0, x1, y1 in LETTERS[ch]:
+            pts = [(cx + x0 * unit, y0 * unit), (cx + x1 * unit, y0 * unit), (cx + x1 * unit, y1 * unit),
+                   (cx + x0 * unit, y1 * unit)]
+            ops.append(poly([tr(x, y) for x, y in pts], colour))
+        for stroke in EXTRA_STROKES.get(ch, []):
+            ops.append(poly([tr(cx + x * unit, y * unit) for x, y in stroke], colour))
+        cx += (5 + gap) * unit
+    return ops
 
 
 def word(text, x, y, height, colour, gap=0.8, serif=0.0):
@@ -267,6 +291,48 @@ def braid(cx, y0, y1, half, colour, step=6.0, width=1.3, vertical=True):
     return ops
 
 
+SEA_BACK = Path(__file__).resolve().parent / "uf2_sea_helmet_back.json"
+
+
+def sea_helmet_back():
+    """Seahawks helmet back (26H0/26A0 helmet02, one design): the logo's gray wing continues across the back as one
+    white-edged band that dips into a chevron with a centre notch, as on the 2026 helmets (Sept 27 2026 gallery);
+    stray outline ticks and the broken centre pieces go; the rear bumper plate reads SEATTLE; the hidden flag decal
+    shows a US flag. Shell shapes come from ``uf2_sea_helmet_back.json`` (projected through the mesh UVs)."""
+    doc = json.loads(SEA_BACK.read_text(encoding="utf-8"))
+    L = doc["layers"]
+    navy, gray, white = "#0C2848", "#A5ABAE", "#ECEDED"
+    ops = [{"op": "multipoly", "color": navy, "only": ["#ECEDED", "#FFFFFF", "#E1E3E4", "#D8DADB", "#C8CCCE"],
+            "only_tolerance": 30, "polys": L["ticks_left"] + L["ticks_right"]},
+           {"op": "multipoly", "color": navy, "polys": L["clear"]},
+           {"op": "multipoly", "color": white, "polys": L["white"]},
+           {"op": "multipoly", "color": gray, "polys": L["gray"]}]
+    # rear bumper plate (LOGO_helmet_C back face: texels x 191-253, y 64-78.5, left to right as seen from behind)
+    ops.append(recolor((193, 66, 252, 77), [white, "#E3E4E5"], white, 10, invert=True))
+    h = 5.4
+    unit = h / 7.0
+    width = (7 * 5 + 6 * 4.6) * unit
+    ops += word("SEATTLE", 222.2 - width / 2, 71.4 - h / 2, h, "#1C2433", gap=4.6)
+    # flag decal (HI_HELMET_flag): quad corners inner-bottom (101.2,133), mid-bottom (118.9,146.8),
+    # inner-top (120.5,108.3); s runs along the helmet (inner towards the side), t up
+    O = np.array([101.2, 133.0]); E1 = np.array([17.7, 13.8]); E2 = np.array([19.3, -24.7])
+    def q(s0, t0, s1, t1):
+        return [tuple(np.round(O + s * E1 + t * E2, 3)) for s, t in ((s0, t0), (s1, t0), (s1, t1), (s0, t1))]
+    def fpoly(points, colour):
+        return dict(poly(points, colour), alpha=255)
+    ops.append(fpoly(q(-0.04, -0.03, 1.04, 1.03), "#B22234"))
+    for k in range(7):
+        if k % 2:
+            ops.append(fpoly(q(-0.04, k / 7.0, 1.04, (k + 1) / 7.0), "#FFFFFF"))
+    ops.append(fpoly(q(-0.04, 3.0 / 7.0, 0.62, 1.03), "#3C3B6E"))
+    for i in range(3):
+        for j in range(3):
+            s0 = 0.08 + i * 0.18
+            t0 = 0.52 + j * 0.15
+            ops.append(fpoly(q(s0, t0, s0 + 0.07, t0 + 0.06), "#FFFFFF"))
+    return ops
+
+
 # -- recipes ---------------------------------------------------------------------------------------------------------
 
 def recipes():
@@ -289,12 +355,15 @@ def recipes():
         elif kind == "clear":
             _, chunk, suffixes, note = item
             payload, extra = None, {}
+        elif kind == "digitcopy":
+            _, chunk, payload, suffixes, note = item
+            extra = {}
         else:
             _, payload, suffixes, note = item
             chunk, extra = 0, {}
         for side in sides:
             sel = CODES[team] + ("H" if side == "home" else "A") + str(style)
-            ids = ["uw2-%s-%s-%d-%s" % (team, side, style, s) for s in suffixes]
+            ids = [s[5:] if s.startswith("noah:") else "uw2-%s-%s-%d-%s" % (team, side, style, s) for s in suffixes]
             R.setdefault(sel, []).append((kind, chunk, payload, ids, note, json.loads(json.dumps(extra))))
 
     both = ("home", "away")
@@ -1165,6 +1234,34 @@ def recipes():
     was += spear(74.5, 26.0, 108.0) + spear(178.0, 118.0, 44.0)
     add("WAS", 9, both, ("tex", 12, was, ["helmet-spear"],
                          "gold spear through the middle of the W with a large forward arrowhead"))
+
+    # Noah's review of uf1's sheets (Oct 13-14 2026): primary kits, revising uf1's output ---------------------------
+    add("SEA", 4, both, ("tex", 12, sea_helmet_back(), ["noah:noah-1014-SEA-helmet-back"],
+                         "the same 2026 helmet back on the navy/gray alternate's helmet (same shell art)", {"mip": "mode"}))
+    add("SEA", 0, both, ("tex", 12, sea_helmet_back(), ["noah:noah-1014-SEA-helmet-back"],
+                         "helmet back as on the 2026 helmets: one continuous white-edged gray band with a chevron and "
+                         "centre notch where the logo wings meet, SEATTLE on the rear bumper plate, the US flag decal",
+                         {"mip": "mode"}))
+
+    add("NYG", 0, ("away",), ("tex", 3, [{"op": "retint", "box": [40, 0, 92, 16], "base": W, "source": "#0E2878",
+                                          "color": "#B81A35", "tolerance": 40},
+                                         {"op": "retint", "box": [36, 62, 92, 82], "base": W, "source": "#0E2878",
+                                          "color": "#B81A35", "tolerance": 40}],
+                              ["noah:noah-1014-NYG-away-swoosh"],
+                              "the Nike swoosh on both sleeves in Giants red (Sept 21 2026 at Rams photos), as the "
+                              "sleeve stripes; the pants keep their blue swoosh"))
+    # Seahawks white road jersey (Sept 27 2026 at Commanders): the inner V of the collar is dark charcoal and the navy
+    # feather chevrons run the length of the collar (the navy shoulder numbers already match the photos)
+    add("SEA", 0, ("away",), ("tex", 1, [recolor((118, 0, 204, 72), ["#DCDCDC", "#CACDD0"], "#3C4148", 20),
+                                         copy((125, 11, 139, 33), (131, 32), skip=W, tolerance=40),
+                                         copy((188, 11, 199, 33), (183, 32), skip=W, tolerance=40)],
+                              ["noah:noah-1014-SEA-away-collar"],
+                              "dark charcoal inner collar; navy feather chevrons continued down both sides of the V"))
+    add("SEA", 0, ("away",), ("tex", 1, [poly([(201, 44.6), (257, 54.4), (257, 72.0), (232, 65.4), (214, 59.6),
+                                               (201, 52.4)], "#0A2A4E")] +
+                              slanted_word("SEAHAWKS", 216.5, 51.9, 5.0, W, 13.2, gap=0.75),
+                              ["noah:noah-1014-SEA-away-wordmark"],
+                              "the chest-band wordmark reads SEAHAWKS in full (it was cut to SEAHAV)"))
     return R
 
 
@@ -1213,6 +1310,10 @@ def entries():
             elif kind == "unif":
                 row = {"selector": selector, "chunk": 0, "texture": "Unif", "kind": "unif", "defects": defects,
                        "note": note, "fields": payload}
+            elif kind == "digitcopy":
+                row = {"selector": selector, "chunk": chunk, "texture": chunk_name(chunk), "kind": "copy_video",
+                       "size": [64, 64, 4], "donor_chunk": payload, "donor_texture": chunk_name(payload),
+                       "defects": defects, "note": note}
             else:
                 raise ValueError(kind)
             rows.append(row)
@@ -1267,7 +1368,10 @@ def preview(export: Path, out: Path, only: list[str]) -> None:
             png = dst / PNG[row["chunk"]]
             rgba = np.asarray(Image.open(png).convert("RGBA")).copy()
             originals[row["chunk"]] = rgba
-            if row["kind"] == "clear":
+            if row["kind"] == "copy_video":
+                painted = np.asarray(Image.open(dst / PNG[row["donor_chunk"]]).convert("RGBA")).copy()
+                n = -1
+            elif row["kind"] == "clear":
                 painted = rgba.copy()
                 painted[..., 3] = 0
                 n = int((rgba[..., 3] > 0).sum())
@@ -1313,6 +1417,12 @@ def data(disc: Path, out: Path, probe: bool = False, only=()) -> None:
                 new, detail = fixes.compile_palette(span, row)
                 print(row["selector"], row["chunk"], row["texture"], "palette", len(detail["palette_entries"]),
                       flush=True)
+            elif row["kind"] == "copy_video":
+                donor = fixes._chunk_for(raw, row["donor_chunk"])
+                donor_span = raw[donor.offset:donor.end_offset]
+                row["donor_sha256"] = fixes.sha(donor_span)
+                new, detail = fixes.copy_video(span, donor_span, row)
+                print(row["selector"], row["chunk"], row["texture"], "copy of", row["donor_texture"], flush=True)
             elif row["kind"] == "clear":
                 chunk_obj, decoded, texture = fixes._txtr(span)
                 row["size"] = [texture.width, texture.height, texture.mip_levels]
@@ -1341,7 +1451,8 @@ def data(disc: Path, out: Path, probe: bool = False, only=()) -> None:
                           "the Unif facemask colour. Existing palette plus spare slots, wet_93 mud twin, fixed spans.",
                 "textures": [{k: row[k] for k in ("selector", "chunk", "texture", "kind", "size", "resource_size",
                                                   "offset", "length", "before_sha256", "after_sha256", "defects",
-                                                  "note", "mip", "ops", "map", "fields", "donors")
+                                                  "note", "mip", "ops", "map", "fields", "donors", "donor_chunk", "donor_texture",
+                                                  "donor_sha256")
                               if k in row} for row in rows]}
     with out.open("w", encoding="utf-8", newline="\n") as stream:
         json.dump(document, stream, indent=1)

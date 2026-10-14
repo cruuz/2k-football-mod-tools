@@ -100,6 +100,28 @@ class NewArt(unittest.TestCase):
                                       "color": "#0B162A"}])
         self.assertEqual(int(scope.sum()), 16)
 
+    def test_retint_keeps_anti_aliasing_and_multipoly_has_no_seams(self):
+        a = canvas(colour=(255, 255, 255))
+        a[2, 2, :3] = (14, 40, 120)                       # the mark
+        a[2, 3, :3] = (134, 147, 187)                     # half blend with the white field
+        a[5, 5, :3] = (0, 200, 0)                         # other art stays
+        out, scope = fixes.paint(a, [{"op": "retint", "box": [0, 0, 16, 16], "base": "#FFFFFF", "source": "#0E2878",
+                                      "color": "#B81A35"}])
+        self.assertEqual(out[2, 2, :3].tolist(), [184, 26, 53])
+        self.assertTrue(abs(int(out[2, 3, 0]) - 220) <= 2 and abs(int(out[2, 3, 1]) - 140) <= 2)
+        self.assertEqual(out[5, 5, :3].tolist(), [0, 200, 0])
+        self.assertEqual(int(scope.sum()), 2)
+        cover = fixes.multipolygon_coverage([[[0, 0], [1.5, 0], [1.5, 1], [0, 1]], [[1.5, 0], [3, 0], [3, 1], [1.5, 1]],
+                                             [[0, 0], [3, 0], [3, 1], [0, 1]]], 4, 4)
+        self.assertEqual(cover[0].tolist(), [16, 16, 16, 0])
+
+    def test_poly_alpha_makes_a_hidden_decal_opaque(self):
+        a = canvas(alpha=0)
+        out, _ = fixes.paint(a, [{"op": "poly", "color": "#B22234", "alpha": 255,
+                                  "points": [[0, 0], [4, 0], [4, 2.25], [0, 2.25]]}])
+        self.assertTrue((out[:2, :4, 3] == 255).all())
+        self.assertTrue((out[3:, :, 3] == 0).all())
+
     def test_pair_mud_follows_the_nearest_dirt_ratio(self):
         clean = np.array([[200, 100, 50, 255], [0, 0, 0, 255], [100, 50, 25, 255]], np.int64)
         mud = np.array([[100, 50, 25, 255], [0, 0, 0, 255], [0, 0, 0, 0]], np.int64)
@@ -111,8 +133,8 @@ class Data(unittest.TestCase):
     def test_pins_are_complete_and_unique(self):
         doc = fixes.alternates()
         rows = doc["textures"]
-        self.assertEqual(len(rows), 540)
-        self.assertEqual(len(fixes.selectors(doc)), 89)
+        self.assertEqual(len(rows), 544)
+        self.assertEqual(len(fixes.selectors(doc)), 92)
         keys = set()
         for row in rows:
             self.assertIn(row["kind"], fixes.KINDS)
@@ -141,10 +163,20 @@ class Data(unittest.TestCase):
 
     def test_every_finding_has_a_row_or_a_reason(self):
         """Every uw2 alternate-kit finding uf2 reviewed is fixed by a row or listed with its reason."""
-        covered = {d for r in fixes.alternates()["textures"] for d in r["defects"]}
+        covered = {d for r in fixes.alternates()["textures"] for d in r["defects"] if d.startswith("uw2-")}
         reasons = author.VERDICTS
         self.assertFalse(covered & set(reasons))
         self.assertEqual(len(covered) + len(reasons), 232)   # 220 snapshot rows + 12 added by uw2 later
+
+    def test_rows_revising_uf1_start_from_uf1_output(self):
+        """Noah's 10/14 items revise four uf1 textures: each starts from uf1's output pin, at the same span."""
+        uf1 = {(r["selector"], r["chunk"]): r for r in fixes.spec()["textures"]}
+        both = [r for r in fixes.alternates()["textures"] if (r["selector"], r["chunk"]) in uf1]
+        self.assertEqual(sorted((r["selector"], r["chunk"]) for r in both),
+                         [("18A0", 3), ("26A0", 1), ("26A0", 12), ("26H0", 12)])
+        for r in both:
+            u = uf1[(r["selector"], r["chunk"])]
+            self.assertEqual((r["before_sha256"], r["offset"], r["length"]), (u["after_sha256"], u["offset"], u["length"]))
 
     def test_uf1_document_is_unchanged(self):
         self.assertEqual(len(fixes.spec()["textures"]), 60)

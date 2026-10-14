@@ -123,6 +123,40 @@ def polygon_coverage(points, width, height):
     return cover
 
 
+def multipolygon_coverage(polys, width, height):
+    """Samples covered (0..SUPER**2) per texel by the union of several polygons (a shape split into pieces, e.g. one
+    piece per mesh triangle): a sample inside any piece counts once, so abutting pieces leave no blended seam."""
+    step = UNIT // SUPER
+    sub = np.arange(SUPER, dtype=np.int64) * step + step // 2
+    inside_all = np.zeros((height * SUPER, width * SUPER), bool)
+    for points in polys:
+        pts = [(fixed(x), fixed(y)) for x, y in points]
+        require(len(pts) >= 3, "a polygon needs three points")
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        x0 = max(min(xs) // UNIT, 0)
+        x1 = min(-(-max(xs) // UNIT), width)
+        y0 = max(min(ys) // UNIT, 0)
+        y1 = min(-(-max(ys) // UNIT), height)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        sx = (np.arange(x0, x1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+        sy = (np.arange(y0, y1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+        X, Y = np.meshgrid(sx, sy)
+        inside = np.zeros(X.shape, bool)
+        for (ax, ay), (bx, by) in zip(pts, pts[1:] + pts[:1]):
+            if ay == by:
+                continue
+            crosses = (ay > Y) != (by > Y)
+            dy = by - ay
+            lhs = (X - ax) * dy
+            rhs = (Y - ay) * (bx - ax)
+            left = (lhs < rhs) if dy > 0 else (lhs > rhs)
+            inside ^= crosses & left
+        inside_all[y0 * SUPER:y1 * SUPER, x0 * SUPER:x1 * SUPER] |= inside
+    return inside_all.reshape(height, SUPER, width, SUPER).sum(axis=(1, 3)).astype(np.int64)
+
+
 def composite(rgba, cover, colour):
     """Blend ``colour`` over ``rgba`` by integer coverage; alpha keeps its native value."""
     n = cover[..., None]
@@ -431,6 +465,30 @@ def lift(rgba, op):
     return out, hit
 
 
+def retint(rgba, op):
+    """Recolour a mark drawn on a plain field, keeping its anti-aliasing: each texel in ``box`` that lies on the line
+    from ``base`` (the field) towards ``source`` (the mark) at fraction t takes base + t * (colour - base), in exact
+    integers. Texels off that line (other art) stay."""
+    box = box_mask(rgba.shape, op["box"])
+    base = np.array(hex_rgb(op["base"]), np.int64)
+    src = np.array(hex_rgb(op["source"]), np.int64)
+    dst = np.array(hex_rgb(op["color"]), np.int64)
+    c = rgba[..., :3].astype(np.int64)
+    d = src - base
+    den = int((d * d).sum())
+    num = ((c - base) * d).sum(axis=2)
+    num = np.clip(num, 0, den)
+    # distance from the line, squared, times den (exact)
+    proj = base[None, None, :] * den + d[None, None, :] * num[..., None]
+    off = ((c * den - proj) ** 2).sum(axis=2)
+    tol = int(op.get("tolerance", 24))
+    hit = box & (num * 20 > den) & (off <= (tol * den) ** 2)
+    out = rgba.copy()
+    new = (base[None, None, :] * den + (dst - base)[None, None, :] * num[..., None] + den // 2) // den
+    out[..., :3][hit] = np.clip(new, 0, 255)[hit].astype(np.uint8)
+    return out, hit
+
+
 def paint(rgba, ops, donors=None):
     """Apply the authored operations in order; returns the new level 0 and the changed scope."""
     out = rgba.copy()
@@ -452,6 +510,16 @@ def paint(rgba, ops, donors=None):
                 last = np.where(hits.any(axis=0), h - 1 - hits[::-1].argmax(axis=0), -1)
                 cover = np.where((rows >= first[None, :]) & (rows <= last[None, :]), 0, cover)
             out = composite(out, cover, hex_rgb(op["color"]))
+            if "alpha" in op:
+                out[..., 3][cover * 2 >= SUPER * SUPER] = int(op["alpha"])
+        elif kind == "multipoly":
+            cover = multipolygon_coverage(op["polys"], w, h)
+            if "only" in op:
+                cover = np.where(colour_hits(out, op["only"], op.get("only_tolerance", 24)), cover, 0)
+            out = composite(out, cover, hex_rgb(op["color"]))
+            if "alpha" in op:
+                # a decal that was hidden (alpha 0) becomes opaque where at least half its samples are covered
+                out[..., 3][cover * 2 >= SUPER * SUPER] = int(op["alpha"])
         elif kind == "flood":
             out, _ = flood(out, op["seed"], hex_rgb(op["color"]), op.get("tolerance", 24), op["box"])
         elif kind == "recolor":
@@ -474,6 +542,8 @@ def paint(rgba, ops, donors=None):
             out, _ = close_gaps(out, op)
         elif kind == "lift":
             out, _ = lift(out, op)
+        elif kind == "retint":
+            out, _ = retint(out, op)
         elif kind == "stamp":
             donor = op.get("donor", "self")
             source = rgba if donor == "self" else (donors or {}).get(int(donor))
@@ -719,7 +789,8 @@ def compile_texture(span, row, donors=None):
     base = palette[planes[0]].astype(np.uint8)
     painted, scope = paint(base, row["ops"], donors)
     require(scope.any(), "the art changed no texel")
-    alphas = base[..., 3].astype(np.int64)
+    alphas = painted[..., 3].astype(np.int64)
+    alpha_changed = painted[..., 3] != base[..., 3]
     # exact art colours first, then the most frequent edge blends far from the palette, per alpha class in the art
     wanted = art_colours([op for op in row["ops"] if "color" in op])
     added, free = [], free_slots(planes, scope_chain(scope, planes))
@@ -757,8 +828,15 @@ def compile_texture(span, row, donors=None):
             out[points[:, 0], points[:, 1]] = mode_planes[level][points[:, 0], points[:, 1]]
         elif len(points):
             colours = target[points[:, 0], points[:, 1], :3]
-            # each stored mip keeps its own alpha (helmet reflection masks are authored per level)
+            # each stored mip keeps its own alpha (helmet reflection masks are authored per level), except where the
+            # art itself changed the alpha (a hidden decal made opaque): there the art's alpha, snapped to 0 or 255
             alphas_here = palette[plane][points[:, 0], points[:, 1], 3]
+            if alpha_changed.any():
+                moved = alpha_changed[points[:, 0], points[:, 1]]
+                wanted_alpha = target[points[:, 0], points[:, 1], 3]
+                if level:
+                    wanted_alpha = np.where(wanted_alpha >= 128, 255, 0)
+                alphas_here = np.where(moved, wanted_alpha, alphas_here)
             out[points[:, 0], points[:, 1]] = nearest(colours, alphas_here, palette)
         quantized = palette[out]
         require(np.array_equal(quantized[~changed], palette[plane][~changed]), "protected texel changed")
@@ -775,6 +853,7 @@ def compile_texture(span, row, donors=None):
             require((nh * 2, nw * 2) == (ph, pw), "unexpected mip chain")
             target = (quantized.reshape(nh, 2, nw, 2, 4).sum(axis=(1, 3)) + 2) // 4
             changed = changed.reshape(nh, 2, nw, 2).any(axis=(1, 3))
+            alpha_changed = alpha_changed.reshape(nh, 2, nw, 2).any(axis=(1, 3))
             if row.get("mip") == "mode":
                 # uf2: small fixed allocations (digits, busy helmets) keep the parent indices crisp: each changed
                 # parent takes the most frequent of its four child indices (lowest index on ties), not a blend
