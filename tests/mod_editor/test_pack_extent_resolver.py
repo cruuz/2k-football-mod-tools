@@ -155,6 +155,10 @@ class PackExtentResolverTests(unittest.TestCase):
             def simple_status(_xbe: bytes) -> str:
                 return "applied"
 
+            @staticmethod
+            def repair_awards_timing(xbe: bytes) -> tuple[bytes, dict]:  # b771 v1i: already repaired, nothing written
+                return xbe, {"already_applied": True}
+
         class Schedule:
             @staticmethod
             def encode_schedule(_doc):

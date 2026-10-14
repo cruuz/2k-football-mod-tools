@@ -63,7 +63,11 @@ class BuildIntegrationTests(unittest.TestCase):
                     return {'status': 'validated', 'expected': None}
                 modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild,revalidate_playlist=revalidate_playlist),
                            'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime),
-                           'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True})}
+                           'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True}),
+                           # b772 ny1/uf1/uf2: the uniform block's pinned kit repairs; a synthetic image matches none
+                           'nfl2k5_nyg_numbers':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'}),
+                           'nfl2k5_kit_fixes_2026':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'},
+                                                                   apply_alternates=lambda target: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.
