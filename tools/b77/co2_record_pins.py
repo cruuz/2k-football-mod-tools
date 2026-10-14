@@ -70,12 +70,14 @@ def main(argv=None):
     a = p.parse_args(argv)
     report = json.loads((ROOT / "reports/assets/nfl2k5_player_portrait_compatibility.json").read_text(encoding="utf-8"))
     targets = {int(t["portrait_id"]): t for t in report["targets"]}
+    old = json.loads(mc.PINS_PATH.read_text(encoding="utf-8")) if mc.PINS_PATH.is_file() else {}
+    rejected = {r["portrait_id"]: r.get("rejected_sha256", []) for r in old.get("portraits", [])}
     portraits = []
     for team, pid, retail_id, coach in PORTRAITS:
         t = targets[pid]
         portraits.append(dict(team=team, coach=coach, portrait_id=str(pid), retail_photo_id=retail_id,
                               outer_index=t["outer_index"], chunk_offset=t["chunk_offset"], span_size=t["span_size"],
-                              retail_sha256=t["span_sha256"], png=f"portraits/{pid}.png"))
+                              retail_sha256=t["span_sha256"], rejected_sha256=rejected.get(str(pid), [])))
     superseded: dict[str, list[str]] = {}
     if mc.PINS_PATH.is_file():
         old = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))

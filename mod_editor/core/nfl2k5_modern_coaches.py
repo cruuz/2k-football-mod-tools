@@ -29,14 +29,10 @@ The geometry, the skin, the animations, the other four textures, the wrapper and
 are retail; each scene is refit into its retail stored span with the 32-byte wrapper identical and the in-place
 decode inside the retail scratch allowance (the stream is filled to within six bytes of the stored body).
 
-The pictures: the Coach Matchup screen and the VIP viewer draw the PORTRAIT texture named by the decimal of the
-coach record's ``+0x40``. The 2026 portraits of 30 coaches ride with the 2026 league art (the team projects); Dallas
-(7007) and Washington (7029) have no such texture on the disc, so the game shows ``nophoto``. This option writes the
-2026 Dallas and Washington head coaches into two retail portrait slots no roster record uses (7031 and 7034, P8
-128x128, raw fixed spans) and points those two coach records' ``+0x40`` at them (two 16-bit writes in the main
-roster). A roster whose Dallas or Washington coach already names another picture keeps it. The two pictures are
-authored renders of the game's own coach (b77 co3; see the data README), and a slot that holds the earlier picture
-(``superseded_sha256``) is rewritten in place.
+The pictures come from the SOFTDRINK league project, including Dallas 7031 and Washington 7034. This pass
+reserves those two ids in the coach records. On a plain Studio build their slots show the disc's own ``nophoto``
+texture. Retail slots and the rejected co3 renders are replaced with that fallback; league pictures are preserved.
+No portrait PNG or reference photograph ships with the Studio. The painted model faces are independent.
 
 The bodies (b77 co2): the game builds the coach archive name from the coach record's ``+0x18`` (``swprintf``
 ``L"c%02d.iff"`` over its low 16 bits, home and away, for the sideline coach and every cutscene coach). Where another
@@ -71,8 +67,8 @@ HELP_TEXT = (
     "and cap, the 2026 logo on his chest, a modern black headset, and his own face from his official headshot, "
     "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build, and "
     "Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
-    "sideline staff wear the same 2026 colours. Dallas and Washington also get their 2026 head coach's picture on "
-    "the Coach Matchup screen (the 2004 disc has none for them). The animations are the game's own. Experimental: "
+    "sideline staff wear the same 2026 colours. Dallas and Washington pictures come from the SOFTDRINK league "
+    "data; without it they show the game's no-photo image. The animations are the game's own. Experimental: "
     "not yet seen in the game by the SOFTDRINK tester."
 )
 
@@ -166,7 +162,7 @@ def _check_pins(document: dict) -> dict:
     require(len(set(bodies)) == len(bodies), "two clubs name the same coach body")
     for row in document.get("portraits", ()):
         require(set(row) >= {"team", "portrait_id", "retail_photo_id", "outer_index", "chunk_offset", "span_size",
-                             "retail_sha256", "applied_sha256", "png", "png_sha256"}, "modern coach portrait pin incomplete")
+                             "retail_sha256", "applied_sha256", "rejected_sha256"}, "modern coach portrait pin incomplete")
     return document
 
 
@@ -318,10 +314,6 @@ def available() -> bool:
                 path = art_path(row["team"], name)
                 if not path.is_file() or sha(path.read_bytes()) != digest:
                     return False
-        for row in document.get("portraits", ()):
-            path = DATA_DIR / row["png"]
-            if not path.is_file() or sha(path.read_bytes()) != row["png_sha256"]:
-                return False
         return True
     except (OSError, ValueError):
         return False
@@ -514,6 +506,46 @@ def portrait_span(retail_span: bytes, rgba) -> bytes:
     return out
 
 
+def fallback_portrait_span(archive, template: bytes) -> bytes:
+    """Copy the disc's own no-photo pixels into a reserved numeric slot, keeping its header and name."""
+    tx, _ = _tools()
+    entry = next((e for e in archive.entries if e.name_id == 0x8EE9EEED), None)
+    require(entry is not None, "the no-photo archive is missing")
+    raw = archive.read(entry.virtual_offset + 196144, 6032)
+    chunk = tx.parse_chunks(raw)[0]
+    decoded, _ = tx.decode_chunk(raw, chunk)
+    texture = tx.parse_texture(decoded, chunk)
+    require(texture.name == "nophoto" and texture.width == texture.height == 128
+            and texture.format_name == "P8" and texture.mip_levels == 1,
+            "the disc's no-photo texture has an unsupported layout")
+    require(sha(decoded) == "0d601248013a990bfa0c6d07e6b59f160350d52021b543c2ca927674dfc55d74",
+            "the disc's no-photo pixels differ from the supported source")
+    target = tx.parse_chunks(template)[0]
+    require(not target.compressed and target.system_bytes == 128 and target.video_bytes == 17408,
+            "the reserved portrait layout changed")
+    return template[:tx.HEADER.size + target.system_bytes] + decoded[chunk.system_bytes:]
+
+
+def portrait_state(span: bytes, row: dict) -> str:
+    """Only retail slots and explicitly rejected renders are owned; externally supplied pictures are kept."""
+    digest = sha(span)
+    if digest == row["retail_sha256"]:
+        return "retail"
+    if digest == row["applied_sha256"]:
+        return "applied"
+    if digest in row["rejected_sha256"]:
+        return "previous"
+    # Validate the named raw portrait slot even when its pixels belong to league data.
+    tx, _ = _tools()
+    chunk = tx.parse_chunks(span)[0]
+    decoded, _ = tx.decode_chunk(span, chunk)
+    texture = tx.parse_texture(decoded, chunk)
+    require(not chunk.compressed and texture.name == row["portrait_id"]
+            and texture.format_name == "P8" and texture.width == texture.height == 128
+            and texture.mip_levels == 1, "the external coach portrait layout changed")
+    return "kept"
+
+
 # --- the disc ----------------------------------------------------------------------------------------------------
 
 def _roster(archive):
@@ -580,9 +612,7 @@ def _parts(archive, document: dict) -> list[dict]:
         require(entry.name_id == int(row["outer_id"], 16), "the portrait aggregate moved")
         at = entry.virtual_offset + row["chunk_offset"]
         span = archive.read(at, row["span_size"])
-        digest = sha(span)
-        state = ("retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"]
-                 else "previous" if digest in row.get("superseded_sha256", ()) else "foreign")
+        state = portrait_state(span, row)
         out.append(dict(kind="portrait", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
         site, value = _coach_photo_site(archive, row["team"])
         state = ("retail" if value == row["retail_photo_id"] else "applied" if value == int(row["portrait_id"])
@@ -683,10 +713,8 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
                 out.update(written=True, package=row["package"], before_sha256=sha(before), after_sha256=sha(after),
                            changed_bytes=sum(a != b for a, b in zip(before, after)), **detail)
             elif part["state"] in ("retail", "previous") and part["kind"] == "portrait":
-                # b77 co3: an earlier picture (co1's photo crop) is replaced in place: a portrait span keeps the retail
-                # wrapper, system bytes and tail, so the new span compiles the same from either
                 before = archive.read(part["at"], part["size"])
-                after = portrait_span(before, _rgba(DATA_DIR / row["png"], 128, 128))
+                after = fallback_portrait_span(archive, before)
                 require(sha(after) == row["applied_sha256"], f"portrait {row['portrait_id']}: differs from its pin")
                 plan.append((part["at"], before, after))
                 out.update(written=True, portrait_id=row["portrait_id"], before_sha256=sha(before), after_sha256=sha(after),
@@ -802,9 +830,8 @@ def record_pins(retail_image, teams: dict, portraits: list[dict], superseded: di
             entry = archive.entries[p["outer_index"]]
             span = archive.read(entry.virtual_offset + p["chunk_offset"], p["span_size"])
             require(sha(span) == p["retail_sha256"], f"portrait {p['portrait_id']} is not retail on this image")
-            after = portrait_span(span, _rgba(DATA_DIR / p["png"], 128, 128))
-            prows.append(dict(p, outer_id=f"0x{entry.name_id:08x}", applied_sha256=sha(after),
-                              png_sha256=sha((DATA_DIR / p["png"]).read_bytes())))
+            after = fallback_portrait_span(archive, span)
+            prows.append(dict(p, outer_id=f"0x{entry.name_id:08x}", applied_sha256=sha(after)))
             _site, value = _coach_photo_site(archive, p["team"])
             require(value == p["retail_photo_id"], f"{p['team']}: the retail coach record names {value}")
     return _check_pins(dict(schema=PINS_SCHEMA, label=LABEL, teams=rows, portraits=prows))

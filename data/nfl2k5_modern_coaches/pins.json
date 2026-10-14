@@ -4400,12 +4400,11 @@
    "chunk_offset": 68818944,
    "span_size": 17568,
    "retail_sha256": "5f878ee2114c7b7ddab653260200d762a0acb99f56a6a7c045476eaa4b336ecd",
-   "png": "portraits/7031.png",
    "outer_id": "0x35cb8d72",
-   "applied_sha256": "d60466b3d4391e1673097a67343504b79aab10813ee2a3a09186d8593a7fc8ce",
-   "png_sha256": "dcfd468a7b1cabb34b01fc619cdff0fbb93736a46454d77967511fbc6e8b9759",
-   "superseded_sha256": [
-    "0661dfe8762d4a6a675221dd0323e1b32d3546148b5ef5f53d663af61c42b598"
+   "applied_sha256": "14ba57ab089f94fc3d935197018d688e1284b54b21bdb26e35127ab35d76806d",
+   "rejected_sha256": [
+    "d60466b3d4391e1673097a67343504b79aab10813ee2a3a09186d8593a7fc8ce",
+    "23a5b26e22f9c1c961fa2ac578e848c69c1d17e057ba860083b21debfda18c23"
    ]
   },
   {
@@ -4417,12 +4416,10 @@
    "chunk_offset": 62353920,
    "span_size": 17568,
    "retail_sha256": "72779564aad2076da86a72ab8a3d1f819dff21de8de7ad765d5e1dc59d40c8a4",
-   "png": "portraits/7034.png",
    "outer_id": "0x35cb8d72",
-   "applied_sha256": "8efa56971ed7870330cbfae323f2bf1c58bb59e155c8c6c55ed20acf3c2de2fc",
-   "png_sha256": "57d659be24ec7a79b273856893869346622e8eca655a7bd45615c5ece1db6ee0",
-   "superseded_sha256": [
-    "008be1fbf0495e6529eeaf92fe453ae5aebe9e87d636179c618d0db81f13e562"
+   "applied_sha256": "bce3177c246abb2ad68b480bc99dba35dc868b3e0f71ab138f25e8aab29cc270",
+   "rejected_sha256": [
+    "8efa56971ed7870330cbfae323f2bf1c58bb59e155c8c6c55ed20acf3c2de2fc"
    ]
   }
  ],

@@ -56,15 +56,18 @@ class ModernArtReleaseTests(unittest.TestCase):
 
     def test_every_modern_png_is_authored_and_catalogued(self):
         """b77 co3: the two photo-crop portraits and the 32 accessories atlases with retail shoe and clipboard pixels
-        were replaced (authored renders; headset-only atlases), so all 597 PNGs are reviewed authored art."""
+        were replaced (authored renders; headset-only atlases), and pr2 removed both pictures, so all 595 PNGs are reviewed authored art."""
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 597)
+        self.assertEqual(len(document["files"]), 595)
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):
-            self.assertIn(relative, document["files"])
+            if "/portraits/" in relative:
+                self.assertNotIn(relative, document["files"])
+            else:
+                self.assertIn(relative, document["files"])
         self.assertFalse([r for r in document["files"] if r.endswith("/accessories.png")])
         digests = {row["sha256"] for row in document["files"].values()}
         for refused_before in ("0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",

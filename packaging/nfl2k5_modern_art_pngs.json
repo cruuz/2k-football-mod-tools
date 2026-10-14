@@ -1,5 +1,5 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). The two Coach Matchup pictures (7031 Dallas, 7034 Washington) are renders of the game's own coach for that club, not photographs. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
   "files": {
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,
@@ -1350,18 +1350,6 @@
       "sha256": "913f092bbddc50c67573ddf0afd384a5465169b5f07501c5356500aeb490328c",
       "size": 46588,
       "width": 256
-    },
-    "data/nfl2k5_modern_coaches/portraits/7031.png": {
-      "height": 128,
-      "sha256": "dcfd468a7b1cabb34b01fc619cdff0fbb93736a46454d77967511fbc6e8b9759",
-      "size": 26020,
-      "width": 128
-    },
-    "data/nfl2k5_modern_coaches/portraits/7034.png": {
-      "height": 128,
-      "sha256": "57d659be24ec7a79b273856893869346622e8eca655a7bd45615c5ece1db6ee0",
-      "size": 24029,
-      "width": 128
     },
     "data/nfl2k5_modern_fans/ARI/boxlogo.png": {
       "height": 64,
