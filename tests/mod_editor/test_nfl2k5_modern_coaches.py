@@ -27,7 +27,7 @@ RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", str(ROOT / "ESPN NFL 2K5 (USA
 HAVE_RETAIL = RETAIL.is_file()
 TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
-SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "accessories": (128, 64), "head": (256, 128),
+SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset": (64, 64), "head": (256, 128),
          "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
 # co2: the club whose coach wears another retail body, and the body (cNN) he wears
 MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "00", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
@@ -79,6 +79,51 @@ class PinsAndArt(unittest.TestCase):
         self.assertEqual(out[1, 2].tolist(), [50, 60, 70, 255])                 # opaque overlay
         self.assertEqual(out[1, 0].tolist(), [255, 255, 255, 255])
 
+    def test_only_the_headset_half_of_the_accessories_atlas_ships(self):
+        """b77 co3: the shoe and clipboard (x >= 64 of the 128x64 atlas) are retail art; they come from the user's disc."""
+        from PIL import Image
+        self.assertEqual((mc.HEADSET_WIDTH, mc.ACCESSORIES_SIZE), (64, (128, 64)))
+        self.assertIn(("headset", "accessoriesShader1"), mc.TEXTURES)
+        self.assertNotIn("accessories", mc.ART_NAMES)
+        for row in mc.pins()["teams"]:
+            self.assertFalse(mc.art_path(row["team"], "accessories").exists(), row["team"])
+            self.assertIn("headset", row["art"])
+            with Image.open(mc.art_path(row["team"], "headset")) as image:
+                self.assertEqual(image.size, (64, 64))
+        allowlist = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8")
+        self.assertNotIn("accessories.png", allowlist)
+
+    def test_derive_accessories_is_the_authored_round_trip_in_integers(self):
+        """The integer bicubic 4x upscale equals Pillow's, and the block mean rounds half to even like the float area
+        downscale the art was authored with, so the derived shoe and clipboard equal the earlier shipped pixels."""
+        import numpy as np
+        from PIL import Image
+        rng = np.random.default_rng(2026)
+        atlas = rng.integers(0, 256, (64, 128, 4), dtype=np.uint8)
+        atlas[..., 3] = 255
+        pillow = np.asarray(Image.fromarray(atlas, "RGBA").resize((512, 256), Image.BICUBIC))
+        ours = mc.bicubic_upscale(atlas)
+        self.assertTrue(np.array_equal(ours, pillow.astype(np.int64)))
+        self.assertEqual(mc.block_mean(np.full((4, 4, 1), 2, np.uint8)).item(), 2)
+        halves = np.array([[[0], [0], [0], [0]], [[0], [0], [0], [0]], [[1], [1], [1], [1]], [[1], [1], [1], [1]]],
+                          np.uint8)                                          # mean 0.5 -> 0 (even)
+        self.assertEqual(mc.block_mean(halves).item(), 0)
+        self.assertEqual(mc.block_mean(halves + 2).item(), 2)              # mean 2.5 -> 2 (even)
+        self.assertEqual(mc.block_mean(halves + 1).item(), 2)              # mean 1.5 -> 2 (even)
+        headset = np.zeros((64, 64, 4), np.uint8)
+        headset[..., 3] = 255
+        out = mc.derive_accessories(atlas, headset)
+        self.assertEqual(out.shape, (64, 128, 4))
+        self.assertTrue(np.array_equal(out[:, :64], headset))
+        reference = pillow.reshape(64, 4, 128, 4, 4).astype(np.float64).mean(axis=(1, 3))
+        self.assertTrue(np.array_equal(out[:, 64:], np.uint8(np.rint(reference))[:, 64:]))
+        translucent = atlas.copy()
+        translucent[0, 0, 3] = 254
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.derive_accessories(translucent, headset)
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.derive_accessories(atlas, headset[:32])
+
     def test_the_bodies_are_one_model_per_club(self):
         pins = mc.pins()
         self.assertEqual(sorted(r["body_code"] for r in pins["teams"]),
@@ -122,6 +167,20 @@ class PinsAndArt(unittest.TestCase):
             else:
                 self.assertIn(team, TEAMS)
                 self.assertIn(name[:-4], SIZES)
+
+    def test_the_two_pictures_are_authored_renders_not_photos(self):
+        """b77 co3: 7031 and 7034 are renders of the game's own coach (co2's authored face, grown hair), cut out like the
+        game's other coach pictures: 128x128 RGBA with a transparent background. The photo crops they replace are
+        pinned only as superseded disc states, never as files."""
+        catalog = (ROOT / "tools/b77/modern_art_png_catalog.py").read_text(encoding="utf-8")
+        for row in mc.pins()["portraits"]:
+            rgba = mc._rgba(mc.DATA_DIR / row["png"], 128, 128)
+            self.assertGreater(float((rgba[..., 3] == 0).mean()), 0.2)          # cut out
+            self.assertGreater(float((rgba[..., 3] == 255).mean()), 0.4)
+            self.assertNotIn(row["png_sha256"], catalog)                       # not a reviewed-out file
+            for old in ("0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
+                        "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83"):
+                self.assertNotEqual(row["png_sha256"], old)
 
     def test_malformed_pins_are_refused(self):
         with self.assertRaises(mc.ModernCoachesError):
@@ -196,6 +255,26 @@ class RetailCompile(unittest.TestCase):
                                  raw[row["span_offset"]:row["span_offset"] + 0x20])   # wrapper identical
                 self.assertLessEqual(detail["fit"]["scratch_needed"], detail["fit"]["scratch_retail"])
 
+    def test_the_shoe_and_clipboard_come_from_the_disc_not_the_repository(self):
+        """Every coach body's retail atlas: the compiled DAL atlas carries the authored headset and the disc's own shoe
+        and clipboard (through the round trip); the shipped headset shares no pixel with the retail headset half."""
+        import numpy as np
+        row = {r["team"]: r for r in mc.pins()["teams"]}["DAL"]
+        mm = mc._mm()
+        tx, _fill = mc._tools()
+        with mc._outer_image()(RETAIL) as archive:
+            entry = {e.name_id: e for e in archive.entries}[mc.name_id(row["archive"])]
+            raw = archive.read(entry.virtual_offset, entry.size)
+        rec, decoded = mm._scene(raw, tx.parse_chunks(raw)[0])
+        tex = [t for t in rec["embedded_textures"] if "accessoriesShader1" in (t.get("mapped_material_names") or ())][0]
+        retail, _ = mm.read_p8(decoded, int(rec["system_bytes"]), tex)
+        retail = np.asarray(retail, np.uint8)
+        headset = mc._rgba(mc.art_path("DAL", "headset"), 64, 64)
+        self.assertEqual(int((np.abs(retail[:, :64, :3].astype(int) - headset[..., :3]).max(axis=2) == 0).sum()), 0)
+        derived = mc.derive_accessories(retail, headset)
+        self.assertTrue(np.array_equal(derived[:, :64], headset))
+        self.assertLessEqual(int(np.abs(derived[:, 64:].astype(int) - retail[:, 64:]).max()), 25)
+
     def test_glasses_hidden_only_where_the_2026_coach_wears_none(self):
         pins = {r["team"]: r for r in mc.pins()["teams"]}
         self.assertEqual(sorted(t for t, r in pins.items() if r["hide_glasses"]), ["GB", "LAR", "PIT", "SEA", "WAS"])
@@ -250,6 +329,24 @@ class RetailCompile(unittest.TestCase):
                 self.assertEqual(after[:0x20 + 128], span[:0x20 + 128])
                 _site, value = mc._coach_photo_site(archive, row["team"])
                 self.assertEqual(value, row["retail_photo_id"])
+
+    def test_an_earlier_picture_is_replaced_in_place(self):
+        """b77 co3: a disc that carries an earlier picture in the slot (co1's photo crop, pinned as superseded) reads
+        'previous', and the new span compiles from it exactly as from the retail span (wrapper, system bytes, tail)."""
+        import numpy as np
+        with mc._outer_image()(RETAIL) as archive:
+            for row in mc.pins()["portraits"]:
+                self.assertTrue(row["superseded_sha256"])
+                self.assertNotIn(row["applied_sha256"], row["superseded_sha256"])
+                at = archive.entries[row["outer_index"]].virtual_offset + row["chunk_offset"]
+                span = archive.read(at, row["span_size"])
+                other = np.zeros((128, 128, 4), np.uint8)
+                other[..., 0], other[..., 3] = 200, 255
+                earlier = mc.portrait_span(span, other)
+                self.assertNotEqual(earlier, span)
+                again = mc.portrait_span(earlier, mc._rgba(mc.DATA_DIR / row["png"], 128, 128))
+                self.assertEqual(mc.sha(again), row["applied_sha256"])
+                self.assertEqual(again[:0x20 + 128], span[:0x20 + 128])
 
 
 if __name__ == "__main__":

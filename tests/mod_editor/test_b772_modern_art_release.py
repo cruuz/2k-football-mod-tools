@@ -54,27 +54,23 @@ class ModernArtReleaseTests(unittest.TestCase):
         self.assertEqual(set(document["files"]) | set(refused), on_disk)
         self.assertFalse(set(document["files"]) & set(refused))
 
-    def test_photo_portraits_and_retail_pixel_art_are_not_admitted(self):
-        _document, refused = tool.build(ROOT)
+    def test_every_modern_png_is_authored_and_catalogued(self):
+        """b77 co3: the two photo-crop portraits and the 32 accessories atlases with retail shoe and clipboard pixels
+        were replaced (authored renders; headset-only atlases), so all 597 PNGs are reviewed authored art."""
+        document, refused = tool.build(ROOT)
+        self.assertEqual(refused, {})
+        self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
+        self.assertEqual(len(document["files"]), 597)
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
-                         "data/nfl2k5_modern_coaches/DAL/accessories.png"):
-            with self.subTest(relative=relative):
-                self.assertNotIn(relative, self.catalog["files"])
-                self.assertIn(relative, refused)
-                path = self.root / relative
-                parent_existed = path.parent.exists()
-                path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(ROOT / relative, path)
-                self.files.append(relative)
-                self.allow()
-                with self.assertRaisesRegex(release.ReleaseCheckError, "suffix is forbidden"):
-                    release.audit_release(self.root, self.allowlist)
-                self.files.remove(relative)
-                path.unlink()
-                if not parent_existed:
-                    path.parent.rmdir()
-                self.allow()
+                         "data/nfl2k5_modern_coaches/DAL/headset.png"):
+            self.assertIn(relative, document["files"])
+        self.assertFalse([r for r in document["files"] if r.endswith("/accessories.png")])
+        digests = {row["sha256"] for row in document["files"].values()}
+        for refused_before in ("0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
+                               "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83",
+                               "abfbc3def998feaeae9d1704afae45b1c68a5e16629b218da32fe386ef44a2d3"):
+            self.assertNotIn(refused_before, digests)
 
     def test_catalog_matches_the_owning_modules_pins(self):
         coaches = json.loads((ROOT / "data/nfl2k5_modern_coaches/pins.json").read_text(encoding="utf-8"))

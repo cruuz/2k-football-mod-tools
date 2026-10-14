@@ -29,26 +29,23 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
-                  "likeness textures ship, the reference photos never do). No photograph or photo crop and no "
-                  "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
+                  "likeness textures ship, the reference photos never do). The two Coach Matchup pictures (7031 Dallas, 7034 "
+                  "Washington) are renders of the game's own coach for that club, not photographs. The accessories atlas "
+                  "ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. "
+                  "No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from "
+                  "the user's own disc at build time.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.
-NOT_AUTHORED = {
-    "data/nfl2k5_modern_coaches/portraits/7031.png": (
-        "0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
-        "photo: a 128x128 crop of Brian Schottenheimer's official headshot (background cut out)"),
-    "data/nfl2k5_modern_coaches/portraits/7034.png": (
-        "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83",
-        "photo: a 128x128 crop of Dan Quinn's official headshot (background cut out)"),
-}
-NOT_AUTHORED_BY_NAME = {
-    ("data/nfl2k5_modern_coaches/", "accessories.png"): (
-        "abfbc3def998feaeae9d1704afae45b1c68a5e16629b218da32fe386ef44a2d3",
-        "retail pixels: the right half (shoe and clipboard) is the 2004 coach accessories texture (47% of its pixels "
-        "identical to the decoded retail texture of every coach body, the rest within 25 levels); the module says "
-        "'the shoe and clipboard keep their retail pixels'"),
-}
+# b77 co3 (2026-10-14) replaced all 34 files i3 refused, so nothing is left out:
+# - portraits/7031.png (0d89e8d4..., a crop of Schottenheimer's official headshot) and portraits/7034.png (9b97f9b9...,
+#   a crop of Quinn's) are now authored renders of the game's own coach for each club (co2's face texture, grown hair
+#   and beard, Blender Cycles), with no pixel of any photograph;
+# - the 32 <club>/accessories.png (abfbc3de..., the retail shoe and clipboard in their right half) are gone: only the
+#   authored headset half ships, as <club>/headset.png (64x64), and the build derives the shoe and clipboard from the
+#   user's own disc (nfl2k5_modern_coaches.derive_accessories).
+NOT_AUTHORED: dict[str, tuple[str, str]] = {}
+NOT_AUTHORED_BY_NAME: dict[tuple[str, str], tuple[str, str]] = {}
 
 
 def sha256(data: bytes) -> str:

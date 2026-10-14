@@ -12,8 +12,10 @@ Per team it writes, at 4x (master4x/) and area-downscaled to the native slot (na
   jacket.png     128x128  full-zip sideline jacket, same colours
   logo.png        64x64   the 2026 team logo where the chest mark quad samples (v 0.41-1.11); the retail maker
                           mark is gone
-  accessories.png 128x64  an unbranded black headset (the 2004 Motorola earcup and band marks are gone); the shoe
-                          and clipboard keep their retail pixels
+  headset.png     64x64   the headset half (x < 64) of the 128x64 accessories atlas: an unbranded black headset
+                          (the 2004 Motorola earcup and band marks are gone); the shoe and clipboard half is not
+                          shipped: the build derives it from the user's own disc (nfl2k5_modern_coaches
+                          derive_accessories, b77 co3)
   head.png       256x128  (faces step) the 2026 coach's face painted onto the coach head layout
 
   python3 tools/b77/co1_coach_art.py apparel --coach-dir DIR --out ART [--teams KC,PHI]
@@ -219,8 +221,8 @@ def logo_texture(team):
 
 
 def headset(rgba_retail):
-    """The headset half of the accessories atlas (x < 64) becomes a matte black, unbranded headset; the shoe and the
-    clipboard keep their retail pixels."""
+    """The headset half of the accessories atlas (x < 64) as a matte black, unbranded headset, at 4x (256x256). Only
+    this half is authored and shipped; the shoe and clipboard half comes from the user's disc at build time."""
     from scipy import ndimage
     m = up(rgba_retail)
     out = m.copy()
@@ -231,7 +233,7 @@ def headset(rgba_retail):
     t = np.clip((smooth - lo) / max(1.0, hi - lo), 0, 1)
     dark = 22 + 70 * t ** 1.2
     out[:, :w, :3] = np.stack([dark, dark, dark * 1.04], axis=-1)
-    return np.uint8(np.clip(np.rint(out), 0, 255))
+    return np.uint8(np.clip(np.rint(out[:, :w]), 0, 255))
 
 
 def save(arr, path):
@@ -253,7 +255,7 @@ def cmd_apparel(args):
         items = {
             "shirt": garment(tex["shirtShader1"][1], top, trim, cap),
             "jacket": garment(tex["jacketShader1"][1], top, trim),
-            "accessories": headset(tex["accessoriesShader1"][1]),
+            "headset": headset(tex["accessoriesShader1"][1]),
         }
         logo, logo_path = logo_texture(team)
         items["logo"] = logo

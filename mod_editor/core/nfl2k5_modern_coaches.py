@@ -12,8 +12,11 @@ this option changes, each refit in place at its retail size and format (full mip
 * ``shirtLogoShader1`` / ``jacketLogoShader1`` (one 64x64 texture): the chest mark becomes the club's 2026 logo
   (the 2004 maker mark is gone). The other chest logo and the cap logo (``teamLogoShader1``, ``hatLogoShader1``)
   have no embedded texture: the game binds them at run time and this option does not touch them.
-* ``accessoriesShader1`` (128x64): the headset half becomes an unbranded matte black headset (the 2004 earcup and
-  band marks are gone); the shoe and clipboard keep their retail pixels.
+* ``accessoriesShader1`` (128x64): the headset half (x < 64) becomes an unbranded matte black headset (the 2004
+  earcup and band marks are gone). Only that half ships (``headset.png``, 64x64). The shoe and clipboard half
+  (x >= 64) is derived at build time from the user's own disc texture (``derive_accessories``: the same 4x bicubic
+  master round trip the art was authored through, in integer arithmetic), so no retail pixels ship and the disc
+  bytes are those of the earlier full-atlas PNG.
 * ``headShader1`` (256x128): the 2026 coach's face, painted from his official headshot onto the coach head layout
   (landmark warp, his skin tone over the whole head, his hair colour or a shaved head).
 
@@ -31,7 +34,9 @@ coach record's ``+0x40``. The 2026 portraits of 30 coaches ride with the 2026 le
 (7007) and Washington (7029) have no such texture on the disc, so the game shows ``nophoto``. This option writes the
 2026 Dallas and Washington head coaches into two retail portrait slots no roster record uses (7031 and 7034, P8
 128x128, raw fixed spans) and points those two coach records' ``+0x40`` at them (two 16-bit writes in the main
-roster). A roster whose Dallas or Washington coach already names another picture keeps it.
+roster). A roster whose Dallas or Washington coach already names another picture keeps it. The two pictures are
+authored renders of the game's own coach (b77 co3; see the data README), and a slot that holds the earlier picture
+(``superseded_sha256``) is rewritten in place.
 
 The bodies (b77 co2): the game builds the coach archive name from the coach record's ``+0x18`` (``swprintf``
 ``L"c%02d.iff"`` over its low 16 bits, home and away, for the sideline coach and every cutscene coach). Where another
@@ -77,7 +82,11 @@ PINS_PATH = DATA_DIR / "pins.json"
 PINS_SCHEMA = "nfl2k5_modern_coaches_pins/v1"
 # texture file -> the material whose embedded texture it replaces
 TEXTURES = (("shirt", "shirtShader1"), ("jacket", "jacketShader1"), ("logo", "shirtLogoShader1"),
-            ("accessories", "accessoriesShader1"), ("head", "headShader1"))
+            ("headset", "accessoriesShader1"), ("head", "headShader1"))
+# b77-co3: the accessories atlas (128x64): the authored headset half ships (headset.png, 64x64); the shoe and clipboard
+# half is derived from the disc's own texture at build time (derive_accessories)
+HEADSET_WIDTH = 64
+ACCESSORIES_SIZE = (128, 64)
 # the sideline staff (coach_asst, material SIDELINE) wear the club's coachshirt texture from its eight team packages
 SIDELINE = (("d", "sideline_dry"), ("r", "sideline_rain"))
 PACKAGES = tuple(f"{side}{weather}{light}" for side in "ha" for weather in "dr" for light in "ns")
@@ -202,6 +211,100 @@ def derive_head(retail_rgba, mask_rgb, classes: dict, overlay_rgba=None):
     return np.uint8(np.concatenate([out, src[..., 3:4]], axis=-1))
 
 
+# --- the accessories atlas: authored headset, shoe and clipboard from the user's disc -----------------------------
+#
+# The art was authored at 4x (co1_coach_art.py): the retail atlas upscaled with a bicubic filter (Pillow's: a = -0.5,
+# support 2, coefficients normalised and rounded to 22-bit fixed point, horizontal pass then vertical pass, each
+# rounded and clamped to 8 bits), the headset half painted over, then every 4x4 block averaged (round half to even).
+# derive_accessories reproduces the shoe and clipboard half of that round trip from the disc's own texture with
+# Python floats for the coefficients (one IEEE operation at a time, in Pillow's order) and integers for the pixels,
+# so every platform builds the same bytes without Pillow's resampler.
+
+_FIXED_BITS = 22
+_UPSCALE = 4
+
+
+def _bicubic(x: float) -> float:
+    a = -0.5
+    if x < 0.0:
+        x = -x
+    if x < 1.0:
+        return ((a + 2.0) * x - (a + 3.0)) * x * x + 1
+    if x < 2.0:
+        return (((x - 5) * x + 8) * x - 4) * a
+    return 0.0
+
+
+def _bicubic_coefficients(in_size: int, out_size: int) -> list[tuple[int, list[int]]]:
+    """Per output index: (first input index, fixed-point weights), as Pillow's precompute_coeffs and
+    normalize_coeffs_8bpc compute them for an upscale (filter scale 1)."""
+    scale = float(in_size) / out_size
+    filterscale = max(scale, 1.0)
+    support = 2.0 * filterscale
+    rows = []
+    for xx in range(out_size):
+        center = (xx + 0.5) * scale
+        ss = 1.0 / filterscale
+        xmin = max(int(center - support + 0.5), 0)
+        xmax = min(int(center + support + 0.5), in_size) - xmin
+        weights = [_bicubic((x + xmin - center + 0.5) * ss) for x in range(xmax)]
+        total = 0.0
+        for w in weights:                       # sequential, as the C loop (not Python's compensated sum())
+            total += w
+        if total != 0.0:
+            weights = [w / total for w in weights]
+        rows.append((xmin, [int(-0.5 + w * (1 << _FIXED_BITS)) if w < 0 else int(0.5 + w * (1 << _FIXED_BITS))
+                            for w in weights]))
+    return rows
+
+
+def _resample_rows(pixels, coefficients):
+    """One 8-bit resampling pass along axis 1 of an (H, W, C) int64 array."""
+    import numpy as np
+    out = np.empty((pixels.shape[0], len(coefficients), pixels.shape[2]), np.int64)
+    for xx, (xmin, weights) in enumerate(coefficients):
+        acc = np.full((pixels.shape[0], pixels.shape[2]), 1 << (_FIXED_BITS - 1), np.int64)
+        for j, w in enumerate(weights):
+            acc += pixels[:, xmin + j, :] * w
+        out[:, xx, :] = np.clip(acc >> _FIXED_BITS, 0, 255)
+    return out
+
+
+def bicubic_upscale(rgba, factor: int = _UPSCALE):
+    """An opaque RGBA texture upscaled ``factor`` times with Pillow's bicubic filter, in integers."""
+    import numpy as np
+    src = np.asarray(rgba, np.int64)
+    height, width = src.shape[:2]
+    wide = _resample_rows(src, _bicubic_coefficients(width, width * factor))
+    tall = _resample_rows(wide.transpose(1, 0, 2), _bicubic_coefficients(height, height * factor))
+    return tall.transpose(1, 0, 2)
+
+
+def block_mean(master, factor: int = _UPSCALE):
+    """Every ``factor`` x ``factor`` block averaged, rounded half to even (the art's area downscale of opaque art)."""
+    import numpy as np
+    m = np.asarray(master, np.int64)
+    h, w = m.shape[0] // factor, m.shape[1] // factor
+    total = m.reshape(h, factor, w, factor, m.shape[2]).sum(axis=(1, 3))
+    n = factor * factor
+    q, r = np.divmod(total, n)
+    return np.uint8(q + ((2 * r > n) | ((2 * r == n) & (q % 2 == 1))))
+
+
+def derive_accessories(retail_rgba, headset_rgba):
+    """The 128x64 accessories atlas: the authored headset (x < 64) beside the shoe and clipboard (x >= 64) derived from
+    the model's own retail atlas through the 4x round trip the art was authored with."""
+    import numpy as np
+    retail = np.asarray(retail_rgba, np.uint8)
+    headset = np.asarray(headset_rgba, np.uint8)
+    width, height = ACCESSORIES_SIZE
+    require(retail.shape == (height, width, 4), "the coach accessories texture is not the retail 128x64 atlas")
+    require(headset.shape == (height, HEADSET_WIDTH, 4), "the authored headset is not 64x64")
+    require(int(retail[..., 3].min()) == 255, "the coach accessories texture is not the opaque retail atlas")
+    derived = block_mean(bicubic_upscale(retail))
+    return np.concatenate([headset, derived[:, HEADSET_WIDTH:]], axis=1)
+
+
 def art_path(team: str, name: str) -> Path:
     return DATA_DIR / team / f"{name}.png"
 
@@ -312,10 +415,17 @@ def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
                                 texture_index=int(tex["index"]), size=[width, height], mip_levels=int(tex["mip_levels"]),
                                 palette_entries=int(colours), derived=recipe["kind"])
             continue
-        rgba = _rgba(art_path(row["team"], name), int(tex["width"]), int(tex["height"]))
+        if name == "headset":
+            retail_atlas, _palette = mm.read_p8(decoded, system, tex)    # the model's own retail atlas (this disc)
+            rgba = derive_accessories(retail_atlas, _rgba(art_path(row["team"], name), HEADSET_WIDTH,
+                                                          int(tex["height"])))
+        else:
+            rgba = _rgba(art_path(row["team"], name), int(tex["width"]), int(tex["height"]))
         colours = mm.write_p8(edited, system, tex, rgba, maximum=int(row.get("palette_max", 256)))
         detail[name] = dict(palette_max=int(row.get("palette_max", 256)), material=material, texture_index=int(tex["index"]), size=[int(tex["width"]), int(tex["height"])],
                             mip_levels=int(tex["mip_levels"]), palette_entries=int(colours))
+        if name == "headset":
+            detail[name]["derived"] = "shoe_and_clipboard_from_disc"   # x >= 64 from the user's own atlas
     if row.get("hide_glasses"):
         import numpy as np
         tex = rows.get(GLASSES_MATERIAL)
@@ -471,7 +581,8 @@ def _parts(archive, document: dict) -> list[dict]:
         at = entry.virtual_offset + row["chunk_offset"]
         span = archive.read(at, row["span_size"])
         digest = sha(span)
-        state = "retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"] else "foreign"
+        state = ("retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"]
+                 else "previous" if digest in row.get("superseded_sha256", ()) else "foreign")
         out.append(dict(kind="portrait", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
         site, value = _coach_photo_site(archive, row["team"])
         state = ("retail" if value == row["retail_photo_id"] else "applied" if value == int(row["portrait_id"])
@@ -531,7 +642,7 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
         parts = _parts(archive, document)
         require(all(p["state"] != "foreign" for p in parts),
                 "a coach model or portrait is neither the retail nor the 2026 bytes; rebuild from a supported USA source")
-        require(retail is not None or all(p["state"] != "previous" for p in parts),
+        require(retail is not None or all(p["state"] != "previous" for p in parts if p["kind"] == "coach"),
                 "a coach model holds an earlier version of the 2026 coaches; rebuild from a supported USA source")
         entries = {e.name_id: e for e in archive.entries}
         for index, part in enumerate(parts):
@@ -571,7 +682,9 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
                 plan.append((part["at"], before, after))
                 out.update(written=True, package=row["package"], before_sha256=sha(before), after_sha256=sha(after),
                            changed_bytes=sum(a != b for a, b in zip(before, after)), **detail)
-            elif part["state"] == "retail" and part["kind"] == "portrait":
+            elif part["state"] in ("retail", "previous") and part["kind"] == "portrait":
+                # b77 co3: an earlier picture (co1's photo crop) is replaced in place: a portrait span keeps the retail
+                # wrapper, system bytes and tail, so the new span compiles the same from either
                 before = archive.read(part["at"], part["size"])
                 after = portrait_span(before, _rgba(DATA_DIR / row["png"], 128, 128))
                 require(sha(after) == row["applied_sha256"], f"portrait {row['portrait_id']}: differs from its pin")

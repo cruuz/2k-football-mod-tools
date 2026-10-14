@@ -442,7 +442,7 @@ def cmd_apparel(args):
         t = art.textures(rec, decoded)
         top, trim, cap, _why = art.APPAREL[team]
         items = {"shirt": art.garment(t["shirtShader1"][1], top, trim, cap), "jacket": art.garment(t["jacketShader1"][1], top, trim),
-                 "accessories": art.headset(t["accessoriesShader1"][1]), "logo": art.logo_texture(team)[0]}
+                 "headset": art.headset(t["accessoriesShader1"][1]), "logo": art.logo_texture(team)[0]}
         for name, master in items.items():
             art.save(master, Path(args.out) / 'master4x' / team / f'{name}.png')
             art.save(art.area_down(master), Path(args.out) / 'native' / team / f'{name}.png')

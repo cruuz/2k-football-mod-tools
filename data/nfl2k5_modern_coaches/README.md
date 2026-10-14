@@ -9,7 +9,7 @@ texture packs, not this repository):
 | `shirt.png` 128x128 | `shirtShader1` (+ `hatShader1` patch u 0.83-0.99, v 0-0.17) | polo / quarter-zip in the 2026 top colour, thin trims in the accent, cap patch in the cap colour; fabric folds keep the retail shading |
 | `jacket.png` 128x128 | `jacketShader1` | full-zip sideline jacket in the same colours |
 | `logo.png` 64x64 | `shirtLogoShader1`, `jacketLogoShader1` | the club's 2026 logo where the chest mark quad samples (v 0.41-1.11); the 2004 maker mark is gone |
-| `accessories.png` 128x64 | `accessoriesShader1`, `clipboardShader1` | unbranded matte black headset (the 2004 earcup and band marks are gone); shoe and clipboard pixels are the retail layout |
+| `headset.png` 64x64 | `accessoriesShader1`, `clipboardShader1` (the left half, x < 64, of the 128x64 atlas) | unbranded matte black headset (the 2004 earcup and band marks are gone). The shoe and clipboard half of the atlas is not shipped: the build derives it from the user's own disc texture (`derive_accessories`, the 4x bicubic round trip the art was authored through, in integers), so the disc bytes equal those of the earlier full-atlas file (b77 co3) |
 | `head.png` 256x128 | `headShader1` | the 2026 head coach's face moved onto the retail head of the body he wears (co2: 468-point landmark warp, the photo's lighting removed, the 2004 shading kept, Poisson-blended, closed mouth, his hair colour on the model's hair layout) |
 | `KC/head_mask.png` 256x128 | `headShader1` (c21) | Kansas City only, in place of head.png: R = weight, G = class x 80 (1 hair, 2 brows, 3 moustache) of the recolour the build applies to the disc's own 2004 Reid face |
 | `KC/head_overlay.png` 256x128 RGBA | `headShader1` (c21) | Kansas City only: Reid's glasses, painted (the 2004 Reid model has no glasses geometry) |
@@ -19,6 +19,13 @@ texture packs, not this repository):
 `portraits/7031.png` (Dallas, Brian Schottenheimer) and `portraits/7034.png` (Washington, Dan Quinn) are the Coach
 Matchup / VIP pictures for the two clubs whose 2004 coach had none (7007 and 7029 resolve to `nophoto`). The module
 writes them into two retail portrait slots no roster record uses and points those coach records' `+0x40` at them.
+They are authored renders (b77 co3), not photographs: the game's own coach model for that club (its 2004 head mesh,
+co2's authored face texture and co1/co2's polo), the head reshaped to the coach's proportions (landmark positions
+measured on his official headshot), the face texture painted over by hand (seams levelled, the 2004 hair layout painted
+out, his eye colour), his hair and beard grown as strands, lit and rendered in Blender Cycles in the framing of the
+game's coach pictures and cut out on a transparent background. No pixel of any photograph is in them. co1's earlier
+pictures (photo crops) are pinned only as `superseded_sha256` disc states, so a disc that carries them is updated in
+place.
 
 Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Fourteen clubs' coaches wear
 another retail body that fits their build better (`pins.json` `bodies`: the model and why; `body_code` per club), and
