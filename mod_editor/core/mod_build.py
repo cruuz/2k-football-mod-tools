@@ -4228,6 +4228,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             progress("Final commentary pass: historic rosters and the double-zero cue", 0, 0)
             final_receipt = final.apply(target, progress=lambda message: progress(message, 0, 0))
             receipt["steps"].append({"step": "commentary_final", **final_receipt})
+    # Repair only the byte-pinned 2026 Denver miniature after project imports.
+    # Retail and custom art do not match the pin and remain untouched.
+    if is_image:
+        icons = _core_module("nfl2k5_menu_icon_orientation")
+        icon_receipt = icons.apply_to_image(target)
+        receipt["steps"].append({"step": "menu_icon_orientation", **icon_receipt})
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
