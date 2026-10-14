@@ -1220,6 +1220,8 @@ tests/mod_editor/test_nfl2k5_presentation_scenes.py
 tests/mod_editor/presentation_scene_fixture.py
 # Beta 76 km: the kick meter in the 2026 ESPN bar's look
 mod_editor/core/nfl2k5_kick_meter_2026.py
+mod_editor/core/nfl2k5_indicator_names.py
+tests/mod_editor/test_nfl2k5_indicator_names.py
 data/nfl2k5_kick_meter_2026_pins.json
 data/nfl2k5_kick_meter_2026/arrow32.png
 data/nfl2k5_kick_meter_2026/digits.png

@@ -24,7 +24,7 @@ FEATURE_KEYS += (
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
     "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
-    "scorebug_runtime", "scorebug_folder", "scorebug_watermark", "music_policy", "music_unlock", "music_userlist",
+    "scorebug_runtime", "scorebug_folder", "scorebug_watermark", "indicator_names_folder", "music_policy", "music_unlock", "music_userlist",
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
 FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",

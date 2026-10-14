@@ -18,6 +18,10 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from mod_editor.core.nfl2k5_scorebug_sprite import load_layout
 
 RANGES = (
+    ("name_timer_decrement", 0x75C00, 0x1A),
+    ("assigned_player_timer_reset", 0x156992, 7),
+    ("selection_timer_reset_a", 0x1A7679, 7),
+    ("selection_timer_reset_b", 0x1A774A, 7),
     ("indicator_predicate", 0x75D40, 0x50),
     ("indicator_collection", 0x75D90, 0x6ED),
     ("option_default_store", 0x77C84, 10),

@@ -537,6 +537,8 @@ def pack_status(pack,folder=None,widescreen=None,watermark=None):
         if scene.digest(table)!=art.RUNTIME_PINS['index']:return 'foreign'
         if grown:
             start=art.HUD_START+art.HUD_SIZE;have=bytes(pack[start:start+added])
+            from .nfl2k5_indicator_names import canonical_hud
+            have=canonical_hud(have)
             modes=(False,True) if widescreen is None else (bool(widescreen),)
             if not any(have==appendix(pack,folder,w,mark)[0] for w in modes for mark in (WATERMARK_MODES if watermark is None else (watermark,))) or any(pack[start+added:outer.align_up(start+added)]):return 'foreign'
         return 'applied' if grown else 'retail'
@@ -735,6 +737,10 @@ def gamedata_status(read,size,folder=None,widescreen=None,watermark=None):
             require(at>=art.HUD_START,'Sprite sources lie inside the HUD outer.')
             return read(count,at-art.HUD_START)
         view=art.PackView(art.HUD_START+size,shifted);have=bytes(read(added,art.HUD_SIZE))
+        # nm1 owns the private indicator FONT packed into the last scene's
+        # existing span. Compare the losslessly recovered scene for this owner.
+        from .nfl2k5_indicator_names import canonical_hud
+        have=canonical_hud(have)
         modes=(False,True) if widescreen is None else (bool(widescreen),)
         marks=WATERMARK_MODES if watermark is None else (watermark,)
         return 'applied' if any(have==appendix(view,folder,w,m)[0] for w in modes for m in marks) else 'foreign'
