@@ -15,6 +15,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tools'), str(ROOT / 'tests/mod_editor')]
 from mod_editor.core import nfl2k5_espn25_fields as fields
 from mod_editor.core import nfl2k5_historic_styles as historic
 from mod_editor.core import nfl2k5_espn25_rosters as rosters
+from mod_editor.core import nfl2k5_modern_metlife as metlife
 from test_nfl2k5_team_logo_swap import _field_scene_run, LOADED
 from b77 import mo2_repair as repair
 
@@ -92,12 +93,32 @@ class RepairContract(unittest.TestCase):
              patch.object(fields, 'repair_situ', return_value=(b'', {})), \
              patch.object(fields, 'variant', return_value='nd'), \
              patch.object(fields, 'protect_period_field', return_value=(b'repaired bundle', {})), \
+             patch.object(fields, '_field_chunk', return_value=(None, None, None)), \
+             patch.object(metlife, 'scene_span', side_effect=lambda bundle, chunk: bundle), \
              patch.object(fields, 'compile_assets', return_value=({'a44nd.iff': b'wrong bundle'}, {})):
-            with self.assertRaisesRegex(ValueError, 'Studio output differs'):
+            with self.assertRaisesRegex(ValueError, 'Studio field output differs'):
                 repair.studio(self.original, self.original, self.receipt)
         result = json.loads(self.receipt.read_text())
         self.assertEqual(result['byte_equal'], 0)
         self.assertFalse(result['physical_disc_written'])
+
+    def test_studio_reports_non_field_drift_separately(self):
+        source = MagicMock()
+        source.__enter__.return_value = source
+        source.get.return_value = b'original bundle'
+        with patch.object(historic, 'Source', return_value=source), \
+             patch.object(fields, 'catalog', return_value=[dict(row=45)]), \
+             patch.object(fields, 'repair_situ', return_value=(b'', {})), \
+             patch.object(fields, 'variant', return_value='nd'), \
+             patch.object(fields, 'protect_period_field', return_value=(b'field|original wall', {})), \
+             patch.object(fields, '_field_chunk', return_value=(None, None, None)), \
+             patch.object(metlife, 'scene_span', side_effect=lambda bundle, chunk: bundle.split(b'|')[0]), \
+             patch.object(fields, 'compile_assets', return_value=({'a44nd.iff': b'field|current wall'}, {})), \
+             contextlib.redirect_stdout(io.StringIO()):
+            repair.studio(self.original, self.original, self.receipt)
+        result = json.loads(self.receipt.read_text())
+        self.assertEqual(result['equal_field_spans'], 1)
+        self.assertEqual(result['byte_equal'], 0)
 
 
 @unittest.skipUnless(DISC, 'set MO2_DISC to the read-only candidate disc')

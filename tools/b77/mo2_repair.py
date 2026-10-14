@@ -5,7 +5,8 @@ prepare reads a disc and writes only field spans and receipts to a work folder.
 apply writes those same fixed spans to --disc-copy, refusing unknown whole-disc
 hashes. scope compares two actual discs. prepare also hashes a virtual repaired
 disc without making a disc copy; that receipt is explicitly not a physical write.
-studio compares all 51 compiled bundles with the repair, without a disc copy.
+studio compares all 51 compiled field spans with the repair, also reporting
+whole-bundle equality, without a disc copy.
 """
 from __future__ import annotations
 import argparse
@@ -165,6 +166,12 @@ def scope(before, after, receipt):
 
 
 def studio(path, retail, receipt):
+    from mod_editor.core import nfl2k5_modern_metlife as mm
+
+    def field_span(bundle):
+        chunk, _, _ = fields._field_chunk(bundle)
+        return mm.scene_span(bundle, chunk)
+
     require(archive.file_hash(path) == BASE_SHA, 'unknown input disc SHA-256')
     with hs.Source(path) as built, hs.Source(retail) as source:
         situ, _ = fields.repair_situ(built.get(identity=hs.SITU_OUTER_ID))
@@ -175,12 +182,17 @@ def studio(path, retail, receipt):
             before = built.get(name)
             after = (before if row['row'] in fields.PRESERVED_RETAIL_ROWS else
                      fields.protect_period_field(before)[0])
+            compiled_field, repaired_field = field_span(compiled[name]), field_span(after)
             rows.append(dict(row=row['row'], name=name, byte_equal=compiled[name] == after,
-                             studio_sha256=fields.sha(compiled[name]), repair_sha256=fields.sha(after)))
-    result = dict(kind='studio_bundle_comparison', physical_disc_written=False,
-                  bundles=len(rows), byte_equal=sum(row['byte_equal'] for row in rows), resources=rows)
+                             field_span_equal=compiled_field == repaired_field,
+                             studio_sha256=fields.sha(compiled[name]), repair_sha256=fields.sha(after),
+                             studio_field_sha256=fields.sha(compiled_field),
+                             repair_field_sha256=fields.sha(repaired_field)))
+    result = dict(kind='studio_field_and_bundle_comparison', physical_disc_written=False,
+                  bundles=len(rows), byte_equal=sum(row['byte_equal'] for row in rows),
+                  equal_field_spans=sum(row['field_span_equal'] for row in rows), resources=rows)
     write_json(receipt, result)
-    require(result['byte_equal'] == result['bundles'], 'Studio output differs; see receipt')
+    require(result['equal_field_spans'] == result['bundles'], 'Studio field output differs; see receipt')
     print(json.dumps({k:v for k,v in result.items() if k != 'resources'}, sort_keys=True))
 
 
