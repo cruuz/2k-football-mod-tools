@@ -620,16 +620,16 @@ LATE_OWNER = "nfl2k5_k128"
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
-               "nfl2k5_period_goalposts", "nfl2k5_honors")
+               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai")
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
 # Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
-TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"))
+TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"))
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
-GAP_OWNERS = (("nfl2k5_honors", "code"),)
+GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
@@ -671,6 +671,7 @@ def dormant_union():
     from . import nfl2k5_k128 as k128
     from . import nfl2k5_letter_grades as letter_grades  # b77-f4
     from . import nfl2k5_period_goalposts as period  # b77-v1b
+    from . import nfl2k5_coach_ai as coach_ai
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
@@ -688,7 +689,7 @@ def dormant_union():
             + k128.REQUESTS
             + letter_grades.REQUESTS
             + period.REQUESTS
-            + honors.REQUESTS)
+            + honors.REQUESTS + coach_ai.REQUESTS)
 
 
 def is_scaleout(payload):

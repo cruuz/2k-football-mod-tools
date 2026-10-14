@@ -216,6 +216,7 @@ class BuildPlan:
     deep_zone_facing: bool = False        # deep-zone corners keep facing the QB on a slower drop; experimental, off in every preset
     deep_zone_bail: bool = False          # three-deep press start with a directional bail (ends at seven yards alone); experimental, off in every preset
     deep_zone_bail_calls: tuple = ()      # staged press-bail authoring calls (asset selector + formation/front/coverage indices); staging is not wired yet, must stay empty
+    coach_ai: bool = False  # bare plans stay neutral; the SOFTDRINK release preset enables this
     playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); composes with read option / QB spy since beta 66 (paired-root contract); experimental, off in every preset
     cpu_money_downs: str = "retail"      # CPU fourth downs, two-point tries and overtime: retail / modern / aggressive / modern2; experimental; Basic is retail, Advanced and Experimental use modern2 (b77 p9)
     coin_defer: bool = False
@@ -504,7 +505,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.letter_grades or self.honors_page
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.letter_grades or self.honors_page
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -527,7 +528,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": False,
-        "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": False, "abilities_charge_stars_only": False, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -548,7 +549,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
-        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": True, "abilities_charge_stars_only": True, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -569,7 +570,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
-        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": True, "abilities_charge_stars_only": True, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -664,6 +665,8 @@ PRESETS["softdrink_experimental"]["honors_page"] = True
 PRESETS["softdrink_basic"]["honors_history"] = ""
 PRESETS["softdrink_advanced"]["honors_history"] = "builtin"
 PRESETS["softdrink_experimental"]["honors_history"] = "builtin"
+# vt1: the SOFTDRINK release includes the 2026 coach profiles; the Build toggle remains editable.
+PRESETS["softdrink_experimental"]["coach_ai"] = True
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}
@@ -822,6 +825,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
+                               ("coach_ai", "nfl2k5_coach_ai"),
                                ("playbook_pair", "nfl2k5_playbook_pair"),
                                ("deep_zone_facing", "nfl2k5_deep_zone"), ("deep_zone_bail", "nfl2k5_deep_zone"),
                                ("reserves_16", "nfl2k5_roster_arena_image"),
@@ -983,7 +987,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "modern_practice_field_team_logo": report.get("team_logo_swap", "unknown"),  # b76-pf P1: the executable's table
         **{key: report.get(key, "unknown") for key in
            ("momentum", "momentum_contact", "momentum_collisions", "momentum_settings",
-            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
+            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "coach_ai", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
@@ -1711,6 +1715,7 @@ def _prepare_music_project(source, project, directory, progress, *, library_resu
 
 
 PLAYBOOK_OPTION_LABELS = {
+    "coach_ai": "Automatic 2026 CPU coach profiles (experimental)",
     "playbook_pair": "Separate offensive and defensive playbooks (experimental)",
     "read_option_runtime": "Read option mesh controls (experimental)",
     "qb_spy": "QB spy for zone, man and rush (experimental)",
@@ -2187,6 +2192,8 @@ def _team_logo_swap_wanted(plan, is_image):
 def _validated_r62_plan_options(plan):
     r62 = _r62_plan_options(plan)
     tt._validate_r62_options(**r62)
+    if plan.coach_ai:
+        r62["cpu_money_downs"] = "modern2"
     tt._validate_lever_flags(plan.season_cap)
     tt.senior_bowl_patch.Settings.from_dict(plan.senior_bowl_settings)
     if type(plan.senior_bowl_seed) is not int or not 0 <= plan.senior_bowl_seed <= 2147483647:
@@ -2438,6 +2445,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Choose Historic moment rosters or a saved ESPN Anniversary plan, not both")
     if type(plan.espn25_era_rules) is not bool:
         raise ValueError("espn25_era_rules must be boolean")
+    if type(plan.coach_ai) is not bool:
+        raise ValueError("coach_ai must be boolean")
+    if plan.coach_ai and not tt.is_disc_image(plan.source):
+        raise ValueError("Automatic coach AI needs a disc image so profiles can match the final playbooks")
     if plan.historic_stock_books and plan.playbook_pair:
         raise ValueError("Stock historical books cannot be combined with separate offensive and defensive book selections")
     if plan.espn25_era_rules and not (plan.espn25_more_moments and plan.dynamic_kickoff and plan.defensive_try and plan.overtime):
@@ -2495,10 +2506,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.hires_pack and not families:
         raise ValueError("Select at least one Hi-res family")
     plan = replace(plan, hires_families=families)
+    if plan.coach_ai:
+        plan = replace(plan, cpu_money_downs="modern2", xbe_space=True)
     legacy_disabled = momentum_on and plan.accel_ramp
     if momentum_on:
         plan = replace(plan, accel_ramp=False)
-    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
+    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or plan.k128_memory or plan.letter_grades or plan.honors_page):
         plan = replace(plan, xbe_space=True)
@@ -3177,7 +3190,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -3511,6 +3524,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             os.replace(destination, target)
         receipt["steps"].append({"step": "music_project", "project": plan.music_project, **rec})
 
+    if plan.coach_ai:
+        progress("Compiling automatic CPU coach profiles for the final playbooks", 0, 0)
+        coach_receipt = tt.coach_ai_patch.apply_profiles_to_image(
+            target, progress=lambda message: progress(message, 0, 0))
+        receipt["steps"].append({"step": "coach_ai_resources", **coach_receipt})
+
     all_requests = tt._selected_space_requests(
         with_kickoff=plan.kickoff_relocated, runtime=plan.scorebug_runtime, momentum=plan.momentum,
         defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap, all_stadiums=plan.all_stadiums,
@@ -3554,7 +3573,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             extra_requests=tuple(row for row in all_requests if row[0] != tt.guardian_overlay_patch.OWNER))
         receipt["steps"].append({"step": "guardian_overlay", **rec})
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
-            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
+            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page):

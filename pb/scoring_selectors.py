@@ -46,11 +46,17 @@ class World(s.NativeScorer):
                    0x2096a0,0x208820,0x207bf0,0x203f20,0x205660,0x2815f0,0x281620):
             self.m.hook_add(self.ucmod.UC_HOOK_CODE,lambda u,a,n,d:self.visits.update([hex(a)]),begin=pc,end=pc)
 
+    def load_native_book(self,raw):
+        self.m.mem_write(s.SOURCE,raw[32:]);self.call(0x161e30,ecx=s.SOURCE,edx=0)
+
+    def initialize_native_plays(self):
+        for play in self.book.plays:self.call(0x1a9a80,ecx=s.BOOK+ip.PLAY_BASE+play.index*96)
+
     def load(self,raw):
         self.book=ip.parse_playbook_resource(raw)
-        self.m.mem_write(s.SOURCE,raw[32:]);self.call(0x161e30,ecx=s.SOURCE,edx=0)
+        self.load_native_book(raw)
         self.put(s.TEAM+0x20,s.BOOK);self.put(self.defense+0x20,s.BOOK)
-        for play in self.book.plays:self.call(0x1a9a80,ecx=s.BOOK+ip.PLAY_BASE+play.index*96)
+        self.initialize_native_plays()
         # Clock policy reuses the team's saved formation/play. A real team
         # initializes these when its book loads; zero is not a legal fixture.
         formation=next(f for f in self.book.formations if ((self.get(s.BOOK+ip.FORMATION_BASE+f.index*ip.FORMATION_SIZE+4)>>8)&63) in (0,1,2,3))
