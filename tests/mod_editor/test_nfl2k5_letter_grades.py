@@ -62,6 +62,19 @@ def _fbits(value: float) -> int:
 
 
 # ---------------------------------------------------------------------------------------------------------
+
+def _pread(fd: int, length: int, offset: int) -> bytes:
+    """Positional read that also works on Windows CPython (no os.pread there): seek, then read to length."""
+    os.lseek(fd, offset, os.SEEK_SET)
+    chunks, left = [], length
+    while left:
+        chunk = os.read(fd, left)
+        if not chunk:
+            break
+        chunks.append(chunk)
+        left -= len(chunk)
+    return b"".join(chunks)
+
 class ScaleTests(unittest.TestCase):
     def test_the_default_bands_are_noahs_scale_exactly(self) -> None:
         self.assertEqual(lg.DEFAULT_BANDS, ((95, "A+"), (90, "A"), (85, "B+"), (80, "B"), (75, "C+"), (70, "C"),
@@ -498,7 +511,7 @@ class StudioBuildTests(unittest.TestCase):
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 offset, length = tt.image_xbe_extent(fd, os.fstat(fd).st_size)
-                built = os.pread(fd, length, offset)
+                built = _pread(fd, length, offset)
             finally:
                 os.close(fd)
         self.assertEqual(lg.status(built), "applied")
@@ -515,7 +528,7 @@ class StudioBuildTests(unittest.TestCase):
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 offset, length = tt.image_xbe_extent(fd, os.fstat(fd).st_size)
-                plain = os.pread(fd, length, offset)
+                plain = _pread(fd, length, offset)
             finally:
                 os.close(fd)
         self.assertEqual(plain, retail)
@@ -532,7 +545,7 @@ def _v05_xbe():
         size = os.fstat(fd).st_size
         entries, _ = xc.parse_xdvdfs(fd, size)
         entry = next(e for e in entries.values() if e.path.strip("/") == "default.xbe")
-        data = os.pread(fd, entry.size, entry.base_offset + entry.sector * 0x800)
+        data = _pread(fd, entry.size, entry.base_offset + entry.sector * 0x800)
     finally:
         os.close(fd)
     if hashlib.sha256(data).hexdigest() != V05_XBE_SHA256:
