@@ -3803,6 +3803,30 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
         uniforms_receipt = uniforms.apply_to_image(target)
         receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
+        # b772-ny1: finish the known NYG home art after the project's uniform
+        # layers. The native shoulder anNN textures use the plain jersey mips.
+        numbers = _core_module("nfl2k5_nyg_numbers")
+        if numbers is None:
+            raise RuntimeError("the Giants shoulder-number repair module is not available in this build")
+        number_receipt = numbers.apply_to_image(target)
+        if number_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "nyg_shoulder_numbers", **number_receipt})
+        # b772-uf1: the 2026 home/away kit art the in-game uniform review found wrong (sleeve stacks, chest bands,
+        # pants stripes, patches, helmet marks, Giants style 7 shoulder digits), pinned to the known kit spans.
+        kit_fixes = _core_module("nfl2k5_kit_fixes_2026")
+        if kit_fixes is None:
+            raise RuntimeError("the 2026 kit art repair module is not available in this build")
+        kit_receipt = kit_fixes.apply_to_image(target)
+        if kit_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026", **{k: v for k, v in kit_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in kit_receipt["kits"]]})
+        # b772-uf2: the 2026 alternate, throwback and Rivalries kit art the same review found wrong (second data file,
+        # same compiler), pinned to the known kit spans after the home/away pass.
+        alt_receipt = kit_fixes.apply_alternates(target)
+        if alt_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_alts",
+                                     **{k: v for k, v in alt_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in alt_receipt["kits"]]})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.

@@ -1996,6 +1996,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_historic_styles",                 # b76-m1: spare styles for historic teams
         "mod_editor.core.nfl2k5_uniform_slots",                   # b77-u3s: uniform style slots and the 2026 plan
         "mod_editor.core.nfl2k5_unc_bowl_uniforms",               # v0.6.1: the two Unc Bowl kits
+        "mod_editor.core.nfl2k5_nyg_numbers",                    # b772: Giants plain white shoulders
+        "mod_editor.core.nfl2k5_kit_fixes_2026",                 # b772-uf1: 2026 home/away kit art fixes
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
         "mod_editor.core.nfl2k5_letter_grades",                   # b77-f4
