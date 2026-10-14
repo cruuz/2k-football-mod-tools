@@ -422,6 +422,53 @@ def plan_profiles(image, *, tendencies=None, progress=None):
     return prepared
 
 
+SKIP_MESSAGE = ("2026 CPU coach profiles skipped: this disc's rosters do not have the 2026 head coaches. "
+                "Install the SOFTDRINK 2K28 pack to use them.")
+
+
+def roster_readiness(image, *, roster_edits=None, tendencies=None):
+    """Read-only, before a build writes anything: will the roster this build ends with carry the 32 2026 head coaches
+    that ``plan_profiles`` requires (team identity, portrait and coach name for every profile)?
+
+    The roster is the source image's main roster with the build's roster-edits ``coaches`` applied in memory by the
+    same writer the build uses (``apply_coach_names``, the only build step that writes coach names; it never moves a
+    coach record's portrait or team). Returns {"ready": bool, "checked": n, "mismatches": [plain lines]}; a roster that
+    cannot be read is not ready (its reason is the first mismatch)."""
+    from . import nfl2k5_playbook_pack as packs, nfl2k5_roster_records as rr
+    directory_path = Path(tendencies) if tendencies else ROOT / "data/vip/coaches"
+    mismatches, checked = [], 0
+    try:
+        with packs._outer_image().OuterImage(image) as archive:
+            roster = rr.RosterDocument(archive.read_entry(5)[32:])
+        body = bytearray(roster.body)
+        if roster_edits:
+            document = roster_edits if isinstance(roster_edits, dict) else rr.read_edits(Path(roster_edits))
+            entries = document.get("coaches") or []
+            if entries:
+                rr.apply_coach_names(body, roster.teams, entries, [])
+        names = rr._coach_tool()
+        for row in portrait_rows():
+            checked += 1
+            team = roster.teams[row["book_index"]]
+            if (team.kind, team.asset_id) != (0, row["asset"]) or not team.coach_offset:
+                mismatches.append(f"{row['team']}: the roster's club {row['book_index']} is not the 2026 club")
+                continue
+            photo = struct.unpack_from("<H", body, team.coach_offset + 0x40)[0]
+            if photo not in (row["portrait"], row.get("alternate_portrait", row["portrait"])):
+                mismatches.append(f"{row['team']}: coach portrait {photo} is not the 2026 head coach's")
+                continue
+            parts = []
+            for field in (0, 4):
+                at = names.relative_target(bytes(body), team.coach_offset + field, "coach name")
+                parts.append(names.utf16z(bytes(body), at, "coach name") if at is not None else "")
+            want = json.loads((directory_path / (row["team"] + ".json")).read_text(encoding="utf-8"))["coach"]
+            if " ".join(parts) != want:
+                mismatches.append(f"{row['team']}: roster coach {' '.join(parts)!r} is not {want!r}")
+    except (OSError, ValueError, IndexError, KeyError, struct.error) as exc:
+        mismatches.insert(0, f"the roster could not be read: {exc}")
+    return dict(ready=not mismatches, checked=checked, mismatches=mismatches)
+
+
 def write_profiles(image, prepared):
     """Fixed-span writes/readback after a complete read-only preflight."""
     from . import nfl2k5_playbook_pack as packs

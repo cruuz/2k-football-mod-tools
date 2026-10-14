@@ -1867,6 +1867,7 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
         if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
+        plan, coach_ai_skip = _coach_ai_decision(plan, progress)
         preflight_board_source(plan, progress)
         r62 = _validated_r62_plan_options(plan)
         from .image_use import check_image_destination, publish_image
@@ -1909,6 +1910,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             if project_result is not None:
                 receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
                 receipt["source"] = str(source)
+            if coach_ai_skip is not None:
+                receipt["steps"].append(coach_ai_skip)
+                receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
             if plan.music_shuffle or plan.music_library:
                 library = _core_module("nfl2k5_music_banks")
                 expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
@@ -1981,7 +1985,34 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
 
 def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
     """Run configuration and source preflights without creating a disc output (beta 66, job B)."""
-    return _build(plan, progress, _preflight_only=True)
+    plan, coach_ai_skip = _coach_ai_decision(plan, progress)
+    receipt = _build(plan, progress, _preflight_only=True)
+    if coach_ai_skip is not None and isinstance(receipt, dict):
+        receipt.setdefault("steps", []).append(coach_ai_skip)
+        receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
+    return receipt
+
+
+def _coach_ai_decision(plan, progress=None):
+    """b77 co3: decide, before any write, whether the automatic coach AI can run on the rosters this build ends with.
+
+    Its profiles need the 32 2026 head coaches (team, portrait and name; ``nfl2k5_coach_ai.plan_profiles``), which only
+    a disc or a roster-edits document that carries them has (the SOFTDRINK 2K28 pack does; a plain retail dump does
+    not). Without them the whole option is skipped, executable kernel and profiles alike (as if it were off; nothing
+    partial), and one plain line says so in the build log, the receipt's user notes and the Build summary. Returns
+    (plan, the receipt step for the skip or None)."""
+    if not plan.coach_ai or not tt.is_disc_image(plan.source):
+        return plan, None
+    readiness = tt.coach_ai_patch.roster_readiness(plan.source, roster_edits=plan.roster_edits or None)
+    if readiness["ready"]:
+        return plan, None
+    message = tt.coach_ai_patch.SKIP_MESSAGE
+    if progress is not None:
+        progress(message, 0, 0)
+    step = {"step": "coach_ai_resources", "status": "skipped", "requested": True, "applied": False,
+            "decided": "before any write", "checked": readiness["checked"],
+            "mismatches": readiness["mismatches"], "user_notes": [message]}
+    return replace(plan, coach_ai=False), step
 
 
 def _board_kit_options(plan):
