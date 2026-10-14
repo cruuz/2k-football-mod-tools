@@ -68,8 +68,67 @@ class Catalog(unittest.TestCase):
             self.assertEqual(hashlib.sha256((fields.ART/'source'/item['file']).read_bytes()).hexdigest(),item['sha256'])
 
 
+class DonorBounds(unittest.TestCase):
+    def test_full_strip_retains_outer_decals_without_recolouring_them(self):
+        from unittest.mock import patch
+        import numpy as np
+        for team, number in (('MIA',8),('WAS',10),('SF',7)):
+            donor=np.zeros((104,768,4),dtype='uint8')
+            # Asymmetric landmarks outside both old crop edges. Their exact
+            # positions and colours detect clipping, shifting and recolouring.
+            donor[20:35,30:45]=(21,42,111,255)
+            donor[40:55,720:735]=(111,42,21,255)
+            donor[60:70,320:330]=(230,230,230,255)
+            base=np.zeros((128,768,4),dtype='uint8')
+            with patch.object(fields,'art',return_value=base):
+                out=fields._endzone(fields.catalog()[number-1],'N',{team:donor})
+            self.assertTrue(np.array_equal(out[32:47,30:45],donor[20:35,30:45]))
+            self.assertTrue(np.array_equal(out[52:67,720:735],donor[40:55,720:735]))
+            self.assertEqual(out.shape,(128,768,4))
+
+    def test_art_override_bypasses_retail_donors(self):
+        from unittest.mock import patch
+        import numpy as np
+        row=fields.catalog()[44]
+        expected=np.full((128,768,4),73,dtype='uint8')
+        with patch.object(fields,'art',return_value=expected):
+            self.assertIs(fields._endzone(row,'N',{'PHI':object()}),expected)
+
+    def test_text_only_repairs_keep_authored_side_logos(self):
+        from unittest.mock import patch
+        import numpy as np
+        for team,number in (('SEA',37),('MIN',49),('STL',13)):
+            donor=np.full((104,560,4),255,dtype='uint8')
+            base=np.zeros((128,768,4),dtype='uint8')
+            base[20:80,8:90]=(13,27,99,255)
+            base[20:80,680:760]=(99,27,13,255)
+            with patch.object(fields,'art',return_value=base):
+                out=fields._endzone(fields.catalog()[number-1],'N',{team:donor})
+            self.assertTrue(np.array_equal(out[:,:104],base[:,:104]))
+            self.assertTrue(np.array_equal(out[:,664:],base[:,664:]))
+
+    def test_malformed_donor_dimensions_are_rejected(self):
+        import numpy as np
+        with self.assertRaisesRegex(ValueError,'donor strip dimensions'):
+            fields._endzone(fields.catalog()[7],'N',{'MIA':np.zeros((104,767,4),dtype='uint8')})
+
+
 @unittest.skipUnless(SOURCE.is_file(),'private retail source required')
 class RetailField(unittest.TestCase):
+    def test_native_side_art_survives_the_actual_donor_extraction(self):
+        import numpy as np
+        with historic.Source(SOURCE) as source:
+            for team,number in (('MIA',8),('WAS',10),('SF',7)):
+                bundle=source.get(fields.WORDMARKS[team]+'dd.iff')
+                donor=fields._wordmark(bundle,team)
+                self.assertEqual(donor.shape,(104,768,4))
+                self.assertGreater(np.count_nonzero(donor[:,:104,3])+np.count_nonzero(donor[:,664:,3]),0,team)
+                out=fields._endzone(fields.catalog()[number-1],'N',{team:donor})
+                # Strongly opaque side pixels preserve the donor's colours.
+                for lo,hi in fields.DONOR_SIDE_REGIONS[team]:
+                    mask=donor[:,lo:hi,3]==255
+                    self.assertTrue(np.array_equal(out[12:116,lo:hi,:3][mask],donor[:,lo:hi,:3][mask]))
+
     def test_retail_playoff_donor_clears_only_championship_stamps(self):
         from mod_editor.core import nfl2k5_modern_metlife as metlife
         from mod_editor.core import nfl2k5_modern_venues_2026 as modern
