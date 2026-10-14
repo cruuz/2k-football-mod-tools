@@ -13,8 +13,9 @@ The input is accepted only as the exact uf1 disc (or an output this tool wrote, 
 The Studio's kit finish pass (``mod_editor.core.nfl2k5_kit_fixes_2026.apply_alternates``, strict) performs the
 writes. Receipts: the write, a zero-byte replay, the full-disc scope, Studio byte equality (each span recompiled
 from the recorded uf1 bytes), a check that no other archive entry shares an owned byte, and the xiso files touched
-(never default.xbe or vc_53450030/0, /8, /9). Kits whose package lies in one of those packs (ARI home styles 6
-and 7 sit in /9) are left to the Studio and listed as deferred.
+(never default.xbe or vc_53450030/0). Kit packages may lie in /8 or /9, which Noah's test disc also changes: every
+owned span must be byte-disjoint from st1's stadium-shadow ranges there (``ST1_RANGES``), so the coordinator's stack
+tool can combine both jobs in one file. ARI home styles 6 and 7 (00H6, 00H7) sit in /9.
 """
 from __future__ import annotations
 
@@ -34,7 +35,10 @@ from mod_editor.core import nfl2k5_modern_metlife as native  # noqa: E402
 UF1_SHA256 = "351bf0949d26583ba0cb5fec546069b14f183fbfb1519d543a4bb64f13a13759"   # uf1 output disc
 DISC_SIZE = 6004408320
 BLOCK = 4 * 1024 * 1024
-FORBIDDEN_PACKS = {"0", "8", "9"}           # Noah's test disc changes these; uf2 must not
+FORBIDDEN_PACKS = {"0"}                     # Noah's test disc rewrites vc_53450030/0; uf2 owns no byte there
+# st1's stadium-shadow spans on Noah's test disc (whole-image byte offsets, half-open), from the coordinator's
+# fix1/st1_ranges.txt: every uf2 span must be disjoint from them.
+ST1_RANGES = ((98189312, 99736736), (99737600, 101366032))
 BACKUP = "uf1_owned_spans"
 
 
@@ -169,6 +173,24 @@ def originals(raws, ranges, recorded):
     return {s: bytes(b) for s, b in out.items()}
 
 
+def st1_disjointness(ranges):
+    """Overlap and nearest gap between every owned span and st1's ranges (whole-image byte offsets)."""
+    overlap, nearest, rows = 0, None, []
+    for r in ranges:
+        for lo, hi in ST1_RANGES:
+            both = max(0, min(r["end"], hi) - max(r["start"], lo))
+            overlap += both
+            gap = max(lo - r["end"], r["start"] - hi, 0)
+            if nearest is None or gap < nearest[0]:
+                nearest = (gap, r["selector"], r["chunk"], r["file"], r["start"], r["end"], lo, hi)
+    in_89 = [dict(selector=r["selector"], chunk=r["chunk"], file=r["file"], start=r["start"], end=r["end"])
+             for r in ranges if r["file"].split("/")[-1] in ("8", "9")]
+    return dict(schema="b772/uf2/st1-disjoint/v1", st1_ranges=[list(x) for x in ST1_RANGES], owned_spans=len(ranges),
+                owned_spans_in_packs_8_9=in_89, overlapping_bytes=overlap,
+                nearest=dict(gap_bytes=nearest[0], selector=nearest[1], chunk=nearest[2], file=nearest[3],
+                             span=[nearest[4], nearest[5]], st1_range=[nearest[6], nearest[7]]) if nearest else None)
+
+
 def rollback(disc, receipts):
     """Write the recorded uf1 bytes back over the recorded spans (the record, not the current data, names them)."""
     blob, meta = receipts / (BACKUP + ".bin"), receipts / (BACKUP + ".json")
@@ -202,14 +224,12 @@ def run(args):
     if args.rollback:
         return rollback(disc, receipts)
     receipts.mkdir(parents=True, exist_ok=True)
-    full = fixes.alternates()
-    _, all_ranges, _ = read_resources(disc, full)
-    deferred = sorted({r["selector"] for r in all_ranges if r["file"].split("/")[-1] in FORBIDDEN_PACKS})
-    # kits whose package lies in a pack Noah's test disc rewrites stay Studio-only here (reported, not written)
-    document = dict(full, textures=[r for r in full["textures"] if r["selector"] not in deferred])
+    document = fixes.alternates()
     raws, ranges, extents = read_resources(disc, document)
     bad = sorted({r["file"] for r in ranges if r["file"].split("/")[-1] in FORBIDDEN_PACKS})
     require(not bad, "an owned span lies in a forbidden pack: " + ", ".join(bad))
+    disjoint = st1_disjointness(ranges)
+    require(disjoint["overlapping_bytes"] == 0, "an owned span overlaps st1's stadium-shadow ranges")
     aliases = alias_check(ranges, extents)
     require(not aliases, "another archive entry shares an owned byte: " + json.dumps(aliases[:3]))
     blob, meta = receipts / (BACKUP + ".bin"), receipts / (BACKUP + ".json")
@@ -248,9 +268,7 @@ def run(args):
         expected[selector] = replacements
     receipt = fixes.apply_to_image(disc, strict=True, document=document)
     write_json(receipts / "disc_write.json", dict(schema="b772/uf2/disc-write/v1", disc=str(disc),
-                                                  input_sha256=digest, deferred_kits=deferred,
-                                                  deferred_reason="kit package in vc_53450030/" +
-                                                  "/".join(sorted(FORBIDDEN_PACKS)) + " (Noah's test disc)",
+                                                  input_sha256=digest,
                                                   **receipt))
     replay = fixes.apply_to_image(disc, strict=True, document=document)
     require(replay["written_spans"] == replay["written_bytes"] == replay["changed_bytes"] == 0,
@@ -281,7 +299,8 @@ def run(args):
     write_json(receipts / "disc_files.json", dict(schema="b772/uf2/disc-files/v1", files=summary))
     final = file_sha(disc)
     require(final == result["disc_sha256"], "disc changed during the receipts")
-    return dict(kits=len(expected), deferred_kits=deferred, owned_spans=len(ranges),
+    write_json(receipts / "disc_st1_disjoint.json", disjoint)
+    return dict(kits=len(expected), owned_spans=len(ranges), st1_overlapping_bytes=0,
                 written_spans=receipt["written_spans"],
                 written_bytes=receipt["written_bytes"], changed_bytes=result["changed_bytes_inside_owned"],
                 replay_written_bytes=0, changed_outside_owned=0, aliased_owned_bytes=0, studio_equal=True,

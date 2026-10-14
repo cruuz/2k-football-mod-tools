@@ -227,8 +227,14 @@ class Refusals(unittest.TestCase):
             self.assertEqual(disc.read_bytes(), b"not a disc")
             self.assertFalse((root / "receipts").exists())
 
-    def test_repair_keeps_out_of_the_test_disc_packs(self):
-        self.assertEqual(repair.FORBIDDEN_PACKS, {"0", "8", "9"})
+    def test_repair_keeps_out_of_pack_0_and_st1s_ranges(self):
+        self.assertEqual(repair.FORBIDDEN_PACKS, {"0"})
+        self.assertEqual(repair.ST1_RANGES, ((98189312, 99736736), (99737600, 101366032)))
+        hit = repair.st1_disjointness([dict(start=99736000, end=99738000, selector="x", chunk=1, file="vc_53450030/9")])
+        self.assertEqual(hit["overlapping_bytes"], 736 + 400)
+        clear = repair.st1_disjointness([dict(start=101366032, end=101366100, selector="x", chunk=1,
+                                              file="vc_53450030/9")])
+        self.assertEqual((clear["overlapping_bytes"], clear["nearest"]["gap_bytes"]), (0, 0))
         self.assertEqual(repair.UF1_SHA256, "351bf0949d26583ba0cb5fec546069b14f183fbfb1519d543a4bb64f13a13759")
 
     def test_build_runs_the_alternates_after_the_home_away_pass(self):
@@ -244,13 +250,12 @@ RECORD = os.environ.get("NFL2K5_UF2_RECORD")
 @unittest.skipUnless(DISC and RECORD, "set NFL2K5_UF2_DISC (the repaired disc) and NFL2K5_UF2_RECORD (its receipt "
                                       "folder with the recorded uf1 spans) for native integration")
 class NativeDisc(unittest.TestCase):
-    SELECTORS = ("05H4", "22A5", "08A5", "10A6", "24A9", "02A3", "37H2", "26A3")
+    SELECTORS = ("05H4", "22A5", "08A5", "10A6", "24A9", "02A3", "37H2", "26A3", "00H6", "00H7")
 
     @classmethod
     def setUpClass(cls):
         cls.doc = fixes.alternates()
-        doc = dict(cls.doc, textures=[r for r in cls.doc["textures"] if r["selector"] not in ("00H6", "00H7")])
-        cls.raws, cls.ranges, cls.extents = repair.read_resources(Path(DISC), doc)
+        cls.raws, cls.ranges, cls.extents = repair.read_resources(Path(DISC), cls.doc)
         recorded = (Path(RECORD) / (repair.BACKUP + ".bin")).read_bytes()
         cls.base = repair.originals(cls.raws, cls.ranges, recorded)
         cls.compiled = {}
@@ -342,8 +347,10 @@ class NativeDisc(unittest.TestCase):
     def test_no_other_archive_entry_shares_an_owned_byte(self):
         self.assertEqual(repair.alias_check(self.ranges, self.extents), [])
 
-    def test_no_owned_span_in_the_test_disc_packs(self):
+    def test_no_owned_span_in_pack_0_and_none_overlaps_st1(self):
         self.assertFalse([r for r in self.ranges if r["file"].split("/")[-1] in repair.FORBIDDEN_PACKS])
+        self.assertEqual(repair.st1_disjointness(self.ranges)["overlapping_bytes"], 0)
+        self.assertEqual(sorted({r["selector"] for r in self.ranges if r["file"].endswith("/9")}), ["00H6", "00H7"])
 
 
 if __name__ == "__main__":
