@@ -22,6 +22,12 @@ The Studio runs this after its uniform layers. Exact input and output pins
 limit it to the known SOFTDRINK kit spans: retail kits and textures a user's
 own recipe replaced are left alone. The native repair (strict) refuses any
 kit that is not exactly the pinned input or the pinned output.
+
+Job uf2 (b772) added the 2026 alternate, throwback and Rivalries kits in a second data file,
+``data/nfl2k5_kit_fixes_2026_alts.json`` (``apply_alternates``). It uses the same compiler plus: inner rings and
+outside halos (outlines measured from the art itself), stamps of art that already sits in another texture of the
+same kit (a helmet logo placed on a sleeve), palette-only recolours for the linear name plate and the digit
+textures, cleared shoulder (TV) digits for kits that have none, and the Unif facemask colour.
 """
 from __future__ import annotations
 
@@ -39,6 +45,8 @@ from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
 SCHEMA = "nfl2k5_kit_fixes_2026/v1"
 DATA = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026.json"
+DATA_ALTS = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_alts.json"
+KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
 WET_NUM, WET_DEN = 93, 100     # w1's mud rule: mud = clean * 0.93, rounded
@@ -64,7 +72,7 @@ def spec(path=None):
         key = (row["selector"], row["chunk"])
         require(key not in seen, "duplicate texture entry " + repr(key))
         seen.add(key)
-        require(row["kind"] in ("tset", "txtr", "copy_video"), "unknown chunk kind")
+        require(row["kind"] in KINDS, "unknown chunk kind")
     return document
 
 
@@ -203,11 +211,14 @@ def grow(rgba, box, sources, colour, radius, into, tolerance, except_=None):
     return out, hit
 
 
-def enclosed(rgba, box, edge, colour, tolerance):
+def enclosed(rgba, box, edge, colour, tolerance, invert=False):
     """Fill every 4-connected region of non-``edge`` texels inside ``box`` that does not touch the box border
-    (the hollow inside of an outlined letter) with ``colour``."""
+    (the hollow inside of an outlined letter) with ``colour``. With ``invert`` the ``edge`` colours are the open
+    field and every other colour is a wall."""
     inside = box_mask(rgba.shape, box)
     wall = colour_hits(rgba, edge, tolerance)
+    if invert:
+        wall = ~wall
     open_ = inside & ~wall
     bx0, by0, bx1, by1 = (int(v) for v in box)
     reached = np.zeros_like(open_)
@@ -253,7 +264,174 @@ def copy_texels(out, source, op):
     return out
 
 
-def paint(rgba, ops):
+def _offsets(radius):
+    r = float(radius)
+    k = int(np.ceil(r))
+    return sorted(((dx * dx + dy * dy, dx, dy) for dy in range(-k, k + 1) for dx in range(-k, k + 1)
+                   if dx * dx + dy * dy <= r * r))
+
+
+def _shift(mask, dx, dy):
+    h, w = mask.shape
+    out = np.zeros_like(mask)
+    ys, yd = (slice(0, h - dy), slice(dy, h)) if dy >= 0 else (slice(-dy, h), slice(0, h + dy))
+    xs, xd = (slice(0, w - dx), slice(dx, w)) if dx >= 0 else (slice(-dx, w), slice(0, w + dx))
+    out[yd, xd] = mask[ys, xs]
+    return out
+
+
+def dist2(mask, radius):
+    """Squared texel-centre distance to the nearest True texel, for distances up to ``radius``; farther texels
+    (and every texel when the mask is empty) get a value above radius**2."""
+    far = int(np.ceil(float(radius))) ** 2 * 4 + 4
+    out = np.full(mask.shape, far, np.int64)
+    for d2, dx, dy in reversed(_offsets(radius)):
+        out[_shift(mask, dx, dy)] = d2
+    return out
+
+
+def ring(rgba, op, original):
+    """Inner ring: texels of the ``inside`` colours (or every opaque texel for ``"opaque"``) whose distance to the
+    nearest texel outside that set lies in (``from``, ``to``] take ``colour``; ``to`` null means any depth."""
+    ref = original if op.get("match") == "original" else rgba
+    tolerance = op.get("tolerance", 24)
+    opaque = ref[..., 3] >= 128
+    if op["inside"] == "opaque":
+        inside = opaque
+    elif op.get("invert"):
+        # every colour except the listed ones (a shape drawn on a known field colour)
+        inside = ~colour_hits(ref, op["inside"], tolerance) & opaque
+    else:
+        inside = colour_hits(ref, op["inside"], tolerance) & opaque
+    r0 = float(op.get("from", 0))
+    r1 = op.get("to")
+    limit = max(r0, float(r1) if r1 is not None else r0) + 1
+    d2 = dist2(~inside, limit)
+    hit = box_mask(rgba.shape, op["box"]) & inside & (d2 > r0 * r0)
+    if r1 is not None:
+        hit &= d2 <= float(r1) * float(r1)
+    out = rgba.copy()
+    out[..., :3][hit] = np.array(hex_rgb(op["color"]), np.uint8)
+    return out, hit
+
+
+def outside_region(rgba, box, edge, tolerance):
+    """Texels in ``box`` that reach the box border without crossing an ``edge`` colour."""
+    inside = box_mask(rgba.shape, box)
+    wall = colour_hits(rgba, edge, tolerance)
+    open_ = inside & ~wall
+    bx0, by0, bx1, by1 = (int(v) for v in box)
+    reached = np.zeros_like(open_)
+    stack = [(x, y) for x in range(bx0, bx1) for y in (by0, by1 - 1)] + \
+            [(x, y) for y in range(by0, by1) for x in (bx0, bx1 - 1)]
+    while stack:
+        x, y = stack.pop()
+        if not (bx0 <= x < bx1 and by0 <= y < by1) or reached[y, x] or not open_[y, x]:
+            continue
+        reached[y, x] = True
+        stack.extend(((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)))
+    return reached, wall
+
+
+def halo(rgba, op):
+    """Outside outline: texels outside an outlined shape (reached from the box border without crossing the ``edge``
+    colours) within ``radius`` of an edge texel take ``colour``; ``into`` limits it to those colours."""
+    tolerance = op.get("tolerance", 24)
+    reached, wall = outside_region(rgba, op["box"], op["edge"], tolerance)
+    hit = reached & (dist2(wall, op["radius"]) <= float(op["radius"]) ** 2)
+    if op.get("into"):
+        hit &= colour_hits(rgba, op["into"], op.get("into_tolerance", tolerance))
+    out = rgba.copy()
+    out[..., :3][hit] = np.array(hex_rgb(op["color"]), np.uint8)
+    return out, hit
+
+
+def stamp(rgba, op, source):
+    """Place existing art: the ``src`` box of ``source`` (this texture's original level 0, or another texture of the
+    same kit) is resampled into the ``dst`` box at 4x (4x4 samples per texel, exact integer arithmetic). Source texels
+    near a ``skip`` colour or below alpha 128 are not drawn; ``remap`` pairs recolour the drawn samples."""
+    h, w = rgba.shape[:2]
+    sh, sw = source.shape[:2]
+    sx0, sy0, sx1, sy1 = (fixed(v) for v in op["src"])
+    dx0, dy0, dx1, dy1 = (fixed(v) for v in op["dst"])
+    require(dx1 > dx0 and dy1 > dy0 and sx0 != sx1 and sy0 != sy1, "stamp boxes are empty")
+    require(0 <= min(sx0, sx1) and max(sx0, sx1) <= sw * UNIT and 0 <= min(sy0, sy1) and max(sy0, sy1) <= sh * UNIT,
+            "stamp source outside its texture")
+    colours = source[..., :3].astype(np.int64).copy()
+    keep = source[..., 3] >= 128
+    if op.get("skip"):
+        keep &= ~colour_hits(source, op["skip"], op.get("tolerance", 24))
+    for pair in op.get("remap", []):
+        hit = keep & colour_hits(source, pair["from"], pair.get("tolerance", 24))
+        colours[hit] = np.array(hex_rgb(pair["to"]), np.int64)
+    if op.get("scale_rgb"):
+        # brighten or darken drawn samples: channel * num // den, clamped (exact integers)
+        num, den = (int(v) for v in op["scale_rgb"])
+        colours = np.minimum((colours * num + den // 2) // den, 255)
+    x0 = max(dx0 // UNIT, 0)
+    x1 = min(-(-dx1 // UNIT), w)
+    y0 = max(dy0 // UNIT, 0)
+    y1 = min(-(-dy1 // UNIT), h)
+    out = rgba.copy()
+    scope = np.zeros((h, w), bool)
+    if x1 <= x0 or y1 <= y0:
+        return out, scope
+    step = UNIT // SUPER
+    sub = np.arange(SUPER, dtype=np.int64) * step + step // 2
+    px = (np.arange(x0, x1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+    py = (np.arange(y0, y1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+    inx = (px >= dx0) & (px < dx1)
+    iny = (py >= dy0) & (py < dy1)
+    ux = sx0 + ((px - dx0) * (sx1 - sx0)) // (dx1 - dx0)
+    uy = sy0 + ((py - dy0) * (sy1 - sy0)) // (dy1 - dy0)
+    tx = np.clip(ux // UNIT, 0, sw - 1)
+    ty = np.clip(uy // UNIT, 0, sh - 1)
+    TX, TY = np.meshgrid(tx, ty)
+    IN = np.meshgrid(inx, iny)
+    drawn = keep[TY, TX] & IN[0] & IN[1]
+    sample = colours[TY, TX] * drawn[..., None]
+    gh, gw = y1 - y0, x1 - x0
+    n = drawn.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
+    total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
+    full = SUPER * SUPER
+    base = rgba[y0:y1, x0:x1, :3].astype(np.int64)
+    blended = (base * (full - n)[..., None] + total + full // 2) // full
+    hit = n > 0
+    region = out[y0:y1, x0:x1]
+    region[..., :3][hit] = blended[hit].astype(np.uint8)
+    scope[y0:y1, x0:x1] = hit
+    return out, scope
+
+
+def close_gaps(rgba, op):
+    """Morphological closing of the ``colors`` mask inside ``box`` (dilate then erode by ``radius``): the texels it
+    adds (gaps between the lines of a drawn shape) that match ``into`` take ``colour``."""
+    tolerance = op.get("tolerance", 24)
+    box = box_mask(rgba.shape, op["box"])
+    mask = colour_hits(rgba, op["colors"], tolerance) & box
+    r = float(op["radius"])
+    dilated = dist2(mask, r) <= r * r
+    closed = ~(dist2(~dilated, r) <= r * r)
+    hit = closed & ~mask & box
+    if op.get("into"):
+        hit &= colour_hits(rgba, op["into"], op.get("into_tolerance", tolerance))
+    out = rgba.copy()
+    out[..., :3][hit] = np.array(hex_rgb(op["color"]), np.uint8)
+    return out, hit
+
+
+def lift(rgba, op):
+    """Lighten matched texels toward white: channel' = 255 - (255 - channel) * num // den (exact integers)."""
+    hit = box_mask(rgba.shape, op["box"]) & colour_hits(rgba, op["from"], op.get("tolerance", 24))
+    num, den = (int(v) for v in op["keep"])
+    out = rgba.copy()
+    c = out[..., :3].astype(np.int64)
+    lifted = 255 - ((255 - c) * num + den // 2) // den
+    out[..., :3][hit] = lifted[hit].astype(np.uint8)
+    return out, hit
+
+
+def paint(rgba, ops, donors=None):
     """Apply the authored operations in order; returns the new level 0 and the changed scope."""
     out = rgba.copy()
     h, w = out.shape[:2]
@@ -261,6 +439,9 @@ def paint(rgba, ops):
         kind = op["op"]
         if kind == "poly":
             cover = polygon_coverage(op["points"], w, h)
+            if "only" in op:
+                # draw only over texels of these colours (a pattern that stays inside an existing shape)
+                cover = np.where(colour_hits(out, op["only"], op.get("only_tolerance", 24)), cover, 0)
             if "protect" in op:
                 # keep existing art: per column inside the box, every row between the first and the last texel of
                 # the protected colours (a band with a wordmark on it) stays as it is
@@ -281,9 +462,23 @@ def paint(rgba, ops):
             out, _ = grow(out, op["box"], op["from"], hex_rgb(op["color"]), op["radius"], op["into"],
                           op.get("tolerance", 24), op.get("except"))
         elif kind == "enclosed":
-            out, _ = enclosed(out, op["box"], op["edge"], hex_rgb(op["color"]), op.get("tolerance", 24))
+            out, _ = enclosed(out, op["box"], op["edge"], hex_rgb(op["color"]), op.get("tolerance", 24),
+                              bool(op.get("invert", False)))
         elif kind == "copy":
             out = copy_texels(out, rgba, op)
+        elif kind == "ring":
+            out, _ = ring(out, op, rgba)
+        elif kind == "halo":
+            out, _ = halo(out, op)
+        elif kind == "close":
+            out, _ = close_gaps(out, op)
+        elif kind == "lift":
+            out, _ = lift(out, op)
+        elif kind == "stamp":
+            donor = op.get("donor", "self")
+            source = rgba if donor == "self" else (donors or {}).get(int(donor))
+            require(source is not None, "stamp donor texture absent")
+            out, _ = stamp(out, op, source)
         else:
             raise ValueError("2026 kit fixes: unknown art operation " + repr(kind))
     scope = np.any(out != rgba, axis=2)
@@ -394,7 +589,25 @@ def mud_rule(clean, mud, used):
         expect = rule(clean)
         if np.abs(mud[used] - expect[used]).max() <= 1:
             return name
-    raise ValueError("2026 kit fixes: the _mud palette follows neither wet_93 nor darken_60 of the clean palette")
+    # uf2: some alternate kits carry a separately painted mud twin (its own dirt colours per index). New entries then
+    # take the dirt ratio of the nearest existing clean entry ("pair", see pair_mud).
+    return "pair"
+
+
+def pair_mud(clean, mud, slots, reference):
+    """Mud colour for new clean entries ``slots``: the nearest ``reference`` entry's per-channel mud/clean ratio
+    (exact integers, clamped), alpha as the clean entry."""
+    out = mud.copy()
+    ref = np.array(sorted(set(int(i) for i in reference) - set(int(s) for s in slots)), np.int64)
+    require(len(ref) > 0, "no reference entries for the mud twin")
+    for s in slots:
+        d = ((clean[ref, :3] - clean[s, :3]) ** 2).sum(axis=1)
+        j = int(ref[int(d.argmin())])
+        for k in range(3):
+            base = int(clean[j, k])
+            out[s, k] = min(255, (int(clean[s, k]) * int(mud[j, k]) + base // 2) // base) if base else int(mud[j, k])
+        out[s, 3] = clean[s, 3]
+    return out
 
 
 def nearest(colours, alphas, palette):
@@ -487,8 +700,9 @@ def extend_palette(palette, free, wanted, alpha):
     return added
 
 
-def compile_texture(span, row):
-    """Paint ``row``'s art into one native chunk span; returns (new span, receipt)."""
+def compile_texture(span, row, donors=None):
+    """Paint ``row``'s art into one native chunk span; returns (new span, receipt). ``donors`` maps a chunk index
+    of the same kit to its level-0 RGBA (stamp sources)."""
     chunk, decoded, textures = native_textures(span, row["kind"])
     clean = textures[0]
     require(clean["name"] == row["texture"], "texture name differs: " + clean["name"])
@@ -503,7 +717,7 @@ def compile_texture(span, row):
         rule = mud_rule(palette, mud, np.unique(np.concatenate([p.ravel() for p in planes])))
     h, w = planes[0].shape
     base = palette[planes[0]].astype(np.uint8)
-    painted, scope = paint(base, row["ops"])
+    painted, scope = paint(base, row["ops"], donors)
     require(scope.any(), "the art changed no texel")
     alphas = base[..., 3].astype(np.int64)
     # exact art colours first, then the most frequent edge blends far from the palette, per alpha class in the art
@@ -532,14 +746,16 @@ def compile_texture(span, row):
             merged_moved += moved
             merged_slots += len(more)
         added += extend_palette(palette, free, want_here, alpha)
-    new_planes, rows = [], []
+    new_planes, rows, mode_planes = [], [], {}
     target = painted.astype(np.int64)
     changed = scope
     for level, plane in enumerate(planes):
         ph, pw = plane.shape
         out = plane.copy()
         points = np.argwhere(changed)
-        if len(points):
+        if len(points) and level in mode_planes:
+            out[points[:, 0], points[:, 1]] = mode_planes[level][points[:, 0], points[:, 1]]
+        elif len(points):
             colours = target[points[:, 0], points[:, 1], :3]
             # each stored mip keeps its own alpha (helmet reflection masks are authored per level)
             alphas_here = palette[plane][points[:, 0], points[:, 1], 3]
@@ -559,12 +775,29 @@ def compile_texture(span, row):
             require((nh * 2, nw * 2) == (ph, pw), "unexpected mip chain")
             target = (quantized.reshape(nh, 2, nw, 2, 4).sum(axis=(1, 3)) + 2) // 4
             changed = changed.reshape(nh, 2, nw, 2).any(axis=(1, 3))
+            if row.get("mip") == "mode":
+                # uf2: small fixed allocations (digits, busy helmets) keep the parent indices crisp: each changed
+                # parent takes the most frequent of its four child indices (lowest index on ties), not a blend
+                kids = out.reshape(nh, 2, nw, 2).transpose(0, 2, 1, 3).reshape(nh, nw, 4).astype(np.int64)
+                best = np.full((nh, nw), 256, np.int64)
+                best_n = np.zeros((nh, nw), np.int64)
+                for k in range(4):
+                    v = kids[..., k]
+                    n = (kids == v[..., None]).sum(axis=2)
+                    better = (n > best_n) | ((n == best_n) & (v < best))
+                    best = np.where(better, v, best)
+                    best_n = np.where(better, n, best_n)
+                mode_planes[level + 1] = best
     new = write_texture(decoded, chunk, clean, new_planes, palette)
     if row["kind"] == "tset":
         # existing twin entries stay byte-exact; only the slots this fix filled get the rule's value
         twin = mud.copy()
         slots = [a["slot"] for a in added]
-        twin[slots] = MUD_RULES[rule](palette)[slots]
+        if rule == "pair":
+            used = np.unique(np.concatenate([p.ravel() for p in original_planes]))
+            twin = pair_mud(palette, mud, slots, used)
+        else:
+            twin[slots] = MUD_RULES[rule](palette)[slots]
         new = write_texture(new, chunk, textures[1], new_planes, twin)
     fixed_span, fit = rebuild_fixed_span_filled(span, new, encoder="auto")
     require(len(fixed_span) == len(span) and fixed_span[:32] == span[:32], "wrapper or allocation changed")
@@ -573,6 +806,109 @@ def compile_texture(span, row):
     return fixed_span, dict(texture=clean["name"], mips=rows, palette_slots_added=added, mud_rule=rule,
                             merged_twin_slots=merged_slots, protected_texels_moved_one_level=merged_moved,
                             fit=asdict(fit), level0_scope_texels=int(scope.sum()))
+
+
+def _txtr(span, kinds=("P8",)):
+    chunks = parse_chunks(span)
+    require(len(chunks) == 1 and chunks[0].end_offset == len(span), "expected one complete chunk span")
+    chunk = chunks[0]
+    require(chunk.kind == "TXTR" and chunk.compressed, "expected a compressed TXTR chunk")
+    decoded, _ = decode_chunk(span, chunk)
+    texture = parse_texture(decoded, chunk)
+    require(texture.format_name in kinds, "unsupported texture format " + texture.format_name)
+    return chunk, decoded, texture
+
+
+def _rebuild(span, new):
+    fixed_span, fit = rebuild_fixed_span_filled(span, new, encoder="auto")
+    require(len(fixed_span) == len(span) and fixed_span[:32] == span[:32], "wrapper or allocation changed")
+    check, _ = decode_chunk(fixed_span, parse_chunks(fixed_span)[0])
+    require(check == new, "native round trip differs")
+    return fixed_span, fit
+
+
+def compile_palette(span, row):
+    """Recolour palette entries only (the linear name plate, digit textures): every entry within ``tolerance`` of a
+    ``from`` colour takes the new RGB and keeps its alpha. Indices, size, mips and wrapper stay the same."""
+    chunk, decoded, texture = _txtr(span, ("P8", "VC_P8_LINEAR"))
+    require(texture.name == row["texture"], "texture name differs: " + texture.name)
+    at = chunk.system_bytes + texture.palette_offset
+    palette = np.frombuffer(decoded[at:at + 1024], np.uint8).reshape(256, 4)[:, [2, 1, 0, 3]].astype(np.int64)
+    new_palette = palette.copy()
+    changed = []
+    for mapping in row["map"]:
+        hit = np.zeros(256, bool)
+        for source in mapping["from"]:
+            hit |= np.abs(palette[:, :3] - np.array(hex_rgb(source), np.int64)).max(axis=1) <= int(
+                mapping.get("tolerance", 24))
+        if not mapping.get("transparent", False):
+            hit &= palette[:, 3] > 0
+        if "alpha_min" in mapping:
+            hit &= palette[:, 3] >= int(mapping["alpha_min"])
+        new_palette[hit, :3] = np.array(hex_rgb(mapping["to"]), np.int64)
+        changed += [int(i) for i in np.flatnonzero(hit)]
+    require(changed and not np.array_equal(new_palette, palette), "the palette recolour changed nothing")
+    new = bytearray(decoded)
+    new[at:at + 1024] = np.ascontiguousarray(new_palette[:, [2, 1, 0, 3]], np.uint8).tobytes()
+    new = bytes(new)
+    fixed_span, fit = _rebuild(span, new)
+    return fixed_span, dict(texture=texture.name, palette_entries=sorted(set(changed)), fit=asdict(fit))
+
+
+def compile_clear(span, row):
+    """Clear a shoulder (TV) digit: every texel of every stored mip takes the texture's own transparent index, so
+    the kit shows no TV number (the 2026 alternates that have none)."""
+    chunk, decoded, texture = _txtr(span)
+    require(texture.name == row["texture"], "texture name differs: " + texture.name)
+    require((texture.width, texture.height, texture.mip_levels) == tuple(row["size"]), "digit size differs")
+    t = dict(pixel=texture.pixel_offset, palette=texture.palette_offset, width=texture.width,
+             height=texture.height, mips=texture.mip_levels)
+    planes = read_planes(decoded, chunk, t)
+    palette = read_palette(decoded, chunk, t)
+    clear = np.flatnonzero(palette[:, 3] == 0)
+    require(len(clear) > 0, "the digit palette has no transparent entry")
+    counts = np.bincount(planes[0].ravel(), minlength=256)
+    index = int(clear[np.argmax(counts[clear])])
+    new = write_texture(decoded, chunk, t, [np.full_like(p, index) for p in planes])
+    require(new != decoded, "the digit is already clear")
+    fixed_span, fit = _rebuild(span, new)
+    return fixed_span, dict(texture=texture.name, transparent_index=index, fit=asdict(fit))
+
+
+UNIF_FIELDS = {"facemask": 0x30}
+
+
+def compile_unif(span, row):
+    """Set one Unif colour field (BGRA as stored), e.g. the facemask colour at 0x30. The raw 0x20-byte wrapper
+    and every other byte stay the same."""
+    chunks = parse_chunks(span)
+    require(len(chunks) == 1 and chunks[0].end_offset == len(span), "expected one complete chunk span")
+    chunk = chunks[0]
+    require(chunk.kind == "Unif" and not chunk.compressed and chunk.stored_size == 80, "expected the raw Unif chunk")
+    new = bytearray(span)
+    for name, value in sorted(row["fields"].items()):
+        at = chunk.body_offset + UNIF_FIELDS[name]
+        rgb = hex_rgb(value)
+        new[at:at + 4] = bytes((rgb[2], rgb[1], rgb[0], 0xFF))
+    require(bytes(new) != span, "the Unif fields already hold these values")
+    return bytes(new), dict(fields=row["fields"])
+
+
+def texture_rgba(span):
+    """Level-0 RGBA of the first texture in a P8 chunk span (stamp donors)."""
+    chunks = parse_chunks(span)
+    kind = "tset" if chunks[0].kind == "TSET" else "txtr"
+    chunk, decoded, textures = native_textures(span, kind) if kind == "txtr" else _tset_first(span)
+    planes = read_planes(decoded, chunk, textures[0])
+    return read_palette(decoded, chunk, textures[0])[planes[0]].astype(np.uint8)
+
+
+def _tset_first(span):
+    chunks = parse_chunks(span)
+    require(len(chunks) == 1 and chunks[0].end_offset == len(span), "expected one complete chunk span")
+    chunk = chunks[0]
+    decoded, _ = decode_chunk(span, chunk)
+    return chunk, decoded, _tset_textures(decoded)
 
 
 def copy_video(span, donor_span, row):
@@ -649,8 +985,27 @@ def compile_resource(selector, raw, *, strict=True, document=None):
                 skipped.append(row["chunk"])
                 continue
             new, detail = copy_video(span, donor_span, row)
+        elif row["kind"] == "palette":
+            new, detail = compile_palette(span, row)
+        elif row["kind"] == "clear":
+            new, detail = compile_clear(span, row)
+        elif row["kind"] == "unif":
+            new, detail = compile_unif(span, row)
         else:
-            new, detail = compile_texture(span, row)
+            donors, missing = {}, False
+            for index, pin in sorted((row.get("donors") or {}).items()):
+                donor = _chunk_for(raw, int(index))
+                donor_span = raw[donor.offset:donor.end_offset]
+                if sha(donor_span) != pin:
+                    # a stamp source the user's recipe replaced: keep the user's art (strict refuses)
+                    require(not strict, selector + ": stamp donor differs from its pin")
+                    missing = True
+                    break
+                donors[int(index)] = texture_rgba(donor_span)
+            if missing:
+                skipped.append(row["chunk"])
+                continue
+            new, detail = compile_texture(span, row, donors)
         require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")
         replacements.append((chunk.offset, new))
         parts.append(dict(selector=selector, chunk_index=chunk.index, offset=chunk.offset, length=len(new),
@@ -710,3 +1065,13 @@ def apply_to_image(path, *, strict=False, document=None):
     skipped = [k["selector"] for k in kits if k["state"] == "other_uniform"]
     return dict(state="applied", written_spans=written, written_bytes=written_bytes,
                 changed_bytes=sum(k["changed_bytes"] for k in kits), skipped_kits=skipped, kits=kits)
+
+
+def alternates():
+    """The uf2 document: 2026 alternate, throwback and Rivalries kit fixes."""
+    return spec(DATA_ALTS)
+
+
+def apply_alternates(path, *, strict=False):
+    """Studio uniform finish pass for the alternates (after ``apply_to_image``): pinned spans only."""
+    return apply_to_image(path, strict=strict, document=alternates())

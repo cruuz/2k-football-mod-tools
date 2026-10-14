@@ -3779,6 +3779,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if kit_receipt["state"] == "applied":
             receipt["steps"].append({"step": "kit_fixes_2026", **{k: v for k, v in kit_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in kit_receipt["kits"]]})
+        # b772-uf2: the 2026 alternate, throwback and Rivalries kit art the same review found wrong (second data file,
+        # same compiler), pinned to the known kit spans after the home/away pass.
+        alt_receipt = kit_fixes.apply_alternates(target)
+        if alt_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_alts",
+                                     **{k: v for k, v in alt_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in alt_receipt["kits"]]})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
