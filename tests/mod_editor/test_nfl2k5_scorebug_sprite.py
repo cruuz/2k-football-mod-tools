@@ -141,8 +141,12 @@ class DisplayModelTests(unittest.TestCase):
   for wide in (False,True):
    c=sprite.compile_folder(widescreen=wide);row=next(q for q in c.quads if q['name']=='watermark')
    self.assertTrue(row['brand']);self.assertEqual(row['tint'],'none')
-   self.assertEqual(row['box'][2],sprite.drawable_right(wide)-sprite.PIN_MARGIN);self.assertEqual(row['layout_box'],brand['box'])
-   hud=sprite.hud_box(row['box'],wide);self.assertLessEqual(hud[2],640);self.assertGreater(hud[0],520)
+   shown=sprite.display_box(sprite.contracted(sprite.hud_box(row['box'],wide),wide),wide)
+   display_width=sprite.DISPLAY[wide]['size'][0]
+   self.assertAlmostEqual((display_width-shown[2])/display_width,51/1920)
+   self.assertEqual(row['layout_box'],brand['box'])
+   hud=sprite.contracted(sprite.hud_box(row['box'],wide),wide)
+   self.assertLessEqual(hud[2],640);self.assertGreater(hud[0],520)
    self.assertEqual(c.widescreen,wide)
    x0,y0,x1,y1=c.cells['espn_mnf'];packed=c.atlas.crop((x0,y0,x1,y1))
    self.assertLessEqual(packed.getchannel('A').getextrema()[1],round(255*brand['opacity'])+1)  # opacity applied when packed
