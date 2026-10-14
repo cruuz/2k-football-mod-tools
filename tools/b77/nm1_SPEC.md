@@ -1,6 +1,10 @@
 # nm1 technical handoff: controlled-player surnames
 
-Status: investigation and art dependency, not a repair. No disc bytes changed.
+This is the initial static audit. The coordinator subsequently authorized atlas
+plumbing and a private, mechanically repacked retail placeholder. The current
+authoring contract is [nm1_ATLAS_SPEC.md](nm1_ATLAS_SPEC.md), which supersedes the
+provisional dimensions and size below. The implementation is in
+`mod_editor/core/nfl2k5_indicator_names.py`; live validation remains separate.
 
 ## What is established
 
@@ -60,6 +64,11 @@ They are source UV regions, not the compiled atlas's repacked UVs.
 | label_TH | [574, 47, 583, 56] | 9 by 9 |
 
 ## Required Opus art work
+
+Historical proposal only. Use `nm1_ATLAS_SPEC.md` for the implemented 256x128
+atlas, 11-pixel cap height, metrics and disc location. The coordinator has
+assigned the complete alphabet to the Opus HUD art job; the earlier stop below
+no longer blocks technical work or the authorized private placeholder.
 
 The wave's rule 6 says: "When a fix needs new artwork (new textures, logos, fonts
 or models), stop at a precise technical spec." Completing arbitrary surnames

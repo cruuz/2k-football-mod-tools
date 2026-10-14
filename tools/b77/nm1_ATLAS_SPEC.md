@@ -70,8 +70,8 @@ The compiler creates a native private **FONT** resource named
 Resource lookup includes the FOURCC, so the controller texture is unaffected.
 The FONT has one ASCII range 32..126, per-character advances and quads, lowercase
 aliases, and a **256 by 128 swizzled P8 texture** with a 1,024-byte BGRA palette.
-Palette indices 1..15 are white with 16 alpha levels; 16..30 are dark RGB
-(16,16,16) with the same coverage levels. Zero is transparent. The generated
+Palette indices 1..15 are white with alpha 17,34,...255; 16..30 are dark RGB
+(16,16,16) with the same 15 nonzero coverage levels. Zero is transparent. The generated
 one-pixel outline is eight-neighbor alpha dilation around each glyph separately.
 
 Location: `vc_53450030/0`, outer 346 (`gamedata.iff`), inside the existing
