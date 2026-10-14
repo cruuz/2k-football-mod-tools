@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from mod_editor.core import nfl2k5_franchise_upgrade as up
+from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_franchise_upgrade_io as service
 from mod_editor.core import nfl2k5_save_rost as sr
 from tests.mod_editor.test_nfl2k5_team_history import synthetic_body, entry
@@ -52,6 +53,49 @@ def evidence(payload):
 
 
 class TeamHistoryUpgradeTests(unittest.TestCase):
+    def test_wrapped_event_ring_reads_past_cursor_and_skips_cleared_slots(self):
+        payload = bytearray(synthetic_franchise())
+        office = fs.FranchiseSave(payload).front_office_block
+        struct.pack_into("<I", payload, office + fs.F_LEDGER_CURSOR, 1)
+        # A draft survives beyond the cursor. A cleared release retains its
+        # old reference, but the native iterator must not expose it as active.
+        struct.pack_into("<IHHB", payload, office + fs.F_LEDGER + 599 * 12,
+                         0x80000004 | (6 << 5) | (31 << 21), 0, 0, 30)
+        struct.pack_into("<IHHB", payload, office + fs.F_LEDGER + 598 * 12,
+                         0x80000000, 0, 0, 30)
+        rows = fs.FranchiseSave(payload).ledger()
+        self.assertEqual([r["index"] for r in rows], [0, 599])
+        self.assertEqual((rows[1]["kind"], rows[1]["argument_1"], rows[1]["argument_2"]), (4, 6, 31))
+        self.assertTrue(rows[1]["last_in_group"])
+
+    def test_draft_signing_and_no_visible_move_do_not_prove_a_completed_season(self):
+        before, disc = fixture()
+        for kind in (1, 4, 7, 8, 9, 10, 12):
+            payload = bytearray(before)
+            office = fs.FranchiseSave(payload).front_office_block
+            payload[office + fs.F_LEDGER:office + fs.F_LEDGER + 600 * 12] = bytes(600 * 12)
+            struct.pack_into("<I", payload, office + fs.F_LEDGER_CURSOR, 1)
+            struct.pack_into("<IHHB", payload, office + fs.F_LEDGER + 599 * 12,
+                             0x80000000 | kind, 0, 0, 30)
+            with self.subTest(kind=kind):
+                after, receipt = up.upgrade_team_history(bytes(payload), disc)
+                self.assertEqual([c["season"] for c in receipt["changes"]], [2025])
+                row = next(r for r in receipt["unresolved"] if r["season"] == 2026)
+                self.assertEqual(row["native_event_slots"], [599])
+                self.assertEqual(row["reason"], "retained_events_without_season_coverage")
+                self.assertFalse(receipt["native_evidence"]["full_season_coverage_proved"])
+                self.assertEqual(up.upgrade_team_history(after, disc)[0], after)
+
+    def test_empty_log_is_not_evidence_of_an_unchanged_season_club(self):
+        before, disc = fixture()
+        payload = bytearray(before)
+        office = fs.FranchiseSave(payload).front_office_block
+        payload[office + fs.F_LEDGER:office + fs.F_LEDGER + 600 * 12] = bytes(600 * 12)
+        _, receipt = up.upgrade_team_history(bytes(payload), disc)
+        self.assertEqual(receipt["unresolved_by_reason"], {
+            "no_retained_player_event_or_season_coverage": 1,
+            "pre_franchise_source_missing_or_mismatched": 1})
+
     def test_disc_restores_imported_season_but_never_infers_played_season(self):
         before, disc = fixture()
         after, receipt = up.upgrade_team_history(before, disc)

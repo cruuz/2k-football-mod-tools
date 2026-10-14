@@ -59,7 +59,7 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     entries use native-style insertion in the bounded pool; shared streams
     are cloned so other owners retain their exact history. Insufficient capacity refuses the entire operation.
     """
-    _save, roster = franchise(payload)
+    save, roster = franchise(payload)
     disc = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
     by_identity = defaultdict(list)
     disc_identity = defaultdict(list)
@@ -71,6 +71,26 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
             disc_identity[identity(player)].append(player)
     clubs = {team.abbreviation: team.index for team in roster.teams[:32]}
     require(len(clubs) == 32 and all(clubs), "requires unique NFL club abbreviations")
+    # These events can identify a club at an event, but cannot prove the
+    # absence of intervening moves. The native writer wraps at 600 entries,
+    # clears kinds independently, and stores event arguments rather than a
+    # season/date. A draft or signing plus today's membership is insufficient.
+    native_events = save.ledger()
+    events_by_player = defaultdict(list)
+    for event in native_events:
+        events_by_player[event["player_index"]].append(event["index"])
+    native_evidence = {
+        "ledger_write_cursor": save.u32(save.front_office_block + fs.F_LEDGER_CURSOR),
+        "ledger_boundary_cursors": list(struct.unpack_from(
+            "<II", payload, save.front_office_block + fs.F_LEDGER_BOUNDARIES)),
+        "ledger_capacity": fs.F_LEDGER_CAPACITY,
+        "retained_events": len(native_events),
+        "retained_event_kinds": dict(sorted(Counter(e["kind"] for e in native_events).items())),
+        "news_log_entries": len(save.transactions()),
+        "full_season_coverage_proved": False,
+        "limitation": "Native event slots can wrap or be cleared and carry no season coverage marker. "
+                      "Current membership, contracts, draft events and partial highlights do not prove a whole season.",
+    }
 
     def entries(words, field, slot):
         return [raw for raw in words if not raw & 0x70000000
@@ -152,7 +172,11 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
             common = {"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
                       "birth_date": identity(player)[2], "season": year, "slot": slot}
             if found is None:
-                unresolved.append({**common, "reason": "no recorded or supplied historical club"})
+                event_slots = events_by_player[player.index] if player.pool == "primary" else []
+                reason = ("pre_franchise_source_missing_or_mismatched" if year < BASE_YEAR else
+                          "retained_events_without_season_coverage" if event_slots else
+                          "no_retained_player_event_or_season_coverage")
+                unresolved.append({**common, "reason": reason, "native_event_slots": event_slots})
                 continue
             value, basis = found
             additions[player.key].append((slot << 23) | (87 << 16) | value)
@@ -229,6 +253,8 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     require([t.abbreviation for t in checked.teams] == [t.abbreviation for t in roster.teams],
             "TEAM repair changed a club label")
     return result, {"operation": "team_history", "changes": changes, "unresolved": unresolved,
+                    "unresolved_by_reason": dict(sorted(Counter(r["reason"] for r in unresolved).items())),
+                    "native_evidence": native_evidence,
                     "unresolved_rows": len(unresolved), "used_before": used, "used_after": used + needed,
                     "capacity": roster.pool_capacity, "source_savegame_sha256": sha(payload),
                     "output_savegame_sha256": sha(result), "existing_history_words_preserved": True,
