@@ -389,6 +389,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     with tempfile.TemporaryDirectory(prefix="nfl2k5-oracle-", dir=work_dir) as temp:
         target = (Path(temp) / "stack.xiso.iso").resolve()
         preset = dict(build.PRESETS["softdrink_experimental"])
+        # b772-i3: vt1 turned coach AI on in this preset. Its late profile compile needs the SOFTDRINK league
+        # roster's 2026 head coaches, which this retail-only observed build does not write, so it refused
+        # ("SF: roster coach 'Dennis Erickson' differs from profile coach 'Kyle Shanahan'"). Its executable
+        # owner is still installed and observed with the union below (coach_ai.apply); its PLAY profiles
+        # are not executable bytes.
+        preset["coach_ai"] = False
         plan = build.BuildPlan(source=str(xiso), target=str(target), **preset)
         with ExitStack() as stack:
             # v7 requires its matching atlas. Observe its actual fixed-span
