@@ -20,12 +20,61 @@ WORDMARKS={'ARI':'s00','STL':'s00','BUF':'s03','CAR':'s04','CIN':'s06','DAL':'s0
           'PIT':'s22','LAR':'s23','SF':'s25','SEA':'s26','TEN':'s28','WAS':'s29',
           'CLE':'s30','ATL':'s01','BAL':'s02'}
 
+# The native field swap (0x9C5DE) overwrites these material bindings with
+# loaded team TXTRs, including the retail end-zone shield. Keep the authored
+# paint on dedicated Anniversary fields. Equal-length names preserve offsets.
+PERIOD_MATERIALS = {'center_logo': 'era_midlogo', **{
+    f'endzone_{end}_{part}': f'era_end_{end}_{part}'
+    for end in 'NS' for part in 'LMR'}}
+PRESERVED_RETAIL_ROWS = (24, 25, 34)
+
 
 def require(ok,message):
     if not ok:raise ValueError(message)
 
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+
+def protect_period_field(bundle):
+    """Keep embedded period paint through the native team-texture swap.
+
+    Only seven material-name strings change in the decoded field. Textures,
+    pointers, geometry and the rest of the bundle stay byte-identical. The
+    compressed field retains its allocation; replay is an exact no-op.
+    """
+    from . import nfl2k5_modern_metlife as mm
+    tx = mm._tools()[0]
+    chunk, rec, decoded = _field_chunk(bundle)
+    names = {m['name']: m for m in rec['materials']}
+    old = set(PERIOD_MATERIALS) & names.keys()
+    new = set(PERIOD_MATERIALS.values()) & names.keys()
+    require((old == set(PERIOD_MATERIALS) and not new) or
+            (new == set(PERIOD_MATERIALS.values()) and not old),
+            'mixed or incomplete period field material names')
+    if new:
+        return bundle, dict(already_applied=True, decoded_changed_bytes=0)
+    edited = bytearray(decoded)
+    ranges = []
+    for before, after in PERIOD_MATERIALS.items():
+        start = names[before]['name_target']
+        source = (before + '\0').encode('utf-16le')
+        target = (after + '\0').encode('utf-16le')
+        require(len(source) == len(target) and
+                decoded[start:start + len(source)] == source,
+                'unexpected period material string')
+        edited[start:start + len(target)] = target
+        ranges.append(dict(offset=start, size=len(target), before=before, after=after))
+    span = mm.scene_span(bundle, chunk)
+    replacement, _ = tx.rebuild_compressed_chunk_fixed_span(span, bytes(edited))
+    result = bundle[:chunk.offset] + replacement + bundle[chunk.offset + len(span):]
+    _, actual, back = _field_chunk(result)
+    require(back == bytes(edited) and len(result) == len(bundle), 'period material readback differs')
+    require(set(PERIOD_MATERIALS.values()) <= {m['name'] for m in actual['materials']},
+            'period material bindings were not retained')
+    return result, dict(already_applied=False, field_offset=chunk.offset, field_size=len(span),
+                        decoded_changed_bytes=sum(a != b for a, b in zip(decoded, edited)),
+                        name_ranges=ranges, textures_and_geometry_identical=True)
 
 
 def catalog():
@@ -255,6 +304,9 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
             span,detail=_retail_playoff_field(source)
         else:span,detail=_field(templates[code],row,wordmarks,old_shield)
         after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
+        if row['row'] not in PRESERVED_RETAIL_ROWS:
+            after, protection = protect_period_field(after)
+            detail['period_material_protection'] = protection
         _field_chunk(after)
         alias=f'a{index:02d}{code}.iff';require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
         output[alias]=after;receipts.append(dict(row=row['row'],alias=alias,source=name,
