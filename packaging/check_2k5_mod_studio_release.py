@@ -327,6 +327,13 @@ SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "548712f6a9bd53feaa640827cf11b7df2d1f6fbc
 ANNIVERSARY_FIELD_PNG_CATALOG = "packaging/nfl2k5_espn25_field_pngs.json"
 ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "bd57194fa4708fe8c5c45b5dcdcbe4c9195594dc1094247038675871495c0378"
 
+# b772: the 2026 coaches (co1/co2), the 2026 fans (fr1) and the 2025-26 officials (rf1) ship authored PNG art.
+# Like the two catalogs above this is an exact, immutable list (path, byte count, SHA-256, PNG dimensions) of files
+# reviewed as authored art: no photograph or photo crop and no retail-extracted pixels. It grants no general PNG
+# exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
+MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
+MODERN_ART_PNG_CATALOG_SHA256 = "4c7199954cf42f280a99cde825eef1ad42b2d8af4ac119b38ac2fae0ff78730b"
+
 
 def _scorebug_template_pngs(root: Path) -> dict:
     catalog = root / SCOREBUG_TEMPLATE_PNG_CATALOG
@@ -359,6 +366,21 @@ def _anniversary_field_pngs(root: Path) -> dict:
     document = json.loads(data)
     if document.get("schema") != "nfl2k5_espn25_field_pngs/v1":
         raise ReleaseCheckError("reviewed Anniversary PNG catalog schema changed")
+    return document["files"]
+
+
+def _modern_art_pngs(root: Path) -> dict:
+    catalog = root / MODERN_ART_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(512 * 1024 + 1)
+    if (len(data) > 512 * 1024
+            or hashlib.sha256(data).hexdigest() != MODERN_ART_PNG_CATALOG_SHA256):
+        raise ReleaseCheckError("reviewed modern-art PNG catalog hash changed")
+    document = json.loads(data)
+    if document.get("schema") != "nfl2k5_modern_art_pngs/v1":
+        raise ReleaseCheckError("reviewed modern-art PNG catalog schema changed")
     return document["files"]
 
 
@@ -608,8 +630,12 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     reviewed_icon_count = 0
     reviewed_scorebug_png_count = 0
     reviewed_anniversary_png_count = 0
+    reviewed_modern_art_png_count = 0
     scorebug_pngs = _scorebug_template_pngs(release_root)
     anniversary_pngs = _anniversary_field_pngs(release_root)
+    modern_art_pngs = _modern_art_pngs(release_root)
+    if set(modern_art_pngs) & (set(scorebug_pngs) | set(anniversary_pngs)):
+        raise ReleaseCheckError("a PNG is listed in more than one reviewed catalog")
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
@@ -690,6 +716,12 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             seen_files.add(relative)
             total_bytes += info.st_size
             continue
+        if relative in modern_art_pngs:
+            _validate_reviewed_png(path, relative, info, modern_art_pngs[relative], "modern-art")
+            reviewed_modern_art_png_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         if suffix in FORBIDDEN_SUFFIXES:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
         if suffix not in ALLOWED_SUFFIXES and path.name.casefold() not in ALLOWED_SUFFIXLESS_NAMES:
@@ -757,6 +789,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         "reviewed_icon_count": reviewed_icon_count,
         "reviewed_scorebug_template_png_count": reviewed_scorebug_png_count,
         "reviewed_anniversary_field_png_count": reviewed_anniversary_png_count,
+        "reviewed_modern_art_png_count": reviewed_modern_art_png_count,
         "private_generated_inventories_included": False,
         "retail_payloads_included": False,
         "symlinks_included": False,

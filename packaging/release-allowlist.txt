@@ -3109,6 +3109,7 @@ data/nfl2k5_espn25_fields/source/sb32.png
 data/nfl2k5_espn25_fields/source/sb34.png
 data/nfl2k5_espn25_fields/source/sb36.png
 packaging/nfl2k5_espn25_field_pngs.json
+packaging/nfl2k5_modern_art_pngs.json
 
 packaging/check_packaged_runtime.py
 tools/b765/s1_coplanar.py

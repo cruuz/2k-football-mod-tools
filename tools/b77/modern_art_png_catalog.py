@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""b772-i3: write (or check) the reviewed modern-art PNG catalog the 2K5 release gate pins.
+
+  python3 tools/b77/modern_art_png_catalog.py [--repo .] [--check]
+
+The release gate (packaging/check_2k5_mod_studio_release.py) forbids every .png except exact reviewed files. The 2026
+coaches (co1/co2), the 2026 fans (fr1) and the 2025-26 officials (rf1) ship authored PNG art under three data folders.
+This tool lists every .png the release allowlist declares under those folders, records path, byte size, SHA-256 and
+PNG dimensions, and writes packaging/nfl2k5_modern_art_pngs.json. It then prints the catalog's own SHA-256, which the
+checker pins as MODERN_ART_PNG_CATALOG_SHA256 (change both together).
+
+A file goes into the catalog only after it was reviewed as authored art: no photograph or crop of one, and no
+retail-extracted pixels. Files that failed that review are listed in NOT_AUTHORED below with the reason; they stay out
+of the catalog, so the release gate keeps refusing them until they are replaced or the decision changes. Each entry's
+SHA-256 is pinned here, so a replaced file is reviewed again instead of inheriting the old verdict.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import struct
+import sys
+from pathlib import Path
+
+CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
+SCHEMA = "nfl2k5_modern_art_pngs/v1"
+FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/")
+CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
+                  "modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach "
+                  "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
+                  "likeness textures ship, the reference photos never do). No photograph or photo crop and no "
+                  "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
+
+# Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
+# path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.
+NOT_AUTHORED = {
+    "data/nfl2k5_modern_coaches/portraits/7031.png": (
+        "0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
+        "photo: a 128x128 crop of Brian Schottenheimer's official headshot (background cut out)"),
+    "data/nfl2k5_modern_coaches/portraits/7034.png": (
+        "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83",
+        "photo: a 128x128 crop of Dan Quinn's official headshot (background cut out)"),
+}
+NOT_AUTHORED_BY_NAME = {
+    ("data/nfl2k5_modern_coaches/", "accessories.png"): (
+        "abfbc3def998feaeae9d1704afae45b1c68a5e16629b218da32fe386ef44a2d3",
+        "retail pixels: the right half (shoe and clipboard) is the 2004 coach accessories texture (47% of its pixels "
+        "identical to the decoded retail texture of every coach body, the rest within 25 levels); the module says "
+        "'the shoe and clipboard keep their retail pixels'"),
+}
+
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def png_size(data: bytes, relative: str) -> tuple[int, int]:
+    if len(data) < 24 or data[:16] != b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR":
+        raise SystemExit(f"not a PNG: {relative}")
+    return struct.unpack_from(">II", data, 16)
+
+
+def declared_pngs(repo: Path) -> list[str]:
+    out = []
+    for line in (repo / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines():
+        entry = line.strip()
+        if entry and not entry.startswith("#") and entry.lower().endswith(".png") and entry.startswith(FOLDERS):
+            out.append(entry)
+    return sorted(set(out))
+
+
+def excluded(relative: str, digest: str) -> str | None:
+    """The review verdict for a file that is not authored art, or None. Refuses a changed file at a reviewed path."""
+    row = NOT_AUTHORED.get(relative)
+    if row is None:
+        row = next((v for (folder, name), v in NOT_AUTHORED_BY_NAME.items()
+                    if relative.startswith(folder) and relative.rsplit("/", 1)[-1] == name), None)
+    if row is None:
+        return None
+    if row[0] != digest:
+        raise SystemExit(f"{relative} changed since its review (was {row[0][:12]}, now {digest[:12]}): review it again")
+    return row[1]
+
+
+def build(repo: Path) -> tuple[dict, dict]:
+    files, refused = {}, {}
+    for relative in declared_pngs(repo):
+        data = (repo / relative).read_bytes()
+        width, height = png_size(data, relative)
+        reason = excluded(relative, sha256(data))
+        if reason is not None:
+            refused[relative] = dict(sha256=sha256(data), size=len(data), reason=reason)
+            continue
+        files[relative] = dict(height=height, sha256=sha256(data), size=len(data), width=width)
+    on_disk = sorted(p.relative_to(repo).as_posix() for folder in FOLDERS for p in (repo / folder).rglob("*.png"))
+    undeclared = sorted(set(on_disk) - set(files) - set(refused))
+    if undeclared:
+        raise SystemExit("PNG files under the reviewed folders are not in the release allowlist: " + ", ".join(undeclared))
+    return dict(classification=CLASSIFICATION, files=files, schema=SCHEMA), refused
+
+
+def render(document: dict) -> bytes:
+    return (json.dumps(document, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--repo", default=str(Path(__file__).resolve().parents[2]))
+    parser.add_argument("--check", action="store_true", help="refuse when the committed catalog differs")
+    args = parser.parse_args()
+    repo = Path(args.repo).resolve()
+    document, refused = build(repo)
+    data = render(document)
+    target = repo / CATALOG
+    stale = (target.read_bytes() if target.is_file() else b"") != data
+    if not args.check:
+        with open(target, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(data.decode("utf-8"))
+    by_folder = {}
+    for relative in document["files"]:
+        key = relative.split("/")[1]
+        by_folder[key] = by_folder.get(key, 0) + 1
+    print(json.dumps(dict(catalog=CATALOG, sha256=sha256(data), files=len(document["files"]), by_folder=by_folder,
+                          not_catalogued=len(refused)), sort_keys=True))
+    for relative, row in sorted(refused.items()):
+        print(f"NOT_AUTHORED {relative} {row['sha256'][:12]} {row['reason']}")
+    if args.check and stale:
+        print("MODERN_ART_PNG_CATALOG_STALE", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
