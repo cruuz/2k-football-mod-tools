@@ -601,6 +601,7 @@ data/nfl2k5_kit_fixes_2026_alts.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
 mod_editor/core/nfl2k5_letter_grades.py
+mod_editor/core/nfl2k5_letter_grades_attributes.py
 mod_editor/core/nfl2k5_letter_grades_code.py
 mod_editor/core/nfl2k5_letter_grades_progress.py
 mod_editor/core/nfl2k5_period_goalposts.py

@@ -35,6 +35,11 @@ from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 
+# Keep the historical F4/F4b byte pins covered. lg2's default is tested separately.
+def legacy_apply(payload, **options):
+    return lg.apply(payload, all_ratings=False, **options)
+
+
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_CS = importlib.util.find_spec("capstone") is not None
 V05_DISC = Path(os.environ.get("NFL2K5_V05_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.5 (2026-10-06).xiso.iso"))
@@ -228,7 +233,7 @@ class AllocatorTests(unittest.TestCase):
         from mod_editor.gui import beta62_options
         self.assertIn("letter_grades", beta62_options.KEYS)
         row = [r for r in beta62_options.OPTIONS if r[0] == "letter_grades"][0]
-        self.assertEqual(row[1], "Letter grades in Franchise")
+        self.assertEqual(row[1], "Letter grades for all player ratings")
         self.assertIn("95+ A+", row[2])
         self.assertIn("letter_grades", __import__("mod_editor.core.nfl2k5_build_settings", fromlist=["x"]).FEATURE_KEYS)
 
@@ -329,19 +334,19 @@ class RetailNativeTests(unittest.TestCase):
             cls.retail = _retail()
         except unittest.SkipTest as exc:
             raise unittest.SkipTest(str(exc))
-        cls.patched, cls.receipt = lg.apply(cls.retail)
+        cls.patched, cls.receipt = legacy_apply(cls.retail)
 
     def test_status_apply_and_replay(self) -> None:
         self.assertEqual(lg.status(self.retail), "retail")
         self.assertEqual(lg.status(self.patched), "applied")
         self.assertEqual(lg.read_settings(self.patched)["bands"][0], {"minimum": 95, "label": "A+"})
-        again, receipt = lg.apply(self.patched)
+        again, receipt = legacy_apply(self.patched)
         self.assertEqual(again, self.patched)
         self.assertTrue(receipt["already_applied"])
         self.assertEqual(len(self.receipt["sites"]), 28)
         self.assertEqual(self.receipt["owner_bytes"], 400)
         with self.assertRaises(lg.LetterGradesError):
-            lg.apply(self.patched, bands=((90, "A"), (None, "F")))
+            legacy_apply(self.patched, bands=((90, "A"), (None, "F")))
 
     def test_foreign_and_mixed_installations_are_refused(self) -> None:
         for label, va, before, after in lg.sites(0x14DA000, 0x1507000):
@@ -350,7 +355,7 @@ class RetailNativeTests(unittest.TestCase):
             broken[off] ^= 0x01
             self.assertEqual(lg.status(bytes(broken)), "foreign", label)
             with self.assertRaises(ValueError):
-                lg.apply(bytes(broken))
+                legacy_apply(bytes(broken))
         # a retail executable with one site already patched is mixed, not retail
         off = rdata.offset_of(self.retail, 0x31F71E)
         mixed = bytearray(self.retail)
@@ -364,7 +369,7 @@ class RetailNativeTests(unittest.TestCase):
 
     def test_a_custom_band_table_installs_and_reads_back(self) -> None:
         bands = ((90, "G"), (70, "OK"), (None, "X"))
-        patched, _ = lg.apply(self.retail, bands=bands)
+        patched, _ = legacy_apply(self.retail, bands=bands)
         self.assertEqual(lg.status(patched), "applied")
         self.assertEqual(lg.normalize_bands([(r["minimum"], r["label"]) for r in lg.read_settings(patched)["bands"]]), bands)
 
@@ -381,8 +386,8 @@ class RetailNativeTests(unittest.TestCase):
         self.assertEqual(sorted((r["owner"], r["kind"]) for r in after if r["owner"] == lg.OWNER),
                          [(lg.OWNER, "code"), (lg.OWNER, "read_only")])
         # the new owner then installs, and the result equals a build that asked for both owners at once
-        installed, _ = lg.apply(grown)
-        direct, _ = lg.apply(space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)[0])
+        installed, _ = legacy_apply(grown)
+        direct, _ = legacy_apply(space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)[0])
         self.assertEqual(installed, direct)
         # refusals: an owner that is not late, a second append, a legacy (not sealed) image
         with self.assertRaises(ValueError):
@@ -397,13 +402,13 @@ class RetailNativeTests(unittest.TestCase):
     def test_the_owner_installs_in_either_order_with_k128(self) -> None:
         from mod_editor.core import nfl2k5_k128 as k128
         union, _ = space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)
-        a, _ = lg.apply(k128.apply(union)[0])
-        b, _ = k128.apply(lg.apply(union)[0])
+        a, _ = legacy_apply(k128.apply(union)[0])
+        b, _ = k128.apply(legacy_apply(union)[0])
         self.assertEqual(a, b)
         self.assertEqual((lg.status(a), k128.status(a)), ("applied", "applied"))
         # K128 alone, then the late append on its installed image, ends the same as the union build
         only, _ = k128.apply(self.retail)
-        appended, _ = lg.apply(only)
+        appended, _ = legacy_apply(only)
         self.assertEqual(appended, a)
 
 
@@ -415,7 +420,7 @@ class PrintfAndFormatterTests(unittest.TestCase):
             cls.retail = _retail()
         except unittest.SkipTest as exc:
             raise unittest.SkipTest(str(exc))
-        cls.patched, _ = lg.apply(cls.retail)
+        cls.patched, _ = legacy_apply(cls.retail)
         from tests.nfl2k5_supersim_draft_fixture import Machine
         cls.m = Machine(cls.patched, trace_writes=False)
         cls.m0 = Machine(cls.retail, trace_writes=False)

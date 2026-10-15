@@ -233,7 +233,7 @@ def _encode_menu(source):
     return bytes(encoded)
 
 
-def code_for(code_va, data_va):
+def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
     out = bytearray(assembly.CODE)
@@ -254,6 +254,11 @@ def code_for(code_va, data_va):
             text_pool.extend((value + "\0").encode("ascii"))
             return
         content = (value + "\0").encode("utf-16le")
+        if letter_grades:
+            from . import nfl2k5_letter_grades_attributes as grades
+            for label, text, rating in grades.CAREER_PROSPECTS:
+                if name == label:
+                    content = grades.prospect_bytes(text, rating, grade_bands or grades.lg.DEFAULT_BANDS)
         at = reserve(name, len(content))
         out[at:at + len(content)] = content
 
@@ -284,7 +289,8 @@ def code_for(code_va, data_va):
         ("m3_upgrade_text", "Upgrades"), ("m3_prev_text", "Previous attribute"),
         ("m3_next_text", "Next attribute"), ("m3_buy_text", "Buy one point"),
         ("m3_back_text", "Back"),
-        ("m3_upgrade_format", "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
+        ("m3_upgrade_format", "%s: %R. Cap %R. Cost %u XP. Balance %u XP." if letter_grades
+         else "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
         ("m3_calendar_format", "Week %u. %u/%u/%u at %02u:%02u"),
         ("m3_pick_format", "Round %u, pick %u"),
         ("m3_confirm_text", "Buy one attribute point?"),
@@ -657,7 +663,13 @@ def _recognize(payload):
         legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
         blob = image.read(code["va"], CODE_SIZE)
         if blob != b"\xcc" * CODE_SIZE:
-            legacy.require(blob == code_for(code["va"], data["va"])[0], "mixed generic MyCareer install")
+            expected = code_for(code["va"], data["va"])[0]
+            if blob != expected:
+                from . import nfl2k5_letter_grades as grades
+                legacy.require(grades.status(payload) == "applied", "MyCareer grade formatter missing")
+                expected = code_for(code["va"], data["va"], letter_grades=True,
+                                    grade_bands=grades._owned_state(payload)[2])[0]
+            legacy.require(blob == expected, "mixed generic MyCareer install")
             state = "applied"
     legacy.require(rdata.status(payload, edits) == state, "mixed generic MyCareer hooks/code")
     check_context(payload, edits, installed=state == "applied")
@@ -683,7 +695,12 @@ def apply(payload):
     if space.status(payload) == "retail":
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     code, data = legacy.allocations(payload)
-    blob, labels = code_for(code["va"], data["va"])
+    from . import nfl2k5_letter_grades as grades
+    graded = XbeImage(payload).read(0x541288, 4) == grades.GRADE_FLAGS
+    if graded:
+        legacy.require(grades.status(payload) == "applied", "MyCareer grade formatter missing")
+    blob, labels = code_for(code["va"], data["va"], letter_grades=graded,
+                            grade_bands=grades._owned_state(payload)[2] if graded else None)
     common["code_bytes"] = labels["content_end"] - code["va"]
     common["code_spare_bytes"] = TAG_OFFSET - common["code_bytes"]
     if state == "applied":
