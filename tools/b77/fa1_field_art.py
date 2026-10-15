@@ -4,10 +4,15 @@
 Everything here is drawn from geometry in this file. Reference photographs were
 only looked at while choosing the geometry; none is read, traced or shipped.
 
-giants   the MetLife midfield helmet (s18 center_logo, 256x256). The shell is an
-         ellipse fitted to the accepted silhouette (mean deviation 0.7 texel),
-         the lower contour is a few cubic curves, and every facemask bar has one
-         constant width. The accepted ny pixels are kept exactly.
+giants         the MetLife midfield helmet (s18 center_logo, 256x256). The shell is
+               an ellipse fitted to the accepted silhouette (mean deviation 0.7
+               texel), the lower contour is a few cubic curves, and every facemask
+               bar has one constant width. The accepted ny pixels are kept exactly.
+washington     REDSKINS for Anniversary row 10 (768x104 lettering layer).
+raiders        RAIDERS for Anniversary rows 2 and 5.
+numbers-block  modern block yard numerals in the native 256x256 ``numbers`` atlas
+               cells; no Studio input consumes it yet, so it needs --out.
+seal           upsert this job's rows in the reviewed PNG catalogs, move the pins.
 """
 from __future__ import annotations
 
@@ -203,9 +208,9 @@ class Glyphs:
     Coordinates are band texels; ``t`` is the stem, ``th`` the horizontal bar, ``h`` the cap height.
     """
 
-    def __init__(self, h, t, th, radius):
+    def __init__(self, h, t, th, radius, size=(BAND_W, BAND_H)):
         self.h, self.t, self.th, self.r = h, t, th, radius
-        self.im = Image.new("L", (BAND_W * S, BAND_H * S), 0)
+        self.im = Image.new("L", (size[0] * S, size[1] * S), 0)
         self.d = ImageDraw.Draw(self.im)
 
     def _xy(self, pts):
@@ -279,6 +284,64 @@ class Glyphs:
             self.letter(c, x, y, widths[c])
             x += widths[c] + 2 * outline + gap
         return width
+
+
+    def digit(self, ch, x0, y0, x1, y1):
+        """A block numeral filling the box; ``h0`` is the left half of a zero whose mirror axis is x1."""
+        t, th, r = self.t, self.th, self.r
+        w = x1 - x0; mid = (y0 + y1) / 2
+        if ch == "h0":
+            x2 = x1 + w
+            self.ring(x0, y0, x2, y1, t, th, (True, True, True, True))
+            self.rect(x1, y0 - 1, x2 + 1, y1 + 1, fill=0)
+        elif ch == "1":
+            flag = w * 0.42
+            self.rect(x1 - t, y0, x1, y1)
+            self.rect(x1 - t - flag, y0, x1, y0 + th)
+        elif ch == "2":
+            spur = (y1 - y0) * 0.14
+            self.ring(x0, y0, x1, mid + th / 2, t, th, (True, True, True, False))
+            self.rect(x0 - 0.5, y0 + th + spur, x0 + t + 0.5, mid + th / 2 + 0.5, fill=0)
+            self.d.rounded_rectangle(self._xy([(x0, mid - th / 2), (x1 - r, y1)]), radius=r * S, fill=255,
+                                     corners=(True, False, False, False))
+            self.rect(x0 + t, mid + th / 2, x1 + 0.5, y1 - th, fill=0)
+            self.rect(x0, y1 - th, x1, y1)
+        elif ch == "3":
+            self.ring(x0, y0, x1, y1, t, th, (False, True, True, False))
+            self.rect(x0 - 0.5, y0 + th, x0 + t + 0.5, y1 - th, fill=0)
+            self.rect(x0 + w * 0.30, mid - th / 2, x1, mid + th / 2)
+        elif ch == "4":
+            cross = y0 + (y1 - y0) * 0.60
+            stem = x1 - t * 1.2
+            self.rect(x0, y0, x0 + t, cross + th)
+            self.rect(x0, cross, x1, cross + th)
+            self.rect(stem - t, y0 + (y1 - y0) * 0.30, stem, y1)
+        elif ch == "5":
+            spur = (y1 - y0) * 0.14
+            self.rect(x0, y0, x1, y0 + th)
+            self.rect(x0, y0, x0 + t, mid + th / 2)
+            self.ring(x0, mid - th / 2, x1, y1, t, th, (False, True, True, True))
+            self.rect(x0 - 0.5, mid + th / 2, x0 + t + 0.5, y1 - th - spur, fill=0)
+        else:
+            raise ValueError(ch)
+
+
+#: Native ``numbers`` atlas glyph boxes (256 texels): the retail ink bounds inside each sampled UV cell.
+NUMBER_BOXES = {"h0": (17, 11, 52.02, 116), "2": (89.5, 13, 161.5, 116), "4": (170, 12, 245, 115),
+                "1": (12, 143, 75, 244), "3": (91, 141, 162, 246), "5": (177, 141, 248, 246)}
+#: Modern block numerals (Lucas Oil, Nissan, U.S. Bank, Paycor in 2025-26 game frames): white, no edge.
+BLOCK_NUMBERS = dict(t=19.0, th=17.5, radius=17.0, fill=(245, 246, 247))
+
+
+def number_atlas(spec=BLOCK_NUMBERS):
+    g = Glyphs(0, spec["t"], spec["th"], spec["radius"], size=(256, 256))
+    for ch, box in NUMBER_BOXES.items():
+        g.digit(ch, *box)
+    body = np.asarray(g.im, float) / 255.0
+    k = S
+    a = body.reshape(256, k, 256, k).mean(axis=(1, 3))
+    rgb = np.broadcast_to(np.asarray(spec["fill"], float), (256, 256, 3))
+    return Image.fromarray(np.dstack([rgb, a * 255]).round().clip(0, 255).astype(np.uint8), "RGBA")
 
 
 def lettering(text, h, t, th, radius, widths, gap, outline, fill, edge, cx=BAND_W / 2):
@@ -376,7 +439,7 @@ def seal(check=False):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("item", choices=["giants", "washington", "raiders", "seal"])
+    p.add_argument("item", choices=["giants", "washington", "raiders", "numbers-block", "seal"])
     p.add_argument("--out", type=Path, help="write here instead of the repository input")
     p.add_argument("--check", action="store_true", help="seal: report only, exit 1 when stale")
     a = p.parse_args(argv)
@@ -386,6 +449,9 @@ def main(argv=None):
         image = giants_helmet()
         target = a.out or HELMET
         print(json.dumps({"file": str(target.name), "sha256": save_png(image, target)}))
+    if a.item == "numbers-block":
+        p.error("numbers-block has no Studio input yet; pass --out") if not a.out else None
+        print(json.dumps({"file": a.out.name, "sha256": save_png(number_atlas(), a.out)}))
     if a.item in LETTERING:
         spec, rows = LETTERING[a.item]
         image = lettering_art(spec)
