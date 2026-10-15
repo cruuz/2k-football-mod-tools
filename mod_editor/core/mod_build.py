@@ -3891,6 +3891,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             icon_receipt = uf3_icon.apply_to_image(target)
             if icon_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "menu_icon_uf3", **icon_receipt})
+        # b773-hu1: Washington's Team Select helmet cards and schedule miniatures carry the 2026 helmet W uf3 drew in
+        # game; only the exact known card art changes, retail and user art are left alone.
+        helmet_w = _core_module("nfl2k5_menu_helmet_w2026")
+        if helmet_w is not None:
+            helmet_receipt = helmet_w.apply_to_image(target)
+            if helmet_receipt["written"] or helmet_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_helmet_w2026", **helmet_receipt})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.

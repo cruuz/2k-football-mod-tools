@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 from tools.b77 import hu1_repair as repair
 
 PACK = ROOT/'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0'
+DISC = os.environ.get('NFL2K5_HU1_DISC')
 
 
 class RepairTests(unittest.TestCase):
@@ -56,7 +57,7 @@ class RepairTests(unittest.TestCase):
         writes = list(repair.differences(before, after, 0))
         spans = [(3, 2, 'TXTR a'), (12, 1, 'TXTR b')]
         pins = dict(disc_size=len(before), inputs={repair.sha(before): dict(label='synthetic', after=repair.sha(after))})
-        planned = lambda image, _pins: ([] if image.read(len(after), 0) == after else writes, spans, 0, after, {'x': (0, len(after))})
+        planned = lambda image, _pins, _path=None: ([] if image.read(len(after), 0) == after else writes, spans, 0, after, {'x': (0, len(after))})
         with tempfile.TemporaryDirectory() as folder:
             folder = Path(folder)
             disc, pinfile, receipt = folder/'synthetic', folder/'pins', folder/'receipt'
@@ -106,6 +107,24 @@ class RepairTests(unittest.TestCase):
             off, size = offsets[row['name']]
             self.assertEqual((off, size), (row['appendix_offset'], row['size']))
             self.assertEqual(repair.sha(data[off:off+size]), row['after_sha256'], row['name'])
+
+    def test_menu_stage_follows_the_studio_document(self):
+        source = (ROOT/'tools/b77/hu1_repair.py').read_text(encoding='utf-8')
+        self.assertIn('helmets.paint(before, doc[\'model\'], target)', source)
+        self.assertEqual(source.count('plan(disc, pins, path)') + source.count('plan(overlay, pins, path)'), 4)
+
+    @unittest.skipUnless(DISC, 'set NFL2K5_HU1_DISC (the v0.6.1 base disc, read only) for native integration')
+    def test_menu_stage_on_the_base_disc(self):
+        fd = os.open(DISC, os.O_RDONLY | getattr(os, 'O_BINARY', 0))
+        try:
+            image = repair.Image(fd, os.fstat(fd).st_size)
+            writes, spans = repair.menu(image, Path(DISC))
+            self.assertEqual(len(spans), 8)
+            self.assertTrue(all(o <= w < o+s for w, _, _ in writes for o, s, _ in [next(x for x in spans if x[0] <= w < x[0]+x[1])]))
+            replay, _ = repair.menu(repair.Image(fd, image.size, writes), Path(DISC))
+            self.assertEqual(replay, [])
+        finally:
+            os.close(fd)
 
 
 if __name__ == '__main__':
