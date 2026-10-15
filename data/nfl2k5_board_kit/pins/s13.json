@@ -94,7 +94,7 @@
     },
     {
       "length": 926368,
-      "model_sha256": "55aa9676ae33a87b0263e9cd2530a9c92fedef4bbcfa06a849fa3d1c08710081",
+      "model_sha256": "d020affd2fdaa2c055d9122a096cb6a9fdba71a51a1cef73aee465c378c8d549",
       "name": "s13ar.iff",
       "offset": 452880,
       "published": {
@@ -109,7 +109,7 @@
       "retail_sha256": "e68f464d65bb8329394b170bea54a87e834347a47906410946d0f7ac4fe6b57e",
       "retail_system": 578944,
       "retail_video": 884864,
-      "scratch": 48,
+      "scratch": 64,
       "size": 1477344,
       "system": 567552,
       "vertices": 17586,
@@ -186,7 +186,7 @@
     },
     {
       "length": 969104,
-      "model_sha256": "68d04462eaf05ab71029b9d57da26f78d4730f1344feae2d7977b5a022f5cf88",
+      "model_sha256": "7b97310ee25cac5e13dcdd19a9f67184909a665cbe8dec6999455b21092044f7",
       "name": "s13ns.iff",
       "offset": 406112,
       "published": {
