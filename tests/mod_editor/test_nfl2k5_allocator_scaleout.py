@@ -45,7 +45,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(sprite['size'], 5376)  # beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
         self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
-                         [106496, 86016, 20480])
+                         [107008, 86016, 19968])  # 512 bytes move from directory capacity to the named code spill.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
                          [0, 0, 48])  # the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
         self.assertEqual(len(report['pages']), 52)
@@ -93,6 +93,38 @@ class PlannerTests(unittest.TestCase):
                                                       read_only_sha256=hashlib.sha256(b'ro').hexdigest()))
         self.assertEqual(plain[:12], sealed[:12])
         self.assertEqual(plain[76:], sealed[76:])
+
+    def test_tap_and_moment_coaches_fit_without_moving_existing_features(self):
+        requests = space.dormant_union()
+        before = space.plan(r for r in requests if r[0] != space.DIRECTORY_CODE_OWNER)
+        after = space.plan(requests)
+        self.assertEqual(before['file_size'], after['file_size'])
+        for row in before['allocations']:
+            if row['owner'] != space.DIRECTORY_OWNER:
+                self.assertIn(row, after['allocations'])
+        directory = next(r for r in after['allocations'] if r['owner'] == space.DIRECTORY_OWNER)
+        code = next(r for r in after['allocations'] if r['owner'] == space.DIRECTORY_CODE_OWNER)
+        self.assertEqual((directory['size'], code['size']), (3584, 512))
+        for coordinate in ('raw', 'va'):
+            self.assertEqual(directory[coordinate] + directory['size'], code[coordinate])
+            self.assertEqual(code[coordinate] + code['size'], directory[coordinate] + space.PAGE)
+        region = next(r for r in after['regions'] if r['raw'] <= code['raw'] < r['raw'] + r['size'])
+        self.assertEqual(region['flags'], 0x36)
+        self.assertFalse(region['flags'] & 1)  # Still not writable.
+
+    def test_directory_spill_contract_and_compressed_capacity_are_bounded(self):
+        for kind, size, align in [('data', 512, 16), ('code', 513, 16), ('code', 512, 32)]:
+            with self.subTest(kind=kind, size=size, align=align), self.assertRaisesRegex(ValueError, 'directory code'):
+                space.plan([(space.DIRECTORY_CODE_OWNER, kind, size, align)])
+        seals = dict(code_sha256='0'*64, read_only_sha256='0'*64)
+        with patch.object(space.zlib, 'compress', return_value=b'x'*3508):
+            block = space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            self.assertEqual(len(block), space.PAGE)
+            self.assertEqual(block[-512:], b'\xcc'*512)
+        with patch.object(space.zlib, 'compress', return_value=b'x'*3509):
+            with self.assertRaisesRegex(ValueError, 'directory capacity'):
+                space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            self.assertEqual(len(space._scale_directory([], seals)), space.PAGE)
 
     def test_cli_text_json_and_refusal_without_build_or_output(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -189,7 +221,7 @@ class SyntheticTests(unittest.TestCase):
         for region in space.layout(self.grown)['regions']:
             section = image.section(region['va'], region['size'])
             self.assertEqual(section.writable, region['kind'] == 'data')
-            self.assertEqual(section.executable, region['kind'] == 'code')
+            self.assertEqual(section.executable, bool(region['flags'] & 4))
             head, tail = struct.unpack_from('<II', self.grown, section.header + 28)
             self.assertEqual(tail-head, 2 if region['size'] > 4096 else 0)
             self.assertEqual(image.read(head, 2), bytes(2))
@@ -216,6 +248,36 @@ class SyntheticTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'exact'):
             space.install_code(grown, 'synthetic_scaleout', code[:-1])
 
+    def test_directory_code_survives_other_owner_writes_and_detects_corruption(self):
+        code = b'\x90'*511 + b'\xc3'
+        grown, _ = space.install_code(self.grown, space.DIRECTORY_CODE_OWNER, code)
+        grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R'*LARGE[1][2])
+        grown, _ = space.install_code(grown, 'synthetic_scaleout', b'\x90'*LARGE[0][2])
+        self.assertEqual(space.status(grown), 'applied')
+        row = next(a for a in space.layout(grown)['allocations'] if a['owner'] == space.DIRECTORY_CODE_OWNER)
+        image = XbeImage(grown)
+        self.assertEqual(image.read(row['va'], 512), code)
+        self.assertTrue(image.section(row['va']).executable)
+        self.assertFalse(image.runtime_writable(row['va'], 512))
+        for offset in (row['raw']-1, row['raw'], row['raw']+511):
+            broken = bytearray(grown)
+            broken[offset] ^= 1
+            self.assertEqual(space.status(bytes(broken)), 'foreign')
+
+    def test_directory_code_extension_preserves_features_and_executable_extent(self):
+        requests = tuple(r for r in REQUESTS + LARGE if r[0] != space.DIRECTORY_CODE_OWNER)
+        before, _ = space.apply(self.retail, requests)
+        after, receipt = space.extend_scaleout(before, (space.DIRECTORY_CODE_REQUEST,))
+        self.assertEqual(len(after), len(before))
+        self.assertTrue(receipt['existing_feature_allocations_unchanged'])
+        self.assertFalse(receipt['existing_allocations_unchanged'])
+        self.assertEqual(receipt['directory_tail_reassigned_bytes'], 512)
+        self.assertEqual(space.status(after), 'applied')
+        for row in space.layout(before)['allocations']:
+            if row['owner'] != space.DIRECTORY_OWNER:
+                self.assertIn(row, space.layout(after)['allocations'])
+                at, size = row['raw'], row['size']
+                self.assertEqual(before[at:at+size], after[at:at+size])
     def test_corruption_and_resealed_unknown_bytes_refuse_before_mutation(self):
         offsets = [0x104, 0x108, 0x10C, 0x11C, 0x120, 0x14C, 0x150, 0x154,
                    0x178, 0x17C, space.META_COPY, space.SCALE_NAMES, space.DEBUG_COPY, space.LIB_COPY,

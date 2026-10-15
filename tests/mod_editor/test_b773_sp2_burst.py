@@ -7,6 +7,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -50,9 +51,21 @@ class HumanBurstTests(unittest.TestCase):
         self.assertEqual(abilities.apply(self.fixed)[1]["changed_bytes"], 0)
         self.assertEqual(human.apply(self.fixed)[0], self.fixed)
         self.assertTrue(all(a in space.layout(self.fixed)["allocations"]
-                            for a in space.layout(self.base)["allocations"]))
+                            for a in space.layout(self.base)["allocations"]
+                            if a['owner'] != space.DIRECTORY_OWNER))
+        old = next(a for a in space.layout(self.base)['allocations'] if a['owner'] == space.DIRECTORY_OWNER)
+        new = next(a for a in space.layout(self.fixed)['allocations'] if a['owner'] == space.DIRECTORY_OWNER)
+        self.assertEqual(new, dict(old, size=space.PAGE-human.CODE_SIZE))
         self.assertEqual(abilities.read_settings(self.base), abilities.read_settings(self.fixed))
         self.assertEqual(len(self.base), len(self.fixed))
+
+    def test_legacy_gap_install_keeps_the_authors_exact_hash_and_replays(self):
+        with patch.object(human, 'REQUESTS', ((human.LEGACY_OWNER, 'code', 512, 16),)):
+            legacy = abilities.apply(self.base)[0]
+        self.assertEqual(hashlib.sha256(legacy).hexdigest(),
+                         'a1304b2c59290d019a1edbcfb128985f191595141c631a15f230081396b40959')
+        self.assertEqual(human.status(legacy), 'applied')
+        self.assertEqual(abilities.apply(legacy)[0], legacy)
 
     def test_dike_speed70_and_curve_through_real_pad_layouts(self):
         for raw in (self.fixed, self.fresh):
@@ -146,8 +159,8 @@ class HumanBurstTests(unittest.TestCase):
             before.write_bytes(self.base)
             after.write_bytes(self.base)
             written = repair.repair_executable(after)
-            self.assertEqual(written["changed_bytes"], 1179)
-            self.assertEqual(written["written_bytes"], 4710)
+            self.assertEqual(written["changed_bytes"], 1291)
+            self.assertEqual(written["written_bytes"], 4182)
             self.assertEqual(after.read_bytes(), self.fixed)
             replay = repair.repair_executable(after)
             self.assertEqual((replay["changed_bytes"], replay["written_bytes"]), (0, 0))

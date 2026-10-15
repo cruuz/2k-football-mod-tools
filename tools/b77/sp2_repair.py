@@ -20,18 +20,18 @@ from mod_editor.core import xdvdfs_compact as xd
 
 BASE_DISC_SHA256 = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BASE_XBE_SHA256 = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
-RESULT_DISC_SHA256 = "0123f8a4deaa571315b8ddfc35d88b1131330fc083f06bdfb8078fbeb784d53e"
-RESULT_XBE_SHA256 = "a1304b2c59290d019a1edbcfb128985f191595141c631a15f230081396b40959"
+RESULT_DISC_SHA256 = "1aeb6659878488abda91577a5f8810ffe937f52a99174115b86c9e2fcccf404f"
+RESULT_XBE_SHA256 = "d8dec1690641713522b8a1a2e335c231b59a019e0ced6cca13c481551318b7cc"
 DISC_SIZE, XBE_SIZE, XBE_OFFSET = 6004408320, 12300288, 2398208
 SCOPE = (
-    (916, 936, 'derived section SHA-1'),
-    (2316, 2336, 'derived section SHA-1'),
-    (2428, 2448, 'derived section SHA-1'),
+    (916, 936, 'derived text section SHA-1'),
+    (2392, 2396, 'read-only executable section flags'),
+    (2428, 2448, 'derived directory section SHA-1'),
     (3508, 3540, 'allocator directory SHA-256'),
     (3141448, 3141453, 'initialize hook'),
     (3141563, 3141568, 'update hook'),
-    (12131920, 12132432, 'human burst code'),
-    (12279808, 12283904, 'sealed allocator directory'),
+    (12279808, 12283392, 'bounded allocator directory'),
+    (12283392, 12283904, 'named human burst code'),
 )
 
 

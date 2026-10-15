@@ -510,8 +510,20 @@
   16
  ],
  [
-  "nfl2k5_human_tap_burst",
+  "nfl2k5_human_tap_burst_spill",
   "code",
+  512,
+  16
+ ],
+ [
+  "nfl2k5_moment_coaches",
+  "code",
+  512,
+  16
+ ],
+ [
+  "nfl2k5_moment_coaches",
+  "data",
   512,
   16
  ]

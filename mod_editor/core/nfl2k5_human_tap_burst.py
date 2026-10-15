@@ -6,6 +6,9 @@ expiry without resetting native elapsed time or removing native repeat extra.
 CPU bursts and charged bursts retain native behavior. Max stores preserve
 existing star benefits. No rating, permission, charge or Speedster field changes.
 The successful initializer tail and native throttle call are the only hooks.
+New builds use the allocator's bounded directory-tail code reservation, leaving
+the moment-coach gap available. The earlier gap owner remains readable and
+replays without moving or rewriting its already installed code.
 """
 from __future__ import annotations
 
@@ -16,7 +19,8 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 from .nfl2k5_draft_ai import _Asm
 
-OWNER = "nfl2k5_human_tap_burst"
+LEGACY_OWNER = "nfl2k5_human_tap_burst"
+OWNER = space.DIRECTORY_CODE_OWNER
 CODE_SIZE = 512
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 HOOKS = (("initialize", 0x30EF48, bytes.fromhex("e98331d9ff")),
@@ -93,7 +97,7 @@ def sites(labels):
 def _inspect(payload):
     layout = space.layout(payload)
     image = XbeImage(payload)
-    rows = [a for a in layout["allocations"] if a["owner"] == OWNER]
+    rows = [a for a in layout["allocations"] if a["owner"] in (OWNER, LEGACY_OWNER)]
     state, labels = "retail", None
     if rows:
         space._require(len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"])
@@ -135,8 +139,9 @@ def normalize_sp1_guard(payload, va, data):
 def reservations(payload):
     if status(payload) != "applied":
         return []
-    out = [r for r in space.reservations(payload) if r["owner"] == OWNER]
-    return out + [dict(owner=OWNER, start=hex(va), end=hex(va+len(before)), size=len(before),
+    out = [r for r in space.reservations(payload) if r["owner"] in (OWNER, LEGACY_OWNER)]
+    owner = out[0]["owner"]
+    return out + [dict(owner=owner, start=hex(va), end=hex(va+len(before)), size=len(before),
                        basis="human ordinary tap " + name + "; pinned native site")
                   for name, va, before in HOOKS]
 
@@ -148,9 +153,9 @@ def apply(payload):
     if state == "applied":
         return payload, dict(status="already_applied", changed_bytes=0, edits=[])
     allocated, allocation = (payload, {}) if rows else space.extend_scaleout(payload, REQUESTS)
-    a = next(r for r in space.layout(allocated)["allocations"] if r["owner"] == OWNER)
+    a = next(r for r in space.layout(allocated)["allocations"] if r["owner"] in (OWNER, LEGACY_OWNER))
     code, labels, length = code_for(a["va"])
-    installed, _ = space.install_code(allocated, OWNER, code)
+    installed, _ = space.install_code(allocated, a["owner"], code)
     image, buf, edits = XbeImage(installed), bytearray(installed), []
     for name, va, before, after in sites(labels):
         off = image.offset(va, len(before))
