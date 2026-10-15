@@ -81,7 +81,8 @@ class ContractTests(unittest.TestCase):
   for preset in ('softdrink_basic','softdrink_advanced','softdrink_experimental'):
    try:plan=build.apply_preset(build.BuildPlan(source="source",target="target"),preset)
    except ValueError:continue
-   self.assertFalse(plan.scorebug_runtime)
+   # b773 nm1/i4: only the Experimental preset installs the sprite scorebug (the private indicator-name FONT lives in its appended scene)
+   self.assertEqual(plan.scorebug_runtime,preset=='softdrink_experimental')
 
 class LogoFitTests(unittest.TestCase):
  def test_complete_wide_marks_keep_the_configured_proportions(self):

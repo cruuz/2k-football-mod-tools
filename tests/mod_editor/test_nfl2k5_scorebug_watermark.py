@@ -43,7 +43,8 @@ class ContractTests(unittest.TestCase):
    self.assertEqual(saved.to_plan(saved.from_plan(plan),'','').scorebug_watermark,mode)
   for name in ('softdrink_basic','softdrink_advanced','softdrink_experimental'):
    plan=build.apply_preset(build.BuildPlan('',''),name)
-   self.assertFalse(plan.scorebug_runtime);self.assertEqual(plan.scorebug_watermark,'auto')
+   # b773 nm1/i4: only the Experimental preset installs the sprite scorebug (the private indicator-name FONT lives in its appended scene)
+   self.assertEqual(plan.scorebug_runtime,name=='softdrink_experimental');self.assertEqual(plan.scorebug_watermark,'auto')
   with self.assertRaises(ValueError):saved.build_settings({'scorebug_watermark':'bad'})
 
 
