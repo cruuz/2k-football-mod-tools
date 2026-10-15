@@ -10,6 +10,7 @@ from contextlib import contextmanager, ExitStack
 import hashlib
 import heapq
 import json
+import mmap
 import os
 from pathlib import Path
 import shutil
@@ -26,6 +27,7 @@ from . import xdvdfs_compact as xc
 BLOCK = 1024 * 1024
 GRAIN = 4096
 SOURCE_ALIGNMENT = 512
+COPY_SEED = 32
 RUN = struct.Struct("<QI32s32s")
 SOURCE_COPY = struct.Struct("<QQI32s32s")
 FILE_CONTRACT = "source-copy-v1"
@@ -119,70 +121,128 @@ def _digest(stream, offset, size, progress=None):
 
 
 def _retail_index(base, entry, progress, *, index=None, tag=0):
-    """4 KiB windows at 512-byte offsets, including windows across read blocks.
+    """Sparse byte anchors, independent of the destination alignment.
 
-    Hashes are lookup keys only. Every candidate is compared byte for byte.
-    Keep all offsets so even a hash collision cannot hide a retail match.
+    Keys contain the actual bytes, so a Python hash collision cannot authorize
+    a copy. One occurrence suffices: extension is checked against that source,
+    and any following anchors remain discoverable. Repetitive padding therefore
+    cannot create unbounded candidate lists.
     """
     index = {} if index is None else index
-    for at in range(0, max(0, entry.size - GRAIN + 1), BLOCK):
-        data = xc.read_at(base, entry.byte_offset + at, min(BLOCK + GRAIN - SOURCE_ALIGNMENT, entry.size - at))
-        for lo in range(0, min(BLOCK, len(data) - GRAIN + 1), SOURCE_ALIGNMENT):
-            key = hashlib.blake2b(data[lo:lo + GRAIN], digest_size=12).digest()
-            offsets = index.get(key)
-            if offsets is None:
-                index[key] = tag + at + lo
-            elif isinstance(offsets, int):
-                index[key] = [offsets, tag + at + lo]
-            else:
-                offsets.append(tag + at + lo)
+    for at in range(0, max(0, entry.size - COPY_SEED + 1), BLOCK):
+        data = xc.read_at(base, entry.byte_offset + at, min(BLOCK + COPY_SEED - 1, entry.size - at))
+        for lo in range(0, min(BLOCK, len(data) - COPY_SEED + 1), SOURCE_ALIGNMENT):
+            index.setdefault(data[lo:lo + COPY_SEED], tag + at + lo)
         progress("Indexing retail spans", min(at + BLOCK, entry.size), entry.size)
     return index
 
 
-def _edits(base, built, before, after, index, sources=None):
-    """Yield literal or source-copy records, coalesced to 1 MiB.
+@contextmanager
+def _retail_bytes(stream):
+    """Read-only mapping on Windows and POSIX; BytesIO supports synthetic tests."""
+    if hasattr(stream, "getvalue"):
+        yield stream.getvalue()
+    else:
+        with mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as data:
+            yield data
 
-    Unchanged grains stay implicit. Never trade retail references for a more
-    compressible full replacement. Literal grains always start on a file grain.
+
+def _common_edge(a, b, *, suffix=False):
+    """Exact common prefix/suffix length using bounded C-level comparisons."""
+    if a == b:
+        return len(a)
+    lo, hi = 0, min(len(a), len(b))
+    while lo < hi:
+        n = (lo + hi + 1) // 2
+        equal = a[-n:] == b[-n:] if suffix else a[:n] == b[:n]
+        if equal:
+            lo = n
+        else:
+            hi = n - 1
+    return lo
+
+
+def _extend_copy(retail, entry, source_at, data, anchor, left):
+    """Extend a verified seed to exact byte boundaries, never outside a file."""
+    absolute = entry.byte_offset + source_at
+    back_limit = min(anchor - left, source_at)
+    back = 0
+    step = 256
+    while back < back_limit:
+        size = min(step, back_limit - back)
+        common = _common_edge(retail[absolute - back - size:absolute - back],
+                              data[anchor - back - size:anchor - back], suffix=True)
+        back += common
+        if common < size:
+            break
+        step *= 2
+    limit = min(len(data) - anchor, entry.size - source_at)
+    forward = 0
+    step = 256
+    while forward < limit:
+        size = min(step, limit - forward)
+        common = _common_edge(retail[absolute + forward:absolute + forward + size],
+                              data[anchor + forward:anchor + forward + size])
+        forward += common
+        if common < size:
+            break
+        step *= 2
+    return anchor - back, anchor + forward, source_at - back
+
+
+def _edits(base, built, before, after, index, sources=None):
+    """Discover unaligned copies, extending both ends before writing literals.
+
+    A seed is sampled every 512 source bytes and searched at *every* destination
+    byte. Any identical run of at least 543 bytes contains a seed regardless of
+    its alignment. Extension includes shorter prefixes and tails. The lookahead
+    also discovers seeds beyond a 1 MiB output boundary before emitting its tail.
+    The wire remains source-copy-v1: every emitted run is at most 1 MiB.
     """
-    for at in range(0, after.size, BLOCK):
-        count = min(BLOCK, after.size - at)
-        old_count = max(0, min(count, before.size - at))
-        a = xc.read_at(base, before.byte_offset + at, old_count) if old_count else b""
-        b = xc.read_at(built, after.byte_offset + at, count)
-        spans = []
-        for lo in range(0, count, GRAIN):
-            hi = min(lo + GRAIN, count)
-            data = b[lo:hi]
-            if a[lo:hi] == data:
+    lookahead = SOURCE_ALIGNMENT + COPY_SEED - 1
+    with _retail_bytes(base) as retail:
+        for at in range(0, after.size, BLOCK):
+            count = min(BLOCK, after.size - at)
+            read_count = min(count + lookahead, after.size - at)
+            old_count = max(0, min(read_count, before.size - at))
+            a = retail[before.byte_offset + at:before.byte_offset + at + old_count]
+            b = xc.read_at(built, after.byte_offset + at, read_count)
+            if a[:count] == b[:count]:
                 continue
-            source_at, source_entry = None, None
-            if len(data) == GRAIN:
-                candidates = index.get(hashlib.blake2b(data, digest_size=12).digest(), ())
-                if isinstance(candidates, int):
-                    candidates = (candidates,)
-                for candidate in candidates:
+            spans = []
+            cursor = pos = 0
+            while pos + COPY_SEED <= len(b) and cursor < count:
+                seed = b[pos:pos + COPY_SEED]
+                # Prefer the original location, avoiding needless copy records
+                # and long searches through common zero/padding sequences.
+                if a[pos:pos + COPY_SEED] == seed:
+                    entry, offset = before, at + pos
+                else:
+                    candidate = index.get(seed)
+                    if candidate is None:
+                        pos += 1
+                        continue
                     entry = sources[candidate >> 32] if sources is not None else before
                     offset = candidate & 0xFFFFFFFF if sources is not None else candidate
-                    if xc.read_at(base, entry.byte_offset + offset, GRAIN) == data:
-                        source_at, source_entry = offset, entry
-                        break
-            if spans and spans[-1][1] == lo and (
-                    source_at is None and spans[-1][2] is None or
-                    source_at is not None and spans[-1][2] is not None and
-                    source_entry is spans[-1][3] and
-                    source_at == spans[-1][2] + lo - spans[-1][0]):
-                spans[-1] = (spans[-1][0], hi, spans[-1][2], source_entry)
-            else:
-                spans.append((lo, hi, source_at, source_entry))
-        for lo, hi, source_at, source_entry in spans:
-            old, new = a[lo:hi], b[lo:hi]
-            hashes = hashlib.sha256(old).digest(), hashlib.sha256(new).digest()
-            if source_at is None:
-                yield None, RUN.pack(at + lo, hi - lo, *hashes) + new, hi - lo
-            else:
-                yield source_entry, SOURCE_COPY.pack(at + lo, source_at, hi - lo, *hashes), hi - lo
+                lo, hi, source_at = _extend_copy(retail, entry, offset, b, pos, cursor)
+                require(hi - pos >= COPY_SEED, "Retail anchor bytes changed during export")
+                hi = min(hi, count)
+                if lo >= count:
+                    break
+                if lo > cursor:
+                    spans.append((cursor, lo, None, None))
+                if entry is not before or source_at != at + lo:
+                    spans.append((lo, hi, source_at, entry))
+                cursor = pos = hi
+            if cursor < count and a[cursor:count] != b[cursor:count]:
+                spans.append((cursor, count, None, None))
+            for lo, hi, source_at, source_entry in spans:
+                old, new = a[lo:hi], b[lo:hi]
+                hashes = hashlib.sha256(old).digest(), hashlib.sha256(new).digest()
+                if source_at is None:
+                    yield None, RUN.pack(at + lo, hi - lo, *hashes) + new, hi - lo
+                else:
+                    yield source_entry, SOURCE_COPY.pack(at + lo, source_at, hi - lo, *hashes), hi - lo
 
 
 class _Measure:
@@ -237,6 +297,295 @@ def _changed_members(archive, number, base, built, before, after, scratch, index
             else:
                 result.setdefault("cross_copies", []).append(dict(blob, source_path=path))
     return dict(result, **counts)
+
+
+# A second, inverse search handles isolated retail spans too short to contain a
+# sparse source anchor. Memory stays bounded by the amount of literal data in
+# one batch. All matches are still independently replayed before publication.
+LITERAL_BATCH_BYTES = 512 * BLOCK
+LITERAL_SEED = 16
+
+
+def _literal_seed_candidates(needles):
+    """Optional Bloom prefilter; callers must still compare exact seed bytes.
+
+    Studio already includes NumPy. Minimal standalone environments retain the
+    stdlib search below. A collision only adds work, never authorizes a copy.
+    Explicit little-endian views also work on unaligned Windows buffers.
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    import itertools
+    bits = 1 << 20
+    while bits < len(needles) * 16:
+        bits *= 2
+    bloom = np.zeros(bits // 8, dtype=np.uint8)
+    mask = np.uint64(bits - 1)
+    def positions(data, stride):
+        count = (len(data) - LITERAL_SEED) // stride + 1
+        a = np.ndarray((count,), dtype="<u8", buffer=data, strides=(stride,))
+        b = np.ndarray((count,), dtype="<u8", buffer=data, offset=8, strides=(stride,))
+        h = a ^ (b * np.uint64(0x9E3779B97F4A7C15))
+        h ^= h >> 30; h *= np.uint64(0xBF58476D1CE4E5B9)
+        h ^= h >> 27; h *= np.uint64(0x94D049BB133111EB); h ^= h >> 31
+        return (h & mask).astype(np.intp), ((h >> 32) & mask).astype(np.intp), a, b
+    iterator = iter(needles)
+    while batch := list(itertools.islice(iterator, 65536)):
+        for pos in positions(b"".join(batch), LITERAL_SEED)[:2]:
+            np.bitwise_or.at(bloom, pos >> 3, (1 << (pos & 7)).astype(np.uint8))
+    def search(data):
+        if len(data) < LITERAL_SEED:
+            return ()
+        a, b, first, second = positions(data, 1)
+        hit = ((bloom[a >> 3] >> (a & 7)) & 1) & ((bloom[b >> 3] >> (b & 7)) & 1)
+        # Adjacent identical windows need one witness. Compare all 16 bytes,
+        # not their hashes, so this also safely bounds work on zero/FF fill.
+        hit[1:] &= (first[1:] != first[:-1]) | (second[1:] != second[:-1])
+        return np.flatnonzero(hit).tolist()
+    return search
+
+
+def _find_literal_seeds(base, sources, needles, progress):
+    """Find exact seeds at every source byte, with a stdlib-only fallback.
+
+    Sixteen shifted, nonoverlapping regex scans perform the byte slicing in C.
+    Set intersection also runs in C. Every offset is visited, including windows
+    straddling a read boundary; source-file boundaries are never crossed.
+    """
+    import re
+    pattern = re.compile(b".{16}", re.DOTALL)
+    pending = needles
+    found = {}
+    if len(needles) <= 32:
+        # A later prefix pass usually introduces only a handful of new tails.
+        # Exact C-level searches avoid rescanning every byte in Python for each
+        # such pass; mmap.find and bytes.find share this bounded-file contract.
+        with _retail_bytes(base) as retail:
+            for number, entry in enumerate(sources):
+                for seed in tuple(pending):
+                    at = retail.find(seed, entry.byte_offset, entry.byte_offset + entry.size)
+                    if at >= 0:
+                        found[seed] = (number << 32) | (at - entry.byte_offset)
+                        pending.remove(seed)
+                progress("Finding residual retail copies: " + entry.path, number + 1, len(sources))
+                if not pending:
+                    break
+        return found
+    candidates = _literal_seed_candidates(needles) if len(needles) >= 4096 else None
+    window = BLOCK if candidates is not None else 65536
+    total = sum(e.size for e in sources)
+    done = 0
+    for number, entry in enumerate(sources):
+        for at in range(0, max(0, entry.size - LITERAL_SEED + 1), window):
+            if not pending:
+                return found
+            data = xc.read_at(base, entry.byte_offset + at, min(window + LITERAL_SEED - 1, entry.size - at))
+            if candidates is not None:
+                for offset in candidates(data):
+                    seed = data[offset:offset + LITERAL_SEED]
+                    if seed in pending:
+                        found[seed] = (number << 32) | (at + offset)
+                        pending.remove(seed)
+            else:
+                for shift in range(LITERAL_SEED):
+                    hits = pending.intersection(pattern.findall(data[shift:]))
+                    for seed in hits:
+                        found[seed] = (number << 32) | (at + data.find(seed))
+                    pending.difference_update(hits)
+            progress("Finding residual retail copies: " + entry.path, done + min(at + window, entry.size), total)
+        done += entry.size
+    return found
+
+
+def _split_literal(data, found, sources, retail, *, prefix_only=False):
+    cursor = 0
+    positions = [0] if prefix_only else range(0, len(data) - LITERAL_SEED + 1, LITERAL_SEED)
+    for at in positions:
+        if at < cursor or at + LITERAL_SEED > len(data):
+            continue
+        candidate = found.get(data[at:at + LITERAL_SEED])
+        if candidate is None:
+            continue
+        number, source_at = candidate >> 32, candidate & 0xFFFFFFFF
+        lo, hi, offset = _extend_copy(retail, sources[number], source_at, data, at, cursor)
+        require(hi - at >= LITERAL_SEED, "Residual retail seed changed during export")
+        if lo > cursor:
+            yield cursor, lo, None, None
+        yield lo, hi, number, offset
+        cursor = hi
+    if cursor < len(data):
+        yield cursor, len(data), None, None
+
+
+def _literal_records(stream):
+    while header := stream.read(RUN.size):
+        require(len(header) == RUN.size, "Truncated literal record")
+        at, size, before, after = RUN.unpack(header)
+        data = stream.read(size)
+        require(len(data) == size and hashlib.sha256(data).digest() == after, "Literal record changed during export")
+        yield at, data
+
+
+def _refine_literals(part, doc, base, sources, progress):
+    """Replace residual retail sequences with existing byte-granular copy ops.
+
+    First sample each literal every 16 bytes and search every source offset.
+    Thus any retained common subrange is shorter than 31 bytes. A final prefix
+    pass removes whole residual literals of 16 or more bytes too. Short shared
+    constants still need the independent release audit; they are not artwork.
+    No new installer operation, executable helper or dependency is involved.
+    """
+    before_total = sum(r.get("literal_bytes", 0) for r in doc["files"])
+    source_numbers = {e.path.casefold(): i for i, e in enumerate(sources)}
+    with tempfile.TemporaryDirectory(prefix=".2k5-copies-", dir=part.parent) as tmp, \
+         zipfile.ZipFile(part) as original, _retail_bytes(base) as retail:
+        root = Path(tmp)
+        copy_paths = {}
+        literal_paths = {}
+        extra_counts = {}
+        def initial():
+            for row_number, row in enumerate(doc["files"]):
+                if row["mode"] == "copy":
+                    continue
+                with original.open(row["payload"]["member"]) as stream:
+                    for at, data in _literal_records(stream):
+                        yield row_number, at, data
+        def saved(paths):
+            for row_number, path in sorted(paths.items()):
+                with path.open("rb") as stream:
+                    for at, data in _literal_records(stream):
+                        yield row_number, at, data
+        def phase(records, phase_number, prefix_only, known=None):
+            result = {}
+            with ExitStack() as handles:
+                writers = {}
+                def writer(key, path):
+                    if key not in writers:
+                        writers[key] = handles.enter_context(path.open("wb"))
+                    return writers[key]
+                batch = []
+                size = 0
+                def flush():
+                    if known is None:
+                        needles = set()
+                        for _, _, data in batch:
+                            starts = range(0, len(data) - LITERAL_SEED + 1, LITERAL_SEED)
+                            needles.update(data[i:i + LITERAL_SEED] for i in starts)
+                        found = _find_literal_seeds(base, sources, needles, progress) if needles else {}
+                    else:
+                        found = known
+                    for row_number, at, data in batch:
+                        row = doc["files"][row_number]
+                        own = source_numbers[row["path"]]
+                        entry = sources[own]
+                        path = root / f"literals-{phase_number}-{row_number}.bin"
+                        result[row_number] = path
+                        literals = writer(("literal", row_number), path)
+                        for lo, hi, source_number, source_at in _split_literal(data, found, sources, retail, prefix_only=prefix_only):
+                            offset = at + lo
+                            old_size = max(0, min(hi - lo, entry.size - offset))
+                            old = retail[entry.byte_offset + offset:entry.byte_offset + offset + old_size]
+                            new = data[lo:hi]
+                            if old == new:
+                                continue
+                            hashes = hashlib.sha256(old).digest(), hashlib.sha256(new).digest()
+                            if source_number is None:
+                                literals.write(RUN.pack(offset, len(new), *hashes) + new)
+                            else:
+                                key = (row_number, source_number, phase_number)
+                                if key not in copy_paths:
+                                    copy_paths[key] = root / f"copies-{row_number}-{source_number}-{phase_number}.bin"
+                                copies = writer(key, copy_paths[key])
+                                copies.write(SOURCE_COPY.pack(offset, source_at, len(new), *hashes))
+                                counts = extra_counts.setdefault(row_number, [0, 0])
+                                counts[0] += len(new)
+                                counts[1] += 1
+                for record in records:
+                    batch.append(record)
+                    size += len(record[2])
+                    if size >= LITERAL_BATCH_BYTES:
+                        flush(); batch.clear(); size = 0
+                if batch:
+                    flush()
+            return result
+        literal_paths = phase(initial(), 0, False)
+        # A whole retail-identical residual can now be at most 30 bytes:
+        # every 31-byte original range contained a searched 16-byte seed.
+        # Search all these short prefixes together, without retaining their data.
+        known, checked = {}, set()
+        phase_number = 1
+        while True:
+            prefixes = {data[:LITERAL_SEED] for _, _, data in saved(literal_paths)
+                        if LITERAL_SEED <= len(data) < 2 * LITERAL_SEED - 1}
+            unseen = prefixes - checked
+            checked.update(unseen)
+            if unseen:
+                known.update(_find_literal_seeds(base, sources, unseen, progress))
+            if not prefixes.intersection(known):
+                break
+            previous = literal_paths
+            literal_paths = phase(saved(previous), phase_number, True, known=known)
+            for path in previous.values():
+                path.unlink()
+            phase_number += 1
+            # Copying a known prefix from a longer literal can expose a new
+            # short tail. Check it too; each repeated pass removes bytes, and
+            # already-searched prefixes (including misses) are never rescanned.
+        replacement = root / "refined.zip"
+        with zipfile.ZipFile(replacement, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=True) as output:
+            output.writestr("payload.bin", b"")
+            for number, old_row in enumerate(doc["files"]):
+                if old_row["mode"] == "copy":
+                    continue
+                row = dict(old_row)
+                path = literal_paths.get(number)
+                with (path.open("rb") if path is not None else tempfile.TemporaryFile()) as stream:
+                    row["payload"] = _member(output, f"operations/{number:04d}.bin", iter(lambda: stream.read(BLOCK), b""))
+                    stream.seek(0)
+                    row["literal_bytes"] = sum(len(data) for _, data in _literal_records(stream))
+                old_copies = {source_numbers[p]: blob for p, blob in _copy_payloads(old_row)}
+                groups = sorted(set(old_copies) | {s for r, s, phase_number in copy_paths if r == number})
+                row.pop("copies", None); row.pop("cross_copies", None)
+                for group, source_number in enumerate(groups):
+                    with ExitStack() as handles:
+                        streams = []
+                        if source_number in old_copies:
+                            streams.append(handles.enter_context(original.open(old_copies[source_number]["member"])))
+                        for phase_number in sorted(p for r, s, p in copy_paths
+                                                   if r == number and s == source_number):
+                            path = copy_paths.get((number, source_number, phase_number))
+                            if path is not None:
+                                streams.append(handles.enter_context(path.open("rb")))
+                        def records(stream):
+                            while record := stream.read(SOURCE_COPY.size):
+                                require(len(record) == SOURCE_COPY.size, "Truncated source-copy record")
+                                yield SOURCE_COPY.unpack(record)
+                        merged = heapq.merge(*(records(stream) for stream in streams), key=lambda record: record[0])
+                        info = _member(output, f"operations/{number:04d}-copies-{group:04d}.bin",
+                                       (SOURCE_COPY.pack(*record) for record in merged))
+                    source_path = sources[source_number].path.casefold()
+                    if source_path == row["path"]:
+                        row["copies"] = info
+                    else:
+                        row.setdefault("cross_copies", []).append(dict(info, source_path=source_path))
+                added_bytes, added_records = extra_counts.get(number, (0, 0))
+                row["source_copy_bytes"] += added_bytes
+                row["source_copy_records"] += added_records
+                doc["files"][number] = row
+            for asset in doc["assets"]:
+                with original.open(asset["member"]) as stream:
+                    info = _member(output, asset["member"], iter(lambda: stream.read(BLOCK), b""))
+                require(info["sha256"] == asset["sha256"], "Source asset changed during export")
+            encoded = json.dumps(doc, separators=(",", ":")).encode()
+            require(len(encoded) <= m.MAX_MANIFEST_BYTES, "File manifest exceeds 16 MiB")
+            output.writestr("manifest.json", encoded)
+        # Windows must close the ZIP before replacing its file.
+        original.close()
+        m._atomic_replace(replacement, part)
+    progress("Residual retail literals removed", before_total - sum(r.get("literal_bytes", 0) for r in doc["files"]), before_total)
+    return doc
 
 
 def _alias(a, b):
@@ -337,6 +686,7 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
                         row.update(_changed_members(z, index, base, built, a, b, output.parent, retail_index, sources))
                     rows.append(row)
                     done += b.size
+                retail_index.clear()
                 assets = []
                 for member, source in (source_assets or {}).items():
                     _asset_name(member)
@@ -358,6 +708,7 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
                 z.writestr("manifest.json", encoded)
             # The replay re-reads both inputs and compares every replayed byte with them and with the
             # hashes pinned above, so inputs that really changed refuse here, whatever their metadata did.
+            doc = _refine_literals(part, doc, base, sources, progress)
             verified = load(part, doc)
             replay = verify_against(verified, base_path, built_path, progress=progress)
     result = inspect(m.load(output))
