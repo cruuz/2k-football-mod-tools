@@ -3461,3 +3461,4 @@ mod_editor/core/nfl2k5_broadcast_greens.py
 tests/mod_editor/test_nfl2k5_broadcast_greens.py
 # i4: reserved-colour-aware helmet palette ladder
 tests/mod_editor/test_2k5_helmet_locked_palette.py
+tests/mod_editor/test_2k5_native_safe_palette_ladder.py
