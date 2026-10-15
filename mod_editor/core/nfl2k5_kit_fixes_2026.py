@@ -396,6 +396,9 @@ def stamp(rgba, op, source):
     keep = source[..., 3] >= 128
     if op.get("skip"):
         keep &= ~colour_hits(source, op["skip"], op.get("tolerance", 24))
+    if op.get("only"):
+        # uf3: draw only source texels near these colours (a logo taken off a differently coloured shell)
+        keep &= colour_hits(source, op["only"], op.get("only_tolerance", 24))
     for pair in op.get("remap", []):
         hit = keep & colour_hits(source, pair["from"], pair.get("tolerance", 24))
         colours[hit] = np.array(hex_rgb(pair["to"]), np.int64)

@@ -252,6 +252,80 @@ def maker_on_top(colour):
              "alpha_line": {"field": "#FFFFFF", "mark": DONOR_NAVY}} for box in ([58, 1, 84, 16], [43, 65, 69, 80])]
 
 
+# -- Buffalo: the Nickel City helmet outline (ur1, uw2) ---------------------------------------------------------------
+# The Nickel City (Charge) helmet is the blue shell with the standing buffalo in the same blue, a red streak and a bold
+# white outline round both (2026 Week 3 vs LAC frames). uf2's selected-colour outline came out as scattered white
+# dots on helmet02 and faint broken lines on helmet00, with a dashed pink edge on the streak. Clear those and the
+# old streak, take the buffalo and streak at build time from
+# the primary helmet of the same club (03H0: the same decal at the same place, blue and red on a white shell), paint
+# the buffalo white and the streak red, then fill everything deeper than BUF_OUTLINE texels inside the white back
+# with the shell blue, and edge the streak's tip in white where it runs past the buffalo: a continuous white outline
+# round the buffalo and round the streak.
+BUF_SHELL, BUF_RED, BUF_OUTLINE = "#00338D", "#C60C30", 1.6
+BUF_BOXES = [[34, 46, 134, 126], [34, 138, 136, 218]]       # the lower box stops above the US flag (y 219)
+
+
+def buf_outline_ops(chunk):
+    ops = []
+    donor = "03H0:%d" % chunk
+    for box in BUF_BOXES:
+        # the old outline: its white texels and their pale blue-grey anti-aliasing
+        ops.append({"op": "recolor", "box": box, "from": ["#FFFFFF", "#7185A9"], "color": BUF_SHELL,
+                    "tolerance": 100})
+        # the old streak and its dashed pink edge go too; the donor's clean streak is laid back below
+        ops.append({"op": "recolor", "box": box, "from": [BUF_RED, "#E08A9A"], "color": BUF_SHELL, "tolerance": 75})
+        ops.append({"op": "stamp", "donor": donor, "src": box, "dst": box, "only": [BUF_SHELL, BUF_RED],
+                    "only_tolerance": 60, "remap": [{"from": [BUF_SHELL], "to": "#FFFFFF", "tolerance": 60}]})
+        ops.append({"op": "ring", "box": box, "inside": ["#FFFFFF"], "from": BUF_OUTLINE, "to": None,
+                    "color": BUF_SHELL})
+        # a solid white keyline round the streak (it also fills the hairline gap the primary's white shell leaves
+        # between streak and body, and edges the tip where it runs past the buffalo)
+        ops.append({"op": "halo", "box": box, "edge": [BUF_RED], "radius": 2.3, "color": "#FFFFFF",
+                    "into": [BUF_SHELL], "into_tolerance": 80, "tolerance": 40})
+    if chunk == 12:
+        # the two facemask screws beside the decal keep their own pixels (the clearing above took their highlights)
+        ops += [copy_box([45, 53, 57, 63]), copy_box([45, 193, 57, 203])]
+    return ops
+
+
+def copy_box(box):
+    return {"op": "copy", "src": list(box), "dst": [box[0], box[1]]}
+
+
+# -- New England: the red throwback's shoulder bars (ur1, uw2) --------------------------------------------------------
+# uf2 widened the Pat Patriot throwback's white/blue/white bars by growing colours, which left ragged edges, and the
+# bars ran down the chest to the armpit like the Colts' (N21). The 2026 throwback (Week 5 vs LV frames) wears three
+# equal bars, white, blue, white, over the shoulder top only. Redraw each bar as clean bands round its own centre line
+# (fitted on the shipped art; x = a + b*y + c*y^2 + d*y^3), 21 texels across in thirds, ending at the shoulder cap
+# like the Colts' (front row 70, back row 85), after clearing the old bar to the cloth red.
+NE_RED, NE_NAVY = "#CE102F", "#010182"
+NE_BARS = [  # (cubic coefficients, highest power first; clearing box; last row)
+    ((-4e-05, 0.008855, -0.217921, 73.915824), (58, 0, 108, 118), 70),     # the front mesh print: x 112-216
+    ((4e-05, -0.008764, 0.214184, 251.108232), (218, 0, 266, 118), 70),
+    ((-1e-06, 0.002342, -0.093558, 300.573559), (284, 0, 322, 144), 85),   # the back mesh print: x 326-450
+    ((2e-06, -0.0025, 0.100233, 478.38315), (456, 0, 494, 144), 85),
+]
+
+
+def ne_ops():
+    ops = []
+    for coeffs, box, last in NE_BARS:
+        # the old bar: white, navy and their blends with each other and the red (the mesh print stays)
+        ops.append({"op": "recolor", "box": list(box), "from": ["#FFFFFF", NE_NAVY, "#E890A0", "#68085A",
+                                                                "#8080C0", "#4040A5", "#C1C1E2"],
+                    "color": NE_RED, "tolerance": 60})
+        # and its dull red edge (the boxes stop short of the mesh print, which uses the same dull reds)
+        ops.append({"op": "recolor", "box": list(box), "from": ["#A32C3F", "#B0374A", "#BB4F61"], "color": NE_RED,
+                    "tolerance": 26})
+        rows = [float(y) for y in range(0, last + 1, 5)]
+        centre = [sum(c * y ** (3 - i) for i, c in enumerate(coeffs)) for y in rows]
+        for half, colour in ((10.5, "#FFFFFF"), (3.5, NE_NAVY)):
+            left = [(c - half, y) for c, y in zip(centre, rows)]
+            right = [(c + half, y) for c, y in zip(centre, rows)]
+            ops.append(poly(left + list(reversed(right)), colour))
+    return ops
+
+
 # -- Chicago: the home sleeve's GSH (ur1) ---------------------------------------------------------------------------
 # uf1 moved the GSH initials up with the home sleeve bands, copying with a per-row background skip; where a letter
 # texel matched its row's stripe colour it was dropped, so the white letters broke into fragments across a navy
@@ -315,6 +389,14 @@ def recipes():
     for sel in ("37H2", "37A2"):
         add(sel, (3, maker_on_top("#FFFFFF"), ["N30", "ur1-37H2-maker"],
                   "a whole white swoosh back on top of the navy horn (the horn had painted over most of it)"))
+    for sel in ("16H4", "16A4"):
+        add(sel, (1, ne_ops(), ["ur1-16H4-shoulder-bars", "uw2-NE-home-4-shoulder-bands", "uw2-NE-away-4-shoulder-bands"],
+                  "clean equal white/blue/white shoulder bars over the shoulder top (ragged, and down to the armpit)"))
+    for sel in ("03H8", "03A8"):
+        for chunk in (11, 12):
+            add(sel, (chunk, buf_outline_ops(chunk), ["ur1-03H8-helmet-outline", "uw2-BUF-home-8-helmet-graphic",
+                                                      "uw2-BUF-away-8-helmet-graphic"],
+                      "a continuous white outline round the blue buffalo and the red streak (it was scattered dots)"))
     for sel in ("02H0", "02A0"):
         for chunk in (11, 12):
             add(sel, (chunk, bal_ops(chunk), ["N03", "ur1-02-helmet-remnants"],
