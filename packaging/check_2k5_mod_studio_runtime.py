@@ -1999,6 +1999,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_kit_fixes_2026",                 # b772-uf1: 2026 home/away kit art fixes
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
+        "mod_editor.core.nfl2k5_letter_grades_attributes",          # b773-lg2
         "mod_editor.core.nfl2k5_letter_grades",                   # b77-f4
         "mod_editor.core.nfl2k5_letter_grades_code",              # b77-f4
         "mod_editor.core.nfl2k5_letter_grades_progress",          # b77-f4b

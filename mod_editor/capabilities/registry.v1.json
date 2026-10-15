@@ -7868,7 +7868,7 @@
         "resource": "XBE .text, .rdata and .string_ sites listed above; owned 160 RX and 240 read-only bytes in the allocator's late region.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Shows the player overall and the team offense, defense and overall in Franchise as letter grades on Noah's 2K scale (A+ to F-) instead of numbers: roster, trade, free agent and contract lists, the depth chart panel, the player card, the weekly prep panel, team select and the defense lists. Text only: lists sort by the number, attributes stay numbers.",
+      "summary": "Shows the player overall and the team offense, defense and overall in Franchise as letter grades on Noah's 2K scale (A+ to F-) instead of numbers: roster, trade, free agent and contract lists, the depth chart panel, the player card, the weekly prep panel, team select and the defense lists. Text only: lists sort by the number. Player attributes also use grades in lists, cards, depth charts, scouting, progression, Create/Edit Player, MyCareer and substitution panels. Studio ratings stay numeric.",
       "surface": "gameplay_tuning_sliders",
       "title": "Letter grades in Franchise (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_letter_grades"
