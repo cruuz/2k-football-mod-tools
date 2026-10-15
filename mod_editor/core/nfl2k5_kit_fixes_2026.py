@@ -403,6 +403,18 @@ def stamp(rgba, op, source):
         # brighten or darken drawn samples: channel * num // den, clamped (exact integers)
         num, den = (int(v) for v in op["scale_rgb"])
         colours = np.minimum((colours * num + den // 2) // den, 255)
+    weight = None
+    if op.get("alpha_line"):
+        # uf3: the source is a mark drawn on a plain field; each source texel's position on the line from
+        # ``field`` to ``mark`` (0..256, exact integers) is how much of ``color`` it lays down, so the mark lands on
+        # any background with its anti-aliasing intact
+        f = np.array(hex_rgb(op["alpha_line"]["field"]), np.int64)
+        m = np.array(hex_rgb(op["alpha_line"]["mark"]), np.int64)
+        d = m - f
+        den_l = int((d * d).sum())
+        num_l = ((source[..., :3].astype(np.int64) - f) * d).sum(axis=2)
+        weight = np.clip((num_l * 256 + den_l // 2) // den_l, 0, 256) * keep
+        colours[:] = np.array(hex_rgb(op["color"]), np.int64)
     x0 = max(dx0 // UNIT, 0)
     x1 = min(-(-dx1 // UNIT), w)
     y0 = max(dy0 // UNIT, 0)
@@ -424,11 +436,18 @@ def stamp(rgba, op, source):
     TX, TY = np.meshgrid(tx, ty)
     IN = np.meshgrid(inx, iny)
     drawn = keep[TY, TX] & IN[0] & IN[1]
-    sample = colours[TY, TX] * drawn[..., None]
     gh, gw = y1 - y0, x1 - x0
-    n = drawn.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
-    total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
-    full = SUPER * SUPER
+    if weight is None:
+        sample = colours[TY, TX] * drawn[..., None]
+        n = drawn.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
+        total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
+        full = SUPER * SUPER
+    else:
+        w = weight[TY, TX] * drawn
+        sample = colours[TY, TX] * w[..., None]
+        n = w.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
+        total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
+        full = SUPER * SUPER * 256
     base = rgba[y0:y1, x0:x1, :3].astype(np.int64)
     blended = (base * (full - n)[..., None] + total + full // 2) // full
     hit = n > 0

@@ -97,6 +97,23 @@ class Kinds(unittest.TestCase):
         doc = {"textures": [{"donor_selector": "22H0"}, {"donors": {"16A0:3": "x", "4": "y"}}]}
         self.assertEqual(fixes.donor_kits(doc), ["16A0", "22H0"])
 
+    def test_alpha_line_stamp_keeps_anti_aliasing_on_any_ground(self):
+        src = np.zeros((4, 4, 4), np.uint8)
+        src[..., :3] = 255
+        src[..., 3] = 255
+        src[1, 1, :3] = (10, 36, 78)                                     # the mark, full weight
+        src[1, 2, :3] = (132, 145, 166)                                  # about half way to the field
+        ground = np.zeros((4, 4, 4), np.uint8)
+        ground[..., :3] = (200, 20, 40)
+        ground[..., 3] = 255
+        op = {"op": "stamp", "donor": "16A0:3", "src": [0, 0, 4, 4], "dst": [0, 0, 4, 4], "color": "#FFFFFF",
+              "alpha_line": {"field": "#FFFFFF", "mark": "#0A244E"}}
+        out, scope = fixes.paint(ground, [op], {"16A0:3": src})
+        self.assertEqual(out[1, 1, :3].tolist(), [255, 255, 255])
+        self.assertTrue(all(abs(int(v) - w) <= 3 for v, w in zip(out[1, 2, :3], (228, 139, 149))))
+        self.assertEqual(out[0, 0, :3].tolist(), [200, 20, 40])        # the field adds nothing
+        self.assertEqual(int(scope.sum()), 2)
+
     def test_texels_paint_listed_points_and_alpha(self):
         a = np.zeros((8, 8, 4), np.uint8)
         a[..., 3] = 252
@@ -179,8 +196,9 @@ class Data(unittest.TestCase):
         earlier = {(r["selector"], r["chunk"]): r for r in fixes.spec()["textures"] + fixes.alternates()["textures"]}
         both = [r for r in fixes.finish()["textures"] if (r["selector"], r["chunk"]) in earlier]
         self.assertEqual(sorted((r["selector"], r["chunk"]) for r in both),
-                         [("03A0", 3), ("05A0", 3), ("05H0", 3), ("08A0", 3), ("08H0", 3), ("13A0", 3), ("19A0", 3),
-                          ("19H0", 3), ("29A0", 12), ("29H0", 12)])
+                         [("03A0", 3), ("05A0", 3), ("05H0", 3), ("08A0", 3), ("08A5", 3), ("08A6", 3), ("08H0", 3),
+                          ("08H5", 3), ("08H6", 3), ("13A0", 3), ("19A0", 3), ("19H0", 3), ("29A0", 12), ("29H0", 12),
+                          ("37A2", 3), ("37H2", 3)])
         for r in both:
             e = earlier[(r["selector"], r["chunk"])]
             self.assertEqual((r["before_sha256"], r["offset"], r["length"]), (e["after_sha256"], e["offset"], e["length"]))

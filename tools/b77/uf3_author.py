@@ -214,23 +214,55 @@ def swoosh_ops(cloth):
 # from another SOFTDRINK sleeve (16A0: navy on white, the same mark at the same spot; the repository never draws
 # it) and set to Denver navy on the panel colour.
 DEN_NAVY, DEN_SWOOSH_DONOR, DONOR_NAVY = "#0A2343", "16A0:3", "#0A244E"
-DEN_BACK, DEN_FRONT, DEN_B0, DEN_B1, DEN_BAND = 6.0, 122.0, 24.0, 13.0, 5.5      # uf1: front edge row 9
+DEN_BACK, DEN_FRONT, DEN_B0, DEN_B1, DEN_BAND, DEN_DROP = 6.0, 122.0, 24.0, 9.0, 5.5, 4.0
+# uf2's stepped "mountain" band top edge on the alternates (08H5, 08H6, 08A5, 08A6), island 0
+DEN_STEPS = [(6.0, 24.0), (25.333, 19.3), (44.667, 19.0), (64.0, 14.3), (83.333, 14.0), (102.667, 9.3), (122.0, 9.0)]
 
 
-def den_ops(panel):
+def den_ops(panel, band=DEN_NAVY, swoosh=DEN_NAVY, stepped=False):
+    """Repaint the sleeve panel and its band with the band's front end DEN_DROP rows lower (the back end stays), then
+    place a clean swoosh two rows higher on the panel, in ``swoosh`` colour."""
     ops = []
+    drop = lambda x, y: (x, y + DEN_DROP * (x - DEN_BACK) / (DEN_FRONT - DEN_BACK))
+    top_edge = DEN_STEPS if stepped else [(DEN_BACK, DEN_B0), (DEN_FRONT, DEN_B1)]
+    top_edge = [drop(x, y) for x, y in top_edge]
+    bottom = [drop(DEN_FRONT, DEN_B1 + DEN_BAND), drop(DEN_BACK, DEN_B0 + DEN_BAND)]
     for top, mirror, src, dst in ((0, False, [58, 2, 84, 16], [58, 0, 84, 14]),
                                   (64, True, [43, 66, 69, 80], [43, 64, 69, 78])):
         col = (lambda c: 127.0 - c) if mirror else (lambda c: c)
-        back, front = col(DEN_BACK), col(DEN_FRONT)
-        ops.append(poly([(back, top), (front, top), (front, top + DEN_B1), (back, top + DEN_B0)], panel))
-        ops.append(poly([(back, top + DEN_B0), (front, top + DEN_B1), (front, top + DEN_B1 + DEN_BAND),
-                         (back, top + DEN_B0 + DEN_BAND)], DEN_NAVY))
+        edge = [(col(x), top + y) for x, y in top_edge]
+        panel_pts = [(col(DEN_BACK), top), (col(DEN_FRONT), top)] + list(reversed(edge))
+        band_pts = edge + [(col(x), top + y) for x, y in bottom]
+        ops.append(poly(panel_pts, panel))
+        ops.append(poly(band_pts, band))
         ops.append({"op": "stamp", "donor": DEN_SWOOSH_DONOR, "src": src, "dst": dst, "skip": ["#FFFFFF"],
                     "tolerance": 14})
-        ops.append({"op": "retint", "box": dst, "base": "#FFFFFF", "source": DONOR_NAVY, "color": DEN_NAVY,
+        ops.append({"op": "retint", "box": dst, "base": "#FFFFFF", "source": DONOR_NAVY, "color": swoosh,
                     "field": panel, "tolerance": 30})
     return ops
+
+
+# -- Houston: the red alternate's sleeve swoosh (ur1) ---------------------------------------------------------------
+# uf2's navy horn on the Battle Red alternate is painted over the white swoosh, so only broken white pieces of it show
+# along the horn's edge. Lay a whole white swoosh back on top at the same spot, from another SOFTDRINK sleeve at build
+# time (16A0, the same mark; its anti-aliasing kept on the mixed red/navy ground).
+
+def maker_on_top(colour):
+    return [{"op": "stamp", "donor": DEN_SWOOSH_DONOR, "src": box, "dst": box, "color": colour,
+             "alpha_line": {"field": "#FFFFFF", "mark": DONOR_NAVY}} for box in ([58, 1, 84, 16], [43, 65, 69, 80])]
+
+
+# -- Chicago: the home sleeve's GSH (ur1) ---------------------------------------------------------------------------
+# uf1 moved the GSH initials up with the home sleeve bands, copying with a per-row background skip; where a letter
+# texel matched its row's stripe colour it was dropped, so the white letters broke into fragments across a navy
+# gap and the orange band. The away kit's copy (05A0) survived whole: navy letters on one orange band, as the Week 5
+# away frame shows. Take that same strip at build time (05A0, same art, same place), keep its orange band behind the
+# letters, and set the letters white for the navy home jersey (the v0.6 home GSH was white on orange).
+
+def chi_gsh_ops():
+    box = [55, 87, 86, 100]
+    return [{"op": "stamp", "donor": "05A0:3", "src": box, "dst": box},
+            {"op": "retint", "box": box, "base": "#C83803", "source": "#0D1A32", "color": "#FFFFFF", "tolerance": 40}]
 
 
 # -- Pittsburgh: the Unc Bowl (2025) kits -----------------------------------------------------------------------------
@@ -262,11 +294,27 @@ def recipes():
         add(sel, (1, ind_torso_ops(cloth), ["N21", "ur1-11-torso-stripes"],
                   "the shoulder stripes end at the shoulder cap (front row 70, back row 85), not at the armpit"))
     for sel, cloth in sorted(SWOOSH_FORWARD.items()):
-        add(sel, (3, swoosh_ops(cloth), ["N24" if sel.startswith("11") else "N30", "ur1-maker-route-clearance"],
-                  "the sleeve swoosh moved 16 texels forward, ahead of the sleeve arm number instead of under it"))
+        ops, evidence = swoosh_ops(cloth), ["N24" if sel.startswith("11") else "N30", "ur1-maker-route-clearance"]
+        note = "the sleeve swoosh moved 16 texels forward, ahead of the sleeve arm number instead of under it"
+        if sel == "05H0":
+            ops = ops + chi_gsh_ops()
+            evidence, note = evidence + ["ur1-05H0-gsh"], note + "; the GSH initials whole again (white on orange)"
+        if sel == "13A0":
+            # ur1: uf1's clearing rectangles stopped at row 62/126, leaving the old red hem band's last two rows as a
+            # thin red line at the hem; the 2026 away sleeve has only the red/gold/red stack (Week 4 at LV)
+            ops = [rect(0, 62, 128, 65, cloth), rect(0, 126, 128, 128, cloth)] + ops
+            evidence, note = evidence + ["ur1-13A0-hem"], note + "; the old red hem line removed"
+        add(sel, (3, ops, evidence, note))
     for sel, panel in (("08H0", "#FFFFFF"), ("08A0", "#FC4C02")):
         add(sel, (3, den_ops(panel), ["N30", "ur1-08-maker"],
                   "a whole navy swoosh high on the mountain panel, clear of the band (it had merged into the band)"))
+    # the alternates: orange panel over a stepped band, white swoosh (it ran into the white band)
+    for sel, band in (("08H5", "#FFFFFF"), ("08H6", "#FFFFFF"), ("08A6", "#FFFFFF"), ("08A5", DEN_NAVY)):
+        add(sel, (3, den_ops("#FC4C02", band=band, swoosh="#FFFFFF", stepped=True), ["N30", "ur1-08-alt-maker"],
+                  "a whole white swoosh high on the orange panel, clear of the mountain band (it had run into it)"))
+    for sel in ("37H2", "37A2"):
+        add(sel, (3, maker_on_top("#FFFFFF"), ["N30", "ur1-37H2-maker"],
+                  "a whole white swoosh back on top of the navy horn (the horn had painted over most of it)"))
     for sel in ("02H0", "02A0"):
         for chunk in (11, 12):
             add(sel, (chunk, bal_ops(chunk), ["N03", "ur1-02-helmet-remnants"],
