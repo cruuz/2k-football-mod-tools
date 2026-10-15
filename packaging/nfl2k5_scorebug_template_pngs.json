@@ -1122,6 +1122,12 @@
       "size": 6688,
       "width": 256
     },
+    "data/nfl2k5_indicator_names/atlas.png": {
+      "height": 128,
+      "sha256": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
+      "size": 2981,
+      "width": 256
+    },
     "data/nfl2k5_kick_meter_2026/arrow32.png": {
       "height": 32,
       "sha256": "a691a700d169278a677524690ea8d397015e6233f9cea380875c7a632d45bb13",

@@ -1898,6 +1898,9 @@ data/nfl2k5_scorebug_sprite/team_accents.json
 packaging/scorebug_replication_pins.py
 tools/scorebug_sprite/jev/README.md
 data/nfl2k5_scorebug_sprite/team_colors_official_2026.json
+# b77 hu1: authored player-name alphabet for the nm1 indicator labels
+data/nfl2k5_indicator_names/atlas.png
+data/nfl2k5_indicator_names/metrics.json
 data/nfl2k5_scorebug_sprite/broadcast_display.json
 mod_editor/core/nfl2k5_scorebug_teams.py
 tools/scorebug_sprite/gpu.py
