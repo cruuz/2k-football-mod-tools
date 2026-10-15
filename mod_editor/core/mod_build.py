@@ -3989,6 +3989,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["steps"].append({"step": "kit_fixes_2026_alts",
                                      **{k: v for k, v in alt_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in alt_receipt["kits"]]})
+        # b773-uf3: the uniform elements judged against the 2026 game highlights (the Washington helmet W, the Unc
+        # Bowl Steelers nameplates and arm numbers, ...), a third pinned layer after the alternates.
+        uf3_receipt = kit_fixes.apply_finish(target)
+        if uf3_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_uf3",
+                                     **{k: v for k, v in uf3_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in uf3_receipt["kits"]]})
+        # b773-uf3: the 2026 Pittsburgh road miniature (schedule screens) with its Steelmark the right way up; only the
+        # exact known art changes, retail and user art are left alone.
+        uf3_icon = _core_module("nfl2k5_menu_icon_uf3")
+        if uf3_icon is not None:
+            icon_receipt = uf3_icon.apply_to_image(target)
+            if icon_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_icon_uf3", **icon_receipt})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.

@@ -67,7 +67,8 @@ class BuildIntegrationTests(unittest.TestCase):
                            # b772 ny1/uf1/uf2: the uniform block's pinned kit repairs; a synthetic image matches none
                            'nfl2k5_nyg_numbers':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'}),
                            'nfl2k5_kit_fixes_2026':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'},
-                                                                   apply_alternates=lambda target: {'state': 'retail'})}
+                                                                   apply_alternates=lambda target: {'state': 'retail'},
+                                                                   apply_finish=lambda target: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.

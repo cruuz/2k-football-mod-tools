@@ -46,7 +46,8 @@ from nfl_vc_lz_fill import rebuild_fixed_span_filled
 SCHEMA = "nfl2k5_kit_fixes_2026/v1"
 DATA = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026.json"
 DATA_ALTS = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_alts.json"
-KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif")
+DATA_UF3 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_uf3.json"
+KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
 WET_NUM, WET_DEN = 93, 100     # w1's mud rule: mud = clean * 0.93, rounded
@@ -395,6 +396,9 @@ def stamp(rgba, op, source):
     keep = source[..., 3] >= 128
     if op.get("skip"):
         keep &= ~colour_hits(source, op["skip"], op.get("tolerance", 24))
+    if op.get("only"):
+        # uf3: draw only source texels near these colours (a logo taken off a differently coloured shell)
+        keep &= colour_hits(source, op["only"], op.get("only_tolerance", 24))
     for pair in op.get("remap", []):
         hit = keep & colour_hits(source, pair["from"], pair.get("tolerance", 24))
         colours[hit] = np.array(hex_rgb(pair["to"]), np.int64)
@@ -402,6 +406,18 @@ def stamp(rgba, op, source):
         # brighten or darken drawn samples: channel * num // den, clamped (exact integers)
         num, den = (int(v) for v in op["scale_rgb"])
         colours = np.minimum((colours * num + den // 2) // den, 255)
+    weight = None
+    if op.get("alpha_line"):
+        # uf3: the source is a mark drawn on a plain field; each source texel's position on the line from
+        # ``field`` to ``mark`` (0..256, exact integers) is how much of ``color`` it lays down, so the mark lands on
+        # any background with its anti-aliasing intact
+        f = np.array(hex_rgb(op["alpha_line"]["field"]), np.int64)
+        m = np.array(hex_rgb(op["alpha_line"]["mark"]), np.int64)
+        d = m - f
+        den_l = int((d * d).sum())
+        num_l = ((source[..., :3].astype(np.int64) - f) * d).sum(axis=2)
+        weight = np.clip((num_l * 256 + den_l // 2) // den_l, 0, 256) * keep
+        colours[:] = np.array(hex_rgb(op["color"]), np.int64)
     x0 = max(dx0 // UNIT, 0)
     x1 = min(-(-dx1 // UNIT), w)
     y0 = max(dy0 // UNIT, 0)
@@ -423,11 +439,18 @@ def stamp(rgba, op, source):
     TX, TY = np.meshgrid(tx, ty)
     IN = np.meshgrid(inx, iny)
     drawn = keep[TY, TX] & IN[0] & IN[1]
-    sample = colours[TY, TX] * drawn[..., None]
     gh, gw = y1 - y0, x1 - x0
-    n = drawn.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
-    total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
-    full = SUPER * SUPER
+    if weight is None:
+        sample = colours[TY, TX] * drawn[..., None]
+        n = drawn.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
+        total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
+        full = SUPER * SUPER
+    else:
+        w = weight[TY, TX] * drawn
+        sample = colours[TY, TX] * w[..., None]
+        n = w.reshape(gh, SUPER, gw, SUPER).sum(axis=(1, 3))
+        total = sample.reshape(gh, SUPER, gw, SUPER, 3).sum(axis=(1, 3))
+        full = SUPER * SUPER * 256
     base = rgba[y0:y1, x0:x1, :3].astype(np.int64)
     blended = (base * (full - n)[..., None] + total + full // 2) // full
     hit = n > 0
@@ -468,11 +491,14 @@ def lift(rgba, op):
 def retint(rgba, op):
     """Recolour a mark drawn on a plain field, keeping its anti-aliasing: each texel in ``box`` that lies on the line
     from ``base`` (the field) towards ``source`` (the mark) at fraction t takes base + t * (colour - base), in exact
-    integers. Texels off that line (other art) stay."""
+    integers. Texels off that line (other art) stay. uf3: ``field`` (default ``base``) moves the field too: those
+    texels take field + t * (colour - field), so a mark stamped from a white field lands on a coloured one with its
+    anti-aliasing intact."""
     box = box_mask(rgba.shape, op["box"])
     base = np.array(hex_rgb(op["base"]), np.int64)
     src = np.array(hex_rgb(op["source"]), np.int64)
     dst = np.array(hex_rgb(op["color"]), np.int64)
+    field = np.array(hex_rgb(op.get("field", op["base"])), np.int64)
     c = rgba[..., :3].astype(np.int64)
     d = src - base
     den = int((d * d).sum())
@@ -484,7 +510,7 @@ def retint(rgba, op):
     tol = int(op.get("tolerance", 24))
     hit = box & (num * 20 > den) & (off <= (tol * den) ** 2)
     out = rgba.copy()
-    new = (base[None, None, :] * den + (dst - base)[None, None, :] * num[..., None] + den // 2) // den
+    new = (field[None, None, :] * den + (dst - field)[None, None, :] * num[..., None] + den // 2) // den
     out[..., :3][hit] = np.clip(new, 0, 255)[hit].astype(np.uint8)
     return out, hit
 
@@ -544,9 +570,20 @@ def paint(rgba, ops, donors=None):
             out, _ = lift(out, op)
         elif kind == "retint":
             out, _ = retint(out, op)
+        elif kind == "texels":
+            # uf3 (b773): listed texels [x, y] take one colour (left-over pieces of an old decal, measured on the
+            # shipped art); ``alpha`` sets their alpha as well
+            pts = np.asarray(op["points"], np.int64).reshape(-1, 2)
+            require(len(pts) and (pts >= 0).all() and (pts[:, 0] < w).all() and (pts[:, 1] < h).all(),
+                    "texel outside the texture")
+            out[pts[:, 1], pts[:, 0], :3] = np.array(hex_rgb(op["color"]), np.uint8)
+            if "alpha" in op:
+                out[pts[:, 1], pts[:, 0], 3] = int(op["alpha"])
         elif kind == "stamp":
             donor = op.get("donor", "self")
-            source = rgba if donor == "self" else (donors or {}).get(int(donor))
+            # a chunk of the same kit (an integer) or, uf3, of another kit ("SELECTOR:chunk")
+            key = donor if isinstance(donor, str) and ":" in donor else None if donor == "self" else int(donor)
+            source = rgba if donor == "self" else (donors or {}).get(key)
             require(source is not None, "stamp donor texture absent")
             out, _ = stamp(out, op, source)
         else:
@@ -955,22 +992,63 @@ def compile_clear(span, row):
 
 
 UNIF_FIELDS = {"facemask": 0x30}
+# uf3 (b773): the arm-number route at 0x38 (native accessor 0x8E840, route table 0x4EF810): with no neck roll 1/2/3/4
+# put the arm digits on shoulder_B/shoulder_A/sleeve_B/sleeve_A. A slot that borrows another kit's jersey must take
+# that kit's route too, or its digits land on the borrowed sleeve stripes (ur1, the Unc Bowl Steelers).
+UNIF_INTS = {"number_route": (0x38, (1, 2, 3, 4))}
 
 
 def compile_unif(span, row):
-    """Set one Unif colour field (BGRA as stored), e.g. the facemask colour at 0x30. The raw 0x20-byte wrapper
-    and every other byte stay the same."""
+    """Set Unif colour fields (BGRA as stored), e.g. the facemask colour at 0x30, and small integer fields (the
+    arm-number route at 0x38). The raw 0x20-byte wrapper and every other byte stay the same."""
     chunks = parse_chunks(span)
     require(len(chunks) == 1 and chunks[0].end_offset == len(span), "expected one complete chunk span")
     chunk = chunks[0]
     require(chunk.kind == "Unif" and not chunk.compressed and chunk.stored_size == 80, "expected the raw Unif chunk")
     new = bytearray(span)
-    for name, value in sorted(row["fields"].items()):
+    for name, value in sorted(row.get("fields", {}).items()):
         at = chunk.body_offset + UNIF_FIELDS[name]
         rgb = hex_rgb(value)
         new[at:at + 4] = bytes((rgb[2], rgb[1], rgb[0], 0xFF))
+    for name, value in sorted(row.get("ints", {}).items()):
+        at, allowed = UNIF_INTS[name]
+        require(int(value) in allowed, "unsupported " + name)
+        at += chunk.body_offset
+        require(struct.unpack_from("<I", span, at)[0] in allowed, "unexpected stored " + name)
+        struct.pack_into("<I", new, at, int(value))
     require(bytes(new) != span, "the Unif fields already hold these values")
-    return bytes(new), dict(fields=row["fields"])
+    return bytes(new), dict(fields=row.get("fields", {}), ints=row.get("ints", {}))
+
+
+NAME_METRICS = slice(0x2C, 0xA0)        # 29 little-endian (atlas offset, glyph width) pairs in the NAME body
+
+
+def compile_name(span, donor_span, row):
+    """Give a nameplate the glyph metrics of the kit whose name atlas it carries (uf3, b773). The native compositor
+    (0x1C2140) copies each letter at its stored width, so a slot that borrowed a wider atlas but kept its own narrow
+    widths cuts every letter (the Unc Bowl Steelers: GAINWELL read CAINVELL). Only the metric pairs change; the
+    donor must be the same raw NAME layout and identical outside them."""
+    pieces = []
+    for blob in (span, donor_span):
+        chunks = parse_chunks(blob)
+        require(len(chunks) == 1 and chunks[0].end_offset == len(blob), "expected one complete NAME span")
+        chunk = chunks[0]
+        require(chunk.kind == "NAME" and not chunk.compressed and chunk.stored_size == 160,
+                "expected the raw 160-byte NAME chunk")
+        pieces.append((chunk, blob))
+    (chunk, _), (donor, _) = pieces
+    body, donor_body = span[chunk.body_offset:], donor_span[donor.body_offset:]
+    require(len(body) == len(donor_body) == 160, "NAME body size differs")
+    require(body[:NAME_METRICS.start] == donor_body[:NAME_METRICS.start] and
+            body[NAME_METRICS.stop:] == donor_body[NAME_METRICS.stop:], "the donor NAME differs outside its metrics")
+    require(body[NAME_METRICS] != donor_body[NAME_METRICS], "the nameplate already has the donor's metrics")
+    new = bytearray(span)
+    new[chunk.body_offset + NAME_METRICS.start:chunk.body_offset + NAME_METRICS.stop] = donor_body[NAME_METRICS]
+    old = struct.unpack_from("<58H", body, NAME_METRICS.start)
+    now = struct.unpack_from("<58H", donor_body, NAME_METRICS.start)
+    require(old[0::2] == now[0::2], "the donor's glyph atlas offsets differ")
+    return bytes(new), dict(donor_selector=row["donor_selector"],
+                            widths_changed=sum(a != b for a, b in zip(old[1::2], now[1::2])))
 
 
 def texture_rgba(span):
@@ -1026,8 +1104,9 @@ def _chunk_for(raw, index):
     raise ValueError("2026 kit fixes: chunk %d absent" % index)
 
 
-def compile_resource(selector, raw, *, strict=True, document=None):
-    """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict."""
+def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
+    """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict. ``kits`` maps
+    a donor kit selector to its package bytes (the uf3 ``name`` rows)."""
     document = document or spec()
     rows = [r for r in document["textures"] if r["selector"] == selector]
     require(rows, "no entries for " + selector)
@@ -1070,17 +1149,36 @@ def compile_resource(selector, raw, *, strict=True, document=None):
             new, detail = compile_clear(span, row)
         elif row["kind"] == "unif":
             new, detail = compile_unif(span, row)
+        elif row["kind"] == "name":
+            donor_raw = (kits or {}).get(row["donor_selector"])
+            require(donor_raw is not None, selector + ": nameplate donor kit absent")
+            donor = _chunk_for(donor_raw, row["chunk"])
+            donor_span = donor_raw[donor.offset:donor.end_offset]
+            if sha(donor_span) != row["donor_sha256"]:
+                # a donor nameplate the user's recipe replaced: keep this kit as it is (strict refuses)
+                require(not strict, selector + ": nameplate donor differs from its pin")
+                skipped.append(row["chunk"])
+                continue
+            new, detail = compile_name(span, donor_span, row)
         else:
             donors, missing = {}, False
             for index, pin in sorted((row.get("donors") or {}).items()):
-                donor = _chunk_for(raw, int(index))
-                donor_span = raw[donor.offset:donor.end_offset]
+                if ":" in str(index):
+                    # uf3: a texture of another kit package ("SELECTOR:chunk"), read from the same image
+                    other, at = str(index).split(":")
+                    source_raw = (kits or {}).get(other)
+                    require(source_raw is not None, selector + ": stamp donor kit absent")
+                    key = str(index)
+                else:
+                    source_raw, at, key = raw, index, int(index)
+                donor = _chunk_for(source_raw, int(at))
+                donor_span = source_raw[donor.offset:donor.end_offset]
                 if sha(donor_span) != pin:
                     # a stamp source the user's recipe replaced: keep the user's art (strict refuses)
                     require(not strict, selector + ": stamp donor differs from its pin")
                     missing = True
                     break
-                donors[int(index)] = texture_rgba(donor_span)
+                donors[key] = texture_rgba(donor_span)
             if missing:
                 skipped.append(row["chunk"])
                 continue
@@ -1093,6 +1191,13 @@ def compile_resource(selector, raw, *, strict=True, document=None):
                           **detail))
     return replacements, dict(selector=selector, state="applied", skipped_textures=skipped,
                               changed_bytes=sum(p["changed_bytes"] for p in parts), parts=parts)
+
+
+def donor_kits(document):
+    """Kit packages read as donors (uf3): nameplate rows' ``donor_selector`` and cross-kit stamp sources."""
+    out = {r["donor_selector"] for r in document["textures"] if r.get("donor_selector")}
+    out |= {str(k).split(":")[0] for r in document["textures"] for k in (r.get("donors") or {}) if ":" in str(k)}
+    return sorted(out)
 
 
 def selectors(document=None):
@@ -1121,13 +1226,18 @@ def apply_to_image(path, *, strict=False, document=None):
         for entry in index.entries:
             by_name.setdefault(bump.logical_name_for(entry.name_id), []).append(entry)
         # Preflight every kit before the first write, so a refusal leaves the image untouched.
+        donors = {}
+        for selector in donor_kits(document):
+            entries = by_name.get(selector + ".IFF", [])
+            require(len(entries) == 1, selector + " donor kit package absent or duplicated")
+            donors[selector] = image.read_segments(index.sub_extents(entries[0], 0, entries[0].size))
         plans = []
         for selector in wanted:
             entries = by_name.get(selector + ".IFF", [])
             require(len(entries) == 1, selector + " kit package absent or duplicated")
             entry = entries[0]
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
-            replacements, receipt = compile_resource(selector, raw, strict=strict, document=document)
+            replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
             plans.append((entry, replacements, receipt))
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
@@ -1154,3 +1264,13 @@ def alternates():
 def apply_alternates(path, *, strict=False):
     """Studio uniform finish pass for the alternates (after ``apply_to_image``): pinned spans only."""
     return apply_to_image(path, strict=strict, document=alternates())
+
+
+def finish():
+    """The uf3 document: elements judged against the 2026 game highlights, kept, reverted to v0.6 or redrawn."""
+    return spec(DATA_UF3)
+
+
+def apply_finish(path, *, strict=False):
+    """Studio uniform finish pass for uf3 (after ``apply_alternates``): pinned spans only."""
+    return apply_to_image(path, strict=strict, document=finish())
