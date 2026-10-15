@@ -62,12 +62,12 @@ def canonical_xbe(raw):
 def repair_xbe(raw):
     canonical_xbe(raw)
     fixed, detail = burst.apply(raw)
-    studio, _ = abilities.apply(raw)
-    require(studio == fixed, "native output differs from Studio abilities output")
+    studio, _ = abilities.apply_rating_rules(raw)
+    require(studio == fixed, "native output differs from the historical abilities phase")
     require(space.status(fixed) == "applied", "invalid output seals")
     changes = [i for i, (a, b) in enumerate(zip(raw, fixed)) if a != b]
     require(all(any(lo <= i < hi for lo, hi, _ in SCOPE) for i in changes), "outside-scope XBE change")
-    require(burst.apply(fixed)[0] == fixed and abilities.apply(fixed)[0] == fixed, "non-idempotent output")
+    require(burst.apply(fixed)[0] == fixed and abilities.apply_rating_rules(fixed)[0] == fixed, "non-idempotent output")
     return fixed, dict(schema="b772/sp1-repair/v1", status="repaired" if changes else "already_repaired",
                        before_sha256=sha(raw), after_sha256=sha(fixed), size=len(raw),
                        changed_bytes=len(changes), changed_offsets=[hex(i) for i in changes],

@@ -27,7 +27,7 @@ class SprintTests(unittest.TestCase):
         cls.retail = RETAIL.read_bytes()
         if hashlib.sha256(cls.retail).hexdigest() != RETAIL_SHA256:
             raise unittest.SkipTest('retail hash mismatch')
-        cls.fresh = abilities.apply(cls.retail, right_stick_stars_only=True, charge_stars_only=True)[0]
+        cls.fresh = abilities.apply_rating_rules(cls.retail, right_stick_stars_only=True, charge_stars_only=True)[0]
         cls.inputs = {'retail': cls.retail, 'fresh': cls.fresh}
         if SHIPPED.is_file():
             cls.inputs['shipped'] = SHIPPED.read_bytes()
@@ -73,7 +73,7 @@ class SprintTests(unittest.TestCase):
                     self.assertEqual(m.read(m.S + 0x90) & 3, 3 if allowed else 0)
 
     def test_partial_charge_grants_cpu_ready_and_stale_consumption(self):
-        payload = abilities.apply(self.retail, right_stick_stars_only=True, charge_stars_only=True,
+        payload = abilities.apply_rating_rules(self.retail, right_stick_stars_only=True, charge_stars_only=True,
                                  star_access=('charge', 'flicks', 'none', 'full'))[0]
         m = SprintMachine(payload)
         for carrier, controller, tier, star in itertools.product((False, True), (0, -1), range(4), (False, True)):

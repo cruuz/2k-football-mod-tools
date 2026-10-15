@@ -851,6 +851,7 @@ docs/mod_editor/nfl2k5_practice_squad_screen_capability.json
 ASTRA_PS_NATIVE_SCREEN_REPORT.md
 mod_editor/core/nfl2k5_abilities_runtime.py
 mod_editor/core/nfl2k5_tap_burst.py
+mod_editor/core/nfl2k5_human_tap_burst.py
 mod_editor/core/nfl2k5_abilities_runtime_code.py
 docs/mod_editor/nfl2k5_abilities_runtime_capability.json
 ASTRA_ABILITIES_RUNTIME_REPORT.md

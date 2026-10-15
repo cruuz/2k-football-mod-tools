@@ -44,7 +44,11 @@ def status(payload):
         space.layout(payload)
         image = XbeImage(payload)
         for va, size, digest in GUARDS:
-            space._require(hashlib.sha256(image.read(va, size)).hexdigest() == digest,
+            data = image.read(va, size)
+            if va == END and hashlib.sha256(data).hexdigest() != digest:
+                from . import nfl2k5_human_tap_burst as human
+                data = human.normalize_sp1_guard(payload, va, data)
+            space._require(hashlib.sha256(data).hexdigest() == digest,
                            f"foreign tap-burst dependency at {va:#x}")
         current = image.read(START, len(BEFORE))
         return "retail" if current == BEFORE else "applied" if current == AFTER else "foreign"

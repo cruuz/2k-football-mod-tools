@@ -620,7 +620,8 @@ LATE_OWNER = "nfl2k5_k128"
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
-               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_moment_coaches")
+               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
+               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst")
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -629,7 +630,8 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
-GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"))
+GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
+              ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.

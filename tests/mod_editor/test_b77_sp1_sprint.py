@@ -28,7 +28,7 @@ class SprintTests(unittest.TestCase):
     def setUpClass(cls):
         cls.retail = RETAIL.read_bytes()
         assert hashlib.sha256(cls.retail).hexdigest() == RETAIL_SHA256
-        cls.fixed = abilities.apply(cls.retail, charge_stars_only=True, right_stick_stars_only=True)[0]
+        cls.fixed = abilities.apply_rating_rules(cls.retail, charge_stars_only=True, right_stick_stars_only=True)[0]
         cls.old, cls.new = SprintMachine(cls.retail), SprintMachine(cls.fixed)
 
     def test_low_break_tackle_reproduces_weak_or_zero_burst_and_fix_matches_full_retail_burst(self):
@@ -110,7 +110,7 @@ class SprintTests(unittest.TestCase):
             self.assertEqual(m.pop_float(), 3.5)
 
     def test_source_replay_and_mixed_initializer_refusal(self):
-        self.assertEqual(abilities.apply(self.fixed)[0], self.fixed)
+        self.assertEqual(abilities.apply_rating_rules(self.fixed)[0], self.fixed)
         self.assertEqual(burst.status(self.fixed), "applied")
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
         bad = bytearray(self.fixed)
@@ -123,7 +123,7 @@ class SprintTests(unittest.TestCase):
     def test_actual_base_source_equality_exact_scope_replay_and_unknown_hash_refusal(self):
         raw = BASE.read_bytes()
         fixed, receipt = repair.repair_xbe(raw)
-        self.assertEqual(fixed, abilities.apply(raw)[0])
+        self.assertEqual(fixed, abilities.apply_rating_rules(raw)[0])
         self.assertEqual(receipt["changed_bytes"], 69)
         self.assertEqual(receipt["outside_scope_changed_bytes"], 0)
         replay, r = repair.repair_xbe(fixed)
