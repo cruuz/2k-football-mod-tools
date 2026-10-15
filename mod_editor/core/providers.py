@@ -956,7 +956,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_jersey_tset_targets.py": "6835fbeef8f34aaa137b582a386d630860eccb1bf17cc626232d3ff36bda02e0",
         "tools/nfl_live_face_texture_png_import.py": "e0f7398cbdb87a79593b5a8a61ec12b2ed3b03bb1966d4fb14f581543c2c7864",
         "tools/nfl_live_face_texture_targets.py": "c9748ee6cbb0441fded6c961ef25ec913e3294218c7892eacb731456c315f8d4",
-        "tools/nfl_live_helmet_txtr_png_import.py": "38555a95f7fe50abfbf9b47ab86945ffba2bfd92d78eae6b828532f865abaabe",
+        "tools/nfl_live_helmet_txtr_png_import.py": "14996e8675d80cf559668079993610bfe8de627d834f1b3242f55ba2952c6af1",
         "tools/nfl_live_helmet_txtr_targets.py": "26b18b9aa8f0afd71e0b137eef52f2cbfd0f2108cb63546979883446bc93325f",
         "tools/nfl_live_numbers_nameplate_png_import.py": "86a4796e44fcb286b8fd9450fc5242f4ddc22fb83a4fa32ffdab3ecbdd2d3449",
         "tools/nfl_live_numbers_nameplate_targets.py": "e122e41055e4d3b02ab35041db2e3cbd828fcf90c1b8f258abeb8718c20fc6a4",
