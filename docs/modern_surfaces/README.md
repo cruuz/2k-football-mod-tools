@@ -93,6 +93,39 @@ writer may compose it itself and the post-pass then leaves the same bytes.
 
 ## Venue responses measured in game (Beta 77 st1)
 
+Beta 77 gr1 adds a final palette correction in
+`mod_editor/core/nfl2k5_broadcast_greens.py`, enabled with Modern surfaces.
+It runs after the Anniversary field compiler and before disc compaction, so
+retail layouts, modern venues, practice, special venues and installed period
+aliases receive the same correction. Source writers keep their existing
+targets and response calibration; this pass changes their completed grass RGB.
+
+The synthetic RGB gain is `(58/87, 102/111, 56/62)`, from the channel median
+of three neutral MetLife photo medians divided by three playtest still
+medians. The magenta-lit fireworks photograph is excluded. Natural grass uses
+`102/111` on all three channels, preserving its warmer hue. The grass reduction
+implements the owner's whole-game request and is an extrapolation, not a new
+broadcast calibration. Night, rain and snow carry the same gain; they do not
+have a new independently measured response. Stored palette changes require
+live rendering to establish their final screen color.
+
+Ownership is explicit: field `color_premipped` and
+`grass_outside_premipped`, practice `pf_ground`, `pf_field_strip`,
+`pf_turf_strip`, environment `env_grass`, and visible green divot pixels.
+Only green RGB changes. White markings inside a grass texture, snow, alpha,
+indices and every mip index plane retain their bytes. Shared grass/paint textures or
+palettes are refused. All end-zone textures, logos, numbers, wall art,
+geometry, detail normals, Fldd words, light rigs and st1 shadow data are kept.
+Green backgrounds embedded in protected end-zone artwork remain unchanged.
+Mixed ground textures without explicit grass ownership are excluded.
+
+Each scene is compressed losslessly into its existing allocation, preserving
+its header and decoder scratch word. The image receipt (`.greens.json`) makes
+replay a zero-write operation and refuses intervening field changes. Calling
+the pure bundle transform twice without that receipt would compound the
+gain; the Studio places it once, after every field writer. The fixed-span
+`tools/b77/gr1_repair.py` separately pins full input/output disc hashes.
+
 A venue row may carry `response`: a per-channel response for one light class measured in game, which replaces the
 look's table value for that venue and light (`venue_response`). MetLife (s18, s19) carries the afternoon one: on the
 v0.6.1 disc the afternoon field drew (92.5, 135.5, 84.5) at the play camera against its target (82.5, 102.6, 66.9),

@@ -3172,3 +3172,6 @@ data/vip/coaches/TEN.json
 data/vip/coaches/WAS.json
 docs/mod_editor/nfl2k5_coach_vip.md
 docs/mod_editor/nfl2k5_coach_ai.md
+
+mod_editor/core/nfl2k5_broadcast_greens.py
+tests/mod_editor/test_nfl2k5_broadcast_greens.py
