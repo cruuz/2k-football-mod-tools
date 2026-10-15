@@ -174,8 +174,10 @@ class Candidate(unittest.TestCase):
              patch.object(fields, '_wordmark', return_value=None), \
              patch.object(fields, '_field', return_value=(self.bundle[:self.receipt['field_size']], {})):
             resources, receipt = fields.compile_assets(lambda _: self.bundle, lambda _: self.bundle, bytes(situ))
-        self.assertEqual(resources['a44dd.iff'], self.fixed)
+        from mod_editor.core import nfl2k5_super_bowl_walls as walls
+        self.assertEqual(resources['a44dd.iff'], walls.apply(self.fixed, row['row'])[0])
         self.assertTrue(receipt['assets'][0]['detail']['period_material_protection']['textures_and_geometry_identical'])
+        self.assertTrue(receipt['assets'][0]['detail']['super_bowl_walls']['written'])
 
 
 if __name__ == '__main__':

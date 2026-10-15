@@ -1,0 +1,1665 @@
+{
+ "schema": "nfl2k5_super_bowl_walls/v1",
+ "held_rows": [
+  34
+ ],
+ "note": "Authored event surfaces; permanent venue signs keep their bytes. Row 34 is held unchanged.",
+ "rows": [
+  {
+   "row": 14,
+   "event": "XXIII",
+   "date": "1989-01-22",
+   "venue": "Joe Robbie Stadium",
+   "city": "MIAMI",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s14",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row14/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "189f9f7ff6485ad58b17de1328941430d2c70f7568c49b6ac79501e453633baa"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row14/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "4b0015aa0a66033f02ea68f484452b904f6a1cdabb8f784de76a7b3138c2dbc9"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row14/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "22b4d23e557e2608019b55e258b009d1e7d2eddb7fd3dbf5a065bdbde7c34e34"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row14/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "5c908d78bc7ccdab47486a14872b1325db6d9ba4c474a59b27b410daf97c3080"
+    },
+    {
+     "material": "wall05",
+     "file": "row14/wall05.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "ce291311f839c965687139cf9de8b539197eff16644986ad91817e56c719a9d6"
+    },
+    {
+     "material": "wall08",
+     "file": "row14/wall08.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "d66611493299f887f7029647707f1d5e130a1f790bcd2b98251a9be45c90c529"
+    },
+    {
+     "material": "wall04",
+     "file": "row14/wall04.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "b8fb7b2d598529ce4bffa09a05db4dbb98a05bb63cf8e479a2ba927f95ed937d"
+    },
+    {
+     "material": "wall07",
+     "file": "row14/wall07.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "21031d19e0fe9d0d2ff6f64f6c3387e71c00198fd37a5f495e7f7862ffacd729"
+    }
+   ]
+  },
+  {
+   "row": 15,
+   "event": "XXV",
+   "date": "1991-01-27",
+   "venue": "Tampa Stadium",
+   "city": "TAMPA",
+   "network": "ABC",
+   "source_kind": "retail",
+   "source_prefix": "s27",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row15/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "6988f4e4f0284d5d41d607a2bb86b4b0c4dc5b5843304f9b03791947df3a2975"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row15/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "22be01cde748ead81956b1d3b00b28d105710b658d9d66a8ca1bf5bdda0699df"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row15/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "8e1585aec9a3a3b740389b6ad048fcb6ce958a3af258b5b583a359e231a6f0b0"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row15/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "c5c163e40c1f9a53d9583992aea367e2db8a4857aa123c097fdc7068867b88e4"
+    },
+    {
+     "material": "fieldwall",
+     "file": "row15/fieldwall.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "band",
+     "sha256": "786b1acf6054cc7a938848cee4a99b7cd7a4c16fa1ed65d3dfa187150c0436f2",
+     "areas": [
+      [
+       0,
+       62,
+       128,
+       128
+      ]
+     ]
+    },
+    {
+     "material": "bigwallbanner2",
+     "file": "row15/bigwallbanner2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "e21b626b411c91b5d55dcf3852711891213f8f23db4fbd963cbe6ed09fe77ef2",
+     "areas": [
+      [
+       40,
+       0,
+       128,
+       128
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "row": 21,
+   "event": "XXXII",
+   "date": "1998-01-25",
+   "venue": "Qualcomm Stadium",
+   "city": "SAN DIEGO",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s24",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row21/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "bbe96e488be184b9ea5425ed53661cec3217c1249ab2850a97634ee56f50ac1d"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row21/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "2ea84c770d396dec3c1c5c0589fe5e5ecb63f736edaa650ffb464074630acf0f"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row21/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "fcace4f5b34cdec57619e4b71052b752086c7635b9001017bbcd1a984a3bfda0"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row21/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "4f64f75f8fbd0303e2853745c9a6dee22566f8e8c9d456443e00626c945e1891"
+    },
+    {
+     "material": "chargerlogo",
+     "file": "row21/chargerlogo.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "art",
+     "painter": "word_event+tile_logo",
+     "sha256": "468c3b230d88a4e274c4b013ebc38452a44bf64dbd16dc87f5eeba90d1cc3713",
+     "areas": [
+      [
+       0,
+       0,
+       256,
+       64
+      ],
+      [
+       0,
+       149,
+       109,
+       256
+      ]
+     ]
+    },
+    {
+     "material": "chargerswall02",
+     "file": "row21/chargerswall02.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "71ffea53f549fa929dd71a8d1ab3dc264ccd20f6b11fffe8dbf24cf3cd7e9ca6"
+    },
+    {
+     "material": "chargerswall03",
+     "file": "row21/chargerswall03.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "67f92afc42cdcedcf3d2a37d22d76192bd30512e17dbce1216fd91eca392290d"
+    }
+   ]
+  },
+  {
+   "row": 22,
+   "event": "XXXIV",
+   "date": "2000-01-30",
+   "venue": "Georgia Dome",
+   "city": "ATLANTA",
+   "network": "ABC",
+   "source_kind": "retail",
+   "source_prefix": "s01",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row22/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "794ac9c120d0d4b198b1b77f727746f6b1ca75b875defc83ab00d0db475bb126"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row22/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "e306bc92977246e0c70b28ee3a719f73f989f46ed7328cdb1c20acbd21a5d6e1"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row22/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "9f49b5353b38d09d63de461e1822ae631a45c88a5079788774489542f4d50272"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row22/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "0815db9a840841d79d78cfbcb221a3581646075140a5360efde6e4b70d1500a1"
+    },
+    {
+     "material": "falconswall01",
+     "file": "row22/falconswall01.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "opaque",
+     "painter": "bands3",
+     "sha256": "21cf9160e3928a5fcbb2f4d54dd06a2f73e2017b3cf4d0dd223a3acf9c12cc7f"
+    },
+    {
+     "material": "falconswall02",
+     "file": "row22/falconswall02.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "mark",
+     "sha256": "8889cc955b7eba2af29bcaebdcfd6e223e610d1ffe64266f4d32534789b15d0b"
+    },
+    {
+     "material": "falconswall05",
+     "file": "row22/falconswall05.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "d58f9e28115f698f158d980892cc9387c6712dd5357b984496ba4c7206344f2b"
+    },
+    {
+     "material": "logo",
+     "file": "row22/logo.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "flag",
+     "sha256": "cd61c7b0a8b40dea531b1a6cd8969ec5b32d28ec2e626cb80b4d89b01c9bafd0"
+    }
+   ]
+  },
+  {
+   "row": 23,
+   "event": "XXXVI",
+   "date": "2002-02-03",
+   "venue": "Louisiana Superdome",
+   "city": "NEW ORLEANS",
+   "network": "FOX",
+   "source_kind": "retail",
+   "source_prefix": "s17",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row23/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "66fd75d7ce8c1b2dd9371dc4f08e0938048b30c31bc661b37467055185b1e150"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row23/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "e33de78fe86a37e2f811782e2b869ed6f7d9d162fb8f7cf5fb3d167589571edb"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row23/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "07add5a50151f49ccbe2b55278bb1e853868f213060a714514b38518b69aa53d"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row23/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "d28626c7298d5cad461d1f60809d3800acfb772587f2e84ae8625f27f35be13a"
+    },
+    {
+     "material": "swall1",
+     "file": "row23/swall1.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "ee0b9637a183013392d608aaa28d9a908e45b46e7f7678d2090aad0da3afac08"
+    },
+    {
+     "material": "swall2",
+     "file": "row23/swall2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "4017a36afa3f8d94ae5e99bc050dcd95368a690c1feabbe57bbe3531e9e36f16"
+    },
+    {
+     "material": "new_orleans3_lambert39",
+     "file": "row23/new_orleans3_lambert39.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "marquee",
+     "sha256": "712fe9e97dc874ff0b130970b6f4a8ad08ba18f427f27778a21d64f24daf12bd",
+     "areas": [
+      [
+       0,
+       18,
+       128,
+       40
+      ]
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert17",
+     "file": "row23/new_orleans3_lambert17.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "f05c5e9c9adf597cdf05dfa880acc2f50313a7f3a309cabf602290da0d1eba23"
+    },
+    {
+     "material": "swall3",
+     "file": "row23/swall3.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "hang_wide+word_event+shield_mark+mark",
+     "sha256": "704092d475e85108cd83d032216b78ed7b81b716061f7f349968408d3f98bc5c",
+     "areas": [
+      [
+       0,
+       0,
+       128,
+       64
+      ],
+      [
+       0,
+       64,
+       128,
+       78
+      ],
+      [
+       0,
+       78,
+       64,
+       128
+      ],
+      [
+       64,
+       78,
+       128,
+       128
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "row": 27,
+   "event": "XLII",
+   "date": "2008-02-03",
+   "venue": "University of Phoenix Stadium",
+   "city": "GLENDALE",
+   "network": "FOX",
+   "source_kind": "built",
+   "source_prefix": "s00",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row27/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "5f2d9f0378ba2601393c43364ca6df3a374394ee36391f2570bea14687b06bc0"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row27/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "6e542c21b25260b3a16da58e3ebedfb85cf19c552a4334488ebb2aa1046e995e"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row27/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "9118f6e62657d7ba17124068583a8c03d369eba3d49b1c642662b645a3730ebe"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row27/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "f5c46c31d9e18bf001d1d89877b14f66cef1b93b2781238ce63867947b1d60de"
+    },
+    {
+     "material": "sf_wall",
+     "file": "row27/sf_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "2eb26856a4744c9a8a5edd05a33d699b9dae14bdfc07bf71fe01a45b06131884"
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row27/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "73ed78ef502f46df2213be153c637d83faf32e7c2920a9f4ce3fb1346206c907"
+    },
+    {
+     "material": "LIGHT_sf_board_wing",
+     "file": "row27/LIGHT_sf_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "9fae1214be747b46cd679e6abaaa2b0f69136e49a6c6e773cd86679f85d9ed17"
+    },
+    {
+     "material": "sf_logo",
+     "file": "row27/sf_logo.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "uop_name",
+     "sha256": "f168fdd9c4b38e5b32dd29fa57cb0b304beb8fd60b6459ff07b3d7db4f209672"
+    }
+   ]
+  },
+  {
+   "row": 28,
+   "event": "XLIII",
+   "date": "2009-02-01",
+   "venue": "Raymond James Stadium",
+   "city": "TAMPA",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s27",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row28/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "ac7a64d896b093277b478e718c405880a97c4aae5f177b509e6e89511fc61723"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row28/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "13f5f090a69502539b829f122c135ee1a9a7c8b3994caa018099297c7b1841fb"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row28/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "f3f82bb0b58393de1ec13e7ee4bd79a74be5ba2f97471e92a0d7a7037ae40a35"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row28/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "b5c617cc67cbaac642158a0146bb9e142ca1d3116bdb8699009955bed4418cf7"
+    },
+    {
+     "material": "fieldwall",
+     "file": "row28/fieldwall.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "band",
+     "sha256": "03f5d695fe4d6b64a39b49f77904db5350e17935035a22bcf0d4cbba7053e88f",
+     "areas": [
+      [
+       0,
+       62,
+       128,
+       128
+      ]
+     ]
+    },
+    {
+     "material": "bigwallbanner2",
+     "file": "row28/bigwallbanner2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "f2ad54347569a8597b06be7a647dfd32f006a08ffadc0f773b8b3df2c33d306e",
+     "areas": [
+      [
+       40,
+       0,
+       128,
+       128
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "row": 29,
+   "event": "XLVI",
+   "date": "2012-02-05",
+   "venue": "Lucas Oil Stadium",
+   "city": "INDIANAPOLIS",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s11",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row29/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "b48a0d95dd173d42b148340011efffffc100e2c58abf93bf35fbc305d4b012f8"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row29/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "4a53063bab2ee38b3a04ead1259afa8a7ae49bf7090c9db69fcdf0c991733d36"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row29/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "ac96be966e4150842961f9820142dd2eaf90db44b203ae9e85542c9a59a843c9"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row29/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "ec12af1ba1bf975307d6ec285dd31920f6d5e537462ab93376d2ca734e5f2b54"
+    },
+    {
+     "material": "los_wall",
+     "file": "row29/los_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "85cd77c9b8f467bfddb53b3eaa49c47f06f9d8a4e838adca5a42c3295045d1f5"
+    },
+    {
+     "material": "LIGHT_los_ribbon",
+     "file": "row29/LIGHT_los_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "82eb954f7210d3db7278bafa2b8a81d1fb39f50570ca415bfdfaa54454b910a0"
+    },
+    {
+     "material": "LIGHT_los_board_wing",
+     "file": "row29/LIGHT_los_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "be33e275f97d85a77b9b62d80534657c22ee12a3bf1e5ad9d4ea547abcf84278"
+    },
+    {
+     "material": "los_banners",
+     "file": "row29/los_banners.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "vbanners",
+     "sha256": "e0071412e55058c59b8d593196d8a5a9e5265ca1614bd499407ce7da3de46aa9"
+    }
+   ]
+  },
+  {
+   "row": 30,
+   "event": "LI",
+   "date": "2017-02-05",
+   "venue": "NRG Stadium",
+   "city": "HOUSTON",
+   "network": "FOX",
+   "source_kind": "retail",
+   "source_prefix": "s37",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row30/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "e88b54e47edfad4a1c25d584f1a62ce295cad5b20dd0e49c46a6846b91ec6802"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row30/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "730b1f0b5342170d1fc3154f1e4c94bc01c4ff575b1dfe05b61cd38b3b9a55ba"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row30/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "6e542c21b25260b3a16da58e3ebedfb85cf19c552a4334488ebb2aa1046e995e"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row30/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "c29127b45ffa5049809a324ced7936208bd9261f7c94d6852cf44b0ebed02eb8"
+    },
+    {
+     "material": "texanswall01",
+     "file": "row30/texanswall01.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "9934ed1e20bfff043544f91ad5f15bd53a8ecb1c262748952dfe3550d00d343f"
+    },
+    {
+     "material": "tunnelcover01",
+     "file": "row30/tunnelcover01.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "24401d878c41e9d37cd1ae1e719e55ee98c5c40c26e5618c08c5b717128320f1",
+     "areas": [
+      [
+       0,
+       0,
+       82,
+       128
+      ]
+     ]
+    },
+    {
+     "material": "stadium_name",
+     "file": "row30/stadium_name.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "nrg_name",
+     "sha256": "43eadfd4b4fb10fc2ea24e02ba12cdbdf0787a70d4defe41a8eacb5546f2bdc4"
+    }
+   ]
+  },
+  {
+   "row": 35,
+   "event": "XLIV",
+   "date": "2010-02-07",
+   "venue": "Sun Life Stadium",
+   "city": "SOUTH FLORIDA",
+   "network": "CBS",
+   "source_kind": "retail",
+   "source_prefix": "s14",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row35/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "e9aebaf80a4a1cf8f389c7f27ad2969a909c5adb5b943bfa9403f848783b3464"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row35/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "16335cb8de40a474f4b7caed8ba90c88dae29ee661b1d1c30ac4b365fb288b58"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row35/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "9bb8adc910cd03570186b8010bd2c6d590562c03b48477b9d0e2cb5ec0b3b6fb"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row35/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "139e0457f0954174af5287ff1533bf77c0e7cf843efad13fbafbbfbbb05c6da2"
+    },
+    {
+     "material": "wall05",
+     "file": "row35/wall05.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "2163c33fefad1818dc7d1a809b7c713fb215e80e546ee70bffcf1da8a2f2ceea"
+    },
+    {
+     "material": "wall08",
+     "file": "row35/wall08.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "f2657c870d5fcd008b8da8455dbfcc550c98aa0ad510a347d1ea8a13eeade2bd"
+    },
+    {
+     "material": "wall04",
+     "file": "row35/wall04.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "12702d2114a118219ddb1d3d5872502f5a00062c0132a43eb06da48305f0122a"
+    },
+    {
+     "material": "wall07",
+     "file": "row35/wall07.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "24e56fbdacb9490554c3ce46a346ebcabf871a9c3d28430e7c1d9a2593bb6ceb"
+    }
+   ]
+  },
+  {
+   "row": 40,
+   "event": "XLVII",
+   "date": "2013-02-03",
+   "venue": "Mercedes-Benz Superdome",
+   "city": "NEW ORLEANS",
+   "network": "CBS",
+   "source_kind": "retail",
+   "source_prefix": "s17",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row40/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "f3e34a48ff3375da8c0a2742129c52f3dd3b1d27ee4b58658e4b38bef6a78eab"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row40/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "88a915ba65535deb0f53116709e4ff9b2477d6cc2c1eae630340d7100f47d6cb"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row40/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "0445d0c682643ade042883f56e3184fa16f01f94835478bde2f38c3e9ec1d100"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row40/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "3ce5f5feb18e43cf53bf85af903517b2d6385132db8366c1d5269c4071a51254"
+    },
+    {
+     "material": "swall1",
+     "file": "row40/swall1.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "82addd943d0d0f673a177ae04d4fa4e0f5336e5b346000db8f33247f2b7442be"
+    },
+    {
+     "material": "swall2",
+     "file": "row40/swall2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "c345e839ab091273e3513e58e99908e14c938b52b1a2531d0027f2e5fa13af4b"
+    },
+    {
+     "material": "new_orleans3_lambert39",
+     "file": "row40/new_orleans3_lambert39.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "marquee",
+     "sha256": "852a3892fc06170282be00c1e6bf6ada4e9ee41bb85be1861f37e967eef2334c",
+     "areas": [
+      [
+       0,
+       18,
+       128,
+       40
+      ]
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert17",
+     "file": "row40/new_orleans3_lambert17.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "35f4a15780c055c4e5e9186b1c94f27b4aa32a4c73653e751249bdf64cf7e662"
+    },
+    {
+     "material": "swall3",
+     "file": "row40/swall3.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "hang_wide+word_event+shield_mark+mark",
+     "sha256": "b69e798aeb62355c305666edb8305ebaecf4dad3a1da20d3f39699a6b56cc30b",
+     "areas": [
+      [
+       0,
+       0,
+       128,
+       64
+      ],
+      [
+       0,
+       64,
+       128,
+       78
+      ],
+      [
+       0,
+       78,
+       64,
+       128
+      ],
+      [
+       64,
+       78,
+       128,
+       128
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "row": 42,
+   "event": "XLIX",
+   "date": "2015-02-01",
+   "venue": "University of Phoenix Stadium",
+   "city": "ARIZONA",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s00",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row42/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "33699b080a3a96fb19d08369c63315906319558d76931fa3607f5271e28b9dcd"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row42/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "67d832aa9b9a48de54ff8b8defdf8abdb2291b9049c7593620fc180d3eb386fd"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row42/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "6e542c21b25260b3a16da58e3ebedfb85cf19c552a4334488ebb2aa1046e995e"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row42/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "b93c3b892121c841d5abd8991dfb2d43ed36f2e09cb327dd88338d8b8eacbb20"
+    },
+    {
+     "material": "sf_wall",
+     "file": "row42/sf_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "638c3a8d70936f5114e285dcfb48f25139c16946b0d55f81224afc995342f841"
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row42/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "a6e3efe36c24a71703737d5c10faac62fb8c5135c95c1772e0c35b895605f96e"
+    },
+    {
+     "material": "LIGHT_sf_board_wing",
+     "file": "row42/LIGHT_sf_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "7f71abdd14e455fc22be27d209c92902d78a21a8bc0f87e3e82810a11568798a"
+    },
+    {
+     "material": "sf_logo",
+     "file": "row42/sf_logo.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "uop_name",
+     "sha256": "f168fdd9c4b38e5b32dd29fa57cb0b304beb8fd60b6459ff07b3d7db4f209672"
+    }
+   ]
+  },
+  {
+   "row": 45,
+   "event": "LII",
+   "date": "2018-02-04",
+   "venue": "U.S. Bank Stadium",
+   "city": "MINNEAPOLIS",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s15",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row45/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "b285cf06483964fc6b7a546bf34aeea46cb84a9e1775680ff152c400aa3b5d9e"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row45/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "465e71a1e1ff7a8184b5095dda43f2d2541ab86ef9474f6ab23616968533f25b"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row45/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "a3f5dfb02c7e097d3c5b234b8e5391d4abc93cc2789335d02e9007ae3d8a8fb5"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row45/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "d8a015c9092762ae5bd16f9828c261a407b035e1ee34ae2db613047e17184dcb"
+    },
+    {
+     "material": "usb_wall",
+     "file": "row45/usb_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "b17eb8bf45f66b13bf063b9db27d41a1e478b716c08056ba4da8a2975755e5e0"
+    },
+    {
+     "material": "LIGHT_usb_ribbon",
+     "file": "row45/LIGHT_usb_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "e8051ed6b2aa015d10c754c0511679b134cc2ba21ee15936f6da34dc948c548d"
+    },
+    {
+     "material": "LIGHT_usb_board_wing",
+     "file": "row45/LIGHT_usb_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "57fa9d5c50df36c17c522efa268f1b26da0194cd7b1039dd7b4d7d59d3fb94b1"
+    },
+    {
+     "material": "LIGHT_usb_signs",
+     "file": "row45/LIGHT_usb_signs.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "signs4",
+     "sha256": "3f1c71f1e9f005e7170cbb533c00828f6a4d91975789b451127e8e461c7112f6"
+    },
+    {
+     "material": "LIGHT_usb_prow_display",
+     "file": "row45/LIGHT_usb_prow_display.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "fd946e0c16d66e029084e7b78a2ea105b046b3cfd48ae307e4f261a86257dfbd"
+    }
+   ]
+  },
+  {
+   "row": 46,
+   "event": "LIV",
+   "date": "2020-02-02",
+   "venue": "Hard Rock Stadium",
+   "city": "MIAMI",
+   "network": "FOX",
+   "source_kind": "built",
+   "source_prefix": "s14",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row46/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "353a2344c181afed0af9c93a0b4856fc6832b857a855bc956d5049996764dc2c"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row46/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "81522e8de4917799de3d7e616078952b4235a92b970f7b6cb165b6e56162bdc9"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row46/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "88a915ba65535deb0f53116709e4ff9b2477d6cc2c1eae630340d7100f47d6cb"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row46/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "2a045446be54f4b90a8de30850b634cadb1f28fc16c722c0027349a41abdff32"
+    },
+    {
+     "material": "hr_wall",
+     "file": "row46/hr_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "4165c06210326fafcfbcf2ccee4a6759e353a443b36f3d166453134ac1b9f2ba"
+    },
+    {
+     "material": "LIGHT_hr_ribbon",
+     "file": "row46/LIGHT_hr_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "9dcef135b13332d79a5a6addf9aeeba12c5b334d234bb85153af846f9335db04"
+    },
+    {
+     "material": "LIGHT_hr_board_panel",
+     "file": "row46/LIGHT_hr_board_panel.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "panel",
+     "sha256": "ac0a3afabe3a92389fad77a0ffdc5c9f963b17d4dc07fa4cfdce3db72650b6da"
+    }
+   ]
+  },
+  {
+   "row": 48,
+   "event": "LVI",
+   "date": "2022-02-13",
+   "venue": "SoFi Stadium",
+   "city": "LOS ANGELES",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s23",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row48/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "82feb0057f52760c8937e9420721b06dd719d206b137d5a6813f23525c16b563"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row48/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "0ca357d298ae4326ba1aa00ffe8ffe5980d7526243bc8cc6ffbc66748dc17137"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row48/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "787bb583c3afa0372851c0a833fc8b49ed28c96c91207fe3c3830e91d602d9ad"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row48/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "2c9c6d1edba591c5e0559fe55e845603ece59b1c59922591f97466f893b6e946"
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row48/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "e35239ba240ea2b594181962ecf9f4f38e69adfa0e99b9a5fa812cbc992f4fc2"
+    },
+    {
+     "material": "LIGHT_sf_screen",
+     "file": "row48/LIGHT_sf_screen.png",
+     "size": [
+      512,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "screen",
+     "sha256": "b7ca46fd9e92d4fdbe3691799f8a05fbda4a61055cbcc8cbe667ebfba1a87d0b"
+    }
+   ]
+  },
+  {
+   "row": 50,
+   "event": "LVIII",
+   "date": "2024-02-11",
+   "venue": "Allegiant Stadium",
+   "city": "LAS VEGAS",
+   "network": "CBS",
+   "source_kind": "built",
+   "source_prefix": "s20",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row50/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "9d9c51dd8f75915c0f7c092b8895c7a1e9d16e4d4a4cacb9ca5efc24adbf4975"
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row50/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "81522e8de4917799de3d7e616078952b4235a92b970f7b6cb165b6e56162bdc9"
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row50/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "9482ab76c56f9c124d419690522b1e8cbdca96b171076edf7ebb5963056c2570"
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row50/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "8d99a9117a8eca0688aafb56723bc5e564f5304e371197116ba7b081db742bdd"
+    },
+    {
+     "material": "ag_wall",
+     "file": "row50/ag_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "a1864a749dfa22ea467dc1809ebba17118ea3cca61cf62a5af3ad833e9499cce"
+    },
+    {
+     "material": "LIGHT_ag_ribbon",
+     "file": "row50/LIGHT_ag_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "bedb5525ebb537e5c83a3ffe300d4fd399b27b304449977c84e3a68162cc46b5"
+    },
+    {
+     "material": "LIGHT_ag_board_panel",
+     "file": "row50/LIGHT_ag_board_panel.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "panel",
+     "sha256": "54cb29fc65a515b37af1025cec0406fe8b04ac0b411433eef7c449e0889a1097"
+    },
+    {
+     "material": "LIGHT_ag_mesh",
+     "file": "row50/LIGHT_ag_mesh.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "mesh",
+     "sha256": "759541b5b13407389d607c60eb09707dcd11cd3e393ee64b681ec8ce319f759a"
+    }
+   ]
+  }
+ ]
+}

@@ -51,7 +51,7 @@ def rows():
                              "https://www.pro-football-reference.com/boxscores/202510160cin.htm"])]
 
 
-def code_for(va, spans=None, *, legacy=False):
+def code_for(va, spans=None, *, legacy=False, ball=True):
     spans = spans or [dict(va=va, size=CODE_SIZE, owner_offset=0)]
     require(spans[0]["size"] >= TABLE + 200, "venue entry/table must be contiguous")
 
@@ -94,6 +94,16 @@ def code_for(va, spans=None, *, legacy=False):
     b.label("done")
     b.b("5a9dc3")
     body.extend(b.assemble())
+    selector = None
+    if not legacy and ball:
+        # b773-me1: the per-game ball palette choice (nfl2k5_era_ball) fills the gap before the table, which is in
+        # the first owned span in every layout; the end of the owner has too little room on split layouts.
+        from . import nfl2k5_era_ball as era_ball
+        start = TABLE - era_ball.SELECTOR_SIZE
+        require(len(body) <= start and address(start, era_ball.SELECTOR_SIZE) is not None, "ball selector room")
+        body.extend(b"\xcc" * (start - len(body)))
+        code, selector = era_ball.selector(address(start, era_ball.SELECTOR_SIZE))
+        body.extend(code)
     body.extend(b"\xcc" * (TABLE - len(body)))
     selected = rows()[:50] if legacy else rows()
     body.extend(bytes(len(selected) * 4))
@@ -133,6 +143,8 @@ def code_for(va, spans=None, *, legacy=False):
     for label, site, before in HOOKS + (() if legacy else (FILENAME_HOOK,)):
         opcode = b"\xe8" if label in ("report", "presentation") else b"\xe9"
         edits.append((site, before, (opcode + struct.pack("<i", va + labels[label] - site - 5)).ljust(len(before), b"\x90")))
+    if selector:
+        edits.append(selector)
     return bytes(body).ljust(CODE_SIZE, b"\xcc"), edits
 
 
@@ -158,6 +170,12 @@ def _recognize(payload):
                 and image.read(FILENAME_HOOK[1], len(FILENAME_HOOK[2])) == FILENAME_HOOK[2]
                 and b"".join(image.read(r["va"], r["size"]) for r in owned["spans"]) == old):
             return "legacy"
+        previous, previous_edits = code_for(owned["va"], owned["spans"], ball=False)
+        from . import nfl2k5_era_ball as era_ball
+        if (all(image.read(site, len(after)) == after for site, _, after in previous_edits)
+                and image.read(era_ball.HOOK[1], len(era_ball.HOOK[2])) == era_ball.HOOK[2]
+                and b"".join(image.read(r["va"], r["size"]) for r in owned["spans"]) == previous):
+            return "previous"
     require(states in ({"retail"}, {"applied"}), "foreign/mixed venue hooks")
     state = next(iter(states))
     if owned:
@@ -178,8 +196,9 @@ def underlying(payload):
     state = _recognize(payload)
     if state == "retail":
         return payload
+    from . import nfl2k5_era_ball as era_ball
     out, image = bytearray(payload), XbeImage(payload)
-    for _label, site, before in HOOKS + (FILENAME_HOOK,):
+    for _label, site, before in HOOKS + (FILENAME_HOOK, era_ball.HOOK):
         at = image.offset(site, len(before))
         out[at:at + len(before)] = before
     return seal(out)
@@ -203,7 +222,7 @@ def apply(payload, *, enabled=True):
     owned = allocation(payload)
     body, edits = code_for(owned["va"], owned["spans"])
     if enabled:
-        if before == "legacy":
+        if before in ("legacy", "previous"):
             # _recognize has proved every byte of the old owner. Retire that
             # body before using the allocator's ordinary same-body guard.
             _, _, requests = space._validate(payload)

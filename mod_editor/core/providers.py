@@ -514,7 +514,9 @@ class Nfl2k5UnifiedVisualProvider:
     backend_module_sha256 = "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
-        "mod_editor/core/nfl2k5_espn25_fields.py": "5182f423fe34b77c1a1e47af6efd9fa730183028fec9271647058eb01dc37732",
+        "mod_editor/core/nfl2k5_espn25_fields.py": "cd3b897a2c711642f41b98703572a69b374dda22b5522f813d1bbb3dd8f53d5f",
+        "mod_editor/core/nfl2k5_super_bowl_walls.py": "a97aaa770b15508104e0bd516eeb5708b4e047142b199f0cb48a645c08abc68f",
+        "mod_editor/core/nfl2k5_era_ball.py": "f2996e9e0d8080d6796ba4e1a5325fc3101747ad4f168687191fe11b4bafc33f",
         "mod_editor/core/exact_math.py": "31b977deeda09cbb68dcde7561ea54c9ebfad2cb4ff74f6601d681e3f4d68564",
         "mod_editor/core/nfl2k5_allegiant_model.py": "fe092ff909859b0041c6e47cdedb85c15a206bc4a430a2a8a49bfc66f7fe8993",
         "mod_editor/core/nfl2k5_allegiant_venue.py": "adf75beb901280fa9ddb2e5a0e88364fa178437bd39345598f02793b7b0ae4c1",
@@ -557,7 +559,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_anniversary_pack.py": "ce18514a50889f3bb2180b07890fab142de49fe416f83470a1ef3f0a33c86acc",
         "mod_editor/core/nfl2k5_marks_store.py": "cc0049a7b10fdd31ed43c183e29470d920e0bf8af6b24b704e989095c0dc0659",
         "mod_editor/core/xdvdfs_compact.py": "fff8750e5879128101e2a8dc51d97622974659a7c09b27014be60bab679d8ed3",
-        "mod_editor/core/nfl2k5_moment_venues.py": "7b3f92ee60c1ed050290a6958fb1a4d01c12d25d71f4d4411985b5f78a7122dc",
+        "mod_editor/core/nfl2k5_moment_venues.py": "8271ad4d9478a8e7a86b0132262b2bb95ebba3f0a292421b669d4f7c4c233e41",
         "mod_editor/core/nfl2k5_historic_styles.py": "d543c92db41a0b4cc66a9ed971cfd38c65dd81f71fc71abe06ff5397c5174d34",
         "mod_editor/core/nfl2k5_menu_icon_orientation.py": "af3bb2b1e848c7f75bd9d47c7a5285dc9ea7ac6033850e84ee24316b8c6b9218",
         "mod_editor/core/nfl2k5_era_rules_code.py": "31a59de504f1d3c80db7823240bc1854324a544e48c572f5cb3518c0a1da6402",
@@ -583,7 +585,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "1c630a472af7285ca83430b1ac9c9b996d6387bb172a06ab44de4be211f3c10b",
+        "mod_editor/core/mod_build.py": "df10cc14880a955ecf45aca5cd582f3d7f59eec043c4ddf764165f02b7e6e336",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
         "mod_editor/core/modpack_files.py": "5362d6fe78aeafc5c6a8c0d8783d089ac2c85a3a5a60eafefbb66363c8a75c6a",

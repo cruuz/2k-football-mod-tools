@@ -25,15 +25,21 @@ from pathlib import Path
 
 CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
 SCHEMA = "nfl2k5_modern_art_pngs/v1"
-FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/")
+FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/",
+           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/")
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
                   "likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the "
                   "external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas "
                   "ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. "
-                  "No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from "
-                  "the user's own disc at build time.")
+                  "The Super Bowl event walls (me1) are "
+                  "drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours; areas a surface "
+                  "keeps from the venue are transparent in the PNG and filled from the user's disc at build time. "
+                  "The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering "
+                  "and a generic shield; its plain leather is taken from the user's disc ball at build time. "
+                  "No photograph or photo crop and no "
+                  "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.
