@@ -1,6 +1,7 @@
-"""2026 head coaches (beta 77 co1, co2): the pins and the shipped art, the coach bodies, the Build wiring, and, when a
-retail USA image is present, the real compile of coach scenes (Reid's derived head included), the body ids and the two
-portrait slots against their pins.
+"""2026 head coaches (beta 77 co1, co2, co3, cm1): the pins and the shipped art, the coach bodies, the authored coach
+geometry (cm1: Quinn's bald head, seven lean bodies), the Build wiring, and, when a retail USA image is present, the real
+compile of coach scenes (Reid's derived head and the geometry included), the body ids and the two portrait slots
+against their pins.
 
 The always-on tests read only the repository. The retail checks read the user's own disc image and skip without it
 (point NFL2K5_RETAIL_XISO at the retail USA .xiso.iso).
@@ -29,6 +30,8 @@ TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
 SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset": (64, 64), "head": (256, 128),
          "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
+# cm1: the clubs whose coach scene carries authored vertex edits (WAS: the bald head; the others: a lean body)
+GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN"}
 # co2: the club whose coach wears another retail body, and the body (cNN) he wears
 MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "00", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
          "MIN": "28", "NYG": "22", "PHI": "18", "PIT": "26", "SEA": "13", "TEN": "15"}
@@ -158,8 +161,11 @@ class PinsAndArt(unittest.TestCase):
             rel = path.relative_to(mc.DATA_DIR).as_posix()
             if rel in allowed:
                 continue
-            self.assertTrue(rel.endswith(".png"), rel)
             team, name = rel.split("/")
+            if name == mc.GEOMETRY_FILE:                    # cm1: authored vertex edits (integers), not an image
+                self.assertIn(team, GEOMETRY)
+                continue
+            self.assertTrue(rel.endswith(".png"), rel)
             if team == "portraits":
                 self.assertIn(name, {"7031.png", "7034.png"})
             elif name[:-4] in mc.HEAD_RECIPE_FILES:
@@ -181,6 +187,46 @@ class PinsAndArt(unittest.TestCase):
             for old in ("0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
                         "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83"):
                 self.assertNotEqual(row["png_sha256"], old)
+
+    def test_the_coach_geometry_is_pinned_and_well_formed(self):
+        """b77 cm1: each geometry file is pinned, names its own archive, and lists integer lane values for the
+        vertices that move (each vertex once, in range, unit normals) on the scene's three shapes only."""
+        from mod_editor.core import nfl2k5_models as models
+        rows = {r["team"]: r for r in mc.pins()["teams"]}
+        self.assertEqual({t for t, r in rows.items() if r.get("geometry")}, GEOMETRY)
+        for team in sorted(GEOMETRY):
+            row = rows[team]
+            doc = mc.load_geometry(row)
+            self.assertEqual(doc["archive"], row["archive"])
+            names = [item["name"] for item in doc["shapes"]]
+            self.assertTrue(set(names) <= set(mc.GEOMETRY_SHAPES) and len(set(names)) == len(names), team)
+            self.assertIn("coachBodyGrp1", names)              # the bald head's headset band moves too
+            if team == "WAS":
+                self.assertIn("coachHeadGrp1", names)
+            for item in doc["shapes"]:
+                self.assertEqual(len(item["lanes_sha256"]), 64)
+                vertices = [v for v, *_q in item["positions"]]
+                self.assertEqual(len(vertices), len(set(vertices)))
+                self.assertTrue(all(0 <= v < item["vertex_count"] for v in vertices))
+                self.assertTrue(all(-32768 <= int(q) <= 32767 for _v, *qs in item["positions"] for q in qs))
+                self.assertGreater(len(item["positions"]), 0)
+                for _v, word in item["normals"]:
+                    n = models.decode_normpacked3(int(word))
+                    self.assertAlmostEqual(sum(c * c for c in n) ** 0.5, 1.0, delta=0.01)
+
+    def test_coach_geometry_refusals(self):
+        row = dict({r["team"]: r for r in mc.pins()["teams"]}["WAS"])
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.load_geometry(dict(row, geometry="0" * 64))      # differs from its pin
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.load_geometry(dict(row, archive="c07.iff"))      # authored for another model
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.apply_geometry(bytearray(), {"shapes": []}, {"schema": "other", "shapes": []})
+        good = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))
+        bad = json.loads(json.dumps(good))
+        bad["teams"][0]["geometry"] = "abc"
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
 
     def test_malformed_pins_are_refused(self):
         with self.assertRaises(mc.ModernCoachesError):
@@ -242,7 +288,8 @@ class RetailCompile(unittest.TestCase):
         pins = {r["team"]: r for r in mc.pins()["teams"]}
         with mc._outer_image()(RETAIL) as archive:
             entries = {e.name_id: e for e in archive.entries}
-            for team in ("KC", "DAL", "PIT"):     # Reid's derived head on c21, an unmoved club, a moved one
+            # Reid's derived head on c21, an unmoved club, a moved one, cm1's bald head and two lean bodies
+            for team in ("KC", "DAL", "PIT", "WAS", "CIN", "LAR"):
                 row = pins[team]
                 entry = entries[mc.name_id(row["archive"])]
                 raw = archive.read(entry.virtual_offset, entry.size)
@@ -254,6 +301,52 @@ class RetailCompile(unittest.TestCase):
                 self.assertEqual(out[row["span_offset"]:row["span_offset"] + 0x20],
                                  raw[row["span_offset"]:row["span_offset"] + 0x20])   # wrapper identical
                 self.assertLessEqual(detail["fit"]["scratch_needed"], detail["fit"]["scratch_retail"])
+
+    def test_the_geometry_moves_only_its_own_vertices(self):
+        """b77 cm1: the WAS scene compiled with and without its geometry differs only in the position and normal lanes
+        of the listed vertices; Quinn's crown is about a centimetre lower (the 2004 hair volume is gone), his face and
+        ears do not move, and the skeleton, skin, triangles and textures are the same bytes. Another mesh is refused."""
+        from mod_editor.core import nfl2k5_models as models
+        import struct
+        row = {r["team"]: r for r in mc.pins()["teams"]}["WAS"]
+        doc = mc.load_geometry(row)
+        with mc._outer_image()(RETAIL) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            raw = archive.read(entries[mc.name_id("c29.iff")].virtual_offset, entries[mc.name_id("c29.iff")].size)
+            other = archive.read(entries[mc.name_id("c07.iff")].virtual_offset, entries[mc.name_id("c07.iff")].size)
+        tx, _fill = mc._tools()
+        rec, decoded = mc._mm()._scene(raw, tx.parse_chunks(raw)[0])
+        edited = bytearray(decoded)
+        detail = mc.apply_geometry(edited, rec, doc)
+        allowed = set()
+        heads = {}
+        for item in doc["shapes"]:
+            lanes, position_at, normal_at = mc._geometry_lanes(rec, decoded, item["name"])
+            for v, *_q in item["positions"]:
+                allowed.update(range(position_at(v), position_at(v) + 6))
+            for v, _w in item["normals"]:
+                allowed.update(range(normal_at(v), normal_at(v) + 4))
+            if item["name"] == "coachHeadGrp1":
+                shape = [s for s in rec["shapes"] if s["name"] == "coachHeadGrp1"][0]
+                before = models.read_positions(bytes(decoded), shape, lanes)
+                after = models.read_positions(bytes(edited), shape, models._shape_lanes(rec, shape, bytes(edited)))
+                heads = dict(before=before, after=after)
+        changed = {i for i, (a, b) in enumerate(zip(decoded, edited)) if a != b}
+        self.assertTrue(changed and changed <= allowed)
+        self.assertEqual(detail["coachHeadGrp1"]["positions"], len([1 for item in doc["shapes"]
+                                                                      if item["name"] == "coachHeadGrp1"
+                                                                      for _p in item["positions"]]))
+        top_before = max(p[1] for p in heads["before"]); top_after = max(p[1] for p in heads["after"])
+        self.assertGreater(top_before - top_after, 0.8)
+        self.assertLess(top_before - top_after, 1.2)
+        moved = [i for i, (a, b) in enumerate(zip(heads["before"], heads["after"]))
+                 if max(abs(a[k] - b[k]) for k in range(3)) > 1e-3]
+        # the face (in front of the ears, below the brows) does not move: only the scalp and the back of the head
+        self.assertTrue(moved and all(heads["before"][i][1] > 42.0 or heads["before"][i][2] < 8.0 for i in moved))
+        rec2, decoded2 = mc._mm()._scene(other, tx.parse_chunks(other)[0])
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.apply_geometry(bytearray(decoded2), rec2, doc)
+        self.assertIsNotNone(struct)
 
     def test_the_shoe_and_clipboard_come_from_the_disc_not_the_repository(self):
         """Every coach body's retail atlas: the compiled DAL atlas carries the authored headset and the disc's own shoe

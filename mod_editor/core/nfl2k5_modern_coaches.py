@@ -47,6 +47,13 @@ Philadelphia's in 2004): its own body, head mesh and face texture, his hair and 
 his glasses painted on (the model has no glasses geometry). That face is derived at build time from the disc's own
 texture (an authored weight mask and glasses overlay, integer arithmetic), so no retail pixels ship.
 
+Coach models (b77 cm1): where the 2004 model cannot reach the 2026 coach by texture alone, ``<club>/geometry.json``
+moves the scene's own vertices (``apply_geometry``: integer positions and normals of the vertices that move, refused on
+any mesh but the one each shape was authored on). Washington's Dan Quinn has a bald head (the 2004 hair volume off the
+scalp; the headset band and the low-detail head follow); seven lean coaches (CIN, CAR, GB, TEN, LAR, SF, MIN) wear the
+lean body of a retail coach of the same mesh family. The vertex count, triangles, skin weights, skeleton and animations
+are retail. Their heads, and Dallas's, are painted on the head mesh in 3D (one skin tone, painted hair and facial hair).
+
 EXPERIMENTAL and UNWITNESSED: proved offline (decoded textures, byte receipts, renders from the data); the look in
 the game is for Noah's eyes.
 """
@@ -69,8 +76,8 @@ BUILD_CAPTION = "2026 head coaches (sideline look and faces)"
 HELP_TEXT = (
     "Dresses every club's head coach on the sideline in his 2026 look: the club's 2026 colours on his polo, jacket "
     "and cap, the 2026 logo on his chest, a modern black headset, and his own face from his official headshot, "
-    "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build, and "
-    "Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
+    "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build (lean "
+    "coaches on a lean body), Washington's Dan Quinn has a bald head, and Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
     "sideline staff wear the same 2026 colours. Dallas and Washington also get their 2026 head coach's picture on "
     "the Coach Matchup screen (the 2004 disc has none for them). The animations are the game's own. Experimental: "
     "not yet seen in the game by the SOFTDRINK tester."
@@ -108,6 +115,12 @@ GLASSES_KEEP_COLUMNS = 4
 # chosen size is pinned per club (``palette_max``) so a build compiles it directly
 PALETTE_LADDER = (256, 192, 128, 96, 64)
 PORTRAIT_HEADER = 0x20
+# b77 cm1: a club whose look the 2004 model cannot reach by texture alone ships authored vertex edits for its coach
+# scene (``<club>/geometry.json``): new fixed-point positions and shading normals for the vertices that move, on the
+# scene's own shapes (same vertex count, same triangles, same skin and animations; nothing is added or removed)
+GEOMETRY_SCHEMA = "nfl2k5_coach_geometry/v1"
+GEOMETRY_FILE = "geometry.json"
+GEOMETRY_SHAPES = ("coachBodyGrp1", "coachLodGrp1", "coachHeadGrp1")
 
 
 class ModernCoachesError(ValueError):
@@ -162,6 +175,8 @@ def _check_pins(document: dict) -> dict:
         require(str(row.get("team_code", "")).isdigit() and str(row.get("body_code", "")).isdigit()
                 and row["archive"] == f"c{row['body_code']}.iff", f"{row['team']}: the coach body is not named")
         require(len(row.get("sideline", ())) == len(PACKAGES), f"{row['team']}: the sideline packages are incomplete")
+        require("geometry" not in row or (isinstance(row["geometry"], str) and len(row["geometry"]) == 64),
+                f"{row['team']}: the geometry pin is malformed")
     bodies = [row["body_code"] for row in teams]
     require(len(set(bodies)) == len(bodies), "two clubs name the same coach body")
     for row in document.get("portraits", ()):
@@ -309,6 +324,88 @@ def art_path(team: str, name: str) -> Path:
     return DATA_DIR / team / f"{name}.png"
 
 
+def geometry_path(team: str) -> Path:
+    return DATA_DIR / team / GEOMETRY_FILE
+
+
+# --- authored geometry: new positions and normals for the vertices that move --------------------------------------
+#
+# ``<club>/geometry.json`` (b77 cm1): {"schema", "archive", "shapes": [{"name", "vertex_count", "lanes_sha256",
+# "positions": [[vertex, x, y, z], ...], "normals": [[vertex, word], ...]}]}. ``x y z`` are the shape's NORMSHORT3
+# lane values (its retail scale and offset at record +0x10 / +0x20 are kept) and ``word`` its NORMPACKED3 normal.
+# ``lanes_sha256`` is the digest of the shape's retail position and normal lanes (every vertex, in order: six position
+# bytes then four normal bytes), so an edit only ever lands on the mesh it was authored for. The values are integers:
+# every platform writes the same bytes, and only the listed vertices change.
+
+def _geometry_lanes(rec: dict, decoded, name: str):
+    from . import nfl2k5_models as models
+    shapes = [s for s in rec["shapes"] if str(s["name"]) == name and int(s["vertex_count"]) > 0]
+    require(len(shapes) == 1, f"the coach scene has no single shape {name}")
+    shape = shapes[0]
+    lanes = models._shape_lanes(rec, shape, bytes(decoded))
+    require(lanes.position_format == "NORMSHORT3" and lanes.normal is not None,
+            f"{name}: not the retail NORMSHORT3 / NORMPACKED3 lane layout")
+    position_base = models._stream_base({}, shape, lanes.position_stream)
+    normal_base = models._stream_base({}, shape, lanes.normal[0])
+
+    def position_at(vertex: int) -> int:
+        return position_base + vertex * lanes.position_stride + lanes.position_offset
+
+    def normal_at(vertex: int) -> int:
+        return normal_base + vertex * lanes.normal[2] + lanes.normal[1]
+    return lanes, position_at, normal_at
+
+
+def geometry_lanes_digest(rec: dict, decoded, name: str) -> str:
+    """SHA-256 of one shape's position and normal lanes (every vertex in order: 6 position bytes, 4 normal bytes)."""
+    lanes, position_at, normal_at = _geometry_lanes(rec, decoded, name)
+    h = hashlib.sha256()
+    for vertex in range(lanes.vertex_count):
+        h.update(bytes(decoded[position_at(vertex):position_at(vertex) + 6]))
+        h.update(bytes(decoded[normal_at(vertex):normal_at(vertex) + 4]))
+    return h.hexdigest()
+
+
+def load_geometry(row: dict) -> dict:
+    path = geometry_path(row["team"])
+    require(path.is_file(), f"{row['team']}: the coach geometry is missing from this build")
+    payload = path.read_bytes()
+    require(sha(payload) == row["geometry"], f"{row['team']}: the coach geometry differs from its pin")
+    document = json.loads(payload.decode("utf-8"))
+    require(document.get("schema") == GEOMETRY_SCHEMA and document.get("archive") == row["archive"],
+            f"{row['team']}: the coach geometry is not for {row['archive']}")
+    return document
+
+
+def apply_geometry(edited: bytearray, rec: dict, document: dict) -> dict:
+    """Write the authored positions and normals of ``document`` into the decoded coach scene ``edited`` (in place).
+    Refuses a shape whose vertex count or retail lanes differ from the ones the edit was authored on."""
+    require(document.get("schema") == GEOMETRY_SCHEMA, "unsupported coach geometry")
+    detail = {}
+    for item in document["shapes"]:
+        name = str(item["name"])
+        require(name in GEOMETRY_SHAPES, f"the coach geometry names an unknown shape {name}")
+        lanes, position_at, normal_at = _geometry_lanes(rec, edited, name)
+        require(lanes.vertex_count == int(item["vertex_count"]), f"{name}: the vertex count differs from the edit's")
+        require(geometry_lanes_digest(rec, edited, name) == item["lanes_sha256"],
+                f"{name}: the mesh is not the one the coach geometry was authored on")
+        seen = set()
+        for vertex, x, y, z in item["positions"]:
+            require(0 <= vertex < lanes.vertex_count and vertex not in seen
+                    and all(-32768 <= int(v) <= 32767 for v in (x, y, z)), f"{name}: bad position row {vertex}")
+            seen.add(vertex)
+            struct.pack_into("<3h", edited, position_at(vertex), int(x), int(y), int(z))
+        seen = set()
+        for vertex, word in item["normals"]:
+            require(0 <= vertex < lanes.vertex_count and vertex not in seen and 0 <= int(word) <= 0xFFFFFFFF,
+                    f"{name}: bad normal row {vertex}")
+            seen.add(vertex)
+            struct.pack_into("<I", edited, normal_at(vertex), int(word))
+        detail[name] = dict(positions=len(item["positions"]), normals=len(item["normals"]),
+                            vertex_count=lanes.vertex_count)
+    return detail
+
+
 def available() -> bool:
     """The pins load and every shipped texture matches its pin."""
     try:
@@ -317,6 +414,10 @@ def available() -> bool:
             for name, digest in row["art"].items():
                 path = art_path(row["team"], name)
                 if not path.is_file() or sha(path.read_bytes()) != digest:
+                    return False
+            if row.get("geometry"):
+                path = geometry_path(row["team"])
+                if not path.is_file() or sha(path.read_bytes()) != row["geometry"]:
                     return False
         for row in document.get("portraits", ()):
             path = DATA_DIR / row["png"]
@@ -435,6 +536,8 @@ def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
         clear[:, GLASSES_KEEP_COLUMNS:, :] = 0
         mm.write_p8(edited, system, tex, clear, maximum=int(row.get("palette_max", 256)))
         detail["glasses"] = dict(material=GLASSES_MATERIAL, hidden=True, kept_columns=GLASSES_KEEP_COLUMNS)
+    if row.get("geometry"):
+        detail["geometry"] = apply_geometry(edited, rec, load_geometry(row))
     span = raw[chunk.offset:chunk.offset + 0x20 + chunk.stored_size]
     rebuilt, fit = _refit(span, bytes(edited))
     out = raw[:chunk.offset] + rebuilt + raw[chunk.offset + len(rebuilt):]
@@ -752,6 +855,8 @@ def record_pins(retail_image, teams: dict, portraits: list[dict], superseded: di
             if spec.get("head_recipe"):
                 row["head_recipe"] = spec["head_recipe"]
             row["art"] = {n: sha(art_path(team, n).read_bytes()) for n in art_names(row)}
+            if geometry_path(team).is_file():
+                row["geometry"] = sha(geometry_path(team).read_bytes())
             if body != code:
                 _site, value = _coach_body_site(archive, team)
                 require(value == int(code), f"{team}: the retail coach record names body {value}, not {code}")
