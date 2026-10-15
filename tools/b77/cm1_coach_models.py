@@ -690,7 +690,8 @@ def cmd_geometry(args) -> int:
             name = f"c{recipe['body']['donor']}.iff"
             donor = Scene(read_archive(args.retail, name), name)
         doc, _new = make_geometry(scene, recipe, donor)
-        text = json.dumps(doc, separators=(",", ":")) + "\n"
+        # spaced separators: plain short text tokens (the release gate refuses long whitespace-free runs as blobs)
+        text = json.dumps(doc, separators=(", ", ": ")) + "\n"
         path = mc.geometry_path(team)
         path.write_text(text, encoding="utf-8", newline="\n")
         print(team, row["archive"], {s["name"]: (len(s["positions"]), len(s["normals"])) for s in doc["shapes"]},

@@ -567,7 +567,7 @@
     "sideline_dry": "e97130cdaa7db30c94802db3da66e12ee717606aba8c4464e2180a91978ef118",
     "sideline_rain": "c7be9ce42b24db0f3d38cd2739aa14579c82434683cdba875eb3bd2c5a6ec630"
    },
-   "geometry": "b7a37961509a2dc03b18bf312401d69208eaadb09640614bb0b124eebc747c28",
+   "geometry": "5c0d8622768a2d17a2641dd6a3266a4a4db15b2d5f2263a9d0a39d579ccfaddc",
    "palette_max": 256,
    "applied_sha256": "48e49e14971dd2bb372801d167b53a5e7b9f86f484c3d21f4e93e5ce29d3cff2",
    "superseded_sha256": [
@@ -841,7 +841,7 @@
     "sideline_dry": "5231885ca556944c90bd41889534bc0643707b70fb69979ca0fd209de56fcc34",
     "sideline_rain": "b8ef00ee64748d0901fe649643435595cafa5263eb1c2a8e207fa4ceda208021"
    },
-   "geometry": "5592244a8e36d0770267c00437e857f82625ede298b136134146395290c05f01",
+   "geometry": "65c68aa3ca0c10d3ef29097ef85b89d3ddeb047f8be93686aa79c82e725d6881",
    "palette_max": 256,
    "applied_sha256": "39526b89d168a0dd6ea4e075e5557c9caf4ea08e7e24c8aba6737895c7bd82de",
    "superseded_sha256": [
@@ -1388,7 +1388,7 @@
     "sideline_dry": "6181e08a4a9e7a74541e34a612698edf7825ac6ffa1871bc2cf1ce97b46c3aa4",
     "sideline_rain": "d2281030d9837839c745afb01f7295998b7b7708462e16d7b7fe630854f730ea"
    },
-   "geometry": "41ef4b57550880fc11bf0ff65fa31e34896130487124fc21eb76432fcf1ff719",
+   "geometry": "2a82bb182ce1719aa9985d41f8fa1ee54eb62e39c7c744952ea628cbe3d5b0bb",
    "palette_max": 256,
    "applied_sha256": "6f43f8ed64915da8b48911b1d1ebfc3cc40502d8bf7ebf9b897ac629c2dd6c1b",
    "superseded_sha256": [
@@ -2105,7 +2105,7 @@
     "sideline_dry": "cd9ef2fc2c7216ef2ca2955f5f0b6282bf6cb63bc83eec34e0915abac15671b6",
     "sideline_rain": "41eeda880e9aa52000a3ec44db2a23ef8298997a55fb39d45c38951bffca524d"
    },
-   "geometry": "0e49a7c8f4cbd8265798e237f77150663b921f59b45b5e23ce643a3783ac17f5",
+   "geometry": "428baa0b46e72ec27f32cf0584d5c0a5f99258810afa154a1be0963c7cc47597",
    "palette_max": 256,
    "applied_sha256": "1c4c3dcfe8572f892dcff52d8b6b04ed99b9de535a4e70b2b0f3afa22a278534",
    "superseded_sha256": [
@@ -3195,7 +3195,7 @@
     "sideline_dry": "0f350f63b0ed9cdaaeb3949f6c0b20714d134a869b5b952321aaf2254e6a53e8",
     "sideline_rain": "d99d102177ff105319eebfea8276062ad50484a7c82e641e4b2f303c59045c78"
    },
-   "geometry": "394fb7a9c7d5016a76bfee2e4a6ce625e4c79f0b480cf4a3bf3b165ae17502e4",
+   "geometry": "23c7906068d3b18a3cf5fcdc681c098ea45dbaa2362b3539c8960f1c1b897d3e",
    "palette_max": 256,
    "applied_sha256": "72dd51a00f3eeb309a575d7d5fdc8c2364d5f82056dc59d0f2941eead597b5b3",
    "superseded_sha256": [
@@ -3469,7 +3469,7 @@
     "sideline_dry": "958feb6aaf851c5c83f73b9a3dbae20f916844806d5fed9f5cea51b108667b4f",
     "sideline_rain": "9fd3b95c155e1edd8901a41bb1e125b5b7f135d17cd311065a971e25545b5b97"
    },
-   "geometry": "d64305fa04b7ab0d5b765446cf6892d671a8af450f422553a22e14249f36a971",
+   "geometry": "f7412a450a724abbd7aca88673561ff877c827829414fc41beadaacd3dbc6dba",
    "palette_max": 256,
    "applied_sha256": "fcfc06d0be0a01dda5c1481df72d62eb1d1dae84e53c35b7714b2d3d1c4a37a7",
    "superseded_sha256": [
@@ -3879,7 +3879,7 @@
     "sideline_dry": "f1dacb22bc5863f7c8e6784232c675a412373a44d588ca3d55eaee6c68ec2adc",
     "sideline_rain": "fdef38afd90279f7ab7d75246650ee5a13259945319ac4f184d294db18db492a"
    },
-   "geometry": "2fb7ee503df8b5a2423886145e28a40efa6b5e93bac88adb272c0f061ea6baf2",
+   "geometry": "083f824ad14e6a33479addaaf5176424e76b8eac97d8e529f77509b000a06a88",
    "palette_max": 256,
    "applied_sha256": "18ade6b63a139255753ea9bb10cd68de1e64882f74ff87cd5bba1db6eb9f9de6",
    "superseded_sha256": [
@@ -4017,7 +4017,7 @@
     "sideline_dry": "8278fce55539f284f42e7a32c95765d67869cf2eb57748d66edda837ef0405e2",
     "sideline_rain": "913f092bbddc50c67573ddf0afd384a5465169b5f07501c5356500aeb490328c"
    },
-   "geometry": "1b402ab1726e10f9bb38a1d79b7fcbcfa5ffca5dfe2f393db6f21f40569a9a40",
+   "geometry": "eb8f60faee7cbc193e4504c6743712d0c3febaa46da87a14c68707f5d61d6c95",
    "palette_max": 256,
    "applied_sha256": "9a8dd70bc4f9d7e25a85ac2c836361671b330b414477f270999233a1ea7cacfc",
    "superseded_sha256": [
