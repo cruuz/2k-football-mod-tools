@@ -3153,6 +3153,9 @@ data/nfl2k5_super_bowl_walls/row50/banner_away_team.png
 data/nfl2k5_super_bowl_walls/row50/banner_corp.png
 data/nfl2k5_super_bowl_walls/row50/banner_home_player.png
 data/nfl2k5_super_bowl_walls/row50/banner_home_team.png
+mod_editor/core/nfl2k5_era_ball.py
+data/nfl2k5_era_ball/manifest.json
+data/nfl2k5_era_ball/modern_ball.png
 
 data/nfl2k5_espn25_more_moments_appearance.json
 data/nfl2k5_ratings_forty_sources.json

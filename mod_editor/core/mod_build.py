@@ -4272,6 +4272,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n))
         receipt["steps"].append({"step": "espn25_fields", **field_receipt})
         receipt["result"]["espn25_fields"] = "applied"
+        # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006; normal games
+        # and later moments keep the modern ball. global.iff is written by earlier passes, so this runs last.
+        progress("Giving modern games the modern ball", 0, 0)
+        era_ball = _core_module("nfl2k5_era_ball")
+        if era_ball is None:
+            raise ValueError("the era ball compiler is unavailable")
+        ball_receipt = era_ball.apply_to_image(target)
+        receipt["steps"].append({"step": "era_ball", **ball_receipt})
+        receipt["result"]["era_ball"] = ball_receipt["state"]
     if tt.is_disc_image(target):
         # DESIGN: all growth writers have finished. Compact only this disposable
         # build copy, then run the publication gates through its new directory.
@@ -4297,6 +4306,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if (receipt["result"]["espn25_named_previews"] != "applied"
                     or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
             raise ValueError("named previews did not survive the final resource passes")
+        receipt["result"]["era_ball"] = _core_module("nfl2k5_era_ball").image_status(target)
+        if receipt["result"]["era_ball"] != "applied":
+            raise ValueError("the era ball did not survive the final resource passes")
     if is_image:
         from .nfl2k5_disc_extents import validate_image
         receipt["disc_extents"] = validate_image(target)

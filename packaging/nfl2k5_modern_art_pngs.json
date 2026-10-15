@@ -1,6 +1,12 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). The Super Bowl event walls (me1) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours; areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc at build time. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). The Super Bowl event walls (me1) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours; areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc at build time. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
   "files": {
+    "data/nfl2k5_era_ball/modern_ball.png": {
+      "height": 256,
+      "sha256": "1e9acff58f27c7fbfb1f6e72060618fa3735736c1a7ed8ee1e96355f3e176b98",
+      "size": 96452,
+      "width": 256
+    },
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,
       "sha256": "c15244ea768bdda49c96c1c6b3da91fe45b0f0a3f0f54bb685d5f37bf0e20cc0",

@@ -1,8 +1,10 @@
-"""Super Bowl moments carry their own event walls (N06); everything else in the venue keeps its bytes."""
+"""Super Bowl moments carry their own event walls (N06); modern games get the modern ball and older moments keep the disc ball (N15)."""
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
+import struct
 import sys
 import tempfile
 import unittest
@@ -15,6 +17,9 @@ from PIL import Image
 from mod_editor.core import nfl2k5_espn25_fields as fields
 from mod_editor.core import nfl2k5_super_bowl_walls as walls
 from mod_editor.core import nfl2k5_modern_venues_2026 as mv
+from mod_editor.core import nfl2k5_era_ball as ball
+from mod_editor.core import nfl2k5_moment_venues as venues
+from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 DISC = os.environ.get('ME1_DISC')
 SIZE = 16
@@ -197,6 +202,166 @@ class Disc(unittest.TestCase):
                 every = set(mv.p8_rows(rec))
                 old, now = walls.texture_bytes(before, rec, every), walls.texture_bytes(after, rec, every)
                 self.assertEqual({int(k) for k in old if old[k] != now[k]}, listed)
+
+
+# --- N15: the era ball ---------------------------------------------------------------------------------------------
+
+HAVE_UNICORN = importlib.util.find_spec('unicorn') is not None
+CAVE, HEAP, STACK = 0x300000, 0x200000, 0x400000
+
+
+def run_selector(mode, ordinal, *, textures=2, signature=None):
+    """Executes the selector from its cave entry to the displaced instruction's return; (tex0 palette, regs, stack)."""
+    from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+    from unicorn import x86_const as x
+    code, (site, retail, hook) = ball.selector(CAVE)
+    uc = Uc(UC_ARCH_X86, UC_MODE_32)
+    for base in (0x95000, CAVE, HEAP, STACK - 0x1000, ball.ORDINAL & ~0xFFF, ball.MODE & ~0xFFF):
+        uc.mem_map(base, 0x2000)
+    uc.mem_write(CAVE, code)
+    scene, array, data1 = HEAP, HEAP + 0x100, HEAP + 0x1000
+    uc.mem_write(scene + 0x14, struct.pack('<II', textures, array))
+    uc.mem_write(array + 8, struct.pack('<I', 0xDEADBEEF))
+    uc.mem_write(array + 0x24, struct.pack('<II', data1, 0))
+    uc.mem_write(array + 0x2C, struct.pack('<I', ball.DUAL_FORMAT if signature is None else signature))
+    uc.mem_write(ball.MODE, struct.pack('<I', mode))
+    uc.mem_write(ball.ORDINAL, struct.pack('<I', ordinal))
+    regs = {x.UC_X86_REG_EAX: 0x11, x.UC_X86_REG_EBX: 0x22, x.UC_X86_REG_ECX: 0x33, x.UC_X86_REG_EDX: 0x44,
+            x.UC_X86_REG_ESI: 0x55, x.UC_X86_REG_EDI: scene, x.UC_X86_REG_EBP: 0x77, x.UC_X86_REG_ESP: STACK - 0x100}
+    for reg, value in regs.items():
+        uc.reg_write(reg, value)
+    uc.reg_write(x.UC_X86_REG_EFLAGS, 0x246)
+    uc.emu_start(CAVE, site + len(retail), count=200)
+    after = {reg: uc.reg_read(reg) for reg in regs}
+    pushed = struct.unpack('<I', uc.mem_read(after[x.UC_X86_REG_ESP], 4))[0]
+    palette = struct.unpack('<I', uc.mem_read(array + 8, 4))[0]
+    regs[x.UC_X86_REG_ESP] -= 4
+    return palette, data1, after == regs and uc.reg_read(x.UC_X86_REG_EFLAGS) == 0x246, pushed
+
+
+class BallData(unittest.TestCase):
+    def test_old_rows_are_the_moments_before_2006(self):
+        moments = json.loads((ROOT / 'data/nfl2k5_espn25_fields.json').read_text())['moments']
+        self.assertEqual(ball.old_ball_rows(), [m['row'] for m in moments if m['season'] < 2006])
+        self.assertEqual(ball.row_mask(), 0x383FFFFFF)
+
+    def test_palette_b_sits_in_the_freed_normal_map_mips(self):
+        self.assertEqual(ball.OLD_PALETTE, ball.TEX1['pixel'] + 65536 + 16384 + 4096)
+        self.assertLessEqual(ball.OLD_PALETTE + ball.PALETTE_BYTES, ball.TEX1['palette'])
+        self.assertEqual(ball.DUAL_FORMAT & 0xFFF0FFFF, ball.BALL_FORMAT & 0xFFF0FFFF)
+        self.assertEqual((ball.DUAL_FORMAT >> 16) & 15, 3)
+
+    def test_joint_palettes_carry_both_designs_through_one_index_image(self):
+        rng = np.random.default_rng(5)
+        modern = [rng.integers(0, 255, (n, n, 4), dtype=np.uint8) for n in (8, 4)]
+        old = [255 - m for m in modern]
+        palette, index = ball.joint_palettes(modern, old, 256)
+        again, index2 = ball.joint_palettes(modern, old, 256)
+        self.assertTrue((palette == again).all() and all((a == b).all() for a, b in zip(index, index2)))
+        for m, o, i in zip(modern, old, index):
+            self.assertTrue((palette[i][..., :3] == m[..., :3]).all())
+            self.assertTrue((palette[i][..., 3:] == o[..., :3]).all())
+
+    def test_shipped_art_is_authored_and_binary(self):
+        rgba = ball.art()
+        self.assertEqual(rgba.shape, (256, 256, 4))
+        self.assertGreater(int((rgba[..., 3] == 255).sum()), 4000)
+        doc = ball.manifest()
+        self.assertEqual(doc['modern_from_season'], 2006)
+        self.assertEqual(hashlib.sha256((ROOT / 'data/nfl2k5_era_ball' / doc['texture']['file']).read_bytes()).hexdigest(),
+                         doc['texture']['sha256'])
+
+    def test_selector_fits_and_hooks_the_ball_lookup(self):
+        code, (site, retail, hook) = ball.selector(CAVE)
+        self.assertEqual(len(code), ball.SELECTOR_SIZE)
+        self.assertEqual((site, retail), (0x950CC, bytes.fromhex('687057e600')))
+        self.assertEqual(hook, b'\xe9' + struct.pack('<i', CAVE - site - 5))
+        self.assertEqual(struct.unpack('<Q', code[-8:])[0], ball.row_mask())
+
+    def test_moment_venues_installs_the_selector_inside_its_owner(self):
+        body, edits = venues.code_for(0x500000)
+        self.assertEqual(len(body), venues.CODE_SIZE)
+        self.assertIn(ball.HOOK[1], [site for site, _, _ in edits])
+        site, _, hook = edits[-1]
+        target = site + 5 + struct.unpack('<i', hook[1:])[0]
+        self.assertEqual(body[target - 0x500000:][:ball.SELECTOR_SIZE], ball.selector(target)[0])
+        old_body, old_edits = venues.code_for(0x500000, ball=False)
+        self.assertNotIn(ball.HOOK[1], [s for s, _, _ in old_edits])
+        at = target - 0x500000
+        self.assertEqual(at + ball.SELECTOR_SIZE, venues.TABLE)
+        self.assertEqual(old_body[at:venues.TABLE], b'\xcc' * ball.SELECTOR_SIZE)
+        self.assertEqual(body[:at] + body[venues.TABLE:], old_body[:at] + old_body[venues.TABLE:])
+
+    def test_build_runs_the_ball_after_every_global_writer(self):
+        source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
+        at = source.index('era_ball.apply_to_image(target)')
+        for writer in ('apply_fields_to_image', 'helmets.apply_to_image', 'wipes.apply_to_image'):
+            self.assertLess(source.index(writer), at, writer)
+        self.assertLess(at, source.index('finish_private(target'))
+
+
+@unittest.skipUnless(HAVE_UNICORN, 'Unicorn required to execute the selector')
+class BallSelector(unittest.TestCase):
+    def test_old_moments_take_palette_b(self):
+        for ordinal in (0, 25, 31, 32, 33):
+            palette, data1, kept, pushed = run_selector(8, ordinal)
+            self.assertEqual(palette, data1 + 0x15000, ordinal)
+            self.assertTrue(kept)
+            self.assertEqual(pushed, 0xE65770)
+
+    def test_normal_games_and_later_moments_take_palette_a(self):
+        for mode, ordinal in ((8, 26), (8, 30), (8, 34), (8, 50), (8, 51), (8, 0x40), (0, 0), (3, 5), (9, 0)):
+            palette, data1, kept, _ = run_selector(mode, ordinal)
+            self.assertEqual(palette, data1 - 0x440, (mode, ordinal))
+            self.assertTrue(kept)
+
+    def test_unsigned_or_foreign_scenes_are_untouched(self):
+        for kwargs in (dict(signature=ball.BALL_FORMAT), dict(textures=1), dict(textures=3)):
+            palette, _, kept, pushed = run_selector(8, 0, **kwargs)
+            self.assertEqual(palette, 0xDEADBEEF, kwargs)
+            self.assertTrue(kept)
+            self.assertEqual(pushed, 0xE65770)
+
+
+@unittest.skipUnless(DISC, 'set ME1_DISC to the read-only base disc')
+class BallDisc(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_historic_styles as historic
+        from mod_editor.core import nfl2k5_espn25_rosters as rosters
+        with historic.Source(Path(DISC)) as source:
+            cls.outer = source.get(identity=ball.GLOBAL_ID)
+        cls.xbe = rosters.read_xbe(Path(DISC))
+
+    def test_only_the_ball_span_changes_and_replay_is_a_no_op(self):
+        new, receipt = ball.apply_global(self.outer)
+        self.assertEqual((ball.state(self.outer), ball.state(new)), ('retail', 'applied'))
+        self.assertEqual(len(new), len(self.outer))
+        at, size = receipt['ball_offset'], receipt['ball_size']
+        self.assertEqual(new[:at], self.outer[:at])
+        self.assertEqual(new[at + size:], self.outer[at + size:])
+        again, second = ball.apply_global(new)
+        self.assertEqual(again, new)
+        self.assertTrue(second['already_applied'])
+        self.assertLess(receipt['disc_ball_mean_abs_error'], 1.5)
+        self.assertLess(receipt['modern_mean_abs_error'], 1.5)
+
+    def test_palette_b_reproduces_the_disc_ball(self):
+        new, _ = ball.apply_global(self.outer)
+        _, rec, decoded = ball.ball_scene(self.outer)
+        disc = ball._levels(decoded, int(rec['system_bytes']))[0][..., :3].astype(int)
+        a, b, index = ball.palettes(new)
+        self.assertLess(float(np.abs(b[index][..., :3].astype(int) - disc).mean()), 1.5)
+        self.assertGreater(float(np.abs(a[index][..., :3].astype(int) - disc).mean()), 3.0)
+
+    def test_previous_venue_owner_upgrades_and_restores(self):
+        self.assertEqual(venues.status(self.xbe), 'previous')
+        upgraded, receipt = venues.apply(self.xbe)
+        self.assertEqual((venues.status(upgraded), receipt['status']), ('applied', 'applied'))
+        self.assertEqual(venues.apply(upgraded)[1]['status'], 'already_applied')
+        image = XbeImage(upgraded)
+        self.assertNotEqual(image.read(ball.HOOK[1], 5), ball.HOOK[2])
+        self.assertEqual(XbeImage(venues.underlying(upgraded)).read(ball.HOOK[1], 5), ball.HOOK[2])
 
 
 if __name__ == '__main__':
