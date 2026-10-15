@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_draft_picks as picks
+from mod_editor.core import nfl2k5_hback as hback
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
 BASE_SHA = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
@@ -75,8 +76,9 @@ def main():
     ap.add_argument("--virtual", action="store_true")
     ap.add_argument("--prior-receipt", type=Path, help="Accept the exact previous output for replay")
     ap.add_argument("--picks-plan", type=Path, help="Complete ownership table for new franchises")
+    ap.add_argument("--hback-plan", type=Path, help="All 32 backfield role decisions")
     args = ap.parse_args()
-    if args.receipt.resolve() in tuple(p.resolve() for p in (args.disc, args.plan, args.picks_plan, args.prior_receipt) if p):
+    if args.receipt.resolve() in tuple(p.resolve() for p in (args.disc, args.plan, args.picks_plan, args.hback_plan, args.prior_receipt) if p):
         raise ValueError("Receipt must not overwrite an input")
     plan_raw = args.plan.read_bytes()
     plan = json.loads(plan_raw)
@@ -93,18 +95,28 @@ def main():
         for at, data in runs(before, after):
             assert archive.image_offset(entry.virtual_offset+at+len(data)-1) == archive.image_offset(entry.virtual_offset+at)+len(data)-1
     picks_sha, pick_receipt = None, None
+    hback_sha, hback_receipt = None, None
     xbe_before = xbe_after = None
-    if args.picks_plan:
-        picks_raw = args.picks_plan.read_bytes()
-        picks_sha = sha(picks_raw)
-        pick_plan = json.loads(picks_raw)
+    if args.picks_plan or args.hback_plan:
         with args.disc.open("rb") as handle:
             xbe_at, length = tt.image_xbe_extent(handle.fileno(), args.disc.stat().st_size)
             handle.seek(xbe_at)
             xbe_before = handle.read(length)
-        xbe_after, pick_receipt = picks.apply(xbe_before, pick_plan)
-        if picks.apply(xbe_after, pick_plan)[0] != xbe_after:
-            raise ValueError("Draft initializer replay changed bytes")
+        xbe_after = xbe_before
+        if args.picks_plan:
+            picks_raw = args.picks_plan.read_bytes()
+            picks_sha = sha(picks_raw)
+            pick_plan = json.loads(picks_raw)
+            xbe_after, pick_receipt = picks.apply(xbe_after, pick_plan)
+            if picks.apply(xbe_after, pick_plan)[0] != xbe_after:
+                raise ValueError("Draft initializer replay changed bytes")
+        if args.hback_plan:
+            hback_raw = args.hback_plan.read_bytes()
+            hback_sha = sha(hback_raw)
+            hback_plan = json.loads(hback_raw)
+            xbe_after, hback_receipt = hback.apply(xbe_after, hback_plan)
+            if hback.apply(xbe_after, hback_plan)[0] != xbe_after:
+                raise ValueError("H-back replay changed bytes")
         spans.extend((xbe_at + at, data) for at, data in runs(xbe_before, xbe_after))
     spans.sort()
     if any(a+len(data)>b for (a,data),(b,_) in zip(spans,spans[1:])):
@@ -114,7 +126,8 @@ def main():
     if args.prior_receipt:
         previous = json.loads(args.prior_receipt.read_text(encoding="utf-8"))
         if (previous["plan_sha256"] != sha(plan_raw) or previous["input_sha256"] != BASE_SHA
-                or previous.get("picks_plan_sha256") != picks_sha):
+                or previous.get("picks_plan_sha256") != picks_sha
+                or previous.get("hback_plan_sha256") != hback_sha):
             raise ValueError("Replay receipt does not describe this plan and base")
         accepted.add(previous["output_sha256"])
     if proof["input_sha256"] not in accepted:
@@ -143,6 +156,7 @@ def main():
                    plan_sha256=sha(plan_raw), body_before_sha256=sha(before[32:]), body_after_sha256=sha(body),
                    replay_changed_bytes=0, studio_equal=True, studio=studio["roster_refresh"],
                    picks_plan_sha256=picks_sha, draft_picks=pick_receipt,
+                   hback_plan_sha256=hback_sha, hback=hback_receipt,
                    xbe_before_sha256=sha(xbe_before) if xbe_before else None,
                    xbe_after_sha256=sha(xbe_after) if xbe_after else None,
                    spans=[dict(offset=at,size=len(data),sha256=sha(data)) for at,data in spans])

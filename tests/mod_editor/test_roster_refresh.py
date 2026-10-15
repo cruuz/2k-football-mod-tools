@@ -42,6 +42,8 @@ def sample():
     for p in doc.players:
         p.record.set('depth_rank', 7)
         p.record.set('depth_side', 7)
+        p.record.set('contract_length', 1)
+        p.record.set('contract_remaining', 1)
     body = doc.to_body()
     doc = rr.RosterDocument(body, scheme='one_pool', reference_year=2026)
     rows = [dict(index=p.index, gsis_id=f'id{p.index}', first=p.first, last=p.last,
@@ -165,6 +167,7 @@ class RefreshTests(unittest.TestCase):
         row['fields']={k:50 for k in rr.RATING_BYTE_ORDER}
         row['fields'].update(position=3,jersey=18,height=72,weight=200,birth_year=2000,
                              birth_month=1,birth_day=1,years_pro=1,photo_id=7100,
+                             contract_length=1,contract_remaining=1,contract_value=23,
                              depth_rank=7,depth_side=7)
         plan['teams'][0]['active'].append(2464)
         out,receipt=refresh.apply_body(bytes(raw),plan)
@@ -174,6 +177,49 @@ class RefreshTests(unittest.TestCase):
         self.assertEqual(refresh.apply_body(out,plan)[0],out)
         with self.assertRaisesRegex(ValueError,'identity mismatch'):
             refresh.apply_body(self.body,plan)
+
+    def test_disjoint_vacant_cap_buffers_become_exclusive_adjacent_and_replay(self):
+        raw=bytearray(self.body);offset=fixture.PLAYERS_OFF+2464*84
+        for field,target in ((0x10,0x68000),(0x14,0x68080)):
+            raw[target:target+34]='****************'.encode('utf-16le')+b'\0\0'
+            struct.pack_into('<i',raw,offset+field,target-offset-field+1)
+        raw[offset+8]=1
+        doc=rr.RosterDocument(bytes(raw))
+        self.assertEqual(refresh._repair_create_buffers(doc),1)
+        out=doc.to_body(normalise_commentary=False)
+        checked=rr.RosterDocument(out);player=checked.by_pool('primary')[2464]
+        first=checked._pointer_target(player.offset,'first_name_pointer')
+        last=checked._pointer_target(player.offset,'last_name_pointer')
+        self.assertEqual(last,first+34)
+        self.assertEqual((checked.name_refs[first],checked.name_refs[last]),(1,1))
+        self.assertEqual((player.first,player.last),('****************',)*2)
+        self.assertEqual(refresh._repair_create_buffers(checked),0)
+        self.assertEqual(checked.to_body(normalise_commentary=False),out)
+        for p in checked.by_pool('primary'):
+            if p.index!=2464:self.assertEqual(p.record.encode(),bytes(raw[p.offset:p.offset+84]))
+
+    def test_newly_owned_unsigned_record_needs_guarded_contract_and_replay_preserves_it(self):
+        doc=rr.RosterDocument(self.body);p=doc.by_pool('primary')[0]
+        for key in refresh.CONTRACT_FIELDS:p.record.set(key,0)
+        raw=doc.to_body();plan=copy.deepcopy(self.plan)
+        with self.assertRaisesRegex(ValueError,'contract initializer'):refresh.apply_body(raw,plan)
+        fields=dict(contract_value=23,contract_length=1,contract_remaining=1,contract_type=2,contract_bonus=0)
+        plan['contract_initializations']=[dict(index=0,fields=fields,source='https://example.org/minimum',rule='Synthetic one-year accounting fixture')]
+        out,receipt=refresh.apply_body(raw,plan)
+        self.assertEqual(receipt['initialized_contracts'],1)
+        checked=rr.RosterDocument(out)
+        self.assertEqual({k:checked.players[0].record.get(k) for k in fields},fields)
+        self.assertEqual(refresh.apply_body(out,plan)[0],out)
+        self.assertEqual(refresh.apply_body(out,plan)[1]['initialized_contracts'],0)
+        checked.players[0].record.set('contract_value',99)
+        changed=checked.to_body();replayed=refresh.apply_body(changed,plan)[0]
+        self.assertEqual(rr.RosterDocument(replayed).players[0].record.get('contract_value'),99)
+        for mutation in (lambda q:q['contract_initializations'].append(q['contract_initializations'][0]),
+                         lambda q:q['contract_initializations'][0].update(index=1344),
+                         lambda q:q['contract_initializations'][0]['fields'].update(contract_length=0),
+                         lambda q:q['contract_initializations'][0].update(source='')):
+            bad=copy.deepcopy(plan);mutation(bad)
+            with self.assertRaises(ValueError):refresh.apply_body(raw,bad)
 
 
 if __name__=='__main__':unittest.main()

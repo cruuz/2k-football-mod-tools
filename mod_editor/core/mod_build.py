@@ -2331,6 +2331,18 @@ def _apply_draft_pick_ownership(plan, target, receipt, progress):
         receipt["steps"].append({"step": "draft_pick_ownership", **pick_receipt})
 
 
+def _apply_hback_roles(plan, target, receipt, progress):
+    if not plan.roster_edits:
+        return
+    document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
+    roles = document.get("hback_roles")
+    if roles is not None:
+        progress("Setting team backfield role labels", 0, 0)
+        xbe, result = _core_module("nfl2k5_hback").apply(_xbe_bytes(target), roles)
+        _write_xbe_bytes(target, xbe)
+        receipt["steps"].append({"step": "hback_roles", **result})
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -3923,6 +3935,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["steps"].append({"step": "qb_throw_power", **qb_receipt})
     _apply_roster_refresh(plan, target, receipt, progress)
     _apply_draft_pick_ownership(plan, target, receipt, progress)
+    _apply_hback_roles(plan, target, receipt, progress)
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)

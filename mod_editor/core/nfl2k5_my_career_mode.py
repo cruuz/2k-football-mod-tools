@@ -496,13 +496,18 @@ def check_context(payload, edits, *, installed=False):
     image = XbeImage(payload)
     legacy.check_context(image)
     # Shared enum abbreviations follow the installed EDGE/LB labels. Only
-    # the exact retail pointers or those two known label pointers are valid.
+    # the exact retail pointers or fully validated companion labels are valid.
     names = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
     pointers = (15113192, 15113200, 15113204, 15113208, 15113216, 15113224, 15113232, 15113240, 15113248, 15113256, 15113300, 15113308, 15113272, 15113276, 15113280, 15113284, 15113292)
     for i, (pointer, name) in enumerate(zip(pointers, names)):
         actual = struct.unpack("<I", image.read(0x4F26D0+4*i, 4))[0]
         if i == 11 and actual == 0xE69C30: name, pointer = "LB", actual
         if i == 16 and actual == 0x10CA2: name, pointer = "EDGE", actual
+        if i == 8 and actual != pointer:
+            from . import nfl2k5_hback as hback
+            legacy.require(hback.status(payload) == "applied", "foreign H-back label companion")
+            pointer = hback.strings(hback.allocation(payload)["va"])[1]["abbr"]
+            name = hback.TEXT["abbr"]
         legacy.require(actual == pointer and image.read(actual,2*(len(name)+1)) == (name+"\0").encode("utf-16le"),
                        "foreign MyPlayer HUD position label")
 

@@ -14,6 +14,9 @@ appearance, stars and abilities. Their permitted changes are jersey, position,
 depth rank, depth side, membership and the five depth-preference bits. Number
 commentary is repaired by the normal roster writer. All other roster bytes,
 including coach and history tables, remain outside the refresh's ownership.
+Two guarded initialization exceptions apply: unused CAP records need exclusive
+adjacent name buffers, and unsigned records moved into NFL ownership need valid
+native contract terms. Existing nonzero contracts are never replaced.
 
 Plans identify existing records by index, first name, last name and date of
 birth, and carry source identifiers and URLs. Membership includes all 32 clubs,
@@ -23,6 +26,12 @@ provide model ratings. They start with zero history and ability state. Their
 ratings must already include the pack's desired final adjustments because the
 refresh runs after those adjustments. Replay changes only permitted roster
 fields, preserving subsequent ratings and appearance work.
+Every owned record needs a nonzero contract length because native IR payroll
+divides by that length. A `contract_initializations` row may supply the five
+contract fields for an otherwise empty unsigned record, with a source URL and
+modeling rule. Replay preserves a nonzero contract. The dated October 14 H-back
+stage uses the existing economy minimum model for these accounting placeholders;
+they are explicitly distinguished from observed NFL contracts.
 
 All active depth chains are locked. NFL clubs are checked for conflicting
 locks; alumni teams alias the same player records and cannot have independent
@@ -43,7 +52,7 @@ Virtual proof does not demonstrate a live franchise, an actual write/replay, or
 a complete retail-to-pack build. It proves the final roster stage on the pinned
 installed baseline. A complete rebuild must still pass the identity guards.
 
-## Future picks: research, not an implementation
+## New-franchise future picks
 
 The franchise initializer at `0x13EE10` initializes two banks of seven 32-byte
 ownership arrays. Bank 0 is `0xE3C0B4..0xE3C193`; bank 1 is
@@ -54,15 +63,17 @@ cannot seed traded picks because initialization resets it.
 The load routine expands the front-office save's fourteen 32-dword tables into
 these byte arrays. At `0x31E430`, season transition copies bank 1 to bank 0 and
 resets bank 1 to original ownership. `0x31E210` also reorders first-bank entries
-with the draft-order permutation. Calendar-year alignment, conditional picks,
-and team-index mapping need verification before a writer is enabled. No third
-future-year bank was established by this investigation.
+with the draft-order permutation. No third future-year bank was established.
 
-A future native implementation needs an owned, guarded initialization hook
-after the reset, a dated complete ownership manifest, and rollover checks.
+The optional `draft_pick_ownership` directive now installs an owned, guarded
+hook immediately after the reset at `0x13EF89`. Its complete 448-row manifest
+seeds the 2027 and 2028 drafts for a 2026 starting season. Conditional choices
+must be explicitly frozen by the data author, with unconfirmed owners marked.
+Native later trading and rollover stay intact. See
+[draft_pick_ownership.md](draft_pick_ownership.md) for guards and native checks.
 An existing-save upgrade could potentially write the front-office tables, but
 would need to preserve user trades and the save's season and draft order. This
-refresh implements neither new-franchise pick seeding nor an existing-save
-upgrade. Its `unrepresented` manifest also records unsupported reserve status
+refresh does not implement an existing-save upgrade. Its `unrepresented`
+manifest also records unsupported reserve status
 and missing practice-squad identities; absence from active rosters does not
 mean correctly seeded injured reserve.
