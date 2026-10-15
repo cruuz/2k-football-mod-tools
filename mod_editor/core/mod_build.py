@@ -674,6 +674,10 @@ PRESETS["softdrink_advanced"]["honors_history"] = "builtin"
 PRESETS["softdrink_experimental"]["honors_history"] = "builtin"
 # vt1: the SOFTDRINK release includes the 2026 coach profiles; the Build toggle remains editable.
 PRESETS["softdrink_experimental"]["coach_ai"] = True
+# i4: hu1 authored the alphabet consumed by nm1; resolve it inside each installed bundle.
+for _preset_values in PRESETS.values():
+    _preset_values["indicator_names_folder"] = ""
+PRESETS["softdrink_experimental"]["indicator_names_folder"] = str(ROOT / "data/nfl2k5_indicator_names")
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}

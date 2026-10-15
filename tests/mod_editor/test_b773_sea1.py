@@ -218,17 +218,30 @@ class NativeDisc(unittest.TestCase):
             parts, receipt = fixes.compile_resource(selector, fixed, strict=True, document=self.doc)
             self.assertEqual((parts, receipt["state"]), ([], "applied"))
 
-    def test_shoulder_digits_are_three_fifths_of_the_chest_grey(self):
+    def test_both_shoulder_sets_are_plain_wolf_grey_with_original_alpha_and_indices(self):
         from nfl_txtr import parse_chunks
-        fixed = self.compiled["26H0"][2]
-        chunks = {c.index: c for c in parse_chunks(fixed)}
-        for index in range(33, 43):
-            c = chunks[index]
-            rgba = fixes.texture_rgba(fixed[c.offset:c.end_offset])
-            self.assertEqual({tuple(p) for p in rgba[..., :3].reshape(-1, 3).tolist()}, {(99, 103, 105)})
-        chest = chunks[17]
-        rgba = fixes.texture_rgba(fixed[chest.offset:chest.end_offset])
-        self.assertIn((165, 172, 175), {tuple(p) for p in rgba[..., :3].reshape(-1, 3).tolist()})
+        for selector in ("26H0", "26H4"):
+            fixed = self.compiled[selector][2]
+            chunks = {c.index: c for c in parse_chunks(fixed)}
+            for index in range(33, 43):
+                c = chunks[index]
+                before = self.raws[selector][c.offset:c.end_offset]
+                after = fixed[c.offset:c.end_offset]
+                rgba = fixes.texture_rgba(after)
+                self.assertEqual({tuple(p) for p in rgba[..., :3].reshape(-1, 3).tolist()}, {(99, 103, 105)})
+                np.testing.assert_array_equal(rgba[..., 3], fixes.texture_rgba(before)[..., 3])
+                old_chunk, old, texture = fixes._txtr(before, ("P8", "VC_P8_LINEAR"))
+                new_chunk, new, new_texture = fixes._txtr(after, ("P8", "VC_P8_LINEAR"))
+                at = old_chunk.system_bytes + texture.palette_offset
+                self.assertEqual(len(after), len(before))
+                self.assertEqual(new[:at], old[:at])
+                self.assertEqual(new[at + 1024:], old[at + 1024:])
+                self.assertEqual(new[at + 3:at + 1024:4], old[at + 3:at + 1024:4])
+                self.assertEqual((texture.width, texture.height, texture.mip_levels),
+                                 (new_texture.width, new_texture.height, new_texture.mip_levels))
+            chest = chunks[17]
+            rgba = fixes.texture_rgba(fixed[chest.offset:chest.end_offset])
+            self.assertIn((165, 172, 175), {tuple(p) for p in rgba[..., :3].reshape(-1, 3).tolist()})
 
     def test_no_logo_texels_left_in_the_crown_stripe(self):
         from nfl_txtr import parse_chunks

@@ -88,6 +88,12 @@ class AlphabetContract(unittest.TestCase):
             for name in ('atlas.png', 'metrics.json'):
                 self.assertEqual((Path(folder)/name).read_bytes(), (FOLDER/name).read_bytes(), name)
 
+    def test_experimental_preset_uses_the_authored_bundle(self):
+        from mod_editor.core import mod_build
+        self.assertEqual(Path(mod_build.PRESETS["softdrink_experimental"]["indicator_names_folder"]), FOLDER)
+        for name in ("softdrink_basic", "softdrink_advanced"):
+            self.assertFalse(mod_build.PRESETS[name].get("indicator_names_folder", ""))
+
     def test_nm1_compiler_accepts_the_atlas(self):
         try:
             from mod_editor.core import nfl2k5_indicator_names as names

@@ -289,9 +289,10 @@ def entries():
             rows.append({"selector": sel, "chunk": 33 + d, "texture": "an%d" % (48 + d), "kind": "palette",
                          "defects": ["noah-1014-SEA-shoulder-numbers"],
                          "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers "
-                                 "(the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+                                 "(the game lights shoulder digits 1.5-2x brighter, so it showed white); "
+                                 "26H4 lime outline is mapped to the same plain wolf grey",
                          "map": [{"from": ["#000000"], "tolerance": 255, "transparent": True,
-                                  "scale": DIGIT_SCALE}]})
+                                  **({"scale": DIGIT_SCALE} if sel == "26H0" else {"to": "#636769"})}]})
     return sorted(rows, key=lambda r: (r["selector"], r["chunk"]))
 
 

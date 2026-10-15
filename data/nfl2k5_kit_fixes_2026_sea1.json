@@ -8428,7 +8428,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8456,7 +8456,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8484,7 +8484,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8512,7 +8512,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8540,7 +8540,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8568,7 +8568,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8596,7 +8596,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8624,7 +8624,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8652,7 +8652,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -8680,7 +8680,7 @@
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11578,11 +11578,11 @@
    "offset": 475888,
    "length": 1424,
    "before_sha256": "da1ac115956a2daed7bba05fd5850028505c3385da77279bd67187427c012fbd",
-   "after_sha256": "766ac95a67708bfeca8a8710f3df0e0805e2181f588e0eccf325891c60ad6906",
+   "after_sha256": "0ced4727447cc5332be5019fd18f0473a238db6daff423f64cf1604e10165b12",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11590,10 +11590,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11606,11 +11603,11 @@
    "offset": 477312,
    "length": 1008,
    "before_sha256": "0e84b3054e301b4098c787fcbaeafb24fa409be2dc6f4eb608cda8890932dab2",
-   "after_sha256": "46ecbb674566a1eab71f9798624f367ad058e5e42d776fd017217837fe7fd444",
+   "after_sha256": "4d5174fd38bdf8e735d98d281a2df30b46bd5e3b4701f952681925fcfde3464c",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11618,10 +11615,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11634,11 +11628,11 @@
    "offset": 478320,
    "length": 1776,
    "before_sha256": "aa1a3a73c95f5f0a17ee30688ba1096d28d160798a7db8febd90cb88e89ad731",
-   "after_sha256": "cd88f66118765e952f6d5d1a5e8a642dcbf072e949292972fbb1e27b0231c527",
+   "after_sha256": "a81021e374aaa7a05e9647d182561667ddfa7425e9d061ef669e073b7e41509a",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11646,10 +11640,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11662,11 +11653,11 @@
    "offset": 480096,
    "length": 1856,
    "before_sha256": "533389b93e38c04df9a87e5ebe5ded183eada805e902ccb1fbdd3155e0df9256",
-   "after_sha256": "fd86d21b4ae755da11a9c58655d06253a227fc92936ad49c5ae1385f769c0be2",
+   "after_sha256": "676a2cb05d96ff3718f0ee4e1f993b7e4afb86b377521285404b0304e0c11ed4",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11674,10 +11665,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11690,11 +11678,11 @@
    "offset": 481952,
    "length": 1728,
    "before_sha256": "429e289c41861eba027ef8aceb0e24e91d61f363e6aa3873e9cca569f92d83d8",
-   "after_sha256": "f72c94407de1eb2747ca2fa89bec937d650ee039e9dc1de7797a81b821f29737",
+   "after_sha256": "86b2c8796dd451061a7e0d2f92f69ee30943fef4a6b67314f81d6b5c00351566",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11702,10 +11690,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11718,11 +11703,11 @@
    "offset": 483680,
    "length": 1616,
    "before_sha256": "7d50e35502b868fb66b5a009f049cae579f35052a0d4b1be7734e27430b269d8",
-   "after_sha256": "76d8bd91ad16156d75f5d57da453cdbc879223aacd9592577057a8369e8e40f7",
+   "after_sha256": "64047787c80ff68185c6f0d32326a9d6ec5195cdbc47e3ae3342fbb3526ef5a3",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11730,10 +11715,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11746,11 +11728,11 @@
    "offset": 485296,
    "length": 1696,
    "before_sha256": "90d2fcc1c5c0b412dcb5f8b1016ad25d169dc04efe3e3e16d90eb9d159e42195",
-   "after_sha256": "ae68e8f95a70a98c41bd0a4e222877b5ce3702da4e14a5c89108715ca68e86d9",
+   "after_sha256": "6abd26c439d3cfe339c8483dff0b2d3c5ab6c6aa19bc87e98adf1644173ce56e",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11758,10 +11740,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11774,11 +11753,11 @@
    "offset": 486992,
    "length": 1696,
    "before_sha256": "5f29faeee6fcb7d7e12fe8c868164d000ed67bdbde77a2bd98898098cdd86c73",
-   "after_sha256": "57c711cdfcf5024f422ab6ce315871810f8d3d647386904876e24e4b8831e72b",
+   "after_sha256": "f3ab7515d53b92a91df7cae61890c87169b654961a844e57a1b2e5e81fad21c6",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11786,10 +11765,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11802,11 +11778,11 @@
    "offset": 488688,
    "length": 1744,
    "before_sha256": "a8d8636bc0e462db612ec970555ad82a8aa886c6884402031afd4a15ddc09651",
-   "after_sha256": "3e232295da9418b44e735b7b98e57f4f9c6a8f857660a355ffe071a9e142c199",
+   "after_sha256": "bef3f7e99ce0553e5f65790c0f0c6ddfbb538e9120288133c6d6465822ab5e3a",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11814,10 +11790,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   },
@@ -11830,11 +11803,11 @@
    "offset": 490432,
    "length": 1696,
    "before_sha256": "12c4dcd175b7145f5f1edcf57c94105c8d289c9e61316958b0db46f2f1fbce01",
-   "after_sha256": "29a4503993a8e126f68dddb2304a56662a062f10c6834f21894b3c68576fbb47",
+   "after_sha256": "d334d4192c4a1dafde4dd401653a2905ae47cad0fd49f80a04bc647ce64cedb6",
    "defects": [
     "noah-1014-SEA-shoulder-numbers"
    ],
-   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white)",
+   "note": "shoulder (TV) digit darkened to 3/5 so it reads wolf grey like the chest numbers (the game lights shoulder digits 1.5-2x brighter, so it showed white); 26H4 lime outline is mapped to the same plain wolf grey",
    "map": [
     {
      "from": [
@@ -11842,10 +11815,7 @@
      ],
      "tolerance": 255,
      "transparent": true,
-     "scale": [
-      3,
-      5
-     ]
+     "to": "#636769"
     }
    ]
   }
