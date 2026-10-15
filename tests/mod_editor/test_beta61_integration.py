@@ -26,7 +26,9 @@ class BuildIntegrationTests(unittest.TestCase):
             self.assertEqual(selected.scorebug, name == 'softdrink_experimental')
             # Beta 62: the runtime scorebug (logos, live events) is off in every preset until the
             # community freeze report is resolved; the static bar still rides Experimental.
-            self.assertFalse(selected.scorebug_runtime)
+            # b773 nm1/i4: the Experimental preset (and only it) installs the sprite scorebug, because the private
+            # indicator-name FONT occupies its appended sprite scene (the SOFTDRINK recipe already overrides it on).
+            self.assertEqual(selected.scorebug_runtime, name == 'softdrink_experimental')
             self.assertEqual(build.BuildPlan('source', 'target', **selected.to_recipe()).to_recipe(), selected.to_recipe())
 
     def test_library_metadata_is_a_selected_content_transaction(self):
