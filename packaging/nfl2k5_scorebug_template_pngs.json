@@ -1122,6 +1122,12 @@
       "size": 6688,
       "width": 256
     },
+    "data/nfl2k5_indicator_names/atlas.png": {
+      "height": 128,
+      "sha256": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
+      "size": 2981,
+      "width": 256
+    },
     "data/nfl2k5_kick_meter_2026/arrow32.png": {
       "height": 32,
       "sha256": "a691a700d169278a677524690ea8d397015e6233f9cea380875c7a632d45bb13",
@@ -2846,8 +2852,8 @@
     },
     "data/nfl2k5_scorebug_sprite/template.png": {
       "height": 512,
-      "sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b",
-      "size": 27963,
+      "sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398",
+      "size": 27390,
       "width": 1536
     },
     "data/nfl2k5_sofi_model/art/LIGHT_sf_concourse.png": {

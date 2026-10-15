@@ -4016,6 +4016,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             icon_receipt = uf3_icon.apply_to_image(target)
             if icon_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "menu_icon_uf3", **icon_receipt})
+        # b773-hu1: Washington's Team Select helmet cards and schedule miniatures carry the 2026 helmet W uf3 drew in
+        # game; only the exact known card art changes, retail and user art are left alone.
+        helmet_w = _core_module("nfl2k5_menu_helmet_w2026")
+        if helmet_w is not None:
+            helmet_receipt = helmet_w.apply_to_image(target)
+            if helmet_receipt["written"] or helmet_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_helmet_w2026", **helmet_receipt})
         # b773-pa1: the modern above-the-knee pants hem on every current-season kit (texture only: the pants, their
         # bump map and the sideline player), compiled after the uf3 finish; throwbacks keep their era hem.
         pants_hem = _core_module("nfl2k5_pants_hem_2026")
