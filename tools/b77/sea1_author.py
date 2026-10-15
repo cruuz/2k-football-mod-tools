@@ -243,10 +243,14 @@ def write_shapes(mesh_path):
 
 def helmet_ops():
     layers = json.loads(SHAPES.read_text(encoding="utf-8"))["layers"]
-    return crown_ops() + [{"op": "multipoly", "color": NAVY, "polys": layers["clear"]},
-                          {"op": "multipoly", "color": GRAY, "polys": layers["band_gray"]},
-                          {"op": "multipoly", "color": WHITE, "polys": layers["band_top"] + layers["band_bottom"]},
-                          {"op": "multipoly", "color": WHITE, "polys": layers["line"]}]
+    # Repainted texels take alpha 255 (as uf3's Washington W): the shell's reflection mask is 233-251 in scattered
+    # texels here, and the compiler keeps a texel's alpha, so those would quantise to the few colours the palette
+    # holds at that alpha (navy) and come back as dark specks in the band.
+    return crown_ops() + [{"op": "multipoly", "color": NAVY, "alpha": 255, "polys": layers["clear"]},
+                          {"op": "multipoly", "color": GRAY, "alpha": 255, "polys": layers["band_gray"]},
+                          {"op": "multipoly", "color": WHITE, "alpha": 255,
+                           "polys": layers["band_top"] + layers["band_bottom"]},
+                          {"op": "multipoly", "color": WHITE, "alpha": 255, "polys": layers["line"]}]
 
 
 # The navy/grey-pants combo (26H4/26A4, uf2's copy of the same shell art) also kept red dotted lines from an older
@@ -262,7 +266,8 @@ ALT_REMNANTS = [
 
 
 def alt_ops():
-    return [{"op": "texels", "color": colour, "points": [list(p) for p in points]} for colour, points in ALT_REMNANTS]
+    return [{"op": "texels", "color": colour, "alpha": 255, "points": [list(p) for p in points]}
+            for colour, points in ALT_REMNANTS]
 
 
 DIGIT_SCALE = [3, 5]

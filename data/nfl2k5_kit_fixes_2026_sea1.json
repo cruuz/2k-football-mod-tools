@@ -17,7 +17,7 @@
    "offset": 404480,
    "length": 37392,
    "before_sha256": "1b6764bcb3ec1cce46ec9ee1b438816b349bc59ec564fde2144873aa035342f6",
-   "after_sha256": "4ef6747c99e88dfd499604cf8802715afd5dcb2087a92db6dfa4dcae455d25e9",
+   "after_sha256": "c3e09c0a15b9301534af491de7a4e5583e91b9c1a7eacf4beefb84f636e85c7d",
    "defects": [
     "noah-1014-SEA-crown-fragment",
     "noah-1014-SEA-helmet-back-lines"
@@ -41,6 +41,7 @@
     {
      "op": "multipoly",
      "color": "#0C2848",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -851,6 +852,7 @@
     {
      "op": "multipoly",
      "color": "#A5ABAE",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -1513,6 +1515,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -2275,6 +2278,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -2782,7 +2786,7 @@
    "offset": 413328,
    "length": 37072,
    "before_sha256": "60ed667600be9a30cc68c56178f438f249c4fad255f825cfb786025b30acc249",
-   "after_sha256": "391ceb5e65bd5a6872905aeab750960f43fde997ec0f59c0fd788b1bffdafd9a",
+   "after_sha256": "ba87e0f70989cda301fc156eaeb08b998f2bf2ca37916df83e6ba4dbd25cee34",
    "defects": [
     "noah-1014-SEA-crown-fragment",
     "noah-1014-SEA-helmet-back-lines"
@@ -2806,6 +2810,7 @@
     {
      "op": "multipoly",
      "color": "#0C2848",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -3616,6 +3621,7 @@
     {
      "op": "multipoly",
      "color": "#A5ABAE",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -4278,6 +4284,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -5040,6 +5047,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -5534,6 +5542,7 @@
     {
      "op": "texels",
      "color": "#0C2848",
+     "alpha": 255,
      "points": [
       [
        119,
@@ -5612,6 +5621,7 @@
     {
      "op": "texels",
      "color": "#475D73",
+     "alpha": 255,
      "points": [
       [
        119,
@@ -5626,6 +5636,7 @@
     {
      "op": "texels",
      "color": "#7D8D9C",
+     "alpha": 255,
      "points": [
       [
        120,
@@ -5649,7 +5660,7 @@
    "offset": 405664,
    "length": 37392,
    "before_sha256": "1b6764bcb3ec1cce46ec9ee1b438816b349bc59ec564fde2144873aa035342f6",
-   "after_sha256": "4ef6747c99e88dfd499604cf8802715afd5dcb2087a92db6dfa4dcae455d25e9",
+   "after_sha256": "c3e09c0a15b9301534af491de7a4e5583e91b9c1a7eacf4beefb84f636e85c7d",
    "defects": [
     "noah-1014-SEA-crown-fragment",
     "noah-1014-SEA-helmet-back-lines"
@@ -5673,6 +5684,7 @@
     {
      "op": "multipoly",
      "color": "#0C2848",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -6483,6 +6495,7 @@
     {
      "op": "multipoly",
      "color": "#A5ABAE",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -7145,6 +7158,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -7907,6 +7921,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -8694,7 +8709,7 @@
    "offset": 413328,
    "length": 37072,
    "before_sha256": "60ed667600be9a30cc68c56178f438f249c4fad255f825cfb786025b30acc249",
-   "after_sha256": "391ceb5e65bd5a6872905aeab750960f43fde997ec0f59c0fd788b1bffdafd9a",
+   "after_sha256": "ba87e0f70989cda301fc156eaeb08b998f2bf2ca37916df83e6ba4dbd25cee34",
    "defects": [
     "noah-1014-SEA-crown-fragment",
     "noah-1014-SEA-helmet-back-lines"
@@ -8718,6 +8733,7 @@
     {
      "op": "multipoly",
      "color": "#0C2848",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -9528,6 +9544,7 @@
     {
      "op": "multipoly",
      "color": "#A5ABAE",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -10190,6 +10207,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -10952,6 +10970,7 @@
     {
      "op": "multipoly",
      "color": "#ECEDED",
+     "alpha": 255,
      "polys": [
       [
        [
@@ -11446,6 +11465,7 @@
     {
      "op": "texels",
      "color": "#0C2848",
+     "alpha": 255,
      "points": [
       [
        119,
@@ -11524,6 +11544,7 @@
     {
      "op": "texels",
      "color": "#475D73",
+     "alpha": 255,
      "points": [
       [
        119,
@@ -11538,6 +11559,7 @@
     {
      "op": "texels",
      "color": "#7D8D9C",
+     "alpha": 255,
      "points": [
       [
        120,
