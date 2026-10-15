@@ -280,6 +280,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                     # Studio dynamically selects these reviewed field owners after surface compilation.
                     "mod_editor/core/nfl2k5_midfield_art.py",
                     "mod_editor/core/nfl2k5_split_endzone_art.py",
+                    # b773-gr1: the last field pass, called after every field writer.
+                    "mod_editor/core/nfl2k5_broadcast_greens.py",
                     "mod_editor/core/nfl2k5_momentum.py",
                     "mod_editor/core/nfl2k5_momentum_code.py",
                     "mod_editor/core/nfl2k5_defensive_try.py",
