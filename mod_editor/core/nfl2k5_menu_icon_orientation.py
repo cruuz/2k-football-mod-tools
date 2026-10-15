@@ -66,7 +66,12 @@ def locate(archive, name: str) -> tuple[int, bytes]:
 
 
 def plan_archive(archive) -> tuple[list, dict]:
-    at, before = locate(archive, TARGET)
+    try:
+        at, before = locate(archive, TARGET)
+    except (ValueError, KeyError, hs.HistoricStylesError):
+        # Same contract as the Pittsburgh miniature step: an archive without the miniature aggregate or member is
+        # not the known art (a synthetic or foreign image), so there is nothing to correct.
+        return [], dict(state="not_applicable", written=0)
     digest = sha(before)
     if digest == AFTER_SHA256:
         return [], dict(state="applied", written=0)
@@ -83,7 +88,14 @@ def plan_archive(archive) -> tuple[list, dict]:
 
 def apply_to_image(image) -> dict:
     from tools.nfl2k5_playbook_position_recode import OuterImage
-    with OuterImage(Path(image), writable=True) as archive:
+    try:
+        archive_cm = OuterImage(Path(image), writable=True)
+        archive = archive_cm.__enter__()
+    except (ValueError, OSError):
+        # Same contract as the Pittsburgh miniature step beside it: an image without the main pack folder is not
+        # NFL 2K5 (a synthetic or foreign image) and has no miniature to correct. Nothing is written.
+        return dict(state="other_image", written=0)
+    try:
         plan, receipt = plan_archive(archive)
         attempted = []
         try:
@@ -98,4 +110,6 @@ def apply_to_image(image) -> dict:
             for at, before in reversed(attempted):
                 archive.write(at, before)
             raise
+    finally:
+        archive_cm.__exit__(None, None, None)
     return receipt
