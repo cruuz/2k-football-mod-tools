@@ -247,6 +247,33 @@ def fan_stage(disc, retail):
     return rows, sorted(ranges, key=lambda r: r["start"]), extents
 
 
+def icon_stage(disc):
+    """The Pittsburgh road miniature (``mini_a22_0``): its row and disc ranges (empty when it is not the known art)."""
+    from mod_editor.core import nfl2k5_menu_icon_uf3 as icon
+    from mod_editor.core import nfl2k5_modern_fans as mf
+    with mf._outer_image()(disc) as image:
+        at, span = icon.locate(image, icon.TARGET)
+        digest = icon.sha(span)
+        require(digest in (icon.BEFORE_SHA256, icon.AFTER_SHA256), "the Pittsburgh miniature is not the known art")
+        after = span if digest == icon.AFTER_SHA256 else icon.rotate_disc(span)
+        require(icon.sha(after) == icon.AFTER_SHA256, "the Pittsburgh miniature differs from its pin")
+        row = dict(key=icon.TARGET, at=at, before=span, after=after,
+                   state="base" if digest == icon.BEFORE_SHA256 else "applied")
+        ranges = []
+        inner = 0
+        for pack, offset, length in image._segments(at, len(span)):
+            start = pack.image_offset + offset
+            ranges.append(dict(start=start, end=start + length, selector="icon:" + icon.TARGET, chunk=0,
+                               texture=icon.TARGET, file="vc_53450030/" + pack.name, kind="fan", resource_offset=inner))
+            inner += length
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        cdf = hs.AGGREGATES[1]["cdf"]
+        extents = [(pack.image_offset + offset, pack.image_offset + offset + length)
+                   for entry in image.entries if entry.name_id != cdf
+                   for pack, offset, length in image._segments(entry.virtual_offset, entry.size)]
+    return [row], ranges, extents
+
+
 def fan_write(disc, rows):
     from mod_editor.core import nfl2k5_modern_fans as mf
     todo = [(r["at"], r["before"], r["after"]) for r in rows if r["state"] == "base"]
@@ -293,13 +320,15 @@ def run(args):
     donors = {}
     raws, kit_ranges, extents = read_resources(disc, document, donors)
     fan_rows, fan_ranges, fan_extents = fan_stage(disc, getattr(args, "retail", None))
-    ranges = sorted(kit_ranges + fan_ranges, key=lambda r: r["start"])
+    icon_rows, icon_ranges, icon_extents = icon_stage(disc)
+    ranges = sorted(kit_ranges + fan_ranges + icon_ranges, key=lambda r: r["start"])
     require(set(donors) == set(donor_selectors(document)), "a donor kit package is absent")
     bad = sorted({r["file"] for r in ranges if r["file"].split("/")[-1] in FORBIDDEN_PACKS})
     require(not bad, "an owned span lies in a forbidden pack: " + ", ".join(bad))
     disjoint = st1_disjointness(ranges)
     require(disjoint["overlapping_bytes"] == 0, "an owned span overlaps st1's stadium-shadow ranges")
-    aliases = alias_check(kit_ranges, extents) + alias_check(fan_ranges, fan_extents)
+    aliases = (alias_check(kit_ranges, extents) + alias_check(fan_ranges, fan_extents)
+               + alias_check(icon_ranges, icon_extents))
     require(not aliases, "another archive entry shares an owned byte: " + json.dumps(aliases[:3]))
     blob, meta = receipts / (BACKUP + ".bin"), receipts / (BACKUP + ".json")
     digest = file_sha(disc)
@@ -311,7 +340,7 @@ def run(args):
             replacements, receipt = fixes.compile_resource(selector, raw, strict=True, document=document,
                                                            kits=donors)
             require(receipt["state"] == "applied" and replacements, selector + ": input is not the pinned base kit")
-        require(all(r["state"] == "base" for r in fan_rows), "a crowd t-shirt is not the base bytes")
+        require(all(r["state"] == "base" for r in fan_rows + icon_rows), "a fan or icon span is not the base bytes")
         if blob.exists():
             require(blob.read_bytes() == recorded, "an older span record differs from this base disc")
         else:
@@ -338,13 +367,14 @@ def run(args):
         require(receipt["state"] == "applied" and replacements, selector + ": recorded base kit does not compile")
         expected[selector] = replacements
     receipt = fixes.apply_to_image(disc, strict=True, document=document)
-    fans = fan_write(disc, fan_rows)
+    fans = fan_write(disc, fan_rows + icon_rows)
     write_json(receipts / "disc_write.json", dict(schema="b773/uf3/disc-write/v1", disc=str(disc),
                                                   input_sha256=digest, fans=fans, **receipt))
     replay = fixes.apply_to_image(disc, strict=True, document=document)
     require(replay["written_spans"] == replay["written_bytes"] == replay["changed_bytes"] == 0,
             "repair replay wrote bytes")
     fan_replay_rows, _, _ = fan_stage(disc, getattr(args, "retail", None))
+    fan_replay_rows += icon_stage(disc)[0]
     fan_replay = fan_write(disc, fan_replay_rows)
     require(fan_replay["written_spans"] == 0 and all(r["state"] == "applied" for r in fan_replay_rows),
             "fan replay wrote bytes")
@@ -353,7 +383,8 @@ def run(args):
     require(result["with_recorded_base_spans_sha256"] == BASE_SHA256, "full-disc byte-scope check failed")
     write_json(receipts / "disc_scope.json", dict(result, ranges=plan))
     write_json(receipts / "disc_alias.json", dict(schema="b773/uf3/alias-check/v1", owned_ranges=len(ranges),
-                                                  other_entry_extents=len(extents) + len(fan_extents),
+                                                  other_entry_extents=len(extents) + len(fan_extents)
+                                                  + len(icon_extents),
                                                   overlapping=aliases))
     actual, now_ranges, _ = read_resources(disc, document)
     require([(r["start"], r["end"]) for r in now_ranges] == [(r["start"], r["end"]) for r in kit_ranges],
@@ -381,7 +412,8 @@ def run(args):
     final = file_sha(disc)
     require(final == result["disc_sha256"], "disc changed during the receipts")
     write_json(receipts / "disc_st1_disjoint.json", disjoint)
-    return dict(kits=len(expected), fan_textures=len(fan_rows), owned_spans=len(ranges), st1_overlapping_bytes=0,
+    return dict(kits=len(expected), fan_textures=len(fan_rows), icons=len(icon_rows), owned_spans=len(ranges),
+                st1_overlapping_bytes=0,
                 written_spans=receipt["written_spans"] + fans["written_spans"],
                 written_bytes=receipt["written_bytes"] + fans["written_bytes"],
                 changed_bytes=result["changed_bytes_inside_owned"],

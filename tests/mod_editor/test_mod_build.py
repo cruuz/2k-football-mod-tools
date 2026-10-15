@@ -270,6 +270,9 @@ class PresetTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as tmp, mock.patch(
                 "mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
                 return_value={"state": "other_moment_slots", "changed": False},
+            ), mock.patch(
+                "mod_editor.core.nfl2k5_menu_icon_uf3.apply_to_image",
+                return_value={"state": "not_applicable", "written": 0},
             ):
                 source = Path(tmp) / "default.xbe"
                 source.write_bytes(_build_synthetic_xbe())

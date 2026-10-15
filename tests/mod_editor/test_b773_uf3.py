@@ -262,6 +262,26 @@ class FanCaps(unittest.TestCase):
         self.assertEqual(len({k.split(":")[0] for k in doc["parts"]}), 32)
 
 
+class PittsburghMiniature(unittest.TestCase):
+    def test_unrelated_image_is_left_alone(self):
+        from mod_editor.core import nfl2k5_menu_icon_uf3 as icon
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "other.img"
+            path.write_bytes(b"other game")
+            self.assertEqual(icon.apply_to_image(path)["state"], "other_image")
+            self.assertEqual(path.read_bytes(), b"other game")
+
+    def test_the_turn_is_a_half_turn_inside_the_disc(self):
+        from mod_editor.core import nfl2k5_menu_icon_uf3 as icon
+        cx, cy = icon.CENTRE
+        self.assertEqual((2 * cx, 2 * cy), (37.0, 39.0))                 # whole-texel pairs: nothing is resampled
+        self.assertLess(icon.RADIUS, 9.5)                                # the dark rim stays
+
+    def test_build_runs_it_after_the_uf3_kit_pass(self):
+        source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        self.assertLess(source.index("kit_fixes.apply_finish(target)"), source.index('_core_module("nfl2k5_menu_icon_uf3")'))
+
+
 class Refusals(unittest.TestCase):
     def test_unrelated_image_is_skipped_by_studio_but_refused_by_native_repair(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -342,6 +362,21 @@ class NativeDisc(unittest.TestCase):
 
     def test_no_other_archive_entry_shares_an_owned_byte(self):
         self.assertEqual(repair.alias_check(self.ranges, self.extents), [])
+
+    def test_pittsburgh_miniature_turns_to_its_pin_and_only_that_slot(self):
+        from mod_editor.core import nfl2k5_menu_icon_uf3 as icon
+        from mod_editor.core import nfl2k5_modern_fans as mf
+        with mf._outer_image()(Path(DISC)) as image:
+            _, span = icon.locate(image, icon.TARGET)
+            _, other = icon.locate(image, "mini_h22_0")
+            plan, receipt = icon.plan_archive(image)
+        self.assertEqual(icon.sha(span), icon.BEFORE_SHA256)
+        after = icon.rotate_disc(span)
+        self.assertEqual(icon.sha(after), icon.AFTER_SHA256)
+        self.assertEqual(len(after), len(span))
+        self.assertEqual(icon.rotate_disc(after), span)                   # a half turn twice is the original
+        self.assertEqual((len(plan), receipt["state"]), (1, "applied"))
+        self.assertNotEqual(icon.sha(other), icon.BEFORE_SHA256)
 
     def test_no_owned_span_in_pack_0_and_none_overlaps_st1(self):
         self.assertFalse([r for r in self.ranges if r["file"].split("/")[-1] in repair.FORBIDDEN_PACKS])
