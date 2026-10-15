@@ -1983,6 +1983,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             # b76-tf: the Modern surfaces receipt travels with the disc too (its status reads it)
             surfaces = _core_module("nfl2k5_modern_surfaces")
             surfaces_receipt = surfaces.read_receipt(directory / target.name) if surfaces is not None else None
+            greens = _core_module("nfl2k5_broadcast_greens")
+            greens_path = greens.receipt_path(directory / target.name) if greens is not None else None
+            greens_receipt = json.loads(greens_path.read_text()) if greens_path is not None and greens_path.exists() else None
             publish_image(directory / target.name, target, previous_target)
             if colour_receipt is not None:
                 colour._save_image_receipt(target, colour_receipt)
@@ -1998,6 +2001,11 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     surfaces.save_receipt(target, surfaces_receipt)
                 else:
                     surfaces.receipt_path(target).unlink(missing_ok=True)
+            if greens is not None:
+                if greens_receipt is not None:
+                    greens.save(greens.receipt_path(target), greens_receipt)
+                else:
+                    greens.receipt_path(target).unlink(missing_ok=True)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
@@ -4501,6 +4509,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         ball_receipt = era_ball.apply_to_image(target)
         receipt["steps"].append({"step": "era_ball", **ball_receipt})
         receipt["result"]["era_ball"] = ball_receipt["state"]
+    if plan.modern_surfaces:
+        # gr1: every field writer, including the period aliases, has finished.
+        # Palette RGB only, preserving painted assets and st1's lighting.
+        greens = _core_module("nfl2k5_broadcast_greens")
+        if greens is None:
+            raise ValueError("the Broadcast greens compiler is unavailable")
+        greens_receipt = greens.apply_to_image(
+            target, progress=progress, anniversary_receipt=field_receipt if plan.espn25_named_previews else None)
+        receipt["steps"].append({"step": "broadcast_greens", **greens_receipt})
+        receipt["result"]["broadcast_greens"] = greens_receipt["state"]
     if plan.indicator_names_folder:
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.

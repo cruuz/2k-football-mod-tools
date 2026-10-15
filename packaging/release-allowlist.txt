@@ -3457,3 +3457,5 @@ docs/mod_editor/super_bowl_user_art.md
 data/nfl2k5_modern_venues_2026/numbers/block.png
 data/nfl2k5_modern_venues_2026/numbers/manifest.json
 tests/mod_editor/test_b773_fn1.py
+mod_editor/core/nfl2k5_broadcast_greens.py
+tests/mod_editor/test_nfl2k5_broadcast_greens.py
