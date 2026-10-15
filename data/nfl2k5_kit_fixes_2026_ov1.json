@@ -1,0 +1,97 @@
+{
+  "schema": "nfl2k5_kit_fixes_2026/v1",
+  "source": "ov1: TB wordmark raster carries an old shield fragment below the separately placed collar shield",
+  "method": "Atlas exclusion of the duplicate fragment, flat source cloth restored; no new art, fixed spans and mud twins",
+  "base_disc_sha256": "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4",
+  "textures": [
+    {
+      "selector": "27A0",
+      "chunk": 1,
+      "texture": "jersey00",
+      "kind": "tset",
+      "size": [
+        512,
+        256,
+        6
+      ],
+      "resource_size": 1523504,
+      "offset": 112,
+      "length": 77424,
+      "defects": [
+        "ov1-TB-duplicate-shield"
+      ],
+      "note": "Exclude the old shield fragment embedded in the chest wordmark; preserve the collar shield and letters.",
+      "ops": [
+        {
+          "op": "poly",
+          "color": "#FFFFFF",
+          "points": [
+            [
+              157,
+              82
+            ],
+            [
+              168,
+              82
+            ],
+            [
+              168,
+              89
+            ],
+            [
+              157,
+              89
+            ]
+          ]
+        }
+      ],
+      "before_sha256": "1fcc5ad06385149b35a883e50eda11281132d08655e47c9ce8a19e936a67fc10",
+      "after_sha256": "3f802f267dabdd0717a7bbb0e68a4eb06cb5b27b89291de3915d22486ca0f1ef"
+    },
+    {
+      "selector": "27H0",
+      "chunk": 1,
+      "texture": "jersey00",
+      "kind": "tset",
+      "size": [
+        512,
+        256,
+        6
+      ],
+      "resource_size": 1513168,
+      "offset": 112,
+      "length": 65776,
+      "defects": [
+        "ov1-TB-duplicate-shield"
+      ],
+      "note": "Exclude the old shield fragment embedded in the chest wordmark; preserve the collar shield and letters.",
+      "ops": [
+        {
+          "op": "poly",
+          "color": "#B21C35",
+          "points": [
+            [
+              155,
+              82
+            ],
+            [
+              169,
+              82
+            ],
+            [
+              169,
+              89
+            ],
+            [
+              155,
+              89
+            ]
+          ]
+        }
+      ],
+      "before_sha256": "2d5b010a93baea1442ef3ea2fdf2b7233c6bd3f3c9469a2b75e4d7d97ab5652b",
+      "after_sha256": "2d120170c46e97f9bcc24dc1842990ae6a218a14babb2edcdebfc731a0e8f0db"
+    }
+  ],
+  "output_disc_sha256": "84078baee326941962f4c0d29ece7a45d29176e4442e2504fc95a612fdad071a"
+}
