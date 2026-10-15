@@ -3158,7 +3158,11 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
         roster.free_agents = selected
     coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
-    roster.check_depth_locks()
+    # A dated refresh validates its final club chains after membership changes.
+    # Alumni aliases cannot own independent locks, including on a replay after
+    # one of their aliased NFL players has moved to a reserve list.
+    if not doc.get("roster_refresh"):
+        roster.check_depth_locks()
     out = roster.to_body()
     # Resolve against the final serialized membership, including reserve repacks.
     special_count = 0
@@ -3181,7 +3185,11 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             from . import nfl2k5_spare_capacity
             out, spare_receipt = nfl2k5_spare_capacity.apply_body(out)
             fa_receipt = dict(fa_receipt, historic_spare_capacity=spare_receipt)
-    return out, {"modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    refresh_receipt = None
+    if doc.get("roster_refresh"):
+        from . import nfl2k5_roster_refresh
+        out, refresh_receipt = nfl2k5_roster_refresh.apply_body(out, doc["roster_refresh"])
+    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,

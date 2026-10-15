@@ -28,7 +28,14 @@ class Machine:
         from unicorn import x86_const as r
         self.u, self.r = u, r
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
-        self.uc.mem_map(0x10000, 0x1500000 - 0x10000)
+        # Current scale-out images include the final RW page above 0x1500000.
+        # Keep the bounded fixture separate from its roster arena at 0x2000000.
+        image_end = max(s.virtual_address + max(s.raw_size, struct.unpack_from('<I', payload, s.header_offset + 8)[0])
+                        for s in pools._sections(payload))
+        image_end = (image_end + 4095) & ~4095
+        assert image_end <= self.BASE, "executable overlaps fixture roster arena"
+        self.uc.mem_map(0x10000, image_end - 0x10000)
+        self.uc.mem_write(0x10000, payload[:struct.unpack_from('<I', payload, 0x108)[0]])
         for section in pools._sections(payload):
             if section.raw_size:
                 self.uc.mem_write(section.virtual_address,

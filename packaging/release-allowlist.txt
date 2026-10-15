@@ -3306,3 +3306,17 @@ tests/mod_editor/test_nfl2k5_menu_icon_orientation.py
 mod_editor/core/nfl2k5_moment_coaches.py
 data/nfl2k5_moment_coaches.json
 docs/mod_editor/nfl2k5_moment_coaches.md
+mod_editor/core/nfl2k5_roster_refresh.py
+
+tools/b77/ro1_repair.py
+docs/mod_editor/roster_refresh.md
+mod_editor/core/nfl2k5_draft_picks.py
+tests/mod_editor/test_nfl2k5_draft_picks.py
+docs/mod_editor/draft_pick_ownership.md
+mod_editor/core/nfl2k5_hback.py
+tests/mod_editor/test_nfl2k5_hback.py
+tools/b77/ro1_hback_probe.py
+tools/b77/ro1_hback_paths.py
+tools/b77/ro1_native_fixture.py
+tools/b77/ro1_contract_probe.py
+docs/mod_editor/hback_roles.md

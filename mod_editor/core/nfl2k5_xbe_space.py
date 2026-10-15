@@ -648,6 +648,7 @@ LATE_OWNER = "nfl2k5_k128"
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
                "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
+               "nfl2k5_draft_picks", "nfl2k5_hback",
                "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", DIRECTORY_CODE_OWNER)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
