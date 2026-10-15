@@ -104,14 +104,14 @@
     64,
     64
    ],
-   "sha256": "6946d882cdba2a9201d714ad289238403fbb8adebcfc628027fbd6d893702b8b"
+   "sha256": "b3311d1642202c92ea8a1d730623e8b4192dcc9c1b2a9fcfbbdfb3105315c685"
   },
   "usb_zinc_top": {
    "size": [
     64,
     64
    ],
-   "sha256": "478f4e5d8c813d04b9e2165ac6bc057682faedfd0254a21607c2b1fb5331a463"
+   "sha256": "9e1e1bf31c6fd7cfff468d38c1938d54bba862c0b52bb65e5b3649f75ec16af9"
   },
   "LIGHT_usb_lights": {
    "size": [
@@ -125,35 +125,35 @@
     64,
     64
    ],
-   "sha256": "ec1c011e081de640f41a30b4d66b98378aa9dcaebe732a3ddb063b0d546c4089"
+   "sha256": "641a4aa8601e4c3555d6897a97874ef9e21ee5f8c1baf5ee30eb85062b1a4726"
   },
   "LIGHT_usb_glasswall_n": {
    "size": [
     64,
     64
    ],
-   "sha256": "867699790830daef9f6d3b09849bad2a0c59a6c3a9c0eaa6eeaa7afdec28b9df"
+   "sha256": "75bfe37a5a7ea30cebb38bc49f60afee8b4ab09dfbc8e275a4013b0719a296ba"
   },
   "usb_zinc": {
    "size": [
     64,
     64
    ],
-   "sha256": "3d20ee7d47d1e2a30441f5c3d47e0212e4f91d60f9f76d84be8e17d3e077b858"
+   "sha256": "b46e08ddba342f524324e750ebff8333b4c317040e921411e1b3f81f82758ea8"
   },
   "LIGHT_usb_facade_glass": {
    "size": [
     128,
     64
    ],
-   "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9"
+   "sha256": "ca9df674eb0f66d02c1706039829a973850d3a91add775a8b198a5d707b03314"
   },
   "LIGHT_usb_prow_display": {
    "size": [
     128,
     64
    ],
-   "sha256": "e016ed2c9d942647b94613aa38c7afac546f5475b09adaddd9ef71f03d7b4fa1"
+   "sha256": "48fcd78d9b29575fa2205b3778b78a0d1ab3c0a243bed548adf8db6d2e4c1380"
   },
   "LIGHT_usb_board_wing": {
    "size": [

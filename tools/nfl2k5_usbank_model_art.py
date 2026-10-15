@@ -274,12 +274,18 @@ def etfe_top(size=64):
     """The ETFE from above (u048, u053, u054: pale silver-grey pillows on ribs running down the slope, bright in the
     oblique aerials)."""
     S = size * SCALE
-    im = Image.new("RGB", (S, S), (204, 210, 218))
+    a = np.zeros((S, S, 3), np.float32)
+    xs = np.linspace(0.0, 1.0, S)[None, :]
+    pillow = 0.94 + 0.06 * np.sin(xs * np.pi * 8.0) ** 2
+    for k, v in enumerate((214, 226, 240)):
+        a[..., k] = v * pillow
+    im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
-    for x in range(0, S, SCALE * 4):
-        d.line([x, 0, x, S], fill=(168, 176, 188), width=SCALE)
+    for x in range(0, S, S // 8):
+        d.line([x, 0, x, S], fill=(170, 182, 198), width=SCALE)
+        d.line([x + SCALE, 0, x + SCALE, S], fill=(236, 242, 250), width=max(1, SCALE // 2))
     for y in range(0, S, S // 4):
-        d.line([0, y, S, y], fill=(150, 156, 166), width=SCALE)
+        d.line([0, y, S, y], fill=(156, 168, 184), width=SCALE)
     return im
 
 
@@ -288,13 +294,15 @@ def zinc_top(size=64):
     up (the orthophotos) but dark charcoal from every oblique view the flyover takes (u054, u055, u047), which is how
     the model draws it."""
     S = size * SCALE
-    im = Image.new("RGB", (S, S), (70, 72, 78))
+    im = Image.new("RGB", (S, S), (44, 47, 53))
     d = ImageDraw.Draw(im)
     r = rng(33)
-    for x in range(0, S, SCALE * 6):
-        tone = int(r.integers(-4, 5))
-        d.rectangle([x, 0, x + SCALE * 6, S], fill=(70 + tone, 72 + tone, 78 + tone))
-        d.line([x, 0, x, S], fill=(56, 58, 62), width=max(1, SCALE // 2))
+    for x in range(0, S, SCALE * 4):
+        tone = int(r.integers(-3, 4))
+        d.rectangle([x, 0, x + SCALE * 4, S], fill=(44 + tone, 47 + tone, 53 + tone))
+        d.line([x, 0, x, S], fill=(32, 34, 39), width=max(1, SCALE // 2))
+    for y in range(0, S, S // 4):
+        d.line([0, y, S, y], fill=(36, 38, 44), width=max(1, SCALE // 2))
     return im
 
 
@@ -316,9 +324,12 @@ def glasswall(size=(128, 128), night=False):
     W, H = size[0] * SCALE, size[1] * SCALE
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    mullion = (124, 128, 136, 255) if night else (58, 62, 70, 255)
+    mullion = (124, 128, 136, 255) if night else (52, 58, 68, 255)
+    sub = (104, 110, 120, 255) if night else (68, 76, 88, 255)
     for x in range(0, W, W // 2):
         d.rectangle([x, 0, x + SCALE * 2 - 1, H], fill=mullion)
+    for x in (W // 4, 3 * W // 4):
+        d.rectangle([x, 0, x + SCALE - 1, H], fill=sub)
     for k in range(3):
         y = k * H // 3
         d.rectangle([0, y, W, y + SCALE * 2 - 1], fill=mullion)
@@ -326,17 +337,30 @@ def glasswall(size=(128, 128), night=False):
 
 
 def zinc(size=128):
-    """The dark zinc-coloured metal panels (u036, u053 to u055): near-black grey panels in staggered courses."""
+    """The dark zinc-coloured metal panels (u036, u053 to u055): sleek horizontal linear courses in dark anthracite zinc,
+    subtle louver bays, and a crisp silver-white architectural trim strip along the bottom edge (v 0.90 to 1.00)."""
     S = size * SCALE
     r = rng(41)
-    im = Image.new("RGB", (S, S), (42, 44, 48))
+    im = Image.new("RGB", (S, S), (38, 41, 47))
     d = ImageDraw.Draw(im)
-    ch = S // 16
-    for k in range(16):
-        off = int(r.integers(0, S // 4))
-        for x in range(-off, S, S // 4):
-            tone = int(r.integers(-5, 6))
-            d.rectangle([x, k * ch, x + S // 4 - SCALE // 2, (k + 1) * ch - SCALE // 2], fill=(46 + tone, 48 + tone, 52 + tone))
+    courses = 32
+    ch = int(S * 0.86) // courses
+    for k in range(courses):
+        y0, y1 = k * ch, (k + 1) * ch
+        off = int(r.integers(0, S // 6))
+        for x in range(-off, S, S // 6):
+            tone = int(r.integers(-2, 3))
+            d.rectangle([x, y0, x + S // 6 - 1, y1 - 1], fill=(38 + tone, 41 + tone, 47 + tone))
+        d.line([0, y1 - 1, S, y1 - 1], fill=(26, 28, 33), width=max(1, SCALE // 2))
+    # subtle dark architectural louver rectangles in the mid band (v ~ 0.36..0.46)
+    ly0, ly1 = int(S * 0.36), int(S * 0.45)
+    for x0 in (int(S * 0.14), int(S * 0.62)):
+        d.rectangle([x0, ly0, x0 + int(S * 0.14), ly1], fill=(24, 26, 31))
+    # crisp silver-white architectural accent flashing band at the bottom of the atlas (v 0.90..1.00)
+    ty0 = int(S * 0.89)
+    d.rectangle([0, ty0 - SCALE, S, ty0], fill=(22, 24, 28))
+    d.rectangle([0, ty0, S, S], fill=(226, 230, 236))
+    d.line([0, ty0 + SCALE, S, ty0 + SCALE], fill=(244, 246, 250), width=SCALE)
     return im
 
 
@@ -345,28 +369,44 @@ def facade_glass(size=(128, 64)):
     W, H = size[0] * SCALE, size[1] * SCALE
     a = np.zeros((H, W, 3), np.float32)
     g = np.linspace(0.0, 1.0, H)[:, None]
-    for k, (hi, lo) in enumerate(zip((150, 170, 196), (86, 100, 118))):
-        a[..., k] = hi + (lo - hi) * g
+    xs = np.linspace(0.0, 1.0, W)[None, :]
+    sheen = 10.0 * np.sin(xs * np.pi * 2.0 + g * 1.4)
+    for k, (hi, mid, lo) in enumerate(zip((164, 190, 222), (118, 144, 174), (68, 82, 98))):
+        col = np.where(g < 0.62, hi + (mid - hi) * (g / 0.62), mid + (lo - mid) * ((g - 0.62) / 0.38))
+        a[..., k] = col + sheen
     im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
+    d.rectangle([0, int(H * 0.88), W, H], fill=(42, 46, 54))
     for x in range(0, W, W // 12):
-        d.rectangle([x, 0, x + SCALE // 2, H], fill=(60, 66, 74))
+        d.rectangle([x, 0, x + max(1, SCALE // 2), H], fill=(46, 52, 60))
     for y in range(0, H, H // 6):
-        d.rectangle([0, y, W, y + SCALE // 2], fill=(60, 66, 74))
+        d.rectangle([0, y, W, y + max(1, SCALE // 2)], fill=(46, 52, 60))
     return im
 
 
 def prow_display(size=(128, 128)):
-    """The prow's 49 x 76 ft LED display (Daktronics; u036 shows it running game-day graphics): SKOL and VIKINGS on
-    purple, plain type."""
+    """The prow's 49 x 76 ft trapezoidal LED display (Daktronics; u036, u047): recessed in a dark zinc trapezoidal
+    bezel matching the prow blade's taper, SKOL and VIKINGS on purple, plain type."""
     W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGB", (W, H), VIK["purple"])
+    im = Image.new("RGB", (W, H), (36, 39, 45))
     d = ImageDraw.Draw(im)
-    d.rectangle([0, int(H * 0.44), W, int(H * 0.56)], fill=VIK["gold"])
-    top = _row([_text("SKOL", VIK["white"])], W, int(H * 0.40), SCALE * 8, 0.8)
-    im.paste(top, (0, int(H * 0.02)), top)
-    bot = _row([_text("VIKINGS", VIK["white"])], W, int(H * 0.40), SCALE * 8, 0.7)
-    im.paste(bot, (0, int(H * 0.58)), bot)
+    # outer dark bezel and inner LED trapezoid following the prow blade's left spine and right edge
+    outer = [(int(W * 0.01), int(H * 0.02)), (int(W * 0.99), int(H * 0.08)),
+             (int(W * 0.85), int(H * 0.98)), (int(W * 0.20), int(H * 0.96))]
+    inner = [(int(W * 0.05), int(H * 0.07)), (int(W * 0.95), int(H * 0.13)),
+             (int(W * 0.82), int(H * 0.93)), (int(W * 0.23), int(H * 0.91))]
+    d.polygon(outer, fill=(16, 17, 21))
+    screen = Image.new("RGB", (W, H), VIK["purple"])
+    sd = ImageDraw.Draw(screen)
+    sd.polygon([(0, 0), (int(W * 0.45), 0), (int(W * 0.25), H), (0, H)], fill=(62, 28, 106))
+    sd.rectangle([0, int(H * 0.45), W, int(H * 0.55)], fill=VIK["gold"])
+    top = _row([_text("SKOL", VIK["white"])], int(W * 0.76), int(H * 0.34), SCALE * 6, 0.78)
+    screen.paste(top, (int(W * 0.14), int(H * 0.10)), top)
+    bot = _row([_text("VIKINGS", VIK["white"])], int(W * 0.62), int(H * 0.32), SCALE * 6, 0.72)
+    screen.paste(bot, (int(W * 0.21), int(H * 0.57)), bot)
+    mask = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(mask).polygon(inner, fill=255)
+    im.paste(screen, (0, 0), mask)
     return im
 
 

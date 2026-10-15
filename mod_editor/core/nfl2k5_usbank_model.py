@@ -527,7 +527,9 @@ class USBank(sm.SoFi):
     def _ridge_polyline(self):
         q = self.p["roof"]
         tip = self.prow_tip()
-        return [((q["ridge_x"], q["ridge_z_e"]), q["ridge_e"]), ((q["ridge_x"], q["ridge_z_w"]), q["ridge_w"]),
+        return [((q["ridge_x"], q["ridge_z_e"]), q["ridge_e"]),
+                ((q["ridge_x"], -75.0), q["ridge_e"] + 5.3),
+                ((q["ridge_x"], q["ridge_z_w"]), q["ridge_w"] - 2.8),
                 ((tip[0], tip[1]), q["tip"])]
 
     def prow_tip(self):
@@ -566,15 +568,24 @@ class USBank(sm.SoFi):
         return self.roof_top(x, z) - self.p["roof"]["depth"]
 
     def _roof_stations(self):
-        """(z, x_south, x_north) cross-sections of the outline every ``station`` metres and at every outline vertex."""
+        """(z, x_south, x_north) cross-sections of the outline at key vertices and every ``station`` metres, filtered so
+        near-duplicate east/south outline vertices do not create sliver rows."""
         q = self.p["roof"]
         P = self.outline()
-        zs = set(np.round(P[:, 1], 3))
-        z0, z1 = P[:, 1].min(), P[:, 1].max()
-        for z in np.arange(math.ceil(z0 / q["station"]) * q["station"], z1, q["station"]):
-            zs.add(round(float(z), 3))
+        z0, z1 = float(P[:, 1].min()), float(P[:, 1].max())
+        raw = sorted({round(float(z), 3) for z in P[:, 1]} |
+                     {round(float(z), 3) for z in np.arange(math.ceil(z0 / 12.0) * 12.0, z1, 12.0)} |
+                     {-125.0, -109.0, -75.0, 108.0})
+        must = {round(z0, 3), round(z1, 3), -157.3, -140.1, -129.5, -125.0, -109.9, -86.0, 91.9, 108.0, 114.2, 126.5}
+        zs = []
+        for z in raw:
+            if not zs or z in must or z - zs[-1] >= 4.8:
+                if zs and z in must and z - zs[-1] < 2.2 and zs[-1] not in must:
+                    zs[-1] = z
+                else:
+                    zs.append(z)
         out = []
-        for z in sorted(zs):
+        for z in zs:
             z_ = min(max(z, z0 + 0.05), z1 - 0.05)
             xs = []
             for i in range(len(P)):
@@ -587,19 +598,15 @@ class USBank(sm.SoFi):
         return out
 
     def _roof(self):
-        """The roof over the whole outline: its top (ETFE south of the ridge, the opaque membrane north of it) and its
-        underside (the ETFE's bright panels on the white grid; the dark steel of the opaque roof), and the fascia at the
-        edges. One grid of stations across the building, split at the ridge."""
+        """The roof over the whole outline: its top (the clear ETFE skylight south of the ridge framed by a dark zinc
+        perimeter apron and prow deck, the dark opaque membrane north of the ridge, and the raised ridge spine box) and
+        its underside (the ETFE's bright panels on the white grid; the dark steel of the opaque roof)."""
         q = self.p["roof"]
         st = self._roof_stations()
         xr = q["ridge_x"]
         cols = 8
-        rows_top, rows_under, uvs, split = [], [], [], []
+        rows_top, rows_under, uvs = [], [], []
         for z, xa, xb in st:
-            xs = list(np.linspace(xa, xb, cols + 1))
-            if xa < xr < xb:
-                xs = sorted(set(xs) | {xr})
-            # a fixed column count per row: resample the columns at even fractions, the ridge snapped to its nearest
             xs = list(np.linspace(xa, xb, cols + 1))
             if xa < xr < xb:
                 k = int(np.argmin([abs(x - xr) for x in xs[1:-1]])) + 1
@@ -610,7 +617,7 @@ class USBank(sm.SoFi):
         self.roof_rows = rows_under
         top_s = self.meshes.setdefault("usb_roof_top", Mesh("usb_roof_top"))
         und = self.meshes.setdefault("usb_roof_under", Mesh("usb_roof_under"))
-        # one grid per side of the ridge (shared vertices): each row's columns up to the ridge, and from it
+        # underside: one grid per side of the ridge
         for south in (True, False):
             rows_t, rows_u, rows_uv = [], [], []
             for rt, ru, uv in zip(rows_top, rows_under, uvs):
@@ -620,21 +627,63 @@ class USBank(sm.SoFi):
                         self._roof_grid(top_s, und, rows_t, rows_u, rows_uv, south)
                     rows_t, rows_u, rows_uv = [], [], []
                     continue
-                # a fixed column count per grid: resample this row's side at even fractions
                 xs_side = [rt[c][0] for c in cols_]
                 x0, x1 = min(xs_side), max(xs_side)
                 z = rt[0][2]
-                xs = list(np.linspace(x0, x1, 5))
+                if south:
+                    # 5 columns on the south slope so column 0..1 is the 13 m south dark zinc perimeter apron,
+                    # columns 1..3 the clear ETFE field, and 3..4 the ridge curb
+                    b0 = min(x0 + 13.5, x0 + 0.22 * (x1 - x0))
+                    b1 = max(b0 + 1.0, x1 - 2.4)
+                    xs = [x0, b0, 0.5 * (b0 + b1), b1, x1]
+                else:
+                    xs = list(np.linspace(x0, x1, 4))
                 rows_t.append([(x, self.roof_top(x, z), z) for x in xs])
                 rows_u.append([(x, self.roof_under(x, z), z) for x in xs])
                 rows_uv.append([(x / 12.0, z / 12.0) for x in xs])
             if len(rows_t) >= 2:
                 self._roof_grid(top_s, und, rows_t, rows_u, rows_uv, south)
+        # raised ridge box / spine along the main ridge truss and prow spine (u053 to u055, interstate photo)
+        pl = self._ridge_polyline()
+        r_pts = []
+        for ((ax, az), _ha), ((bx, bz), _hb) in zip(pl[:-1], pl[1:]):
+            for t in np.linspace(0.0, 1.0, 5, endpoint=False):
+                r_pts.append((ax + (bx - ax) * t, az + (bz - az) * t))
+        r_pts.append(pl[-1][0])
+        hw, hh = 2.6, 3.0
+        l_bot, l_top, r_top, r_bot, r_uv = [], [], [], [], []
+        for idx, (rx, rz) in enumerate(r_pts):
+            y0 = self.roof_top(rx, rz) - 0.3
+            y1 = y0 + hh * (1.15 if rz < -120.0 else 1.0)
+            w_ = hw * (0.45 if idx == len(r_pts) - 1 else 1.0)
+            l_bot.append((rx - w_, y0, rz)); l_top.append((rx - w_ * 0.75, y1, rz))
+            r_top.append((rx + w_ * 0.75, y1, rz)); r_bot.append((rx + w_, y0, rz))
+            r_uv.append(idx * 1.2)
+        top_s.grid("usb_zinc_top", [l_bot, l_top], [[(u, 0.8) for u in r_uv], [(u, 0.2) for u in r_uv]],
+                   facing=lambda p_: np.array([-0.85, 0.52, 0.0]))
+        top_s.grid("usb_zinc_top", [r_top, r_bot], [[(u, 0.2) for u in r_uv], [(u, 0.8) for u in r_uv]],
+                   facing=lambda p_: np.array([0.85, 0.52, 0.0]))
+        top_s.grid("usb_etfe_top", [l_top, r_top], [[(u, 0.2) for u in r_uv], [(u, 0.8) for u in r_uv]], facing=up)
 
     @staticmethod
     def _roof_grid(top_s, und, rows_t, rows_u, rows_uv, south):
-        top_s.grid("usb_etfe_top" if south else "usb_zinc_top", rows_t, rows_uv, facing=up)
         und.grid("usb_etfe_under" if south else "usb_roof_under", rows_u, rows_uv, facing=down)
+        if not south:
+            top_s.grid("usb_zinc_top", rows_t, rows_uv, facing=up)
+            return
+        # south slope: dark zinc apron along the south eave (cols 0..1), ridge curb (cols 3..4), west prow nose
+        # (z < -110) and east gable border (z > 108); translucent ETFE (cols 1..3) over the main bowl
+        top_s.grid("usb_zinc_top", [r[:2] for r in rows_t], [u[:2] for u in rows_uv], facing=up)
+        top_s.grid("usb_zinc_top", [r[3:] for r in rows_t], [u[3:] for u in rows_uv], facing=up)
+        w_rows = [i for i, r in enumerate(rows_t) if r[0][2] <= -108.0 + 1e-3]
+        m_rows = [i for i, r in enumerate(rows_t) if -110.0 - 1e-3 <= r[0][2] <= 109.0 + 1e-3]
+        e_rows = [i for i, r in enumerate(rows_t) if r[0][2] >= 107.0 - 1e-3]
+        if len(w_rows) >= 2:
+            top_s.grid("usb_zinc_top", [rows_t[i][1:4] for i in w_rows], [rows_uv[i][1:4] for i in w_rows], facing=up)
+        if len(m_rows) >= 2:
+            top_s.grid("usb_etfe_top", [rows_t[i][1:4] for i in m_rows], [rows_uv[i][1:4] for i in m_rows], facing=up)
+        if len(e_rows) >= 2:
+            top_s.grid("usb_zinc_top", [rows_t[i][1:4] for i in e_rows], [rows_uv[i][1:4] for i in e_rows], facing=up)
 
     def _truss(self):
         """The ridge truss (36 ft deep, 16 ft wide; Thornton Tomasetti) under the roof along the ridge: the dark wedge
@@ -952,10 +1001,15 @@ class USBank(sm.SoFi):
         return self.GRADE + (top - self.GRADE) * min(max(s / L, 0.0), 1.0)
 
     def _facade(self):
-        """The outline's walls from below the plaza to the roof's edge: the west faces glass (reflective outside, see-through
-        inside); the prow's blade dark over the glass under its lower edge, and its north-west face glass under a dark
-        band (u036, u047); the others dark zinc-coloured panels over a glass base (u036, u053 to u055). Inside, under the
-        roof, a band of clerestory windows (u003, u017, u019) over the dark inner face."""
+        """The outline's angular faceted walls from the plaza to the roof:
+        - West Legacy Gate: reflective/clear glass wall capped by a roof fascia beam, framed on the south by a sloped
+          dark zinc pier, with the five 75-to-95-ft pivoting glass doors at the plaza level;
+        - West Prow Blade: overhanging dark zinc V-wedge rising from the plaza foot to the 272-ft tip (no outward glass
+          beneath its overhanging spine);
+        - Northwest Prow: recessed inclined glass curtain wall behind the prow spine, crossed by the projecting diagonal
+          dark zinc facet, upper triangular glass window and roof rake;
+        - East, Southeast, South and North: 3D angular folded dark zinc facets with outward-cantilevering knuckles,
+          white architectural accent trim bands, the East Gable recessed triangular glass wall, and exterior signs."""
         q = self.p["facade"]
         m = self.meshes.setdefault("usb_facade", Mesh("usb_facade"))
         g = self.meshes.setdefault("usb_glass", Mesh("usb_glass"))
@@ -966,11 +1020,42 @@ class USBank(sm.SoFi):
         nw_len = sum(float(math.np_hypot(*(edges[k][1] - edges[k][0]))) for k in nw)
         nw_run = 0.0
         s = 0.0
+
+        def _facet_out(x, z):
+            """Continuous outward knuckle projection (m) and height (m) for the folded zinc perimeter walls."""
+            if z > 125.0 and -22.0 <= x <= 30.0:
+                # Smoothly close the projecting East wings into the recessed East Gable central glass window
+                d_win = max(-15.5 - x, x - 23.0, 0.0)
+                t_w = min(d_win / 6.0, 1.0)
+                return 3.8 * t_w, 33.5 + 3.0 * t_w
+            if z > 95.0 and x < -45.0:
+                # Southeast angular prow fold (juts out up to 7.8 m near (-71, 114))
+                w = max(0.0, 1.0 - math.hypot(x - (-72.0), z - 114.0) / 36.0)
+                return 3.8 + 4.0 * w, 31.5 + 5.5 * w
+            if z > 110.0:
+                return 3.8, 33.5 + 3.5 * max(0.0, 1.0 - abs(x - 10.0) / 55.0)
+            if x < -95.0:
+                # South sideline angular facets
+                bay = 0.5 + 0.5 * math.sin((z + 20.0) * math.pi / 48.0)
+                return 3.4 + 1.8 * bay, 28.5 + 3.0 * bay
+            if z < -80.0 and x > 55.0:
+                # Northwest flank continuing the diagonal rib
+                t_ = min(max((x - 58.4) / 58.0, 0.0), 1.0)
+                return 2.4 * (1.0 - 0.3 * t_), 33.0 - 5.0 * t_
+            return 2.4, 29.0
+
+        n_edges = len(edges)
         for i, (a, b, n, west) in enumerate(edges):
+            n_prev = edges[(i - 1) % n_edges][2]
+            n_next = edges[(i + 1) % n_edges][2]
+            m_a = (n_prev + n) / max(0.55, 1.0 + float(math.np_dot(n_prev, n)))
+            m_b = (n + n_next) / max(0.55, 1.0 + float(math.np_dot(n, n_next)))
             L = float(math.np_hypot(*(b - a)))
-            k = max(1, int(math.ceil(L / 12.0)))
+            step_m = 16.0 if L > 32.0 else 18.0
+            k = max(1, int(math.ceil(L / step_m)))
             ts = np.linspace(0, 1, k + 1)
             pts = [a + (b - a) * t for t in ts]
+            miters = [m_a * (1.0 - t) + m_b * t for t in ts]
             tops = [self.roof_top(float(p[0]), float(p[1])) for p in pts]
             outward = lambda p_, n=n: np.array([n[0], 0.0, n[1]])  # noqa: E731
             inward = lambda p_, n=n: -np.array([n[0], 0.0, n[1]])  # noqa: E731
@@ -986,30 +1071,276 @@ class USBank(sm.SoFi):
                 split = [tip_top - q["nw_band"] - (tip_top - q["nw_band"] - low) * (nw_run + L * t) / nw_len for t in ts]
                 split[0] = min(split[0], tops[0])
                 nw_run += L
+                s += L
+                continue
             else:
                 split = [self.GRADE + q["base"]] * len(pts)
             split = [min(y, yt) for y, yt in zip(split, tops)]
             mid = [(float(p[0]), y, float(p[1])) for p, y in zip(pts, split)]
-            if not west:
-                g.grid("LIGHT_usb_facade_glass", [bot, mid], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=outward)
-            if west or i == blade or i in nw:
+            if west:
                 self.glass_faces.append((a, b, n, west, [float(t) for t in ts], split))
                 mull = [[(u * 2, 1.0) for u in us], [(u * 2, (y - self.GRADE) / 18.0) for u, y in zip(us, split)]]
-                off = lambda Q, k, n=n: [(x + n[0] * k, y, z + n[1] * k) for x, y, z in Q]  # noqa: E731
+                off = lambda Q, k_, n=n: [(x + n[0] * k_, y, z + n[1] * k_) for x, y, z in Q]  # noqa: E731
                 g.grid("LIGHT_usb_glasswall", [off(bot, -0.3), off(mid, -0.3)], mull, facing=inward)
-                if west:
-                    g.grid("LIGHT_usb_glasswall", [off(bot, 0.3), off(mid, 0.3)], mull, facing=outward)
-            if west:
+                g.grid("LIGHT_usb_glasswall", [off(bot, 0.3), off(mid, 0.3)], mull, facing=outward)
+                # Top dark zinc roof fascia beam with silver lower trim over the Legacy Gate glass
+                f_top = [(x + n[0] * 0.65, y, z + n[1] * 0.65) for x, y, z in top]
+                f_mid = [(x + n[0] * 0.65, y - 2.4, z + n[1] * 0.65) for x, y, z in top]
+                f_trm = [(x + n[0] * 0.65, y - 3.0, z + n[1] * 0.65) for x, y, z in top]
+                m.grid("usb_zinc", [f_mid, f_top], [[(u, 0.80) for u in us], [(u, 0.06) for u in us]], facing=outward)
+                m.grid("usb_zinc", [f_trm, f_mid], [[(u, 0.98) for u in us], [(u, 0.91) for u in us]], facing=outward)
                 s += L
                 continue
-            m.grid("usb_zinc", [mid, top], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=outward)
-            # inside: the dark inner face, and the clerestory windows under the roof
-            inner = lambda Q, n=n: [(x - n[0] * 0.4, y, z - n[1] * 0.4) for x, y, z in Q]  # noqa: E731
-            cl = [(x, max(ys, yt - q["clerestory"]), z) for (x, ys, z), yt in zip(mid, tops)]
-            m.grid("usb_dark", [inner(mid), inner(cl)], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=inward)
-            m.grid("LIGHT_usb_clerestory", [inner(cl), inner(top)],
-                   [[(u * 1.5, 1.0) for u in us], [(u * 1.5, 0.0) for u in us]], facing=inward)
+            if i == blade:
+                # Overhanging dark zinc prow blade: NO outward glass below blade_edge (open air under the overhang)
+                m.grid("usb_zinc", [mid, top], [[(u, 0.82) for u in us], [(u, 0.04) for u in us]], facing=outward)
+                # 3D soffit return along the leaning prow spine back toward the recessed northwest glass wall
+                sof_in = [(x - n[0] * 3.2, y + 0.4, z - n[1] * 3.2) for x, y, z in mid]
+                m.grid("usb_zinc", [sof_in, mid], [[(u, 0.82) for u in us], [(u, 0.55) for u in us]],
+                       facing=lambda p_, n=n: np.array([0.45 * n[0], -0.82, 0.45 * n[1]]))
+                inner = lambda Q, n=n: [(x - n[0] * 0.4, y, z - n[1] * 0.4) for x, y, z in Q]  # noqa: E731
+                cl = [(x, max(ys, yt - q["clerestory"]), z) for (x, ys, z), yt in zip(mid, tops)]
+                m.grid("usb_dark", [inner(mid), inner(cl)], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=inward)
+                m.grid("LIGHT_usb_clerestory", [inner(cl), inner(top)],
+                       [[(u * 1.5, 1.0) for u in us], [(u * 1.5, 0.0) for u in us]], facing=inward)
+                continue
+
+            # East Gable central triangular glass window (recessed under the East Ridge Peak at x ~ -15.6..23.1, z > 125)
+            if float(min(a[1], b[1])) > 125.0 and -16.0 <= 0.5 * float(a[0] + b[0]) <= 26.0:
+                g_bot = [(float(p[0]), self.GRADE - 0.5, float(p[1])) for p in pts]
+                g_top = [(float(p[0]), y - 2.6, float(p[1])) for p, y in zip(pts, tops)]
+                g.grid("LIGHT_usb_facade_glass", [g_bot, g_top],
+                       [[(u * 1.5, 1.0) for u in us], [(u * 1.5, 0.0) for u in us]], facing=outward)
+                # White diagonal structural cross-brace & roof cap on the East Gable glass (u054, Sep 2015 SE photo)
+                br_lo = [(float(p[0]) + n[0] * 0.4, 28.0 + 0.18 * (float(p[0]) + 15.0), float(p[1]) + n[1] * 0.4) for p in pts]
+                br_hi = [(x, y + 2.2, z) for x, y, z in br_lo]
+                m.grid("usb_zinc", [br_lo, br_hi], [[(u, 0.98) for u in us], [(u, 0.91) for u in us]], facing=outward)
+                m.grid("usb_zinc", [g_top, top], [[(u, 0.80) for u in us], [(u, 0.10) for u in us]], facing=outward)
+                s += L
+                continue
+
+            # 3D faceted dark zinc walls with mitered corner knuckles (watertight across edges) and white accent trim
+            f_info = [_facet_out(float(p[0]), float(p[1])) for p in pts]
+            g_top_y = [max(self.GRADE + 9.5, ky - 2.2) for _ko, ky in f_info]
+            g_mid = [(float(p[0]), y, float(p[1])) for p, y in zip(pts, g_top_y)]
+            g.grid("LIGHT_usb_facade_glass", [bot, g_mid],
+                   [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=outward)
+            kn_lo = [(float(p[0] + mv[0] * ko), ky - 1.3, float(p[1] + mv[1] * ko))
+                     for p, mv, (ko, ky) in zip(pts, miters, f_info)]
+            kn_hi = [(float(p[0] + mv[0] * ko), ky, float(p[1] + mv[1] * ko))
+                     for p, mv, (ko, ky) in zip(pts, miters, f_info)]
+            top_out = [(float(p[0] + mv[0] * (0.35 * ko)), yt, float(p[1] + mv[1] * (0.35 * ko)))
+                       for p, mv, (ko, _ky), yt in zip(pts, miters, f_info, tops)]
+            # Dark undercut soffit from recessed glass top out to the projecting knuckle
+            m.grid("usb_zinc", [g_mid, kn_lo], [[(u, 0.82) for u in us], [(u, 0.55) for u in us]],
+                   facing=lambda p_, n=n: np.array([0.55 * n[0], -0.83, 0.55 * n[1]]))
+            # Crisp white architectural accent trim band along the knuckle crease
+            m.grid("usb_zinc", [kn_lo, kn_hi], [[(u, 0.98) for u in us], [(u, 0.91) for u in us]],
+                   facing=outward)
+            # Upper tilted zinc facet (leans inward from the knuckle to the roof edge, catching sky light)
+            up_n = np.array([0.92 * n[0], 0.38, 0.92 * n[1]])
+            up_n /= math.np_norm(up_n)
+            m.grid("usb_zinc", [kn_hi, top_out], [[(u, 0.82) for u in us], [(u, 0.04) for u in us]],
+                   facing=lambda p_, un=up_n: un)
+            # Only emit inner facade wall near the open west end (the bowl's own rim wall closes the rest)
+            if float(min(a[1], b[1])) < -45.0:
+                inner = lambda Q, n=n: [(x - n[0] * 0.4, y, z - n[1] * 0.4) for x, y, z in Q]  # noqa: E731
+                cl = [(x, max(ys, yt - q["clerestory"]), z) for (x, ys, z), yt in zip(mid, tops)]
+                m.grid("usb_dark", [inner(mid), inner(cl)], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=inward)
+                m.grid("LIGHT_usb_clerestory", [inner(cl), inner(top)],
+                       [[(u * 1.5, 1.0) for u in us], [(u * 1.5, 0.0) for u in us]], facing=inward)
             s += L
+
+        self._facade_prow_and_doors(m, g, edges, blade, nw, tip_top)
+
+    def _facade_prow_and_doors(self, m, g, edges, blade, nw, tip_top):
+        """Build the 3D overhanging prow V-wing, the northwest recessed glass & diagonal dark zinc facet, the south
+        corner angular pier, the five Legacy Gate pivoting glass doors, and the East/South exterior wordmarks."""
+        a_bl, b_bl, n_bl, _w = edges[blade]
+        # 1. V-taper right wing of the dark zinc prow blade overlapping the north edge of the Legacy Gate glass wall
+        a_w2, b_w2, n_w2, _ww = edges[blade - 1]
+        d_w2 = (a_w2 - b_w2) / float(math.np_hypot(*(a_w2 - b_w2)))
+        top_a = self.roof_top(float(a_bl[0]), float(a_bl[1]))
+        wing_w = 13.5
+        p_wing_top = b_w2 + d_w2 * wing_w
+        y_wing_top = self.roof_top(float(p_wing_top[0]), float(p_wing_top[1]))
+        off_w = n_w2 * 0.55
+        P_foot = (float(b_w2[0] + off_w[0]), self.GRADE - 0.5, float(b_w2[1] + off_w[1]))
+        P_tl = (float(b_w2[0] + off_w[0]), top_a, float(b_w2[1] + off_w[1]))
+        P_tr = (float(p_wing_top[0] + off_w[0]), y_wing_top, float(p_wing_top[1] + off_w[1]))
+        P_mid = (float(b_w2[0] + d_w2[0] * (wing_w * 0.48) + off_w[0]),
+                 0.5 * (self.GRADE + y_wing_top), float(b_w2[1] + d_w2[1] * (wing_w * 0.48) + off_w[1]))
+        m.grid("usb_zinc", [[P_foot, P_mid], [P_tl, P_tr]], [[(0.0, 0.82), (0.8, 0.45)], [(0.0, 0.04), (0.8, 0.04)]],
+               facing=lambda p_, nn=n_w2: np.array([nn[0], 0.0, nn[1]]))
+        P_foot_i = (float(b_w2[0] - off_w[0]), self.GRADE - 0.5, float(b_w2[1] - off_w[1]))
+        P_tl_i = (float(b_w2[0] - off_w[0]), top_a, float(b_w2[1] - off_w[1]))
+        P_tr_i = (float(p_wing_top[0] - off_w[0]), y_wing_top, float(p_wing_top[1] - off_w[1]))
+        P_mid_i = (float(b_w2[0] + d_w2[0] * (wing_w * 0.48) - off_w[0]),
+                   0.5 * (self.GRADE + y_wing_top), float(b_w2[1] + d_w2[1] * (wing_w * 0.48) - off_w[1]))
+        m.grid("usb_dark", [[P_foot_i, P_mid_i], [P_tl_i, P_tr_i]], [[(0, 1), (1, 1)], [(0, 0), (1, 0)]],
+               facing=lambda p_, nn=n_w2: -np.array([nn[0], 0.0, nn[1]]))
+
+        # 2. Northwest Prow recessed inclined glass wall + projecting diagonal dark zinc rib + upper glass triangle
+        c_nw = edges[nw[-1]][1]
+        n_nw = edges[nw[0]][2]
+        out_nw = lambda p_, nn=n_nw: np.array([nn[0], 0.08, nn[1]])  # noqa: E731
+        in_nw = lambda p_, nn=n_nw: -np.array([nn[0], 0.0, nn[1]])  # noqa: E731
+        p_foot_nw = np.array([float(a_bl[0]) + 1.2, float(a_bl[1]) - 1.2])
+        p_base_nw = np.array([float(c_nw[0]), float(c_nw[1])])
+        ts_nw = np.linspace(0.0, 1.0, 5)
+        top_nw_pts = [b_bl + (c_nw - b_bl) * t for t in ts_nw]
+        bot_nw_pts = [p_foot_nw + (p_base_nw - p_foot_nw) * t for t in ts_nw]
+        y_top_nw = [self.roof_top(float(p[0]), float(p[1])) for p in top_nw_pts]
+        y_rake_lo = [y - 6.2 for y in y_top_nw]
+        # Register the NW skyline behind b_bl -> c_nw tapering to GRADE at the tip so it never occludes the prow blade inside
+        self.glass_faces.append((b_bl, c_nw, n_nw, False, [0.0, 1.0], [self.GRADE, y_rake_lo[-1]]))
+        g.grid("LIGHT_usb_glasswall",
+               [[(float(p[0] - n_nw[0] * 0.3), self.GRADE - 0.5, float(p[1] - n_nw[1] * 0.3)) for p in top_nw_pts],
+                [(float(p[0] - n_nw[0] * 0.3), self.GRADE + (y - self.GRADE) * t, float(p[1] - n_nw[1] * 0.3))
+                 for p, y, t in zip(top_nw_pts, y_rake_lo, ts_nw)]],
+               [[(t * 5.6, 1.0) for t in ts_nw], [(t * 5.6, 0.0) for t in ts_nw]], facing=in_nw)
+        # Diagonal dark zinc rib sweeps from 68% up the prow spine down to y=33..44 at c_nw
+        y_rib_hi = [75.0 * (1.0 - t) + 45.0 * t for t in ts_nw]
+        y_rib_lo = [64.0 * (1.0 - t) + 33.0 * t for t in ts_nw]
+
+        def _nw_pos(t_idx, y_val, push=0.0):
+            y_b = self.GRADE - 0.5
+            y_t = y_top_nw[t_idx]
+            f = min(max((y_val - y_b) / max(1.0, y_t - y_b), 0.0), 1.0)
+            xy = bot_nw_pts[t_idx] * (1.0 - f) + top_nw_pts[t_idx] * f + n_nw * push
+            return (float(xy[0]), float(y_val), float(xy[1]))
+
+        r_bot = [_nw_pos(k, self.GRADE - 0.5, 0.0) for k in range(5)]
+        r_rib_lo0 = [_nw_pos(k, y_rib_lo[k], 0.0) for k in range(5)]
+        r_rib_lo1 = [_nw_pos(k, y_rib_lo[k], 2.0) for k in range(5)]
+        r_rib_hi1 = [_nw_pos(k, y_rib_hi[k], 2.0) for k in range(5)]
+        r_rib_hi0 = [_nw_pos(k, y_rib_hi[k], 0.2) for k in range(5)]
+        r_rake_lo = [_nw_pos(k, y_rake_lo[k], 0.8) for k in range(5)]
+        r_top = [_nw_pos(k, y_top_nw[k], 0.8) for k in range(5)]
+        u_nw = [t * 2.8 for t in ts_nw]
+        uv_nw_glass = lambda row, us=u_nw: [(u, (92.0 - p[1]) / 52.0) for u, p in zip(us, row)]  # noqa: E731
+        uv_nw_mull = lambda row, us=u_nw: [(u * 2.0, (92.0 - p[1]) / 26.0) for u, p in zip(us, row)]  # noqa: E731
+        # Lower NW glass curtain wall + mullions (world-height v avoids diagonal UV zig-zag on sloped trapezoids)
+        g.grid("LIGHT_usb_facade_glass", [r_bot, r_rib_lo0],
+               [uv_nw_glass(r_bot), uv_nw_glass(r_rib_lo0)], facing=out_nw)
+        r_bot_m = [(x + n_nw[0] * 0.2, y, z + n_nw[1] * 0.2) for x, y, z in r_bot]
+        r_rib_lo0_m = [(x + n_nw[0] * 0.2, y, z + n_nw[1] * 0.2) for x, y, z in r_rib_lo0]
+        g.grid("LIGHT_usb_glasswall", [r_bot_m, r_rib_lo0_m],
+               [uv_nw_mull(r_bot_m), uv_nw_mull(r_rib_lo0_m)], facing=out_nw)
+        # Projecting diagonal NW dark zinc rib + soffit + top bevel
+        m.grid("usb_zinc", [r_rib_lo0, r_rib_lo1], [[(u, 0.80) for u in u_nw], [(u, 0.55) for u in u_nw]],
+               facing=lambda p_, nn=n_nw: np.array([0.4 * nn[0], -0.9, 0.4 * nn[1]]))
+        m.grid("usb_zinc", [r_rib_lo1, r_rib_hi1], [[(u, 0.82) for u in u_nw], [(u, 0.12) for u in u_nw]],
+               facing=lambda p_, nn=n_nw: np.array([0.92 * nn[0], 0.35, 0.92 * nn[1]]))
+        m.grid("usb_zinc", [r_rib_hi1, r_rib_hi0], [[(u, 0.40) for u in u_nw], [(u, 0.10) for u in u_nw]],
+               facing=lambda p_, nn=n_nw: np.array([0.5 * nn[0], 0.85, 0.5 * nn[1]]))
+        # Upper NW triangular glass window + mullions
+        g.grid("LIGHT_usb_facade_glass", [r_rib_hi0, r_rake_lo],
+               [uv_nw_glass(r_rib_hi0), uv_nw_glass(r_rake_lo)], facing=out_nw)
+        r_rib_hi0_m = [(x + n_nw[0] * 0.35, y, z + n_nw[1] * 0.35) for x, y, z in r_rib_hi0]
+        r_rake_lo_m = [(x + n_nw[0] * 0.35, y, z + n_nw[1] * 0.35) for x, y, z in r_rake_lo]
+        g.grid("LIGHT_usb_glasswall", [r_rib_hi0_m, r_rake_lo_m],
+               [uv_nw_mull(r_rib_hi0_m), uv_nw_mull(r_rake_lo_m)], facing=out_nw)
+        # Upper NW dark zinc roof rake
+        m.grid("usb_zinc", [r_rake_lo, r_top], [[(u, 0.82) for u in u_nw], [(u, 0.04) for u in u_nw]], facing=out_nw)
+
+        # 3. South Corner sloped angular dark zinc pier framing the right side of the Legacy Gate glass wall
+        a_s1, _b_s1, n_s1, _ws1 = edges[1]
+        d_s1 = (edges[1][1] - edges[1][0]) / float(math.np_hypot(*(edges[1][1] - edges[1][0])))
+        y_s1 = self.roof_top(float(a_s1[0]), float(a_s1[1]))
+        s_bot_out = (float(a_s1[0] - d_s1[0] * 2.5 + n_s1[0] * 5.2), self.GRADE - 0.5,
+                     float(a_s1[1] - d_s1[1] * 2.5 + n_s1[1] * 5.2))
+        s_bot_in = (float(a_s1[0] + d_s1[0] * 5.5 + n_s1[0] * 0.6), self.GRADE - 0.5,
+                    float(a_s1[1] + d_s1[1] * 5.5 + n_s1[1] * 0.6))
+        s_top_out = (float(a_s1[0] + n_s1[0] * 0.8), y_s1, float(a_s1[1] + n_s1[1] * 0.8))
+        s_top_in = (float(a_s1[0] + d_s1[0] * 3.2 + n_s1[0] * 0.6), y_s1, float(a_s1[1] + d_s1[1] * 3.2 + n_s1[1] * 0.6))
+        m.grid("usb_zinc", [[s_bot_out, s_bot_in], [s_top_out, s_top_in]],
+               [[(0.0, 0.82), (0.5, 0.82)], [(0.0, 0.04), (0.5, 0.04)]],
+               facing=lambda p_, nn=n_s1: np.array([nn[0], 0.18, nn[1]]))
+        # Side return of the South Corner pier facing south-west
+        s_back = (float(a_s1[0] - d_s1[0] * 4.0), self.GRADE - 0.5, float(a_s1[1] - d_s1[1] * 4.0))
+        s_back_t = (float(a_s1[0] - d_s1[0] * 2.0), y_s1, float(a_s1[1] - d_s1[1] * 2.0))
+        m.grid("usb_zinc", [[s_back, s_bot_out], [s_back_t, s_top_out]],
+               [[(0.0, 0.82), (0.4, 0.82)], [(0.0, 0.04), (0.4, 0.04)]],
+               facing=lambda p_: np.array([-0.94, 0.15, -0.30]))
+
+        # 4. Five Legacy Gate pivoting glass doors (75 to 95 ft tall, 55 ft = 16.8 m wide) and portal frame
+        p_start = b_w2 + d_w2 * 8.0
+        p_end = a_s1 - d_s1 * 5.5
+        door_vec = p_end - p_start
+        door_total = float(math.np_hypot(*door_vec))
+        door_dir = door_vec / door_total
+        door_n = n_w2
+        bay_w = door_total / 5.0
+        door_hs = (29.0, 27.5, 26.0, 24.4, 22.9)
+        # Continuous ground-level entrance canopy / threshold bar at GRADE + 4.2 m
+        c_a = p_start + door_n * 1.1
+        c_b = p_end + door_n * 1.1
+        m.grid("usb_zinc", [[(float(c_a[0]), self.GRADE + 3.6, float(c_a[1])),
+                             (float(c_b[0]), self.GRADE + 3.6, float(c_b[1]))],
+                            [(float(c_a[0]), self.GRADE + 4.6, float(c_a[1])),
+                             (float(c_b[0]), self.GRADE + 4.6, float(c_b[1]))]],
+               [[(0.0, 0.98), (5.0, 0.98)], [(0.0, 0.91), (5.0, 0.91)]],
+               facing=lambda p_, nn=door_n: np.array([nn[0], 0.0, nn[1]]))
+        ang = math.radians(24.0)
+        leaf_dir = door_dir * math.cos(ang) + door_n * math.sin(ang)
+        leaf_n = np.array([door_n[0] * math.cos(ang) - door_dir[0] * math.sin(ang), 0.0,
+                           door_n[1] * math.cos(ang) - door_dir[1] * math.sin(ang)])
+        for k_d, dh in enumerate(door_hs):
+            b0 = p_start + door_dir * (k_d * bay_w)
+            b1 = p_start + door_dir * ((k_d + 1) * bay_w)
+            bc = 0.5 * (b0 + b1) + door_n * 0.45
+            yt = self.GRADE + dh
+            # Stepped steel header beam over each door bay + vertical pier between bays
+            ha = b0 + door_n * 0.85
+            hb = b1 + door_n * 0.85
+            m.grid("usb_zinc", [[(float(ha[0]), yt - 0.9, float(ha[1])), (float(hb[0]), yt - 0.9, float(hb[1]))],
+                                [(float(ha[0]), yt, float(ha[1])), (float(hb[0]), yt, float(hb[1]))]],
+                   [[(0.0, 0.98), (1.0, 0.98)], [(0.0, 0.91), (1.0, 0.91)]],
+                   facing=lambda p_, nn=door_n: np.array([nn[0], 0.0, nn[1]]))
+            pa = b0 + door_dir * 0.45 + door_n * 0.85
+            pb = b0 - door_dir * 0.45 + door_n * 0.85
+            m.grid("usb_black", [[(float(pb[0]), self.GRADE, float(pb[1])), (float(pa[0]), self.GRADE, float(pa[1]))],
+                                 [(float(pb[0]), yt, float(pb[1])), (float(pa[0]), yt, float(pa[1]))]],
+                   [[(0, 1), (1, 1)], [(0, 0), (1, 0)]],
+                   facing=lambda p_, nn=door_n: np.array([nn[0], 0.0, nn[1]]))
+            # Pivoted glass leaf (open 24 degrees around its central pivot axis)
+            hw = bay_w * 0.46
+            la = bc - leaf_dir * hw
+            lb = bc + leaf_dir * hw
+            yb_leaf = self.GRADE + 4.6
+            yt_leaf = yt - 0.9
+            g.grid("LIGHT_usb_facade_glass",
+                   [[(float(la[0]), yb_leaf, float(la[1])), (float(lb[0]), yb_leaf, float(lb[1]))],
+                    [(float(la[0]), yt_leaf, float(la[1])), (float(lb[0]), yt_leaf, float(lb[1]))]],
+                   [[(0.0, 1.0), (1.0, 1.0)], [(0.0, 0.0), (1.0, 0.0)]],
+                   facing=lambda p_, ln=leaf_n: ln)
+            g.grid("LIGHT_usb_glasswall",
+                   [[(float(la[0] + leaf_n[0] * 0.08), yb_leaf, float(la[1] + leaf_n[2] * 0.08)),
+                     (float(lb[0] + leaf_n[0] * 0.08), yb_leaf, float(lb[1] + leaf_n[2] * 0.08))],
+                    [(float(la[0] + leaf_n[0] * 0.08), yt_leaf, float(la[1] + leaf_n[2] * 0.08)),
+                     (float(lb[0] + leaf_n[0] * 0.08), yt_leaf, float(lb[1] + leaf_n[2] * 0.08))]],
+                   [[(0.0, 1.0), (2.0, 1.0)], [(0.0, 0.0), (2.0, 0.0)]],
+                   facing=lambda p_, ln=leaf_n: ln)
+
+        # 5. Exterior wordmarks on the East-Southeast gable wing and the South-Southeast fascia (interstate & SE photos)
+        ms = self.meshes.setdefault("usb_prow", Mesh("usb_prow"))
+        # East-Southeast two-line wordmark (usb_prow_letters), facing east-southeast (+z, slightly -x)
+        n_ese = np.array([-0.14, 0.0, 0.99]); n_ese /= math.np_norm(n_ese)
+        r_ese = -np.cross(n_ese, (0.0, 1.0, 0.0)); r_ese /= math.np_norm(r_ese)
+        c_ese = np.array([-26.0, 52.0, 133.2])
+        w_e, h_e = 21.0, 10.5
+        l_e, rt_e = c_ese - r_ese * (w_e / 2), c_ese + r_ese * (w_e / 2)
+        ms.quad("usb_prow_letters", l_e, rt_e, rt_e + [0, h_e, 0], l_e + [0, h_e, 0],
+                (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, nn=n_ese: nn)
+        # South-Southeast one-line wordmark (usb_letters), facing south (-x)
+        n_ss = np.array([-0.99, 0.0, 0.08]); n_ss /= math.np_norm(n_ss)
+        r_ss = -np.cross(n_ss, (0.0, 1.0, 0.0)); r_ss /= math.np_norm(r_ss)
+        c_ss = np.array([-108.2, 50.0, 66.0])
+        w_s, h_s = 28.0, 7.0
+        l_s, rt_s = c_ss - r_ss * (w_s / 2), c_ss + r_ss * (w_s / 2)
+        ms.quad("usb_letters", l_s, rt_s, rt_s + [0, h_s, 0], l_s + [0, h_s, 0],
+                (0, 1), (1, 1), (1, 0), (0, 0), facing=lambda p_, nn=n_ss: nn)
 
     def _skyline(self):
         """Downtown through the glass (SKYLINE_EYE): inside, an opaque panel 0.15 m behind the glass wall's mullions
@@ -1111,6 +1442,18 @@ class USBank(sm.SoFi):
         rings = [grow(0.0), grow(14.0), grow(40.0)]
         uv = lambda Q: [(x / 20.0, z / 20.0) for x, _y, z in Q]  # noqa: E731
         m.grid("usb_plaza", rings, [uv(r) for r in rings], facing=up)
+        # Fill the plaza pavement under the overhanging West Prow (between the recessed NW glass wall and the prow tip)
+        edges = self._edges()
+        blade, nw = self._prow_edges()
+        a_bl, b_bl = edges[blade][0], edges[blade][1]
+        c_nw = edges[nw[-1]][1]
+        p0 = (float(b_bl[0]) - 0.5, self.GRADE, float(b_bl[1]))
+        p1 = (float(b_bl[0]) + 1.5, self.GRADE, float(b_bl[1]) + 1.5)
+        p2 = (float(c_nw[0]) + 2.0, self.GRADE, float(c_nw[1]) + 4.0)
+        p3 = (float(a_bl[0]) - 2.0, self.GRADE, float(a_bl[1]) + 4.0)
+        m.quad("usb_plaza", p0, p3, p2, p1,
+               (p0[0] / 20.0, p0[2] / 20.0), (p3[0] / 20.0, p3[2] / 20.0),
+               (p2[0] / 20.0, p2[2] / 20.0), (p1[0] / 20.0, p1[2] / 20.0), facing=up)
         plaza = [(x, z) for x, _y, z in rings[-1][:-1]]
         towers = {t.get("way") for t in self.footprint().get("towers", []) if float(t["height"]) >= self.TOWER_MIN_H}
         self.env_counts = env.dress(self, self.venue, grade=self.GRADE, keep_out=[plaza], inner=plaza,
@@ -1208,10 +1551,10 @@ BASE = {
     "LIGHT_usb_ribbon": (255, 255, 255), "LIGHT_usb_glass": (190, 186, 255), "LIGHT_usb_concourse": (214, 208, 255),
     "usb_portal": (160, 156, 150), "usb_dark": (190, 186, 180), "usb_black": (200, 196, 190),
     "usb_etfe_under": (244, 236, 160), "usb_roof_under": (210, 204, 170), "usb_truss": (210, 204, 180),
-    "usb_etfe_top": (196, 180, 104), "usb_zinc_top": (176, 162, 92), "LIGHT_usb_lights": (255, 255, 255),
+    "usb_etfe_top": (240, 224, 128), "usb_zinc_top": (154, 142, 82), "LIGHT_usb_lights": (255, 255, 255),
     "usb_roof_letters": (236, 220, 120), "usb_flag": (220, 214, 200), "LIGHT_usb_blue_sign": (255, 255, 255),
     "LIGHT_usb_panels": (240, 236, 255), "LIGHT_usb_clerestory": (236, 230, 255),
-    "LIGHT_usb_glasswall": (244, 234, 255), "usb_zinc": (214, 200, 150), "LIGHT_usb_facade_glass": (228, 212, 255),
+    "LIGHT_usb_glasswall": (244, 234, 255), "usb_zinc": (234, 218, 162), "LIGHT_usb_facade_glass": (236, 220, 255),
     "LIGHT_usb_prow_display": (255, 255, 255), "LIGHT_usb_board_wing": (255, 255, 255), "jumbo_tron": (255, 255, 255),
     "usb_header": (255, 255, 255), "usb_letters": (255, 255, 255), "usb_prow_letters": (255, 255, 255),
     "LIGHT_usb_signs": (255, 255, 255),
@@ -1252,11 +1595,20 @@ def light(mat, P, N, tod, weather, outside=False):
         f = np.full(n, INSIDE_LIGHT)
     elif tod == "n":
         f = np.full(n, 1.0)
+        if mat == "usb_zinc":
+            f = np.clip(0.75 + 0.25 * N[:, 1] + 0.12 * N[:, 2], 0.48, 1.08)
     else:
         sun = np.array(SUN[tod])
         s = sun / math.np_norm(sun)
-        nd = np.clip(math.np_matmul(N, s), 0, 1)
-        f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
+        if mat == "usb_zinc":
+            raw_nd = math.np_matmul(N, s)
+            sky_f = 0.56 + 0.28 * np.clip(N[:, 1], -0.7, 0.8)
+            sun_f = 0.36 * np.clip((raw_nd + 0.35) / 1.35, 0.0, 1.0)
+            az_f = 0.12 * N[:, 2] - 0.06 * N[:, 0]
+            f = np.clip(sky_f + sun_f + az_f, 0.44, 1.12)
+        else:
+            nd = np.clip(math.np_matmul(N, s), 0, 1)
+            f = (0.76 + 0.26 * nd) if tod == "d" else (0.64 + 0.45 * nd)
     if mat == "usb_concrete":
         f = np.where(N[:, 1] < -0.5, f * 0.6, f)
     tint = TINT[tod] if outside else (1.0, 1.0, 1.0)
