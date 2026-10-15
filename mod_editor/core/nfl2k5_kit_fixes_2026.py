@@ -47,6 +47,7 @@ SCHEMA = "nfl2k5_kit_fixes_2026/v1"
 DATA = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026.json"
 DATA_ALTS = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_alts.json"
 DATA_UF3 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_uf3.json"
+DATA_SEA1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sea1.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
@@ -961,7 +962,15 @@ def compile_palette(span, row):
             hit &= palette[:, 3] > 0
         if "alpha_min" in mapping:
             hit &= palette[:, 3] >= int(mapping["alpha_min"])
-        new_palette[hit, :3] = np.array(hex_rgb(mapping["to"]), np.int64)
+        if "scale" in mapping:
+            # sea1 (b773): darken the hit entries by num/den (rounded), keeping hue and alpha. The shoulder (TV)
+            # digits are lit about 1.5 to 2 times brighter in game than the jersey and its chest numbers, so a
+            # shoulder digit in the chest digit's own colour reads much lighter (wolf grey showed as white).
+            num, den = (int(v) for v in mapping["scale"])
+            require(0 < num < den, "a palette scale must darken")
+            new_palette[hit, :3] = (palette[hit, :3] * num + den // 2) // den
+        else:
+            new_palette[hit, :3] = np.array(hex_rgb(mapping["to"]), np.int64)
         changed += [int(i) for i in np.flatnonzero(hit)]
     require(changed and not np.array_equal(new_palette, palette), "the palette recolour changed nothing")
     new = bytearray(decoded)
@@ -1274,3 +1283,13 @@ def finish():
 def apply_finish(path, *, strict=False):
     """Studio uniform finish pass for uf3 (after ``apply_alternates``): pinned spans only."""
     return apply_to_image(path, strict=strict, document=finish())
+
+
+def seattle():
+    """The sea1 document: the Seattle helmet (crown-front logo fragment, helmet-back lines) and shoulder digits."""
+    return spec(DATA_SEA1)
+
+
+def apply_seattle(path, *, strict=False):
+    """Studio uniform finish pass for sea1 (after ``apply_finish``): pinned spans only."""
+    return apply_to_image(path, strict=strict, document=seattle())
