@@ -198,19 +198,27 @@ class AllocatorTests(unittest.TestCase):
         # which the native repairs append after F4 and so never exist without it
         later = space.LATE_OWNERS[space.LATE_OWNERS.index(lg.OWNER):]
         without = tuple(r for r in union if r[0] not in later)
-        self.assertEqual(len(union) - len(without), 11)   # b77-f5b: + the honors owner's code and data rows; b772-vt1: + the coach AI owner's (late owner, last)
+        self.assertEqual(len(union) - len(without), 16)  # Includes five fixed tap/draft/H-back/rating slot requests.
         plan_with, plan_without = space.plan(union), space.plan(without)
         key = lambda a: (a["owner"], a["kind"])           # noqa: E731
         old = {key(a): a for a in space._scale_allocations(without)}
         new = {key(a): a for a in space._scale_allocations(union)}
         for k, row in old.items():
-            self.assertEqual(new[k], row, f"{k} moved")
+            if k[0] == space.DIRECTORY_OWNER:
+                self.assertEqual(row['size'], 4096)
+                self.assertEqual(new[k]['size'], 1104)
+                self.assertEqual((row['raw'], row['va']), (new[k]['raw'], new[k]['va']))
+            else:
+                self.assertEqual(new[k], row, f"{k} moved")
         added = sorted(k for k in new if k not in old)
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
-                                        ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data")]))
+                                        ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data"),
+                                        ("nfl2k5_human_tap_burst_spill", "code"),
+                                        ("nfl2k5_draft_picks_spill", "code"), ("nfl2k5_hback_spill", "code"),
+                                        ("nfl2k5_team_ratings_spill", "code"), ("nfl2k5_team_ratings_spill", "read_only")]))
         # after K128 in its region, contiguous with it
         k128, mine = new[("nfl2k5_k128", "code")], new[(lg.OWNER, "code")]
         self.assertEqual(mine["va"], k128["va"] + k128["size"])
