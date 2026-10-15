@@ -780,7 +780,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_offense_concepts.py": "08bacfddec04829c837feeac095123e59a974559c62704395d7d3671d5a5167a",
         "mod_editor/core/nfl2k5_complete_offense.py": "02c3469814d041b3fde678e7e4357bfa8856ca1cafad9546b473a34af0f09d5c",
         "mod_editor/core/nfl2k5_playbook_lint.py": "0b405ddafa310be03a7b1a351e06e3c56302c5d53b0a4750720de3a39e2c4286",
-        "mod_editor/core/nfl2k5_play_scoring.py": "5cf6b50416682cf54527befb2954c26e367df316e0bd8536955517e451d1d107",
+        "mod_editor/core/nfl2k5_play_scoring.py": "097d354b00f849507a715d088c58180d932f0065539ee64babc72769c86d61ba",
         "mod_editor/core/nfl2k5_screen_authored_pins.py": "5ab9fa4b46e60fb8ba46e77fcb6d115357c017c187691dd08ddcc16719082c61",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "296b94fe2565486665c6e820658fd149d22b3ddaeec42cc87b606325f5f7167f",
         "mod_editor/core/nfl2k5_playbook_pack.py": "fd167cc276d2eaa46b000f0d37b431cb1f588b82b481d80086ff86e0cc7c236a",

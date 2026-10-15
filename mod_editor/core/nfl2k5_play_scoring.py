@@ -25,6 +25,13 @@ BOOK = 0xB75A40
 SOURCE, STACK, STOP = 0x3000000, 0x303F000, 0x303FF00
 TEAM, META, DIRECTION, STATE, ACTOR = (0x3020000+i*0x1000 for i in range(5))
 CONTEXTS = (0, 1, 2, 3)
+INSTRUCTION_BUDGET = 100_000
+BOOK_LOAD = 0x161E30
+# The coach profile hook validates 896 tag bytes and hashes 0x12fd0 body
+# bytes before native copy/relocation. The body hash alone takes 466,656
+# instructions; a tagged production book loads in 533,184. Allow bounded
+# headroom for the loader only, while executing the entire hook unchanged.
+BOOK_LOAD_BUDGET = 1_000_000
 
 
 class ScoringError(ValueError):
@@ -178,7 +185,8 @@ class NativeScorer:
         m.mem_write(STACK, struct.pack('<'+'I'*(1+len(args)), STOP, *args))
         self.counts[hex(pc)] += 1
         try:
-            m.emu_start(pc, STOP, count=100000)
+            budget = BOOK_LOAD_BUDGET if pc == BOOK_LOAD else INSTRUCTION_BUDGET
+            m.emu_start(pc, STOP, count=budget)
         except self.ucmod.UcError as exc:
             if self.problem is None:
                 self.problem = dict(kind='native-fault', pc=hex(m.reg_read(r.UC_X86_REG_EIP)), error=str(exc))
@@ -196,7 +204,7 @@ class NativeScorer:
         self.counts.clear()
         self.environment_calls.clear()
         self.m.mem_write(SOURCE, resource[32:])
-        self.call(0x161E30, ecx=SOURCE, edx=0)
+        self.call(BOOK_LOAD, ecx=SOURCE, edx=0)
         self.put(TEAM+0x20, BOOK)
         for play in book.plays:
             pv = BOOK+ip.PLAY_BASE+play.index*96
