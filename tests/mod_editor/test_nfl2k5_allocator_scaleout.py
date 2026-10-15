@@ -104,7 +104,7 @@ class PlannerTests(unittest.TestCase):
                 self.assertIn(row, after['allocations'])
         directory = next(r for r in after['allocations'] if r['owner'] == space.DIRECTORY_OWNER)
         code = next(r for r in after['allocations'] if r['owner'] == space.DIRECTORY_CODE_OWNER)
-        self.assertEqual((directory['size'], code['size']), (2016, 512))
+        self.assertEqual((directory['size'], code['size']), (1104, 512))
         for coordinate in ('raw', 'va'):
             self.assertEqual(directory[coordinate] + 3584, code[coordinate])
             self.assertEqual(code[coordinate] + code['size'], directory[coordinate] + space.PAGE)
