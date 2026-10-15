@@ -16,16 +16,12 @@ texture packs, not this repository):
 | `sideline_dry.png` 256x256 | `coachshirt` in the club's four `?d?` team packages | the sideline staff's polo in the same colours |
 | `sideline_rain.png` 256x256 | `coachshirt` in the club's four `?r?` team packages | the sideline staff's jacket in the same colours |
 
-`portraits/7031.png` (Dallas, Brian Schottenheimer) and `portraits/7034.png` (Washington, Dan Quinn) are the Coach
-Matchup / VIP pictures for the two clubs whose 2004 coach had none (7007 and 7029 resolve to `nophoto`). The module
-writes them into two retail portrait slots no roster record uses and points those coach records' `+0x40` at them.
-They are authored renders (b77 co3), not photographs: the game's own coach model for that club (its 2004 head mesh,
-co2's authored face texture and co1/co2's polo), the head reshaped to the coach's proportions (landmark positions
-measured on his official headshot), the face texture painted over by hand (seams levelled, the 2004 hair layout painted
-out, his eye colour), his hair and beard grown as strands, lit and rendered in Blender Cycles in the framing of the
-game's coach pictures and cut out on a transparent background. No pixel of any photograph is in them. co1's earlier
-pictures (photo crops) are pinned only as `superseded_sha256` disc states, so a disc that carries them is updated in
-place.
+Dallas (Brian Schottenheimer, 7031) and Washington (Dan Quinn, 7034) pictures come from the external SOFTDRINK
+league project, through `player_portrait` edits like the other 30 coaches. No portrait PNG ships in the Studio.
+The module reserves these ids in the coach records. A plain build fills the reserved slots with the user's own
+disc's `nophoto` pixels. Retail slots and the rejected co3 renders become that fallback; external league pictures
+are kept. Applying the league project replaces either old photo crops or rejected renders with its real headshots.
+The painted 3D coach faces and their pins are unchanged.
 
 Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Fourteen clubs' coaches wear
 another retail body that fits their build better (`pins.json` `bodies`: the model and why; `body_code` per club), and
@@ -36,7 +32,7 @@ Each model's shirt, jacket, headset and head are authored for the club that now 
 Colours: `data/nfl2k5_scorebug_sprite/team_colors_official_2026.json` (2026 Record and Fact Book, NFL.com logo files);
 logos: `data/nfl2k5_scorebug_mnf/logos/`. Each club's choice of top, trim and cap colour, and why, is in
 `pins.json` (`apparel`). Faces: painted by `tools/b77/co2_coach_faces.py` (co1: `tools/b77/co1_coach_art.py faces`) from the 2026 official headshots (the
-photos themselves are reference only and are never copied into the repository or a pack; for Buffalo, Miami and
+full reference photos stay outside the Studio; portrait crops belong to the separate league project; for Buffalo, Miami and
 Minnesota the club's 2026 Coach Matchup portrait in the league art was the reference). Hair colour and density are
 set by eye from the photos (`HAIR`, `DENSITY` in that tool).
 
@@ -46,7 +42,7 @@ eight, found through each package's own chunk table.
 
 `pins.json` holds, per club, the retail and compiled SHA-256 of the coach scene span, its offset and size, the palette
 size the art compiles at (192 for five clubs whose new art needs a smaller palette to fit the retail span), the refit
-receipt and the SHA-256 of every PNG; per portrait, the slot, the retail and written span SHA-256 and the PNG digest.
+receipt and the SHA-256 of every PNG; per portrait, the slot, the retail and fallback span SHA-256 and rejected render digests.
 Regenerate with `python3 tools/b77/co2_record_pins.py --retail RETAIL.iso --write` after changing any PNG (it carries
 the digests of earlier versions forward as `superseded_sha256`).
 

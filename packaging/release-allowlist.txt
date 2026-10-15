@@ -1459,8 +1459,6 @@ data/nfl2k5_modern_coaches/TEN/sideline_dry.png
 data/nfl2k5_modern_coaches/TEN/sideline_rain.png
 data/nfl2k5_modern_coaches/WAS/sideline_dry.png
 data/nfl2k5_modern_coaches/WAS/sideline_rain.png
-data/nfl2k5_modern_coaches/portraits/7031.png
-data/nfl2k5_modern_coaches/portraits/7034.png
 tests/mod_editor/test_nfl2k5_modern_coaches.py
 mod_editor/core/nfl2k5_modern_fans.py
 data/nfl2k5_modern_fans/pins.json

@@ -29,21 +29,16 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
-                  "likeness textures ship, the reference photos never do). The two Coach Matchup pictures (7031 Dallas, 7034 "
-                  "Washington) are renders of the game's own coach for that club, not photographs. The accessories atlas "
+                  "likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the "
+                  "external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas "
                   "ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. "
                   "No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from "
                   "the user's own disc at build time.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.
-# b77 co3 (2026-10-14) replaced all 34 files i3 refused, so nothing is left out:
-# - portraits/7031.png (0d89e8d4..., a crop of Schottenheimer's official headshot) and portraits/7034.png (9b97f9b9...,
-#   a crop of Quinn's) are now authored renders of the game's own coach for each club (co2's face texture, grown hair
-#   and beard, Blender Cycles), with no pixel of any photograph;
-# - the 32 <club>/accessories.png (abfbc3de..., the retail shoe and clipboard in their right half) are gone: only the
-#   authored headset half ships, as <club>/headset.png (64x64), and the build derives the shoe and clipboard from the
-#   user's own disc (nfl2k5_modern_coaches.derive_accessories).
+# pr2 removed both rejected rendered portraits. Real headshots live in the external league data.
+# co3 replaced the 32 accessories atlases with authored headset halves; retail details come from the user's disc.
 NOT_AUTHORED: dict[str, tuple[str, str]] = {}
 NOT_AUTHORED_BY_NAME: dict[tuple[str, str], tuple[str, str]] = {}
 

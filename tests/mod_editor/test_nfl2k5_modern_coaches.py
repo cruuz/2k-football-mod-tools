@@ -145,9 +145,6 @@ class PinsAndArt(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), digest)
                 with Image.open(path) as image:
                     self.assertEqual(image.size, SIZES[name], f"{row['team']} {name}")
-        for row in mc.pins()["portraits"]:
-            with Image.open(mc.DATA_DIR / row["png"]) as image:
-                self.assertEqual(image.size, (128, 128))
 
     def test_only_authored_textures_ship(self):
         """No reference photo or anything but the authored PNGs, the pins and the README in the data folder."""
@@ -160,27 +157,18 @@ class PinsAndArt(unittest.TestCase):
                 continue
             self.assertTrue(rel.endswith(".png"), rel)
             team, name = rel.split("/")
-            if team == "portraits":
-                self.assertIn(name, {"7031.png", "7034.png"})
-            elif name[:-4] in mc.HEAD_RECIPE_FILES:
+            if name[:-4] in mc.HEAD_RECIPE_FILES:
                 self.assertEqual(team, "KC")
             else:
                 self.assertIn(team, TEAMS)
                 self.assertIn(name[:-4], SIZES)
 
-    def test_the_two_pictures_are_authored_renders_not_photos(self):
-        """b77 co3: 7031 and 7034 are renders of the game's own coach (co2's authored face, grown hair), cut out like the
-        game's other coach pictures: 128x128 RGBA with a transparent background. The photo crops they replace are
-        pinned only as superseded disc states, never as files."""
-        catalog = (ROOT / "tools/b77/modern_art_png_catalog.py").read_text(encoding="utf-8")
+    def test_pictures_are_external_and_no_render_or_photo_ships(self):
+        self.assertFalse(list((mc.DATA_DIR / "portraits").glob("*.png")))
         for row in mc.pins()["portraits"]:
-            rgba = mc._rgba(mc.DATA_DIR / row["png"], 128, 128)
-            self.assertGreater(float((rgba[..., 3] == 0).mean()), 0.2)          # cut out
-            self.assertGreater(float((rgba[..., 3] == 255).mean()), 0.4)
-            self.assertNotIn(row["png_sha256"], catalog)                       # not a reviewed-out file
-            for old in ("0d89e8d437cfbf490469b77d26e514bba82aae7817951dde8bf7fa31d48d9fa0",
-                        "9b97f9b96bc056b14f8408e982c7d39391cd426a265e2cb1e3b764b002fe5a83"):
-                self.assertNotEqual(row["png_sha256"], old)
+            self.assertNotIn("png", row)
+            self.assertNotIn("png_sha256", row)
+            self.assertTrue(row["rejected_sha256"])
 
     def test_malformed_pins_are_refused(self):
         with self.assertRaises(mc.ModernCoachesError):
@@ -324,29 +312,29 @@ class RetailCompile(unittest.TestCase):
                 at = archive.entries[row["outer_index"]].virtual_offset + row["chunk_offset"]
                 span = archive.read(at, row["span_size"])
                 self.assertEqual(mc.sha(span), row["retail_sha256"])
-                after = mc.portrait_span(span, mc._rgba(mc.DATA_DIR / row["png"], 128, 128))
+                after = mc.fallback_portrait_span(archive, span)
                 self.assertEqual(mc.sha(after), row["applied_sha256"])
                 self.assertEqual(after[:0x20 + 128], span[:0x20 + 128])
                 _site, value = mc._coach_photo_site(archive, row["team"])
                 self.assertEqual(value, row["retail_photo_id"])
 
-    def test_an_earlier_picture_is_replaced_in_place(self):
-        """b77 co3: a disc that carries an earlier picture in the slot (co1's photo crop, pinned as superseded) reads
-        'previous', and the new span compiles from it exactly as from the retail span (wrapper, system bytes, tail)."""
+    def test_external_picture_is_kept_and_rejected_render_is_removed(self):
         import numpy as np
         with mc._outer_image()(RETAIL) as archive:
             for row in mc.pins()["portraits"]:
-                self.assertTrue(row["superseded_sha256"])
-                self.assertNotIn(row["applied_sha256"], row["superseded_sha256"])
                 at = archive.entries[row["outer_index"]].virtual_offset + row["chunk_offset"]
                 span = archive.read(at, row["span_size"])
-                other = np.zeros((128, 128, 4), np.uint8)
-                other[..., 0], other[..., 3] = 200, 255
-                earlier = mc.portrait_span(span, other)
-                self.assertNotEqual(earlier, span)
-                again = mc.portrait_span(earlier, mc._rgba(mc.DATA_DIR / row["png"], 128, 128))
-                self.assertEqual(mc.sha(again), row["applied_sha256"])
-                self.assertEqual(again[:0x20 + 128], span[:0x20 + 128])
+                self.assertEqual(mc.portrait_state(span, row), "retail")
+                fallback = mc.fallback_portrait_span(archive, span)
+                self.assertEqual(mc.portrait_state(fallback, row), "applied")
+                rgba = np.zeros((128, 128, 4), np.uint8)
+                rgba[..., 0], rgba[..., 3] = 200, 255
+                external = mc.portrait_span(span, rgba)
+                self.assertEqual(mc.portrait_state(external, row), "kept")
+                rejected = dict(row, rejected_sha256=[mc.sha(external)])
+                self.assertEqual(mc.portrait_state(external, rejected), "previous")
+                self.assertEqual(mc.fallback_portrait_span(archive, external), fallback)
+
 
 
 if __name__ == "__main__":
