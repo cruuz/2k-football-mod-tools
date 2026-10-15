@@ -26,7 +26,8 @@ class IntegrationPlans(unittest.TestCase):
             p = build.apply_preset(build.BuildPlan('s', 't'), key)
             for flag in set(FLAGS) - {'modern_naming'}:
                 self.assertIs(getattr(p, flag), False, (key, flag))
-            self.assertIs(p.scorebug_runtime, False)
+            # b773 nm1/i4: only the Experimental preset installs the sprite scorebug (the indicator-name FONT lives in it)
+            self.assertIs(p.scorebug_runtime, key == 'softdrink_experimental')
             self.assertEqual(p.created_teams_extra, 0)
         with patch.object(tt.modern_naming_patch, 'preset_enabled', return_value=False):
             self.assertFalse(build.apply_preset(build.BuildPlan('s', 't'), 'softdrink_experimental').modern_naming)
@@ -187,7 +188,7 @@ class PairedBuildIntegration(unittest.TestCase):
             payload=build._xbe_bytes(target)
             self.assertEqual(tt.screen_hooks_patch.status(payload),'applied')
             self.assertFalse(tt.guardian_overlay_patch.read_settings(payload)['guardian_everyone_practice'])
-            self.assertEqual([row['step'] for row in receipt['steps']],['copy','guardian_overlay','xbe_space','unc_bowl_uniforms'])
+            self.assertEqual([row['step'] for row in receipt['steps']],['copy','guardian_overlay','xbe_space','unc_bowl_uniforms','menu_icon_orientation'])
             self.assertEqual(g.image_status(source),'retail')
 
     def test_modern_naming_build_writes_both_halves_and_off_refuses_named_source(self):
@@ -217,7 +218,7 @@ class PairedBuildIntegration(unittest.TestCase):
         self.assertEqual(tt.practice_squad_screen_patch.status(payload),'applied')
         settings=tt.roster_arena_patch.read_settings(payload)
         self.assertTrue(settings['reserves_16']);self.assertEqual(settings['created_teams_extra'],2)
-        self.assertEqual([row['step'] for row in receipt['steps'][-2:]], ['roster_arena_growth','unc_bowl_uniforms'])
+        self.assertEqual([row['step'] for row in receipt['steps'][-3:]], ['roster_arena_growth','unc_bowl_uniforms','menu_icon_orientation'])
         self.assertEqual(writer.image_status(fixture.source),'retail')
 
 
