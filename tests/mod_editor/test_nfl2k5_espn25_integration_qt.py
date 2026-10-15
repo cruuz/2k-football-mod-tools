@@ -167,8 +167,8 @@ class BuildPlanTests(unittest.TestCase):
         receipt = mod_build.build(mod_build.BuildPlan(str(fixture.image), str(target), espn25_plan=str(path)),
                                   lambda message, *_: messages.append(message))
         step = next(row for row in receipt["steps"] if row["step"] == "espn25_plan")
-        self.assertEqual([row["step"] for row in receipt["steps"][-3:]],
-                         ["espn25_plan", "unc_bowl_uniforms", "commentary_final"],
+        self.assertEqual([row["step"] for row in receipt["steps"][-4:]],
+                         ["espn25_plan", "unc_bowl_uniforms", "commentary_final", "menu_icon_orientation"],
                          "c2 finalizes commentary after the plan's roster edits")
         self.assertFalse(step["already_applied"])
         self.assertEqual(receipt["result"]["espn25_plan"], "applied")
