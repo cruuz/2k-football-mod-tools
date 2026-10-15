@@ -318,14 +318,14 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "548712f6a9bd53feaa640827cf11b7df2d1f6fbc59fd434f91934b4dac85ba9d"
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "90beb3dcaf1cbf663786a31fe64f6a44e7a5c4e69625f87e89f3dc994bb01b43"
 
 # Anniversary paint is authored or cropped from publicly sourced references.
 # Retail wordmarks/shields/scenes are read from the user's disc at compile time
 # and are not included here. This separate, immutable catalog grants no general
 # PNG exception, even inside the Anniversary art directory.
 ANNIVERSARY_FIELD_PNG_CATALOG = "packaging/nfl2k5_espn25_field_pngs.json"
-ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "bd57194fa4708fe8c5c45b5dcdcbe4c9195594dc1094247038675871495c0378"
+ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d07042485d12253016a150a6b1ab"
 
 # b772: the 2026 coaches (co1/co2), the 2026 fans (fr1) and the 2025-26 officials (rf1) ship authored PNG art.
 # Like the two catalogs above this is an exact, immutable list (path, byte count, SHA-256, PNG dimensions) of files

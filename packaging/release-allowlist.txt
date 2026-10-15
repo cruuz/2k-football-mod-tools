@@ -2825,6 +2825,7 @@ data/nfl2k5_espn25_fields/row01/playoff_logo.png
 data/nfl2k5_espn25_fields/row02/center_logo.png
 data/nfl2k5_espn25_fields/row02/endzone_N.png
 data/nfl2k5_espn25_fields/row02/endzone_S.png
+data/nfl2k5_espn25_fields/row02/lettering.png
 data/nfl2k5_espn25_fields/row02/playoff_logo.png
 data/nfl2k5_espn25_fields/row03/center_logo.png
 data/nfl2k5_espn25_fields/row03/endzone_N.png
@@ -2837,6 +2838,7 @@ data/nfl2k5_espn25_fields/row04/playoff_logo.png
 data/nfl2k5_espn25_fields/row05/center_logo.png
 data/nfl2k5_espn25_fields/row05/endzone_N.png
 data/nfl2k5_espn25_fields/row05/endzone_S.png
+data/nfl2k5_espn25_fields/row05/lettering.png
 data/nfl2k5_espn25_fields/row05/playoff_logo.png
 data/nfl2k5_espn25_fields/row06/center_logo.png
 data/nfl2k5_espn25_fields/row06/endzone_N.png
@@ -2857,6 +2859,7 @@ data/nfl2k5_espn25_fields/row09/playoff_logo.png
 data/nfl2k5_espn25_fields/row10/center_logo.png
 data/nfl2k5_espn25_fields/row10/endzone_N.png
 data/nfl2k5_espn25_fields/row10/endzone_S.png
+data/nfl2k5_espn25_fields/row10/lettering.png
 data/nfl2k5_espn25_fields/row10/playoff_logo.png
 data/nfl2k5_espn25_fields/row11/center_logo.png
 data/nfl2k5_espn25_fields/row11/endzone_N.png

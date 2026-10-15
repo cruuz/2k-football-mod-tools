@@ -14,6 +14,20 @@ ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/'data/nfl2k5_espn25_fields.json'
 ART=ROOT/'data/nfl2k5_espn25_fields'
 SCHEMA='nfl2k5_espn25_fields/v1'
+# Native 768-wide donor strips put artwork outside the old 104:664 crop.
+# These are separator columns between existing text and side decals, not
+# newly authored placements. Preserve the side decals' original colours.
+DONOR_SIDE_REGIONS = {
+    'MIA': ((0, 208), (560, 768)),
+    'WAS': ((0, 152), (616, 768)),
+    'SF': ((0, 210), (560, 768)),
+}
+# Only routes present in this catalog are migrated. Other donors need their
+# own reviewed separation bounds before changing their composition contract.
+FULL_STRIP_DONORS = frozenset(('MIA', 'WAS', 'SF'))
+# Measured native text bounds, with blank separator columns. These donors
+# keep the authored side logos and the existing 560-pixel destination slot.
+WORDMARK_RECTS = {'SEA': (96, 632), 'MIN': (64, 704), 'STL': (48, 720)}
 WORDMARKS={'ARI':'s00','STL':'s00','BUF':'s03','CAR':'s04','CIN':'s06','DAL':'s07',
           'DEN':'s08','DET':'s09','GB':'s10','IND':'s11','KC':'s13','MIA':'s14',
           'MIN':'s15','NE':'s16','NO':'s17','NYG':'s18','OAK':'s20','PHI':'s21',
@@ -134,7 +148,7 @@ def _field_chunk(bundle):
 
 
 def _wordmark(bundle,team=None):
-    """The user's retail wordmark, separated from its turf/background.
+    """The user's retail wordmark or full strip, separated from its background.
 
     This retains an existing team typeface instead of inventing one. A 2004
     typeface is still only an approximation where an era used another mark.
@@ -162,14 +176,24 @@ def _wordmark(bundle,team=None):
         rgba[:,:,3]=np.where(~outside,255,0).astype('uint8')
         im=Image.fromarray(rgba);box=im.getbbox();require(box is not None,'retail Bengals wordmark is blank')
         return np.asarray(im.crop(box).resize((560,104),Image.Resampling.LANCZOS))
-    rgba=rgba[:,104:664]
+    if team not in FULL_STRIP_DONORS:
+        left,right=WORDMARK_RECTS.get(team,(104,664))
+        rgba=rgba[:,left:right]
     rgb=rgba[:,:,:3].astype(float)
     corners=np.concatenate([rgb[:8,:8].reshape(-1,3),rgb[-8:,-8:].reshape(-1,3)])
     bg=np.median(corners,axis=0)
     grass=(rgb[:,:,1]>rgb[:,:,0]*1.02)&(rgb[:,:,1]>rgb[:,:,2]*1.07)
-    mask=(np.linalg.norm(rgb-bg,axis=2)>60)&~grass
+    distance=np.linalg.norm(rgb-bg,axis=2)>60
+    mask=distance&~grass
+    if team in FULL_STRIP_DONORS:
+        # The native side decals contain pale green-tinted silver/white. The
+        # wordmark's broad grass test deletes those shield/helmet outlines.
+        # Use the measured background distance for these bounded decals.
+        for left,right in DONOR_SIDE_REGIONS.get(team,()):
+            mask[:,left:right]=distance[:,left:right]
     rgba[:,:,3]=np.where(mask,255,0).astype('uint8')
-    return np.asarray(Image.fromarray(rgba).resize((560,104),Image.Resampling.LANCZOS))
+    width=768 if team in FULL_STRIP_DONORS else 560
+    return np.asarray(Image.fromarray(rgba).resize((width,104),Image.Resampling.LANCZOS))
 
 
 def _endzone(row,end,wordmarks):
@@ -181,22 +205,37 @@ def _endzone(row,end,wordmarks):
     # authored phrase until its specific period stencil is supplied.
     if key not in wordmarks or e['text']=='GREEN BAY' or e.get('wordmark_file'):return art(row['row'],'endzone_'+end)
     rgba=wordmarks[key].copy();rgb=rgba[:,:,:3].astype(float)
+    full_strip=rgba.shape[1]==768
+    require(rgba.shape in ((104,560,4),(104,768,4)), 'unexpected donor strip dimensions')
     primary=np.asarray(Image.new('RGB',(1,1),e['foreground']).getpixel((0,0)))
     outline=np.asarray(Image.new('RGB',(1,1),e['outline']).getpixel((0,0)))
     white=np.min(rgb,axis=2)>190
     rgba[:,:,:3]=np.where(white[:,:,None],outline,primary).astype('uint8')
+    if full_strip:
+        for left,right in DONOR_SIDE_REGIONS.get(key,()):
+            rgba[:,left:right,:3]=rgb[:,left:right].astype('uint8')
+    letters=None
+    if e.get('lettering'):
+        # Authored period capitals replace the donor's text in its own colours;
+        # a full-strip donor keeps only its native side decals.
+        letters=art(row['row'],e['lettering']);require(letters.shape==(104,768,4),'lettering is not 768x104')
+        keep=np.zeros(rgba.shape[1],dtype=bool)
+        for left,right in (DONOR_SIDE_REGIONS.get(key,()) if full_strip else ()):keep[left:right]=True
+        rgba[:,~keep,3]=0
     # Preserve the supplied end-zone fill/logo layout; the donor covers the
     # old authored wordmark region with its own shape.
     base=art(row['row'],'endzone_'+end).copy()
     fill=(0,0,0,0) if e['background']=='turf' else Image.new('RGBA',(1,1),e['background']).getpixel((0,0))
-    base[10:118,104:664]=fill
+    left,right=(0,768) if full_strip else (104,664)
+    base[10:118,left:right]=fill
     canvas=Image.fromarray(base)
     if row.get('pattern')=='stripes':
         from PIL import ImageDraw
         canvas=Image.new('RGBA',(768,128),e['background']);d=ImageDraw.Draw(canvas)
         for x in range(-128,850,100):
             d.polygon([(x,0),(x+45,0),(x+173,128),(x+128,128)],fill='#101820')
-    canvas.alpha_composite(Image.fromarray(rgba),(104,12))
+    canvas.alpha_composite(Image.fromarray(rgba),(left,12))
+    if letters is not None:canvas.alpha_composite(Image.fromarray(letters),(0,12))
     return np.asarray(canvas)
 
 
