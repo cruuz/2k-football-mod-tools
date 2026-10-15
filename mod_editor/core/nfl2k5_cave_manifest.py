@@ -80,7 +80,7 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
                              and space.status(before) == "retail" and space.status(after) == "applied")
             if owner == 'nfl2k5_music_metadata':
                 from . import nfl2k5_music_metadata as music
@@ -129,7 +129,7 @@ class Recorder:
         # them from the final layout, never from a different probe layout.
         # defensive_try is one writer with two named allocator owners. finish()
         # publishes both children, including the immutable stat descriptors.
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai") and space.status(after) == "applied":
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings") and space.status(after) == "applied":
             # Owners that can also run on a retail-space image (seven-on-seven in the
             # gate composition, before the allocator) have no allocator reservations
             # yet; the allocator's planned pages lie outside that image's mapping.
@@ -142,6 +142,13 @@ class Recorder:
                     continue
                 self.reserve(int(reservation["start"], 0), reservation["size"],
                              reservation["owner"], reservation["basis"])
+        if owner == "nfl2k5_indicator_names":
+            # nm1 receipts use code[] rather than edits[]. Reserve exactly its
+            # three verified native sites, including bytes unchanged from retail.
+            for va, _before, expected, label in module.code_edits():
+                if post_image.read(va, len(expected)) != expected:
+                    raise OracleError("indicator-name declared site differs from generated code")
+                self.reserve(va, len(expected), owner, "declared edit: " + label)
         if not runs:
             return
         # Include bytes in declared sites that happen to equal retail, plus cave
@@ -340,6 +347,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_moment_coaches as moment_coaches
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
+    from . import nfl2k5_indicator_names as indicator_names
+    from . import nfl2k5_letter_grades_attributes as attributes
     from . import nfl2k5_cpu_money_downs as money_downs
     from . import nfl2k5_accelerated_clock as accelerated_clock
     from . import nfl2k5_franchise_edit_player as edit_player
@@ -368,6 +377,20 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + seven.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + edit_player.REQUESTS + accelerated_clock.REQUESTS + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS + widescreen_menus.REQUESTS + team_logo_swap.REQUESTS + k128.REQUESTS + letter_grades.REQUESTS + period.REQUESTS + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
+    # Complete synthetic plans exercise the real executable writers without
+    # asserting any current roster or trade facts. Never use these as pack data.
+    synthetic_source = ["https://example.org/synthetic-cave-manifest-probe"]
+    synthetic_note = "Synthetic ownership probe only; not a roster or trade claim."
+    picks_plan = dict(schema=draft_picks.SCHEMA, base_season=2026, as_of="2026-10-14",
+                      picks=[dict(year=year, round=round_, original_team=team, owner=team,
+                                  status="retained", sources=synthetic_source, resolution=synthetic_note)
+                             for year in (2027, 2028) for round_ in range(1, 8) for team in draft_picks.TEAMS])
+    hback_plan = dict(schema=hback.SCHEMA, as_of="2026-10-14",
+                      teams=[dict(team=team, role="H-B" if team in ("LV", "HOU") else "FB",
+                                  sources=synthetic_source, resolution=synthetic_note)
+                             for team in draft_picks.TEAMS])
+    draft_picks.table_for(picks_plan)
+    hback.mask_for(hback_plan)
     probe_requests = (("synthetic_scaleout", "code", synthetic_owner_bytes, space.PAGE),) if synthetic_owner_bytes else ()
     space.plan(all_requests + probe_requests)  # refuse before any disc build
     progress = progress or (lambda _message: None)
@@ -381,7 +404,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
     modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music, momentum, defensive_try, zone_drop, roster_storage)})
-    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai)})
+    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -431,7 +454,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
                                     practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False,
                                     franchise_autosave=False, coverage_trail=False, franchise_edit_player=False,
-                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False,
+                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
                                     # b77-i2: p9 made Advanced/Experimental select Modern 2; the money-downs owner is an allocator
                                     # owner like the others here, so the probe build leaves it off and the union below installs it.
                                     cpu_money_downs="retail"),
@@ -516,6 +539,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # manifest does not depend on the moments data in data/.
             final, _ = more_moments.Probe.apply(final)
             final, _ = moment_coaches.apply(final)
+            final, _ = draft_picks.apply(final, picks_plan)
+            final, _ = hback.apply(final, hback_plan)
+            final, _ = team_ratings.apply(final)
+            final, _ = indicator_names.apply_xbe(final)
             # b76-vb3: the 25th Anniversary kickoff gate, last over the relocated kickoff and the kick rules it gates
             # (its 20 + 8 re-pointed sites, the two formation readers, the play store, owned code and RW state).
             final, _ = anniversary_kickoff.apply(final, anniversary_tables)
@@ -576,6 +603,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                    (screen_hooks, {}),
                                    (arena_growth, dict(created_teams_extra=2)),
                                    (historic_quick_game, {}), (more_moments.Probe, {}), (moment_coaches, {}),
+                                   (draft_picks, dict(plan=picks_plan)), (hback, dict(plan=hback_plan)), (team_ratings, {}),
                                    (anniversary_kickoff, dict(tables=anniversary_tables)),
                                    (widescreen_menus, {}),
                                    (team_logo_swap, {}),
@@ -585,9 +613,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                    (goalposts.XbePatch, {}),
                                    (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
                 probe, _ = module.apply(probe, **kwargs)
+            probe, _ = indicator_names.apply_xbe(probe)
             probe, _ = space.install_code(probe, "synthetic_scaleout", b"\xc3" + b"\x90" * (synthetic_owner_bytes - 1))
             if any(module.status(probe) != "applied" for module in (space, seven, camera, helmet_finish, weather_haze, number_kerning, team_names.XbePatch, modern_color, coin_defer, decided_clock, cpu_scrambles, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist, practice_screen, abilities, qb_spy, calendar, read_option, screen_hooks, arena_growth, autosave, espn25.XbePatch, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock,
-                                                               historic_quick_game, more_moments.Probe, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, period, kick_meter.XbePatch, goalposts.XbePatch)):
+                                                               historic_quick_game, more_moments.Probe, draft_picks, hback, team_ratings, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, period, kick_meter.XbePatch, goalposts.XbePatch)):
                 raise OracleError("synthetic owner does not compose with the complete real owner union")
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
             try:
@@ -615,11 +644,13 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                         if getattr(module, "__file__", None)}
         used_fingerprints = {name: digest for name, digest in fingerprints.items()
                              if str((ROOT / name).resolve()) in loaded_paths}
+        if preset.get("indicator_names_folder"):
+            preset["indicator_names_folder"] = Path(preset["indicator_names_folder"]).relative_to(ROOT).as_posix()
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
                 "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, coach_ai.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
+                "extra_owners": [draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, coach_ai.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
                                  music_policy.__name__.rsplit(".", 1)[-1]],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,
