@@ -117,6 +117,8 @@ class RecipePreflightTests(unittest.TestCase):
             service = Nfl2k5BuildService()
             with mock.patch.object(service, "build", side_effect=AssertionError("empty texture backend called")), \
                     mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                    mock.patch("mod_editor.core.nfl2k5_menu_icon_orientation.apply_to_image",
+                               return_value={"state": "not_applicable", "written": 0}), \
                     mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 receipt = mod_build.build_with_project(mod_build.BuildPlan(str(source), str(target)),
                                                       service, None, Session())
