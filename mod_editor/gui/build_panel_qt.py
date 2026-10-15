@@ -218,7 +218,7 @@ ANNIVERSARY_OPTIONS = (
 )
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
-                  "Rates current personnel with slot receivers and nickel corners. Fullbacks are optional. "
+                  "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
                   "Requires modern position pools. Not yet tested in-game."))
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (

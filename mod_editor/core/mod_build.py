@@ -239,8 +239,9 @@ class BuildPlan:
     # b77-f4: letter grades in Franchise (Noah's 2K scale: 95+ A+ ... 0-49 F-) for the player overall and the team
     # offense / defense / overall; display only, lists still sort on the number, attributes stay numbers.
     # An allocator owner (late, after K128). Off in Basic (2004 numbers), on in Modern and Experimental.
-    team_ratings: bool = False
     letter_grades: bool = False
+    # Modern displayed unit ratings; native simulation and AI formulas stay intact.
+    team_ratings: bool = False
     # b77-f5: Player Card honors page: the bumpers (Black/White) and triggers flip a Franchise Player Card to the award
     # history (MVP, OPOY, DPOY, ROY, Super Bowls, SB MVP, Pro Bowls, All-Pro, rushing titles, with years); the game adds
     # each season's winners itself. An allocator owner (late, after the letter grades). Off in Basic.

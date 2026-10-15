@@ -23,8 +23,10 @@ def sha(b):return hashlib.sha256(b).hexdigest()
 
 def scopes(payload):
     row=tr.allocation(payload)
-    result=[(rdata.offset_of(payload,va),n,'getter') for va,n,_ in tr.SITES]
-    result += [(row['raw'],row['size'],'rating table'),
+    result=[(rdata.offset_of(payload,va),n,'UI caller') for va,n,_ in tr.SITES]
+    code=tr.allocations(payload)['code']
+    result += [(code['raw'],code['size'],'display rating code'),
+               (row['raw'],row['size'],'rating table and spread'),
                (space.SCALE_DIRECTORY,space.PAGE,'allocator directory'),
                (space.DIRECTORY,space.LIB_COPY-space.DIRECTORY,'allocator header')]
     result += [(s.header+36,20,'section digest') for s in XbeImage(payload).sections]
@@ -44,7 +46,9 @@ def repair(payload):
         match=next(r for r in new if r['owner']==row['owner'] and r['kind']==row['kind'] and r.get('owner_offset',0)==row.get('owner_offset',0))
         if (row['va'],row['raw'],row['size'])!=(match['va'],match['raw'],match['size']):raise ValueError('Existing allocation moved')
         if payload[row['raw']:row['raw']+row['size']]!=result[row['raw']:row['raw']+row['size']]:raise ValueError('Existing allocation bytes changed')
-    return result,dict(receipt,changed_bytes_outside_allowed_spans=0,replay_changed_bytes=0,
+    native_equal=all(XbeImage(payload).read(va,n)==XbeImage(result).read(va,n) for va,n,_ in tr.NATIVE_ROUTINES)
+    if not native_equal:raise ValueError('Native simulation getters changed')
+    return result,dict(receipt,changed_bytes_outside_allowed_spans=0,replay_changed_bytes=0,native_getters_identical=native_equal,
         existing_allocations_unchanged=True,studio_equal=True,
         allowed_spans=[dict(offset=a,size=n,kind=k) for a,n,k in allowed])
 
