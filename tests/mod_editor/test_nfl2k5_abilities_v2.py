@@ -213,7 +213,9 @@ class IntegrityTests(unittest.TestCase):
     def test_budget_and_complete_union(self):
         from tests.nfl2k5_allocator_stack import REQUESTS
         rows = json.loads((ROOT/'tests/fixtures/nfl2k5_allocator_beta62_requests.json').read_text())
-        self.assertEqual([tuple(r) for r in rows if r[0]==patch.OWNER], list(patch.REQUESTS))
+        # b773 sp2: REQUESTS also carries the human tap burst's named directory spill (its own owner).
+        self.assertEqual([tuple(r) for r in rows if r[0]==patch.OWNER],
+                         [r for r in patch.REQUESTS if r[0]==patch.OWNER])
         self.assertTrue(set(patch.REQUESTS) <= set(REQUESTS))
         self.assertLessEqual(patch.CODE_SIZE, patch.BUDGET)
         space.plan(rows)
