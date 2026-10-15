@@ -137,4 +137,71 @@ viewer_miss:
 .balign 4
 career_address:
     .long career_state
+
+/* F6E60 has initialized the playback context. Only automatic bindings
+ * suppress the virtual-controller flag; the native explicit VIP path stays. */
+.global presentation, offense, defense
+presentation:
+    pushfd
+    pushad
+    cld
+    mov ecx, edi
+    call coach_presentation
+    popad
+    popfd
+    jmp presentation_continue
+offense:
+    pushfd
+    pushad
+    sub esp, 16
+    cld
+    mov ecx, ebx
+    mov edx, esp
+    call coach_choose
+    test eax, eax
+    jz offense_miss
+    mov eax, [esp]
+    mov [esp+32], eax /* saved EBX: category */
+    mov eax, [esp+4]
+    mov [esp+16], eax /* saved EDI: formation */
+    mov eax, [esp+8]
+    mov [esp+20], eax /* saved ESI: play */
+    add esp, 16
+    popad
+    popfd
+    jmp offense_publish
+offense_miss:
+    add esp, 16
+    popad
+    popfd
+    je offense_special
+    jmp offense_continue
+defense:
+    pushfd
+    pushad
+    sub esp, 16
+    cld
+    mov ecx, ebx
+    mov edx, esp
+    call coach_choose
+    test eax, eax
+    jz defense_miss
+    mov eax, [esp]
+    mov [esp+16], eax /* saved EDI: category */
+    mov eax, [esp+4]
+    mov [esp+20], eax /* saved ESI: formation */
+    mov eax, [esp+8]
+    mov [esp+68], eax /* native frame +16: front */
+    mov eax, [esp+12]
+    mov [esp+24], eax /* saved EBP: coverage */
+    add esp, 16
+    popad
+    popfd
+    jmp defense_publish
+defense_miss:
+    add esp, 16
+    popad
+    popfd
+    jne defense_ordinary
+    jmp defense_continue
 .section .note.GNU-stack,"",@progbits

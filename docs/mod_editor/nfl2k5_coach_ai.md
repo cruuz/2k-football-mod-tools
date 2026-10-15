@@ -6,13 +6,23 @@ explicit `false` is preserved in saved settings. Bare plans, Basic and Advanced
 retain their previous defaults.
 When enabled, current NFL CPU teams use their observed coach profile without
 loading a USR or making a Coach Matchup selection. It includes VIP-aware Modern
-2. The human side keeps its ordinary native behavior. Cold xemu checks cover
+2. The human side keeps its ordinary native behavior. The previous playback
+implementation's cold xemu checks cover
 an uninterrupted Play Now half, a PAT, kickoffs and controller reassignment.
 Explicit NFL Coach and imported-VIP choices are retained. A full franchise
 game, native save, cold reload and ordinary plays in the next game also pass.
 Corrected imported VIP gameplay has a bounded call sample. Live coverage is
 limited to the teams and modes listed below; component execution alone is
-not a gameplay witness.
+not a gameplay witness. Those earlier checks do not establish acceptance of
+the presentation repair described below.
+
+Automatic tendencies now enter the ordinary CPU selection path. The profile
+context remains available to the native offense/defense selectors, but the
+automatic side does not retain the VIP virtual-controller flag. The native CPU
+publication tails commit the selected category, formation and play. This avoids
+driving a second play-selection menu and its recorded timing. Explicit Coach
+Matchup selections still use native VIP playback. The personnel panel and the
+defense's selection countdown are native retail features and remain intact.
 
 The automatic profile is associated with the team's existing NFL Coach entry.
 That entry already uses its roster portrait. An explicit different NFL Coach
@@ -39,11 +49,15 @@ ID, so either build order works without changing the stored playbook profiles.
 | Active MyCareer stages 1–6 | Original MyCareer policy |
 | Paired offensive/defensive book | Existing paired-side replay suppression remains |
 
-The eight native hooks validate both raw PLAY loading paths, attach at CPU setup, rebind
+The eleven native hooks validate both raw PLAY loading paths, attach at CPU setup, rebind
 after controller changes, release at game unload, and route the two portrait
 renderers. Setup runs through the game's `F7B30`/`F6E60`/`F7A90` path. Only the
 eligible CPU setup's local mode register is adapted; global mode never changes.
-Native selectors and mandatory decision charts remain intact.
+Native selectors and mandatory decision charts remain intact. Three hooks
+separate automatic playback data from presentation and enter the two ordinary
+CPU publication tails. The adapter bypasses human sides, explicit VIP choices,
+special phases/modes, MyCareer, paired-book accessor suppression and recursive
+native fallback. Its temporary VIP flag is restored before the game loop resumes.
 
 The profile influences ordinary calls and the native decision statistics; it
 does not make every snap an exact history replay. Native hurry-up sequences
@@ -51,11 +65,10 @@ bypass the ordinary VIP selector. The game also marks used pools and can
 choose a native fallback on later calls. Special teams and eligible audibles
 keep their existing paths. Live call comparisons must separate those paths
 from sampled profile selections; short games do not prove long-run rates.
-The native fallback can also name a secondary formation that its own menu
-cannot reach. A franchise sample targeted non-authored Bear 46 and executed
-4-3 Over instead; the same menu limit exists in the retail executable. The
-authored pools exclude unreachable formations, but do not replace that
-independent native fallback path.
+The native fallback can also name a secondary formation that its VIP menu
+cannot reach. Earlier playback evidence recorded Bear 46 becoming 4-3 Over.
+Automatic calls now use the ordinary publication tail, while explicit VIPs
+retain that menu behavior. Authored pools remain unchanged.
 
 The owner reserves 5,120 RX bytes and 128 RW bytes. It allocates at most two
 8,608-byte playback contexts through the native heap. Neither uses a resident
@@ -112,6 +125,26 @@ the manual VIP documentation and per-profile build receipts.
 
 ## Repair an existing private v0.6.1 disc
 
+For the automatic CPU presentation repair on the exact feedback-wave disc,
+use an independent copy of the read-only base:
+
+```sh
+python3 tools/b77/vp3_repair.py \
+  --base /private/original-v0.6.1.xiso.iso \
+  --image /private/test-copy.xiso.iso \
+  --evidence /private/presentation-receipts
+```
+
+The tool pins the complete input image and executable, restores only the old
+coach AI owner, then invokes the current Studio writer. It preserves allocation
+addresses and every resource byte, including all 32 coach profiles. Receipts
+cover fixed-span writes, a complete disc comparison, whole-executable equality
+with Studio and a second invocation that writes zero bytes. Unknown inputs
+refuse. The accepted base image SHA-256 is
+`520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4`.
+
+### Earlier profile installation
+
 The repository development repair tool prepares and verifies the XBE and all 32 resources
 before writing. Use a private disc copy; it performs fixed-span writes in place:
 
@@ -138,7 +171,32 @@ Generated executables, profiles, discs and save templates are never shipped.
 
 ## Verification
 
-Cold xemu acceptance on co2 + VIP-aware Modern 2 + coach AI covers:
+The presentation repair has a separate cold-boot Play Now comparison with
+Seattle CPU at New York Giants human. Retail shows the personnel panel and
+defensive countdown. The feedback-wave base additionally drives a CPU play
+menu with its VIP flag set. The repaired game keeps an automatic profile bound
+with that flag clear, shows the native personnel panel, and accepts ordinary
+human defensive formation/front/coverage choices. A complete repaired CPU
+possession ends in a punt, a ten-yard human return and the human offense's next
+selection menu. Two distinct ordinary completed calls in that possession match
+their profile records. The personnel choice is already visible in the first
+entering menu sample, bounded by 1.001 host seconds / 0.690 native seconds from
+the preceding camera sample. This is a sampling bound, not internal selector
+latency. The first full panel to first visible countdown spans 6.069 native
+seconds, compared with 6.019 in the component-off control, with one-host-second
+sampling. An earlier repaired run measured 6.008 and two additional call matches;
+it ended on SIGTERM before its possession finished.
+
+The full same-plan Studio control failed while compiling a helmet asset. The
+live off control therefore removes only the recognized coach AI component from
+the pinned base; it is not a completed full-plan build. Five CPU plays were
+captured before the disk reserve guard stopped that control. The private vp3
+receipts retain these limits and the exact byte scopes. New presentation live
+coverage does not establish MyNFL, CPU defense, or every supported mode; the
+native component checks cover ordinary selection in modes 4-7.
+
+Cold xemu acceptance of the previous playback implementation on co2 +
+VIP-aware Modern 2 + coach AI covers:
 
 - DAL/WAS Play Now, native mode 4, through a complete half and the Q3
   kickoff: fourth downs, a touchdown, PAT, field goals, punts and kickoffs.
@@ -163,12 +221,16 @@ Xbox hardware are not established by this live sample.
 ```sh
 python3 tools/nfl2k5_coach_ai_assemble.py --check
 python3 tests/mod_editor/test_nfl2k5_coach_ai.py
+python3 tests/mod_editor/test_nfl2k5_coach_ai_presentation.py
 python3 packaging/repin.py --apply --include-tests
 python3 packaging/repin.py --check --include-tests
 ```
 
 Private resource/native unit checks use `NFL2K5_COACH_AI_IMAGE` and
 `NFL2K5_COACH_AI_XBE`. The latter points to the VIP-aware base executable.
+The presentation checks execute the ordinary CPU publication tails and verify
+that automatic profiles leave the VIP menu flag off. Set
+`NFL2K5_COACH_AI_RETAIL_XBE` too for the paired-book suppression check.
 `tools/b77/vp1_verify.py --automatic --profiles PRIVATE_PROFILES
 --baseline-xbe PRIVATE_BASELINE ...` executes all four supported modes with
 zero preselected VIPs, actual native offense/defense selectors, retail and
