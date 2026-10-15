@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """cm1: carry the b77 cm1 coach-model change into a copy of the v0.6.1 disc, in place, with receipts.
 
-What cm1 changes on a disc: the coach scene (``cNN.iff`` chunk 0, one fixed span each) of eleven clubs.
+What cm1 changes on a disc: the coach scene (``cNN.iff`` chunk 0, one fixed span each) of eighteen clubs.
 
 * Washington (Dan Quinn, c29): a bald head (the 2004 hair volume off the scalp, the headset band and the low-detail
   head following), a new head texture (one pale skin tone, his white goatee, no hair layout);
 * Dallas (Brian Schottenheimer, c07): a new head texture (a grey, salt-and-pepper beard instead of the dark smudge);
 * the Jets (Aaron Glenn, c19) and Tampa Bay (Todd Bowles, c27): new head textures (natural brown skin instead of a
   saturated red or orange, Glenn's white goatee, Bowles's grey-black beard and brown eyes);
+* Miami, Detroit, Cleveland, New England, Atlanta and the Giants (c14, c04, c00, c16, c01, c22): new head textures
+  (one natural skin tone, grey beards and stubble that read grey, not dark; Harbaugh's grin softened);
+* Jacksonville (Liam Coen, c30): a lean body (carried by position, c30 has its own vertex order) and a new head
+  (full light-brown hair instead of a thin blond layout);
 * Cincinnati, Carolina, Green Bay, Tennessee, the Rams, San Francisco, Minnesota (c06, c09, c10, c15, c23, c25, c28):
   a lean body taken from a leaner retail coach of the same mesh family, and a new head texture.
 
 Everything else on the disc is left as it is. The input must be the v0.6.1 shortcut disc, or co3's output of it (the two
-Coach Matchup pictures already replaced); any other hash is refused. Those eleven scenes must read ``previous`` (the
+Coach Matchup pictures already replaced); any other hash is refused. Those eighteen scenes must read ``previous`` (the
 co2 coaches the v0.6.1 disc carries) and every other coach part ``applied``. The scenes are compiled from the user's
 retail image (``--retail``), exactly as a Studio build compiles them.
 
@@ -43,7 +47,8 @@ INPUTS = {
     "d60ea6dd42fac32fa2ffb52a83ccf97d1fa555965b8517a0a2ddd40ab251c3cf": "v0.6.1 + co3 (Coach Matchup pictures)",
 }
 INPUT_SIZE = 6_004_408_320
-OWNED = ("WAS", "DAL", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "NYJ", "TB")
+OWNED = ("WAS", "DAL", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "NYJ", "TB", "MIA", "DET", "CLE", "NE", "ATL", "JAX",
+         "NYG")
 BLOCK = 1 << 23
 
 

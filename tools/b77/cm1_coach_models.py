@@ -152,6 +152,76 @@ RECIPES: dict[str, dict] = {
             facial=[dict(kind="stubble", parts=("moustache", "corners", "chin", "cheeks", "neck"), colour=(64, 58, 56),
                          density=0.45, light=0.3, light_colour=(140, 136, 132))]),
     },
+    # Jeff Hafley: fair skin (co2's was orange with a dark line at the smile); short brown hair receding at the temples;
+    # a light brown-grey stubble
+    "MIA": {
+        "who": "Jeff Hafley",
+        "head": dict(
+            skin=(212, 162, 142), warm=(208, 142, 124), neck=0.08, lips=(192, 120, 106), brows=(96, 74, 60),
+            hair=dict(colour=(96, 76, 60), front=47.0, recede=1.7, side=43.5, back=34.5, sideburn=38.8),
+            facial=[dict(kind="stubble", parts=("moustache", "corners", "chin", "cheeks"), colour=(112, 100, 92),
+                         density=0.16)]),
+    },
+    # Dan Campbell: fair, ruddy skin; short grey-brown hair; a grey moustache and goatee
+    "DET": {
+        "who": "Dan Campbell",
+        "head": dict(
+            skin=(214, 160, 144), warm=(212, 138, 124), neck=0.08, lips=(192, 118, 108), brows=(118, 98, 86),
+            hair=dict(colour=(112, 98, 88), grey=0.3, grey_colour=(176, 172, 166), front=47.0, recede=1.4, side=43.2,
+                      back=34.5, sideburn=38.8),
+            facial=[dict(parts=("moustache", "corners", "chin"), colour=(118, 110, 104), density=0.85, light=0.4,
+                         light_colour=(204, 200, 192)),
+                    dict(kind="stubble", parts=("cheeks",), colour=(150, 144, 138), density=0.15)]),
+    },
+    # Todd Monken: fair, ruddy skin (co2's c00 head was a dark 2004 head pulled light, still too orange); full white-grey
+    # hair; clean-shaven
+    "CLE": {
+        "who": "Todd Monken",
+        "head": dict(
+            skin=(218, 156, 136), warm=(214, 134, 116), neck=0.08, lips=(196, 122, 110), brows=(160, 140, 126),
+            hair=dict(colour=(196, 190, 184), front=46.6, recede=1.0, side=43.5, back=34.5, sideburn=39.0)),
+    },
+    # Mike Vrabel: fair skin; short salt-and-pepper hair; a short grey stubble beard (light grey, never a smudge)
+    "NE": {
+        "who": "Mike Vrabel",
+        "head": dict(
+            skin=(206, 156, 144), warm=(204, 136, 126), neck=0.08, lips=(186, 118, 110), brows=(84, 70, 64),
+            hair=dict(colour=(80, 72, 70), grey=0.45, grey_colour=(172, 168, 166), front=46.8, recede=1.2, side=43.2,
+                      back=34.5, sideburn=38.6),
+            facial=[dict(kind="stubble", parts=("moustache", "corners", "chin", "cheeks", "neck"), colour=(104, 100, 98),
+                         density=0.6, light=0.45, light_colour=(196, 192, 188))]),
+    },
+    # Kevin Stefanski: fair skin; short grey hair; a short grey beard heaviest on the chin
+    "ATL": {
+        "who": "Kevin Stefanski",
+        "head": dict(
+            skin=(212, 156, 138), warm=(208, 136, 120), neck=0.08, lips=(190, 118, 106), brows=(100, 82, 74),
+            hair=dict(colour=(112, 106, 102), grey=0.5, grey_colour=(176, 172, 168), front=46.8, recede=1.0, side=43.4,
+                      back=34.5, sideburn=38.6),
+            facial=[dict(parts=("moustache", "corners", "chin"), colour=(120, 116, 112), density=0.85, light=0.45,
+                         light_colour=(196, 192, 188)),
+                    dict(kind="stubble", parts=("cheeks", "neck"), colour=(112, 108, 104), density=0.45, light=0.4,
+                         light_colour=(190, 186, 182))]),
+    },
+    # Liam Coen: very fair, pink skin; full light-brown hair (co2's read thin and blond on the short 2004 layout);
+    # clean-shaven; an athletic build (c30 is heavy-ish and has its own vertex order: the slim build comes over by
+    # position from c28, which has the same build, to the lean c12)
+    "JAX": {
+        "who": "Liam Coen",
+        "body": dict(donor="12", via="28"),
+        "head": dict(
+            skin=(222, 170, 158), warm=(218, 148, 140), neck=0.08, lips=(204, 128, 118), brows=(128, 100, 84),
+            hair=dict(colour=(128, 100, 78), front=46.6, recede=0.6, side=43.6, back=34.2, sideburn=39.0)),
+    },
+    # John Harbaugh: fair skin; dark grey hair under the cap, greying at the sides; clean-shaven (co2's grin read as a
+    # grimace: less of the photo's fine detail)
+    "NYG": {
+        "who": "John Harbaugh",
+        "head": dict(
+            skin=(216, 166, 148), warm=(212, 146, 130), neck=0.08, lips=(196, 124, 112), brows=(80, 66, 60), detail=0.55,
+            hair=dict(colour=(66, 58, 54), grey=0.2, grey_sides=0.35, grey_colour=(160, 156, 152), front=46.8, recede=1.0,
+                      side=43.5, back=34.5, sideburn=38.8)),
+    },
     # Kevin O'Connell: fair skin; light-brown hair, a little receded; clean-shaven; lean and tall
     "MIN": {
         "who": "Kevin O'Connell",
@@ -313,6 +383,22 @@ def bald_cranium(P, T, N, ears, *, centre, front, side, back, low=1.5, high=2.5,
     return P - (w * (t_side + (t_top - t_side) * up ** 2))[:, None] * N
 
 
+def hair_volume(P, N, ears, *, front, amount, crown=0.5, back=0.15, low=0.6, high=2.0, centre=(0.0, 41.0, 7.5)):
+    """More hair on a 2004 head (a fuller or spiked top): the scalp above the front hairline moves outward along its
+    normal, ``amount`` cm over the front of the top, ``crown`` x that at the crown and ``back`` x at the back, faded in
+    above the hairline and kept off the ears."""
+    d = P - np.asarray(centre, float)
+    w = smoothstep(front - low, front + high, P[:, 1])
+    frontness = smoothstep(-6.0, 12.0, d[:, 2])                  # 0 at the back of the head, 1 at the forehead
+    profile = back + (1.0 - back) * frontness
+    profile = profile * (crown + (1 - crown) * smoothstep(3.0, 9.0, d[:, 2]))
+    if ears.any():
+        E = P[ears]
+        dist = np.sqrt(((P[:, None, :] - E[None, :, :]) ** 2).sum(-1)).min(1)
+        w = w * smoothstep(1.0, 3.0, dist)
+    return P + (w * amount * profile)[:, None] * N
+
+
 def carried_normals(words, P_old, P_new, T):
     """The shape's own normals carried through the change (only where a vertex or a neighbour moved)."""
     n0 = np.array([models.decode_normpacked3(int(w)) for w in words])
@@ -377,7 +463,17 @@ def make_geometry(scene: Scene, recipe: dict, donor: "Scene | None" = None) -> t
     head, body, lod = (scene.shapes[n] for n in ("coachHeadGrp1", "coachBodyGrp1", "coachLodGrp1"))
     new, normals = {}, {}
     offset = scene.joints["coachBodyGrp1:thorax"] - scene.joints["coachHeadGrp1:thorax"]
-    if "body" in recipe:
+    if "body" in recipe and recipe["body"].get("via"):
+        # a model with its own vertex order (c30): the change from the "via" body (same build, another family) to
+        # the donor is carried over by position (each vertex takes the move of the via body's vertices around it)
+        via, dn = donor
+        Pv = via.shapes["coachBodyGrp1"]["P"]
+        keep_v = smoothstep(58.0, 64.0, Pv[:, 1])[:, None]
+        Dv = (1 - keep_v) * (dn.shapes["coachBodyGrp1"]["P"] - Pv)
+        Db = carry_field(Pv, Dv, body["P"], 1.5, 0.5)
+        new["coachBodyGrp1"] = body["P"] + Db
+        new["coachLodGrp1"] = lod["P"] + carry_field(body["P"], Db, lod["P"], 6.0, 2.5)
+    elif "body" in recipe:
         Qb = body_from_donor(body, donor.shapes["coachBodyGrp1"])
         Db = Qb - body["P"]
         new["coachBodyGrp1"] = Qb
@@ -389,6 +485,14 @@ def make_geometry(scene: Scene, recipe: dict, donor: "Scene | None" = None) -> t
         normals["coachBodyGrp1"] = nb / np.maximum(np.linalg.norm(nb, axis=1, keepdims=True), 1e-9)
         # the low-detail body follows the same change (its vertices take the move of the body around them)
         new["coachLodGrp1"] = lod["P"] + carry_field(body["P"], Db, lod["P"], 6.0, 2.5)
+    if "hair_volume" in recipe:
+        Ph = head["P"]
+        Qh = hair_volume(Ph, vertex_normals(Ph, tris_of(head)), ear_mask(head), **recipe["hair_volume"])
+        Dh = Qh - Ph
+        new["coachHeadGrp1"] = Qh
+        Pb = new.get("coachBodyGrp1", body["P"]); Pl = new.get("coachLodGrp1", lod["P"])
+        new["coachBodyGrp1"] = Pb + carry_field(Ph + offset, Dh, body["P"], 2.5, 1.0)
+        new["coachLodGrp1"] = Pl + carry_field(Ph + offset, Dh, lod["P"], 3.0, 1.2)
     if "bald" in recipe:
         Ph = head["P"]
         Qh = bald_cranium(Ph, tris_of(head), vertex_normals(Ph, tris_of(head)), ear_mask(head), **recipe["bald"])
@@ -723,6 +827,9 @@ def cmd_geometry(args) -> int:
         if "body" in recipe:
             name = f"c{recipe['body']['donor']}.iff"
             donor = Scene(read_archive(args.retail, name), name)
+            if recipe["body"].get("via"):
+                via = f"c{recipe['body']['via']}.iff"
+                donor = (Scene(read_archive(args.retail, via), via), donor)
         doc, _new = make_geometry(scene, recipe, donor)
         # spaced separators: plain short text tokens (the release gate refuses long whitespace-free runs as blobs)
         text = json.dumps(doc, separators=(", ", ": ")) + "\n"

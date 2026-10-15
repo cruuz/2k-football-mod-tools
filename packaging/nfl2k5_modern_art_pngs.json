@@ -1,5 +1,5 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). The two Coach Matchup pictures (7031 Dallas, 7034 Washington) are renders of the game's own coach for that club, not photographs. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. b77 cm1 repainted eleven coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). The two Coach Matchup pictures (7031 Dallas, 7034 Washington) are renders of the game's own coach for that club, not photographs. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
   "files": {
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,
@@ -45,8 +45,8 @@
     },
     "data/nfl2k5_modern_coaches/ATL/head.png": {
       "height": 128,
-      "sha256": "bc704690d2b0ed26a11691c9ace4a75f36f49ad4b01982691388d3f50382b1fa",
-      "size": 59694,
+      "sha256": "0bb63db4c246c3ce274adbc48081e23996ffdcc5b358e4e7e26d3dbd4aaa19a7",
+      "size": 54125,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/ATL/headset.png": {
@@ -297,8 +297,8 @@
     },
     "data/nfl2k5_modern_coaches/CLE/head.png": {
       "height": 128,
-      "sha256": "69bcf9d2ef21c67d3311ff6d434ff21ebf29412207614367c7f409da949bf2c7",
-      "size": 61446,
+      "sha256": "8ccc18bca6dbf4b23cabcc413547c647b8ff656bf4f9097522a7d0fc3ff30f83",
+      "size": 41988,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CLE/headset.png": {
@@ -423,8 +423,8 @@
     },
     "data/nfl2k5_modern_coaches/DET/head.png": {
       "height": 128,
-      "sha256": "482fc6e1861561d24b3928b0f8cbafdbfd0463ad0ceee67a66e9330bee8490ba",
-      "size": 59063,
+      "sha256": "45b78b7bee7d2dfb1f66b4c65c8437dcdeedbd9bcb6c3ad3b3f9d6936b5a5c40",
+      "size": 51433,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DET/headset.png": {
@@ -591,8 +591,8 @@
     },
     "data/nfl2k5_modern_coaches/JAX/head.png": {
       "height": 128,
-      "sha256": "d1e2c95a0a1fb408b0cb5ff6defce92f678f95651612f295ff562e79042683db",
-      "size": 55285,
+      "sha256": "5dbb37c5b328937dbe30725e9564206942ee4cb56cf67899631a1fdb262da8b1",
+      "size": 41074,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/JAX/headset.png": {
@@ -807,8 +807,8 @@
     },
     "data/nfl2k5_modern_coaches/MIA/head.png": {
       "height": 128,
-      "sha256": "776c723386565417c8a8cd20d9301894678e3b14a4cd3696b004d01d589f8f0d",
-      "size": 59638,
+      "sha256": "ca9a73883f70204eb4445a5188066c40be381ec7420bd3f920abe9c38c0751bf",
+      "size": 41825,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/MIA/headset.png": {
@@ -891,8 +891,8 @@
     },
     "data/nfl2k5_modern_coaches/NE/head.png": {
       "height": 128,
-      "sha256": "423f61f09b774d6e6b78f1b0e581b089ff7d7baf0bf9aa89af99076953ff61fe",
-      "size": 58189,
+      "sha256": "5c765b694380f97df1a847c4cb12a433552a108b884c254e87921fe900a5f9c6",
+      "size": 55312,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NE/headset.png": {
@@ -975,8 +975,8 @@
     },
     "data/nfl2k5_modern_coaches/NYG/head.png": {
       "height": 128,
-      "sha256": "5763ac406b765dd1613f6eb475844afc364d5cacfa26732bce12afcc197b822b",
-      "size": 55127,
+      "sha256": "e69504ed60201600436398b676e353bddfeec58e3f038013db02e06620138da7",
+      "size": 47100,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NYG/headset.png": {

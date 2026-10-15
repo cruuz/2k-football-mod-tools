@@ -1309,6 +1309,7 @@ data/nfl2k5_modern_coaches/IND/logo.png
 data/nfl2k5_modern_coaches/IND/shirt.png
 data/nfl2k5_modern_coaches/JAX/headset.png
 data/nfl2k5_modern_coaches/JAX/head.png
+data/nfl2k5_modern_coaches/JAX/geometry.json
 data/nfl2k5_modern_coaches/JAX/jacket.png
 data/nfl2k5_modern_coaches/JAX/logo.png
 data/nfl2k5_modern_coaches/JAX/shirt.png
