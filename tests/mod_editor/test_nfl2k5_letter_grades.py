@@ -193,7 +193,7 @@ class AllocatorTests(unittest.TestCase):
         # which the native repairs append after F4 and so never exist without it
         later = space.LATE_OWNERS[space.LATE_OWNERS.index(lg.OWNER):]
         without = tuple(r for r in union if r[0] not in later)
-        self.assertEqual(len(union) - len(without), 9)   # b77-f5b: + the honors owner's code and data rows; b772-vt1: + the coach AI owner's (late owner, last)
+        self.assertEqual(len(union) - len(without), 11)   # b77-f5b: + the honors owner's code and data rows; b772-vt1: + the coach AI owner's (late owner, last)
         plan_with, plan_without = space.plan(union), space.plan(without)
         key = lambda a: (a["owner"], a["kind"])           # noqa: E731
         old = {key(a): a for a in space._scale_allocations(without)}
@@ -204,7 +204,8 @@ class AllocatorTests(unittest.TestCase):
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
-                                        ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data")]))
+                                        ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
+                                        ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data")]))
         # after K128 in its region, contiguous with it
         k128, mine = new[("nfl2k5_k128", "code")], new[(lg.OWNER, "code")]
         self.assertEqual(mine["va"], k128["va"] + k128["size"])

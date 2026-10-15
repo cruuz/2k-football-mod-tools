@@ -996,6 +996,8 @@ def guard_digests(payload):
 def _recognize(payload, data, *, legacy=False):
     from . import nfl2k5_moment_venues as historical_venues
     payload = historical_venues.underlying(payload)
+    from . import nfl2k5_moment_coaches as historical_coaches
+    payload = historical_coaches.underlying(payload)
     layout = space.layout(payload)
     image = XbeImage(payload)
     entries = table_entries(data) if data is not None else []
