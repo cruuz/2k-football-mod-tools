@@ -47,21 +47,17 @@ class Contract(unittest.TestCase):
 
 @unittest.skipUnless(BASE.is_file(), "the v0.6.1 disc is not present (NFL2K5_CO3_BASE)")
 class OnTheV061Disc(unittest.TestCase):
-    def test_only_the_two_pictures_are_planned_and_they_equal_their_pins(self):
+    def test_the_co3_picture_repair_is_superseded_by_pr2_and_cm1(self):
+        """b773 i4: co3 planned the two authored Coach Matchup pictures onto the v0.6.1 disc. pr2 moved those pictures
+        to the SOFTDRINK league project (the module keeps the slots and writes nothing), and cm1 changed the coach
+        scenes themselves, so the v0.6.1 scenes now read as an earlier version that needs the retail source."""
         before = BASE.stat()
         states = mc.resource_states(BASE)
         self.assertEqual({k: v for k, v in states.items() if k.startswith("portrait:")},
-                         {"portrait:DAL": "previous", "portrait:WAS": "previous"})
-        self.assertEqual({v for k, v in states.items() if not k.startswith("portrait:")}, {"applied"})
-        plan, rows = mc.plan_image(BASE)
-        written = [r for r in rows if r.get("written")]
-        self.assertEqual(sorted((r["kind"], r["team"]) for r in written), [("portrait", "DAL"), ("portrait", "WAS")])
-        pins = {p["team"]: p for p in mc.pins()["portraits"]}
-        for (at, old, new), row in zip(plan, written):
-            self.assertEqual(len(old), len(new))
-            self.assertEqual(mc.sha(new), pins[row["team"]]["applied_sha256"])
-            self.assertIn(mc.sha(old), pins[row["team"]]["superseded_sha256"])
-            self.assertEqual(old[:0x20 + 128], new[:0x20 + 128])       # wrapper and system bytes kept
+                         {"portrait:DAL": "kept", "portrait:WAS": "kept"})
+        self.assertIn("previous", {v for k, v in states.items() if not k.startswith("portrait:")})
+        with self.assertRaisesRegex(mc.ModernCoachesError, "rebuild from a supported USA source"):
+            mc.plan_image(BASE)
         after = BASE.stat()
         self.assertEqual((before.st_size, before.st_mtime_ns), (after.st_size, after.st_mtime_ns))
 

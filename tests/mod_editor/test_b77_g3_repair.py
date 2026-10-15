@@ -57,10 +57,11 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(replay, self.after)
         self.assertEqual(receipt['changed_bytes'], 0)
         self.assertEqual(receipt['status'], 'already_repaired')
-        # The current Studio also installs sp1's ordinary-burst initializer;
-        # historical g3 remains pinned to its own original owner-only delta.
-        from mod_editor.core import nfl2k5_tap_burst
-        latest = nfl2k5_tap_burst.apply(self.after)[0]
+        # The current Studio also installs sp1's ordinary-burst initializer and
+        # sp2's human tap burst; historical g3 remains pinned to its own
+        # original owner-only delta.
+        from mod_editor.core import nfl2k5_human_tap_burst, nfl2k5_tap_burst
+        latest = nfl2k5_human_tap_burst.apply(nfl2k5_tap_burst.apply(self.after)[0])[0]
         self.assertEqual(abilities.apply(self.before)[0], latest)
         self.assertEqual(abilities.apply(self.after)[0], latest)
         self.assertEqual(abilities.apply(latest)[0], latest)
