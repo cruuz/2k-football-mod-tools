@@ -588,7 +588,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/mod_build.py": "36880a606d41f23739c10d95ea6060b5a1652ade66650b05207f2b29e77ec334",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
-        "mod_editor/core/modpack_files.py": "73aee10fdec0eae7d16edad1785c891955eff2a7d3fea1a61abbf4642af883d2",
+        "mod_editor/core/modpack_files.py": "98ea2e4df1bd860aeb34b038998329d37cdc042d08dcfc140ce2e59f2e00cfc2",
         "mod_editor/core/modpack_ops.py": "485d2d8e3caa9c5096de406768918cde1bd8d8b15ddba15a299e0bd0e8099f4b",
         "mod_editor/core/nfl2k5_abilities_runtime.py": "3f01d93fd34f7d7ced2ba4bf70b720174640a00698da73387df94221c8b7f04a",
         "mod_editor/core/nfl2k5_tap_burst.py": "b9d49e2896ce0b6c6f9c035817212d8010c22a6639ec587c6769791f6aff5549",

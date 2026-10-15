@@ -208,11 +208,11 @@ class SourceCopyTests(unittest.TestCase):
         m.apply(pack, base, out)
         self.assertEqual(contents(out), contents(built))
 
-    def test_four_to_fifteen_byte_whole_literals_are_source_copies(self):
+    def test_four_to_thirty_byte_whole_literals_are_source_copies(self):
         donor = random.Random(934).randbytes(4097)
         original = {"default.xbe": b"XBEH", "donor": donor}
         wanted = dict(original)
-        for size in range(4, 16):
+        for size in range(4, 31):
             original[str(size)] = b"old"
             wanted[str(size)] = donor[37:37 + size]
         base = image(self.root / "tiny-base.iso", original)
@@ -228,22 +228,40 @@ class SourceCopyTests(unittest.TestCase):
 
     def test_short_seed_acceleration_and_stdlib_agree_at_read_boundaries(self):
         raw = random.Random(543).randbytes(f.BLOCK + 79) + bytes(4096)
-        needles = {raw[i:i + 4] for i in range(0, len(raw) - 4, 211)}
-        needles.update((raw[f.BLOCK - 3:f.BLOCK + 1], bytes(4)))
         entry = type("Entry", (), {"path": "a", "byte_offset": 0, "size": len(raw)})()
-        accelerated = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
-                                           m._no_progress, seed_size=4)
-        with mock.patch.object(f, "_literal_seed_candidates", return_value=None):
-            fallback = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
-                                            m._no_progress, seed_size=4)
-        expected = {seed: raw.find(seed) for seed in needles}
-        self.assertEqual(accelerated, expected)
-        self.assertEqual(fallback, expected)
-        # A four-byte witness cannot straddle independently pinned files.
-        entries = [type("Entry", (), {"path": "one", "byte_offset": 0, "size": 31})(),
-                   type("Entry", (), {"path": "two", "byte_offset": 31, "size": 31})()]
-        self.assertEqual(f._find_literal_seeds(io.BytesIO(raw), entries, {raw[29:33]},
-                                              m._no_progress, seed_size=4), {})
+        for width in (4, 8):
+            with self.subTest(seed_size=width):
+                needles = {raw[i:i + width] for i in range(0, len(raw) - width, 211)}
+                needles.update((raw[f.BLOCK - width + 1:f.BLOCK + 1], bytes(width)))
+                accelerated = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
+                                                   m._no_progress, seed_size=width)
+                with mock.patch.object(f, "_literal_seed_candidates", return_value=None):
+                    fallback = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
+                                                    m._no_progress, seed_size=width)
+                expected = {seed: raw.find(seed) for seed in needles}
+                self.assertEqual(accelerated, expected)
+                self.assertEqual(fallback, expected)
+                entries = [type("Entry", (), {"path": "one", "byte_offset": 0, "size": 31})(),
+                           type("Entry", (), {"path": "two", "byte_offset": 31, "size": 31})()]
+                crossing = raw[29:29 + width]
+                self.assertEqual(f._find_literal_seeds(io.BytesIO(raw), entries, {crossing},
+                                                      m._no_progress, seed_size=width), {})
+
+    def test_short_cleanup_does_not_repeatedly_split_long_authored_literals(self):
+        original = {"default.xbe": b"XBEH", "a": b"old", "b": b"old", "donor": b"ABCD"}
+        authored = b"ABCD" + random.Random(8383).randbytes(1000)
+        base = image(self.root / "bounded-base.iso", original)
+        built = image(self.root / "bounded-built.iso", dict(original, a=authored, b=b"ABCD"))
+        pack = self.root / "bounded.2k5patch"
+        result = f.export(base, built, pack, require_retail=False)
+        row = next(r for r in result["files"] if r["path"] == "a")
+        self.assertEqual(row["source_copy_bytes"], 0)
+        self.assertEqual(row["literal_bytes"], len(authored))
+        short = next(r for r in result["files"] if r["path"] == "b")
+        self.assertEqual(short["literal_bytes"], 0)
+        out = self.root / "bounded-installed.iso"
+        m.apply(pack, base, out)
+        self.assertEqual(contents(out), contents(built))
 
     def test_prefix_failure_closes_spools_and_removes_partial_pack(self):
         rng = random.Random(830)

@@ -313,7 +313,7 @@ def _literal_seed_candidates(needles, seed_size=LITERAL_SEED):
     stdlib search below. A collision only adds work, never authorizes a copy.
     Explicit little-endian views also work on unaligned Windows buffers.
     """
-    require(seed_size in (4, 16), "Unsupported literal seed size")
+    require(seed_size in (4, 8, 16), "Unsupported literal seed size")
     try:
         import numpy as np
     except ImportError:
@@ -358,7 +358,7 @@ def _find_literal_seeds(base, sources, needles, progress, *, seed_size=LITERAL_S
     straddling a read boundary; source-file boundaries are never crossed.
     """
     import re
-    require(seed_size in (4, 16), "Unsupported literal seed size")
+    require(seed_size in (4, 8, 16), "Unsupported literal seed size")
     pattern = re.compile(b".{" + str(seed_size).encode("ascii") + b"}", re.DOTALL)
     pending = needles
     found = {}
@@ -461,7 +461,7 @@ def _refine_literals(part, doc, base, sources, progress):
                 with path.open("rb") as stream:
                     for at, data in _literal_records(stream):
                         yield row_number, at, data
-        def phase(records, phase_number, prefix_only, known=None):
+        def phase(records, phase_number, prefix_only, known=None, *, seed_size=LITERAL_SEED, short_only=False):
             result = {}
             with ExitStack() as handles:
                 writers = {}
@@ -487,8 +487,11 @@ def _refine_literals(part, doc, base, sources, progress):
                         path = root / f"literals-{phase_number}-{row_number}.bin"
                         result[row_number] = path
                         literals = writer(("literal", row_number), path)
-                        for lo, hi, source_number, source_at in _split_literal(data, found, sources, retail, prefix_only=prefix_only,
-                                                                                  seed_size=4 if prefix_only else LITERAL_SEED):
+                        parts = ([(0, len(data), None, None)]
+                                 if short_only and not seed_size <= len(data) < 2 * seed_size else
+                                 _split_literal(data, found, sources, retail,
+                                                prefix_only=prefix_only, seed_size=seed_size))
+                        for lo, hi, source_number, source_at in parts:
                             offset = at + lo
                             old_size = max(0, min(hi - lo, entry.size - offset))
                             old = retail[entry.byte_offset + offset:entry.byte_offset + offset + old_size]
@@ -518,18 +521,17 @@ def _refine_literals(part, doc, base, sources, progress):
         literal_paths = phase(initial(), 0, False)
         # A whole retail-identical residual can now be at most 30 bytes:
         # every 31-byte original range contained a searched 16-byte seed.
-        # Search four-byte prefixes of these short residuals together. This
-        # also removes varied 4..15-byte fragments; only one-to-three-byte
-        # coincidences can remain as whole literals found elsewhere in retail.
+        # Search sixteen-byte prefixes together and recheck any new short tail
+        # exposed by extending a matching prefix in a longer literal.
         known, checked = {}, set()
         phase_number = 1
         while True:
-            prefixes = {data[:4] for _, _, data in saved(literal_paths)
-                        if 4 <= len(data) < 2 * LITERAL_SEED - 1}
+            prefixes = {data[:LITERAL_SEED] for _, _, data in saved(literal_paths)
+                        if LITERAL_SEED <= len(data) < 2 * LITERAL_SEED - 1}
             unseen = prefixes - checked
             checked.update(unseen)
             if unseen:
-                known.update(_find_literal_seeds(base, sources, unseen, progress, seed_size=4))
+                known.update(_find_literal_seeds(base, sources, unseen, progress))
             if not prefixes.intersection(known):
                 break
             previous = literal_paths
@@ -540,6 +542,26 @@ def _refine_literals(part, doc, base, sources, progress):
             # Copying a known prefix from a longer literal can expose a new
             # short tail. Check it too; each repeated pass removes bytes, and
             # already-searched prefixes (including misses) are never rescanned.
+        # No whole residual of 16 or more bytes matches retail now. Handle
+        # the remaining short runs in two bounded passes: an 8..15-byte run
+        # loses at least eight bytes, then a 4..7-byte run loses at least four.
+        # Do not repeatedly peel four-byte coincidences from long authored
+        # literals. That adds full-source scans and copy records without
+        # improving whole-literal exclusion.
+        for width in (8, 4):
+            prefixes = {data[:width] for _, _, data in saved(literal_paths)
+                        if width <= len(data) < 2 * width}
+            if not prefixes:
+                continue
+            found = _find_literal_seeds(base, sources, prefixes, progress, seed_size=width)
+            if not found:
+                continue
+            previous = literal_paths
+            literal_paths = phase(saved(previous), phase_number, True, known=found,
+                                  seed_size=width, short_only=True)
+            for path in previous.values():
+                path.unlink()
+            phase_number += 1
         replacement = root / "refined.zip"
         with zipfile.ZipFile(replacement, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=True) as output:
             output.writestr("payload.bin", b"")
