@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Super Bowl event walls (N06) and the era ball (N15) on a verified candidate copy.
+"""Super Bowl event walls (N06, redesigned by sb2) and the era ball (N15) on a verified candidate copy.
+
+sb2 refresh: the walls carry the season's NFL shield. Super Bowls before the 2008 season take the period shield from
+the retail disc at build time, so prepare and studio read --retail (read only) as the Studio's alias compiler does.
+The repair ships the authored marks: no user logo folder is used.
 
 prepare reads a disc and writes only the changed spans and receipts to a work folder: the stadium scene span of each
 of the 16 Super Bowl aliases, the ball scene span of global.iff, and the changed runs of default.xbe (the moment-venue
@@ -76,22 +80,31 @@ def xbe_runs(before, after, gap=16):
     return [tuple(r) for r in runs]
 
 
-def patches(path, disc):
+def wall_marks(retail):
+    """The Studio's marks for the repair: the period shield read from the retail disc (pinned), no user folder."""
+    with hs.Source(Path(retail)) as source:
+        shield, receipt = walls.period_shield(source.get(walls.PERIOD_SHIELD_RESOURCE))
+    require(receipt['pinned_retail'], 'the retail period shield differs from its pin')
+    return walls.Marks(shield, None), receipt
+
+
+def patches(path, disc, marks):
     target = hs.Target(disc)
     situ = target.get(identity=hs.SITU_OUTER_ID)
     result, details = [], []
     for row in wall_rows():
         name = f"a{row - 1:02d}{fields.variant(situ, row - 1)}.iff"
         before = target.get(name)
-        after, proof = walls.apply(before, row)
+        after, proof = walls.apply(before, row, marks=marks)
         require(proof['written'], f'row {row} walls already applied; prepare requires the original candidate')
-        again, second = walls.apply(after, row)
+        again, second = walls.apply(after, row, marks=marks)
         require(again == after and second['already_applied'], f'row {row} replay changed bytes')
         result += _entry_edits(disc, target, name, None, before, after, proof['stadium_offset'],
                                proof['stadium_size'], f'{name} stadium')
         details.append(dict(kind='walls', row=row, name=name, before_sha256=sha(before), after_sha256=sha(after),
                             stadium_offset=proof['stadium_offset'], stadium_size=proof['stadium_size'],
-                            textures=len(proof['textures']), replay_written_bytes=0,
+                            textures=len(proof['textures']), slots=len(proof['slots']),
+                            slot_sources=sorted({x['source'] for x in proof['slots']}), replay_written_bytes=0,
                             studio_transform='nfl2k5_super_bowl_walls.apply'))
         print(f'prepared walls row {row:02d} {name}', flush=True)
     outer = target.get(identity=ball.GLOBAL_ID)
@@ -146,15 +159,16 @@ def virtual_hashes(disc, plans):
     return {label: (digests[label].hexdigest(), changed[label]) for label in plans}
 
 
-def prepare(path, out):
+def prepare(path, retail, out):
     require(archive.file_hash(path) == BASE_SHA, 'unknown input disc SHA-256')
+    marks, shield = wall_marks(retail)
     mo2 = json.loads(MO2_PINS.read_text())
     require(mo2['input_sha256'] == BASE_SHA, 'mo2 pins are for another base')
     out.mkdir(parents=True, exist_ok=True)
     sys.path.insert(0, str(ROOT / 'tools'))
     from b77 import mo2_repair
     with archive.Disc(path, descriptors=()) as disc:
-        edits, details = patches(path, disc)
+        edits, details = patches(path, disc, marks)
         mo2_edits, _ = mo2_repair.patches(disc)
         for p in edits:
             require(not any(p['offset'] < m['offset'] + m['length'] and m['offset'] < p['offset'] + p['length']
@@ -175,7 +189,7 @@ def prepare(path, out):
                   virtual_changed_bytes=hashes['me1'][1], after_mo2_input_sha256=mo2['output_sha256'],
                   after_mo2_virtual_output_sha256=hashes['mo2_me1'][0], spans=len(edits),
                   span_bytes=sum(p['length'] for p in edits), virtual_changed_outside_spans=0,
-                  replay_written_bytes=0, studio_transform_shared=True, resources=details)
+                  replay_written_bytes=0, studio_transform_shared=True, period_shield=shield, resources=details)
     write_json(out / 'receipt.json', report)
     print(json.dumps({k: v for k, v in report.items() if k != 'resources'}, sort_keys=True))
 
@@ -254,6 +268,7 @@ def studio(path, retail, receipt):
         return mm.scene_span(bundle, chunk)
 
     require(archive.file_hash(path) == BASE_SHA, 'unknown input disc SHA-256')
+    marks, _ = wall_marks(retail)
     with hs.Source(path) as built, hs.Source(retail) as source:
         situ, _ = fields.repair_situ(built.get(identity=hs.SITU_OUTER_ID))
         compiled, _ = fields.compile_assets(built.get, source.get, situ)
@@ -263,7 +278,7 @@ def studio(path, retail, receipt):
             code = fields.variant(situ, row - 1)
             name = f"a{row - 1:02d}{code}.iff"
             before = built.get(name)
-            after, proof = walls.apply(before, row)
+            after, proof = walls.apply(before, row, marks=marks)
             spec = catalog[row]
             donor = (built.get if spec['source_kind'] == 'built' else source.get)(spec['source_prefix'] + code + '.iff')
             studio_scene, repair_scene = stadium(compiled[name]), stadium(after)
@@ -298,6 +313,7 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     p = sub.add_parser('prepare')
     p.add_argument('--disc', type=Path, required=True)
+    p.add_argument('--retail', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p = sub.add_parser('apply')
     p.add_argument('--disc-copy', type=Path, required=True)
@@ -313,7 +329,7 @@ def main():
     p.add_argument('--receipt', type=Path, required=True)
     a = parser.parse_args()
     if a.command == 'prepare':
-        prepare(a.disc, a.out)
+        prepare(a.disc, a.retail, a.out)
     elif a.command == 'apply':
         apply(a.disc_copy, a.plan, a.receipt)
     elif a.command == 'scope':

@@ -23,6 +23,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 DISC = os.environ.get('ME1_DISC')
 SIZE = 16
+ROW = dict(row=45, event='LII', season=2017, textures=[])
 
 
 def fake_scene(textures=2):
@@ -65,7 +66,8 @@ class Synthetic(unittest.TestCase):
         return entry
 
     def write_manifest(self, textures, row=45):
-        doc = dict(schema=walls.SCHEMA, held_rows=[34], rows=[dict(row=row, event='LII', textures=textures)])
+        doc = dict(schema=walls.SCHEMA, held_rows=[34], rows=[dict(row=row, event='LII', season=2017,
+                                                                   textures=textures)])
         (self.art / 'manifest.json').write_text(json.dumps(doc), newline='\n')
         walls._MANIFEST = None
         return walls.entry(row)
@@ -78,7 +80,8 @@ class Synthetic(unittest.TestCase):
         for alpha, expect in (('opaque', np.full((SIZE, SIZE), 255)),
                               ('source', np.where(current[..., 3] >= 128, 255, 0)),
                               ('art', np.where(np.arange(SIZE)[None, :].repeat(SIZE, 0) < 4, 0, 255))):
-            rgba, resized = walls.target(self.decoded, self.rec, self.row(0), self.texture('mat0', alpha))
+            rgba, resized, _ = walls.target(self.decoded, self.rec, self.row(0), self.texture('mat0', alpha), ROW,
+                                            walls.Marks())
             self.assertFalse(resized)
             np.testing.assert_array_equal(rgba[..., 3], expect, err_msg=alpha)
             self.assertEqual(tuple(rgba[8, 8, :3]), (200, 20, 40))
@@ -86,13 +89,13 @@ class Synthetic(unittest.TestCase):
     def test_areas_keep_disc_texels_outside(self):
         current = mv.read_texture(self.decoded, self.rec, self.row(0))
         texture = self.texture('mat0', 'opaque', areas=[[0, 8, 16, 16]])
-        rgba, _ = walls.target(self.decoded, self.rec, self.row(0), texture)
+        rgba, _, _ = walls.target(self.decoded, self.rec, self.row(0), texture, ROW, walls.Marks())
         np.testing.assert_array_equal(rgba[:8], current[:8])
         self.assertTrue((rgba[8:, :, :3] == (200, 20, 40)).all())
 
     def test_only_listed_texture_bytes_change_and_scope_is_checked(self):
         entry = self.write_manifest([self.texture('mat0', 'opaque')])
-        edited, receipts = walls.painted(self.decoded, self.rec, entry)
+        edited, receipts, _ = walls.painted(self.decoded, self.rec, entry, walls.Marks())
         r0 = self.row(0)
         start, end = r0['pixel_offset'], r0['palette_offset'] + 1024
         self.assertNotEqual(bytes(edited[start:end]), self.decoded[start:end])
@@ -106,18 +109,18 @@ class Synthetic(unittest.TestCase):
     def test_painted_surface_is_recognised_on_replay(self):
         entry = self.write_manifest([self.texture('mat0', 'opaque', areas=[[0, 8, 16, 16]]),
                                      self.texture('mat1', 'source', colour=(10, 60, 200, 255))])
-        self.assertFalse(walls.already_painted(self.decoded, self.rec, entry))
-        edited, _ = walls.painted(self.decoded, self.rec, entry)
-        self.assertTrue(walls.already_painted(bytes(edited), self.rec, entry))
+        self.assertFalse(walls.already_painted(self.decoded, self.rec, entry, walls.Marks()))
+        edited, _, _ = walls.painted(self.decoded, self.rec, entry, walls.Marks())
+        self.assertTrue(walls.already_painted(bytes(edited), self.rec, entry, walls.Marks()))
 
     def test_refusals(self):
         entry = self.write_manifest([self.texture('mat0', 'opaque'), self.texture('mat0x', 'opaque')])
         with self.assertRaisesRegex(ValueError, 'lacks mat0x'):
-            walls.painted(self.decoded, self.rec, entry)
+            walls.painted(self.decoded, self.rec, entry, walls.Marks())
         self.rec['embedded_textures'][1]['mapped_material_names'] = ['mat1', 'mat0b']
         entry = self.write_manifest([self.texture('mat1', 'opaque'), self.texture('mat0b', 'opaque', name='b.png')])
         with self.assertRaisesRegex(ValueError, 'shares a texture'):
-            walls.painted(self.decoded, self.rec, entry)
+            walls.painted(self.decoded, self.rec, entry, walls.Marks())
         tampered = self.texture('mat0', 'opaque')
         tampered['sha256'] = '0' * 64
         with self.assertRaisesRegex(ValueError, 'hash differs'):
@@ -163,13 +166,15 @@ class ShippedArt(unittest.TestCase):
 
     def test_art_folder_holds_only_manifest_files(self):
         doc = walls.manifest()
-        listed = {t['file'] for r in doc['rows'] for t in r['textures']} | {'manifest.json'}
+        listed = ({t['file'] for r in doc['rows'] for t in r['textures']} | {'manifest.json'}
+                  | {t['layer'] for r in doc['rows'] for t in r['textures'] if t.get('layer')})
         present = {p.relative_to(walls.ART).as_posix() for p in walls.ART.rglob('*') if p.is_file()}
         self.assertEqual(present, listed)
 
     def test_compiler_wires_the_pass_after_period_protection(self):
         source = (ROOT / 'mod_editor/core/nfl2k5_espn25_fields.py').read_text()
-        self.assertLess(source.index('protect_period_field(after)'), source.index("super_bowl_walls.apply(after, row['row'])"))
+        self.assertLess(source.index('protect_period_field(after)'),
+                        source.index("super_bowl_walls.apply(after, row['row'], marks=marks)"))
 
 
 @unittest.skipUnless(DISC, 'set ME1_DISC to the read-only base disc')

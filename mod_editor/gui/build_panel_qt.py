@@ -1263,6 +1263,31 @@ class BuildPanel(QWidget):
         self.official_marks_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.official_marks_status)
         self.official_marks_pack_field.textChanged.connect(self._official_marks_pack_changed)
+        # b773-sb2: the user's own Super Bowl logos for the Super Bowl walls (Anniversary named previews)
+        super_bowl_row = QHBoxLayout()
+        super_bowl_row.addWidget(QLabel("Your Super Bowl logos"))
+        self.super_bowl_user_art_field = QLineEdit()
+        self.super_bowl_user_art_field.setPlaceholderText(
+            "Optional folder: super_bowl/XLVI.png, brands/nbc.png, teams/STL.png")
+        self.super_bowl_user_art_field.setToolTip(
+            "Your own PNG files for the Super Bowl moments' walls, ribbon boards and banners. A file placed in the "
+            "folder replaces the authored mark in its slots; anything missing keeps the authored marks. Nothing in "
+            "this folder is shipped. Create folder... makes the layout with a README listing every file name. "
+            "Used with Anniversary: named previews and period fields.")
+        super_bowl_row.addWidget(self.super_bowl_user_art_field, 1)
+        self.super_bowl_user_art_button = QPushButton("Choose...")
+        self.super_bowl_user_art_button.clicked.connect(self._choose_super_bowl_user_art)
+        super_bowl_row.addWidget(self.super_bowl_user_art_button)
+        self.super_bowl_user_art_create = QPushButton("Create folder...")
+        self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
+        super_bowl_row.addWidget(self.super_bowl_user_art_create)
+        r.addLayout(super_bowl_row)
+        self.super_bowl_user_art_status = QLabel()
+        self.super_bowl_user_art_status.setWordWrap(True)
+        self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
+        r.addWidget(self.super_bowl_user_art_status)
+        self.super_bowl_user_art_field.textChanged.connect(self._super_bowl_user_art_changed)
+        self._super_bowl_user_art_changed()
         from mod_editor.core import nfl2k5_kick_meter_2026 as kick_meter  # b76-km
         self.kick_meter_check = self._option(
             r, "kick_meter_2026", kick_meter.BUILD_CAPTION, kick_meter.HELP_TEXT,
@@ -2641,6 +2666,7 @@ class BuildPanel(QWidget):
             modern_metlife_model=self._modern_metlife_model_changed(),
             modern_helmets=self._modern_helmets_changed(),  # b76-hm
             official_marks_pack=self.official_marks_pack_field.text().strip(),
+            super_bowl_user_art=self.super_bowl_user_art_field.text().strip(),  # b773-sb2
             espn_marks_2026=self._espn_marks_changed(),
             espn_wipes_boards_2026=self._espn_wipes_boards_changed(),  # b76-p2
             kick_meter_2026=self._kick_meter_changed(),  # b76-km
@@ -3145,6 +3171,37 @@ class BuildPanel(QWidget):
         if on and box.isEnabled():
             box.setChecked(False)
         self._refresh()
+
+    def _choose_super_bowl_user_art(self):
+        folder = QFileDialog.getExistingDirectory(self, "Choose your Super Bowl logos folder")
+        if folder:
+            self.super_bowl_user_art_field.setText(folder)
+
+    def _create_super_bowl_user_art(self):
+        from mod_editor.core import nfl2k5_super_bowl_walls as walls
+        parent = QFileDialog.getExistingDirectory(self, "Create the user_art folder inside")
+        if not parent:
+            return
+        try:
+            folder = walls.create_user_art_layout(Path(parent) / "user_art")
+        except (OSError, ValueError) as exc:
+            show_operation_error(self, "create the Super Bowl logos folder", str(exc))
+            return
+        self.super_bowl_user_art_field.setText(str(folder))
+
+    def _super_bowl_user_art_changed(self):
+        from mod_editor.core import nfl2k5_super_bowl_walls as walls
+        folder = self.super_bowl_user_art_field.text().strip()
+        if not folder:
+            self.super_bowl_user_art_status.setText(
+                "Super Bowl walls use the authored event marks, network type and the mod's team logos.")
+            return
+        try:
+            found = walls.user_art_status(folder)
+        except (OSError, ValueError) as exc:
+            self.super_bowl_user_art_status.setText(f"Super Bowl logos folder unreadable: {exc}")
+            return
+        self.super_bowl_user_art_status.setText(found)
 
     def _choose_official_marks_pack(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose official marks pack")
@@ -3770,6 +3827,7 @@ class BuildPanel(QWidget):
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
         self.official_marks_pack_field.setText(saved.build_settings(state).get("official_marks_pack") or "")
+        self.super_bowl_user_art_field.setText(saved.build_settings(state).get("super_bowl_user_art") or "")
         restore(self, state)
         # b76-i1: the custom intro movie path is not one of the shared path fields
         from mod_editor.core import nfl2k5_build_settings as saved

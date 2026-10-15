@@ -194,13 +194,24 @@ def append_to_image(path, resources, *, situation=None):
     return receipt
 
 
-def apply_fields_to_image(path, retail_source, *, progress=None):
-    """Compile period aliases from the completed build and append them to it."""
+def apply_fields_to_image(path, retail_source, *, progress=None, user_art=None, log=None):
+    """Compile period aliases from the completed build and append them to it.
+
+    ``user_art`` is the optional folder of the user's own Super Bowl logos; ``log(line)`` receives the build-log
+    lines that say which Super Bowl wall slots were filled from it and which kept the authored marks."""
     from . import nfl2k5_espn25_fields as fields
     from . import nfl2k5_historic_styles as styles
     with styles.Source(path) as built, styles.Source(retail_source) as retail:
         situ, situ_receipt = fields.repair_situ(built.get(identity=mm.SITU_ID))
-        resources, art_receipt = fields.compile_assets(built.get, retail.get, situ, progress=progress)
+        resources, art_receipt = fields.compile_assets(built.get, retail.get, situ, progress=progress,
+                                                       user_art=user_art)
+    if log:
+        if user_art:
+            from . import platform_compat as io
+            found = io.io_path(io.absolute_path(user_art)).is_dir()
+            log(f"Super Bowl walls: your logos folder {user_art}" + ("" if found else " was not found"))
+        for line in art_receipt['super_bowl_walls']['log']:
+            log(line)
     receipt = append_to_image(path, resources, situation=situ)
     receipt.update(fields=art_receipt, situation=situ_receipt, situation_after_sha256=sha(situ))
     return receipt
