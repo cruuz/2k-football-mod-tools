@@ -3453,3 +3453,7 @@ docs/mod_editor/team_ratings.md
 tools/b77/tr1_repair.py
 tools/b77/tr1_probe.py
 docs/mod_editor/super_bowl_user_art.md
+# fn1: authored block yard numbers and reviewed venue manifest
+data/nfl2k5_modern_venues_2026/numbers/block.png
+data/nfl2k5_modern_venues_2026/numbers/manifest.json
+tests/mod_editor/test_b773_fn1.py

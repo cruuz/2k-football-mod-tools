@@ -80,11 +80,11 @@
     },
     {
       "length": 605680,
-      "model_sha256": "9d0a16a30e8c0ce0232c10ebe416cfafc7687ee286b7106ea273538ea034a45a",
+      "model_sha256": "00d1316353bd59f1a552430c0de018d02b2ac9da760eb526f6b046ee24902640",
       "name": "s32nd.iff",
       "offset": 445968,
       "retail_sha256": "ab446729e40fae3ef4add0de14a59a24febe98ebedff7b30034bf200c76dcd36",
-      "scratch": 64,
+      "scratch": 80,
       "shapes": 28,
       "size": 1119488,
       "system": 347008,

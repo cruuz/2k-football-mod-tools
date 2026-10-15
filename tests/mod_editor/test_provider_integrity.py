@@ -337,6 +337,8 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
+                "data/nfl2k5_modern_venues_2026/numbers/manifest.json": "fa9ca79e6175b4b50fb624841b4cb6aea47f9a9f910e891723de1fdf9cfed089",
+                "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
                 "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",

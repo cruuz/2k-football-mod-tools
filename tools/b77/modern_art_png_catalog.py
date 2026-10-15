@@ -26,9 +26,9 @@ from pathlib import Path
 CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
 SCHEMA = "nfl2k5_modern_art_pngs/v1"
 FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/",
-           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/")
+           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/")
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
-                  "modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach "
+                  "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
                   "likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the "
                   "external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas "

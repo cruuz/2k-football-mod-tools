@@ -2,7 +2,7 @@
   "bundles": [
     {
       "length": 986224,
-      "model_sha256": "0dda83b4c5791f0eea97d1004578f92e8dd9731a49397e746ef87757d6a11dc5",
+      "model_sha256": "df3c25416848c67b4a03e12766e475bfe992538fc419dd28d83ebc53acc17ab0",
       "name": "s16dd.iff",
       "offset": 415792,
       "retail_sha256": "9cfb084ca94003169c95a177498beb6f884495cd4625e1bd80d7bb11b9811c48",
@@ -15,7 +15,7 @@
     },
     {
       "length": 998160,
-      "model_sha256": "d279ab5c61b0d9805a8567a0820f43fa88f467290f0721489c2cff1092cd237d",
+      "model_sha256": "66e22c56456d4f1647e8cff628b531de8fbebee2006c26d703d7db5060a9b342",
       "name": "s16dr.iff",
       "offset": 425104,
       "retail_sha256": "0c7f9ec66b654c6860fb8e0c03f9b081f1f33148088c1e294f6a9caf3dbe1856",
@@ -67,7 +67,7 @@
     },
     {
       "length": 959776,
-      "model_sha256": "e09c373283b3b5e55086abc1ad3c2f36417748d72eb40ca6fba924205718c81f",
+      "model_sha256": "5cd7e5c61e2b605d76642043e2adb27207bbccec8afacf023c7dc889d3e2329d",
       "name": "s16as.iff",
       "offset": 381328,
       "retail_sha256": "9dfc1ce349026a8a2d5699e6406a899d2d9fa9218944b9b51c503e92f70d6dac",

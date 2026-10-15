@@ -171,6 +171,7 @@ def compress_detail_normal(span, *, loan_bytes=None):
                    "normal allocation loan cannot keep its native final read inside zero scratch")
         stored = requested
     header[1], header[4] = stored, tx.COMPRESSED_SENTINEL
+    tx.check_vc_lz_native(filled, stored, 0, decoded)
     rebuilt = tx.HEADER.pack(*header) + filled
     back, info = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt)[0])
     sb.require(back == decoded and info.consumed_bytes == stored,

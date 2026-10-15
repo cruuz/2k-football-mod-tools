@@ -357,6 +357,67 @@ def minimum_vc_lz_overlap_scratch(
     return maximum
 
 
+def check_vc_lz_native(stream: bytes, stored_size: int, scratch: int, expected: bytes) -> dict:
+    """Check the retail 0x4dc00 decoder's reads and writes in its actual allocation.
+
+    This dependency-free execution model preserves instruction order, backwards
+    match copies, and the flag fetch at 0x4dcb4 BEFORE the final output test at
+    0x4dcc0. Unlike minimum_vc_lz_overlap_scratch, it also checks that last read.
+    Offline tests compare this model with the recognized XBE under Unicorn.
+    No executable bytes or retail assets are needed by the Studio.
+    """
+    size = len(expected)
+    if len(stream) != stored_size or stored_size < 10 or scratch < 0:
+        raise TxtrError("native decoder: invalid stored allocation")
+    allocation = size + scratch
+    start = allocation - stored_size
+    if start < 0 or struct.unpack_from("<I", stream)[0] != size or not 1 <= stream[8] <= 15:
+        raise TxtrError("native decoder: invalid prefix or allocation")
+    memory = bytearray(b"\xcc") * allocation
+    memory[start:] = stream
+    source, destination = start + 10, 0
+    flags, mask, bits = memory[start + 9], 1, memory[start + 8]
+    distance_mask = (1 << bits) - 1
+    max_read = start + 10
+
+    def read(at):
+        if at < 0 or at >= allocation:
+            raise TxtrError("native decoder: read outside allocation")
+        return memory[at]
+
+    while destination < size:
+        if flags & mask:
+            # Native reads the high byte first, then the low byte.
+            high = read(source + 1)
+            code = read(source) | (high << 8)
+            source += 2
+            distance, length = code & distance_mask, (code >> bits) + 3
+            if distance == 0 or distance > destination or destination + length > size:
+                raise TxtrError("native decoder: invalid in-place match")
+            max_read = max(max_read, destination - distance + length)
+            if distance >= length:
+                memory[destination:destination + length] = memory[destination - distance:destination - distance + length]
+            else:
+                for i in range(length - 1, -1, -1):
+                    memory[destination + i] = read(destination - distance + i)
+            destination += length
+        else:
+            memory[destination] = read(source)
+            source += 1
+            destination += 1
+        max_read = max(max_read, source)
+        mask = (mask << 1) & 255
+        if mask == 0:
+            flags = read(source)
+            source += 1
+            max_read = max(max_read, source)
+            mask = 1
+    if memory[:size] != expected:
+        raise TxtrError("native decoder: in-place output differs")
+    return dict(exact_native_model_output=True, max_read=max_read,
+                max_write=destination, allocation=allocation)
+
+
 def compress_vc_lz(
     source: bytes,
     *,
@@ -645,7 +706,7 @@ def rebuild_compressed_chunk_fixed_span(
         recompressed, stored_size, len(decoded)
     )
     required_overlap_scratch_bytes = (
-        max(padding_size, exact_minimum_overlap_scratch_bytes) + 15
+        max(padding_size, exact_minimum_overlap_scratch_bytes, stored_size - len(decoded)) + 15
     ) & ~15
     rebuilt_overlap_scratch_bytes = max(
         overlap_scratch_bytes, required_overlap_scratch_bytes
@@ -655,6 +716,7 @@ def rebuild_compressed_chunk_fixed_span(
         rebuilt_overlap_scratch_bytes, reserved0, reserved1,
     )
     rebuilt = rebuilt_header + recompressed + bytes(padding_size)
+    check_vc_lz_native(rebuilt[HEADER.size:], stored_size, rebuilt_overlap_scratch_bytes, decoded)
     if len(rebuilt) != len(template_span):
         raise TxtrError("fixed-span rebuild changed the complete span size")
     rebuilt_decoded, rebuilt_decode_info = decode_chunk(rebuilt, chunk)
