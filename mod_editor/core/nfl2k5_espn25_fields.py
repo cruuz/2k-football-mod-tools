@@ -279,6 +279,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
     """
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
+    from . import nfl2k5_super_bowl_walls as super_bowl_walls
     require(struct.unpack_from('<I',situ,32+0x40)[0]==51,'expected 51 physical Anniversary rows')
     output={};receipts=[];templates={};wordmarks={};old_shield=None
     for row in catalog():
@@ -307,12 +308,15 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
         if row['row'] not in PRESERVED_RETAIL_ROWS:
             after, protection = protect_period_field(after)
             detail['period_material_protection'] = protection
+        after, walls = super_bowl_walls.apply(after, row['row'])
+        if walls:
+            detail['super_bowl_walls'] = walls
         _field_chunk(after)
         alias=f'a{index:02d}{code}.iff';require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
         output[alias]=after;receipts.append(dict(row=row['row'],alias=alias,source=name,
             source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),
             field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
-            outside_field_chunks_identical=True,art_status=row['art_status'],detail=detail))
+            outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail))
         if progress:progress(row['row'],51,alias)
     return output,dict(schema='nfl2k5_espn25_fields_receipt/v1',catalog_sha256=sha(DATA.read_bytes()),
         manifest_sha256=sha((ART/'manifest.json').read_bytes()),runtime_witnessed=False,

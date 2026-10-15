@@ -514,7 +514,8 @@ class Nfl2k5UnifiedVisualProvider:
     backend_module_sha256 = "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
-        "mod_editor/core/nfl2k5_espn25_fields.py": "5182f423fe34b77c1a1e47af6efd9fa730183028fec9271647058eb01dc37732",
+        "mod_editor/core/nfl2k5_espn25_fields.py": "cd3b897a2c711642f41b98703572a69b374dda22b5522f813d1bbb3dd8f53d5f",
+        "mod_editor/core/nfl2k5_super_bowl_walls.py": "a97aaa770b15508104e0bd516eeb5708b4e047142b199f0cb48a645c08abc68f",
         "mod_editor/core/exact_math.py": "31b977deeda09cbb68dcde7561ea54c9ebfad2cb4ff74f6601d681e3f4d68564",
         "mod_editor/core/nfl2k5_allegiant_model.py": "fe092ff909859b0041c6e47cdedb85c15a206bc4a430a2a8a49bfc66f7fe8993",
         "mod_editor/core/nfl2k5_allegiant_venue.py": "adf75beb901280fa9ddb2e5a0e88364fa178437bd39345598f02793b7b0ae4c1",
