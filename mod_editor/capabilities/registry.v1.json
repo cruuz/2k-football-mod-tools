@@ -14065,9 +14065,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s15 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s15 row of the main ROST",
         "hash_pins": [
           "e0e6744e35f064142a90a493fe306f511c1ee7855e55752076ad8caeef699376",
-          "27aa4116763c0aba62a327aa1385d019ddbac2ef29780222adfefae270d7c22e",
+          "8dc41a7ef4faf80ef38361bf3ac2f9feb9f61d2d10e88829ee941c82cd999636",
           "81f415d012a8294c5aa9ee1e1705fca97bdfbed943c7ac0cadfc64f942be75ec",
-          "05cc58fddc6377adb0d98f2f610c12024ff5930e248bc2aa2035583f31382e10"
+          "178c98398c1292e3b1e9ed1248b25f218d00b573da408607112f367c2aa59d0e"
         ],
         "resource": "archive entries s15{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s15",
         "retail_file": "the vc_53450030 archive packs holding the Vikings stadium bundles, and the main roster"
