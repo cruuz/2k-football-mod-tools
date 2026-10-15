@@ -310,17 +310,18 @@ def lamps(size=(64, 32)):
 # --- the glass walls and the facade ------------------------------------------------------------------------------------
 
 def glasswall(size=(128, 128), night=False):
-    """The Legacy Gate's glass wall from inside (u001, u014): tall panes in a grid of slim dark mullions, a pale sky tint
-    and mostly transparent so downtown's towers show through (alpha). By night (u044) the glass is dark and nearly clear
-    and the mullions catch the stadium's light."""
+    """The Legacy Gate's mullions (u001, u014, st2's interior photos): the steel grid over the panes, 4 m bays (two a
+    repeat of 8 m) and 6 m rows (three a repeat of 18 m), the panes clear (alpha 0) so the panorama behind them shows
+    whole. Dark against the sky by day; by night (u044) the grid catches the stadium's light."""
     W, H = size[0] * SCALE, size[1] * SCALE
-    im = Image.new("RGBA", (W, H), (18, 22, 30, 16) if night else (176, 200, 222, 56))
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    mullion = (112, 116, 124, 255) if night else (52, 56, 62, 255)
-    for x in range(0, W, W // 8):
-        d.rectangle([x, 0, x + SCALE, H], fill=mullion)
-    for y in range(0, H, H // 8):
-        d.rectangle([0, y, W, y + SCALE - 1], fill=mullion)
+    mullion = (124, 128, 136, 255) if night else (58, 62, 70, 255)
+    for x in range(0, W, W // 2):
+        d.rectangle([x, 0, x + SCALE * 2 - 1, H], fill=mullion)
+    for k in range(3):
+        y = k * H // 3
+        d.rectangle([0, y, W, y + SCALE * 2 - 1], fill=mullion)
     return im
 
 
@@ -505,6 +506,250 @@ def towers(size=(64, 64), night=False):
     return im
 
 
+#: downtown's landmarks as the 2016 to 2026 photos show them (u001, u014, u036; st2's Commons set, 2026-10-14): matched by
+#: OpenStreetMap name, or by height for the unnamed ways (metres; nearest within 1.5). Body colour, window rows' colour,
+#: and the top: flat, ``notch`` (IDS: the zigzag corners), ``halo`` (Capella: the open ring over the drum), ``crown``
+#: (Wells Fargo Center: setbacks to a stepped gable, lit gold at night), ``spire`` (Two22's lit crown), ``obelisk``
+#: (Foshay: the tapered shaft and pyramid)
+LANDMARKS = (("IDS Tower", None, (92, 132, 156), (58, 90, 112), "notch"),
+             ("Capella Tower", None, (150, 152, 160), (96, 104, 118), "halo"),
+             (None, 236.0, (204, 188, 156), (150, 132, 104), "crown"),
+             ("33 South Sixth", None, (112, 100, 92), (72, 64, 60), "flat"),
+             ("Two22", None, (138, 102, 96), (92, 64, 62), "spire"),
+             ("US Bank Plaza", None, (178, 168, 162), (118, 112, 110), "flat"),
+             ("US Bank Plaza I", None, (178, 168, 162), (118, 112, 110), "flat"),
+             ("Ameriprise Financial HQ", None, (112, 142, 162), (78, 102, 120), "flat"),
+             ("Target Plaza", None, (126, 138, 150), (84, 94, 106), "flat"),
+             ("Target Plaza South", None, (126, 138, 150), (84, 94, 106), "flat"),
+             ("Hennepin County Government Center", None, (170, 120, 104), (110, 76, 68), "flat"),
+             (None, 137.0, (206, 196, 176), (150, 140, 120), "obelisk"),
+             ("Wells Fargo 600", None, (108, 130, 150), (70, 88, 106), "flat"),
+             ("Wells Fargo 550", None, (108, 130, 150), (70, 88, 106), "flat"))
+#: everything else: glass and stone tones of the photos' towers and blocks
+PALETTE = ((132, 146, 160), (160, 156, 150), (118, 126, 138), (176, 170, 160), (104, 116, 130), (150, 140, 128))
+
+
+def _skyline_boxes():
+    """Downtown's buildings for the panorama: every OpenStreetMap tower (each outline's minimum rectangle, shrunk to the
+    model's TOWER_AREA; a tower within 45 m of a taller one dropped, OSM draws parts and their building) and the blocks
+    round the site that are not towers (OSM's height, else 3.2 m a level, else 12 m), far to near."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from mod_editor.core import nfl2k5_allegiant_model as ag
+    from mod_editor.core import nfl2k5_usbank_model as um
+    fp = um.footprint()
+    out, kept = [], []
+    for t in sorted(fp.get("towers", []), key=lambda t: -float(t["height"])):
+        Q = np.array(t["points"], float)
+        if len(Q) < 3:
+            continue
+        R = np.array(ag._min_rect(Q), float)
+        c = R.mean(axis=0)
+        area = float(np.linalg.norm(R[1] - R[0]) * np.linalg.norm(R[2] - R[1]))
+        if area > um.TOWER_AREA:
+            R = c + (R - c) * np.sqrt(um.TOWER_AREA / area)
+        if any(np.hypot(*(c - k)) < 45.0 for k in kept):
+            continue
+        kept.append(c)
+        style = None
+        for name, h, body, rows, top in LANDMARKS:
+            if (name and t.get("name") == name) or (h and not t.get("name") and abs(float(t["height"]) - h) < 1.5):
+                style = (body, rows, top)
+                break
+        out.append(dict(rect=R, h0=float(t.get("min_height") or 0.0), h1=float(t["height"]), way=int(t.get("way") or 0),
+                        style=style))
+    towers = {t.get("way") for t in fp.get("towers", [])}
+    for b in fp.get("buildings", []):
+        Q = np.array(b["points"], float)
+        if len(Q) < 3 or b.get("way") in towers:
+            continue
+        h = float(b["height"]) if b.get("height") else 3.2 * float(b["levels"]) if b.get("levels") else 12.0
+        if np.allclose(Q[0], Q[-1]):
+            Q = Q[:-1]
+        if float(np.sum(Q[:, 0] * np.roll(Q[:, 1], -1) - np.roll(Q[:, 0], -1) * Q[:, 1])) < 0:
+            Q = Q[::-1]
+        out.append(dict(rect=Q, h0=0.0, h1=h, way=int(b.get("way") or 0), style=None))
+    E = np.array([um.SKYLINE_EYE[0], um.SKYLINE_EYE[2]])
+    out.sort(key=lambda o: -float(np.hypot(*(o["rect"].mean(axis=0) - E))))
+    return out, um
+
+
+def skyline(tod, size=(256, 128)):
+    """Downtown Minneapolis from the field through the Legacy Gate's glass (st2, 2026-10-14; Noah: like Ford Field's
+    windows, "where you can actually see the city in the background"; the interior photos u001, u014 and st2's Commons
+    set): the towers drawn from OpenStreetMap's outlines and heights, projected from the model's SKYLINE_EYE onto its
+    panorama (``nfl2k5_usbank_model.skyline_uv``: the left 40 degrees in the top half, the right 40 in the bottom), in
+    the landmarks' own colours and tops, window rows and mullions; the blocks round the site in front and the street at
+    the bottom. By day a clear sky, warm and low in the afternoon; at night dark towers with scattered lit windows and
+    lit crowns."""
+    W, H = size[0] * SCALE, size[1] * SCALE
+    boxes, um = _skyline_boxes()
+    ex, ey, ez = um.SKYLINE_EYE
+    a0, a_s, a1 = um.SKYLINE_AZ
+    t0, t1 = um.SKYLINE_TAN
+    PW, PH = 2 * W, int(round(H * 0.492))
+    night = tod == "n"
+    r = rng({"d": 61, "a": 62, "n": 63}[tod])
+    top, low = {"d": ((104, 152, 214), (206, 220, 234)), "a": ((108, 140, 196), (242, 210, 172)),
+                "n": ((8, 12, 28), (34, 42, 66))}[tod]
+    haze = np.array(low, np.float32)
+    g = np.linspace(0.0, 1.0, PH)[:, None, None] ** 1.6
+    pan = np.repeat(np.array(top, np.float32) * (1 - g) + haze * g, PW, axis=1)
+    im = Image.fromarray(np.clip(pan, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(im)
+
+    def px(x, y, z):
+        az = np.degrees(np.arctan2(x - ex, -(z - ez)))
+        tn = (y - ey) / max(1.0, np.hypot(x - ex, z - ez))
+        return (az - a0) / (a1 - a0) * PW, (t1 - tn) / (t1 - t0) * PH
+
+    sun = None if night else np.array({"d": (-0.46, 0.34), "a": (-0.84, -0.12)}[tod])
+    G = um.GRADE
+
+    # the ground under the horizon: the streets and roofs fading into the haze, darker toward the plaza
+    _px, yh = px(0.0, G, -2600.0)
+    gnd = np.array((40, 42, 50) if night else (118, 118, 116), np.float32)
+    for y in range(int(yh), PH):
+        f = (y - yh) / max(1.0, PH - yh)
+        c = (haze * 0.7 + gnd * 0.3) * (1 - f) + gnd * f if not night else gnd * (0.8 + 0.2 * f)
+        d.line([(0, y), (PW, y)], fill=tuple(int(v) for v in c))
+
+    # the far city under the towers: a hazy band of low roofs to the horizon
+    far = tuple(int(c) for c in (haze * 0.80 + np.array((60, 64, 70)) * 0.20)) if not night else (22, 26, 40)
+    x = 0
+    while x < PW:
+        w = int(r.integers(SCALE * 3, SCALE * 9))
+        h = float(r.uniform(14.0, 40.0))
+        _px, y = px(0.0, G + h, -2600.0)
+        d.rectangle([x, int(y), x + w, int(yh) + SCALE], fill=far)
+        if night:
+            for _k in range(int(r.integers(0, 4))):
+                lx, ly = x + int(r.integers(0, w)), int(r.integers(int(y), int(yh) + SCALE + 1))
+                d.rectangle([lx, ly, lx + SCALE - 1, ly], fill=(210, 186, 140))
+        x += w
+
+    def shade(col, n2, dist):
+        c = np.array(col, np.float32)
+        if night:
+            c = c * 0.18 + np.array((14, 16, 26))
+        else:
+            k = 0.80 + 0.34 * max(0.0, float(np.dot(n2, sun)))
+            c = c * k * (np.array((1.04, 0.96, 0.86)) if tod == "a" else 1.0)
+            f = min(0.62, dist / 3600.0)
+            c = c * (1 - f) + haze * f
+        return tuple(int(v) for v in np.clip(c, 0, 255))
+
+    for o in boxes:
+        R = o["rect"]
+        c2 = R.mean(axis=0)
+        dist = float(np.hypot(c2[0] - ex, c2[1] - ez))
+        if dist < 130.0:
+            continue
+        body, rows, kind = o["style"] or (PALETTE[o["way"] % len(PALETTE)], None, "flat")
+        rows = rows or tuple(int(v * 0.68) for v in body)
+        rr = rng(o["way"] % 100000 + 7)
+        h0, h1 = G + o["h0"], G + o["h1"]
+        tiers = [(R, h0, h1)]
+        if kind == "crown":
+            tiers = [(R, h0, h0 + (h1 - h0) * 0.74)]
+            for k, (s, hb, ht) in enumerate(((0.84, 0.74, 0.86), (0.66, 0.86, 0.95))):
+                tiers.append((c2 + (R - c2) * s, h0 + (h1 - h0) * hb, h0 + (h1 - h0) * ht))
+        elif kind == "obelisk":
+            tiers = [(R, h0, h0 + (h1 - h0) * 0.82)]
+        elif kind in ("halo", "spire"):
+            tiers = [(R, h0, h0 + (h1 - h0) * 0.90)]
+        for Rt, yb, yt in tiers:
+            ccw = float(np.sum(Rt[:, 0] * np.roll(Rt[:, 1], -1) - np.roll(Rt[:, 0], -1) * Rt[:, 1])) > 0
+            faces = []
+            for i in range(len(Rt)):
+                p, q = Rt[i], Rt[(i + 1) % len(Rt)]
+                e2 = q - p
+                if np.hypot(*e2) < 0.5:
+                    continue
+                m = (p + q) / 2
+                n2 = np.array([e2[1], -e2[0]]) / max(1e-6, np.hypot(*e2))
+                if not ccw:
+                    n2 = -n2
+                if np.dot(n2, np.array([ex, ez]) - m) > 0:
+                    faces.append((-float(np.hypot(m[0] - ex, m[1] - ez)), i, p, q, e2, n2))
+            for _dm, _i, p, q, e2, n2 in sorted(faces, key=lambda f: f[:2]):
+                poly = [px(p[0], yb, p[1]), px(q[0], yb, q[1]), px(q[0], yt, q[1]), px(p[0], yt, p[1])]
+                if max(abs(poly[0][0] - poly[1][0]), 0) > PW / 2:
+                    continue
+                d.polygon(poly, fill=shade(body, n2, dist))
+                rowc = shade(rows, n2, dist)
+                L = float(np.hypot(*e2))
+                bays = max(1, int(L / 3.2))
+                floors = int((yt - yb) / 3.9)
+                for f in range(1, floors):
+                    y = yb + f * 3.9
+                    a_, b_ = px(p[0], y, p[1]), px(q[0], y, q[1])
+                    if night:
+                        for k in range(bays):
+                            if rr.random() < 0.34:
+                                s0, s1 = k / bays, (k + 0.7) / bays
+                                u0 = (a_[0] + (b_[0] - a_[0]) * s0, a_[1] + (b_[1] - a_[1]) * s0)
+                                u1 = (a_[0] + (b_[0] - a_[0]) * s1, a_[1] + (b_[1] - a_[1]) * s1)
+                                d.line([u0, u1], fill=(232, 204, 146) if rr.random() < 0.8 else (206, 218, 236),
+                                       width=max(1, SCALE // 2))
+                    elif dist < 2400:
+                        d.line([a_, b_], fill=rowc, width=1)
+                if dist < 800 and not night:
+                    for k in range(1, bays):
+                        w0 = p + e2 * (k / bays)
+                        d.line([px(w0[0], yb, w0[1]), px(w0[0], yt, w0[1])], fill=rowc, width=1)
+                if kind == "notch" and not night:
+                    for s in (0.10, 0.90):
+                        w0 = p + e2 * s
+                        d.line([px(w0[0], yb, w0[1]), px(w0[0], yt, w0[1])], fill=rowc, width=SCALE)
+        # the tops
+        cx, cz = float(c2[0]), float(c2[1])
+        wtop = float(np.hypot(*(R[1] - R[0])))
+        if kind == "halo":
+            # the drum and the open ring over it
+            yb = h0 + (h1 - h0) * 0.90
+            lx, ly = px(cx - wtop * 0.3, yb, cz)
+            rx_, ry = px(cx + wtop * 0.3, h1 - 4.0, cz)
+            d.rectangle([min(lx, rx_), ry, max(lx, rx_), ly], fill=shade(body, np.array([0.0, 1.0]), dist))
+            ox0, oy0 = px(cx - wtop * 0.5, h1 + 6.0, cz)
+            ox1, oy1 = px(cx + wtop * 0.5, yb - 2.0, cz)
+            d.ellipse([min(ox0, ox1), oy0, max(ox0, ox1), oy1], outline=(236, 236, 240) if night else
+                      shade((196, 198, 204), np.array([0.0, 1.0]), dist), width=SCALE)
+        elif kind == "spire":
+            yb = h0 + (h1 - h0) * 0.90
+            l_, r_ = px(cx - wtop * 0.4, yb, cz), px(cx + wtop * 0.4, yb, cz)
+            tip = px(cx, h1 + 10.0, cz)
+            d.polygon([l_, r_, tip], fill=(236, 210, 150) if night else shade((150, 112, 92), np.array([0.0, 1.0]), dist))
+        elif kind == "obelisk":
+            yb = h0 + (h1 - h0) * 0.82
+            l_, r_ = px(cx - wtop * 0.5, yb, cz), px(cx + wtop * 0.5, yb, cz)
+            l2, r2 = px(cx - wtop * 0.32, h1 - 8.0, cz), px(cx + wtop * 0.32, h1 - 8.0, cz)
+            tip = px(cx, h1, cz)
+            d.polygon([l_, r_, r2, tip, l2], fill=shade(body, np.array([-0.5, 0.5]), dist))
+            if night:
+                d.line([l2, r2], fill=(240, 226, 190), width=SCALE)
+        elif kind == "crown" and night:
+            l_, r_ = px(cx - wtop * 0.33, h0 + (h1 - h0) * 0.95, cz), px(cx + wtop * 0.33, h0 + (h1 - h0) * 0.95, cz)
+            tip = px(cx, h1, cz)
+            d.polygon([l_, r_, tip], fill=(236, 196, 104))
+        elif kind == "crown":
+            l_, r_ = px(cx - wtop * 0.33, h0 + (h1 - h0) * 0.95, cz), px(cx + wtop * 0.33, h0 + (h1 - h0) * 0.95, cz)
+            d.polygon([l_, r_, px(cx, h1, cz)], fill=shade((214, 196, 150), np.array([0.0, 1.0]), dist))
+        if night and o["h1"] > 100 and kind in ("flat", "notch"):
+            l_, r_ = px(cx - wtop * 0.4, h1 - 1.5, cz), px(cx + wtop * 0.4, h1 - 1.5, cz)
+            d.line([l_, r_], fill=(220, 226, 236), width=SCALE // 2)
+
+    pano = np.asarray(im)
+    out = np.zeros((H, W, 3), np.uint8)
+    pad = (H // 2 - PH) // 2
+    for half in (0, 1):
+        part = pano[:, half * W:(half + 1) * W]
+        y0 = half * (H // 2)
+        out[y0:y0 + pad] = part[:1]
+        out[y0 + pad:y0 + pad + PH] = part
+        out[y0 + pad + PH:y0 + H // 2] = part[-1:]
+    return Image.fromarray(out)
+
+
 def lawn(size=128):
     """The Commons park's lawns and the plantings round the plaza."""
     S = size * SCALE
@@ -551,43 +796,60 @@ def field_outside(size=128):
     return Image.new("RGB", (S, S), (64, 110, 44))
 
 
-def drawings():
+def _plan():
+    """name: (drawing callable, game size)."""
     return {
-        "usb_seat_front": (seat(0.04, 11), (64, 128)), "usb_seat_mid": (seat(0.08, 12), (64, 128)),
-        "usb_seat_back": (seat(0.12, 13), (64, 128)),
-        "usb_concrete": (base.concrete(), (64, 64)), "usb_wall": (wall(), (256, 32)),
-        "LIGHT_usb_ribbon": (ribbon(), (256, 64)), "LIGHT_usb_glass": (base.glass(), (128, 64)),
-        "LIGHT_usb_concourse": (base.concourse(), (128, 64)), "usb_portal": (base.vomitory(), (32, 32)),
-        "usb_dark": (base.dark(), (32, 32)), "usb_black": (black(), (32, 32)),
-        "usb_etfe_under": (etfe_under(), (128, 128)), "usb_roof_under": (roof_under(), (64, 64)),
-        "usb_truss": (truss(), (64, 64)), "usb_etfe_top": (etfe_top(), (64, 64)), "usb_zinc_top": (zinc_top(), (64, 64)),
-        "LIGHT_usb_lights": (lamps(), (64, 32)), "LIGHT_usb_glasswall": (glasswall(), (128, 128)),
-        "LIGHT_usb_glasswall_n": (glasswall(night=True), (128, 128)),
-        "usb_zinc": (zinc(), (64, 64)), "LIGHT_usb_facade_glass": (facade_glass(), (128, 64)),
-        "LIGHT_usb_prow_display": (prow_display(), (128, 128)), "LIGHT_usb_board_wing": (board_wing(), (64, 128)),
-        "usb_header": (header(), (256, 64)), "usb_letters": (letters(), (256, 64)),
-        "usb_prow_letters": (prow_letters(), (128, 64)), "usb_letters_back": (letters_back(), (64, 16)),
-        "LIGHT_usb_signs": (signs(), (256, 128)), "LIGHT_usb_blue_sign": (blue_sign(), (128, 64)),
-        "LIGHT_usb_panels": (panels(), (128, 64)), "LIGHT_usb_clerestory": (clerestory(), (64, 64)),
-        "LIGHT_usb_clerestory_n": (clerestory(night=True), (64, 64)),
-        "usb_flag": (flag(), (128, 64)),
-        "usb_plaza": (base.plaza(), (32, 32)), "usb_lawn": (lawn(), (32, 32)), "usb_asphalt": (base.asphalt(), (32, 32)),
-        "usb_road": (base.road(), (32, 32)), "usb_building": (base.building(), (32, 32)),
-        "LIGHT_usb_towers": (towers(), (64, 64)), "LIGHT_usb_towers_n": (towers(night=True), (64, 64)),
-        "usb_sky_d": (sky("d"), (128, 64)), "usb_sky_a": (sky("a"), (128, 64)), "usb_sky_n": (sky("n"), (128, 64)),
-        "field/usb_turf": (field_turf(), (128, 64)), "field/usb_turf_outside": (field_outside(), (128, 128)),
+        "usb_seat_front": (lambda: seat(0.04, 11), (64, 128)), "usb_seat_mid": (lambda: seat(0.08, 12), (64, 128)),
+        "usb_seat_back": (lambda: seat(0.12, 13), (64, 128)),
+        "usb_concrete": (base.concrete, (64, 64)), "usb_wall": (wall, (256, 32)),
+        "LIGHT_usb_ribbon": (ribbon, (256, 64)), "LIGHT_usb_glass": (base.glass, (128, 64)),
+        "LIGHT_usb_concourse": (base.concourse, (128, 64)), "usb_portal": (base.vomitory, (32, 32)),
+        "usb_dark": (base.dark, (32, 32)), "usb_black": (black, (32, 32)),
+        "usb_etfe_under": (etfe_under, (128, 128)), "usb_roof_under": (roof_under, (64, 64)),
+        "usb_truss": (truss, (64, 64)), "usb_etfe_top": (etfe_top, (64, 64)), "usb_zinc_top": (zinc_top, (64, 64)),
+        "LIGHT_usb_lights": (lamps, (64, 32)), "LIGHT_usb_glasswall": (lambda: glasswall((64, 64)), (64, 64)),
+        "LIGHT_usb_glasswall_n": (lambda: glasswall((64, 64), night=True), (64, 64)),
+        "usb_zinc": (zinc, (64, 64)), "LIGHT_usb_facade_glass": (facade_glass, (128, 64)),
+        "LIGHT_usb_prow_display": (lambda: prow_display((128, 64)), (128, 64)),
+        "LIGHT_usb_board_wing": (board_wing, (64, 128)),
+        "usb_header": (header, (256, 64)), "usb_letters": (letters, (256, 64)),
+        "usb_prow_letters": (prow_letters, (128, 64)), "usb_letters_back": (letters_back, (64, 16)),
+        "LIGHT_usb_signs": (lambda: signs((256, 64)), (256, 64)), "LIGHT_usb_blue_sign": (blue_sign, (128, 64)),
+        "LIGHT_usb_panels": (panels, (128, 64)), "LIGHT_usb_clerestory": (clerestory, (64, 64)),
+        "LIGHT_usb_clerestory_n": (lambda: clerestory(night=True), (64, 64)),
+        "usb_flag": (flag, (128, 64)),
+        "usb_plaza": (base.plaza, (32, 32)), "usb_lawn": (lawn, (32, 32)), "usb_asphalt": (base.asphalt, (32, 32)),
+        "usb_road": (base.road, (32, 32)), "usb_building": (base.building, (32, 32)),
+        "LIGHT_usb_towers": (towers, (64, 64)), "LIGHT_usb_towers_n": (lambda: towers(night=True), (64, 64)),
+        "usb_sky_d": (lambda: sky("d"), (128, 64)), "usb_sky_a": (lambda: sky("a"), (128, 64)),
+        "usb_sky_n": (lambda: sky("n"), (128, 64)),
+        "LIGHT_usb_skyline_d": (lambda: skyline("d"), (256, 128)), "LIGHT_usb_skyline_a": (lambda: skyline("a"), (256, 128)),
+        "LIGHT_usb_skyline_n": (lambda: skyline("n"), (256, 128)),
+        "field/usb_turf": (field_turf, (128, 64)), "field/usb_turf_outside": (field_outside, (128, 128)),
     }
+
+
+def drawings(only=None):
+    """name: (4x master, game size); ``only``: just those names (the rest are not drawn)."""
+    return {k: (fn(), size) for k, (fn, size) in _plan().items() if only is None or k in only}
 
 
 def main(argv=None):
     global LOGO, MARK_3M, MARK_LOL
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("out")
-    ap.add_argument("--logo", required=True, help="the Commons wordmark rendered to PNG (author time only)")
-    ap.add_argument("--mark-3m", required=True, help="the Commons 3M wordmark rendered to PNG (author time only)")
-    ap.add_argument("--mark-lol", required=True, help="the Commons Land O'Lakes, Inc. logo PNG (author time only)")
+    ap.add_argument("--logo", help="the Commons wordmark rendered to PNG (author time only)")
+    ap.add_argument("--mark-3m", help="the Commons 3M wordmark rendered to PNG (author time only)")
+    ap.add_argument("--mark-lol", help="the Commons Land O'Lakes, Inc. logo PNG (author time only)")
     ap.add_argument("--masters")
+    ap.add_argument("--only", help="comma-separated names: redraw just these and update their art.json entries")
     a = ap.parse_args(argv)
+    only = set(a.only.split(",")) if a.only else None
+    if only is not None and only - set(_plan()):
+        ap.error(f"unknown drawings: {sorted(only - set(_plan()))}")
+    marked = {"usb_header", "usb_letters", "usb_prow_letters", "LIGHT_usb_blue_sign", "LIGHT_usb_panels"}
+    if (only is None or only & marked) and not (a.logo and a.mark_3m and a.mark_lol):
+        ap.error("--logo, --mark-3m and --mark-lol are required for the official marks' drawings")
     LOGO = a.logo
     MARK_3M, MARK_LOL = a.mark_3m, a.mark_lol
     out = Path(a.out)
@@ -597,14 +859,17 @@ def main(argv=None):
     if masters:
         (masters / "field").mkdir(parents=True, exist_ok=True)
     manifest = {}
-    for name, (master, size) in drawings().items():
+    if only is not None and (out / "art.json").is_file():
+        manifest = json.loads((out / "art.json").read_text(encoding="utf-8"))["art"]
+    for name, (master, size) in drawings(only).items():
         native = reduce(master, size)
         path = out / f"{name}.png"
         native.save(path, optimize=True)
         manifest[name] = dict(size=list(size), sha256=hashlib.sha256(path.read_bytes()).hexdigest())
         if masters:
             master.save(masters / f"{name}.png", optimize=True)
-    (out / "art.json").write_text(json.dumps(dict(schema="nfl2k5_usbank_model_art/v1", art=manifest), indent=1) + "\n")
+    (out / "art.json").write_text(json.dumps(dict(schema="nfl2k5_usbank_model_art/v1", art=manifest), indent=1) + "\n",
+                                  newline="\n")
     print("USBANK_ART_OK", len(manifest))
     return 0
 

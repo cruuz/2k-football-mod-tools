@@ -74,6 +74,12 @@ GRADE = 17.0
 TOWER_AREA = 1200.0
 #: the budget: downtown's towers of 90 m and more; the blocks round the site within 420 m as boxes
 TOWER_MIN_H, TOWN_RADIUS = 90.0, 420.0
+#: downtown through the west glass (st2, 2026-10-14; Noah: the windows "like the ones at the existing Ford Field where you
+#: can actually see the city in the background"): one panorama drawn from SKYLINE_EYE over the field, on a panel just
+#: inside the glass. Azimuth in degrees from -z toward +x, SKYLINE_AZ[0] to SKYLINE_AZ[2], split at SKYLINE_AZ[1] between
+#: the texture's top half and its bottom half (twice the width a single 256 texel row gives); down each half the tangent
+#: of the elevation from SKYLINE_TAN[1] to SKYLINE_TAN[0]
+SKYLINE_EYE, SKYLINE_AZ, SKYLINE_TAN = (0.0, 24.0, 0.0), (-50.0, -10.0, 30.0), (-0.05, 0.27)
 _FOOTPRINT = None
 
 Mesh = mm.Mesh
@@ -89,6 +95,23 @@ def footprint():
 
 def sha(data):
     return hashlib.sha256(bytes(data)).hexdigest()
+
+
+def skyline_angles(x, y, z):
+    """(azimuth in degrees, tangent of the elevation) of a point seen from SKYLINE_EYE."""
+    ex, ey, ez = SKYLINE_EYE
+    return math.degrees(math.atan2(x - ex, -(z - ez))), (y - ey) / math.hypot(x - ex, z - ez)
+
+
+def skyline_uv(az, tan, half):
+    """The panorama's (u, v) of a direction in the texture's top (``half`` 0) or bottom half (1); each half keeps a
+    texel clear of the other."""
+    a0, a_s, a1 = SKYLINE_AZ
+    t0, t1 = SKYLINE_TAN
+    v = 0.004 + 0.492 * min(max((t1 - tan) / (t1 - t0), 0.0), 1.0)
+    if half == 0:
+        return (az - a0) / (a_s - a0), v
+    return (az - a_s) / (a1 - a_s), 0.5 + v
 
 
 # ------------------------------------------------------------------------------------------------ the plan loop
@@ -343,6 +366,7 @@ class USBank(sm.SoFi):
         row = self.section(north)["upper"][4]
         self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
         self._facade()
+        self._skyline()
         self._prow()
         self._roof_letters()
         self._queen_trusses()
@@ -937,6 +961,7 @@ class USBank(sm.SoFi):
         g = self.meshes.setdefault("usb_glass", Mesh("usb_glass"))
         edges = self._edges()
         blade, nw = self._prow_edges()
+        self.glass_faces = []
         tip_top = self.roof_top(*self.prow_tip())
         nw_len = sum(float(math.np_hypot(*(edges[k][1] - edges[k][0]))) for k in nw)
         nw_run = 0.0
@@ -965,13 +990,15 @@ class USBank(sm.SoFi):
                 split = [self.GRADE + q["base"]] * len(pts)
             split = [min(y, yt) for y, yt in zip(split, tops)]
             mid = [(float(p[0]), y, float(p[1])) for p, y in zip(pts, split)]
-            g.grid("LIGHT_usb_facade_glass", [bot, mid], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=outward)
+            if not west:
+                g.grid("LIGHT_usb_facade_glass", [bot, mid], [[(u, 1.0) for u in us], [(u, 0.0) for u in us]], facing=outward)
             if west or i == blade or i in nw:
-                inset = [(x - n[0] * 0.3, y, z - n[1] * 0.3) for x, y, z in bot]
-                inset_t = [(x - n[0] * 0.3, y, z - n[1] * 0.3) for x, y, z in mid]
-                g.grid("LIGHT_usb_glasswall", [inset, inset_t], [[(u * 2, 1.0) for u in us],
-                                                                 [(u * 2, (y - self.GRADE) / 18.0) for u, y in zip(us, split)]],
-                       facing=inward)
+                self.glass_faces.append((a, b, n, west, [float(t) for t in ts], split))
+                mull = [[(u * 2, 1.0) for u in us], [(u * 2, (y - self.GRADE) / 18.0) for u, y in zip(us, split)]]
+                off = lambda Q, k, n=n: [(x + n[0] * k, y, z + n[1] * k) for x, y, z in Q]  # noqa: E731
+                g.grid("LIGHT_usb_glasswall", [off(bot, -0.3), off(mid, -0.3)], mull, facing=inward)
+                if west:
+                    g.grid("LIGHT_usb_glasswall", [off(bot, 0.3), off(mid, 0.3)], mull, facing=outward)
             if west:
                 s += L
                 continue
@@ -983,6 +1010,57 @@ class USBank(sm.SoFi):
             m.grid("LIGHT_usb_clerestory", [inner(cl), inner(top)],
                    [[(u * 1.5, 1.0) for u in us], [(u * 1.5, 0.0) for u in us]], facing=inward)
             s += L
+
+    def _skyline(self):
+        """Downtown through the glass (SKYLINE_EYE): inside, an opaque panel 0.15 m behind the glass wall's mullions
+        carrying the panorama, from the plaza to the glass's top (the sky's top row over SKYLINE_TAN[1]); outside, on
+        the Legacy Gate's faces, the same panel facing out: seen from the plaza it is the panorama mirrored, as the glass
+        reflects downtown (u036, u047). Columns at every face's ends, at the panorama's split and every 2.5 degrees, so
+        each quad stays in one half and the azimuth runs nearly linear across it."""
+        ex, ey, ez = SKYLINE_EYE
+        a0, a_s, a1 = SKYLINE_AZ
+        t1 = SKYLINE_TAN[1]
+        m = self.meshes.setdefault("usb_skyline", Mesh("usb_skyline"))
+        marks = [a_s] + [a0 + 2.5 * k for k in range(int((a1 - a0) / 2.5) + 1)]
+        for a, b, n, west, ts, split in self.glass_faces:
+            e = b - a
+            az_a, _t = skyline_angles(float(a[0]), ey, float(a[1]))
+            az_b, _t = skyline_angles(float(b[0]), ey, float(b[1]))
+            lo, hi = min(az_a, az_b), max(az_a, az_b)
+            cols = [0.0, 1.0]
+            for az in marks:
+                if lo + 0.05 < az < hi - 0.05:
+                    d0, d1 = math.sin(math.radians(az)), -math.cos(math.radians(az))
+                    det = e[0] * d1 - d0 * e[1]
+                    cols.append(float((d0 * (a[1] - ez) - d1 * (a[0] - ex)) / det))
+            cols.sort()
+            runs = ([], [])                      # the columns in each half of the panorama; the split's column in both
+            for t in cols:
+                p = a + e * t
+                az, _t = skyline_angles(float(p[0]), ey, float(p[1]))
+                if az <= a_s + 0.06:
+                    runs[0].append(t)
+                if az >= a_s - 0.06:
+                    runs[1].append(t)
+            for half, run in enumerate(runs):
+                if len(run) < 2:
+                    continue
+                for side, k, facing in ((0, -0.15, -n), (1, 0.06, n)):
+                    if side and not west:
+                        continue
+                    rows = [[], [], []]
+                    uvs = [[], [], []]
+                    for t in run:
+                        p = a + e * t + n * k
+                        q = a + e * t - n * 0.15
+                        top = float(np.interp(t, ts, split))
+                        d = math.hypot(float(q[0]) - ex, float(q[1]) - ez)
+                        for r, y in enumerate((self.GRADE - 0.5, min(top, ey + d * t1), top)):
+                            az, tan = skyline_angles(float(q[0]), y, float(q[1]))
+                            rows[r].append((float(p[0]), y, float(p[1])))
+                            uvs[r].append(skyline_uv(min(max(az, a0), a1), tan, half))
+                    m.grid("LIGHT_usb_reflect" if side else "LIGHT_usb_skyline", rows, uvs,
+                           facing=lambda p_, f=(float(facing[0]), float(facing[1])): np.array([f[0], 0.0, f[1]]))
 
     def _prow(self):
         """The blade's wordmark and the 49 x 76 ft display under it, each centred in the blade's width at its own height
@@ -1119,6 +1197,7 @@ MATERIALS = {
     "usb_plaza": ("usb_plaza", CLASS_OPAQUE), "usb_lawn": ("usb_lawn", CLASS_OPAQUE), "usb_asphalt": ("usb_asphalt", CLASS_OPAQUE),
     "usb_road": ("usb_road", CLASS_OPAQUE), "usb_building": ("usb_building", CLASS_OPAQUE),
     "LIGHT_usb_towers": ("LIGHT_usb_towers", CLASS_OPAQUE), "usb_sky": ("usb_sky", CLASS_OPAQUE),
+    "LIGHT_usb_skyline": ("LIGHT_usb_skyline", CLASS_OPAQUE), "LIGHT_usb_reflect": ("LIGHT_usb_skyline", CLASS_OPAQUE),
     **env.materials(VENUE),
 }
 
@@ -1138,7 +1217,10 @@ BASE = {
     "LIGHT_usb_signs": (255, 255, 255),
     "usb_plaza": (226, 206, 120), "usb_lawn": (224, 204, 80), "usb_asphalt": (220, 200, 90), "usb_road": (220, 200, 90),
     "usb_building": (220, 200, 110), "LIGHT_usb_towers": (214, 200, 255), "usb_sky": (255, 255, 255),
+    "LIGHT_usb_skyline": (255, 255, 255),
 }
+#: the Legacy Gate's glass reflecting downtown (u036, u047): the panorama dimmed and blued by the glass (DESIGN)
+REFLECT = {"d": (112, 128, 150), "a": (138, 126, 124), "n": (132, 138, 166)}
 #: the sun over Minneapolis (DESIGN): by day high in the south (bearing 180: game angle -36 degrees from +x toward -z... the
 #: plan vector (sin 180, cos 180) = (0, -1) in east/north is x = -0.81, z = +0.59 in this frame), in the afternoon low in
 #: the south-west (bearing 240: x = -0.99, z = -0.14)
@@ -1158,6 +1240,10 @@ def light(mat, P, N, tod, weather, outside=False):
     n = len(P)
     if mat == "usb_sky":
         out = np.full((n, 4), 255, np.uint8)
+        return out
+    if mat == "LIGHT_usb_reflect":
+        out = np.full((n, 4), 255, np.uint8)
+        out[:, :3] = REFLECT[tod]
         return out
     if mat.startswith("LIGHT_") and tod == "n":
         f = np.full(n, 1.0)
@@ -1195,6 +1281,15 @@ def _rgba(path):
 #: textures with their own night drawing (downtown's towers: dark, lit windows; the clerestory: the night sky; the
 #: glass wall: dark and nearly clear, so the full-bright night light leaves no white veil over the view, u044)
 NIGHT_TEXTURES = ("LIGHT_usb_towers", "LIGHT_usb_clerestory", "LIGHT_usb_glasswall")
+#: textures with a drawing per time of day (the sky; downtown's panorama under it)
+TOD_TEXTURES = ("usb_sky", "LIGHT_usb_skyline")
+
+
+def texture_name(key, tod):
+    """The art file (without .png) of texture ``key`` in a bundle of time of day ``tod``."""
+    if key in TOD_TEXTURES:
+        return f"{key}_{tod}"
+    return f"{key}_n" if key in NIGHT_TEXTURES and tod == "n" else key
 
 
 def _textures(venue, tod, weather):
@@ -1203,7 +1298,7 @@ def _textures(venue, tod, weather):
     for key in dict.fromkeys(k for k, _c in MATERIALS.values()):   # MATERIALS order: deterministic across processes
         if key.startswith("env_"):
             continue
-        name = f"usb_sky_{tod}" if key == "usb_sky" else f"{key}_n" if key in NIGHT_TEXTURES and tod == "n" else key
+        name = texture_name(key, tod)
         out[key] = _rgba(art / f"{name}.png")
     out.update(env.textures(venue, tod, weather))
     return out

@@ -2144,6 +2144,9 @@ data/nfl2k5_usbank_model/art/LIGHT_usb_lights.png
 data/nfl2k5_usbank_model/art/LIGHT_usb_prow_display.png
 data/nfl2k5_usbank_model/art/LIGHT_usb_ribbon.png
 data/nfl2k5_usbank_model/art/LIGHT_usb_signs.png
+data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_a.png
+data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_d.png
+data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_n.png
 data/nfl2k5_usbank_model/art/LIGHT_usb_towers.png
 data/nfl2k5_usbank_model/art/LIGHT_usb_towers_n.png
 data/nfl2k5_usbank_model/art/usb_asphalt.png
