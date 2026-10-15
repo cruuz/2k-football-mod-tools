@@ -84,15 +84,20 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 105799)  # b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 108839)  # b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 84690)  # b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 85202)  # b773 mo1: + the 512-byte moment coaches state; b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])
             self.assertNotEqual(section.name, ".text")
             self.assertEqual(section.writable, a["kind"] == "data")
-            self.assertEqual(section.executable, a["kind"] == "code")
+            if a["kind"] == "read_only":
+                # b773 sp2/ro1/tr1: the named code spills in the allocator directory page make the shared general
+                # read-only section executable; the music storage section stays plain read-only. Never writable.
+                self.assertFalse(section.writable)
+            else:
+                self.assertEqual(section.executable, a["kind"] == "code")
             if a["kind"] == "data":
                 self.assertEqual(image.read(a["va"], a["size"]), bytes(a["size"]))
         self.assertEqual(image.section(music_storage.VA).raw, music_storage.RAW)
@@ -120,6 +125,14 @@ class CompleteOwnerTests(unittest.TestCase):
         for a in space.layout(legacy)["allocations"]:
             if a["owner"] == tt.scorebug_runtime_patch.OWNER and a["kind"] == "code":
                 continue   # beta 71: the grown sprite owner sits after the union; the gates and the manifest pin it
+            if a["owner"] == space.DIRECTORY_OWNER:
+                # b773 sp2/ro1/tr1: the allocator's own directory page gives its tail to the named code spills, so its
+                # reservation may shrink; where it starts never moves and no feature allocation moves.
+                full_row = full_sites[a["owner"], a["kind"]]
+                self.assertEqual({k: v for k, v in a.items() if k != "size"},
+                                 {k: v for k, v in full_row.items() if k != "size"})
+                self.assertLessEqual(full_row["size"], a["size"])
+                continue
             self.assertEqual(a, full_sites[a["owner"], a["kind"]])
         self.assertEqual(compose(self.retail, reverse=True)[0], self.full)
 
