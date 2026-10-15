@@ -1031,7 +1031,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_kit_fixes_2026_uf3.json": "a1911b169c1a4bb8fe130575586563e1ac9c9567e490a7d753f7c017f492747c",
         "data/nfl2k5_kit_fixes_2026_sea1.json": "507ea2233b31a41e5301427367186cca3c0f116be6b2f31172068b8dc9f34e35",
         "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
-        "data/nfl2k5_pants_hem_2026.json": "f244de059146b7b1352d0d6e3964da10bf958da9c125d2c1b74850567c1c140d",
+        "data/nfl2k5_pants_hem_2026.json": "39ddffaa80e95b297a6ce5c68c4af0a8fa707dcb40d6cffaf4a7149547a15f18",
         "data/nfl2k5_menu_helmet_w2026.json": "ee8b9dcc3903f3c63fd4ae3bf0ab1f50e5aa7f7d26240c8d02ff10aa2c0ed590",
         "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
         "data/nfl2k5_indicator_names/metrics.json": "2bebe47d2fb50e36a5c3a736d95677c06c780addf88463c2b5b266111af4a129",

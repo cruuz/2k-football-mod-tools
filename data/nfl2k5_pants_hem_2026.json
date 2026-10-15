@@ -7507,7 +7507,7 @@
    "legging_wet": "#999999",
    "socks_chunk": 4,
    "socks_sha256": "99b29f7261ca5189c7fc096a1410816f225e77bebfb274016e1d7f07f4cd77d2",
-   "after_sha256": "8368e4834e84592b05c29d7d2daa0affc2d3868aea679501f1cb66a54fde0eee"
+   "after_sha256": "7d52fe991f625224c8ff03905fbb812cb8cd498cfdde3e289f429b0b61494835"
   },
   {
    "selector": "19A7",
@@ -7719,7 +7719,7 @@
    "legging_wet": "#999999",
    "socks_chunk": 4,
    "socks_sha256": "99b29f7261ca5189c7fc096a1410816f225e77bebfb274016e1d7f07f4cd77d2",
-   "after_sha256": "8368e4834e84592b05c29d7d2daa0affc2d3868aea679501f1cb66a54fde0eee"
+   "after_sha256": "7d52fe991f625224c8ff03905fbb812cb8cd498cfdde3e289f429b0b61494835"
   },
   {
    "selector": "19H7",
@@ -10528,7 +10528,7 @@
    "legging_wet": "#231405",
    "socks_chunk": 4,
    "socks_sha256": "5b7f46a1d705681b369ca71c49b1e5ce50984f1d71c210de40702541c4ce7cf0",
-   "after_sha256": "069c7e0adf939fa34b1123b3d5a2d9dbe6757b8f6e867f841a8d14ef558f8f2e"
+   "after_sha256": "d9eed5ef4ce187ec9ff4f69e16d65c881ac53ebd1a3fbe856c607b156df2a20d"
   },
   {
    "selector": "30H0",
