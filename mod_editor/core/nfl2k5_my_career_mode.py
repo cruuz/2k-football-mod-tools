@@ -519,6 +519,13 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(economy.status(payload) == "applied", "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
+    # The optional dated pick owner shares this initializer. Normalize only
+    # its exact hook after its complete allocation, code and contexts validate.
+    # It does not call MyCareer validation, so this introduces no guard cycle.
+    from . import nfl2k5_draft_picks as draft_picks
+    if image.read(draft_picks.SITE, 5) != draft_picks.ORIGINAL:
+        legacy.require(draft_picks.status(payload) == "applied", "foreign draft-pick initializer companion")
+        camera_edits.extend(draft_picks.sites(draft_picks.allocation(payload)["va"]))
     from . import nfl2k5_franchise_autosave as autosave
     # Practice and music already validate MyCareer. Avoid a dependency cycle
     # by checking Auto Save on a private retail view of our fully validated

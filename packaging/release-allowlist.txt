@@ -3174,3 +3174,6 @@ mod_editor/core/nfl2k5_roster_refresh.py
 
 tools/b77/ro1_repair.py
 docs/mod_editor/roster_refresh.md
+mod_editor/core/nfl2k5_draft_picks.py
+tests/mod_editor/test_nfl2k5_draft_picks.py
+docs/mod_editor/draft_pick_ownership.md
