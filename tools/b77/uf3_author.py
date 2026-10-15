@@ -3,9 +3,10 @@
 
 uf3 judged the uniform elements that ur1 (v0.6 against v0.6.1 for all 680 kits), uw2 (in-game captures) and Noah's
 10/14 playtest video flagged against the 2026 reference library (official game highlights, weeks 1 to 5). For each
-element it kept the current art, went back to the v0.6 art, or drew a fix. This file holds the drawn fixes and the
-reversions as the same native-texel vector art the uf1/uf2 passes use (``mod_editor/core/nfl2k5_kit_fixes_2026.py``),
-drawn at 4x and averaged onto the native pixels. Every entry is pinned to the kit span the v0.6.1 Studio build
+element it kept the current art, went back to the v0.6 art, or drew a fix (no element needed the v0.6 bytes back).
+This file holds the drawn fixes as the same native-texel vector art the uf1/uf2 passes use
+(``mod_editor/core/nfl2k5_kit_fixes_2026.py``), drawn at 4x and averaged onto the native pixels, plus two data fixes
+(the Unc Bowl nameplate metrics and arm-number route). Every entry is pinned to the kit span the v0.6.1 Studio build
 produces, so this layer runs after the alternates pass and leaves user-replaced textures alone.
 
   uf3_author.py preview --tex DIR --out DIR      paint level 0 onto extracted kit PNGs (``<selector>_c<chunk>.png``)
