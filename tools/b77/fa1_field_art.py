@@ -6,8 +6,12 @@ only looked at while choosing the geometry; none is read, traced or shipped.
 
 giants         the MetLife midfield helmet (s18 center_logo, 256x256). The shell is
                an ellipse fitted to the accepted silhouette (mean deviation 0.7
-               texel), the lower contour is a few cubic curves, and every facemask
-               bar has one constant width. The accepted ny pixels are kept exactly.
+               texel) and the lower contour is a few cubic curves (fa1). The
+               facemask (fa2) keeps the original v0.6 facemask's layout, with the
+               bar positions, widths and the ear clip measured on rectified photos
+               of the painted field helmet: silver bars with thin dark keylines and
+               one white outline where the mask leaves the shell. The accepted ny
+               pixels are kept exactly.
 washington     REDSKINS for Anniversary row 10 (768x104 lettering layer).
 raiders        RAIDERS for Anniversary rows 2 and 5.
 numbers-block  modern block yard numerals in the native 256x256 ``numbers`` atlas
@@ -38,6 +42,9 @@ WHITE = (244, 245, 247)
 BLUE = (14, 60, 117)
 RED = (167, 25, 48)
 GREY = (165, 172, 175)
+#: fa2 facemask: the painted silver (top-down photo, white balance taken from the white outline) and its keyline.
+SILVER = (176, 186, 193)
+KEYLINE = (78, 86, 100)
 
 #: The accepted ny mark, white with its navy edge, copied texel for texel.
 NY_RECT = (62, 40, 155, 115)
@@ -143,15 +150,67 @@ def dome_arc(n=400):
     return np.stack([DOME["cx"] + DOME["a"] * np.cos(ang), DOME["cy"] + DOME["b"] * np.sin(ang)], 1)
 
 
-#: Facemask centre lines (1024 units). Bars meet the shell under their own rims.
-TOP_BAR = [(628, 482), (893, 482), (893, 396)]
-SIDE_UP = [(626, 580), (700, 478)]                 # ear clip up to the top bar
-SIDE_DOWN = [(612, 482), (740, 664)]               # forehead down across it to the upright's foot
-UPRIGHT = [(740, 482), (740, 684)]
-MID_BAR = [(552, 672), (732, 688)]
-LOOP = [(732, 688), (974, 710), (950, 958), (780, 958), (732, 688)]
-CLIP = [(554, 572), (630, 572), (630, 672), (554, 672)]
-BAR, DOUBLE, RIM, SEPARATOR = 48.0, 78.0, 12.0, 7.0
+#: fa2 facemask, in texels (x right, y down). Each group is painted as one shape: a dark keyline, then the
+#: silver core; a later group's keyline crosses an earlier group, which reads as one bar passing over another.
+#: Off the shell the whole mask sits in one white outline. Paths are polylines; {"c": [p1, p2, p3]} is a cubic
+#: from the previous point and "round" fillets the corners. Measured on rectified photos of the painted MetLife
+#: helmet (top-down and elevated views, registered to this texture); the loop, upright, top bar, brow clip and
+#: side bar already sat where the v0.6 art had them.
+FACEMASK = dict(
+    keyline=0.9, outline=5.0,
+    groups=[
+        dict(name="top bar and brow clip", bars=[
+            dict(path=[(178, 118.3), (226, 121.3)], w=6.5),
+            dict(path=[(225.3, 121.3), (225.3, 99.8), (218.8, 99.8), (218.8, 115)], w=3.6, round=3)]),
+        dict(name="side bar and ear clip", bars=[
+            dict(path=[(181, 116.4), (168, 120), (159.5, 126.5), (153.5, 134), (149.5, 143)], w=7.5, round=8),
+            dict(path=[(149.5, 143), (136, 149.5), (132.5, 166)], w=7, round=3),
+            dict(path=[(131.5, 167), (181, 179.5)], w=7.5)],
+             rings=[dict(c=(152.5, 157.5), r=3.2, w=2.6, hole=1.7)]),
+        dict(name="upright, loop, cross bar and diagonal", bars=[
+            dict(path=[(182.4, 119.6), (182.6, 172)], w=8.5),
+            dict(path=[(183, 170), (183.4, 200), {"c": [(183.8, 224), (189, 239.5), (205, 240)]}, (231.5, 240.2),
+                       (241, 184)], w=9.2),
+            dict(path=[(186, 172.5), (243.5, 183)], w=8),
+            dict(path=[(147, 140.5), (171, 158.5), (188, 171.5)], w=8, round=10)]),
+        dict(name="loop groove", groove=True, bars=[
+            dict(path=[(191, 238.2), {"c": [(196, 240.6), (200, 241.4), (206, 241.5)]}, (232.6, 241.6),
+                       (242.1, 186)], w=0.8)]),
+    ])
+#: The shell behind the mask (texels): navy shows between the side bar, the upright and the diagonal, around
+#: the ear clip and as a sliver under the top bar; the face opening below the diagonal stays open, as painted.
+FACE_EDGE = [(140, 169), (164, 171.5), (165.5, 156), (181.25, 166.5), (181.25, 127.5), (213, 127.5)]
+
+
+def mask_path(items, radius=0):
+    """Texel polyline (with optional cubic segments and fillets) -> points in 1024 units."""
+    if any(isinstance(it, dict) for it in items):
+        out = [np.asarray(items[0], float)[None]]
+        for it in items[1:]:
+            if isinstance(it, dict):
+                p1, p2, p3 = it["c"]
+                out.append(cubic(out[-1][-1], p1, p2, p3, n=48)[1:])
+            else:
+                out.append(np.asarray(it, float)[None])
+        path = np.concatenate(out)
+    else:
+        path = rounded(items, radius) if radius else np.asarray(items, float)
+    return path * 4
+
+
+def facemask_fields(size):
+    """[(group, signed distance in texels to the group's silver core)] for FACEMASK."""
+    ty, tx = (np.mgrid[0:size, 0:size] + 0.5) / S
+    fields = []
+    for group in FACEMASK["groups"]:
+        d = np.full((size, size), np.inf)
+        for bar in group["bars"]:
+            d = np.minimum(d, centre_distance([mask_path(bar["path"], bar.get("round", 0))], size) / 4 - bar["w"] / 2)
+        for ring in group.get("rings", ()):
+            (cx, cy), r = ring["c"], ring["r"]
+            d = np.minimum(d, np.abs(np.hypot(tx - cx, ty - cy) - r) - ring["w"] / 2)
+        fields.append((group, d))
+    return fields
 
 
 def giants_helmet():
@@ -163,7 +222,7 @@ def giants_helmet():
     bottom.append(cubic((290, 700), (330, 740), (380, 832), (480, 834)))
     bottom.append(cubic((480, 834), (560, 836), (640, 800), (646, 742)))
     bottom.append(cubic((646, 742), (648, 712), (600, 694), (548, 684)))
-    hidden = [(560, 676), (725, 690), (725, 482), (dome_x(FRONT_Y, 1), 482)]
+    hidden = [(4 * x, 4 * y) for x, y in FACE_EDGE] + [(dome_x(FRONT_Y, 1), 482)]
     shell_pts = np.concatenate(bottom + [np.array(hidden), dome_arc()])
     shell = poly_mask(shell_pts, size)
     patch = poly_mask([back, (152, 645), (190, 658), (back[0] - 14, 658), (back[0] - 14, back[1])], size)
@@ -172,9 +231,12 @@ def giants_helmet():
     inner = ((xx - DOME["cx"]) / (DOME["a"] - STRIPE)) ** 2 + ((yy - DOME["cy"]) / (DOME["b"] - STRIPE)) ** 2 > 1
     stripe = shell & inner & (yy <= np.where(xx < DOME["cx"], BACK_Y, FRONT_Y))
 
+    mask = facemask_fields(size)
+    solid = np.min([d for g, d in mask if not g.get("groove")], axis=0)
     c = Canvas(size)
     body = shell | patch
     c.paint(ndi.distance_transform_edt(~body) / U <= OUTLINE, WHITE)
+    c.paint(solid <= FACEMASK["keyline"] + FACEMASK["outline"], WHITE)     # the shell covers it where they overlap
     c.paint(patch, WHITE)
     c.paint(shell, BLUE)
     c.paint(stripe, RED)
@@ -182,12 +244,16 @@ def giants_helmet():
     for x0, y0, r in ((333.2, 696.5, 11.5), (554.8, 764.4, 11.0)):              # snaps
         c.paint((xx - x0) ** 2 + (yy - y0) ** 2 <= r * r, WHITE)
 
-    c.bar([rounded(CLIP, 22, closed=True)], BAR - 6, RIM)
-    c.bar([np.array(SIDE_UP, float)], BAR, RIM)
-    c.bar([rounded(TOP_BAR, 30)], DOUBLE, RIM, SEPARATOR)
-    c.bar([np.array(SIDE_DOWN, float)], BAR, RIM)
-    c.bar([np.array(UPRIGHT, float)], BAR, RIM)
-    c.bar([np.array(MID_BAR, float), rounded(LOOP, [0, 30, 56, 56, 0])], DOUBLE, RIM, SEPARATOR)
+    ty, tx = (np.mgrid[0:size, 0:size] + 0.5) / S
+    for group, d in mask:
+        if group.get("groove"):
+            c.paint(d <= 0, KEYLINE)
+            continue
+        c.paint(d <= FACEMASK["keyline"], KEYLINE)
+        c.paint(d <= 0, SILVER)
+        for ring in group.get("rings", ()):
+            (cx, cy) = ring["c"]
+            c.paint(np.hypot(tx - cx, ty - cy) <= ring["hole"], BLUE)
 
     out = c.reduce(256, 256)
     accepted = np.asarray(Image.open(HELMET).convert("RGBA"))
