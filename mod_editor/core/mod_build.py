@@ -4016,6 +4016,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             icon_receipt = uf3_icon.apply_to_image(target)
             if icon_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "menu_icon_uf3", **icon_receipt})
+        # b773-pa1: the modern above-the-knee pants hem on every current-season kit (texture only: the pants, their
+        # bump map and the sideline player), compiled after the uf3 finish; throwbacks keep their era hem.
+        pants_hem = _core_module("nfl2k5_pants_hem_2026")
+        if pants_hem is not None:
+            hem_receipt = pants_hem.apply_to_image(target)
+            if hem_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "pants_hem_2026",
+                                         **{k: v for k, v in hem_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in hem_receipt["kits"]]})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.

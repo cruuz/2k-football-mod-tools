@@ -199,6 +199,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import spec; assert len(spec()['textures']) == 60; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import alternates; assert len(alternates()['textures']) == 544; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import finish; assert len(finish()['textures']) > 0; "
+                "from mod_editor.core.nfl2k5_pants_hem_2026 import spec as hem; assert len(hem()['textures']) == 491; "
                 "assert build_settings({'modern_color_settings': default_settings()})['modern_color_settings']['values']['turf.value_lift'] == 2.8",
                 str(module.parents[1])], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -221,11 +222,12 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [426, 10, 8, 9, 8, 9]  # b773-me1: + the Super Bowl event walls module the Anniversary field compiler imports and the era ball module the moment-venue owner imports; b772-vt1: + the automatic coach AI owner, its generated code template and the coach VIP profile module; b772-sp1: + the ordinary tap-burst module the abilities runtime imports; b77-st1: + the stadium shadow module the MetLife model imports; b772-ny1: + the Giants shoulder-number module; b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [427, 10, 8, 9, 8, 9]  # b773-me1: + the Super Bowl event walls module the Anniversary field compiler imports and the era ball module the moment-venue owner imports; b772-vt1: + the automatic coach AI owner, its generated code template and the coach VIP profile module; b772-sp1: + the ordinary tap-burst module the abilities runtime imports; b77-st1: + the stadium shadow module the MetLife model imports; b772-ny1: + the Giants shoulder-number module; b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
             # b773-sp2: + the human tap-burst compiler imported by the abilities runtime.
             # b773-ic1: + the exact pinned menu-icon orientation repair.
             # b773-mo1: + moment coaches and its newly reached scenarios and modern-coaches dependencies.
             # b773-uf3: + the exact pinned Pittsburgh miniature correction.
+            # b773-pa1: + the 2026 pants hem pass (its kit document is a data pin).
             # b771-v1g: + the Unc Bowl compiler and its archive helper; the owned-span document is a data pin.
             # b765 integration: + fixed-size spare-capacity owner for dated FA/historic composition.
             # b765-a1: + the Anniversary archive pack, field compiler and their 38 existing venue-tool dependencies.
@@ -268,6 +270,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 adapters = frozenset({
                     "mod_editor/core/nfl2k5_menu_icon_orientation.py",
                     "mod_editor/core/nfl2k5_menu_icon_uf3.py",
+                    "mod_editor/core/nfl2k5_pants_hem_2026.py",
                     "mod_editor/core/nfl2k5_unc_bowl_uniforms.py",
                     "mod_editor/core/nfl2k5_nyg_numbers.py",
                     "mod_editor/core/nfl2k5_kit_fixes_2026.py",
@@ -339,6 +342,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_uf3.json": "a1911b169c1a4bb8fe130575586563e1ac9c9567e490a7d753f7c017f492747c",
                 "data/nfl2k5_kit_fixes_2026_sea1.json": "7da979e4f26044f7e024f97421806592fbb854acaf63a0241aaf61771d81b7b0",
                 "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
+                "data/nfl2k5_pants_hem_2026.json": "f244de059146b7b1352d0d6e3964da10bf958da9c125d2c1b74850567c1c140d",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",
