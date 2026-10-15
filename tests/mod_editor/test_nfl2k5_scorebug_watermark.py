@@ -13,6 +13,18 @@ RETAIL=ROOT/'extracted/ESPN NFL 2K5 (USA)/default.xbe'
 NATIVE=RETAIL.is_file() and (RETAIL.parent/'vc_53450030/0').is_file() and importlib.util.find_spec('unicorn') is not None
 
 class ContractTests(unittest.TestCase):
+ def test_corner_pin_preserves_authored_picture_margin(self):
+  for wide in (False,True):
+   width=s.DISPLAY[wide]['size'][0]
+   for row in s.load_layout()[0]['brand']:
+    box=s.placed_box(row,wide)
+    shown=s.display_box(s.contracted(s.hud_box(box,wide),wide),wide)
+    self.assertAlmostEqual((width-shown[2])/width,51/1920)
+    self.assertAlmostEqual(shown[1],35)
+    self.assertAlmostEqual(shown[2]-shown[0],214)
+    self.assertAlmostEqual(shown[3]-shown[1],29)
+   row=dict(box=[100,200,300,400])
+   self.assertEqual(s.placed_box(row,wide),row['box'])
  def test_two_cells_one_quad_and_three_policies(self):
   tables=[]
   for mode in s.WATERMARK_MODES:
@@ -91,6 +103,45 @@ def brand_record(compiled):
   vertex,tint,material,offset=s.STATIC.unpack_from(compiled.table,start+i*s.STATIC.size)
   if offset:return vertex,offset
  raise AssertionError('No brand table')
+
+
+@unittest.skipUnless(NATIVE,'needs private retail extraction and Unicorn')
+class CornerCameraTests(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls):
+  cls.preview=s.NativePreview()
+
+ def test_native_quad_and_camera_clip_at_both_aspects(self):
+  from mod_editor.core import nfl2k5_widescreen as wide
+  for aspect in (False,True):
+   geometry,capture=self.preview.capture(widescreen=aspect)
+   m=capture['machine']
+   try:
+    row=next(q for q in self.preview.modes[aspect]['compiled'].quads if q.get('brand'))
+    points=geometry['positions'][row['vertex']:row['vertex']+4]
+    clip=struct.unpack('<4H',m.uc.mem_read(wide.ACTIVE_CAMERA_VA+0x200,8))
+    self.assertEqual(clip,(40,679,16,463))
+    self.assertEqual(m.get(0xa95530+wide.STAMP_OFFSET),wide.STAMP_PIXELS)
+    for x,y in points:
+     self.assertGreaterEqual(x+40,clip[0]);self.assertLessEqual(x+40,clip[1]+1)
+     self.assertGreaterEqual(y,clip[2]);self.assertLessEqual(y,clip[3]+1)
+    shown=s.display_box((min(p[0] for p in points),min(p[1] for p in points),
+                         max(p[0] for p in points),max(p[1] for p in points)),aspect)
+    width=s.DISPLAY[aspect]['size'][0]
+    self.assertAlmostEqual(shown[2],width*(1-51/1920),delta=.1)
+    self.assertAlmostEqual(shown[1],35,delta=.1)
+    # A second activation must not contract a saved camera again or lose its full clip.
+    before=bytes(m.uc.mem_read(wide.ACTIVE_CAMERA_VA,wide.CAMERA_SIZE))
+    m.run(0x2ac80,ecx=0xa95530,limit=10000)
+    self.assertEqual(bytes(m.uc.mem_read(wide.ACTIVE_CAMERA_VA,wide.CAMERA_SIZE)),before)
+    # An ordinary HUD still uses its usual contracted clip. No global camera change.
+    other=m.alloc(wide.CAMERA_SIZE)
+    m.uc.mem_write(other,bytes(m.uc.mem_read(0xa95530,wide.CAMERA_SIZE)))
+    m.put(other+wide.STAMP_OFFSET,0)
+    m.run(0x2ac80,ecx=other,limit=10000)
+    self.assertEqual(struct.unpack('<2H',m.uc.mem_read(wide.ACTIVE_CAMERA_VA+0x200,4)),
+                     (90,629) if aspect else (40,679))
+   finally:m.close()
 
 
 def exercise(preview,wide,extended):
