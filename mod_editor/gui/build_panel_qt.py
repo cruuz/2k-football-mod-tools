@@ -993,9 +993,10 @@ class BuildPanel(QWidget):
                                                       "rewrites KR and PR every week. With this patch, moving a player on the depth chart or confirming a "
                                                       "returner locks that choice in the player's record and the weekly sort keeps it; unlock from the "
                                                       "Rosters tab. Works with the retail rows or the SPECIAL tab. Experimental.")
-        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (experimental)",
-                                                 "Practice Type 7-On-7, retail line positions and a delayed end rush. UNWITNESSED.",
+        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (unavailable until repaired)",
+                                                 "Removed from Practice until it works. Existing installs are removed when building a copy.",
                                                  badge=NOT_TESTED, needs_image=True)
+        self.seven_on_seven_check.parentWidget().setVisible(mod_build.SEVEN_ON_SEVEN_RELEASED)
         ol.addWidget(franchise)
 
         # ---- Rosters & positions
@@ -2604,7 +2605,7 @@ class BuildPanel(QWidget):
             season_cap=self.season_cap_check.isChecked(),
             xbe_space=self.xbe_space_check.isChecked(), kickoff_relocated=self.kickoff_relocated_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
-            overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
+            overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=mod_build.SEVEN_ON_SEVEN_RELEASED and self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             elbow_options=self.elbow_options_check.isChecked(),
             the1wam_lineman_rating=self.the1wam_lineman_rating_check.isChecked(),

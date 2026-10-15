@@ -135,17 +135,25 @@ class BuildPlanCoverageTests(unittest.TestCase):
             panel.uniform_choice_mode.setCurrentIndex(1)
             self.assertEqual(panel.plan().uniform_choice, "rule")
 
-    def test_seven_on_seven_is_reachable_defaults_off_and_stays_unwitnessed(self) -> None:
-        """v2 (beta 63): the row is available for a supported image, off by default, badged unwitnessed."""
+    def test_seven_on_seven_is_hidden_until_repaired(self) -> None:
+        """N12: presets cannot expose the held practice option."""
         panel = self.panel
-        self.assertTrue(mod_build.SEVEN_ON_SEVEN_RELEASED)
-        self.assertFalse(panel.seven_on_seven_check.isHidden())
+        self.assertFalse(mod_build.SEVEN_ON_SEVEN_RELEASED)
+        self.assertTrue(panel.seven_on_seven_check.parentWidget().isHidden())
+        self.assertIn("unavailable until repaired", panel.seven_on_seven_check.text().lower())
         self.assertFalse(panel.seven_on_seven_check.isChecked())
         self.assertFalse(panel.plan().seven_on_seven)
         for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
             self.assertFalse(mod_build.PRESETS[name]["seven_on_seven"], name)
-        # the coverage panel holds a bare synthetic XBE: a disc-only option reports "Full disc required" there
-        self.assertEqual(panel._badges["seven_on_seven"].text(), "Full disc required")
+            panel.apply_preset(name)
+            self.assertTrue(panel.seven_on_seven_check.parentWidget().isHidden())
+            self.assertFalse(panel.plan().seven_on_seven)
+        panel.restore_project_build_settings({"seven_on_seven": True})
+        self.assertFalse(panel.plan().seven_on_seven)
+        # Even a stale programmatic checkbox value cannot reach a new plan.
+        panel.seven_on_seven_check.setChecked(True)
+        self.assertFalse(panel.plan().seven_on_seven)
+        self.assertEqual(panel._badges["seven_on_seven"].text(), "Not available in this release")
         self.assertFalse(panel.seven_on_seven_check.isEnabled())
 
     def test_a_ticked_option_with_a_missing_required_file_names_the_file(self) -> None:

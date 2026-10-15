@@ -17,6 +17,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import struct
 
 from mod_editor.core import platform_compat
 import shutil
@@ -302,7 +303,7 @@ class BuildPlan:
     # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
     # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
     # PRACTICE-pb.iff (linemen parked at the sideline, a 4-second timer rusher); needs a disc image; unwitnessed
-    seven_on_seven: bool = False  # v2: Practice Type 7-On-7 with retail line spots, offensive pass sets, three idle defensive linemen and one end on a four-second delay; experimental, off in every preset
+    seven_on_seven: bool = False  # held until repaired; old opt-ins are ignored while the release gate is off
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
     # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
@@ -1621,9 +1622,19 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
         target.write_bytes(payload)
 
 
-#: 7-on-7 v2 is available as an EXPERIMENTAL / UNWITNESSED disc-image opt-in.
-#: All presets leave it off; Noah must witness huddle break and repeated snaps.
-SEVEN_ON_SEVEN_RELEASED = True
+#: Held after the practice playtest: keep the implementation for future repair.
+#: Old recipes cannot opt in, and builds retire an already installed menu entry.
+SEVEN_ON_SEVEN_RELEASED = False
+
+
+def retire_seven_on_seven(target: Path) -> dict[str, Any]:
+    """Studio's fixed-size retirement pass, also usable on an extracted XBE."""
+    before = _xbe_bytes(target)
+    patched, removal = tt.seven_on_seven_patch.remove(before)
+    if patched != before:
+        _write_xbe_bytes(target, patched)
+    return {"step": "seven_on_seven_removed", **removal}
+
 
 IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
 
@@ -2317,6 +2328,10 @@ def _apply_roster_history(plan, target, receipt, progress):
 @official.build_scope
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
+    seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
+    if seven_held:
+        progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
+        plan = replace(plan, seven_on_seven=False)
     blockers = validate_plan(plan)
     if blockers:
         raise ValueError("\n".join(blockers))
@@ -2555,7 +2570,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.my_career and plan.my_career_setup:
         # Tiered prepared careers carry initial rank/side locks. Keep those
         # locks through native depth sorting; ordinary creation is unchanged.
-        import struct
         if struct.unpack_from("<I", r62["my_career_setup"], 212)[0]:
             plan = replace(plan, depth_locks=True)
     if type(plan.deep_zone_bail_calls) not in (tuple, list) or plan.deep_zone_bail_calls:
@@ -2576,6 +2590,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if target.exists() and not plan.overwrite:
         raise FileExistsError(f"{target} exists")
     receipt: dict[str, Any] = {"plan": plan.to_recipe(), "steps": [], "source": str(source), "target": str(target)}
+    receipt["seven_on_seven_opt_in_ignored"] = seven_held
     receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     is_image = tt.is_disc_image(source)
     if plan.playbook_packs and is_image:
@@ -2586,6 +2601,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     except (OSError, ValueError):
         # The selected writer owns malformed/missing executable refusal.
         installed_xbe = None
+    retire_seven = False
+    if not SEVEN_ON_SEVEN_RELEASED and installed_xbe is not None:
+        seven = tt.seven_on_seven_patch
+        # Recognize any installed span, then demand a complete, digest-valid
+        # installation before copying. This also refuses mixed old installs.
+        try:
+            retire_seven = any(installed_xbe[off:off + len(after)] == after
+                               for _label, off, _before, after in seven._located(installed_xbe))
+        except (ValueError, struct.error):
+            # As above, malformed executable refusal belongs to the selected
+            # writer; retirement must not mask unrelated plan preflight errors.
+            retire_seven = False
+        if retire_seven:
+            seven.remove(installed_xbe)
     if r62.get("anniversary_kickoff") is None:
         r62["anniversary_kickoff"] = _anniversary_kickoff_wanted(plan, is_image)
     if r62["anniversary_kickoff"]:
@@ -3267,6 +3296,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             copy_image(source, target, progress, source_hasher)
             receipt["source_sha256"] = source_hasher.hexdigest()
         receipt["steps"].append({"step": "copy"})
+
+    if retire_seven:
+        progress("Removing unavailable 7-on-7 practice from the menu", 0, 0)
+        receipt["steps"].append(retire_seven_on_seven(target))
 
     # 3. presentation on the copy
     if plan.scorebug and not plan.scorebug_runtime:
