@@ -332,7 +332,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "bd57194fa4708fe8c5c45b5dcdcbe4c9195594dc
 # reviewed as authored art: no photograph or photo crop and no retail-extracted pixels. It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "ec259b28d80c1022f258b649f2298df89f288995756e83c291db50a6f74272bb"
+MODERN_ART_PNG_CATALOG_SHA256 = "95801c8d6ea9831c3b7c518178064ef3b25fb791af77c19f33b646854ad76c09"
 
 
 def _scorebug_template_pngs(root: Path) -> dict:

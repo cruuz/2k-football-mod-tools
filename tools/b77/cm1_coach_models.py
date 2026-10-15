@@ -17,7 +17,9 @@ triangles, skin weights and animations) and writes the result as integers the St
   hairline (tried for McVay's spikes: the 2004 heads have too few scalp vertices to show spikes).
 
 Heads (``head``): one continuous skin tone over the whole head, painted per texel at its 3D point on the mesh (so the
-UV islands meet without a seam), the fine detail of the club's previous authored face kept on the features only, and
+UV islands meet without a seam), the fine detail of the club's previous authored face kept on the features only,
+painted form (eye sockets, nose, lips, cheekbones: the game lights the head flat, so a smooth tone read as a
+mannequin in the first live close-ups), and
 facial hair painted as shapes on the head around its landmarks (lighter than the skin for white or grey hair, never a
 dark smudge on a light face). Reference photos are only looked at; no photo pixel enters a texture.
 
@@ -715,6 +717,30 @@ def facial_parts(pos, r: dict) -> dict:
     return dict(moustache=moustache, corners=corners, chin=chin, cheeks=cheeks, neck=neck)
 
 
+def form_shading(p, lm: dict, strength: float = 1.0) -> np.ndarray:
+    """Painted form on the face (the game lights the coach head flat, so a smooth tone reads as a mannequin): soft
+    shadow in the eye sockets, beside and under the nose, under the lower lip and along the jaw underside; light on
+    the cheekbones, the nose ridge and the brow. A multiplier around 1 at head points ``p``."""
+    x, y, z = p[..., 0], p[..., 1], p[..., 2]
+    ax = np.abs(x)
+    front = smoothstep(lm["face_z"] - 1.0, lm["face_z"] + 1.0, z)
+
+    def blob(cx, cy, sx, sy, xx=None):
+        return np.exp(-((((ax if xx is None else xx) - cx) / sx) ** 2 + ((y - cy) / sy) ** 2))
+    eye_y = lm["eye"]
+    shade = (0.13 * blob(3.3, eye_y + 0.1, 1.5, 0.9)                     # eye sockets
+             + 0.06 * blob(1.6, eye_y + 0.9, 0.7, 0.6)                   # inner socket under the brow
+             + 0.07 * blob(1.25, lm["nose_base"] + 1.2, 0.5, 1.1)        # beside the nose
+             + 0.09 * blob(0.0, lm["nose_base"] - 0.25, 1.0, 0.3, x)     # under the nose
+             + 0.08 * blob(0.0, lm["lip_bottom"] - 0.75, 1.6, 0.35, x)   # under the lower lip
+             + 0.06 * blob(2.4, lm["mouth"] + 0.9, 0.5, 1.2))            # the nasolabial folds
+    light = (0.05 * blob(4.6, lm["nose_base"] + 1.9, 1.3, 0.9)            # cheekbones
+             + 0.04 * blob(0.0, lm["nose_base"] + 2.6, 0.45, 1.6, x)     # nose ridge
+             + 0.03 * blob(2.6, lm["brow"] + 0.3, 1.6, 0.5))             # brow ridge
+    jaw = (1 - smoothstep(lm["chin"] - 0.8, lm["chin"] + 0.6, y)) * smoothstep(9.0, 14.0, z) * 0.06
+    return 1.0 + strength * (front * (light - shade) - jaw)
+
+
 def paint_head(head: dict, detail_rgba: np.ndarray, r: dict, scale: int = 4) -> np.ndarray:
     """The 256x128 head texture (RGBA uint8) for recipe ``r``: skin, scalp hair (or a bald head), facial hair."""
     H0, W0 = detail_rgba.shape[:2]
@@ -751,6 +777,7 @@ def paint_head(head: dict, detail_rgba: np.ndarray, r: dict, scale: int = 4) -> 
                                     if layer.get("kind") != "stubble"), 0, 1)
                 dw = dw * (1 - 0.8 * grown)
             rgb = rgb * (1 + (detail - 1) * dw)[..., None]
+            rgb = rgb * form_shading(p, lm, r.get("form", 1.4))[..., None]
             mh = lm["mouth_half"]
             lips = ((1 - smoothstep(mh - 0.4, mh + 0.3, ax)) * smoothstep(lm["lip_bottom"] - 0.3, lm["lip_bottom"] + 0.05, y)
                     * (1 - smoothstep(lm["lip_top"] - 0.12, lm["lip_top"] + 0.18, y)) * (z > lm["face_z"] + 5.6))
