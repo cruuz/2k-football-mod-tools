@@ -19,6 +19,7 @@ from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_draft_picks as picks
 from mod_editor.core import nfl2k5_hback as hback
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.core import platform_compat as io
 
 BASE_SHA = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BLOCK = 8 * 1024 * 1024
@@ -66,6 +67,24 @@ def project_hash(path, spans):
     return dict(input_sha256=old.hexdigest(), output_sha256=new.hexdigest(),
                 changed_bytes=count, outside_spans_equal=outside_old.digest()==outside_new.digest(),
                 outside_sha256=outside_old.hexdigest(), scanned_bytes=offset)
+
+
+def write_spans(path, spans):
+    """Write and read back fixed spans through a privately owned binary descriptor."""
+    written = 0
+    fd = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+    try:
+        for at, data in spans:
+            if io.pwrite(fd, data, at) != len(data):
+                raise OSError("Short repair write")
+            written += len(data)
+        os.fsync(fd)
+        for at, data in spans:
+            if io.pread(fd, len(data), at) != data:
+                raise OSError("Repair readback differs")
+    finally:
+        os.close(fd)
+    return written
 
 
 def main():
@@ -138,18 +157,7 @@ def main():
         raise ValueError("Studio refresh replay changed bytes")
     written = 0
     if not args.virtual:
-        fd = os.open(args.disc, os.O_RDWR | getattr(os, "O_BINARY", 0))
-        try:
-            for at, data in spans:
-                if os.pwrite(fd, data, at) != len(data):
-                    raise OSError("Short repair write")
-                written += len(data)
-            os.fsync(fd)
-            for at, data in spans:
-                if os.pread(fd, len(data), at) != data:
-                    raise OSError("Repair readback differs")
-        finally:
-            os.close(fd)
+        written = write_spans(args.disc, spans)
         if project_hash(args.disc, [])["input_sha256"] != proof["output_sha256"]:
             raise ValueError("Complete output hash differs")
     receipt = dict(proof, mode="virtual" if args.virtual else "in_place_copy", physical_bytes_written=written,

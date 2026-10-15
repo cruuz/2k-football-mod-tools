@@ -19,7 +19,8 @@ from .nfl2k5_cave_oracle import XbeImage
 from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_draft_picks import TEAMS
 
-OWNER = "nfl2k5_hback"
+LEGACY_OWNER = "nfl2k5_hback"
+OWNER = LEGACY_OWNER + "_spill"
 SCHEMA = "2k5_mod_studio_hback/v1"
 SIZE = 1024
 REQUESTS = ((OWNER, "code", SIZE, 16),)
@@ -110,7 +111,7 @@ def sites(va):
 
 
 def allocation(payload):
-    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER] if space.status(payload) == "applied" else []
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] in (OWNER, LEGACY_OWNER)] if space.status(payload) == "applied" else []
     require(not rows or len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"]) == ("code", SIZE, 16), "Foreign H-back allocation")
     return rows[0] if rows else None
 
@@ -153,14 +154,14 @@ def apply(payload, plan):
     before = payload
     if state == "applied":
         require(XbeImage(payload).read(row["va"] + MASK_OFFSET, 38) == mask, "A different H-back plan is installed")
-        return payload, dict(owner=OWNER, already_applied=True, changed_bytes=0)
+        return payload, dict(owner=row["owner"], already_applied=True, changed_bytes=0)
     if row is None:
         payload, _ = space.extend_scaleout(payload, REQUESTS)
         row = allocation(payload)
-    payload, _ = space.install_code(payload, OWNER, code_for(row["va"], table, mask))
-    payload, receipt = rdata.apply(payload, sites(row["va"]), OWNER)
+    payload, _ = space.install_code(payload, row["owner"], code_for(row["va"], table, mask))
+    payload, receipt = rdata.apply(payload, sites(row["va"]), row["owner"])
     require(status(payload) == "applied", "H-back installation failed readback")
-    return payload, dict(receipt, owner=OWNER, code_va=hex(row["va"]),
+    return payload, dict(receipt, owner=row["owner"], code_va=hex(row["va"]),
                          hback_teams=[r["team"] for r in plan["teams"] if r["role"] == "H-B"],
                          native_position=8, new_positions=0,
                          changed_bytes=sum(a != b for a, b in zip(before, payload)))

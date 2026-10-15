@@ -154,6 +154,22 @@ class RefreshTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'growth'):
             list(repair.runs(old, old+b'x'))
 
+    def test_native_span_writer_without_positional_os_calls_preserves_binary_bytes(self):
+        from tools.b77 import ro1_repair as repair
+        old = bytes(range(32))
+        spans = [(4,b'\r\n\x1a\0'),(20,b'abc')]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)/'image.bin';path.write_bytes(old)
+            with patch.object(os,'pread',None,create=True), patch.object(os,'pwrite',None,create=True):
+                self.assertEqual(repair.write_spans(path,spans),7)
+            expected = bytearray(old)
+            for at,data in spans:expected[at:at+len(data)] = data
+            self.assertEqual(path.read_bytes(),expected)
+            self.assertEqual(repair.write_spans(path,[]),0)
+            with patch.object(repair.io,'pwrite',return_value=0), self.assertRaisesRegex(OSError,'Short repair write'):
+                repair.write_spans(path,[(0,b'x')])
+            self.assertEqual(path.read_bytes(),expected)
+
     def test_new_player_uses_vacancy_and_has_no_inherited_history(self):
         raw=bytearray(self.body);offset=fixture.PLAYERS_OFF+2464*84
         for field,target in [(0x10,0x68000),(0x14,0x68022)]:

@@ -36,6 +36,13 @@ transactions and MyCareer keep their native position semantics. CAP template
 ratings are unchanged. Player cards describe the shared position category;
 they do not claim that every enum-8 player is personally an H-back.
 
+The helper has a fixed 1,024-byte slot in the allocator directory page. With
+tap burst and draft picks also present, 2,016 contiguous bytes remain for the
+sealed metadata. Existing feature addresses and XBE size stay fixed; inactive
+slots remain zero and allocator-owned. Earlier ordinary-pool installations
+still validate and replay unchanged. The section stays read-only and gains
+execute permission for the named helpers.
+
 Installation checks the allocator seal, modern pools, exact FB record, both
 reader prefixes, every pointer/hook site and the complete helper implementation.
 Foreign or partial installs are refused. Replaying the same mask changes no

@@ -103,7 +103,9 @@ class Native(Runtime):
     def test_append_keeps_allocations_and_replay(self):
         self.assertEqual(dp.status(self.after),'applied')
         old=space.layout(self.before)['allocations'];new=space.layout(self.after)['allocations']
-        self.assertTrue(all(row in new for row in old))
+        self.assertTrue(all(row in new for row in old if row['owner'] != space.DIRECTORY_OWNER))
+        self.assertEqual(sum(r['size'] for r in old if r['owner'] == space.DIRECTORY_OWNER)
+                         - sum(r['size'] for r in new if r['owner'] == space.DIRECTORY_OWNER), dp.CODE_SIZE)
         for row in old:
             if row['owner']=='nfl2k5_xbe_space_directory':
                 continue  # allocator-owned directory must describe the appended owner

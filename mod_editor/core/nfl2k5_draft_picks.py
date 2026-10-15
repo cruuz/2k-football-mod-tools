@@ -18,7 +18,8 @@ from . import nfl2k5_season_length as season
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
-OWNER = "nfl2k5_draft_picks"
+LEGACY_OWNER = "nfl2k5_draft_picks"
+OWNER = LEGACY_OWNER + "_spill"
 SCHEMA = "2k5_mod_studio_draft_picks/v1"
 TEAMS = tuple("SF CHI CIN BUF DEN CLE TB ARI LAC KC IND DAL MIA PHI ATL NYG JAX NYJ DET GB CAR NE LV LAR BAL WAS NO SEA PIT HOU TEN MIN".split())
 CODE_SIZE = 544
@@ -82,7 +83,7 @@ def sites(va):
 
 
 def allocation(payload):
-    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER] if space.status(payload) == "applied" else []
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] in (OWNER, LEGACY_OWNER)] if space.status(payload) == "applied" else []
     if not rows:
         return None
     require(len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"]) == ("code", CODE_SIZE, 16), "Foreign draft-pick allocation")
@@ -127,15 +128,15 @@ def apply(payload, plan):
     before = payload
     if state == "applied":
         require(XbeImage(payload).read(row["va"] + TABLE_OFFSET, 448) == table, "A different ownership table is already installed")
-        return payload, dict(owner=OWNER, already_applied=True, changed_bytes=0)
+        return payload, dict(owner=row["owner"], already_applied=True, changed_bytes=0)
     if row is None:
         payload, _ = (space.apply(payload, REQUESTS, scaleout=True) if space.status(payload) == "retail"
                       else space.extend_scaleout(payload, REQUESTS))
         row = allocation(payload)
-    payload, _ = space.install_code(payload, OWNER, code_for(row["va"], table))
-    payload, _ = rdata.apply(payload, sites(row["va"]), OWNER)
+    payload, _ = space.install_code(payload, row["owner"], code_for(row["va"], table))
+    payload, _ = rdata.apply(payload, sites(row["va"]), row["owner"])
     require(status(payload) == "applied", "Draft initializer failed readback")
-    return payload, dict(owner=OWNER, already_applied=False,
+    return payload, dict(owner=row["owner"], already_applied=False,
                          changed_bytes=sum(a != b for a, b in zip(before, payload)) + abs(len(before) - len(payload)),
                          code_va=hex(row["va"]), table_sha256=hashlib.sha256(table).hexdigest(),
                          years=[plan["base_season"] + 1, plan["base_season"] + 2],

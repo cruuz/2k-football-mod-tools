@@ -526,5 +526,17 @@
   "data",
   512,
   16
+ ],
+ [
+  "nfl2k5_draft_picks_spill",
+  "code",
+  544,
+  16
+ ],
+ [
+  "nfl2k5_hback_spill",
+  "code",
+  1024,
+  16
  ]
 ]

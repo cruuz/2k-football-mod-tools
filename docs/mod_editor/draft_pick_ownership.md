@@ -19,8 +19,10 @@ direct caller is new-franchise setup `FUN_00148cc0`. A five-byte CALL at
 `0x13EF89`, immediately after that reset, installs the supplied owner table.
 The helper preserves registers and flags, checks franchise mode 2, copies
 112 dwords, then executes the displaced MOV before returning. It occupies a
-544-byte late allocation, including the 448-byte immutable table. Existing
-allocations do not move. Context hashes guard the reset, draft consumer and
+544-byte named directory slot, including the 448-byte immutable table. Existing
+feature allocations do not move. Only verified zero bytes owned by allocator
+metadata are reassigned. Earlier ordinary-pool installations still validate and
+replay at their original addresses. Context hashes guard the reset, draft consumer and
 annual rollover; the ordinary XBE section/allocator seals also validate.
 
 Calendar mapping follows the season being played, not the UI's relative
