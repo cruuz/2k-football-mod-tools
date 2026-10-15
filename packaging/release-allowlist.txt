@@ -600,6 +600,7 @@ data/nfl2k5_kit_fixes_2026.json
 data/nfl2k5_kit_fixes_2026_alts.json
 data/nfl2k5_kit_fixes_2026_uf3.json
 data/nfl2k5_kit_fixes_2026_sea1.json
+data/nfl2k5_kit_fixes_2026_ov1.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py

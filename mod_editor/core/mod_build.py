@@ -4003,6 +4003,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["steps"].append({"step": "kit_fixes_2026_sea1",
                                      **{k: v for k, v in sea1_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in sea1_receipt["kits"]]})
+        overlap_receipt = kit_fixes.apply_overlaps(target)
+        if overlap_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_ov1",
+                                     **{k: v for k, v in overlap_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in overlap_receipt["kits"]]})
         # b773-uf3: the 2026 Pittsburgh road miniature (schedule screens) with its Steelmark the right way up; only the
         # exact known art changes, retail and user art are left alone.
         uf3_icon = _core_module("nfl2k5_menu_icon_uf3")

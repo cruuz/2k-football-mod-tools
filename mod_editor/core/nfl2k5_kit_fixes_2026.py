@@ -48,6 +48,7 @@ DATA = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026.json"
 DATA_ALTS = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_alts.json"
 DATA_UF3 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_uf3.json"
 DATA_SEA1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sea1.json"
+DATA_OV1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ov1.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
@@ -1293,3 +1294,12 @@ def seattle():
 def apply_seattle(path, *, strict=False):
     """Studio uniform finish pass for sea1 (after ``apply_finish``): pinned spans only."""
     return apply_to_image(path, strict=strict, document=seattle())
+
+
+def overlaps():
+    """ov1: mechanical decal cleanup, pinned after uf3."""
+    return spec(DATA_OV1)
+
+
+def apply_overlaps(path, *, strict=False):
+    return apply_to_image(path, strict=strict, document=overlaps())

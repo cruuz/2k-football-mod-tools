@@ -338,6 +338,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_alts.json": "56df3346d807f7a8f0ebfcbac0f1cbc5b66cfb507f2100b3539abc296b01bc09",
                 "data/nfl2k5_kit_fixes_2026_uf3.json": "a1911b169c1a4bb8fe130575586563e1ac9c9567e490a7d753f7c017f492747c",
                 "data/nfl2k5_kit_fixes_2026_sea1.json": "7da979e4f26044f7e024f97421806592fbb854acaf63a0241aaf61771d81b7b0",
+                "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",
