@@ -128,7 +128,17 @@ sets `placeholder` false, records provenance, and enters the release allowlist.
 The original provisional 512x128/14-pixel proposal is superseded by the exact
 256x128/11-pixel contract. Opus owns the final visual approval.
 
-The baseline matrix is complete. The coordinator's persistent-name revision has
-new native tests and repair receipts. Live validation must use the revised
-collector and selector together with the private placeholder FONT. Final Opus
-art and visual approval remain separate from technical proof.
+The baseline matrix and persistent-name live checks are complete. A cold boot
+of the repaired base copy with the private placeholder FONT showed expired-timer
+last names on offense before and after the snap, moving defense and a kick
+return under both enabled settings. Defensive control switches replaced the
+old label with one new label, including a second switch before the old timer
+expired. Normal scrimmage defense also showed the name before and after the
+snap. The live checks used one human controller; all four human slots and
+CPU rejection are native-code tested, rather than four-pad live tested.
+
+The focused indicator, build and MyCareer suites passed 45 tests. Fixed-span
+repair receipts record a zero-write replay, zero changed bytes outside the
+declared spans, and equality with the Studio writer. Final Opus art and visual
+approval remain separate from this technical proof. The retail-derived
+placeholder must not ship.
