@@ -96,6 +96,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "modern_color_settings",  # the Colour & lighting page (strength and the 55 controls) beside the modern colour check box
             "scorebug_watermark",  # the ESPN watermark combo beside the sprite scorebug check box (build_panel_qt.py:899)
             "super_bowl_user_art",  # b773-sb2: the Your Super Bowl logos folder field beside the official marks pack
+            "indicator_names_folder",  # b773-nm1: the private indicator atlas folder comes from the Studio preset or the project file, with no Build tab control
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
