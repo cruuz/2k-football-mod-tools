@@ -3167,3 +3167,7 @@ data/vip/coaches/TEN.json
 data/vip/coaches/WAS.json
 docs/mod_editor/nfl2k5_coach_vip.md
 docs/mod_editor/nfl2k5_coach_ai.md
+
+# b773 ic1: exact known menu artwork correction
+mod_editor/core/nfl2k5_menu_icon_orientation.py
+tests/mod_editor/test_nfl2k5_menu_icon_orientation.py
