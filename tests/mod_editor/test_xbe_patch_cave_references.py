@@ -41,6 +41,15 @@ def sections(xbe: bytes):
     return out
 
 
+def ro_section_executable_by_design(payload) -> bool:
+    """b773 sp2/ro1/tr1: the allocator directory page holds named code spills (tap burst, draft picks, H-back, team
+    ratings), which makes the shared general read-only section executable, never writable. Without a spill it stays
+    plain read-only."""
+    from mod_editor.core import nfl2k5_xbe_space as space
+    return any(a["owner"] in space.DIRECTORY_CODE_OWNERS and a["kind"] == "code"
+               for a in space.layout(payload)["allocations"])
+
+
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
     def test_beta69_rules_have_exclusive_live_hooks_and_owned_children(self):
@@ -97,7 +106,7 @@ class CaveReferenceTests(unittest.TestCase):
         image = XbeImage(self.patched)
         self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
         self.assertFalse(image.section(row["va"]).writable)
-        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.section(row["va"]).executable, ro_section_executable_by_design(self.patched))
         self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
         for _, va, before, _ in edit.sites(row["va"]):
             self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=edit.OWNER), [])
@@ -793,7 +802,7 @@ class CaveReferenceTests(unittest.TestCase):
                           if allocation['va'] <= va < allocation['va']+camera.CODE_SIZE}, {})
         descriptor = camera.allocation(self.patched, 'read_only')
         self.assertFalse(image.section(descriptor['va']).writable)
-        self.assertFalse(image.section(descriptor['va']).executable)
+        self.assertEqual(image.section(descriptor['va']).executable, ro_section_executable_by_design(self.patched))
         self.assertEqual(camera._read(self.patched, descriptor['va'], descriptor['size']),
                          camera.broadcast_records(allocation['va']))
         self.assertEqual(camera.status(self.patched), 'applied')
