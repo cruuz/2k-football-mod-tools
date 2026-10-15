@@ -37,9 +37,9 @@ class AnniversaryFieldReleaseTests(unittest.TestCase):
     def allow(self):
         self.allowlist.write_text("\n".join(self.files) + "\n", encoding="utf-8")
 
-    def test_all_283_reviewed_pngs_pass_and_match_existing_provider_pins(self):
+    def test_all_286_reviewed_pngs_pass_and_match_existing_provider_pins(self):
         result = release.audit_release(self.root, self.allowlist)
-        self.assertEqual(result["reviewed_anniversary_field_png_count"], 283)
+        self.assertEqual(result["reviewed_anniversary_field_png_count"], 286)
         self.assertFalse(result["retail_payloads_included"])
         self.assertEqual(result["reviewed_scorebug_template_png_count"], 0)
         module = ast.parse((ROOT / "mod_editor/core/providers.py").read_text())

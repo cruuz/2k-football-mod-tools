@@ -555,6 +555,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row11/endzone_N.png": "322eefd24e0fa8f201ec3f4ff0d7f6b339d52383d81508cc108109473337b24a",
                 "data/nfl2k5_espn25_fields/row11/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
                 "data/nfl2k5_espn25_fields/row10/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row10/lettering.png": "7baf59cda0fde5793f976ff484008341da764cc8dfac96c26e875c44d2d731e2",
                 "data/nfl2k5_espn25_fields/row10/endzone_S.png": "ef01cb09f101c5d36b67d907721827958eabfe107604525d991dc50bbf48c199",
                 "data/nfl2k5_espn25_fields/row10/endzone_N.png": "ef01cb09f101c5d36b67d907721827958eabfe107604525d991dc50bbf48c199",
                 "data/nfl2k5_espn25_fields/row10/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -575,6 +576,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row06/endzone_N.png": "487d4f827ca5bed40fd332e10cd1d93a80a503da03453f28cede8ee0bd441ff8",
                 "data/nfl2k5_espn25_fields/row06/center_logo.png": "1427e0e1a617bf3e0d2ab0804dc8697bc60e1601d0248e9e31407fa4c9df1aa8",
                 "data/nfl2k5_espn25_fields/row05/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row05/lettering.png": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
                 "data/nfl2k5_espn25_fields/row05/endzone_S.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row05/endzone_N.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row05/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -587,6 +589,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row03/endzone_N.png": "ebebbe97f639a91083adc740cc6dcac2d95606813fb09933e5e84662ce1ce071",
                 "data/nfl2k5_espn25_fields/row03/center_logo.png": "f9559b5717fe3aaa4d4a8374c548ef12a33b5016bef5de7f5a2c5eabdb165732",
                 "data/nfl2k5_espn25_fields/row02/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row02/lettering.png": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
                 "data/nfl2k5_espn25_fields/row02/endzone_S.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row02/endzone_N.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row02/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -594,7 +597,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row01/endzone_S.png": "bbc041dff4441c99eb2323161cca7eb2a5c4bb103036e7d0b382b71928790d2d",
                 "data/nfl2k5_espn25_fields/row01/endzone_N.png": "bbc041dff4441c99eb2323161cca7eb2a5c4bb103036e7d0b382b71928790d2d",
                 "data/nfl2k5_espn25_fields/row01/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
-                "data/nfl2k5_espn25_fields/manifest.json": "f0702f9f6b9758a632a308e86310b1ad0b853d8a64752c77753a46233ad8b141",
+                "data/nfl2k5_espn25_fields/manifest.json": "9f7e0cfc607f9068b143eeb7d44f68209b7a324ef3fe4857fa9dda676a588006",
                 "data/nfl2k5_espn25_fields/source/nfl100.png": "e5492f431984e885ba5e927e747a6716f39755ae3f078e3ac3714ca84b3dd41b",
                 "data/nfl2k5_espn25_fields/source/row03_center.png": "add4deaffc840b722d98c7bd91cb6286a165a8de922d160c601823e556f6f53e",
                 "data/nfl2k5_espn25_fields/source/row03_endzone_N.png": "f3c15f0bb902d97950f48de236c30a911012d60a5fbb03f0ef9ce09a0107fe14",
@@ -675,7 +678,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_more_teams/bengals_2025.csv": "23211f988adc97ea41c377f8c3c7bc2fe5f3f12e9d92ce42352dfdce0960a5db",
                 "data/nfl2k5_espn25_v04_profile.json": "3f1f60561c14a2a09fd23dae09d0fad6dbc5f2b49cf14cc171c4cb1a3ad5351d",
                 "data/nfl2k5_espn25_unc_bowl.json": "4a632282beb8cde62ffaa5e896ea22bc89eb67b54ba49a2e19a694c02abb9b18",
-                "data/nfl2k5_espn25_fields.json": "6f7e1d7667472fe600bb99cf770cc46022c5c2e30fd66611b36f1ac30c5f3371"
+                "data/nfl2k5_espn25_fields.json": "da73bb1f1a838fe642d8537596565600bd6febb1771b0829eb6e977bc056da4f"
             },
         )
         for relative, expected in unified.data_pins.items():

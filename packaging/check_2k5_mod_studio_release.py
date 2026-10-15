@@ -325,7 +325,7 @@ SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "0bf14533fcab35f1f454cf543c4b8d862ee1c496
 # and are not included here. This separate, immutable catalog grants no general
 # PNG exception, even inside the Anniversary art directory.
 ANNIVERSARY_FIELD_PNG_CATALOG = "packaging/nfl2k5_espn25_field_pngs.json"
-ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "bd57194fa4708fe8c5c45b5dcdcbe4c9195594dc1094247038675871495c0378"
+ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d07042485d12253016a150a6b1ab"
 
 # b772: the 2026 coaches (co1/co2), the 2026 fans (fr1) and the 2025-26 officials (rf1) ship authored PNG art.
 # Like the two catalogs above this is an exact, immutable list (path, byte count, SHA-256, PNG dimensions) of files

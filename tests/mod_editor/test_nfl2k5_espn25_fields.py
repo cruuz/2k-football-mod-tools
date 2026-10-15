@@ -80,11 +80,34 @@ class DonorBounds(unittest.TestCase):
             donor[40:55,720:735]=(111,42,21,255)
             donor[60:70,320:330]=(230,230,230,255)
             base=np.zeros((128,768,4),dtype='uint8')
-            with patch.object(fields,'art',return_value=base):
+            blank=np.zeros((104,768,4),dtype='uint8')
+            with patch.object(fields,'art',side_effect=lambda row,key:blank if key=='lettering' else base):
                 out=fields._endzone(fields.catalog()[number-1],'N',{team:donor})
             self.assertTrue(np.array_equal(out[32:47,30:45],donor[20:35,30:45]))
             self.assertTrue(np.array_equal(out[52:67,720:735],donor[40:55,720:735]))
             self.assertEqual(out.shape,(128,768,4))
+
+    def test_authored_lettering_replaces_donor_text_and_keeps_side_decals(self):
+        import numpy as np
+        for team,number in (('WAS',10),('OAK',2),('OAK',5)):
+            row=fields.catalog()[number-1]
+            self.assertEqual({e['lettering'] for e in row['endzones']},{'lettering'})
+            donor=np.zeros((104,768 if team=='WAS' else 560,4),dtype='uint8')
+            donor[20:35,30:45]=(21,42,111,255)
+            donor[:,200:500]=(9,9,9,255)
+            for end in 'NS':
+                out=fields._endzone(row,end,{team:donor})
+                letters=fields.art(number,'lettering')
+                ink=letters[:,:,3]==255
+                self.assertGreater(np.count_nonzero(ink),9000)
+                self.assertTrue(np.array_equal(out[12:116][ink][:,:3],letters[ink][:,:3]))
+                self.assertFalse(np.any(np.all(out[12:116,200:500,:3]==9,axis=2)))
+                if team=='WAS':
+                    self.assertTrue(np.array_equal(out[32:47,30:45],donor[20:35,30:45]))
+                # Separated capitals: each letter, outline included, is its own run of columns.
+                inked=np.flatnonzero(letters[:,:,3].max(axis=0)>0)
+                runs=1+np.count_nonzero(np.diff(inked)>1)
+                self.assertEqual(runs,len(row['endzones'][0]['text']))
 
     def test_art_override_bypasses_retail_donors(self):
         from unittest.mock import patch

@@ -165,6 +165,14 @@ def _endzone(row,end,wordmarks):
     if full_strip:
         for left,right in DONOR_SIDE_REGIONS.get(key,()):
             rgba[:,left:right,:3]=rgb[:,left:right].astype('uint8')
+    letters=None
+    if e.get('lettering'):
+        # Authored period capitals replace the donor's text in its own colours;
+        # a full-strip donor keeps only its native side decals.
+        letters=art(row['row'],e['lettering']);require(letters.shape==(104,768,4),'lettering is not 768x104')
+        keep=np.zeros(rgba.shape[1],dtype=bool)
+        for left,right in (DONOR_SIDE_REGIONS.get(key,()) if full_strip else ()):keep[left:right]=True
+        rgba[:,~keep,3]=0
     # Preserve the supplied end-zone fill/logo layout; the donor covers the
     # old authored wordmark region with its own shape.
     base=art(row['row'],'endzone_'+end).copy()
@@ -178,6 +186,7 @@ def _endzone(row,end,wordmarks):
         for x in range(-128,850,100):
             d.polygon([(x,0),(x+45,0),(x+173,128),(x+128,128)],fill='#101820')
     canvas.alpha_composite(Image.fromarray(rgba),(left,12))
+    if letters is not None:canvas.alpha_composite(Image.fromarray(letters),(0,12))
     return np.asarray(canvas)
 
 

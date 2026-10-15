@@ -69,14 +69,16 @@
           "text": "RAIDERS",
           "background": "#101820",
           "foreground": "#ffffff",
-          "outline": "#a5acaf"
+          "outline": "#a5acaf",
+          "lettering": "lettering"
         },
         {
           "team": "OAK",
           "text": "RAIDERS",
           "background": "#101820",
           "foreground": "#ffffff",
-          "outline": "#a5acaf"
+          "outline": "#a5acaf",
+          "lettering": "lettering"
         }
       ],
       "center": "blank",
@@ -200,14 +202,16 @@
           "text": "RAIDERS",
           "background": "#101820",
           "foreground": "#ffffff",
-          "outline": "#a5acaf"
+          "outline": "#a5acaf",
+          "lettering": "lettering"
         },
         {
           "team": "OAK",
           "text": "RAIDERS",
           "background": "#101820",
           "foreground": "#ffffff",
-          "outline": "#a5acaf"
+          "outline": "#a5acaf",
+          "lettering": "lettering"
         }
       ],
       "center": "blank",
@@ -408,14 +412,16 @@
           "text": "REDSKINS",
           "background": "#5a1414",
           "foreground": "#ffb612",
-          "outline": "#ffffff"
+          "outline": "#ffffff",
+          "lettering": "lettering"
         },
         {
           "team": "WAS",
           "text": "REDSKINS",
           "background": "#5a1414",
           "foreground": "#ffb612",
-          "outline": "#ffffff"
+          "outline": "#ffffff",
+          "lettering": "lettering"
         }
       ],
       "center": "blank"

@@ -191,6 +191,133 @@ def giants_helmet():
     return Image.fromarray(out, "RGBA")
 
 
+# --- period end-zone lettering ---------------------------------------------------------------------------------
+FIELDS = ROOT / "data/nfl2k5_espn25_fields"
+#: Lettering band: the 104-texel slot composited at y=12 of the 768x128 end-zone strip.
+BAND_W, BAND_H = 768, 104
+
+
+class Glyphs:
+    """Athletic block capitals on a supersampled canvas: square terminals, uniform stems, rounded bowls.
+
+    Coordinates are band texels; ``t`` is the stem, ``th`` the horizontal bar, ``h`` the cap height.
+    """
+
+    def __init__(self, h, t, th, radius):
+        self.h, self.t, self.th, self.r = h, t, th, radius
+        self.im = Image.new("L", (BAND_W * S, BAND_H * S), 0)
+        self.d = ImageDraw.Draw(self.im)
+
+    def _xy(self, pts):
+        return [(x * S, y * S) for x, y in pts]
+
+    def rect(self, x0, y0, x1, y1, fill=255):
+        self.d.rectangle(self._xy([(x0, y0), (x1, y1)]), fill=fill)
+
+    def poly(self, pts, fill=255):
+        self.d.polygon(self._xy(pts), fill=fill)
+
+    def ring(self, x0, y0, x1, y1, t, th, corners):
+        """A rounded-rectangle ring; ``corners`` (tl, tr, br, bl) choose the rounded corners."""
+        r = self.r
+        self.d.rounded_rectangle(self._xy([(x0, y0), (x1, y1)]), radius=r * S, fill=255, corners=corners)
+        ri = max(r - min(t, th), 0.6)
+        self.d.rounded_rectangle(self._xy([(x0 + t, y0 + th), (x1 - t, y1 - th)]), radius=ri * S, fill=0,
+                                 corners=corners)
+
+    def slant(self, top, bottom, y0, y1, t):
+        """A diagonal stroke of perpendicular width ``t`` whose left edge runs from (top, y0) to (bottom, y1)."""
+        tw = t * np.hypot(bottom - top, y1 - y0) / (y1 - y0)
+        self.poly([(top, y0), (top + tw, y0), (bottom + tw, y1), (bottom, y1)])
+        return tw
+
+    def letter(self, ch, x, y, w):
+        h, t, th = self.h, self.t, self.th
+        mid = y + h * 0.52
+        if ch == "I":
+            self.rect(x, y, x + t, y + h)
+        elif ch == "E":
+            self.rect(x, y, x + t, y + h)
+            self.rect(x, y, x + w, y + th)
+            self.rect(x, mid - th / 2, x + w * 0.84, mid + th / 2)
+            self.rect(x, y + h - th, x + w, y + h)
+        elif ch == "D":
+            self.ring(x, y, x + w, y + h, t, th, (False, True, True, False))
+        elif ch == "R":
+            bowl = y + h * 0.56
+            self.rect(x, y, x + t, y + h)
+            self.ring(x, y, x + w, bowl + th / 2, t, th, (False, True, True, False))
+            self.slant(x + w * 0.40, x + w - t * 1.18, bowl - th / 2, y + h, t)
+        elif ch == "S":
+            spur = h * 0.13
+            self.ring(x, y, x + w, mid + th / 2, t, th, (True, True, False, True))
+            self.rect(x + w - t - 0.5, y + th + spur, x + w + 0.5, mid - th / 2, fill=0)
+            self.ring(x, mid - th / 2, x + w, y + h, t, th, (False, True, True, True))
+            self.rect(x - 0.5, mid + th / 2, x + t + 0.5, y + h - th - spur, fill=0)
+        elif ch == "K":
+            self.rect(x, y, x + t, y + h)
+            arm = t * 1.04
+            tw = self.slant(x + w - t * 1.25, x + t * 0.35, y, y + h * 0.62, arm)
+            self.poly([(x + t * 0.35 + tw * 0.2, mid - th * 0.2), (x + w * 0.42, mid - th * 0.6),
+                       (x + w, y + h), (x + w - tw, y + h)])
+        elif ch == "N":
+            self.rect(x, y, x + t, y + h)
+            self.rect(x + w - t, y, x + w, y + h)
+            self.slant(x, x + w - t * 1.5, y, y + h, t * 1.02)
+        elif ch == "A":
+            self.ring(x, y, x + w, y + h + self.r + th, t, th, (True, True, False, False))
+            self.rect(x - 0.5, y + h, x + w + 0.5, y + h + self.r + th + 1, fill=0)
+            self.rect(x, mid - th / 2, x + w, mid + th / 2)
+        else:
+            raise ValueError(ch)
+
+    def word(self, text, cx, widths, gap, outline):
+        width = sum(widths[c] + 2 * outline for c in text) + gap * (len(text) - 1)
+        x = cx - width / 2 + outline
+        y = (BAND_H - self.h) / 2
+        for c in text:
+            self.letter(c, x, y, widths[c])
+            x += widths[c] + 2 * outline + gap
+        return width
+
+
+def lettering(text, h, t, th, radius, widths, gap, outline, fill, edge, cx=BAND_W / 2):
+    g = Glyphs(h, t, th, radius)
+    g.word(text, cx, widths, gap, outline)
+    body = np.asarray(g.im) > 127
+    ring = ndi.distance_transform_edt(~body) / S <= outline
+    c = Canvas(1)
+    c.rgb = np.zeros(body.shape + (3,))
+    c.alpha = np.zeros(body.shape)
+    c.paint(ring, edge)
+    c.paint(body, fill)
+    k = S
+    pre = np.dstack([c.rgb * c.alpha[..., None], c.alpha])
+    small = pre.reshape(BAND_H, k, BAND_W, k, 4).mean(axis=(1, 3))
+    a = small[..., 3]
+    rgb = np.where(a[..., None] > 1e-6, small[..., :3] / np.maximum(a[..., None], 1e-6), 0)
+    return Image.fromarray(np.dstack([rgb, a * 255]).round().clip(0, 255).astype(np.uint8), "RGBA")
+
+
+def hexrgb(value):
+    return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+
+
+#: Washington 1983: gold capitals, white edge, inside the 152..616 slot between the native side helmets.
+WASHINGTON = dict(text="REDSKINS", h=78, t=13.5, th=11.5, radius=12, gap=11, outline=3,
+                  widths=dict(R=44, E=38, D=45, S=43, K=45, I=13.5, N=46), fill="#ffb612", edge="#ffffff")
+#: Oakland 1968 and 1974: white capitals, silver edge, across the 104..664 slot of the black end zone.
+RAIDERS = dict(text="RAIDERS", h=80, t=15, th=13, radius=14, gap=16, outline=3,
+               widths=dict(R=52, A=60, I=15, D=54, E=46, S=51), fill="#ffffff", edge="#a5acaf")
+LETTERING = {"washington": (WASHINGTON, (10,)), "raiders": (RAIDERS, (2, 5))}
+
+
+def lettering_art(spec):
+    s = dict(spec)
+    return lettering(s.pop("text"), s.pop("h"), s.pop("t"), s.pop("th"), s.pop("radius"), s.pop("widths"),
+                     s.pop("gap"), s.pop("outline"), hexrgb(s.pop("fill")), hexrgb(s.pop("edge")))
+
+
 def save_png(image, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, optimize=True)
@@ -205,6 +332,9 @@ CATALOGS = {
     "packaging/nfl2k5_scorebug_template_pngs.json": (
         "SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256",
         ("data/nfl2k5_modern_metlife/art/s18/field/center_logo.png",)),
+    "packaging/nfl2k5_espn25_field_pngs.json": (
+        "ANNIVERSARY_FIELD_PNG_CATALOG_SHA256",
+        tuple(f"data/nfl2k5_espn25_fields/row{r:02d}/lettering.png" for r in (2, 5, 10))),
 }
 
 
@@ -246,7 +376,7 @@ def seal(check=False):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("item", choices=["giants", "seal"])
+    p.add_argument("item", choices=["giants", "washington", "raiders", "seal"])
     p.add_argument("--out", type=Path, help="write here instead of the repository input")
     p.add_argument("--check", action="store_true", help="seal: report only, exit 1 when stale")
     a = p.parse_args(argv)
@@ -256,6 +386,13 @@ def main(argv=None):
         image = giants_helmet()
         target = a.out or HELMET
         print(json.dumps({"file": str(target.name), "sha256": save_png(image, target)}))
+    if a.item in LETTERING:
+        spec, rows = LETTERING[a.item]
+        image = lettering_art(spec)
+        targets = [a.out] if a.out else [FIELDS / f"row{r:02d}/lettering.png" for r in rows]
+        for target in targets:
+            print(json.dumps({"file": str(target.relative_to(ROOT) if not a.out else target.name),
+                              "sha256": save_png(image, target)}))
     return 0
 
 
