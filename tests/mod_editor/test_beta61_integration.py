@@ -64,6 +64,8 @@ class BuildIntegrationTests(unittest.TestCase):
                 modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild,revalidate_playlist=revalidate_playlist),
                            'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime),
                            'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True}),
+                           'nfl2k5_menu_icon_orientation':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
+                           'nfl2k5_menu_icon_uf3':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
                            # b772 ny1/uf1/uf2: the uniform block's pinned kit repairs; a synthetic image matches none
                            'nfl2k5_nyg_numbers':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'}),
                            'nfl2k5_kit_fixes_2026':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'},
@@ -87,7 +89,7 @@ class BuildIntegrationTests(unittest.TestCase):
                     else:
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
-                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms'])
+                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','menu_icon_orientation'])
                         # macOS temp paths resolve under /private/var: compare resolved paths.
                         self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])
