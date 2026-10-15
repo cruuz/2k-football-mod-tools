@@ -96,4 +96,26 @@ class TextureTransplant(unittest.TestCase):
         self.assertEqual(size,(8,8,1))
 
 
+class NativeRefusal(unittest.TestCase):
+    def test_candidate_refused_by_native_decoder_falls_to_the_next(self):
+        import nfl_vc_lz_fill as fill
+        from types import SimpleNamespace
+        stored=64;header=bytearray(32);header[8]=10
+        original=bytes(32)+bytes(header)+bytes(stored-32)+b'TAIL'
+        chunk=SimpleNamespace(offset=0,end_offset=32+stored,stored_size=stored,overlap_scratch_bytes=16,index=0)
+        tx=SimpleNamespace(compress_vc_lz=lambda data,stream_tag,offset_bits:(bytes([offset_bits])*8,None),
+                           minimum_vc_lz_overlap_scratch=lambda *a:0,
+                           parse_chunks=lambda data,allow_trailing:[chunk])
+        seen=[]
+        def verify(after,new):
+            seen.append(after[32])
+            if len(seen)==1:raise ValueError('reads one byte past the allocation')
+        with patch.object(repair.mm,'_tools',return_value=(tx,)),\
+             patch.object(fill,'fill_stream',side_effect=lambda enc,data,size,slack:(enc.ljust(size,b'\0'),)):
+            after,scope,fitted,loan=repair.fit(original,chunk,b'edited',verify)
+        self.assertEqual(seen,[10,9])
+        self.assertEqual((fitted['offset_bits'],fitted['native_rejected'],loan),(9,1,None))
+        self.assertEqual((after[32],after[-4:],scope),(9,b'TAIL',32+stored))
+
+
 if __name__=='__main__':unittest.main()

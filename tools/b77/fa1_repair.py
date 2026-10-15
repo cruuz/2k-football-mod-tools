@@ -8,8 +8,10 @@ bounded resource-prefix payloads plus an auditable plan for:
   Raiders rows 2 and 5, with their end zones compiled by
   ``nfl2k5_espn25_fields._field`` (row 10 and the Raiders rows now carry the
   authored period lettering);
-* the nine MetLife field variants, whose midfield helmet is painted by
-  ``nfl2k5_modern_metlife.paint_scene`` at the base build's palette cap.
+* the nine MetLife field variants: the textures the MetLife painter owns (the
+  midfield helmet and the north end-zone panels), taken from the Studio's own
+  Modern-colour field composition ``graded_field_span`` with the new art,
+  which also picks their palette cap.
 
 Only the owned textures' decoded pixels, mips and palettes change; each field
 is refit into its own allocation (or a lossless loan from a later scene, as in
@@ -35,8 +37,6 @@ from tools.b77.fd1_repair import BASE_SHA, file_sha, input_state, overlay_hash, 
 
 ROWS = (2, 5, 7, 8, 10, 13, 37, 49)
 METLIFE = tuple(f's18{t}{w}.iff' for t in 'dan' for w in 'drs')
-#: Every base MetLife field holds the helmet exactly as paint_scene wrote it at this cap.
-METLIFE_CAP = 128
 ENDZONES = tuple(f'endzone_{end}_{part}' for end in 'NS' for part in 'LMR')
 SCHEMA = 'b773_fa1_repair/v1'
 PINS = Path(__file__).with_name('fa1_pins.json')
@@ -64,10 +64,26 @@ def bundle_payloads(bundle, keys):
     return chunk, rec, decoded, texture_payloads(rec, decoded, keys)
 
 
-def fit(original, chunk, edited):
-    """(after bundle, scope, fit, loan): ``edited`` refit into the field's allocation, losslessly."""
+def fit(original, chunk, edited, verify=None):
+    """(after bundle, scope, fit, loan): ``edited`` refit into the field's allocation, losslessly.
+
+    ``verify(after, chunk)`` may reject a candidate stream by raising ValueError; the next candidate is tried.
+    The game's in-place decoder can prefetch one byte past a stream that ends on a flag-byte boundary even
+    when the chunk has scratch, which the fill model alone does not catch.
+    """
     import nfl_vc_lz_fill as fill
     tx = mm._tools()[0]; oldspan = original[chunk.offset:chunk.end_offset]
+
+    def accepted(after):
+        if verify is None:
+            return True
+        new = tx.parse_chunks(after, allow_trailing=True)[chunk.index]
+        try:
+            verify(after, new)
+            return True
+        except ValueError as exc:
+            attempts.append(f'native decoder refused a candidate: {exc}')
+            return False
     _declared, tag = struct.unpack_from('<II', oldspan, 32)
     modes = [('greedy', bits) for bits in dict.fromkeys((oldspan[40], 10, 9, 8, 11))]
     last_greedy = modes[-1][1]; candidates = []; attempts = []
@@ -91,9 +107,13 @@ def fit(original, chunk, edited):
                 continue
             span = oldspan[:32] + filled
             require(span[:32] == oldspan[:32], 'chunk wrapper changed')
-            return (original[:chunk.offset] + span + original[chunk.end_offset:], chunk.end_offset,
+            after = original[:chunk.offset] + span + original[chunk.end_offset:]
+            if not accepted(after):
+                continue
+            return (after, chunk.end_offset,
                     dict(encoder=encoder, offset_bits=bits, stored_size=chunk.stored_size, encoded_size=len(encoded),
-                         alias_scratch=alias, scratch_bytes=chunk.overlap_scratch_bytes), None)
+                         alias_scratch=alias, scratch_bytes=chunk.overlap_scratch_bytes,
+                         native_rejected=sum(a.startswith('native') for a in attempts)), None)
         except ValueError as exc:
             attempts.append(str(exc))
     # The field needs a little more compressed storage: losslessly repack the
@@ -130,18 +150,21 @@ def fit(original, chunk, edited):
             if old.index != chunk.index:
                 require(tx.decode_chunk(original, old)[0] == tx.decode_chunk(after, new)[0],
                         'non-field decoded chunk changed')
+        if not accepted(after):
+            continue
         loan = dict(bytes=amount, donor_chunk_index=donor.index, donor_decoded_identical=True,
                     donor_encoded_size=len(donor_enc), donor_stored_size=donor_size,
                     donor_alias_scratch=donor_alias, donor_scratch_bytes=donor.overlap_scratch_bytes)
         return after, donor.end_offset, dict(encoder=encoder, offset_bits=bits, stored_size=field_size,
                                              encoded_size=len(encoded), alias_scratch=alias,
-                                             scratch_bytes=chunk.overlap_scratch_bytes), loan
+                                             scratch_bytes=chunk.overlap_scratch_bytes,
+                                             native_rejected=sum(a.startswith('native') for a in attempts)), loan
     raise ValueError('No lossless fixed prefix encoding fits: ' + str(dict(
         candidates=[(mode, width, len(data)) for data, mode, width in candidates],
         field_stored=chunk.stored_size, donor_saved=donor.stored_size - len(donor_enc), errors=attempts)))
 
 
-def repair_bundle(original, expected):
+def repair_bundle(original, expected, verify=None):
     """Transplant the Studio's texture payloads ``{key: (data, (w, h, mips))}`` into ``original`` and refit."""
     chunk, rec, decoded, current = bundle_payloads(original, tuple(expected))
     edited = bytearray(decoded); ranges = []
@@ -155,7 +178,7 @@ def repair_bundle(original, expected):
     require(protected == decoded, 'decoded bytes outside the owned textures changed')
     if edited == decoded:
         return original, dict(scope_size=0, changed_bytes=0)
-    after, scope, fitted, loan = fit(original, chunk, edited)
+    after, scope, fitted, loan = fit(original, chunk, edited, verify)
     require(len(after) == len(original) and after[scope:] == original[scope:], 'outside fixed prefix changed')
     _c, _r, back, actual = bundle_payloads(after, tuple(expected))
     require(back == edited, 'decoded field differs after fitting')
@@ -173,18 +196,29 @@ def anniversary_payloads(source, number):
              for e in row['endzones']}
     compiled, _ = fields._field(source.get('s25' + row['variant'] + '.iff'), row, words)
     _c, _r, _d, payloads = bundle_payloads(compiled, ENDZONES)
-    return {k: (v[2], v[3]) for k, v in payloads.items()}, ENDZONES
+    return {k: (v[2], v[3]) for k, v in payloads.items()}, ENDZONES, {}
 
 
 def metlife_payloads(source, name):
+    """The MetLife-painted field textures exactly as the Studio's Modern-colour field composition writes them."""
+    from mod_editor.core import nfl2k5_modern_color as colour
     venue, _tod, weather = mm.variant_parts(name)
     retail = source.get(name); dry = mm.dry_reference(source.get(mm.dry_name(name)))
+    outer = {p['name']: p for p in mm._pins()['bundles']}[name]['outer']
+    chunk = mm.bundle_scenes(retail)['field']; before = mm.scene_span(retail, chunk)
+    span, detail = mm.graded_field_span(before, venue, weather, dry, outer_index=outer,
+                                        settings=colour.normalize_settings({}))
+    cap = mm.PALETTE_CAPS[len(detail.get('fit_attempts') or ())]
+    graded = retail[:chunk.offset] + span + retail[chunk.offset + len(before):]
     _c, rec, decoded = fields._field_chunk(retail)
-    edited, receipt = mm.paint_scene(decoded, rec, venue, weather, dry.get('field'), palette_cap=METLIFE_CAP)
-    require(any(p['material'] == 'center_logo' for p in receipt['patches'] + receipt['overlays']),
-            'the MetLife painter did not write the midfield helmet')
-    payloads = texture_payloads(rec, edited, ('center_logo',))
-    return {k: (v[2], v[3]) for k, v in payloads.items()}, ('center_logo',)
+    painted, receipt = mm.paint_scene(decoded, rec, venue, weather, dry.get('field'), palette_cap=cap)
+    keys = tuple(sorted({p['material'] for p in receipt['patches'] + receipt['overlays']}))
+    require('center_logo' in keys, 'the MetLife painter did not write the midfield helmet')
+    _c, grec, gdecoded = fields._field_chunk(graded)
+    studio = texture_payloads(grec, gdecoded, keys)
+    require(all(studio[k][2] == v[2] for k, v in texture_payloads(rec, painted, keys).items()),
+            'the colour composition changed a MetLife-painted texture')
+    return {k: (v[2], v[3]) for k, v in studio.items()}, keys, dict(studio_palette_cap=cap, colour_settings='defaults')
 
 
 def sheet(path, title, before, after, keys):
@@ -227,9 +261,10 @@ def prepare(base, retail, output):
                 name = row_name(number) if isinstance(number, int) else number
                 entry = byid[mv.name_id(name)]; original = archive.read(entry.virtual_offset, entry.size)
                 print('Compiling ' + name, flush=True)
-                expected, keys = (anniversary_payloads(source, number) if isinstance(number, int)
-                                  else metlife_payloads(source, name))
-                after, receipt = repair_bundle(original, expected)
+                expected, keys, studio = (anniversary_payloads(source, number) if isinstance(number, int)
+                                          else metlife_payloads(source, name))
+                after, receipt = repair_bundle(
+                    original, expected, lambda data, c: prove_chunk(data, c, xbe, instruction_limit=40_000_000))
                 require(receipt['scope_size'] > 0, 'expected repair is a no-op: ' + name)
                 replay_bytes, replay = repair_bundle(after, expected)
                 require(replay_bytes == after and replay['changed_bytes'] == 0, 'native payload replay changed bytes')
@@ -246,7 +281,7 @@ def prepare(base, retail, output):
                         native.append(dict(kind=c.kind, offset=c.offset,
                                            **prove_chunk(after, c, xbe, instruction_limit=40_000_000)))
                 sheet(output / 'sheets' / f'{name}.png', name, original, after, keys)
-                receipts.append(dict(name=name, textures=list(keys), native_decoder=native, **receipt))
+                receipts.append(dict(name=name, textures=list(keys), native_decoder=native, **studio, **receipt))
                 print(json.dumps(dict(name=name, scope_size=size, changed_bytes=receipt['changed_bytes'],
                                       loan=receipt['allocation_loan'] is not None,
                                       native_decoder_exact=True, studio_equal=True)), flush=True)
