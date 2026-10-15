@@ -252,10 +252,20 @@ class NativeInstallation(unittest.TestCase):
     def test_full_union_preserves_every_preexisting_owner_address(self):
         from mod_editor.core import nfl2k5_xbe_space as space
         requests = space.dormant_union()
-        old = space._scale_allocations([r for r in requests if r[0] != ai.OWNER])
-        new = space._scale_allocations(requests)
+        # Moment coaches joined after coach AI and follows it in both the
+        # MyCareer code gap and the data tail. Check preservation in the
+        # actual introduction order, including every current owner.
+        previous = [r for r in requests if r[0] != "nfl2k5_moment_coaches"]
+        old = space._scale_allocations([r for r in previous if r[0] != ai.OWNER])
+        new = space._scale_allocations(previous)
         self.assertTrue(all(r in new for r in old))
         self.assertEqual(len([r for r in new if r["owner"] == ai.OWNER]), 2)
+        complete = space._scale_allocations(requests)
+        self.assertTrue(all(r in complete for r in new))
+        added = [r for r in complete if r not in new]
+        self.assertEqual({(r["owner"], r["kind"], r["size"]) for r in added},
+                         {("nfl2k5_moment_coaches", "code", 512),
+                          ("nfl2k5_moment_coaches", "data", 512)})
 
     def test_native_repair_includes_policy_and_is_idempotent(self):
         from tools.b77.vp2_repair import repair_xbe
