@@ -11,7 +11,10 @@ triangles, skin weights and animations) and writes the result as integers the St
   same displacement field, so the band stays seated;
 * ``body``: the body of a leaner retail coach of the same mesh family (identical vertex order and skin) replaces the
   torso, hips and legs of a paunchy one; the neck, head-borne parts (headset, glasses, cap) and hands stay; the
-  low-detail body follows by the displacement field.
+  low-detail body follows by the displacement field. A model with its own vertex order (c30) takes the change by
+  position (``via``: a body of the same build in the donor's family, then the via-to-donor move carried over);
+* ``hair_volume`` (kept for later, not used by a shipped recipe): a fuller top, the scalp moved outward above the
+  hairline (tried for McVay's spikes: the 2004 heads have too few scalp vertices to show spikes).
 
 Heads (``head``): one continuous skin tone over the whole head, painted per texel at its 3D point on the mesh (so the
 UV islands meet without a seam), the fine detail of the club's previous authored face kept on the features only, and
