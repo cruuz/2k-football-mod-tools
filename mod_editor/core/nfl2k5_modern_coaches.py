@@ -50,8 +50,8 @@ texture (an authored weight mask and glasses overlay, integer arithmetic), so no
 Coach models (b77 cm1): where the 2004 model cannot reach the 2026 coach by texture alone, ``<club>/geometry.json``
 moves the scene's own vertices (``apply_geometry``: integer positions and normals of the vertices that move, refused on
 any mesh but the one each shape was authored on). Washington's Dan Quinn has a bald head (the 2004 hair volume off the
-scalp; the headset band and the low-detail head follow); eight lean coaches (CIN, CAR, GB, TEN, LAR, SF, MIN, JAX) wear
-the lean body of a leaner retail coach. The vertex count, triangles, skin weights, skeleton and animations
+scalp; the headset band and the low-detail head follow); ten coaches (CIN, CAR, GB, TEN, LAR, SF, MIN, JAX, BAL, CLE)
+wear the body of a leaner retail coach. The vertex count, triangles, skin weights, skeleton and animations
 are retail. Their heads, and those of DAL, NYJ, TB, MIA, DET, CLE, NE, ATL and NYG, are painted on the head mesh in
 3D (one skin tone, painted hair and facial hair).
 

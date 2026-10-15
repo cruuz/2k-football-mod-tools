@@ -173,10 +173,17 @@ RECIPES: dict[str, dict] = {
                          light_colour=(204, 200, 192)),
                     dict(kind="stubble", parts=("cheeks",), colour=(150, 144, 138), density=0.15)]),
     },
+    # Jesse Minter: lean (his dark beard and hair on c02 already read as him); c02 carries a small paunch, so the lean
+    # body of c03 (same mesh family)
+    "BAL": {
+        "who": "Jesse Minter",
+        "body": dict(donor="03"),
+    },
     # Todd Monken: fair, ruddy skin (co2's c00 head was a dark 2004 head pulled light, still too orange); full white-grey
-    # hair; clean-shaven
+    # hair; clean-shaven; a solid, average build
     "CLE": {
         "who": "Todd Monken",
+        "body": dict(donor="02"),          # solid but not heavy: the average c02 body instead of c00's broad belly
         "head": dict(
             skin=(218, 156, 136), warm=(214, 134, 116), neck=0.08, lips=(196, 122, 110), brows=(160, 140, 126),
             hair=dict(colour=(196, 190, 184), front=46.6, recede=1.0, side=43.5, back=34.5, sideburn=39.0)),

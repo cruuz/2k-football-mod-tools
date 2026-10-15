@@ -31,7 +31,7 @@ TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "
 SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset": (64, 64), "head": (256, 128),
          "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
 # cm1: the clubs whose coach scene carries authored vertex edits (WAS: the bald head; the others: a lean body)
-GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "JAX"}
+GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "JAX", "BAL", "CLE"}
 # co2: the club whose coach wears another retail body, and the body (cNN) he wears
 MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "00", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
          "MIN": "28", "NYG": "22", "PHI": "18", "PIT": "26", "SEA": "13", "TEN": "15"}
