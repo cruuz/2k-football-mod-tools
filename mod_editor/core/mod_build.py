@@ -678,6 +678,8 @@ PRESETS["softdrink_experimental"]["coach_ai"] = True
 for _preset_values in PRESETS.values():
     _preset_values["indicator_names_folder"] = ""
 PRESETS["softdrink_experimental"]["indicator_names_folder"] = str(ROOT / "data/nfl2k5_indicator_names")
+# The private FONT occupies the appended sprite scene, which the runtime pass creates.
+PRESETS["softdrink_experimental"]["scorebug_runtime"] = True
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}

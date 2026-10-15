@@ -91,6 +91,9 @@ class AlphabetContract(unittest.TestCase):
     def test_experimental_preset_uses_the_authored_bundle(self):
         from mod_editor.core import mod_build
         self.assertEqual(Path(mod_build.PRESETS["softdrink_experimental"]["indicator_names_folder"]), FOLDER)
+        plan = mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso", target="out.iso"),
+                                      "softdrink_experimental")
+        self.assertTrue(plan.scorebug_runtime, "the private FONT requires the appended sprite scene")
         for name in ("softdrink_basic", "softdrink_advanced"):
             self.assertFalse(mod_build.PRESETS[name].get("indicator_names_folder", ""))
 
