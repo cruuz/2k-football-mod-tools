@@ -274,19 +274,25 @@ class Marks:
                                          "disc (s43dd.iff)")
         return self.period, "disc_period_shield"
 
-    def user(self, kind, key):
-        """(RGBA or None, origin, note) for an overridable slot."""
-        if (kind, key) in self._cache:
-            return self._cache[(kind, key)]
+    def user(self, kind, key, season=None):
+        """(RGBA or None, origin, note) for an overridable slot. A team takes ``teams/<CODE>_<SEASON>.png`` for
+        one season before ``teams/<CODE>.png`` for every season."""
+        if (kind, key, season) in self._cache:
+            return self._cache[(kind, key, season)]
         from PIL import UnidentifiedImageError
-        path, reason = user_art_file(self.user_art, kind, key)
+        path, reason = None, None
+        for name in ([f"{key}_{season}"] if kind == "team" and season is not None else []) + [key]:
+            path, why = user_art_file(self.user_art, kind, name)
+            reason = reason or why
+            if path is not None:
+                break
         result = (None, "authored", reason)
         if path is not None:
             try:
                 result = (load_user_png(path), "user_art", f"{USER_FOLDERS[kind]}/{path.name}")
             except (OSError, ValueError, UnidentifiedImageError) as exc:
                 result = (None, "authored", f"{USER_FOLDERS[kind]}/{path.name}: {exc}")
-        self._cache[(kind, key)] = result
+        self._cache[(kind, key, season)] = result
         return result
 
 
@@ -426,17 +432,18 @@ def compose(texture, row_entry, marks):
             mark, origin = marks.shield(row_entry["season"])
             note = None
         else:
-            mark, origin, note = marks.user(kind, key)
+            mark, origin, note = marks.user(kind, key, row_entry.get("season"))
         if mark is None:
             placed = marks_layer[y0:y1, x0:x1]
             origin = slot.get("authored", "authored")
         else:
-            placed = marks.fitted(mark, origin, key if kind != "shield" else row_entry["season"] >=
-                                  MODERN_SHIELD_FROM_SEASON, w, h, slot)
+            placed = marks.fitted(mark, origin, note if origin == "user_art" else None, w, h, slot)
             if slot.get("shade"):
                 placed = shade_like(placed, region)
         base[y0:y1, x0:x1] = over(region, placed)
         receipt = dict(material=texture["material"], kind=kind, key=key, box=list(slot["box"]), source=origin)
+        if kind != "shield":
+            receipt["file"] = user_file_name(row_entry, kind, key)
         if note:
             receipt["note"] = note
         receipts.append(receipt)
@@ -625,6 +632,14 @@ FRIENDLY = {
 }
 
 
+def user_file_name(row_entry, kind, key):
+    """The user folder file a slot reads first: ``super_bowl/<NUMERALS>.png``, ``brands/<name>.png``,
+    ``teams/<CODE>.png``, or ``teams/<CODE>_<SEASON>.png`` for a season whose logo the mod does not carry."""
+    if kind == "team" and row_entry.get("team_logos", {}).get(key) == "authored":
+        return f"{USER_FOLDERS[kind]}/{key}_{row_entry['season']}.png"
+    return f"{USER_FOLDERS[kind]}/{key}.png"
+
+
 #: a comfortable source size per kind (any shape works: the mark is trimmed and fitted by aspect)
 RECOMMENDED = {"event": (512, 512), "brand": (512, 256), "team": (256, 256)}
 
@@ -638,8 +653,8 @@ def slot_catalog():
             for s in t.get("slots", ()):
                 if s["kind"] == "shield":
                     continue
-                name = f"{USER_FOLDERS[s['kind']]}/{s['key']}.png"
-                item = found.setdefault(name, dict(kind=s["kind"], key=s["key"], largest=[0, 0], uses={}))
+                name = user_file_name(r, s["kind"], s["key"])
+                item = found.setdefault(name, dict(kind=s["kind"], key=Path(name).stem, largest=[0, 0], uses={}))
                 w, h = s["box"][2] - s["box"][0], s["box"][3] - s["box"][1]
                 if w * h > item["largest"][0] * item["largest"][1]:
                     item["largest"] = [w, h]
@@ -704,8 +719,10 @@ def user_art_readme():
     notes = {
         "event": "One per Super Bowl moment, named by its Roman numerals.",
         "brand": "The networks that carried these games, plus ESPN (the game's own presentation banner).",
-        "team": ("The mod's own team logos are used already. These names are only for seasons whose logo the mod "
-                 "does not carry (the authored team name shows there), or to replace a logo."),
+        "team": ("The mod's own team logos are used already, so nothing is needed here. The four names with a "
+                 "season (CIN_1988, NYG_1990, STL_1999, STL_2001) are the team-seasons whose logo the mod does not "
+                 "carry; a plain club roundel shows there until you add one. CODE.png replaces that club's logo in "
+                 "every Super Bowl it plays; CODE_SEASON.png (the year the season began) only in that season."),
     }
     catalog = slot_catalog()
     for kind in ("event", "brand", "team"):
@@ -721,10 +738,11 @@ def user_art_readme():
             sw, sh = item["largest_slot"]
             lines.append(f"| `{item['file']}` | {sw} x {sh} | {uses} |")
         lines.append("")
-    teams_without = sorted({(r["event"], code) for r in rows for code, how in r.get("team_logos", {}).items()
-                            if how == "authored"}, key=lambda e: _order(e[0]))
+    teams_without = sorted({(r["event"], f"{code}_{r['season']}") for r in rows
+                            for code, how in r.get("team_logos", {}).items() if how == "authored"},
+                           key=lambda e: _order(e[0]))
     if teams_without:
-        lines += ["Seasons that show the authored team name until you add a file: " +
+        lines += ["Team-seasons that show a club roundel until you add a file: " +
                   ", ".join(f"Super Bowl {e} `teams/{c}.png`" for e, c in teams_without) + ".", ""]
     return "\n".join(lines)
 
@@ -752,7 +770,7 @@ def user_art_summary(receipts):
         for s in walls.get("slots", ()):
             if s["kind"] == "shield":
                 continue
-            name = f"{USER_FOLDERS[s['kind']]}/{s['key']}.png"
+            name = s.get("file") or f"{USER_FOLDERS[s['kind']]}/{s['key']}.png"
             if s["source"] == "user_art":
                 filled.setdefault(s.get("note", name), set()).add(walls["event"])
             else:

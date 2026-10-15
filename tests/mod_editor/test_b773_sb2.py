@@ -216,6 +216,28 @@ class UserArt(unittest.TestCase):
         self.assertIn('teams/NYG.png', lines[1])
         self.assertTrue(any(line.startswith('Super Bowl walls: ignored teams/NYG.png: not a PNG') for line in lines))
 
+    def test_a_season_file_fills_only_that_season(self):
+        placeholder(self.folder / 'teams' / 'CIN_1988.png', (256, 256), (255, 120, 0))
+        placeholder(self.folder / 'teams' / 'cin.png', (256, 256), (0, 120, 255))
+        period = np.zeros((256, 256, 4), np.uint8)
+        period[40:216, 60:196] = (0, 50, 140, 255)
+        marks = walls.Marks(period, self.folder)
+        for row, want in ((14, 'teams/CIN_1988.png'), (48, 'teams/cin.png')):
+            entry = walls.entry(row)
+            got = {s.get('note') for t in entry['textures'] for s in walls.compose(t, entry, marks)[1]
+                   if s['kind'] == 'team' and s['key'] == 'CIN'}
+            self.assertEqual(got, {want}, row)
+        (self.folder / 'teams' / 'cin.png').unlink()
+        marks = walls.Marks(period, self.folder)
+        entry = walls.entry(48)
+        got = {s['source'] for t in entry['textures'] for s in walls.compose(t, entry, marks)[1]
+               if s['kind'] == 'team' and s['key'] == 'CIN'}
+        self.assertEqual(got, {'mod_team_logo'})
+        entry = walls.entry(14)
+        files = {s['file'] for t in entry['textures'] for s in walls.compose(t, entry, walls.Marks(period))[1]
+                 if s['kind'] == 'team'}
+        self.assertEqual(files, {'teams/CIN_1988.png', 'teams/SF.png'})
+
     def test_status_line_counts_the_files(self):
         text = walls.user_art_status(self.folder)
         self.assertIn('Found 1 of 16 event logos, 1 of 5 network marks and 1 of', text)
@@ -263,7 +285,7 @@ class UserArt(unittest.TestCase):
             self.assertIn(f"`super_bowl/{r['event']}.png`", readme)
         for brand in walls.BRANDS:
             self.assertIn(f'`brands/{brand}.png`', readme)
-        for code in ('CIN', 'NYG', 'STL', 'NE', 'PHI', 'KC', 'LAR'):
+        for code in ('CIN', 'NYG', 'NE', 'PHI', 'KC', 'LAR', 'CIN_1988', 'NYG_1990', 'STL_1999', 'STL_2001'):
             self.assertIn(f'`teams/{code}.png`', readme)
         self.assertIn('transparent PNG', readme)
         self.assertNotIn('—', readme)

@@ -33,8 +33,9 @@ user_art/
   super_bowl/   XXIII.png XXV.png XXXII.png XXXIV.png XXXVI.png XLII.png XLIII.png XLIV.png
                 XLVI.png XLVII.png XLIX.png LI.png LII.png LIV.png LVI.png LVIII.png
   brands/       nbc.png cbs.png fox.png abc.png espn.png
-  teams/        optional, by club code: CIN.png NYG.png STL.png for the seasons above, or any club
-                in a Super Bowl moment to replace its logo
+  teams/        optional: CIN_1988.png NYG_1990.png STL_1999.png STL_2001.png for the four team-seasons
+                above; CODE.png (for example NE.png) replaces a club's logo in every Super Bowl it plays,
+                CODE_SEASON.png only in that season (the year the season began)
 ```
 
 - Event logos are about 512 x 512 pixels, network marks about 512 x 256, team logos about 256 x 256. Any shape works.
