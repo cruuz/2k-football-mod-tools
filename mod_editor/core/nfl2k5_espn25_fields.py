@@ -271,17 +271,22 @@ def _retail_playoff_field(source):
     return span,detail
 
 
-def compile_assets(get_built,get_retail,situ,*,progress=None):
+def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
     """Return ``({alias filename: bytes}, receipt)`` from name-keyed read callbacks.
 
     get_built reads the completed target's existing venue resources. get_retail
     reads the unchanged retail source. No input callback is ever written to.
+    ``user_art`` is the optional folder of the user's own Super Bowl logos.
     """
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     from . import nfl2k5_super_bowl_walls as super_bowl_walls
     require(struct.unpack_from('<I',situ,32+0x40)[0]==51,'expected 51 physical Anniversary rows')
     output={};receipts=[];templates={};wordmarks={};old_shield=None
+    # sb2: the Super Bowl walls' NFL shield; seasons before 2008 take the period shield from the retail disc
+    marks=super_bowl_walls.Marks(None,user_art);shield_receipt=None
+    if super_bowl_walls.period_shield_needed():
+        marks.period,shield_receipt=super_bowl_walls.period_shield(get_retail(super_bowl_walls.PERIOD_SHIELD_RESOURCE))
     for row in catalog():
         index=row['row']-1;code=variant(situ,index);name=row['source_prefix']+code+'.iff'
         source=(get_built if row['source_kind']=='built' else get_retail)(name)
@@ -308,7 +313,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
         if row['row'] not in PRESERVED_RETAIL_ROWS:
             after, protection = protect_period_field(after)
             detail['period_material_protection'] = protection
-        after, walls = super_bowl_walls.apply(after, row['row'])
+        after, walls = super_bowl_walls.apply(after, row['row'], marks=marks)
         if walls:
             detail['super_bowl_walls'] = walls
         _field_chunk(after)
@@ -318,7 +323,11 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
             field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
             outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail))
         if progress:progress(row['row'],51,alias)
+    walls_receipts=[r['detail']['super_bowl_walls'] for r in receipts if r['detail'].get('super_bowl_walls')]
     return output,dict(schema='nfl2k5_espn25_fields_receipt/v1',catalog_sha256=sha(DATA.read_bytes()),
         manifest_sha256=sha((ART/'manifest.json').read_bytes()),runtime_witnessed=False,
         assets=receipts,total_bytes=sum(map(len,output.values())),
+        super_bowl_walls=dict(manifest_sha256=sha((super_bowl_walls.ART/'manifest.json').read_bytes()),
+            period_shield=shield_receipt,user_art=str(user_art) if user_art else None,
+            log=super_bowl_walls.user_art_summary(walls_receipts) if user_art else []),
         scope='Separate Anniversary resources only; existing modern and retail venue files are read only.')

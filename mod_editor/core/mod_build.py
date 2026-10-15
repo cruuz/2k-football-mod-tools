@@ -229,6 +229,9 @@ class BuildPlan:
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
     espn25_named_previews: bool = False  # named previews, period field aliases and historic venue profile
+    # b773-sb2: optional folder of the user's own Super Bowl logos (super_bowl/<NUMERALS>.png, brands/<name>.png,
+    # teams/<CODE>.png) placed in the Super Bowl walls' slots; "" keeps the authored marks. Never in a preset.
+    super_bowl_user_art: str = ""
     espn25_more_moments: bool = False  # Anniversary collection with its own team-seasons; experimental, needs an image
     # b76-k1: 128 MB memory on stock xemu (K128, R1's late form: a 226-byte startup patch that teaches xemu's
     # Xbox kernel to manage 128 MB after the game built its arena; asleep at 64 MB and on any other kernel; needs
@@ -678,6 +681,9 @@ for _preset_values in PRESETS.values():
 # b76-u4: the 2026 venue art is in no preset; choosing a preset clears a chosen art folder.
 for _preset_values in PRESETS.values():
     _preset_values.setdefault("modern_venues_2026", "")
+# b773-sb2: the user's Super Bowl logos folder is in no preset either.
+for _preset_values in PRESETS.values():
+    _preset_values.setdefault("super_bowl_user_art", "")
 
 # b76-z2: the xemu display-list stability fix is on in all three presets. It changes no gameplay
 # and no picture: the GPU receives the same methods in the same order, only the place where
@@ -2354,6 +2360,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if type(plan.modern_venues_2026) is not str:
         raise ValueError("2026 venue art must be the folder of team venue art, or empty.")
     plan = replace(plan, modern_venues_2026=plan.modern_venues_2026.strip())
+    if type(plan.super_bowl_user_art) is not str:
+        raise ValueError("Your Super Bowl logos must be a folder, or empty.")
+    plan = replace(plan, super_bowl_user_art=plan.super_bowl_user_art.strip())
     if type(plan.modern_metlife_model) is not bool:
         raise ValueError("Modern MetLife model must be Off or On.")
     if type(plan.modern_helmets) is not bool:
@@ -4269,7 +4278,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if field_pack is None:
             raise ValueError("the Anniversary field compiler is unavailable")
         field_receipt = field_pack.apply_fields_to_image(
-            target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n))
+            target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n),
+            user_art=plan.super_bowl_user_art or None, log=lambda line: progress(line, 0, 0))
         receipt["steps"].append({"step": "espn25_fields", **field_receipt})
         receipt["result"]["espn25_fields"] = "applied"
         # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006; normal games
