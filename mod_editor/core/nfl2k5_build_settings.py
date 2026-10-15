@@ -148,3 +148,5 @@ def to_plan(state, source, target):
     values = build_settings(state)
     values["commentary"] = [CommentarySwap(**row) for row in values.get("commentary", [])]
     return BuildPlan(source, target, **values)
+
+FEATURE_KEYS += ("team_ratings",)  # Dynamic modern team rating getters.

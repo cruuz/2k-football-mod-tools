@@ -239,6 +239,7 @@ class BuildPlan:
     # b77-f4: letter grades in Franchise (Noah's 2K scale: 95+ A+ ... 0-49 F-) for the player overall and the team
     # offense / defense / overall; display only, lists still sort on the number, attributes stay numbers.
     # An allocator owner (late, after K128). Off in Basic (2004 numbers), on in Modern and Experimental.
+    team_ratings: bool = False
     letter_grades: bool = False
     # b77-f5: Player Card honors page: the bumpers (Black/White) and triggers flip a Franchise Player Card to the award
     # history (MVP, OPOY, DPOY, ROY, Super Bowls, SB MVP, Pro Bowls, All-Pro, rushing titles, with years); the game adds
@@ -505,7 +506,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.letter_grades or self.honors_page
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.letter_grades or self.honors_page
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -648,6 +649,9 @@ for _preset in PRESETS.values():
     _preset["k128_early"] = False
 del _preset
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
+for _preset in PRESETS:
+    PRESETS[_preset]["team_ratings"] = _preset in ("softdrink_advanced", "softdrink_experimental")
+
 PRESETS["softdrink_basic"]["letter_grades"] = False
 PRESETS["softdrink_advanced"]["letter_grades"] = True
 PRESETS["softdrink_experimental"]["letter_grades"] = True
@@ -822,6 +826,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("historic_stock_books", "nfl2k5_stock_books"),
                                ("espn25_era_rules", "nfl2k5_era_rules"),
                                ("k128_memory", "nfl2k5_k128"), ("k128_roster_heap", "nfl2k5_k128"), ("k128_early", "nfl2k5_k128"),
+                               ("team_ratings", "nfl2k5_team_ratings"),
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1017,6 +1022,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "playbook_packs": "n/a",
         "depth_roles": "n/a",
     }
+    ratings = _core_module("nfl2k5_team_ratings")
+    out["team_ratings"] = ratings.status(_xbe_bytes(source)) if ratings is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -2331,6 +2338,18 @@ def _apply_draft_pick_ownership(plan, target, receipt, progress):
         receipt["steps"].append({"step": "draft_pick_ownership", **pick_receipt})
 
 
+def _apply_team_ratings(plan, target, receipt, progress):
+    if not plan.team_ratings:
+        return
+    module = _core_module("nfl2k5_team_ratings")
+    if module is None:
+        raise RuntimeError("The team ratings module is not available in this build")
+    progress("Recalculating dynamic modern team ratings", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    receipt["steps"].append({"step": "team_ratings", **result})
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -2509,6 +2528,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Choose Historic moment rosters or a saved ESPN Anniversary plan, not both")
     if type(plan.espn25_era_rules) is not bool:
         raise ValueError("espn25_era_rules must be boolean")
+    if type(plan.team_ratings) is not bool:
+        raise ValueError("team_ratings must be boolean")
+    if plan.team_ratings and not plan.position_pools:
+        pools = _core_module("nfl2k5_position_pools")
+        if pools is None or pools.status(_xbe_bytes(plan.source)) != "applied":
+            raise ValueError("Modern team ratings require modern position pools")
     if type(plan.coach_ai) is not bool:
         raise ValueError("coach_ai must be boolean")
     if plan.coach_ai and not tt.is_disc_image(plan.source):
@@ -3923,6 +3948,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["steps"].append({"step": "qb_throw_power", **qb_receipt})
     _apply_roster_refresh(plan, target, receipt, progress)
     _apply_draft_pick_ownership(plan, target, receipt, progress)
+    _apply_team_ratings(plan, target, receipt, progress)
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)
