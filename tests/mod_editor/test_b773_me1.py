@@ -364,5 +364,106 @@ class BallDisc(unittest.TestCase):
         self.assertEqual(XbeImage(venues.underlying(upgraded)).read(ball.HOOK[1], 5), ball.HOOK[2])
 
 
+class RepairContract(unittest.TestCase):
+    """Exercise actual writes on tiny synthetic files, never an image copy."""
+    def setUp(self):
+        import contextlib
+        import io
+        from b77 import me1_repair as repair
+        self.repair = repair
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.folder = Path(self.temp.name)
+        self.original, self.copy = self.folder / 'original.bin', self.folder / 'copy.bin'
+        self.before, self.after = b'0123456789abcdef', b'0123XYZ789abcdeQ'
+        self.mo2, self.mo2_after = b'0123456789MO2def', b'0123XYZ789MO2deQ'
+        self.original.write_bytes(self.before)
+        self.copy.write_bytes(self.before)
+        (self.folder / '000.span').write_bytes(b'XYZ')
+        (self.folder / '001.span').write_bytes(b'Q')
+        sha = repair.sha
+        self.pins = dict(schema='b773/me1/v1', size=16,
+                         inputs={sha(self.before): sha(self.after), sha(self.mo2): sha(self.mo2_after)},
+                         spans=[dict(offset=4, length=3, file='000.span', before_sha256=sha(b'456'),
+                                     after_sha256=sha(b'XYZ')),
+                                dict(offset=15, length=1, file='001.span', before_sha256=sha(b'f'),
+                                     after_sha256=sha(b'Q'))])
+        repair.write_json(self.folder / 'pins.json', self.pins)
+        self.addCleanup(patch.stopall)
+        patch.object(repair, 'PINS', self.folder / 'pins.json').start()
+        patch.object(repair, 'BASE_SHA', sha(self.before)).start()
+        self.receipt = self.folder / 'receipt.json'
+        quiet = contextlib.redirect_stdout(io.StringIO())
+        quiet.__enter__()
+        self.addCleanup(quiet.__exit__, None, None, None)
+
+    def written(self):
+        return json.loads(self.receipt.read_text())['written_bytes']
+
+    def test_fixed_span_write_replay_and_full_scope(self):
+        self.repair.apply(self.copy, self.folder, self.receipt)
+        self.assertEqual(self.written(), 4)
+        self.repair.apply(self.copy, self.folder, self.receipt)
+        self.assertEqual(self.written(), 0)
+        self.repair.scope(self.original, self.copy, self.receipt)
+        self.assertEqual(self.copy.read_bytes(), self.after)
+        self.assertEqual(json.loads(self.receipt.read_text()), dict(kind='physical_full_disc_compare',
+                                                                    changed_bytes=4, changed_outside_spans=0))
+
+    def test_the_post_mo2_input_reaches_its_own_output(self):
+        self.copy.write_bytes(self.mo2)
+        self.repair.apply(self.copy, self.folder, self.receipt)
+        self.assertEqual(self.copy.read_bytes(), self.mo2_after)
+        self.assertEqual(json.loads(self.receipt.read_text())['output_sha256'], self.repair.sha(self.mo2_after))
+
+    def test_unknown_input_refused_before_write(self):
+        self.copy.write_bytes(b'unknown candidate')
+        with self.assertRaisesRegex(ValueError, 'unknown input disc'):
+            self.repair.apply(self.copy, self.folder, self.receipt)
+        self.assertEqual(self.copy.read_bytes(), b'unknown candidate')
+        self.assertFalse(self.receipt.exists())
+
+    def test_tampered_payload_refused_before_write(self):
+        (self.folder / '000.span').write_bytes(b'BAD')
+        with self.assertRaisesRegex(ValueError, 'payload hash mismatch'):
+            self.repair.apply(self.copy, self.folder, self.receipt)
+        self.assertEqual(self.copy.read_bytes(), self.before)
+
+    def test_plan_must_match_the_shipped_pins(self):
+        doc = dict(self.pins, size=17)
+        self.repair.write_json(self.folder / 'pins.json', doc)
+        patch.object(self.repair, 'PINS', self.folder / 'other.json').start()
+        self.repair.write_json(self.folder / 'other.json', self.pins)
+        with self.assertRaisesRegex(ValueError, 'plan differs'):
+            self.repair.apply(self.copy, self.folder, self.receipt)
+
+    def test_scope_rejects_change_outside_spans(self):
+        bad = b'0123XYZ78!abcdeQ'
+        self.copy.write_bytes(bad)
+        self.pins['inputs'][self.repair.sha(self.before)] = self.repair.sha(bad)
+        self.repair.write_json(self.folder / 'pins.json', self.pins)
+        with self.assertRaisesRegex(ValueError, 'out-of-scope change'):
+            self.repair.scope(self.original, self.copy, self.receipt)
+
+    def test_executable_runs_join_close_changes_only(self):
+        before = bytes(64)
+        after = bytearray(before)
+        after[3] = after[10] = after[40] = 1
+        self.assertEqual(self.repair.xbe_runs(before, bytes(after)), [(3, 11), (40, 41)])
+
+    def test_shipped_pins_cover_both_inputs_and_every_target(self):
+        pins = json.loads((ROOT / 'tools/b77/me1_pins.json').read_text())
+        mo2 = json.loads((ROOT / 'tools/b77/mo2_pins.json').read_text())
+        self.assertEqual(set(pins['inputs']), {mo2['input_sha256'], mo2['output_sha256']})
+        names = [s['name'] for s in pins['spans']]
+        self.assertEqual(sum(n.endswith(' stadium') for n in names), 16)
+        self.assertEqual(names.count('global.iff ball'), 1)
+        self.assertIn('default.xbe +0x850cc', names)
+        spans = sorted((s['offset'], s['offset'] + s['length']) for s in pins['spans'])
+        self.assertTrue(all(a[1] <= b[0] for a, b in zip(spans, spans[1:])))
+        for m in mo2['spans']:
+            self.assertFalse(any(lo < m['offset'] + m['length'] and m['offset'] < hi for lo, hi in spans))
+
+
 if __name__ == '__main__':
     unittest.main()
