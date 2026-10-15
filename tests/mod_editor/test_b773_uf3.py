@@ -210,6 +210,27 @@ class Data(unittest.TestCase):
         self.assertEqual(len(moved), 14)
 
 
+class FanCaps(unittest.TestCase):
+    def test_shipped_cap_panels_are_what_the_tool_draws(self):
+        import uf3_fan_caps as caps
+        for team in sorted(caps.fan.FANS):
+            _before, _after, changed = caps.rewrite(team, check=True)
+            self.assertEqual(changed, 0, team)
+
+    def test_cap_panel_is_one_colour_around_the_logo(self):
+        import uf3_fan_caps as caps
+        panel = caps.cap_panel("TEN")
+        border = np.concatenate([panel[0], panel[-1], panel[:, 0], panel[:, -1]])
+        self.assertEqual({tuple(v) for v in border.tolist()}, {(12, 35, 64, 255)})     # #0C2340, the fan navy
+
+    def test_fan_base_record_names_only_tshirt_parts(self):
+        doc = json.loads(repair.FAN_BASE.read_text(encoding="utf-8"))
+        self.assertEqual(doc["base_disc_sha256"], repair.BASE_SHA256)
+        self.assertEqual(len(doc["parts"]), 128)
+        self.assertEqual({k.split(":")[2] for k in doc["parts"]}, {"tshirt"})
+        self.assertEqual(len({k.split(":")[0] for k in doc["parts"]}), 32)
+
+
 class Refusals(unittest.TestCase):
     def test_unrelated_image_is_skipped_by_studio_but_refused_by_native_repair(self):
         with tempfile.TemporaryDirectory() as tmp:
