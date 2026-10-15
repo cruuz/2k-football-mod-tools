@@ -92,8 +92,9 @@ scorebug allocation. A font that cannot fit is rejected before writing.
 
 The indicator initializer at `0xF9FE5..0xFA012` binds this FONT directly through
 the native registry, preserving its material initialization. All global FONT
-slots remain intact. No visibility changes are included in this font binding;
-the live matrix determines whether a separate visibility fix is needed.
+slots remain intact. No visibility changes are included in this font binding. The retail/public/base
+live matrix found the same ordinary timed selection behavior, so no visibility
+repair was justified. The new FONT binding itself still requires live proof.
 
 The mechanically generated placeholder is saved only under the job's private
 scratch folder and has `placeholder: true` and retail donor provenance. It is

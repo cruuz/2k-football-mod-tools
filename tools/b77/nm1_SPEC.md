@@ -1,37 +1,62 @@
 # nm1 technical handoff: controlled-player surnames
 
-This is the initial static audit. The coordinator subsequently authorized atlas
-plumbing and a private, mechanically repacked retail placeholder. The current
-authoring contract is [nm1_ATLAS_SPEC.md](nm1_ATLAS_SPEC.md), which supersedes the
-provisional dimensions and size below. The implementation is in
-`mod_editor/core/nfl2k5_indicator_names.py`; live validation remains separate.
+The implementation contract is [nm1_ATLAS_SPEC.md](nm1_ATLAS_SPEC.md). The
+coordinator assigned the complete scorebug-style alphabet to the Opus HUD art
+job and authorized a private mechanical retail placeholder for technical proof.
+No new letter artwork or retail glyph bytes are included in this repository.
 
-## What is established
+## Live behavior and scope
 
-`nm1_audit.py` reads retail, public v0.6 and the v0.6.1 base directly. It compares
-the indicator predicate, collection, default initializer, name/number drawing,
-font setup and submission. Those spans are byte-identical across all three
-inputs. The projection helper has the same six changed bytes in both mod discs;
-the two calls at 0xFA2A1 and 0xFA31E target the widescreen projection wrapper
-0x4715A. This is not evidence of a newly introduced v0.6.1 suppression.
+The retail, public v0.6 and unmodified v0.6.1 base matrix covers Name and Number
+& Position on offense and defense before the snap and during play, plus a kick
+return at each setting. These are one-controller Quick Game observations.
 
-The option at 0xE5FF90 has three labels: Name, Number & Position, None. The
-initializer at 0x77C84 writes zero, Name, on all three discs. A loaded save may
-override that default. This audit does not inspect saved settings.
+**The base behaves like retail in these checks. Last names are still present.**
+The ordinary indicator label is transient. Control assignment, an RB handoff,
+or a defender switch resets the selected entity's timer to 2.0 simulation
+seconds. After expiry, the label disappears while the player remains controlled.
+A normal QB snap does not restart an expired timer. Name draws the last name;
+Number & Position draws the jersey number and position. Both follow the same
+timing. Pause freezes the timer and changing the option does not reset it.
+All three discs loaded Name from the same copied saved settings.
 
-The actual name draw is 0xF9D00. Value zero selects record+0x14; value one formats
-number and position; other values skip drawing. The submission at 0xFA185 calls
-it only when the collected flag at packet+0x0C bit 0x20 is set. The collector
-at 0x75D90 and its native gates need live tracing before changing visibility.
-Byte equality does not prove that the surrounding runtime state is unchanged.
-MyCareer lists 0x75D90 as a guard; that listing is not an installed hook there.
+On the observed retail/public returns, the initially controlled returner caught
+the ball without a control change. His label expired before the kick and stayed
+absent during the return. On base, the second returner caught the ball and
+received control, restarting the timer. His name was visible while running and
+then expired. This is a control-transfer distinction, not a base-only change.
+A player leaving the camera can also hide a label with a positive timer; those
+frames were not treated as expiry evidence.
 
-Noah's video frames inspected at 30:02 and 30:06 show Williams and Elliott
-beside a green defensive controller ring. At 33:18 Slye is below the orange
-kicker ring, with several other labels and bars overlapping near the line.
-These frames demonstrate surviving name drawing. They do not establish the
-saved option, each label's runtime caller, or pre/post-snap behavior in all modes.
-The disappearance's cause remains unproved.
+No missing-name regression was found, so this patch does not alter visibility
+or timers. Permanent controlled-player names would be a separate behavior
+change from retail. Every mode and two simultaneous human controllers have not
+been live-tested. The option's None setting retains the original skip path;
+the coordinator's live matrix specifically requested Name and Number & Position.
+
+## Static audit
+
+`nm1_audit.py` reads all three discs directly. The indicator predicate,
+collector, default initializer, draw, font setup and submission spans are
+byte-identical. Timer reset/countdown spans also match. The projection helper
+has the same six changed bytes in both mod discs; its calls at 0xFA2A1 and
+0xFA31E target the widescreen projection wrapper at 0x4715A.
+
+The option at 0xE5FF90 has values Name=0, Number & Position=1, None=2. Its
+initializer at 0x77C84 writes Name on all three discs; saved settings can
+override it. Draw function 0xF9D00 uses record+0x14 for Name, formats number and
+position for value1, and skips other values. Submission at 0xFA185 requires
+packet+0x0C bit0x20. The ordinary collector gate at 0x76053 requires entity+0x44
+positive along with role/game/display gates. A separate special-label path can
+request labels without that positive timer, so the timer is not the only
+possible source of on-field labels. MyCareer listing 0x75D90 as a guard does not
+mean a hook is installed there.
+
+Noah's video at 30:02 and 30:06 shows Williams and Elliott near the green
+controller ring. At 33:18 Slye appears below the kicker ring with other labels
+near the line. These are evidence of surviving name drawing, not proof of each
+runtime caller or mode. The controlled-player matrix supplies the behavioral
+comparison above.
 
 ## Existing glyphs are insufficient
 
@@ -63,61 +88,33 @@ They are source UV regions, not the compiled atlas's repacked UVs.
 | label_RD | [561, 47, 570, 56] | 9 by 9 |
 | label_TH | [574, 47, 583, 56] | 9 by 9 |
 
-## Required Opus art work
+## Implemented plumbing and handoff
 
-Historical proposal only. Use `nm1_ATLAS_SPEC.md` for the implemented 256x128
-atlas, 11-pixel cap height, metrics and disc location. The coordinator has
-assigned the complete alphabet to the Opus HUD art job; the earlier stop below
-no longer blocks technical work or the authorized private placeholder.
+`mod_editor/core/nfl2k5_indicator_names.py` validates the 40-glyph source atlas,
+compiles a private native FONT with per-glyph advances and a one-pixel dark
+outline, and binds it only for indicator names. Lowercase roster strings use
+uppercase glyph aliases while punctuation and spaces retain their metrics.
+The global font slots and original name/number/None behavior remain intact.
 
-The wave's rule 6 says: "When a fix needs new artwork (new textures, logos, fonts
-or models), stop at a precise technical spec." Completing arbitrary surnames
-requires missing glyphs, so this handoff stops at that boundary.
+The private resource fits the existing appended scorebug scene span by storing
+the byte-identical decoded scene with native compression. The new FONT follows
+inside that same fixed span. All outer and disc offsets remain unchanged.
+The Studio build plan's `indicator_names_folder` field selects the art folder.
+`tools/b77/nm1_repair.py` uses the same compiler, refuses unknown disc inputs,
+and provides write, zero-write replay, full-disc scope and Studio equality
+receipts. See the atlas contract for exact texture, metrics and disc layout.
 
-Proposed deliverables, pending Opus's choice to authorize this extension of the
-existing-glyph-only brief:
+The private PLACEHOLDER is mechanically repacked from the pinned retail
+indicator FONT, with no new letter drawing. It must not be shipped. Final Opus
+art replaces `atlas.png` and `metrics.json` in the specified authored directory,
+sets `placeholder` false, records provenance, and enters the release allowlist.
+The original provisional 512x128/14-pixel proposal is superseded by the exact
+256x128/11-pixel contract. Opus owns the final visual approval.
 
-- `data/nfl2k5_indicator_names/glyphs.png`: transparent RGBA coverage sheet, 512
-  by 128 pixels. It should contain individual uppercase A-Z, digits, apostrophe,
-  hyphen and period, plus a blank space advance. Reuse existing authored pixels
-  where appropriate. Opus owns the missing letter drawing and visual approval.
-- `data/nfl2k5_indicator_names/glyphs.json`: per-character half-open pixel
-  rectangle, baseline, advance and provenance. A simple proposed allocation is
-  16 columns of 32 by 32 cells. Character order is A-Z, 0-9, apostrophe, hyphen,
-  period, space. Cell i begins at `(32*(i%16), 32*(i//16))`; unused fourth-row
-  cells remain transparent. This is a proposed independent sheet, not a claim
-  that spare space exists in the current scorebug atlas.
-- Keep white ink in alpha, with at least four clear pixels on each cell edge.
-  Supply baseline-aligned glyphs, not a font file. No external fonts or downloads.
-  Keep existing scorebug cells and the ESPN wordmark intact.
-
-Mechanical trial parameters: 14 HUD-pixel cap height, white foreground, dark
-RGB (16,16,16) outline. Both 1-pixel and 2-pixel eight-neighbor dilation rings
-are supplied for comparison at 4x. Fourteen is provisional, based on the roughly
-low-30-pixel name height in Noah's 1080p video, not a measured retail capture.
-Final size must be measured against retail. Opus chooses the ring and approves
-the look. Uppercase presentation is also provisional; case-preserving names
-would require a lowercase set and corresponding extra cells.
-
-The offline previews use only the already-authored whole GOAL tile. They are
-coverage and outline demonstrations, not player surnames or runtime evidence.
-
-## Work still required after the art boundary
-
-Cold-boot retail, public and base under the shared emulator lock with the pad
-guard, private display, config, HDD and EEPROM. Capture all three option values
-on offense and defense before and during plays. Trace 0xE5FF90, selected human
-entities, the collector's label flag and the name-draw caller in the same frames.
-Identify the cause before changing gates. Distinguish CPU/star labels and human
-labels, preserve None and Number & Position, and test all human controller slots.
-
-Then implement the common human label path with last-name lookup, bounded text,
-native screen projection, the authored atlas and the selected outline. A scoped
-native font or sprite resource is needed; the scorebug is a sprite atlas rather
-than a drop-in registered FONT. Prove its resource lifetime and memory budget.
-Do not globally replace a retail font. Add the Studio build path and native repair
-tool with pinned hashes, replay, full-disc scope and Studio equality receipts.
-
-The before/after live matrix, return, two-pad attempt, tests of runtime behavior,
-packaging pins for any new runtime modules and actual surname previews remain
-unfinished. There is no `nm1_repair.py` because no repair has been implemented.
+The baseline matrix, compiler tests, packaging repin and offline native repair
+receipts are complete. Live placeholder rendering remains unverified: the coordinator reserved the
+shared emulator for the user's stream before the patched boot. The queued boot
+was cancelled without starting a pad or emulator. The fixed-span bytes and
+placeholder have offline receipts, but they must not be called live-proven or
+release-ready. A later isolated cold boot must confirm offense, defense and a
+return before integration acceptance.
