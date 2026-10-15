@@ -14,7 +14,7 @@ struct Portrait { u32 identity, legacy; u16 book, asset, photo, alternate, name[
 struct State {
     u8 *context[2], *book[2], *explicit_choice[2];
     u32 fingerprint[2], attachments[2], reason[2], active[2];
-    u32 pending_rebind;
+    u32 pending_rebind, selecting;
 };
 extern struct State state;
 extern const u32 career_address;
@@ -24,6 +24,59 @@ extern void FAST free_native(u8 *);
 extern void FAST stats_native(u8 *, u8 *);
 extern u32 FAST portrait_native(u8 *, u8 *);
 extern void FAST setup_native(u8 *, u32, u8 *);
+extern void FAST offense_native(u32 *, u32 *, u32 *, u32 *, u32 *);
+extern void FAST defense_native(u32 *, u32 *, u32 *, u32 *, u32 *, u32 *, u32 *);
+extern u32 FAST category_native(u8 *, u32);
+extern u8 *FAST vip_native(u8 *);
+static int career(void);
+
+/* Playback data is not a virtual controller. Keep automatic teams on the
+ * ordinary CPU menu/clock path; explicit user-selected VIPs keep their flag. */
+static int automatic(u8 *team) {
+    u32 side;
+    if (team!=(u8 *)0xe5fc20 && team!=(u8 *)0xe5fc60) return 0;
+    side=team==(u8 *)0xe5fc60;
+    return !U(team,0x30) && state.active[side] && state.context[side]
+        && PTR(0xba04b0,side*4)==state.context[side]
+        && PTR(team,0x20)==state.book[side];
+}
+void FAST coach_presentation(u8 *team) { U(team,0x38)=!automatic(team); }
+
+/* Called at the ordinary CPU selection boundary. The native publication
+ * tail still commits the category/formation/play. No menu is driven and no
+ * recorded timing is consumed by presentation. Native fallback can reenter
+ * this boundary, so it must bypass this adapter while a draw is in progress. */
+u32 FAST coach_choose(u8 *team, u32 *out) {
+    u32 v[7]={0,0,0,0,0,0,0}, flag, flip;
+    int offense;
+    u8 *context;
+    if (state.selecting || U(0xe602b4,0)!=4 || U(0xe5ff80,0)<4
+        || U(0xe5ff80,0)>7 || U(0xe601fc,0) || career() || !automatic(team)) return 0;
+    /* The paired-book owner can suppress the native accessor for this side. */
+    context=vip_native(team);
+    if (!context || U(context,0x38)!=2) return 0;
+    offense=PTR(0xe60280,0)==team;
+    if (!offense && PTR(0xe60284,0)!=team) return 0;
+    state.selecting=1;
+    flag=U(team,0x38);
+    /* Preserve the existing VIP-aware fourth-down policy inside this draw.
+     * Restore the presentation flag before returning to the game loop. */
+    U(team,0x38)=1;
+    if (offense) {
+        offense_native(v,v+1,v+2,v+3,v+4);
+        flip=v[3]; v[2]=v[1];
+    } else {
+        defense_native(v,v+1,v+2,v+3,v+4,v+5,v+6);
+        flip=v[4];
+    }
+    U(team,0x38)=flag;
+    state.selecting=0;
+    if (!v[0] || !v[1] || !v[2]) return 0;
+    out[0]=category_native(PTR(team,0x20),v[0]);
+    out[1]=v[0]; out[2]=v[1]; out[3]=v[2];
+    U(PTR(team,12),0x24)=(U(PTR(team,12),0x24)&~0x1004u)|(flip?0x1004u:0);
+    return 1;
+}
 
 static void zero(u8 *p, u32 n) { while (n--) *p++=0; }
 static void copy(u8 *d, const u8 *s, u32 n) { while (n--) *d++=*s++; }

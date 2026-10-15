@@ -311,6 +311,7 @@ def _neighbors(payload):
     trampoline. Restore its retail entry for the hash only after that owner's complete recognizer accepts it."""
     from . import nfl2k5_anniversary_kickoff as anniversary
     from . import nfl2k5_playbook_pair as pair
+    from . import nfl2k5_coach_ai as coach_ai
     neighbors = []
     va, entry = dict(anniversary.READER_SITES)["reader_diagram"], anniversary.READER_ENTRY
     image = XbeImage(payload)
@@ -324,6 +325,9 @@ def _neighbors(payload):
     if image.read(va, len(entry)) != entry:
         space._require(pair.status(payload) == "applied", "Foreign VIP accessor neighbor")
         neighbors.append((va, entry))
+    # Automatic tendencies enter the ordinary CPU publication tail. Accept
+    # that selector-boundary hook only when the entire owner is recognized.
+    neighbors.extend((va, before) for _, va, before, _ in coach_ai.normalized_sites(payload))
     return tuple(neighbors)
 
 

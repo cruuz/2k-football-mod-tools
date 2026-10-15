@@ -199,7 +199,8 @@ def build_profile(resource, tendency):
     return bytes(result), receipt
 
 
-# Pinned native instructions. No hook replaces an RNG, selector or accessor.
+# Pinned native instructions. Selectors and RNG remain native; automatic
+# choices enter the ordinary CPU publication path without VIP presentation.
 HOOKS = (
     ("source", 0x161E30, "5356578bfa8bf1", 0xE9),
     ("setup", 0xF6E9D, "8b4c241c8b048db004ba00", 0xE9),
@@ -209,13 +210,21 @@ HOOKS = (
     ("viewer", 0x350890, "833d0892cb00ff", 0xE9),
     ("resource", 0xE0D90, "5355568bf1", 0xE9),
     ("controller_commit", 0x1569CF, "e89cfeffff", 0xE8),
+    ("presentation", 0xF6FEC, "c7473801000000", 0xE9),
+    ("offense", 0x20B68E, "0f84d9000000", 0xE9),
+    ("defense", 0x20B83D, "0f858d000000", 0xE9),
 )
 SYMBOLS = dict(source_continue=0x161E37, resource_continue=0xE0D95,
                setup_continue=0xF6EA8, takeover_native=0xF7AF0, controller_native=0x156870,
                cleanup_continue=0x6195F, matchup_continue=0x367BD9, matchup_finish=0x367C3D,
                viewer_continue=0x350897, viewer_finish=0x3508C0, setup_original=0xF6E60,
                stats_bind_native=0xF7A90, heap_native=0x38FB0, allocate_native=0x48700,
-               free_native=0x48870, stats_native=0x2818D0, portrait_native=0xE71E0)
+               free_native=0x48870, stats_native=0x2818D0, portrait_native=0xE71E0,
+               presentation_continue=0xF6FF3, offense_native=0x17F1D0,
+               defense_native=0x17DFC0, category_native=0xE1A80, vip_native=0xF71E0,
+               offense_publish=0x20B7C0, offense_special=0x20B76D,
+               offense_continue=0x20B694, defense_publish=0x20B977,
+               defense_ordinary=0x20B8D0, defense_continue=0x20B843)
 
 
 def allocations(payload):
@@ -357,6 +366,8 @@ def apply(payload):
 
 
 GUARDS = (
+    (0x20b7c0, 85, "9e311b0052c714d9612580c4518e6b285a1846ea3400bfcf48016951152c29e3"),
+    (0x20b977, 87, "1e4cb67c8c03d7dffb346f6b4bd9ecb1d4051f9eedea5c3ed583d4237072c519"),
     (0xe0d90, 443, "94205d158baef4714e193ec2766d45a6ee7bb899c6b764966f1ebf9675b881a5"),
     (0x1665a0, 14, "51b06a9965cc2703be9b2bfb04f71587f78f65743d048629ec7bee538e23989f"),
     (0x1665f0, 25, "47beeb5ea7af7c4e2220dcc0ce44776f461396ba7b58894d5f065b57cd6c759c"),
