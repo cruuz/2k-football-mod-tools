@@ -361,9 +361,12 @@ def run(args):
         require(prior["with_recorded_base_spans_sha256"] == BASE_SHA256,
                 "the disc differs from the base outside the owned spans: refused")
     base = originals(raws, ranges, recorded)
+    # a donor kit that is also repaired here (05A0 for 05H0) donates its base bytes, as in a Studio build
+    base_donors = {s: base.get(s, raw) for s, raw in donors.items()}
     expected = {}
     for selector, raw in sorted(base.items()):
-        replacements, receipt = fixes.compile_resource(selector, raw, strict=True, document=document, kits=donors)
+        replacements, receipt = fixes.compile_resource(selector, raw, strict=True, document=document,
+                                                       kits=base_donors)
         require(receipt["state"] == "applied" and replacements, selector + ": recorded base kit does not compile")
         expected[selector] = replacements
     receipt = fixes.apply_to_image(disc, strict=True, document=document)
