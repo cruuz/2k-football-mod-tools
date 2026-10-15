@@ -2,7 +2,7 @@
 
 Every NFL team has its own home venue record in the retail main ROST (+0x114 of the team record), and each venue
 has nine archive bundles, ``<prefix>{d,a,n}{d,r,s}.iff`` (day, afternoon, night; dry, rain, snow). A bundle holds
-a field scene (end zones, midfield mark, turf) and a stadium scene (the bowl, its walls, boards, ribbons, signs and
+a field scene (end zones, midfield mark, yard numbers, turf) and a stadium scene (the bowl, its walls, boards, ribbons, signs and
 fan banners). Noah, 2026-09-23: "the field art should be updated for every team. The stadium wall art should be
 updated for every team. We can keep the same stadiums for now". So this option keeps every stadium and writes each
 team's 2026 art into its home venue:
@@ -17,8 +17,8 @@ team's 2026 art into its home venue:
 
 The art comes from a folder of per-team art in the ``metlife_team_art/v1`` contract (job u1's ``art.py venue``,
 extended for walls by job u4): ``<art root>/<ABBR>/venue/manifest.json`` with the team's ``spec.json`` beside
-``venue/``. Nothing retail or from the web ships: the repository carries the venue table (hashes, texture maps,
-the team-art targets), the code and the tests. The Giants and Jets venues (s18, s19) belong to Modern MetLife and
+``venue/``. The per-team art stays local. The repository carries reviewed authored shared art, the venue table
+(hashes, texture maps, team-art targets), the code and tests; retail pixels and reference photographs do not ship. The Giants and Jets venues (s18, s19) belong to Modern MetLife and
 are skipped. Kansas City (s13) is written here only when the art folder carries a Kansas City venue, and then Modern
 Arrowhead must be off (one writer per bundle); its reviewed art fills what the Kansas City folder leaves out,
 except the sideline yard markers, which stay retail.
@@ -34,6 +34,12 @@ EXPERIMENTAL and UNWITNESSED in game unless a report says otherwise.
 
 The shared supplement also writes yearless plain-type event field logos in s31,
 s39 and s41-s45. SoFi owns s40 and keeps its existing LXI field art.
+
+The optional field material ``numbers`` is a full 256x256 alpha atlas in the
+native UV cells. Reviewed authored block numerals are supplied by default for
+CIN, IND, MIN and TEN when their venue manifests are loaded. Explicit manifest
+art overrides the default. The Lucas Oil and U.S. Bank model painters carry
+the same atlas through their field rewrites; period fields use their own art.
 """
 from __future__ import annotations
 
@@ -86,7 +92,8 @@ TIMES, WEATHERS = "dan", "drs"
 CODES = tuple(t + w for t in TIMES for w in WEATHERS)
 SCENES = ("field", "stadium")
 END_ZONE_PARTS = ("L", "M", "R")
-FIELD_KEYS = tuple(f"endzone_{end}_{part}" for end in "NS" for part in END_ZONE_PARTS) + ("center_logo",)
+ENDZONE_KEYS = tuple(f"endzone_{end}_{part}" for end in "NS" for part in END_ZONE_PARTS)
+FIELD_KEYS = ENDZONE_KEYS + ("center_logo", "numbers")
 # Classes of the team-art targets (see the table): walls and pads take the retail snow drift in snow bundles.
 DRIFT_CLASSES = ("wall", "colour")
 # A variant texture counts as the same texture as the dry-day one when their small luma images correlate at
@@ -500,6 +507,33 @@ def _rects_ok(rects, width, height):
     return all(len(r) == 4 and 0 <= r[0] < r[2] <= width and 0 <= r[1] < r[3] <= height for r in rects)
 
 
+def default_numbers(prefix):
+    """Reviewed native atlas defaults for the four measured modern venues.
+
+    Explicit user numbers art takes precedence. Historical and moment fields
+    never use this home-venue manifest. The atlas replaces its full alpha layer,
+    with no turf compositing or weather fit that could fill its clear cells.
+    """
+    path = DATA_DIR / "numbers" / "manifest.json"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    require(doc.get("schema") == "nfl2k5_modern_venue_numbers/v1", "unsupported yard-number manifest")
+    if prefix not in doc["venues"]:
+        return []
+    out = []
+    for raw in doc["items"]:
+        require(raw["scene"] == "field" and raw["material"] == "numbers" and raw["layer"] == "full"
+                and raw["size"] == [256, 256], "invalid native yard-number item")
+        file = (path.parent / raw["file"]).resolve()
+        require(file.is_relative_to(path.parent.resolve()), "yard-number art escapes manifest")
+        data = file.read_bytes()
+        require(sha(data) == raw["sha256"], "yard-number art differs from its pin")
+        rgba = _rgba(data)
+        require(rgba.shape == (256, 256, 4), "yard-number atlas dimensions differ")
+        out.append(dict(scene="field", key="numbers", layer="full", size=[256, 256], rgba=rgba,
+                        master=None, rects=None, sha256=raw["sha256"], source="team"))
+    return out
+
+
 def load_art(root):
     """Read and check every venue manifest under ``root``.
 
@@ -533,7 +567,9 @@ def load_art(root):
             require(isinstance(key, str) and key and (scene, key) not in seen, f"{path}: item {key} is missing or repeated")
             seen.add((scene, key))
             if scene == "field":
-                require(key in FIELD_KEYS, f"{path}: field item {key} is not an end zone panel or the midfield mark")
+                require(key != "numbers" or (layer == "full" and raw.get("size") == [256, 256]),
+                        f"{path}: numbers needs a full 256x256 native atlas")
+                require(key in FIELD_KEYS, f"{path}: field item {key} is not an end zone panel, the midfield mark or numbers")
             file = (base / raw["file"]).resolve()
             require(file.is_file() and file.stat().st_size <= MAX_ART_BYTES, f"{path}: item {key}: {raw['file']} is missing")
             data = file.read_bytes()
@@ -568,6 +604,8 @@ def load_art(root):
                               **(dict(native_from_master=True, master_sha256=raw["master_sha256"])
                                  if native_from_master else {})))
         require(items, f"{path}: the manifest has no items")
+        if ("field", "numbers") not in seen:
+            items.extend(default_numbers(prefix))
         digest = sha(json.dumps([[i["scene"], i["key"], i["layer"], i["sha256"], i["rects"]] for i in items],
                                 sort_keys=True).encode("utf-8"))
         selected = [[i["scene"], i["key"], i["master_sha256"]]
@@ -591,7 +629,7 @@ def load_art(root):
         require(type(endzone_turf) is bool, f"{path}: endzone_turf_from_field must be a boolean")
         if endzone_turf:
             require(prefix in {"s27", "s29"}, f"{path}: field turf donor is reviewed only for s27/s29")
-            required = set(FIELD_KEYS[:-1] if prefix == "s27" else FIELD_KEYS[:3])
+            required = set(ENDZONE_KEYS if prefix == "s27" else ENDZONE_KEYS[:3])
             require(required <= {i["key"] for i in items if i["scene"] == "field"},
                     f"{path}: field turf donor needs " +
                     ("all six end-zone panels" if prefix == "s27" else "all three shared North end-zone panels"))
@@ -610,7 +648,7 @@ def load_art(root):
             from . import nfl2k5_split_endzone_art as endzone_art
             require(prefix in endzone_art.VENUES, f"{path}: end-zone split is not reviewed for {prefix}")
             supplied = {i["key"] for i in items if i["scene"] == "field"}
-            require(set(FIELD_KEYS[:-1]) <= supplied,
+            require(set(ENDZONE_KEYS) <= supplied,
                     f"{path}: split_shared_endzones needs all six end-zone panels")
             digest = sha((digest + ":split_shared_endzones").encode("ascii"))
         prefix_loan = doc.get("field_prefix_loan", False)
@@ -1141,6 +1179,9 @@ def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours
     """
     mm = _mm()
     height, width = current.shape[:2]
+    if item["scene"] == "field" and item["key"] == "numbers":
+        require(item["layer"] == "full", "numbers must replace the full native alpha atlas")
+        return art.copy()
     if item["layer"] == "overlay" and item["key"] != "center_logo":
         # The paint takes the retail dry-day to bundle fit and goes over this bundle's own retail turf with the
         # 2004 marks filled in (clean_turf): rain and snow turf stay exactly retail (and compress like it), and

@@ -899,6 +899,10 @@ def fit_fixed_span(span, decoded):
             alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
             if padding <= scratch and alias <= scratch:
                 rebuilt = span[:HEADER.size] + filled + bytes(padding)
+                try:
+                    tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
+                except tx.TxtrError:
+                    continue
                 back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
                 require(back == decoded and info.consumed_bytes == len(filled), "rebuilt stream failed its decode check")
                 return rebuilt, dict(encoder=encoder_name, fill=fill_name, padding_bytes=padding, alias_scratch=alias, scratch_bytes=scratch)

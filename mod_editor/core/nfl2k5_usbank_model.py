@@ -1600,7 +1600,7 @@ def build_all(source, *, workers=None, progress=None, names=None):
 FIELD_ART = ART_DIR / "field"
 GRASS_MATERIAL, OUTSIDE_MATERIAL = "color_premipped", "grass_outside_premipped"
 ENDZONE_TEXTURES = ag.ENDZONE_TEXTURES
-TEAM_FIELD = ENDZONE_TEXTURES + ("center_logo",)
+TEAM_FIELD = ENDZONE_TEXTURES + ("center_logo", "numbers")
 remap_grass_uv = ag.remap_grass_uv
 
 
@@ -1634,14 +1634,14 @@ def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False
         al = a[..., 3:4].astype(np.float32) / 255.0
         comp = a[..., :3].astype(np.float32) * al + clean[:3] * (1 - al)
         return np.dstack([np.clip(comp, 0, 255).astype(np.uint8), np.full(a.shape[:2], 255, np.uint8)])
-    team = {k: v for k, v in dict(team or {}).items() if k in ENDZONE_TEXTURES}
+    team = {k: v for k, v in dict(team or {}).items() if k in ENDZONE_TEXTURES + ("numbers",)}
     detail = sm._half_detail if half else (lambda a: a)
     for mat, art in team.items():
         row = rows.get(mat)
         if row is None:
             continue
         a = art if art.shape[:2] == (row["height"], row["width"]) else sm._resample(art, row["width"], row["height"])
-        ml.write_p8(out, system, row, detail(over_turf(a)), maximum=cap)
+        ml.write_p8(out, system, row, a if mat == "numbers" else detail(over_turf(a)), maximum=cap)
     remap_grass_uv(out, rec)
     return bytes(out)
 
@@ -1739,6 +1739,10 @@ def fit_keep_scratch(decoded, system_bytes, video_bytes, span):
             alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
             if padding <= scratch and alias <= scratch:
                 body = filled + bytes(padding)
+                try:
+                    tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
+                except tx.TxtrError:
+                    continue
                 back, info = tx.decompress_vc_lz(body, len(decoded))
                 sb.require(back == bytes(decoded) and info.consumed_bytes == len(filled), "refit field failed its decode check")
                 chunk = tx.HEADER.pack(kind, stored, system_bytes, video_bytes, 0xFEEDBEEF, scratch, head[6], head[7]) + body

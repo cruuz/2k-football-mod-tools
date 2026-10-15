@@ -306,6 +306,20 @@ def rebuild_fixed_span_filled(template_span: bytes, decoded: bytes, *, max_candi
     if padding > scratch or exact_min > scratch:
         raise t.TxtrError(f"cannot keep the retail scratch word: padding {padding}, needs {exact_min}, retail {scratch}")
     rebuilt = template_span[: t.HEADER.size] + filled + bytes(padding)
+    try:
+        t.check_vc_lz_native(rebuilt[t.HEADER.size:], stored_size, scratch, decoded)
+    except t.TxtrError:
+        # Only an unsafe original candidate may select a different fill.
+        # Leave a real readable byte, not just extra destination scratch.
+        if scratch == 0:
+            raise
+        filled, expanded = fill_stream(compressed, decoded, stored_size - 1, slack=0)
+        padding = stored_size - len(filled)
+        exact_min = t.minimum_vc_lz_overlap_scratch(filled, stored_size, len(decoded))
+        if padding > scratch or exact_min > scratch:
+            raise t.TxtrError("native-safe fill cannot keep the retail scratch word")
+        rebuilt = template_span[:t.HEADER.size] + filled + bytes(padding)
+        t.check_vc_lz_native(rebuilt[t.HEADER.size:], stored_size, scratch, decoded)
     back, binfo = t.decode_chunk(rebuilt, chunk)
     if back != decoded or len(rebuilt) != len(template_span) or binfo.consumed_bytes != len(filled):
         raise t.TxtrError("filled span failed independent decode verification")

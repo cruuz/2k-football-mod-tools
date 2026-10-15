@@ -15,7 +15,7 @@ giants         the MetLife midfield helmet (s18 center_logo, 256x256). The shell
 washington     REDSKINS for Anniversary row 10 (768x104 lettering layer).
 raiders        RAIDERS for Anniversary rows 2 and 5.
 numbers-block  modern block yard numerals in the native 256x256 ``numbers`` atlas
-               cells; no Studio input consumes it yet, so it needs --out.
+               cells; fn1 packages it as the reviewed modern-venue default. Pass --out.
 seal           upsert this job's rows in the reviewed PNG catalogs, move the pins.
 """
 from __future__ import annotations
@@ -516,7 +516,7 @@ def main(argv=None):
         target = a.out or HELMET
         print(json.dumps({"file": str(target.name), "sha256": save_png(image, target)}))
     if a.item == "numbers-block":
-        p.error("numbers-block has no Studio input yet; pass --out") if not a.out else None
+        p.error("numbers-block requires --out") if not a.out else None
         print(json.dumps({"file": a.out.name, "sha256": save_png(number_atlas(), a.out)}))
     if a.item in LETTERING:
         spec, rows = LETTERING[a.item]

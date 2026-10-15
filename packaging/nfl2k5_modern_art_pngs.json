@@ -1,5 +1,5 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
   "files": {
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,
@@ -3377,6 +3377,12 @@
       "height": 256,
       "sha256": "e8a1103601c057adc3b2ab9c38ef472ab203ef1ac7a6f0d6d114661abbdda231",
       "size": 11015,
+      "width": 256
+    },
+    "data/nfl2k5_modern_venues_2026/numbers/block.png": {
+      "height": 256,
+      "sha256": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
+      "size": 2329,
       "width": 256
     }
   },

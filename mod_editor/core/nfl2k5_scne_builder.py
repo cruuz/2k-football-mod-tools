@@ -725,9 +725,19 @@ def compressed_chunk(kind, decoded, system_bytes, video_bytes, *, stream_tag, of
     stored = align(len(encoded), 16)
     body = encoded + bytes(stored - len(encoded))
     minimum = tx.minimum_vc_lz_overlap_scratch(body, stored, len(decoded))
-    scratch = align(max(minimum, stored - len(encoded), 16), 16)
+    scratch = align(max(minimum, stored - len(encoded), stored - len(decoded), 16), 16)
     header = tx.HEADER.pack(kind.encode("ascii"), stored, system_bytes, video_bytes, 0xFEEDBEEF, scratch, 0, 0)
     chunk = header + body
+    try:
+        tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
+    except tx.TxtrError:
+        stored += 16
+        body = encoded + bytes(stored - len(encoded))
+        minimum = tx.minimum_vc_lz_overlap_scratch(body, stored, len(decoded))
+        scratch = align(max(minimum, stored - len(encoded), stored - len(decoded), 16), 16)
+        header = tx.HEADER.pack(kind.encode("ascii"), stored, system_bytes, video_bytes, 0xFEEDBEEF, scratch, 0, 0)
+        chunk = header + body
+        tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
     back, info = tx.decompress_vc_lz(body, len(decoded))
     require(back == bytes(decoded) and info.consumed_bytes == len(encoded), "grown chunk failed its decode check")
     return chunk, dict(stored=stored, encoded=len(encoded), scratch=scratch, minimum_scratch=minimum,
@@ -776,7 +786,21 @@ def fixed_span_chunk(kind, decoded, system_bytes, video_bytes, template_span, st
         padding = stored - len(filled)
         body = filled + bytes(padding)
         alias = tx.minimum_vc_lz_overlap_scratch(body, stored, len(decoded))
-        scratch = align(max(alias, padding, 16), 16)
+        scratch = align(max(alias, padding, stored - len(decoded), 16), 16)
+        try:
+            tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
+        except tx.TxtrError:
+            # A full flag group at the allocation end needs a readable padding byte.
+            try:
+                filled = fill.fill_stream(encoded, bytes(decoded), stored - 1, slack=0)[0]
+                padding = stored - len(filled)
+                body = filled + bytes(padding)
+                alias = tx.minimum_vc_lz_overlap_scratch(body, stored, len(decoded))
+                scratch = align(max(alias, padding, stored - len(decoded), 16), 16)
+                tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
+            except tx.TxtrError as exc:
+                attempts.append(f"{name}: {exc}")
+                continue
         chunk = tx.HEADER.pack(kind.encode("ascii"), stored, system_bytes, video_bytes, 0xFEEDBEEF, scratch, 0, 0) + body
         back, info = tx.decompress_vc_lz(body, len(decoded))
         require(back == bytes(decoded) and info.consumed_bytes == len(filled), "refit chunk failed its decode check")

@@ -230,6 +230,12 @@ def _seal_field(template,chunk,rec,decoded,out,textures):
     # decoded geometry and descriptors stay exactly the field template's size.
     stream,_=tx.compress_vc_lz(bytes(out));stored=(len(stream)+15)&~15;stream+=bytes(stored-len(stream))
     scratch=tx.minimum_vc_lz_overlap_scratch(stream,stored,len(out));scratch=(scratch+15)&~15
+    try:
+        tx.check_vc_lz_native(stream,stored,scratch,bytes(out))
+    except tx.TxtrError:
+        stream+=bytes(16);stored+=16
+        scratch=tx.minimum_vc_lz_overlap_scratch(stream,stored,len(out));scratch=(scratch+15)&~15
+        tx.check_vc_lz_native(stream,stored,scratch,bytes(out))
     fields=list(HEADER.unpack_from(template,chunk.offset));fields[1]=stored;fields[5]=scratch
     span=HEADER.pack(*fields)+stream
     back,_=tx.decode_chunk(span,tx.parse_chunks(span,allow_trailing=True)[0]);require(back==bytes(out),'period field round trip differs')

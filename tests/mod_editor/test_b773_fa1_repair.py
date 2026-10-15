@@ -105,6 +105,7 @@ class NativeRefusal(unittest.TestCase):
         chunk=SimpleNamespace(offset=0,end_offset=32+stored,stored_size=stored,overlap_scratch_bytes=16,index=0)
         tx=SimpleNamespace(compress_vc_lz=lambda data,stream_tag,offset_bits:(bytes([offset_bits])*8,None),
                            minimum_vc_lz_overlap_scratch=lambda *a:0,
+                           check_vc_lz_native=lambda *a:{},
                            parse_chunks=lambda data,allow_trailing:[chunk])
         seen=[]
         def verify(after,new):

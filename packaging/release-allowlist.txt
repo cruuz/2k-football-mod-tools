@@ -3172,3 +3172,8 @@ data/vip/coaches/TEN.json
 data/vip/coaches/WAS.json
 docs/mod_editor/nfl2k5_coach_vip.md
 docs/mod_editor/nfl2k5_coach_ai.md
+
+# fn1: authored block yard numbers and reviewed venue manifest
+data/nfl2k5_modern_venues_2026/numbers/block.png
+data/nfl2k5_modern_venues_2026/numbers/manifest.json
+tests/mod_editor/test_b773_fn1.py

@@ -105,6 +105,7 @@ def fit(original, chunk, edited, verify=None):
                 continue
             if chunk.overlap_scratch_bytes == 0 and len(fill.parse_tokens(filled)[3]) % 8 == 0:
                 continue
+            tx.check_vc_lz_native(filled, chunk.stored_size, chunk.overlap_scratch_bytes, bytes(edited))
             span = oldspan[:32] + filled
             require(span[:32] == oldspan[:32], 'chunk wrapper changed')
             after = original[:chunk.offset] + span + original[chunk.end_offset:]
@@ -138,6 +139,8 @@ def fit(original, chunk, edited, verify=None):
                 continue
             if chunk.overlap_scratch_bytes == 0 and len(fill.parse_tokens(field_body)[3]) % 8 == 0:
                 continue
+            tx.check_vc_lz_native(field_body, field_size, chunk.overlap_scratch_bytes, bytes(edited))
+            tx.check_vc_lz_native(donor_body, donor_size, donor.overlap_scratch_bytes, donor_decoded)
             fh = bytearray(oldspan[:32]); dh = bytearray(donor_old[:32])
             struct.pack_into('<I', fh, 4, field_size); struct.pack_into('<I', dh, 4, donor_size)
             after = (original[:chunk.offset] + fh + field_body + original[chunk.end_offset:donor.offset]
