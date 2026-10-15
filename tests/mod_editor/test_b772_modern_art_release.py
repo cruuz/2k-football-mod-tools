@@ -56,12 +56,14 @@ class ModernArtReleaseTests(unittest.TestCase):
         self.assertFalse(set(document["files"]) & set(refused))
 
     def test_every_modern_png_is_authored_and_catalogued(self):
-        """b77 co3: the two photo-crop portraits and the 32 accessories atlases with retail shoe and clipboard pixels
-        were replaced (authored renders; headset-only atlases), and pr2 removed both pictures, so all 595 PNGs are reviewed authored art."""
+        """pr2 leaves 595 coach, fan and official PNGs; me1 adds 122 event walls and one ball.
+
+        Portrait photos remain external and shoe/clipboard pixels come from the user's disc.
+        """
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 595)
+        self.assertEqual(len(document["files"]), 718)
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):
