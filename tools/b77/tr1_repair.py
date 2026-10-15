@@ -15,7 +15,7 @@ from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_rdata_sites as rdata
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-from tools.b77.ro1_repair import runs,project_hash
+from tools.b77.ro1_repair import runs,project_hash,write_spans
 
 BASE_DISC='520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4'
 BASE_XBE='1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f'
@@ -29,6 +29,8 @@ def scopes(payload):
                (row['raw'],row['size'],'rating table and spread'),
                (space.SCALE_DIRECTORY,space.PAGE,'allocator directory'),
                (space.DIRECTORY,space.LIB_COPY-space.DIRECTORY,'allocator header')]
+    result += [(s.header,4,'allocator read-only execute permission') for s in XbeImage(payload).sections
+               if s.start <= space.SCALE_DIRECTORY_VA < s.start+s.raw_size]
     result += [(s.header+36,20,'section digest') for s in XbeImage(payload).sections]
     return sorted(result)
 
@@ -49,19 +51,10 @@ def repair(payload):
     native_equal=all(XbeImage(payload).read(va,n)==XbeImage(result).read(va,n) for va,n,_ in tr.NATIVE_ROUTINES)
     if not native_equal:raise ValueError('Native simulation getters changed')
     return result,dict(receipt,changed_bytes_outside_allowed_spans=0,replay_changed_bytes=0,native_getters_identical=native_equal,
-        existing_allocations_unchanged=True,studio_equal=True,
+        existing_feature_allocations_unchanged=True,
+        existing_allocations_unchanged=old==new,studio_equal=True,
         allowed_spans=[dict(offset=a,size=n,kind=k) for a,n,k in allowed])
 
-def write_spans(path,spans):
-    fd=os.open(path,os.O_RDWR|getattr(os,'O_BINARY',0)|getattr(os,'O_NOFOLLOW',0))
-    try:
-        for at,data in spans:
-            if os.pwrite(fd,data,at)!=len(data):raise OSError('Short write')
-        os.fsync(fd)
-        for at,data in spans:
-            if os.pread(fd,len(data),at)!=data:raise OSError('Readback mismatch')
-    finally:os.close(fd)
-    return sum(len(data) for _,data in spans)
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group(required=True)

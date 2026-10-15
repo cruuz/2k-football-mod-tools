@@ -6,8 +6,8 @@ one directory page). Existing owner VAs and raw offsets stay fixed. Requests
 are immutable and never grow an installed request set in place.
 Loader and gameplay behavior remain experimental and unwitnessed.
 
-The named tap-burst, draft-pick and H-back spills occupy fixed slots in the
-allocator directory page, using at most 2080 bytes. The remaining metadata
+The named tap-burst, draft-pick, H-back and display-rating slots occupy fixed
+parts of the allocator directory page, using at most 2992 bytes. The remaining metadata
 prefix has a strict size limit; inactive slots stay zero and allocator-owned.
 The existing read-only section becomes executable, never writable. Old owner
 names retain their original permissions, bytes and allocations.
@@ -513,7 +513,7 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
         content = buf[row["raw"]:row["raw"] + row["size"]]
         pad = b"\xcc" if row["kind"] == "code" and row["owner"] not in DIRECTORY_CODE_OWNERS else b"\0"
         _require(content == pad * row["size"], "the new owner's span is not unreserved padding")
-        if row["owner"] in DIRECTORY_CODE_OWNERS:
+        if row["owner"] in DIRECTORY_CODE_OWNERS and row["kind"] == "code":
             buf[row["raw"]:row["raw"] + row["size"]] = b"\xcc" * row["size"]
     _seal_scaleout(buf, wanted)
     result = bytes(buf)
@@ -641,6 +641,8 @@ DIRECTORY_CODE_REQUESTS = (
     DIRECTORY_CODE_REQUEST,
     ("nfl2k5_draft_picks_spill", "code", 544, 16),
     ("nfl2k5_hback_spill", "code", 1024, 16),
+    ("nfl2k5_team_ratings_spill", "code", 448, 16),
+    ("nfl2k5_team_ratings_spill", "read_only", 464, 16),
 )
 DIRECTORY_CODE_OWNERS = tuple(r[0] for r in DIRECTORY_CODE_REQUESTS)
 MAX_REQUESTS = 96
@@ -714,6 +716,7 @@ def dormant_union():
     from . import nfl2k5_coach_ai as coach_ai
     from . import nfl2k5_moment_coaches as moment_coaches
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
+    from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
@@ -734,7 +737,7 @@ def dormant_union():
             # Historical coaches remain last so installed owners retain their addresses.
             # Fixed directory slots do not move any earlier owner.
             + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
-            + draft_picks.REQUESTS + hback.REQUESTS)
+            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS)
 
 
 def is_scaleout(payload):
@@ -795,7 +798,9 @@ def _directory_code_rows(requests):
     for expected in DIRECTORY_CODE_REQUESTS:
         owner, kind, size, align = expected
         offset -= size
-        found = [tuple(r) for r in requests if r[0] == owner]
+        _require(all(tuple(r) in DIRECTORY_CODE_REQUESTS for r in requests if r[0] == owner),
+                 "foreign directory code reservation")
+        found = [tuple(r) for r in requests if tuple(r[:2]) == expected[:2]]
         _require(not found or found == [expected], "foreign directory code reservation")
         if found:
             rows.append(dict(owner=owner, kind=kind, size=size, align=align,
@@ -1052,7 +1057,7 @@ def _scale_directory(requests, seals, directory_code=None):
         tail = bytearray(code_size)
         for row in _directory_code_rows(requests):
             at = row["raw"]-SCALE_DIRECTORY-budget
-            tail[at:at+row["size"]] = b"\xcc" * row["size"]
+            tail[at:at+row["size"]] = (b"\xcc" if row["kind"] == "code" else b"\0") * row["size"]
         directory_code = bytes(tail)
     _require(len(directory_code) == code_size, "directory code size differs")
     for row in _directory_metadata_rows(requests)[1:]:
@@ -1199,7 +1204,8 @@ def _apply_scaleout(payload, requests):
         if region["kind"] == "code":
             buf[region["raw"]:region["raw"] + region["size"]] = b"\xcc" * region["size"]
     for row in _directory_code_rows(requests):
-        buf[row["raw"]:row["raw"]+row["size"]] = b"\xcc" * row["size"]
+        if row["kind"] == "code":
+            buf[row["raw"]:row["raw"]+row["size"]] = b"\xcc" * row["size"]
     logo_site = next(a for a in allocations if a["owner"] == LOGO_REQUEST[0])
     buf[logo_site["raw"]:logo_site["raw"] + logo.LOGO_SIZE] = logo.RETAIL_LOGO
     struct.pack_into("<3I", buf, 0x104, 0x10000, PAGE, SCALE_IMAGE_SIZE)
@@ -1260,7 +1266,8 @@ def uninstall_read_only(payload: bytes, owner: str) -> tuple[bytes, dict]:
 
 def _capacity(regions, allocations, *, scaleout):
     result = {}
-    directory_code = sum(a["size"] for a in allocations if a["owner"] in DIRECTORY_CODE_OWNERS)
+    directory_code = sum(a["size"] for a in allocations
+                         if a["owner"] in DIRECTORY_CODE_OWNERS and a["kind"] == "code")
     for kind in ("code", "data", "read_only"):
         matching = [r for r in regions if r["kind"] == kind and not r.get("music")]
         capacity = sum(r["size"] for r in matching)

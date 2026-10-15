@@ -174,3 +174,20 @@ changes, native code/result preservation, foreign-byte refusal, replay, allocati
 preservation and Studio/repair equality. Physical XBE write/replay and a complete
 virtual-disc scope scan are recorded in the private handoff. No new runtime
 library is required.
+
+
+## Integrated allocation and compatibility
+
+The integrated build uses `nfl2k5_team_ratings_spill` with 448 code bytes and
+464 read-only table bytes in two fixed slots of the allocator directory page.
+Only unused padding was removed from the previous 512-byte reservations.
+The table still contains all weights and 21 float32 curve knots. Its section
+is executable and read-only, never writable. The 1,104-byte metadata prefix
+remains bounded; the complete union needs 991 bytes before optional probes.
+All previously installed feature addresses and bytes stay fixed.
+
+The original `nfl2k5_team_ratings_display` owner with 512-byte code and table
+reservations remains readable and replays byte for byte. Mixed owners and
+changed reservation sizes are refused. Rebuild to use the compact layout.
+Native repair receipts distinguish unchanged feature allocations from the
+allocator's resized metadata reservation. Writes use portable positional I/O.

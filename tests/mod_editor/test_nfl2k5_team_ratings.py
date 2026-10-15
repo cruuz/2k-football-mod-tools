@@ -125,7 +125,7 @@ class Native(unittest.TestCase):
     def test_guards_replay_scope_and_existing_allocations(self):
         self.assertEqual(tr.apply(self.after)[0],self.after)
         self.assertEqual(self.receipt['changed_bytes_outside_allowed_spans'],0)
-        self.assertTrue(self.receipt['existing_allocations_unchanged'])
+        self.assertTrue(self.receipt['existing_feature_allocations_unchanged'])
         for va in (0xC4830,0xC4400,tr.allocation(self.after)['va']):
             bad=bytearray(self.after)
             from mod_editor.core.nfl2k5_rdata_sites import offset_of
@@ -265,4 +265,55 @@ class Native(unittest.TestCase):
         with patch.object(mod_build,'_core_module',return_value=tr),patch.object(mod_build,'_xbe_bytes',return_value=self.before),patch.object(mod_build,'_write_xbe_bytes',side_effect=lambda _,b:captured.append(b)):
             mod_build._apply_team_ratings(mod_build.BuildPlan('a','b',team_ratings=True,position_pools=True),'target',receipt,lambda *_:None)
         self.assertEqual(captured,[self.after]);self.assertEqual(receipt['steps'][0]['step'],'team_ratings')
+@unittest.skipUnless(os.environ.get('B77_RO1_XBE'), 'played-disc XBE required')
+class IntegratedAllocation(unittest.TestCase):
+    def test_legacy_exact_binary_remains_readable_and_replays(self):
+        import hashlib
+        base=Path(os.environ['B77_RO1_XBE']).read_bytes()
+        legacy_requests=((tr.LEGACY_OWNER,'code',512,16),(tr.LEGACY_OWNER,'read_only',512,16))
+        with patch.object(tr,'REQUESTS',legacy_requests):
+            legacy=tr.apply(base)[0]
+        self.assertEqual(hashlib.sha256(legacy).hexdigest(),
+                         'd870ece82cee187c8f0d271a466e49dd61411f666a9caea855d3e51802156042')
+        self.assertEqual(tr.apply(legacy)[0],legacy)
+
+    def test_four_features_compose_and_preserve_existing_owners(self):
+        import json
+        from mod_editor.core import nfl2k5_draft_picks as dp,nfl2k5_hback as hb
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities,nfl2k5_xbe_space as space
+        base=Path(os.environ['B77_RO1_XBE']).read_bytes()
+        picks=json.loads(Path(os.environ['B77_RO1_PICKS']).read_text())
+        roles=json.loads(Path(os.environ['B77_RO1_HBACK']).read_text())
+        left=tr.apply(hb.apply(dp.apply(abilities.apply(base)[0],picks)[0],roles)[0])[0]
+        right=abilities.apply(dp.apply(hb.apply(tr.apply(base)[0],roles)[0],picks)[0])[0]
+        self.assertEqual(left,right)
+        self.assertEqual(len(left),len(base))
+        for row in space.layout(base)['allocations']:
+            if row['owner'] != space.DIRECTORY_OWNER:
+                self.assertIn(row,space.layout(left)['allocations'])
+                at,n=row['raw'],row['size']
+                # Tap burst deliberately changes its existing abilities code.
+                if row['owner'] not in ('nfl2k5_abilities_runtime','nfl2k5_abilities'):
+                    self.assertEqual(base[at:at+n],left[at:at+n],row['owner'])
+        self.assertEqual(tr.apply(left)[0],left)
+        for kind,row in tr.allocations(left).items():
+            section=next(s for s in XbeImage(left).sections if s.start<=row['va']<s.start+s.size)
+            self.assertFalse(section.flags & 1)  # write permission
+            self.assertTrue(section.flags & 4)   # executable directory section
+            bad=bytearray(left);bad[row['raw']] ^= 1
+            self.assertEqual(tr.status(bytes(bad)),'foreign')
+
+    def test_physical_writer_uses_windows_fallback_and_checks_short_writes(self):
+        from tools.b77 import tr1_repair as repair
+        from mod_editor.core import platform_compat as io
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/'binary';p.write_bytes(bytes(32))
+            with patch.object(io.os,'pread',None,create=True),patch.object(io.os,'pwrite',None,create=True):
+                self.assertEqual(repair.write_spans(p,[(3,b'\x00\x0a\x1a\xff')]),4)
+            self.assertEqual(p.read_bytes(),bytes(3)+b'\x00\x0a\x1a\xff'+bytes(25))
+            with patch.object(io,'pwrite',return_value=1):
+                with self.assertRaisesRegex(OSError,'Short'):
+                    repair.write_spans(p,[(0,b'ab')])
+
+
 if __name__=='__main__':unittest.main()

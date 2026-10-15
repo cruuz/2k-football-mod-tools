@@ -24,28 +24,32 @@ class FixedSlots(unittest.TestCase):
 
     def test_every_subset_and_insertion_order_preserves_existing_feature_bytes(self):
         final = []
-        for order in itertools.permutations(space.DIRECTORY_CODE_REQUESTS):
+        groups = tuple((r,) for r in space.DIRECTORY_CODE_REQUESTS[:3]) + (space.DIRECTORY_CODE_REQUESTS[3:],)
+        for order in itertools.permutations(groups):
             current = self.base
-            for request in order:
+            for requests in order:
                 old = space.layout(current)['allocations']
-                extended, receipt = space.extend_scaleout(current, (request,))
+                extended, receipt = space.extend_scaleout(current, requests)
                 new = space.layout(extended)['allocations']
                 self.assertEqual(len(extended), len(current))
-                self.assertEqual(receipt['directory_tail_reassigned_bytes'], request[2])
+                self.assertEqual(receipt['directory_tail_reassigned_bytes'], sum(r[2] for r in requests))
                 for row in old:
                     if row['owner'] != space.DIRECTORY_OWNER:
                         self.assertIn(row, new)
                         at, size = row['raw'], row['size']
                         self.assertEqual(current[at:at+size], extended[at:at+size])
                 # Same owner content in every permutation, independent of order.
-                code = bytes([space.DIRECTORY_CODE_OWNERS.index(request[0])+1])*request[2]
-                current = space.install_code(extended, request[0], code)[0]
+                current = extended
+                for request in requests:
+                    content = bytes([space.DIRECTORY_CODE_OWNERS.index(request[0])+1])*request[2]
+                    install = space.install_code if request[1] == "code" else space.install_read_only
+                    current = install(current, request[0], content)[0]
                 self.assertEqual(space.status(current), 'applied')
             final.append(current)
         self.assertTrue(all(blob == final[0] for blob in final))
 
     def test_every_subset_accounts_for_exactly_one_directory_page(self):
-        for mask in range(8):
+        for mask in range(1 << len(space.DIRECTORY_CODE_REQUESTS)):
             active = tuple(r for i,r in enumerate(space.DIRECTORY_CODE_REQUESTS) if mask & (1<<i))
             report = space.plan(self.requests+active)
             rows = [r for r in report['allocations'] if r['owner'] == space.DIRECTORY_OWNER
@@ -56,7 +60,7 @@ class FixedSlots(unittest.TestCase):
                 self.assertFalse(any(coverage[at:at+row['size']]))
                 coverage[at:at+row['size']] = b'\1'*row['size']
             self.assertEqual(coverage, b'\1'*space.PAGE)
-            self.assertEqual(report['capacity']['code']['capacity_bytes'], 106496+sum(r[2] for r in active))
+            self.assertEqual(report['capacity']['code']['capacity_bytes'], 106496+sum(r[2] for r in active if r[1] == "code"))
             image = space.apply(self.retail, self.requests+active)[0]
             self.assertEqual(space.status(image), 'applied')
             self.assertEqual(space.apply(image)[0], image)

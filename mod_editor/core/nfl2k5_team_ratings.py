@@ -15,9 +15,10 @@ from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 from .nfl2k5_draft_ai import _Asm
 
-OWNER = 'nfl2k5_team_ratings_display'
-CODE_SIZE = 512
-RO_SIZE = 512
+LEGACY_OWNER = 'nfl2k5_team_ratings_display'
+OWNER = 'nfl2k5_team_ratings_spill'
+CODE_SIZE = 448
+RO_SIZE = 464
 REQUESTS = ((OWNER, 'code', CODE_SIZE, 16), (OWNER, 'read_only', RO_SIZE, 16))
 OFFENSE = ((0,1,60),(7,1,20),(3,2,40),(9,1,20),(12,1,12),(13,1,24),(14,1,24),(8,1,4))
 DEFENSE = ((16,1,60),(15,1,40),(11,1,20),(4,2,50),(5,1,15),(6,1,15))
@@ -83,15 +84,19 @@ def map_score(value, unit):
     return 1.
 
 
-def table_bytes():
+def table_bytes(size=RO_SIZE):
+    if size not in (RO_SIZE, 512):
+        raise ValueError('Foreign display-rating table size')
     weights = b''.join(struct.pack('<HBBIfff',w,n,p,0x246D80,.10,0.,1.)
                        for p,n,w in OFFENSE+DEFENSE).ljust(SPREAD_OFFSET,b'\0')
     curves = b''.join(struct.pack('<ff',*p) for curve in KNOTS for p in curve)
-    return (weights+curves).ljust(RO_SIZE,b'\0')
+    return (weights+curves).ljust(size,b'\0')
 
 
-def code_for(code_va, table_va):
-    buf = bytearray(b'\xcc'*CODE_SIZE)
+def code_for(code_va, table_va, size=CODE_SIZE):
+    if size not in (CODE_SIZE, 512):
+        raise ValueError('Foreign display-rating code size')
+    buf = bytearray(b'\xcc'*size)
 
     def put(offset, a, limit):
         code = a.assemble()
@@ -158,12 +163,16 @@ def code_for(code_va, table_va):
 
 
 def allocations(payload):
-    found = [r for r in space.layout(payload)['allocations'] if r['owner']==OWNER] if space.status(payload)=='applied' else []
+    found = [r for r in space.layout(payload)['allocations']
+             if r['owner'] in (OWNER, LEGACY_OWNER)] if space.status(payload)=='applied' else []
     if not found: return {}
     rows = {r['kind']:r for r in found}
-    if len(found)!=2 or set(rows)!= {'code','read_only'} or any(
-            (rows[k]['size'],rows[k]['align'])!=(size,16)
-            for k,size in (('code',CODE_SIZE),('read_only',RO_SIZE))):
+    owners = {r['owner'] for r in found}
+    if len(found)!=2 or len(owners)!=1 or set(rows)!= {'code','read_only'}:
+        raise ValueError('Foreign display-rating allocation')
+    sizes = (512,512) if owners == {LEGACY_OWNER} else (CODE_SIZE,RO_SIZE)
+    if any((rows[k]['size'],rows[k]['align'])!=(size,16)
+           for k,size in zip(('code','read_only'),sizes)):
         raise ValueError('Foreign display-rating allocation')
     return rows
 
@@ -206,10 +215,11 @@ def _state(payload, *, require_pools=True):
     if len(states)!=1 or 'foreign' in states: raise ValueError('Mixed or foreign display-rating callers')
     state=states.pop()
     if rows:
-        ro=image.read(rows['read_only']['va'],RO_SIZE)
-        code=image.read(rows['code']['va'],CODE_SIZE)
-        if ro!=(table_bytes() if state=='applied' else bytes(RO_SIZE)) or code!=(
-                code_for(rows['code']['va'],rows['read_only']['va']) if state=='applied' else b'\xcc'*CODE_SIZE):
+        ro_size=rows['read_only']['size']; code_size=rows['code']['size']
+        ro=image.read(rows['read_only']['va'],ro_size)
+        code=image.read(rows['code']['va'],code_size)
+        if ro!=(table_bytes(ro_size) if state=='applied' else bytes(ro_size)) or code!=(
+                code_for(rows['code']['va'],rows['read_only']['va'],code_size) if state=='applied' else b'\xcc'*code_size):
             raise ValueError('Foreign display-rating owner contents')
     return state,rows
 
@@ -223,17 +233,17 @@ def apply(payload):
     state,rows=_state(payload)
     original=payload
     if state=='applied':
-        return payload,dict(owner=OWNER,changed_bytes=0,already_applied=True,simulation_native=True)
+        return payload,dict(owner=rows['code']['owner'],changed_bytes=0,already_applied=True,simulation_native=True)
     if not rows:
         payload,_=space.extend_scaleout(payload,REQUESTS) if space.status(payload)=='applied' else space.apply(payload,REQUESTS,scaleout=True)
         rows=allocations(payload)
     code_va,table_va=rows['code']['va'],rows['read_only']['va']
     sites=[(f'UI_rating_{site:x}',site,site_bytes(site,NATIVE_ROUTINES[unit][0]),
             site_bytes(site,code_va+DISPLAY_OFFSETS[unit])) for site,_n,unit in SITES]
-    payload,_=space.install_read_only(payload,OWNER,table_bytes())
-    payload,_=space.install_code(payload,OWNER,code_for(code_va,table_va))
-    payload,_=rdata.apply(payload,sites,OWNER)
+    payload,_=space.install_read_only(payload,rows['code']['owner'],table_bytes(rows['read_only']['size']))
+    payload,_=space.install_code(payload,rows['code']['owner'],code_for(code_va,table_va,rows['code']['size']))
+    payload,_=rdata.apply(payload,sites,rows['code']['owner'])
     if status(payload)!='applied': raise ValueError('Display-rating readback failed')
-    return payload,dict(owner=OWNER,changed_bytes=sum(a!=b for a,b in zip(original,payload)),
+    return payload,dict(owner=rows['code']['owner'],changed_bytes=sum(a!=b for a,b in zip(original,payload)),
                         already_applied=False,table_va=hex(table_va),code_va=hex(code_va),
                         dynamic=True,simulation_native=True,ui_callers=len(SITES))

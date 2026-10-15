@@ -45,7 +45,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(sprite['size'], 5376)  # beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
         self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
-                         [108576, 86016, 18400])  # 2080 directory bytes belong to three fixed code slots.
+                         [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
                          [0, 0, 48])  # the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
         self.assertEqual(len(report['pages']), 52)

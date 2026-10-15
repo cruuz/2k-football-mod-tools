@@ -538,5 +538,17 @@
   "code",
   1024,
   16
+ ],
+ [
+  "nfl2k5_team_ratings_spill",
+  "code",
+  448,
+  16
+ ],
+ [
+  "nfl2k5_team_ratings_spill",
+  "read_only",
+  464,
+  16
  ]
 ]
