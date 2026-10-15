@@ -659,7 +659,7 @@ LATE_OWNER = "nfl2k5_k128"
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
                "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
-               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS)
+               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display")
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.

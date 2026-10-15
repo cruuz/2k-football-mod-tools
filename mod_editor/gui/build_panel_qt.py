@@ -216,7 +216,10 @@ ANNIVERSARY_OPTIONS = (
      "Use season-specific rules in Anniversary moments. Requires historic Anniversary moments, dynamic kickoff, "
      "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
 )
-BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS)
+BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
+                 ("team_ratings", "Modern team ratings",
+                  "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
+                  "Requires modern position pools. Not yet tested in-game."))
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
@@ -3030,7 +3033,7 @@ class BuildPanel(QWidget):
             combo.setEnabled(False)
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
-        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page", "team_ratings"):
             if (self._state or {}).get(key) == "applied":
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
