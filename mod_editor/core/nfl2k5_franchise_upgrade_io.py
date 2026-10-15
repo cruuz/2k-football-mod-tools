@@ -105,9 +105,11 @@ class UpgradePlan:
 
 
 def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
-                 cohort_path: Path = DEFAULT_COHORT) -> UpgradePlan:
+                 cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
     """Read, validate and preview every change, without creating any files."""
-    upgrade.require(command in ("upgrade", "coach-sync"), "unknown upgrade command")
+    upgrade.require(command in ("upgrade", "coach-sync", "team-history"), "unknown upgrade command")
+    upgrade.require(team_history_path is None or command != "coach-sync",
+                    "TEAM evidence requires upgrade or team-history")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
     body, resources = load_disc(disc, books=command == "upgrade")
@@ -119,8 +121,13 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         steps.append(step)
         payload, step = upgrade.sync_playbooks(payload, body, resources)
         steps.append(step)
-    payload, step = upgrade.sync_coaches(payload, body)
-    steps.append(step)
+    if command in ("upgrade", "team-history"):
+        evidence = json.loads(team_history_path.read_text(encoding="utf-8")) if team_history_path else None
+        payload, step = upgrade.upgrade_team_history(payload, body, evidence)
+        steps.append(step)
+    if command != "team-history":
+        payload, step = upgrade.sync_coaches(payload, body)
+        steps.append(step)
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,
                "input": str(source.resolve()), "disc": str(disc.resolve()),
@@ -133,6 +140,8 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                "validation": {"before": before_validation, "after": after_validation}}
     if command == "upgrade":
         receipt["cohort_sha256"] = hash_file(cohort_path)
+    if team_history_path:
+        receipt["team_history_evidence_sha256"] = hash_file(team_history_path)
     return UpgradePlan(container, disc.resolve(), payload, receipt)
 
 

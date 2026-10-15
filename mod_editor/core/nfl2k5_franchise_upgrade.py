@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import hashlib
+import re
 import struct
 import zlib
 from typing import Mapping
@@ -32,6 +33,233 @@ def require(ok: bool, message: str) -> None:
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+TEAM_EVIDENCE_SCHEMA = "nfl2k5_franchise_team_evidence/v1"
+
+
+def season_stats_sha256(words, slot: int) -> str:
+    """Pin regular-season counters independently of the stream's location/terminator.
+
+    Slot bits are excluded so the experience migration does not invalidate a
+    season's evidence. Duplicate counters remain part of the fingerprint.
+    """
+    counters = sorted(raw & 0x7FFFFF for raw in words
+                      if not raw & 0x70000000 and cs.Word(raw).slot == slot
+                      and cs.Word(raw).field != 87)
+    return sha(b"".join(struct.pack("<I", raw) for raw in counters))
+
+
+def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | None = None) -> tuple[bytes, dict]:
+    """Restore missing TEAM entries without guessing from current membership.
+
+    Pre-franchise seasons may use the current disc's identity-matched history.
+    Seasons played inside this franchise require explicit, counter-pinned
+    evidence. Existing teams and every stat word are preserved. Replacement
+    entries use native-style insertion in the bounded pool; shared streams
+    are cloned so other owners retain their exact history. Insufficient capacity refuses the entire operation.
+    """
+    save, roster = franchise(payload)
+    disc = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    by_identity = defaultdict(list)
+    disc_identity = defaultdict(list)
+    for player in roster.players:
+        if player.pool == "primary":
+            by_identity[identity(player)].append(player)
+    for player in disc.players:
+        if player.pool == "primary":
+            disc_identity[identity(player)].append(player)
+    clubs = {team.abbreviation: team.index for team in roster.teams[:32]}
+    require(len(clubs) == 32 and all(clubs), "requires unique NFL club abbreviations")
+    # These events can identify a club at an event, but cannot prove the
+    # absence of intervening moves. The native writer wraps at 600 entries,
+    # clears kinds independently, and stores event arguments rather than a
+    # season/date. A draft or signing plus today's membership is insufficient.
+    native_events = save.ledger()
+    events_by_player = defaultdict(list)
+    for event in native_events:
+        events_by_player[event["player_index"]].append(event["index"])
+    native_evidence = {
+        "ledger_write_cursor": save.u32(save.front_office_block + fs.F_LEDGER_CURSOR),
+        "ledger_boundary_cursors": list(struct.unpack_from(
+            "<II", payload, save.front_office_block + fs.F_LEDGER_BOUNDARIES)),
+        "ledger_capacity": fs.F_LEDGER_CAPACITY,
+        "retained_events": len(native_events),
+        "retained_event_kinds": dict(sorted(Counter(e["kind"] for e in native_events).items())),
+        "news_log_entries": len(save.transactions()),
+        "full_season_coverage_proved": False,
+        "limitation": "Native event slots can wrap or be cleared and carry no season coverage marker. "
+                      "Current membership, contracts, draft events and partial highlights do not prove a whole season.",
+    }
+
+    def entries(words, field, slot):
+        return [raw for raw in words if not raw & 0x70000000
+                and cs.Word(raw).field == field and cs.Word(raw).slot == slot]
+
+    explicit = {}
+    if evidence is not None:
+        require(isinstance(evidence, Mapping), "TEAM evidence must be an object")
+        require(evidence.get("schema") == TEAM_EVIDENCE_SCHEMA, "unknown TEAM evidence schema")
+        sources = evidence.get("sources", {})
+        rows = evidence.get("rows")
+        require(isinstance(sources, Mapping) and isinstance(rows, list), "TEAM evidence needs sources and rows")
+        for row in rows:
+            require(isinstance(row, Mapping) and all(isinstance(row.get(key), str) for key in
+                    ("first", "last", "birth_date", "team", "source", "stats_sha256")),
+                    "TEAM evidence row has missing or invalid identity/source fields")
+            require(bool(row["birth_date"]), "TEAM evidence needs a birth date")
+            key = row["first"], row["last"], row["birth_date"]
+            matches = by_identity[key]
+            require(len(matches) == 1, "TEAM evidence identity missing or ambiguous")
+            player = matches[0]
+            year = row.get("season")
+            require(type(year) is int and BASE_YEAR <= year < roster.reference_year,
+                    "TEAM evidence must describe a completed franchise season")
+            slot = player.record.values["years_pro"] - (roster.reference_year - year)
+            require(1 <= slot <= 31, "TEAM evidence season outside player career")
+            words = roster.history_words[player.key]
+            games = entries(words, 0, slot)
+            require(len(games) == 1 and games[0] & 65535, "TEAM evidence needs a positive games row")
+            require(row.get("stats_sha256") == season_stats_sha256(words, slot),
+                    "TEAM evidence counters changed")
+            require(row["team"] in clubs, "TEAM evidence club is not in this franchise")
+            source = sources.get(row.get("source"), {})
+            require(isinstance(source, Mapping)
+                    and isinstance(source.get("description"), str) and bool(source["description"].strip())
+                    and isinstance(source.get("sha256"), str)
+                    and re.fullmatch("[0-9a-f]{64}", source["sha256"]) is not None,
+                    "TEAM evidence needs a described, hashed source")
+            target = player.key, slot
+            require(target not in explicit, "duplicate TEAM evidence season")
+            existing = entries(words, 87, slot)
+            value = clubs[row["team"]] + 1
+            require(not existing or (len(existing) == 1 and existing[0] & 65535 == value),
+                    "TEAM evidence conflicts with recorded history")
+            explicit[target] = value, {"kind": "supplied_evidence", "source": row["source"],
+                                       "description": source["description"], "sha256": source["sha256"]}
+
+    additions = defaultdict(list)
+    changes, unresolved = [], []
+    for player in roster.players:
+        words = roster.history_words[player.key]
+        slots = sorted({cs.Word(raw).slot for raw in words if not raw & 0x70000000
+                        and cs.Word(raw).field == 0 and raw & 65535})
+        for slot in slots:
+            if entries(words, 87, slot):
+                continue
+            year = roster.reference_year - player.record.values["years_pro"] + slot
+            # Current rows use runtime membership. Never bake today's club into
+            # an unknown old season or manufacture a folded "pre" season.
+            if year >= roster.reference_year or slot < 1:
+                continue
+            found = explicit.get((player.key, slot))
+            if found is None and year < BASE_YEAR and player.pool == "primary":
+                key = identity(player)
+                candidates = disc_identity[key]
+                if key[2] and len(by_identity[key]) == 1 and len(candidates) == 1:
+                    source_player = candidates[0]
+                    source_slot = source_player.record.values["years_pro"] - (BASE_YEAR - year)
+                    source_words = disc.history_words[source_player.key]
+                    teams = entries(source_words, 87, source_slot)
+                    games = entries(source_words, 0, source_slot)
+                    if (1 <= source_slot <= 31 and len(teams) == 1 and len(games) == 1 and games[0] & 65535
+                            and season_stats_sha256(source_words, source_slot) == season_stats_sha256(words, slot)):
+                        index = (teams[0] & 65535) - 1
+                        if 0 <= index < min(32, len(disc.teams)) and disc.teams[index].abbreviation in clubs:
+                            found = (clubs[disc.teams[index].abbreviation] + 1,
+                                     {"kind": "disc_history", "disc_body_sha256": sha(disc_body),
+                                      "source_player_index": source_player.index, "source_slot": source_slot})
+            common = {"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
+                      "birth_date": identity(player)[2], "season": year, "slot": slot}
+            if found is None:
+                event_slots = events_by_player[player.index] if player.pool == "primary" else []
+                reason = ("pre_franchise_source_missing_or_mismatched" if year < BASE_YEAR else
+                          "retained_events_without_season_coverage" if event_slots else
+                          "no_retained_player_event_or_season_coverage")
+                unresolved.append({**common, "reason": reason, "native_event_slots": event_slots})
+                continue
+            value, basis = found
+            additions[player.key].append((slot << 23) | (87 << 16) | value)
+            changes.append({**common, "field": "team_history", "before": None,
+                            "after": roster.teams[value - 1].abbreviation, "basis": basis})
+
+    out = bytearray(payload)
+    masks = {}
+    spans = []
+    used = roster.pool_used
+    pool = roster.pool
+    require(pool is not None, "missing history pool")
+    # Native FUN_0014e8b0 inserts a word into the used pool with memmove,
+    # adjusts later player pointers, and increments +0x40. Unused native slots
+    # can contain stale words after compaction; zero bytes are not required.
+    # Only accept the known native arena pool, not an arbitrary relocated span.
+    require(not additions or pool == roster.layout.root + 0x41A34,
+            "unsupported history pool location")
+    intervals = {key: (start, start + 4 * len(roster.history_words[key]))
+                 for key, start in roster.history_offsets.items() if start is not None}
+    insertions, clones = {}, {}
+    for key, new in additions.items():
+        start, stop = intervals[key]
+        shared = any(other != key and left < stop and right > start
+                     for other, (left, right) in intervals.items())
+        if shared:
+            clones[key] = tuple(new) + roster.history_words[key]
+        else:
+            insertions[start] = (key, tuple(new))
+    needed = sum(len(new) for _, new in insertions.values()) + sum(map(len, clones.values()))
+    require(used + needed <= roster.pool_capacity, "insufficient history capacity for TEAM repair")
+    end = pool + (used + needed) * 4
+    require(end <= roster.layout.end, "TEAM repair exceeds roster arena")
+    for table in roster.tables.values():
+        if table.offset is not None and table.count and needed:
+            require(end <= table.offset or pool >= table.offset + table.count * table.stride,
+                    "TEAM repair would overlap a roster table")
+    block = bytearray()
+    cursor = pool
+    targets = {}
+    for start, (key, new) in sorted(insertions.items()):
+        block.extend(payload[cursor:start])
+        targets[key] = pool + len(block)
+        block.extend(b"".join(struct.pack("<I", word) for word in new))
+        cursor = start
+    block.extend(payload[cursor:pool + used * 4])
+    for key, words in sorted(clones.items()):
+        targets[key] = pool + len(block)
+        block.extend(b"".join(struct.pack("<I", word) for word in words))
+    require(len(block) == (used + needed) * 4, "TEAM pool size mismatch")
+    if needed:
+        out[pool:end] = block
+        spans.append({"field": "history_pool", "offset": pool, "size": end - pool})
+        masks.update({offset: 255 for offset in range(pool, end)})
+        for key, (start, _stop) in intervals.items():
+            target = targets.get(key, start + sum(len(new) * 4 for at, (_, new) in insertions.items() if at <= start))
+            if target != start:
+                pointer = roster.by_key[key].offset + 0x2C
+                struct.pack_into("<i", out, pointer, target - pointer + 1)
+                masks.update({pointer + i: 255 for i in range(4)})
+                spans.append({"field": "history_pointer", "pool": key[0], "index": key[1],
+                              "offset": pointer, "size": 4})
+        pointer = roster.layout.root + 0x40
+        struct.pack_into("<I", out, pointer, used + needed)
+        masks.update({pointer + i: 255 for i in range(4)})
+        spans.append({"field": "history_used_count", "offset": pointer, "size": 4})
+    result = bytes(out)
+    proof = prove_scope(payload, result, masks)
+    checked = sr.decode(result, base_year=BASE_YEAR)
+    for player in roster.players:
+        require(identity(checked.by_key[player.key]) == identity(player), "TEAM repair changed a player identity")
+        require(checked.history_words[player.key] == tuple(additions.get(player.key, ()))
+                + roster.history_words[player.key], "TEAM history read-back differs")
+    require([t.abbreviation for t in checked.teams] == [t.abbreviation for t in roster.teams],
+            "TEAM repair changed a club label")
+    return result, {"operation": "team_history", "changes": changes, "unresolved": unresolved,
+                    "unresolved_by_reason": dict(sorted(Counter(r["reason"] for r in unresolved).items())),
+                    "native_evidence": native_evidence,
+                    "unresolved_rows": len(unresolved), "used_before": used, "used_after": used + needed,
+                    "capacity": roster.pool_capacity, "source_savegame_sha256": sha(payload),
+                    "output_savegame_sha256": sha(result), "existing_history_words_preserved": True,
+                    "storage_spans": spans,
+                    **proof}
 
 
 def identity(player: sr.Player) -> tuple[str, str, str]:

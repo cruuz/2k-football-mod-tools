@@ -25,18 +25,20 @@ from mod_editor.core.nfl2k5_franchise_upgrade_io import (  # noqa: E402,F401
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("upgrade", "coach-sync"))
+    parser.add_argument("command", choices=("upgrade", "coach-sync", "team-history"))
     parser.add_argument("--input", required=True, type=Path, help="signed FXG save folder or zip")
     parser.add_argument("--disc", required=True, type=Path, help="current/final disc, read only")
     parser.add_argument("--output", type=Path, help="new signed save folder")
     parser.add_argument("--receipt", required=True, type=Path, help="new JSON receipt including all field changes")
     parser.add_argument("--cohort", default=DEFAULT_COHORT, type=Path)
+    parser.add_argument("--team-history", type=Path, help="optional counter-pinned evidence for completed franchise seasons")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
         upgrade.require(args.dry_run or args.output is not None, "--output is required unless --dry-run")
         check_paths(args.input, args.disc, args.output, args.receipt)
-        plan = plan_upgrade(args.input, args.disc, command=args.command, cohort_path=args.cohort)
+        plan = plan_upgrade(args.input, args.disc, command=args.command, cohort_path=args.cohort,
+                            team_history_path=args.team_history)
         receipt = write_plan(plan, None if args.dry_run else args.output, args.receipt)
         print(json.dumps({k: v for k, v in receipt.items() if k not in ("steps", "write", "validation")}))
         return 0

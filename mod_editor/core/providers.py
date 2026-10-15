@@ -716,7 +716,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_franchise_autosave_code.py": "bf06126a790642048aae92d57d3815d445560bc012ed02df5917648bcceec183",
         "mod_editor/core/nfl2k5_franchise_edit_player.py": "aff7a39db971c0929363fbafa0771571b766fe041cc7e22a569f17f955da9b39",
         "mod_editor/core/nfl2k5_franchise_practice.py": "a02412be59a08a5997c1c2936265377520abb4e3ecf7108e24d9546b7a8592f0",
-        "mod_editor/core/nfl2k5_franchise_save.py": "5687f7444ed04ff006cc5ccbaf94cc51fe3deef6891c78b91869c550bc2a2029",
+        "mod_editor/core/nfl2k5_franchise_save.py": "f20458458c3ce63a6cf23c960c7f63baa47df0c57ffeb1acbbfaf137581af05d",
         "mod_editor/core/nfl2k5_gameplay_lever.py": "21fbc88ec891fed1798905f26932d812906c5ce62485bffc1e3b47c9aa9b31f3",
         "mod_editor/core/nfl2k5_guardian_cap.py": "10d04364c41bd7522f74109a3031df05a5cd9ef3ea80193daaf93a455943b5a8",
         "mod_editor/core/nfl2k5_guardian_overlay.py": "c84e20e32f60a0f955c6a5f6bc059ce4abeb5276b7e7e90ba845f8f658990461",
