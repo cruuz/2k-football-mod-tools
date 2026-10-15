@@ -490,6 +490,7 @@ class BuildPlan:
     scorebug_runtime: bool = False
     scorebug_watermark: str = "auto"  # NFL, switching to MNF only for franchise Monday night; mnf / off overrides
     scorebug_folder: str = ""      # optional repaintable ESPN scorebar artwork folder (docs/scorebug_template layout); blank = shipped art
+    indicator_names_folder: str = ""  # optional private indicator atlas; empty preserves the native FONT
     music_policy: str = "retail"
     music_unlock: bool = False
     music_userlist: bool = False
@@ -509,7 +510,7 @@ class BuildPlan:
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.letter_grades or self.honors_page
-                or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.momentum_collisions or self.scorebug_runtime or bool(self.indicator_names_folder) or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
     def to_recipe(self) -> dict[str, Any]:
@@ -2524,6 +2525,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("ESPN 2026 wipes and boards must be Off or On.")
     if type(plan.kick_meter_2026) is not bool:  # b76-km
         raise ValueError("Kick meter (2026 ESPN style) must be Off or On.")
+    if type(plan.indicator_names_folder) is not str:
+        raise ValueError("Indicator names folder must be a path or empty.")
+    if plan.indicator_names_folder:
+        if not tt.is_disc_image(plan.source):
+            raise ValueError("Indicator names need a disc image with the sprite scorebug resources.")
+        from . import nfl2k5_indicator_names as indicator_names
+        indicator_names.compile_font(plan.indicator_names_folder)
     if type(plan.modern_goalposts) is not bool:  # b77-v1
         raise ValueError("Modern goalposts must be Off or On.")
     if type(plan.modern_coaches) is not bool:  # b77-co1
@@ -3317,7 +3325,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
-    if replace(plan, helmet_finish="glossy", weather_haze=False, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
+    if replace(plan, helmet_finish="glossy", weather_haze=False, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, indicator_names_folder="", momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
@@ -4433,6 +4441,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         ball_receipt = era_ball.apply_to_image(target)
         receipt["steps"].append({"step": "era_ball", **ball_receipt})
         receipt["result"]["era_ball"] = ball_receipt["state"]
+    if plan.indicator_names_folder:
+        # Final HUD writer: compresses the existing sprite scene losslessly and
+        # fits its private FONT in that same span, after all other HUD owners.
+        from . import nfl2k5_indicator_names as indicator_names
+        progress("Installing indicator name atlas", 0, 0)
+        names_receipt = indicator_names.apply_to_image(target, folder=plan.indicator_names_folder)
+        receipt["steps"].append({"step": "indicator_names", **names_receipt})
+        receipt["result"]["indicator_names"] = names_receipt["state"]
     if tt.is_disc_image(target):
         # DESIGN: all growth writers have finished. Compact only this disposable
         # build copy, then run the publication gates through its new directory.

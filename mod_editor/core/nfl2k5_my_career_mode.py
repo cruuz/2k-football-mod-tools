@@ -648,6 +648,12 @@ def check_context(payload, edits, *, installed=False):
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
+        # nm1 changes only the collector's label decision, not career control.
+        # Normalize its exact declared bytes so inspecting/replaying a Studio
+        # image after the final indicator pass retains the same strict guard.
+        if va == 0x75d90:
+            from . import nfl2k5_indicator_names as indicator_names
+            raw = bytearray(indicator_names.canonical_context(va, raw))
         for _, hook, before, after in [*edits, *camera_edits]:
             if va <= hook and hook + len(before) <= va + size:
                 at = hook - va

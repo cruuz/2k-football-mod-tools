@@ -1749,6 +1749,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_presentation_scenes",   # b76-p2
         "mod_editor.core.nfl2k5_espn_wipes_boards",     # b76-p2
         "mod_editor.core.nfl2k5_kick_meter_2026",       # b76-km
+        "mod_editor.core.nfl2k5_indicator_names",      # b773-nm1 private atlas compiler
         "mod_editor.core.nfl2k5_modern_goalposts",      # b77-v1
         "mod_editor.core.nfl2k5_rules_patch",
         "mod_editor.core.nfl2k5_coin_defer",
