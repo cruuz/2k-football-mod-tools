@@ -1258,6 +1258,7 @@ data/nfl2k5_modern_coaches/ATL/logo.png
 data/nfl2k5_modern_coaches/ATL/shirt.png
 data/nfl2k5_modern_coaches/BAL/headset.png
 data/nfl2k5_modern_coaches/BAL/head.png
+data/nfl2k5_modern_coaches/BAL/geometry.json
 data/nfl2k5_modern_coaches/BAL/jacket.png
 data/nfl2k5_modern_coaches/BAL/logo.png
 data/nfl2k5_modern_coaches/BAL/shirt.png
@@ -1268,6 +1269,7 @@ data/nfl2k5_modern_coaches/BUF/logo.png
 data/nfl2k5_modern_coaches/BUF/shirt.png
 data/nfl2k5_modern_coaches/CAR/headset.png
 data/nfl2k5_modern_coaches/CAR/head.png
+data/nfl2k5_modern_coaches/CAR/geometry.json
 data/nfl2k5_modern_coaches/CAR/jacket.png
 data/nfl2k5_modern_coaches/CAR/logo.png
 data/nfl2k5_modern_coaches/CAR/shirt.png
@@ -1278,11 +1280,13 @@ data/nfl2k5_modern_coaches/CHI/logo.png
 data/nfl2k5_modern_coaches/CHI/shirt.png
 data/nfl2k5_modern_coaches/CIN/headset.png
 data/nfl2k5_modern_coaches/CIN/head.png
+data/nfl2k5_modern_coaches/CIN/geometry.json
 data/nfl2k5_modern_coaches/CIN/jacket.png
 data/nfl2k5_modern_coaches/CIN/logo.png
 data/nfl2k5_modern_coaches/CIN/shirt.png
 data/nfl2k5_modern_coaches/CLE/headset.png
 data/nfl2k5_modern_coaches/CLE/head.png
+data/nfl2k5_modern_coaches/CLE/geometry.json
 data/nfl2k5_modern_coaches/CLE/jacket.png
 data/nfl2k5_modern_coaches/CLE/logo.png
 data/nfl2k5_modern_coaches/CLE/shirt.png
@@ -1303,6 +1307,7 @@ data/nfl2k5_modern_coaches/DET/logo.png
 data/nfl2k5_modern_coaches/DET/shirt.png
 data/nfl2k5_modern_coaches/GB/headset.png
 data/nfl2k5_modern_coaches/GB/head.png
+data/nfl2k5_modern_coaches/GB/geometry.json
 data/nfl2k5_modern_coaches/GB/jacket.png
 data/nfl2k5_modern_coaches/GB/logo.png
 data/nfl2k5_modern_coaches/GB/shirt.png
@@ -1318,6 +1323,7 @@ data/nfl2k5_modern_coaches/IND/logo.png
 data/nfl2k5_modern_coaches/IND/shirt.png
 data/nfl2k5_modern_coaches/JAX/headset.png
 data/nfl2k5_modern_coaches/JAX/head.png
+data/nfl2k5_modern_coaches/JAX/geometry.json
 data/nfl2k5_modern_coaches/JAX/jacket.png
 data/nfl2k5_modern_coaches/JAX/logo.png
 data/nfl2k5_modern_coaches/JAX/shirt.png
@@ -1334,6 +1340,7 @@ data/nfl2k5_modern_coaches/LAC/logo.png
 data/nfl2k5_modern_coaches/LAC/shirt.png
 data/nfl2k5_modern_coaches/LAR/headset.png
 data/nfl2k5_modern_coaches/LAR/head.png
+data/nfl2k5_modern_coaches/LAR/geometry.json
 data/nfl2k5_modern_coaches/LAR/jacket.png
 data/nfl2k5_modern_coaches/LAR/logo.png
 data/nfl2k5_modern_coaches/LAR/shirt.png
@@ -1349,6 +1356,7 @@ data/nfl2k5_modern_coaches/MIA/logo.png
 data/nfl2k5_modern_coaches/MIA/shirt.png
 data/nfl2k5_modern_coaches/MIN/headset.png
 data/nfl2k5_modern_coaches/MIN/head.png
+data/nfl2k5_modern_coaches/MIN/geometry.json
 data/nfl2k5_modern_coaches/MIN/jacket.png
 data/nfl2k5_modern_coaches/MIN/logo.png
 data/nfl2k5_modern_coaches/MIN/shirt.png
@@ -1389,6 +1397,7 @@ data/nfl2k5_modern_coaches/SEA/logo.png
 data/nfl2k5_modern_coaches/SEA/shirt.png
 data/nfl2k5_modern_coaches/SF/headset.png
 data/nfl2k5_modern_coaches/SF/head.png
+data/nfl2k5_modern_coaches/SF/geometry.json
 data/nfl2k5_modern_coaches/SF/jacket.png
 data/nfl2k5_modern_coaches/SF/logo.png
 data/nfl2k5_modern_coaches/SF/shirt.png
@@ -1399,11 +1408,13 @@ data/nfl2k5_modern_coaches/TB/logo.png
 data/nfl2k5_modern_coaches/TB/shirt.png
 data/nfl2k5_modern_coaches/TEN/headset.png
 data/nfl2k5_modern_coaches/TEN/head.png
+data/nfl2k5_modern_coaches/TEN/geometry.json
 data/nfl2k5_modern_coaches/TEN/jacket.png
 data/nfl2k5_modern_coaches/TEN/logo.png
 data/nfl2k5_modern_coaches/TEN/shirt.png
 data/nfl2k5_modern_coaches/WAS/headset.png
 data/nfl2k5_modern_coaches/WAS/head.png
+data/nfl2k5_modern_coaches/WAS/geometry.json
 data/nfl2k5_modern_coaches/WAS/jacket.png
 data/nfl2k5_modern_coaches/WAS/logo.png
 data/nfl2k5_modern_coaches/WAS/shirt.png

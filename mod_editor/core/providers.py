@@ -704,7 +704,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_edge_rename.py": "8d07169164719fff6121c36b07f90ac8af0d350ea39cb2dcaee83a3ab4e3fc0d",
         "mod_editor/core/nfl2k5_elbow_options.py": "cd6921f1d7b2942f81c1415fab45eb18f3c4487e3e0aac1fda3a9dbd82760a1f",
         "mod_editor/core/nfl2k5_espn25_scenarios.py": "6c5249eaef0aad438a1a8f698ca0f3d5a08435023bc11a4013481aece433e46d",
-        "mod_editor/core/nfl2k5_modern_coaches.py": "cd639ddb9816e6b9ff58c1d1b17d889a5fc7ef0410507d066b1f6b96753981af",
+        "mod_editor/core/nfl2k5_modern_coaches.py": "ad092d1e8315bbe28ab82f385d6608642471af9d308a900f3c0b39d6b8ba106f",
         "mod_editor/core/nfl2k5_moment_coaches.py": "bdff502890de990c13a0cef87e1abae3f51fa8dae5d15f7d9635a200e86d8241",
         "mod_editor/core/nfl2k5_espn25_more_moments.py": "1aff719b32433aeac64f233e5e000ca6fd02350b805f9987bb98f89642eed3ad",
         "mod_editor/core/nfl2k5_espn25_more_moments_code.py": "661c05f766df80e30c11f1975d0a3af797bf5a26ceadf0f0dc56a86e7b99fcdc",

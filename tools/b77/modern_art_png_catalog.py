@@ -42,6 +42,9 @@ CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co
                   "areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. "
                   "The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering "
                   "and a generic shield; its plain leather is taken from the user's disc ball at build time. "
+                  "b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, "
+                  "NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only "
+                  "the fine feature detail of co2's authored faces. "
                   "No photograph or photo crop and no "
                   "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
 
