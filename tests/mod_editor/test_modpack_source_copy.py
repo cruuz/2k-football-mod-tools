@@ -208,6 +208,43 @@ class SourceCopyTests(unittest.TestCase):
         m.apply(pack, base, out)
         self.assertEqual(contents(out), contents(built))
 
+    def test_four_to_fifteen_byte_whole_literals_are_source_copies(self):
+        donor = random.Random(934).randbytes(4097)
+        original = {"default.xbe": b"XBEH", "donor": donor}
+        wanted = dict(original)
+        for size in range(4, 16):
+            original[str(size)] = b"old"
+            wanted[str(size)] = donor[37:37 + size]
+        base = image(self.root / "tiny-base.iso", original)
+        built = image(self.root / "tiny-built.iso", wanted)
+        pack = self.root / "tiny.2k5patch"
+        result = f.export(base, built, pack, require_retail=False)
+        for row in result["files"]:
+            if row["path"].isdigit():
+                self.assertEqual(row["literal_bytes"], 0, row["path"])
+        out = self.root / "tiny-installed.iso"
+        m.apply(pack, base, out)
+        self.assertEqual(contents(out), contents(built))
+
+    def test_short_seed_acceleration_and_stdlib_agree_at_read_boundaries(self):
+        raw = random.Random(543).randbytes(f.BLOCK + 79) + bytes(4096)
+        needles = {raw[i:i + 4] for i in range(0, len(raw) - 4, 211)}
+        needles.update((raw[f.BLOCK - 3:f.BLOCK + 1], bytes(4)))
+        entry = type("Entry", (), {"path": "a", "byte_offset": 0, "size": len(raw)})()
+        accelerated = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
+                                           m._no_progress, seed_size=4)
+        with mock.patch.object(f, "_literal_seed_candidates", return_value=None):
+            fallback = f._find_literal_seeds(io.BytesIO(raw), [entry], set(needles),
+                                            m._no_progress, seed_size=4)
+        expected = {seed: raw.find(seed) for seed in needles}
+        self.assertEqual(accelerated, expected)
+        self.assertEqual(fallback, expected)
+        # A four-byte witness cannot straddle independently pinned files.
+        entries = [type("Entry", (), {"path": "one", "byte_offset": 0, "size": 31})(),
+                   type("Entry", (), {"path": "two", "byte_offset": 31, "size": 31})()]
+        self.assertEqual(f._find_literal_seeds(io.BytesIO(raw), entries, {raw[29:33]},
+                                              m._no_progress, seed_size=4), {})
+
     def test_prefix_failure_closes_spools_and_removes_partial_pack(self):
         rng = random.Random(830)
         first, other, a, b = (rng.randbytes(n) for n in (17, 17, 16, 16))

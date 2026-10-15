@@ -101,7 +101,7 @@ with a conservative Bloom prefilter, followed by exact byte comparisons for
 every candidate. Hash collisions cannot authorize copies. Standalone systems
 without NumPy use sixteen shifted standard-library regex scans. Both paths
 cover every alignment, including windows across reads. A final pass
-checks prefixes of the remaining short literals, including any new short tail
+checks four-byte prefixes of the remaining short literals, including any new short tail
 created by copying a longer literal's prefix. It repeats until no matching
 short literal remains, caching both matches and misses between passes. Small
 sets use exact bounded-file `mmap.find` searches. Old and new copy streams are
@@ -112,7 +112,8 @@ before the pack is published.
 
 After refinement, any remaining game-operation literal subrange identical to
 retail file content is shorter than 31 bytes, and no whole game-operation
-literal of 16 or more bytes is identical to retail file content.
+literal of four or more bytes is identical to retail file content. Remaining
+one-to-three-byte matches are enumerated by the independent whole-pack audit.
 Short binary constants can coincide with the game. Release evidence must audit
 all literal records against the retail image and enumerate such coincidences;
 this matching limit is not a statement about ownership of small byte strings.

@@ -306,13 +306,14 @@ LITERAL_BATCH_BYTES = 512 * BLOCK
 LITERAL_SEED = 16
 
 
-def _literal_seed_candidates(needles):
+def _literal_seed_candidates(needles, seed_size=LITERAL_SEED):
     """Optional Bloom prefilter; callers must still compare exact seed bytes.
 
     Studio already includes NumPy. Minimal standalone environments retain the
     stdlib search below. A collision only adds work, never authorizes a copy.
     Explicit little-endian views also work on unaligned Windows buffers.
     """
+    require(seed_size in (4, 16), "Unsupported literal seed size")
     try:
         import numpy as np
     except ImportError:
@@ -324,38 +325,41 @@ def _literal_seed_candidates(needles):
     bloom = np.zeros(bits // 8, dtype=np.uint8)
     mask = np.uint64(bits - 1)
     def positions(data, stride):
-        count = (len(data) - LITERAL_SEED) // stride + 1
-        a = np.ndarray((count,), dtype="<u8", buffer=data, strides=(stride,))
-        b = np.ndarray((count,), dtype="<u8", buffer=data, offset=8, strides=(stride,))
-        h = a ^ (b * np.uint64(0x9E3779B97F4A7C15))
+        count = (len(data) - seed_size) // stride + 1
+        a = np.ndarray((count,), dtype="<u4" if seed_size == 4 else "<u8",
+                       buffer=data, strides=(stride,))
+        b = (np.ndarray((count,), dtype="<u8", buffer=data, offset=8, strides=(stride,))
+             if seed_size == 16 else a)
+        h = a.astype(np.uint64) ^ (b * np.uint64(0x9E3779B97F4A7C15))
         h ^= h >> 30; h *= np.uint64(0xBF58476D1CE4E5B9)
         h ^= h >> 27; h *= np.uint64(0x94D049BB133111EB); h ^= h >> 31
         return (h & mask).astype(np.intp), ((h >> 32) & mask).astype(np.intp), a, b
     iterator = iter(needles)
     while batch := list(itertools.islice(iterator, 65536)):
-        for pos in positions(b"".join(batch), LITERAL_SEED)[:2]:
+        for pos in positions(b"".join(batch), seed_size)[:2]:
             np.bitwise_or.at(bloom, pos >> 3, (1 << (pos & 7)).astype(np.uint8))
     def search(data):
-        if len(data) < LITERAL_SEED:
+        if len(data) < seed_size:
             return ()
         a, b, first, second = positions(data, 1)
         hit = ((bloom[a >> 3] >> (a & 7)) & 1) & ((bloom[b >> 3] >> (b & 7)) & 1)
-        # Adjacent identical windows need one witness. Compare all 16 bytes,
+        # Adjacent identical windows need one witness. Compare all seed bytes,
         # not their hashes, so this also safely bounds work on zero/FF fill.
         hit[1:] &= (first[1:] != first[:-1]) | (second[1:] != second[:-1])
         return np.flatnonzero(hit).tolist()
     return search
 
 
-def _find_literal_seeds(base, sources, needles, progress):
+def _find_literal_seeds(base, sources, needles, progress, *, seed_size=LITERAL_SEED):
     """Find exact seeds at every source byte, with a stdlib-only fallback.
 
-    Sixteen shifted, nonoverlapping regex scans perform the byte slicing in C.
+    Shifted, nonoverlapping regex scans perform the byte slicing in C.
     Set intersection also runs in C. Every offset is visited, including windows
     straddling a read boundary; source-file boundaries are never crossed.
     """
     import re
-    pattern = re.compile(b".{16}", re.DOTALL)
+    require(seed_size in (4, 16), "Unsupported literal seed size")
+    pattern = re.compile(b".{" + str(seed_size).encode("ascii") + b"}", re.DOTALL)
     pending = needles
     found = {}
     if len(needles) <= 32:
@@ -373,23 +377,23 @@ def _find_literal_seeds(base, sources, needles, progress):
                 if not pending:
                     break
         return found
-    candidates = _literal_seed_candidates(needles) if len(needles) >= 4096 else None
+    candidates = _literal_seed_candidates(needles, seed_size) if len(needles) >= 4096 else None
     window = BLOCK if candidates is not None else 65536
     total = sum(e.size for e in sources)
     done = 0
     for number, entry in enumerate(sources):
-        for at in range(0, max(0, entry.size - LITERAL_SEED + 1), window):
+        for at in range(0, max(0, entry.size - seed_size + 1), window):
             if not pending:
                 return found
-            data = xc.read_at(base, entry.byte_offset + at, min(window + LITERAL_SEED - 1, entry.size - at))
+            data = xc.read_at(base, entry.byte_offset + at, min(window + seed_size - 1, entry.size - at))
             if candidates is not None:
                 for offset in candidates(data):
-                    seed = data[offset:offset + LITERAL_SEED]
+                    seed = data[offset:offset + seed_size]
                     if seed in pending:
                         found[seed] = (number << 32) | (at + offset)
                         pending.remove(seed)
             else:
-                for shift in range(LITERAL_SEED):
+                for shift in range(seed_size):
                     hits = pending.intersection(pattern.findall(data[shift:]))
                     for seed in hits:
                         found[seed] = (number << 32) | (at + data.find(seed))
@@ -399,18 +403,18 @@ def _find_literal_seeds(base, sources, needles, progress):
     return found
 
 
-def _split_literal(data, found, sources, retail, *, prefix_only=False):
+def _split_literal(data, found, sources, retail, *, prefix_only=False, seed_size=LITERAL_SEED):
     cursor = 0
-    positions = [0] if prefix_only else range(0, len(data) - LITERAL_SEED + 1, LITERAL_SEED)
+    positions = [0] if prefix_only else range(0, len(data) - seed_size + 1, seed_size)
     for at in positions:
-        if at < cursor or at + LITERAL_SEED > len(data):
+        if at < cursor or at + seed_size > len(data):
             continue
-        candidate = found.get(data[at:at + LITERAL_SEED])
+        candidate = found.get(data[at:at + seed_size])
         if candidate is None:
             continue
         number, source_at = candidate >> 32, candidate & 0xFFFFFFFF
         lo, hi, offset = _extend_copy(retail, sources[number], source_at, data, at, cursor)
-        require(hi - at >= LITERAL_SEED, "Residual retail seed changed during export")
+        require(hi - at >= seed_size, "Residual retail seed changed during export")
         if lo > cursor:
             yield cursor, lo, None, None
         yield lo, hi, number, offset
@@ -433,8 +437,8 @@ def _refine_literals(part, doc, base, sources, progress):
 
     First sample each literal every 16 bytes and search every source offset.
     Thus any retained common subrange is shorter than 31 bytes. A final prefix
-    pass removes whole residual literals of 16 or more bytes too. Short shared
-    constants still need the independent release audit; they are not artwork.
+    pass removes whole residual literals of four or more bytes too. Remaining
+    one-to-three-byte coincidences still need the independent release audit.
     No new installer operation, executable helper or dependency is involved.
     """
     before_total = sum(r.get("literal_bytes", 0) for r in doc["files"])
@@ -483,7 +487,8 @@ def _refine_literals(part, doc, base, sources, progress):
                         path = root / f"literals-{phase_number}-{row_number}.bin"
                         result[row_number] = path
                         literals = writer(("literal", row_number), path)
-                        for lo, hi, source_number, source_at in _split_literal(data, found, sources, retail, prefix_only=prefix_only):
+                        for lo, hi, source_number, source_at in _split_literal(data, found, sources, retail, prefix_only=prefix_only,
+                                                                                  seed_size=4 if prefix_only else LITERAL_SEED):
                             offset = at + lo
                             old_size = max(0, min(hi - lo, entry.size - offset))
                             old = retail[entry.byte_offset + offset:entry.byte_offset + offset + old_size]
@@ -513,16 +518,18 @@ def _refine_literals(part, doc, base, sources, progress):
         literal_paths = phase(initial(), 0, False)
         # A whole retail-identical residual can now be at most 30 bytes:
         # every 31-byte original range contained a searched 16-byte seed.
-        # Search all these short prefixes together, without retaining their data.
+        # Search four-byte prefixes of these short residuals together. This
+        # also removes varied 4..15-byte fragments; only one-to-three-byte
+        # coincidences can remain as whole literals found elsewhere in retail.
         known, checked = {}, set()
         phase_number = 1
         while True:
-            prefixes = {data[:LITERAL_SEED] for _, _, data in saved(literal_paths)
-                        if LITERAL_SEED <= len(data) < 2 * LITERAL_SEED - 1}
+            prefixes = {data[:4] for _, _, data in saved(literal_paths)
+                        if 4 <= len(data) < 2 * LITERAL_SEED - 1}
             unseen = prefixes - checked
             checked.update(unseen)
             if unseen:
-                known.update(_find_literal_seeds(base, sources, unseen, progress))
+                known.update(_find_literal_seeds(base, sources, unseen, progress, seed_size=4))
             if not prefixes.intersection(known):
                 break
             previous = literal_paths
