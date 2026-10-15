@@ -252,7 +252,8 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                    "nfl2k5_nyg_numbers": SimpleNamespace(apply_to_image=lambda target: {"state": "other_uniform"}),
                    "nfl2k5_kit_fixes_2026": SimpleNamespace(apply_to_image=lambda target: {"state": "other_uniform"},
                                                             apply_alternates=lambda target: {"state": "other_uniform"},
-                                                            apply_finish=lambda target: {"state": "other_uniform"})}
+                                                            apply_finish=lambda target: {"state": "other_uniform"},
+                                                            apply_seattle=lambda target: {"state": "other_uniform"})}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"
