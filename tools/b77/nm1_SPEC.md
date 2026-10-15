@@ -28,11 +28,27 @@ then expired. This is a control-transfer distinction, not a base-only change.
 A player leaving the camera can also hide a label with a positive timer; those
 frames were not treated as expiry evidence.
 
-No missing-name regression was found, so this patch does not alter visibility
-or timers. Permanent controlled-player names would be a separate behavior
-change from retail. Every mode and two simultaneous human controllers have not
-been live-tested. The option's None setting retains the original skip path;
-the coordinator's live matrix specifically requested Name and Number & Position.
+The coordinator subsequently clarified that the retail expiry is the behavior
+to replace. The current patch keeps a human-controlled player's last name
+visible for the entire control period under both Name and Number & Position.
+None remains disabled. CPU-only players receive no name flag, including through
+the former special-label branch. A control transfer removes the old entity's
+label immediately and gives the new entity one label through the existing
+collector and submission path. Native selection timers continue unchanged.
+
+The decision block at 0x7604A..0x760BC reads entity+0x0C and accepts human
+controller ports 0..3. It preserves the native disabled-display and non-field
+state2/state3 gates. It does not use mode-specific player numbers, team sides
+or any expiry timer. The inactive-entity skip, native projection, packet limit
+and single collector traversal remain intact. The selector at
+0xF9D0A..0xF9D1B sends both enabled settings to record+0x14, the last name.
+There is no second text pass or timer mutation.
+
+Native tests exercise all four ports, expired and positive timers, both enabled
+settings, None/unknown settings, CPU/null controllers, control transfer and the
+old special-label flag. MyCareer normalizes only the exact declared nm1
+collector bytes for its existing native-context guard; other changes still fail.
+The actual pinned base reports MyCareer applied before and after nm1.
 
 ## Static audit
 
@@ -94,7 +110,8 @@ They are source UV regions, not the compiled atlas's repacked UVs.
 compiles a private native FONT with per-glyph advances and a one-pixel dark
 outline, and binds it only for indicator names. Lowercase roster strings use
 uppercase glyph aliases while punctuation and spaces retain their metrics.
-The global font slots and original name/number/None behavior remain intact.
+The global font slots remain intact. Both enabled text settings now display
+the persistent last name; None stays disabled.
 
 The private resource fits the existing appended scorebug scene span by storing
 the byte-identical decoded scene with native compression. The new FONT follows
@@ -111,10 +128,7 @@ sets `placeholder` false, records provenance, and enters the release allowlist.
 The original provisional 512x128/14-pixel proposal is superseded by the exact
 256x128/11-pixel contract. Opus owns the final visual approval.
 
-The baseline matrix, compiler tests, packaging repin and offline native repair
-receipts are complete. Live placeholder rendering remains unverified: the coordinator reserved the
-shared emulator for the user's stream before the patched boot. The queued boot
-was cancelled without starting a pad or emulator. The fixed-span bytes and
-placeholder have offline receipts, but they must not be called live-proven or
-release-ready. A later isolated cold boot must confirm offense, defense and a
-return before integration acceptance.
+The baseline matrix is complete. The coordinator's persistent-name revision has
+new native tests and repair receipts. Live validation must use the revised
+collector and selector together with the private placeholder FONT. Final Opus
+art and visual approval remain separate from technical proof.

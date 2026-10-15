@@ -92,9 +92,16 @@ scorebug allocation. A font that cannot fit is rejected before writing.
 
 The indicator initializer at `0xF9FE5..0xFA012` binds this FONT directly through
 the native registry, preserving its material initialization. All global FONT
-slots remain intact. No visibility changes are included in this font binding. The retail/public/base
-live matrix found the same ordinary timed selection behavior, so no visibility
-repair was justified. The new FONT binding itself still requires live proof.
+slots remain intact.
+
+The collector decision at `0x7604A..0x760BC` now enables one name label for each
+currently human-controlled entity, ports 0..3, without reading its selection
+timer. CPU-only entities receive no label, including from the old special-label
+branch. Inactive entities, native projection and the disabled indicator-display
+gate retain their original handling. The selector at `0xF9D0A..0xF9D1B` uses
+the last name for both Name and Number & Position; None remains disabled. This
+implements the coordinator's clarified persistent-name behavior. It does not
+change the native timers, controller assignments, names or simulation state.
 
 The mechanically generated placeholder is saved only under the job's private
 scratch folder and has `placeholder: true` and retail donor provenance. It is

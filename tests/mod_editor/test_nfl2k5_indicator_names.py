@@ -104,6 +104,97 @@ class AtlasTests(unittest.TestCase):
             self.assertEqual(struct.unpack('<I',machine.mem_read(0xa94ea8,4))[0],pointer+0x40 if pointer else 0)
             self.assertEqual(bytes(machine.mem_read(0xa951d8,4)),bytes.fromhex('c0c0c0ff'))
 
+    def test_native_human_label_flag_all_ports_options_and_expired_timers(self):
+        from unicorn import Uc,UC_ARCH_X86,UC_MODE_32
+        from unicorn.x86_const import (UC_X86_REG_ESI,UC_X86_REG_ECX,UC_X86_REG_ESP,
+                                       UC_X86_REG_EDI,UC_X86_REG_EBX)
+        machine=Uc(UC_ARCH_X86,UC_MODE_32)
+        machine.mem_map(0,0x1000000)
+        machine.mem_write(n.CONTROL,n.control_bytes())
+        entity,controller=0x200000,0x210000
+        machine.reg_write(UC_X86_REG_ESI,entity)
+        machine.reg_write(UC_X86_REG_ESP,0x900000)
+        machine.reg_write(UC_X86_REG_EDI,0x12345678)
+        machine.reg_write(UC_X86_REG_EBX,0)
+        seen=0
+        for port in (0,1,2,3,4,0xffffffff):
+            for option in (0,1,2,3,0xffffffff):
+                for timer in (-100.0,0.0,0.5,2.0):
+                    machine.mem_write(entity+0x0c,struct.pack('<I',controller))
+                    machine.mem_write(entity+0x44,struct.pack('<f',timer))
+                    machine.mem_write(controller,struct.pack('<I',port))
+                    machine.mem_write(0xe5ff90,struct.pack('<I',option))
+                    machine.mem_write(0xe5ff80,struct.pack('<I',4))
+                    machine.mem_write(0xb616c0,struct.pack('<I',16))
+                    before=bytes(machine.mem_read(entity,0x50))
+                    machine.reg_write(UC_X86_REG_ECX,0xdeadbeef)
+                    machine.emu_start(n.CONTROL,n.CONTROL_END,count=100)
+                    self.assertEqual(machine.reg_read(UC_X86_REG_ECX),int(port<4 and option<2))
+                    self.assertEqual(bytes(machine.mem_read(entity,0x50)),before)
+                    self.assertEqual(machine.reg_read(UC_X86_REG_EDI),0x12345678)
+                    self.assertEqual(machine.reg_read(UC_X86_REG_EBX),0)
+                    self.assertEqual(machine.reg_read(UC_X86_REG_ESP),0x900000)
+                    seen+=1
+        self.assertEqual(seen,120)
+        # Reject null controllers and retain the native non-field/display gates.
+        for pointer,game,display in ((0,16,4),(controller,2,4),(controller,3,4),(controller,16,3)):
+            machine.mem_write(entity+0x0c,struct.pack('<I',pointer))
+            machine.mem_write(controller,bytes(4))
+            machine.mem_write(0xe5ff90,bytes(4))
+            machine.mem_write(0xe5ff80,struct.pack('<I',display))
+            machine.mem_write(0xb616c0,struct.pack('<I',game))
+            machine.emu_start(n.CONTROL,n.CONTROL_END,count=100)
+            self.assertEqual(machine.reg_read(UC_X86_REG_ECX),0)
+
+    def test_native_control_transfer_removes_old_label_and_has_no_cpu_duplicates(self):
+        from unicorn import Uc,UC_ARCH_X86,UC_MODE_32
+        from unicorn.x86_const import UC_X86_REG_ESI,UC_X86_REG_ECX
+        m=Uc(UC_ARCH_X86,UC_MODE_32);m.mem_map(0,0x1000000)
+        m.mem_write(n.CONTROL,n.control_bytes())
+        m.mem_write(0xe5ff80,struct.pack('<I',4));m.mem_write(0xb616c0,struct.pack('<I',11))
+        m.mem_write(0xe60270,struct.pack('<I',1))  # old special-label path must not add CPU names
+        def collect(assignments):
+            result=[]
+            for i,port in enumerate(assignments):
+                entity,control=0x200000+i*0x100,0x210000+i*0x100
+                m.mem_write(entity+0xc,struct.pack('<I',control))
+                m.mem_write(entity+0x44,struct.pack('<f',2.0))  # old selection timers can still be positive
+                m.mem_write(control,struct.pack('<I',port))
+                m.reg_write(UC_X86_REG_ESI,entity)
+                m.emu_start(n.CONTROL,n.CONTROL_END,count=100)
+                if m.reg_read(UC_X86_REG_ECX):result.append(i)
+            return result
+        self.assertEqual(collect([0,1,2,3]+[0xffffffff]*18),[0,1,2,3])
+        self.assertEqual(collect([0xffffffff,1,2,3,0]+[0xffffffff]*17),[1,2,3,4])
+        self.assertEqual(collect([0xffffffff]*22),[])
+
+    def test_native_selector_uses_last_name_for_both_settings_and_preserves_none(self):
+        from unicorn import Uc,UC_ARCH_X86,UC_MODE_32,UC_HOOK_CODE
+        from unicorn.x86_const import UC_X86_REG_ESI,UC_X86_REG_EBX
+        m=Uc(UC_ARCH_X86,UC_MODE_32);m.mem_map(0,0x1000000)
+        m.mem_write(n.SELECTOR,n.selector_bytes())
+        m.mem_write(0xf9d4c,bytes.fromhex('8b5e14'))
+        record,name=0x200000,0x210000
+        m.mem_write(record+0x14,struct.pack('<I',name));m.reg_write(UC_X86_REG_ESI,record)
+        destinations=[]
+        def stop(uc,address,size,user):
+            if address in (0xf9d4f,0xf9dc7):destinations.append(address);uc.emu_stop()
+        m.hook_add(UC_HOOK_CODE,stop)
+        for option in (0,1,2,3,0xffffffff):
+            m.mem_write(0xe5ff90,struct.pack('<I',option));m.reg_write(UC_X86_REG_EBX,0)
+            m.emu_start(n.SELECTOR,0xf9dd0,count=30)
+            self.assertEqual(destinations[-1],0xf9d4f if option<2 else 0xf9dc7)
+            self.assertEqual(m.reg_read(UC_X86_REG_EBX),name if option<2 else 0)
+
+    def test_career_guard_normalizes_only_exact_declared_nm1_bytes(self):
+        raw=bytearray(b'\xcc'*0x6ed)
+        at=n.CONTROL-0x75d90
+        raw[at:at+len(n.CONTROL_BEFORE)]=n.CONTROL_BEFORE
+        patched=bytearray(raw);patched[at:at+len(n.CONTROL_BEFORE)]=n.control_bytes()
+        self.assertEqual(n.canonical_context(0x75d90,patched),raw)
+        patched[at+7]^=1
+        self.assertEqual(n.canonical_context(0x75d90,patched),patched)
+
     def test_repair_refuses_unknown_disc_before_writing(self):
         from tools.b77.nm1_repair import repair
         base=self.folder/'base.iso';target=self.folder/'copy.iso'

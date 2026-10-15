@@ -27,6 +27,14 @@ HOOK_BEFORE = bytes.fromhex(
     "b903000000c705d851a900c0c0c0ffe85758ffff8bf085f67507a3a84ea900eb0c8bcee8c3f3f4ffa3a84ea900")
 HOOK_RETAIL_SHA = hashlib.sha256(HOOK_BEFORE).hexdigest()
 DONOR_SHA = "60cc66a63ca3ae443b2c38e6ff7abaecfbfb484866433394be151106474afa7e"
+CONTROL, CONTROL_END = 0x7604A, 0x760BC
+CONTROL_BEFORE = bytes.fromhex(
+    "e8f1fcffff85c07438d94644d81d80414e00dfe0f6c4417528e858c7feff85c0751f"
+    "a1c016b60083f802741583f8037410833d80ffe500037407b901000000eb0233c9"
+    "391d7002e60074230fbe562cf604950a9e500001750583ffff7410833d80ffe50003"
+    "7407b801000000eb0233c00bc8")
+SELECTOR, SELECTOR_END = 0xF9D0A, 0xF9D1B
+SELECTOR_BEFORE = bytes.fromhex("a190ffe50083e8007438480f85ac000000")
 
 
 def require(ok, message):
@@ -227,19 +235,82 @@ def hook_bytes():
     return bytes(code) + b"\x90"*(HOOK_END-HOOK-len(code))
 
 
+def control_bytes():
+    """One label per currently human-controlled entity, independent of its timer.
+
+    ESI is the collector's current entity. Its controller object starts with the
+    human port (0..3); CPU controllers use -1. ECX is the native name flag. No
+    timers, controller assignments, roster strings or simulation state are written.
+    The surrounding native loop skips inactive entities and submits each once.
+    """
+    code = bytearray.fromhex("31c98b460c85c0")  # ECX=0; controller pointer
+    jumps = []
+    def reject(opcode):
+        code.extend((opcode, 0))
+        jumps.append(len(code)-1)
+    reject(0x74)  # null controller
+    code += bytes.fromhex("833803")
+    reject(0x77)  # unsigned port >3, including CPU -1
+    code += bytes.fromhex("833d90ffe50001")
+    reject(0x77)  # only Name and Number & Position, never None/unknown
+    code += bytes.fromhex("833d80ffe50003")
+    reject(0x74)  # native indicator display disabled
+    code += bytes.fromhex("a1c016b60083f802")
+    reject(0x74)
+    code += bytes.fromhex("83f803")
+    reject(0x74)  # native non-field states
+    code += b"\xb9\x01\x00\x00\x00"
+    end = len(code)
+    for at in jumps:
+        code[at] = end-at-1
+    require(end <= CONTROL_END-CONTROL, "human label predicate overflow")
+    return bytes(code) + b"\x90"*(CONTROL_END-CONTROL-end)
+
+
+def selector_bytes():
+    # Both enabled options draw record+0x14 (last name); None stays disabled.
+    code = bytearray.fromhex("833d90ffe50001")
+    code += bytes((0x76, 0xF9D4C-(SELECTOR+len(code)+2)))
+    at = SELECTOR+len(code)
+    code += b"\xe9" + struct.pack("<i", 0xF9DC7-at-5)
+    return bytes(code) + b"\x90"*(SELECTOR_END-SELECTOR-len(code))
+
+
+def code_edits():
+    return ((HOOK, HOOK_BEFORE, hook_bytes(), "indicator FONT binding"),
+            (CONTROL, CONTROL_BEFORE, control_bytes(), "persistent human-only label flag"),
+            (SELECTOR, SELECTOR_BEFORE, selector_bytes(), "last name for both enabled text settings"))
+
+
+def canonical_context(va, raw):
+    """Normalize only exact nm1 code for other owners' native-context guards."""
+    result = bytearray(raw)
+    for at, before, after, _ in code_edits():
+        if va <= at and at+len(before) <= va+len(result):
+            offset = at-va
+            if result[offset:offset+len(after)] == after:
+                result[offset:offset+len(before)] = before
+    return bytes(result)
+
+
 def apply_xbe(payload):
     image = XbeImage(payload)
     require(image.read(NAME_VA, len((NAME+"\0").encode("utf-16le"))) == (NAME+"\0").encode("utf-16le"), "resource name changed")
-    new = hook_bytes()
-    before = image.read(HOOK, HOOK_END-HOOK)
-    require(before in (HOOK_BEFORE,new), "unknown indicator initializer")
     buf = bytearray(payload)
-    at = image.offset(HOOK, len(new))
-    buf[at:at+len(new)] = new
+    installed = []
+    for va, before, after, label in code_edits():
+        current = image.read(va, len(before))
+        require(current in (before, after), "unknown " + label)
+        at = image.offset(va, len(after))
+        buf[at:at+len(after)] = after
+        installed.append(dict(va=hex(va), size=len(after), purpose=label,
+                              sha256=sha(after), changed=current != after))
     for section in _sections(buf):
-        if section.virtual_address <= HOOK < section.virtual_address + section.raw_size:
+        if any(section.virtual_address <= va < section.virtual_address + section.raw_size
+               for va, _, _, _ in code_edits()):
             buf[section.header_offset+36:section.header_offset+56] = section_digest(buf,section)
-    return bytes(buf), dict(state="applied" if before == new else "repaired", va=hex(HOOK), size=len(new),
+    return bytes(buf), dict(state="applied" if bytes(buf) == payload else "repaired", code=installed,
+                            persistent_human_names=True, controller_ports=[0,1,2,3],
                             changed_bytes=sum(a != b for a,b in zip(payload,buf)))
 
 
@@ -306,8 +377,9 @@ def image_plan(stream, folder=None):
     start, end = hr["start"], hr["end"]
     edits = [(hud_offset+start, hud[start:end], fixed_hud[start:end], "private FONT and lossless scorebug scene")]
     image = XbeImage(xbe)
-    at = image.offset(HOOK, HOOK_END-HOOK)
-    edits.append((executable.byte_offset+at, xbe[at:at+45], fixed_xbe[at:at+45], "indicator FONT binding"))
+    for va, before, after, label in code_edits():
+        at = image.offset(va, len(after))
+        edits.append((executable.byte_offset+at, xbe[at:at+len(after)], fixed_xbe[at:at+len(after)], label))
     section = next(s for s in _sections(xbe) if s.virtual_address <= HOOK < s.virtual_address+s.raw_size)
     at = section.header_offset+36
     edits.append((executable.byte_offset+at, xbe[at:at+20], fixed_xbe[at:at+20], "derived .text SHA1"))
