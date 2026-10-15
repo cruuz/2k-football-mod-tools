@@ -2647,13 +2647,14 @@
     "jacket": "9efb70d9bc0ca14dc4dd4491f9021b31a09a297ba1dbc4f159c58cbd9324d643",
     "logo": "aad0d73a065ac925e1700b62d3746b6a6333192677f381e5cc183d7dc5e8b352",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "e0727ed2c420081026c302a8b838f25adb921aa6fe5451676d172c0620157ca0",
+    "head": "e655ff35af3d510552af0e3e790760c86bc816aa5009aeb8741607b83ccbb3b9",
     "sideline_dry": "1e8999cb4b522505fa2350ac7da7d3526fa79a0b5c99536842f76e18a6549b24",
     "sideline_rain": "81149252f4dbd523a26643f7c28ce99174e944a4fbc1129d39a39f061c9ea155"
    },
-   "palette_max": 192,
-   "applied_sha256": "1af0d01d2ae29047b0ca554fe19211f07c646872982903edec9b1e40da0776db",
+   "palette_max": 256,
+   "applied_sha256": "9929240404e5e3e56eceec5a9ff73d464dfb3ae99fbfec7c874c7a5f644257a8",
    "superseded_sha256": [
+    "1af0d01d2ae29047b0ca554fe19211f07c646872982903edec9b1e40da0776db",
     "74f876d54427037223a7bf13760b8e3ed2abb50a99a3833a9033618ebefbec72",
     "07608f06b727d46987d91d21371412da71ce005c014187c0fd54118e8b24390a"
    ],
@@ -2663,9 +2664,9 @@
     "stream_bytes": 230256,
     "stored_size": 230256,
     "padding_bytes": 0,
-    "scratch_needed": 70,
+    "scratch_needed": 76,
     "scratch_retail": 80,
-    "matches_expanded": 152
+    "matches_expanded": 150
    },
    "sideline": [
     {
@@ -3739,13 +3740,14 @@
     "jacket": "0a0873feecf6f2e42fd71fcaf74609617a61660f6235389f4e23c4efa5c781f4",
     "logo": "7e5692c7289541e8da5f12bf5b7bbb7846cb519c71272cb9b54151ef3196a919",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "7f16cb0f7f2621e55a1ae03dd37fd66d9427ee225768e44f7e50cc00b3763b39",
+    "head": "bd7d851b2960bb2aebbd78bffbdba838c717fdab05c4532407f3cd4727f9b07b",
     "sideline_dry": "4adabce58aa58a304e0c9581b37df840df69689564265db388f75a410c161600",
     "sideline_rain": "6b6478d770d48f5821d94b2dca9f892e56e09720709d570c230b2a58328cc340"
    },
-   "palette_max": 192,
-   "applied_sha256": "0bcf4ca04ac09361486f7924aa5126cf1aa56bdd947c79b892a997c7a90abee2",
+   "palette_max": 256,
+   "applied_sha256": "9fbeb91115e21d4cbbd3bfb0352268cea9c2af0517eb1dfc36b4976a1ffb8ff0",
    "superseded_sha256": [
+    "0bcf4ca04ac09361486f7924aa5126cf1aa56bdd947c79b892a997c7a90abee2",
     "e9b732c8bf227a2fb5a40027bb509e2083f4a5a7c10e53302b227abd6215fefc",
     "772180660bbc7835d6505186d3800b858f36d8b351d68aa158810db8e3a102e5"
    ],
@@ -3755,9 +3757,9 @@
     "stream_bytes": 226256,
     "stored_size": 226256,
     "padding_bytes": 0,
-    "scratch_needed": 66,
+    "scratch_needed": 76,
     "scratch_retail": 96,
-    "matches_expanded": 417
+    "matches_expanded": 378
    },
    "sideline": [
     {

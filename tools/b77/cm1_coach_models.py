@@ -130,6 +130,28 @@ RECIPES: dict[str, dict] = {
                       sideburn=38.6),
             facial=[dict(kind="stubble", parts=("moustache", "corners", "chin", "cheeks"), colour=(80, 70, 64), density=0.14)]),
     },
+    # Aaron Glenn: medium-dark brown skin (co2's was a saturated red); very short grey-black hair under the cap; a white
+    # moustache and goatee
+    "NYJ": {
+        "who": "Aaron Glenn",
+        "head": dict(
+            skin=(134, 88, 66), warm=(132, 80, 62), neck=0.06, mottling=0.03, lips=(118, 72, 64), brows=(58, 40, 32),
+            brow_strength=0.5,
+            hair=dict(colour=(58, 52, 50), grey=0.35, grey_colour=(150, 146, 142), front=46.0, recede=1.0, side=43.5,
+                      back=34.5, sideburn=38.8),
+            facial=[dict(parts=("moustache", "corners", "chin"), colour=(206, 204, 200), density=0.8),
+                    dict(kind="stubble", parts=("cheeks", "neck"), colour=(150, 146, 142), density=0.18)]),
+    },
+    # Todd Bowles: dark brown skin (co2's was a saturated orange); shaved head under the cap; a short grey-black beard
+    "TB": {
+        "who": "Todd Bowles",
+        "head": dict(
+            skin=(100, 64, 50), warm=(100, 58, 46), neck=0.06, mottling=0.03, lips=(104, 62, 56), brows=(48, 34, 28),
+            brow_strength=0.5, eyes=(80, 52, 36),
+            hair=dict(colour=(44, 36, 32), opacity=0.25, front=46.0, recede=1.4, side=43.0, back=34.5, sideburn=38.6),
+            facial=[dict(kind="stubble", parts=("moustache", "corners", "chin", "cheeks", "neck"), colour=(64, 58, 56),
+                         density=0.45, light=0.3, light_colour=(140, 136, 132))]),
+    },
     # Kevin O'Connell: fair skin; light-brown hair, a little receded; clean-shaven; lean and tall
     "MIN": {
         "who": "Kevin O'Connell",
@@ -669,6 +691,18 @@ def paint_head(head: dict, detail_rgba: np.ndarray, r: dict, scale: int = 4) -> 
     # (covered by their own triangles) keeps the previous texture's pixels
     out = np.clip(dilate(np.where(skin[..., None], rgb, 0.0), skin, 4 * W), 0, 1)
     out = np.where((cov & ~skin)[..., None], src, out)
+    if r.get("eyes"):
+        # brown eyes for a brown-eyed coach on a model whose 2004 eye is blue (luminance kept, the white untouched)
+        eye_tris = np.array([t[0] not in main and float(np.mean(head["P"][t][:, 2])) > 13.0 for t in T])
+        eye = cov & ~skin & eye_tris[np.maximum(tri, 0)]
+        lum = src[..., 0] * 0.299 + src[..., 1] * 0.587 + src[..., 2] * 0.114
+        # the iris is where the atlas is blue (a blue 2004 eye on a brown-eyed coach): those texels take his colour
+        blue = src[..., 2] - np.maximum(src[..., 0], src[..., 1] * 0.9)
+        iris = (eye * smoothstep(0.0, 0.08, blue)).astype(float)
+        target = np.array(r["eyes"]) / 255.0
+        tl = target[0] * 0.299 + target[1] * 0.587 + target[2] * 0.114
+        recol = np.clip(target[None, None, :] * (lum / max(tl, 1e-3))[..., None], 0, 1)
+        out = out * (1 - iris[..., None]) + recol * iris[..., None]
     small = out.reshape(H0, scale, W0, scale, 3).mean(axis=(1, 3))
     rgba = np.concatenate([np.clip(np.rint(small * 255), 0, 255), np.full((H0, W0, 1), 255.0)], -1).astype(np.uint8)
     return rgba

@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """cm1: carry the b77 cm1 coach-model change into a copy of the v0.6.1 disc, in place, with receipts.
 
-What cm1 changes on a disc: the coach scene (``cNN.iff`` chunk 0, one fixed span each) of nine clubs.
+What cm1 changes on a disc: the coach scene (``cNN.iff`` chunk 0, one fixed span each) of eleven clubs.
 
 * Washington (Dan Quinn, c29): a bald head (the 2004 hair volume off the scalp, the headset band and the low-detail
   head following), a new head texture (one pale skin tone, his white goatee, no hair layout);
 * Dallas (Brian Schottenheimer, c07): a new head texture (a grey, salt-and-pepper beard instead of the dark smudge);
+* the Jets (Aaron Glenn, c19) and Tampa Bay (Todd Bowles, c27): new head textures (natural brown skin instead of a
+  saturated red or orange, Glenn's white goatee, Bowles's grey-black beard and brown eyes);
 * Cincinnati, Carolina, Green Bay, Tennessee, the Rams, San Francisco, Minnesota (c06, c09, c10, c15, c23, c25, c28):
   a lean body taken from a leaner retail coach of the same mesh family, and a new head texture.
 
 Everything else on the disc is left as it is. The input must be the v0.6.1 shortcut disc, or co3's output of it (the two
-Coach Matchup pictures already replaced); any other hash is refused. Those nine scenes must read ``previous`` (the
+Coach Matchup pictures already replaced); any other hash is refused. Those eleven scenes must read ``previous`` (the
 co2 coaches the v0.6.1 disc carries) and every other coach part ``applied``. The scenes are compiled from the user's
 retail image (``--retail``), exactly as a Studio build compiles them.
 
@@ -41,7 +43,7 @@ INPUTS = {
     "d60ea6dd42fac32fa2ffb52a83ccf97d1fa555965b8517a0a2ddd40ab251c3cf": "v0.6.1 + co3 (Coach Matchup pictures)",
 }
 INPUT_SIZE = 6_004_408_320
-OWNED = ("WAS", "DAL", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN")
+OWNED = ("WAS", "DAL", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "NYJ", "TB")
 BLOCK = 1 << 23
 
 
@@ -143,7 +145,7 @@ def main(argv=None) -> int:
     owned_states = {k: states[k] for k in sorted(owned_keys)}
     if image_sha == original_sha:
         if set(owned_states.values()) != {"previous"}:
-            refuse(f"the input's nine coach scenes read {owned_states}, expected the v0.6.1 coaches (previous)")
+            refuse(f"the input's owned coach scenes read {owned_states}, expected the v0.6.1 coaches (previous)")
     elif set(owned_states.values()) != {"applied"}:
         refuse(f"--image is {image_sha}: neither the input disc nor a disc carrying this repair")
     plan, rows = mc.plan_image(a.image, retail=a.retail)
@@ -153,7 +155,7 @@ def main(argv=None) -> int:
     owned_plan = [p for p, r in zip(plan, plan_rows) if r["kind"] == "coach" and r["team"] in OWNED]
     owned_rows = [rows[i] for i in keep]
     if image_sha == original_sha and sorted(r["team"] for r in owned_rows) != sorted(OWNED):
-        refuse(f"the plan is not exactly the nine coach scenes: {[r['team'] for r in owned_rows]}")
+        refuse(f"the plan is not exactly the owned coach scenes: {[r['team'] for r in owned_rows]}")
     ranges = owned_ranges(a.image, owned_rows)
     with mc._outer_image()(a.image, writable=True) as archive:
         mc._write_all(archive, owned_plan)                   # checks each span against its preflight, reads back

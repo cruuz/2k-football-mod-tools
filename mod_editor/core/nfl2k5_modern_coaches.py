@@ -52,7 +52,8 @@ moves the scene's own vertices (``apply_geometry``: integer positions and normal
 any mesh but the one each shape was authored on). Washington's Dan Quinn has a bald head (the 2004 hair volume off the
 scalp; the headset band and the low-detail head follow); seven lean coaches (CIN, CAR, GB, TEN, LAR, SF, MIN) wear the
 lean body of a retail coach of the same mesh family. The vertex count, triangles, skin weights, skeleton and animations
-are retail. Their heads, and Dallas's, are painted on the head mesh in 3D (one skin tone, painted hair and facial hair).
+are retail. Their heads, and those of Dallas, the Jets and Tampa Bay, are painted on the head mesh in 3D (one skin
+tone, painted hair and facial hair).
 
 EXPERIMENTAL and UNWITNESSED: proved offline (decoded textures, byte receipts, renders from the data); the look in
 the game is for Noah's eyes.
