@@ -233,6 +233,44 @@ class NamesTests(unittest.TestCase):
             os.replace(fixture.path, root / "closed.iso")
 
 
+class SpareCapacityShiftTests(unittest.TestCase):
+    """b773 i4: the restored spare capacity moves the string pool by 140 * 84 bytes; the names follow it."""
+
+    def test_the_plan_moves_every_run_and_target_by_the_shift_and_nothing_else(self):
+        data = names.manifest()
+        retail, written, runs = names._plan(data)
+        shifted_retail, shifted_written, shifted_runs = names._plan(data, 11760)
+        self.assertEqual({k: v + 11760 for k, v in retail.items()}, shifted_retail)
+        self.assertEqual({k: v + 11760 for k, v in written.items()}, shifted_written)
+        self.assertEqual([(s + 11760, n, a, b) for s, n, a, b in runs], shifted_runs)
+
+    def test_a_synthetic_resource_without_the_capacity_has_no_shift(self):
+        self.assertEqual(names._shift(synthetic_resource()[32:]), 0)
+        self.assertEqual(names._shift(b"not a roster"), 0)
+
+    @unittest.skipUnless(RETAIL_EXTRACTION is not None and os.environ.get("B773_NAMES_ROSTER_DOC") and
+                         Path(os.environ["B773_NAMES_ROSTER_DOC"]).is_file(),
+                         "needs the retail extraction and B773_NAMES_ROSTER_DOC (the SOFTDRINK roster edits)")
+    def test_names_apply_after_the_roster_edits_restore_spare_capacity_and_verify(self):
+        from mod_editor.core import nfl2k5_spare_capacity as spare
+        retail = Path(os.environ["NFL2K5_RETAIL_XISO"]) if os.environ.get("NFL2K5_RETAIL_XISO") else None
+        if retail is None or not retail.is_file():
+            self.skipTest("needs NFL2K5_RETAIL_XISO")
+        with rr._outer_image()(retail) as archive:
+            entry = archive.entries[names.ROST_OUTER_INDEX]
+            payload = archive.read(entry.virtual_offset, entry.size)
+        doc = dict(rr.read_edits(Path(os.environ["B773_NAMES_ROSTER_DOC"])), restore_historic_spare_capacity=True)
+        body, _ = rr.apply_body(payload[32:], doc, scheme="one_pool")
+        self.assertEqual(spare.status(body), "applied")
+        moved = payload[:32] + body
+        self.assertEqual(names._shift(body), spare.INSERT_BYTES)
+        self.assertEqual(names.status(moved), "retail")
+        applied, receipt = names.apply(moved)
+        self.assertEqual(names.status(applied), "applied")
+        self.assertEqual(receipt["pointers_moved"], 16)
+        self.assertEqual(names.apply(applied)[0], applied)       # replay writes nothing
+
+
 class RetailNamesTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
