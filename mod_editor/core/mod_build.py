@@ -3983,6 +3983,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if receipt["result"]["espn25_plan"] != "applied":
             raise ValueError("the ESPN Anniversary edits failed their read-back on the copy")
     if is_image:
+        # b773-i4: the five Anniversary era kits (a5k trades NE 11, PHI 14, NO 6, BAL 1, PIT 4) composed from their
+        # donor kits as the v0.6 native repair did, after the roster labels and the historic spares (donors) exist.
+        # The Unc Bowl finish below starts from the composed PIT 22A4; a Studio build used to leave it retail.
+        era_kits = _core_module("nfl2k5_era_kits")
+        if era_kits is not None:
+            progress("Composing the Anniversary era kits", 0, 0)
+            era_receipt = era_kits.apply_to_image(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "Anniversary era kits"))
+            if era_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "era_kits", **era_receipt})
         uniforms = _core_module("nfl2k5_unc_bowl_uniforms")
         if uniforms is None:
             raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
