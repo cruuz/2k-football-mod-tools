@@ -157,6 +157,9 @@ def paint_results(results, retail, art_root, pins):
                 # Keep only u4 fan items. Sponsor supplements never enter a model.
                 fans = dict(venue, items=[i for i in venue["items"]
                                          if i["scene"] == "stadium" and i["key"] in FAN_KEYS])
+                # Only the fan items are planned here, so a venue that asks the field pass to add a missing
+                # midfield mark (Hard Rock's manifest does) has no center_logo item left to name.
+                fans.pop("add_missing_midfield", None)
                 if not fans["items"]:
                     plans[prefix] = None
                 else:
