@@ -295,7 +295,7 @@ def apply_late_to_image(target, art_root, *, progress=None):
         for name, after in changed.items():
             if name in venues_receipt.get("bundles", {}):
                 venues_receipt["bundles"][name]["applied_sha256"] = ml.sha(after)
-        mv._save_json(mv.receipt_path(target), venues_receipt)
+        mv._save_receipt(target, venues_receipt)
     surface_receipt = surfaces.read_receipt(target)
     if surface_receipt is not None:
         for row in receipts:
