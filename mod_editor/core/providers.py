@@ -710,7 +710,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_coaches.py": "bdff502890de990c13a0cef87e1abae3f51fa8dae5d15f7d9635a200e86d8241",
         "mod_editor/core/nfl2k5_espn25_more_moments.py": "1aff719b32433aeac64f233e5e000ca6fd02350b805f9987bb98f89642eed3ad",
         "mod_editor/core/nfl2k5_espn25_more_moments_code.py": "661c05f766df80e30c11f1975d0a3af797bf5a26ceadf0f0dc56a86e7b99fcdc",
-        "mod_editor/core/nfl2k5_espn25_rosters.py": "7b78abe3201e5694e154cbb831261d8a655472a1574b5de42aeeacb7c51bf2a9",
+        "mod_editor/core/nfl2k5_espn25_rosters.py": "466246bab312befd0513f4466314dbcfa03d61364580da5aa1a6bf44d7e03ef7",
         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "6576fc522bec39f163b851471ab9105db5080a5085681f3f27e626c6e50011f3",
         "mod_editor/core/nfl2k5_extended_visual_io.py": "928a8367c3faf4f37adeb9fa11164529457d79a9bb03fb0f0ecaa0082863975b",
         "mod_editor/core/nfl2k5_formation_play_writer.py": "746974969f0e1b64f5954c24c6fd3d22e9e647f295f58c4cec03d24a3c48bffd",
