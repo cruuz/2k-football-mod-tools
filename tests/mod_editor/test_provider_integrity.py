@@ -196,6 +196,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "from mod_editor.core.nfl2k5_unc_bowl_uniforms import PINS; "
                 "import json; assert json.loads(PINS.read_text())['schema'] == 'nfl2k5_unc_bowl_uniforms/v1'; "
                 "from mod_editor.core.nfl2k5_era_kits import pins as era_pins; assert len(era_pins()['kits']) == 10; "
+                "from mod_editor.core.nfl2k5_moment_kits import pins as kit_pins; assert len(kit_pins()['packages']) == 20; "
                 "from mod_editor.core.nfl2k5_nyg_numbers import pins; assert len(pins()['digits']) == 10; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import spec; assert len(spec()['textures']) == 60; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import alternates; assert len(alternates()['textures']) == 544; "
@@ -223,7 +224,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [433, 10, 8, 9, 8, 9]  # b775-int1: sb1 + mo2 together; b775-mo2: + the moment context owner; b775-sb1: + the Super Bowl field flank module the Anniversary field compiler imports and the franchise Super Bowl hosts module the build calls after Broadcast greens; b773-i4: + the Anniversary era kits stage (a5k compiler) before the Unc Bowl finish; b773-gr1: + the Broadcast greens module the build calls after the last field writer; b773-me1: + the Super Bowl event walls module the Anniversary field compiler imports and the era ball module the moment-venue owner imports; b772-vt1: + the automatic coach AI owner, its generated code template and the coach VIP profile module; b772-sp1: + the ordinary tap-burst module the abilities runtime imports; b77-st1: + the stadium shadow module the MetLife model imports; b772-ny1: + the Giants shoulder-number module; b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [434, 10, 8, 9, 8, 9]  # b775-int1: sb1 + mo2 + ek1 together; b775-ek1: + the Anniversary moment kits stage (new game-accurate kit slots); b775-mo2: + the moment context owner; b775-sb1: + the Super Bowl field flank module the Anniversary field compiler imports and the franchise Super Bowl hosts module the build calls after Broadcast greens; b773-i4: + the Anniversary era kits stage (a5k compiler) before the Unc Bowl finish; b773-gr1: + the Broadcast greens module the build calls after the last field writer; b773-me1: + the Super Bowl event walls module the Anniversary field compiler imports and the era ball module the moment-venue owner imports; b772-vt1: + the automatic coach AI owner, its generated code template and the coach VIP profile module; b772-sp1: + the ordinary tap-burst module the abilities runtime imports; b77-st1: + the stadium shadow module the MetLife model imports; b772-ny1: + the Giants shoulder-number module; b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
             # b773-sp2: + the human tap-burst compiler imported by the abilities runtime.
             # b773-ic1: + the exact pinned menu-icon orientation repair.
             # b773-mo1: + moment coaches and its newly reached scenarios and modern-coaches dependencies.
@@ -276,6 +277,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_pants_hem_2026.py",
                     "mod_editor/core/nfl2k5_menu_helmet_w2026.py",
                     "mod_editor/core/nfl2k5_era_kits.py",
+                    "mod_editor/core/nfl2k5_moment_kits.py",
                     "mod_editor/core/nfl2k5_unc_bowl_uniforms.py",
                     "mod_editor/core/nfl2k5_nyg_numbers.py",
                     "mod_editor/core/nfl2k5_kit_fixes_2026.py",
@@ -348,6 +350,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
                 "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
                 "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
+                "data/nfl2k5_moment_kits.json": "806227a1a2b9575157638a9083181fd645e57eab55f72219c12978dc78f15862",
+                "data/nfl2k5_moment_kits_pins.json": "b92d7e7ad2ccda69819b7bc6d785a3dbb5518b515214fcb2fabca9b262e325a9",
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
                 "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",

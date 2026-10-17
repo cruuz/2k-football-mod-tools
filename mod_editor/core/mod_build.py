@@ -4080,6 +4080,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                          **{k: v for k, v in hem_receipt.items() if k != "kits"},
                                          "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                                   for kit in hem_receipt["kits"]]})
+        if plan.espn25_more_moments:
+            # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
+            # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
+            # only in the moments' team files so modern Team Select never offers them; then the 51 rows' selections.
+            moment_kits = _core_module("nfl2k5_moment_kits")
+            if moment_kits is None:
+                raise RuntimeError("the Anniversary moment kits module is not available in this build")
+            progress("Dressing the Anniversary teams in their game uniforms", 0, 0)
+            kits_receipt = moment_kits.apply_to_image(target)
+            receipt["steps"].append({"step": "moment_kits", **kits_receipt})
+            receipt["result"]["moment_kits"] = moment_kits.image_status(target)
+            if receipt["result"]["moment_kits"] != "applied":
+                raise ValueError("the Anniversary moment kits failed their read-back on the copy")
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
@@ -4510,6 +4523,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+        if _core_module("nfl2k5_moment_kits").image_status(target) != "applied":
+            raise ValueError("the Anniversary moment kits did not survive the intro video pass on the copy")
     if plan.espn25_more_moments:
         progress("Restoring historical Anniversary coaches", 0, 51)
         historical_coaches = _core_module("nfl2k5_moment_coaches")
