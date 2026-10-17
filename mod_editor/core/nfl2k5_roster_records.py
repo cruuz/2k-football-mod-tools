@@ -3189,6 +3189,13 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     if doc.get("roster_refresh"):
         from . import nfl2k5_roster_refresh
         out, refresh_receipt = nfl2k5_roster_refresh.apply_body(out, doc["roster_refresh"])
+        if doc.get("restore_import_floor"):
+            # b775: a refresh's new identities take vacant create records; Anniversary moments and historic games
+            # import two 53-player teams at once and need 106 of them (nfl2k5_spare_capacity.restore_import_floor).
+            _require(doc["restore_import_floor"] is True, "Import floor marker must be Boolean")
+            from . import nfl2k5_spare_capacity
+            out, floor_receipt = nfl2k5_spare_capacity.restore_import_floor(out)
+            refresh_receipt = dict(refresh_receipt, import_floor=floor_receipt)
     return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,

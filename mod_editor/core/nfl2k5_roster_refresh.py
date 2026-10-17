@@ -60,7 +60,10 @@ def apply_body(body, plan):
     datetime.date.fromisoformat(plan["as_of"])
     doc = rr.RosterDocument(bytes(body), scheme="one_pool", reference_year=2026)
     rr._require(doc.version == 17, "Roster refresh is for the disc, not a franchise save")
-    rr._require(len(doc.by_pool("primary")) == 2619, "Refresh needs the pack's 2619-player capacity")
+    from . import nfl2k5_spare_capacity as spare
+    # 2619: the pack's spare capacity; more on a replay after the import floor (b775) added blank records.
+    rr._require(spare.PRIMARY_AFTER <= len(doc.by_pool("primary")) <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS,
+                "Refresh needs the pack's 2619-player capacity")
     by = {p.index: p for p in doc.by_pool("primary")}
     guards = plan["identity_guards"]
     rr._require(len({g[0] for g in guards}) == len(guards), "Duplicate identity guard")

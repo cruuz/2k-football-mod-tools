@@ -222,7 +222,11 @@ def _shift(body: bytes) -> int:
         count = spare._decode(body).tables["primary"].count
     except (ValueError, KeyError, TypeError, IndexError, struct.error, OverflowError):
         return 0
-    return spare.INSERT_BYTES if count == spare.PRIMARY_AFTER else 0
+    # b775: the import floor (spare.restore_import_floor) may add up to MAX_FLOOR_RECORDS more blank records at the
+    # same insertion point; its reclaimed gap lies in the player-name pool, after every team-name run.
+    if spare.PRIMARY_AFTER <= count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS:
+        return (count - spare.PRIMARY_BEFORE) * 84
+    return 0
 
 
 def _layout_bytes(items: list[dict[str, Any]], size: int) -> bytes:

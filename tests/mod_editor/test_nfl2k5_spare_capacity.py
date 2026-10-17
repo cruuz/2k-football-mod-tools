@@ -129,4 +129,62 @@ class SpareCapacityTests(unittest.TestCase):
             mod_build._apply_roster_history(plan,'target',{'steps':[]},lambda *args:None)
         self.assertNotIn('restore_historic_spare_capacity',apply.call_args.args[1])
 
+class ImportFloorTests(unittest.TestCase):
+    """b775 mo1 (Noah 10/17: Patriots at Patriots, Cardinals-Cardinals, Colts at Colts). A moment imports two
+    53-player team files; the importer refuses one when fewer vacant records remain, and 20CB30 then gives both
+    sides the home team. A dated refresh that turns 90 vacancies into new players must not leave fewer than 106."""
+    @classmethod
+    def setUpClass(cls):
+        cls.capacity,_=capacity.apply_body(fixture())
+        doc=rr.load_body(cls.capacity,scheme='one_pool',reference_year=2026)
+        vacant=[p for p in doc.by_pool('primary') if p.record.get('player_type')&1]
+        for p in vacant[:90]:                       # what the 2026-10-14 refresh did with its new identities
+            p.record.set('player_type',rr.FLAG_NFL_PLAYER)
+            doc.set_name(p,'first','New');doc.set_name(p,'last',f'Signing{p.index}')
+        cls.refreshed=doc.to_body(normalise_commentary=False)
+        cls.after,cls.receipt=capacity.restore_import_floor(cls.refreshed)
+    def test_a_refresh_of_ninety_new_players_breaks_the_two_team_import(self):
+        self.assertEqual(capacity.import_vacancies(self.capacity),155)
+        self.assertEqual(capacity.import_vacancies(self.refreshed),65)
+        self.assertLess(capacity.import_vacancies(self.refreshed),capacity.IMPORT_FLOOR)
+        self.assertEqual(capacity.IMPORT_FLOOR,2*53)
+    def test_the_floor_adds_real_blank_records_and_keeps_every_identity(self):
+        self.assertGreaterEqual(capacity.import_vacancies(self.after),capacity.IMPORT_FLOOR)
+        self.assertEqual(self.receipt['vacancies_after'],capacity.import_vacancies(self.after))
+        self.assertEqual(len(self.after),len(self.refreshed))
+        before=rr.load_body(self.refreshed,scheme='one_pool');after=rr.load_body(self.after,scheme='one_pool')
+        added=self.receipt['added_records']
+        self.assertEqual(len(after.by_pool('primary')),2619+added)
+        self.assertEqual(len(after.free_agents),len(before.free_agents))
+        self.assertEqual([p.index for p in after.group_players('draft_class')],list(range(1944,2324)))
+        for p in before.players:
+            q=next(v for v in after.by_pool(p.pool) if v.index==p.index)
+            self.assertEqual((p.first,p.last,p.college_index,p.teams),(q.first,q.last,q.college_index,q.teams))
+        old={after.rel(p.offset+f) for p in after.by_pool('primary')[:2619] for f in (0x10,0x14)}
+        for p in after.by_pool('primary')[2619:]:
+            first,last=after.rel(p.offset+0x10),after.rel(p.offset+0x14)
+            self.assertEqual(last,first+34)          # the adjacent pair the native creator writes
+            self.assertEqual(self.after[first:first+68],2*('*'*16).encode('utf-16le').ljust(34,b'\0'))
+            self.assertNotIn(first,old);self.assertNotIn(last,old)
+    def test_replay_is_a_no_op_and_the_refresh_replays_on_the_output(self):
+        again,receipt=capacity.restore_import_floor(self.after)
+        self.assertEqual(again,self.after);self.assertTrue(receipt['already_applied'])
+        self.assertEqual(capacity.restore_import_floor(self.capacity)[0],self.capacity)   # nothing to restore
+    def test_team_names_follow_the_extra_records(self):
+        from mod_editor.core import nfl2k5_team_names_2026 as team_names
+        count=len(rr.load_body(self.after,scheme='one_pool').by_pool('primary'))
+        self.assertEqual(team_names._shift(self.after),(count-2479)*84)
+        self.assertEqual(team_names._shift(self.capacity),capacity.INSERT_BYTES)
+    def test_refuses_by_name_when_unused_name_space_cannot_hold_the_floor(self):
+        with mock.patch.object(capacity,'_floor_fit',return_value=(0,None)):
+            with self.assertRaisesRegex(ValueError,'need 106'):
+                capacity.restore_import_floor(self.refreshed)
+    def test_studio_keeps_the_floor_after_a_refresh_for_moment_and_historic_consumers(self):
+        source={'roster_refresh':{'schema':'nfl2k5.roster_refresh.v1'}}
+        for historic,anniversary,selected in ((False,False,False),(True,False,True),(False,True,True)):
+            plan=mod_build.BuildPlan('source','target',roster_edits='edits.json',season_2026=True,position_pools=True,historic_teams_quick_game=historic,espn25_more_moments=anniversary)
+            with mock.patch.object(rr,'read_edits',return_value=source),mock.patch.object(rr,'apply',return_value={'log':[]}) as apply:
+                mod_build._apply_roster_refresh(plan,'target',{'steps':[]},lambda *args:None)
+            self.assertEqual(apply.call_args.args[1].get('restore_import_floor') is True,selected)
+
 if __name__=='__main__':unittest.main()
