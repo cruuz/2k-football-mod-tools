@@ -8,11 +8,15 @@ Everything here is procedural and deterministic (fixed seeds, no photos, no imag
   game SHOWS is the palette alpha (in game the field's brightness follows it almost proportionally, and the retail
   map's visible grain goes with its alpha, while tf-v1's tilted normals under a constant alpha showed nothing even up
   close), so the 256 entries are one flat normal (128, 128, 255) with alpha = the entry's index, and the pixels carry
-  short blades or fibres (2 to 3.5 texels, 2.5 to 4.5 cm at the game's 1.27 cm per texel) with dark gaps. Each mip is
-  the 2 x 2 box of the one above, rescaled around the kind's alpha (the mean the in-game brightness was measured
-  with) to a spread that falls with distance. The structure stays within a texel or two because the game maps this
-  texture per triangle with discontinuous UVs (592 of the 618 shared positions of E_detail): anything longer shows
-  the triangle lattice.
+  short blades or fibres (2 to 3.5 texels, 2.5 to 4.5 cm at the game's 1.27 cm per texel) with dark gaps. tf-v4
+  (gr2/gr3, Noah 2026-10-16): the levels are PREMIPPED. Each mip is the 2 x 2 box of the one above mixed with fresh
+  per-level clump noise at that level's own texel scale (FRESH, CLUMP_SIGMA), so the grain survives to the mips the
+  gameplay camera samples instead of averaging away, and the PNG holds them at FULL strength (candidate A's spreads,
+  ``DETAIL_REL_FULL`` in the module) around the kind's alpha (the mean the in-game brightness was measured with). The
+  module scales each level's spread down to the strength a build asks for (``DETAIL_STRENGTH``: turf 15 %, grass 20 %
+  of the way from tf-v3.1's spreads to A's). Every structure stays within a texel or two of its own level because the
+  game maps this texture per triangle with discontinuous UVs (592 of the 618 shared positions of E_detail): anything
+  longer shows the triangle lattice.
 * ``detail_<kind>_tile.png``: a tileable 64 x 64 version of the same kind (mips packed in a 64 x 96 atlas) for the
   venues whose detail normal is a compressed chunk (the Colts and Vikings sets s11, s15): repeated, it fits their
   fixed span.
@@ -33,10 +37,15 @@ import json
 import math
 from pathlib import Path
 
+import sys
+
 import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from mod_editor.core import nfl2k5_modern_surfaces as ms  # noqa: E402  (the spreads and alphas the build uses)
 OUT = ROOT / "data" / "nfl2k5_modern_surfaces" / "art"
 MIP_ORIGINS = ((0, 0), (0, 256), (256, 256), (384, 256), (448, 256), (480, 256))
 DETAIL_KINDS = ("fibre", "helix", "blade_bermuda", "blade_bluegrass")
@@ -138,24 +147,26 @@ def strokes(h, w, cx, cy, th, length, width, height, curl, steps=10):
 
 DETAIL_PARAMS = {
     # tf-v3: bright short blades or fibres lying every way, dark gaps (infill specks on synthetic turf), a per-texel
-    # jitter; no clumps (seam-safe). alpha = the kind's palette alpha since tf-v1 (163, 168, 143: the in-game brightness
-    # was measured with it); rel = the alpha spread (standard deviation / mean) per mip level 0..5. tf-v3.1 (lab 5 and
-    # candidate C): mips 0 and 1 at a third of tf-v3's; the game shows about twice the grain the first model predicted up
-    # close (Arrowhead 0.043, Highmark 0.057, painted logos from the overhead coin-toss camera 0.08: gravel), so the
-    # coin toss and replays (mips below 1.7) now land near 0.02; mips 2 to 5 (the play camera, grain 0.015 to 0.022 in
-    # lab 5) are unchanged. Grass calmer than synthetic turf (grass broadcasts 0.004 to 0.007, synthetic 0.008 to 0.018).
+    # jitter. alpha = the kind's palette alpha since tf-v1 (163, 168, 143: the in-game brightness was measured with it,
+    # the module's DETAIL_ALPHA). The spreads (standard deviation / mean of the alpha per mip level) live in the module:
+    # DETAIL_REL_ANCHOR (tf-v3.1, the calm look Noah played on v0.6.1), DETAIL_REL_FULL (gr2 candidate A, what this
+    # file stores) and DETAIL_STRENGTH (how far a build goes from the first toward the second). fresh_seed draws the
+    # per-level clump noise (Bermuda 7 and fibre 8 are the draws of gr2's pick sheet).
     "fibre": dict(count=60000, length=(2.0, 3.5), width=0.5, curl=0.6, infill=0.14, jitter=0.30, alpha=163, seed=41,
-                  rel=(0.075, 0.053, 0.050, 0.028, 0.014, 0.007)),
-    # Matrix Helix: shorter, twisted fibres
+                  fresh_seed=8, fresh=(0.0, 0.25, 0.45, 0.6, 0.7, 0.8)),
+    # Matrix Helix: shorter, twisted fibres. Its long curls must not reach mips 2 and 3 through the box (gr2's lattice
+    # warning sheet), so those levels take more fresh noise
     "helix": dict(count=66000, length=(1.6, 3.0), width=0.5, curl=2.2, infill=0.14, jitter=0.30, alpha=168, seed=42,
-                  rel=(0.075, 0.051, 0.048, 0.027, 0.013, 0.007)),
+                  fresh_seed=10, fresh=(0.0, 0.25, 0.7, 0.7, 0.75, 0.8)),
     # Bermuda: dense short fine blades mown low
     "blade_bermuda": dict(count=70000, length=(1.8, 3.0), width=0.45, curl=0.4, infill=0.06, jitter=0.28, alpha=143,
-                          seed=43, rel=(0.080, 0.046, 0.032, 0.017, 0.009, 0.005)),
+                          seed=43, fresh_seed=7, fresh=(0.0, 0.25, 0.45, 0.6, 0.7, 0.8)),
     # Kentucky bluegrass: a little longer blades mown higher
     "blade_bluegrass": dict(count=62000, length=(2.2, 3.5), width=0.48, curl=0.4, infill=0.06, jitter=0.28, alpha=143,
-                            seed=44, rel=(0.075, 0.045, 0.034, 0.018, 0.009, 0.005)),
+                            seed=44, fresh_seed=9, fresh=(0.0, 0.25, 0.45, 0.6, 0.7, 0.8)),
 }
+#: tf-v4: the Gaussian sigma (texels of that level) of each level's fresh clump noise
+CLUMP_SIGMA = (0.0, 0.6, 0.7, 0.8, 0.8, 0.8)
 #: the one normal every palette entry carries (tf-v3): flat, as the in-game texture is the alpha
 FLAT_NORMAL_RGB = (128, 128, 255)
 
@@ -189,18 +200,36 @@ def blade_field(kind, h=256, w=512, scale=1):
     return (v - v.mean()) / v.std()
 
 
-def alpha_levels(kind, h=256, w=512, levels=6):
-    """The alpha index levels (uint8, = palette index) of one kind: each mip the 2 x 2 box of the one above (the
-    unquantized field), rescaled around the kind's alpha to its spread; the level mean kept on the kind's alpha."""
+def _box(a):
+    return (a[0::2, 0::2] + a[1::2, 0::2] + a[0::2, 1::2] + a[1::2, 1::2]) / 4
+
+
+def _unit(a):
+    a = a - a.mean()
+    sd = float(a.std())
+    return a / (sd if sd > 1e-9 else 1.0)
+
+
+def alpha_levels(kind, h=256, w=512, levels=6, *, fresh_seed=None):
+    """The alpha index levels (uint8, = palette index) of one kind at FULL strength (tf-v4, premipped): level k is the
+    2 x 2 box of the level above (coherent blades) mixed with fresh per-level clump noise at that level's own texel
+    scale (Gaussian, wrapped so a tile still tiles), rescaled to DETAIL_REL_FULL[k] x the kind's alpha around that
+    alpha; every level's mean kept on the alpha. gr2's ``looks.detail_levels``, the generator of Noah's pick sheet."""
+    from scipy.ndimage import gaussian_filter
     p = DETAIL_PARAMS[kind]
     m = float(p["alpha"])
-    cur = blade_field(kind, h, w)
+    r = rng(p["fresh_seed"] if fresh_seed is None else fresh_seed)
+    cur = _unit(blade_field(kind, h, w))
     out = []
     for k in range(levels):
         if k:
-            cur = (cur[0::2, 0::2] + cur[1::2, 0::2] + cur[0::2, 1::2] + cur[1::2, 1::2]) / 4
-        sd = float(cur.std())
-        a = m + p["rel"][k] * m * (cur - cur.mean()) / (sd if sd > 1e-9 else 1.0)
+            cur = _unit(_box(cur))
+            n = r.normal(0, 1, cur.shape)
+            if CLUMP_SIGMA[k]:
+                n = gaussian_filter(n, CLUMP_SIGMA[k], mode="wrap")
+            f = p["fresh"][k]
+            cur = _unit(math.sqrt(1 - f) * cur + math.sqrt(f) * _unit(n))
+        a = m + ms.DETAIL_REL_FULL[k] * m * cur
         q = np.clip(np.round(a), 0, 255)
         q = np.clip(q + np.round(m - q.mean()), 0, 255)
         out.append(q.astype(np.uint8))
@@ -240,7 +269,7 @@ def tile_atlas(kind):
     for t in range(TILES):
         DETAIL_PARAMS[kind]["seed"] = base + 100 * (t + 1)
         try:
-            levels = alpha_levels(kind, 64, 64)
+            levels = alpha_levels(kind, 64, 64, fresh_seed=DETAIL_PARAMS[kind]["fresh_seed"] + 100 * (t + 1))
         finally:
             DETAIL_PARAMS[kind]["seed"] = base
         for (ox, oy), idx in zip(TILE_ORIGINS, levels):
@@ -249,10 +278,12 @@ def tile_atlas(kind):
 
 
 def masters_4x(kind, out_dir):
-    """Edition 4x master (2048 x 1024 RGBA): the same blades rasterized at 4x, the flat normal, alpha = mip 0's."""
+    """Edition 4x master (2048 x 1024 RGBA): the same blades rasterized at 4x, the flat normal, alpha = mip 0's at the
+    build's default strength (the pack keys on the default detail video)."""
     p = DETAIL_PARAMS[kind]
     v = blade_field(kind, scale=4)
-    a = np.clip(np.round(p["alpha"] + p["rel"][0] * p["alpha"] * v), 0, 255).astype(np.uint8)
+    rel0 = ms.detail_rel(kind)[0]
+    a = np.clip(np.round(p["alpha"] + rel0 * p["alpha"] * v), 0, 255).astype(np.uint8)
     rgb = np.empty(a.shape + (3,), np.uint8)
     rgb[...] = FLAT_NORMAL_RGB
     Image.fromarray(np.concatenate([rgb, a[..., None]], -1), "RGBA").save(out_dir / f"detail_{kind}_4x.png")

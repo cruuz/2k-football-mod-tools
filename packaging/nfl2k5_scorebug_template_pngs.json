@@ -2186,50 +2186,50 @@
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda.png": {
       "height": 384,
-      "sha256": "564df28c89ed72c820ae5ea895bed202349bcea8ccadc699d9792da8b6e0fe79",
-      "size": 124508,
+      "sha256": "4fcd35ad564dc7fdc9185be3af2a050d03c7780f72815c175faf9312fc2ad934",
+      "size": 151916,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda_tile.png": {
       "height": 96,
-      "sha256": "95d1f6c8d4c3766230dc5c3bb1befb66664a3fc7a6ccb104fed83d8a652c6a91",
-      "size": 12937,
+      "sha256": "68087a3f5b5256643f2e0266d81168c3a58abf904a8aa03f7626a8fdca177fcb",
+      "size": 15551,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass.png": {
       "height": 384,
-      "sha256": "d24e1ad126df00cc3ac407789707942655f941e68892ded510ccc3a0a4c8ce0b",
-      "size": 123227,
+      "sha256": "234033a2110be5d3450c635919a8a3879bffb2bfa8778cb82c54e2e30e70788a",
+      "size": 151906,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass_tile.png": {
       "height": 96,
-      "sha256": "915980274a06f2bfcbdfab52710a2a5321088cccc9cb2b3c096b7c56c066b357",
-      "size": 12818,
+      "sha256": "53bb3f5e4d7b4c1dcc57807b968c350c95ce473bec1c99c406daccfa6300834c",
+      "size": 15543,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_fibre.png": {
       "height": 384,
-      "sha256": "7af63431c4a3367e5d016c65eb2e53e377884e06a7edd24f1fc389d5c1200d43",
-      "size": 126815,
+      "sha256": "5608ec4f70a99c25e5ee839e1ff3daf0da6f7a0607516157eb61e86d477427bb",
+      "size": 155880,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_fibre_tile.png": {
       "height": 96,
-      "sha256": "4704ecf11f13fcbad111e117969bd17a21a7feb2504b678d2bfde944a32c8754",
-      "size": 13147,
+      "sha256": "498c67d3970fb693ccaed4c9cb84cc6048cb265a8a0f63e6385866ce3d6a483f",
+      "size": 15935,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_helix.png": {
       "height": 384,
-      "sha256": "70a30006d3e5d01dc1a1b29d14955f28b98abedc11d2613a444b3d10b185381c",
-      "size": 127306,
+      "sha256": "1fcd373c8e6c426ae06382626e065cfcfb8d478e3553c716aedd66a9e97d1bba",
+      "size": 156758,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_helix_tile.png": {
       "height": 96,
-      "sha256": "47c123469c5ca8307dfbd19ef715f8cf648ecbe0be11b79837288d84ea6d1d87",
-      "size": 13205,
+      "sha256": "4c18de30b115f2288c551952a1bcec7609addf1764a495140b982fd1dfd8e489",
+      "size": 15991,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/pattern_grass_bermuda.png": {

@@ -968,6 +968,12 @@ def field_normal_loan_prefixes(art_root):
                  if art["venues"].get(prefix, {}).get("endzone_turf_from_field"))
 
 
+def midfield_normal_loan_prefixes(art_root):
+    """PIT's explicit late midfield borrows from the surfaced detail normal, so Modern surfaces writes it tiled."""
+    art = load_art(art_root)
+    return tuple(prefix for prefix in ("s22",) if art["venues"].get(prefix, {}).get("add_missing_midfield"))
+
+
 def _prepare_field_prefix(data, name, plan, base, *, settings=None):
     """Surface the selected field before fitting six complete painted textures.
 
