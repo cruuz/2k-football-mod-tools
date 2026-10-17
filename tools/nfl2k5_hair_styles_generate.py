@@ -428,16 +428,16 @@ def surfaces(rig, lod):
 def build(name, S, lod):
     m = Mesh()
     hi = lod == 'hi'
+    F = Fields(S)
     if name == 'long_locs':
-        # two layers of locks around the back half; back ones longest, side ones lie on the pads
+        # twelve locks (seven at distance) out of the helmet's back half, falling straight down the back as one dense,
+        # slightly gathered mass over the collar; alternate locks twisted a little so a side view sees rope, not wire
         n = 12 if hi else 7
-        az = np.linspace(-84, 84, n)
-        for i, a in enumerate(az):
-            side = abs(a) / 84
-            length = (23 - 7 * side ** 1.5) + (1.5 if i % 2 else 0)
-            lock(m, S, a, length, (3.9 if hi else 5.6), i % 4, 4, layer=i % 2, steps=3 if hi else 2,
-                 lean=0.08 + 0.06 * side, joints_by_row=['head', 'head', 'neck', 'thorax', 'thorax'],
-                 crown=(46.5 if hi else None))
+        for i, a in enumerate(np.linspace(-62, 62, n)):
+            side = abs(a) / 62
+            strand(m, S, F, a, 23 - 5 * side + (1.2 if i % 2 else 0), (3.7 if hi else 5.4), i % 4, 4, layer=i % 2,
+                   fractions=(0, 0.15, 0.35, 0.65, 1.0) if hi else (0, 0.3, 1.0), crown=(46.5 if hi else None),
+                   back=1.2, centre=0.18 + 0.1 * side, lateral=0.08, twist=(0.35 if i % 2 else -0.35), clear=1.2)
     elif name == 'short_twists':
         n = 13 if hi else 8
         for i, a in enumerate(np.linspace(-70, 70, n)):
@@ -449,21 +449,22 @@ def build(name, S, lod):
         curtain(m, S, az, 15.0, 3 if hi else 2, crown=[50.0, 45.0] if hi else [46.0], lean=0.06,
                 joints=(['head'] * 4 + ['neck', 'thorax', 'thorax']) if hi else (['head'] * 3 + ['neck', 'thorax']))
     elif name == 'afro_puff':
-        az = np.linspace(-108, 108, 11 if hi else 7)
-        curtain(m, S, az, 6.0, 2 if hi else 1, crown=[51.0, 46.0] if hi else [47.0], lean=0.75, bulge=2.4,
-                joints=['head'] * 8)
+        # a rounded volume over the skull (inside the shell under a helmet) and a full roll bulging out under the rim
+        afro(m, S, F, hi)
     elif name == 'braids':
+        # ten box braids in a neat row from the nape, hanging close down the back over the collar
         n = 10 if hi else 6
-        for i, a in enumerate(np.linspace(-95, 95, n)):
-            side = abs(a) / 95
-            lock(m, S, a, 17 - 6 * side, (1.9 if hi else 2.8), i % 4, 4, layer=i % 2, steps=3 if hi else 2,
-                 lean=0.14 + 0.1 * side, taper=0.8, joints_by_row=['head', 'head', 'neck', 'thorax', 'thorax'])
+        for i, a in enumerate(np.linspace(-58, 58, n)):
+            strand(m, S, F, a, 17 - 4 * (abs(a) / 58), (1.9 if hi else 2.8), i % 4, 4, layer=0,
+                   fractions=(0, 0.25, 0.6, 1.0) if hi else (0, 0.35, 1.0), back=1.4, centre=0.25, taper=0.8,
+                   twist=(0.5 if i % 2 else -0.5))
     elif name == 'bun':
         bun_mesh(m, S, hi)
     elif name == 'mullet':
         az = np.linspace(-85, 85, 9 if hi else 5)
         curtain(m, S, az, 12.0, 2 if hi else 1, crown=[46.0] if hi else None, lean=0.25,
                 joints=['head', 'head', 'head', 'neck', 'thorax'] if hi else ['head', 'head', 'neck', 'thorax'])
+    push_out(m, F)
     return m
 
 def bun_mesh(m, S, hi):
@@ -502,6 +503,337 @@ def all_meshes(rig):
         for name in MESHES:
             out[(name, lod)] = build(name, S, lod)
     return out
+
+
+# ------------------------------------------------------------------------------------------------ gravity drape (v2)
+# b775 hs1 v2 (coordinator review 10/17): strands and sheets fall under gravity onto the measured jersey and pads.
+# H(x, z) is the top of the jersey seen from above and Z(x, y) its back seen from behind; a point is outside when it
+# is above the one or behind the other (and off the neck). Locks are drawn behind the back, slide over the collar and
+# pad tops, rows are picked where the path bends, chords are pushed out until they clear, and a last pass moves any
+# triangle edge that still dips into the jersey.
+
+RES = 0.5
+
+class Fields:
+    def __init__(self, S):
+        P = S.jersey_pts
+        self.S = S
+        self.x0, self.y0, self.z0 = -40.0, -10.0, -40.0
+        nx, ny, nz = 160, 120, 160
+        H = np.full((nx, nz), -np.inf); Z = np.full((nx, ny), np.inf)
+        ix = np.clip(((P[:, 0] - self.x0) / RES).astype(int), 0, nx - 1)
+        iy = np.clip(((P[:, 1] - self.y0) / RES).astype(int), 0, ny - 1)
+        iz = np.clip(((P[:, 2] - self.z0) / RES).astype(int), 0, nz - 1)
+        np.maximum.at(H, (ix, iz), P[:, 1]); np.minimum.at(Z, (ix, iy), P[:, 2])
+        # close gaps between samples (1 cell)
+        Hd = H.copy(); Zd = Z.copy()
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                Hd = np.maximum(Hd, np.roll(np.roll(H, dx, 0), dz, 1))
+                Zd = np.minimum(Zd, np.roll(np.roll(Z, dx, 0), dz, 1))
+        self.H, self.Z = Hd, Zd
+    def h(self, x, z):
+        i = int((x - self.x0) / RES); k = int((z - self.z0) / RES)
+        if 0 <= i < self.H.shape[0] and 0 <= k < self.H.shape[1]: return float(self.H[i, k])
+        return -math.inf
+    def zb(self, x, y):
+        i = int((x - self.x0) / RES); k = int((y - self.y0) / RES)
+        if 0 <= i < self.Z.shape[0] and 0 <= k < self.Z.shape[1]: return float(self.Z[i, k])
+        return math.inf
+    def neck_ok(self, p, clear=0.4):
+        if p[1] < 24: return True
+        a = math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z))); r = math.hypot(p[0], p[2] - AXIS_Z)
+        b = self.S.body_radius(a, p[1], da=8, dy=1.0)
+        return r >= b + clear
+    def outside(self, p, clear):
+        x, y, z = p
+        return (y > self.h(x, z) + clear or z < self.zb(x, y) - clear) and self.neck_ok(p)
+
+def fall(F, start, length, *, clear=0.6, back=0.9, centre=0.12, sub=0.4, lateral=0.0):
+    """Particle path from `start` (head frame) that falls under gravity, is drawn behind the back, and slides over
+    the collar and pads; never inside the jersey fields."""
+    p = np.array(start, float); out = [p.copy()]; walked = 0.0; t = 0
+    while walked < length:
+        t += 1
+        x, y, z = p
+        look = F.zb(x, y - 4.0)
+        behind = math.isfinite(look) and z <= look - clear + 0.05
+        d = np.array([0.0, -1.0, 0.0])
+        if not behind:
+            d[2] -= back
+        if abs(x) > 0.5:
+            d[0] -= centre * math.copysign(1.0, x) * min(1.0, abs(x) / 9.0)
+        d[0] += lateral * math.sin(t * sub / 4.0)
+        d /= np.linalg.norm(d)
+        q = p + sub * d
+        if not F.outside(q, clear):
+            cands = []
+            top = F.h(q[0], q[2])
+            if math.isfinite(top) and top + clear <= p[1] + 0.35:
+                cands.append(np.array([q[0], top + clear + 0.01, q[2]]))
+            zb = F.zb(q[0], q[1])
+            if math.isfinite(zb):
+                cands.append(np.array([q[0], q[1], zb - clear - 0.01]))
+            cands = [c for c in cands if F.outside(c, clear * 0.95)]
+            if not cands:
+                q = p + np.array([0, 0, -sub])         # step straight back
+            else:
+                q = min(cands, key=lambda c: np.linalg.norm(c - p))
+        walked += float(np.linalg.norm(q - p)); p = q; out.append(p.copy())
+        if t > 2000: break
+    return np.array(out)
+
+def resample(path, fractions):
+    seg = np.linalg.norm(np.diff(path, axis=0), axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
+    out = []
+    for f in fractions:
+        s = f * cum[-1]; i = int(np.clip(np.searchsorted(cum, s) - 1, 0, len(path) - 2))
+        w = 0 if seg[i] == 0 else (s - cum[i]) / seg[i]
+        out.append(path[i] + (path[i + 1] - path[i]) * w)
+    return out
+
+def simplify_safe(F, path, count, clear=0.2):
+    """Like simplify, but first adds the path points where the current polyline passes inside the jersey."""
+    keep = [0, len(path) - 1]
+    while len(keep) < count:
+        ks = sorted(keep); worst, where = 0.0, None
+        for a, b in zip(ks[:-1], ks[1:]):
+            if b - a < 2: continue
+            A, B = path[a], path[b]
+            for t in np.linspace(0.05, 0.95, 19):
+                p = A + (B - A) * t
+                if not F.outside(p, clear):
+                    i = a + 1 + int(np.argmin(np.linalg.norm(path[a + 1:b] - p, axis=1)))
+                    depth = 1.0
+                    if depth > worst: worst, where = depth, i
+                    break
+            if where is not None: break
+        if where is None:
+            rest = simplify(path, count) 
+            # fall back to distance-based points not yet kept
+            extra = [i for i in range(len(path)) if any((path[i] == r).all() for r in rest) and i not in keep]
+            if not extra: break
+            keep.append(extra[0]); continue
+        keep.append(where)
+    return [path[i] for i in sorted(set(keep))]
+
+def clear_chords(F, rows, clear=0.25, step=0.25, rounds=40):
+    """Push the rows after the first back (and up a little) until no chord between rows passes inside the jersey."""
+    rows = [np.array(r, float) for r in rows]
+    for _ in range(rounds):
+        moved = False
+        for k in range(len(rows) - 1):
+            A, B = rows[k], rows[k + 1]
+            if any(not F.outside(A + (B - A) * t, clear) for t in np.linspace(0.05, 1.0, 16)):
+                for j in (k, k + 1):
+                    if j == 0: continue
+                    rows[j] = rows[j] + np.array([0.0, 0.08, -step])
+                moved = True
+        if not moved: break
+    return rows
+
+def simplify(path, count):
+    """`count` points of the fine path (ends kept), added greedily where the polyline is farthest from the path."""
+    keep = [0, len(path) - 1]
+    while len(keep) < count:
+        best, where = -1.0, None
+        ks = sorted(keep)
+        for a, b in zip(ks[:-1], ks[1:]):
+            if b - a < 2: continue
+            A, B = path[a], path[b]; AB = B - A; L = float(AB @ AB) or 1e-9
+            for i in range(a + 1, b):
+                t = np.clip((path[i] - A) @ AB / L, 0, 1)
+                dist = np.linalg.norm(path[i] - (A + t * AB))
+                if dist > best: best, where = dist, i
+        if where is None: break
+        keep.append(where)
+    return [path[i] for i in sorted(keep)]
+
+def chord_violations(F, pts, clear=0.3, n=12):
+    bad = 0
+    for a, b in zip(pts[:-1], pts[1:]):
+        for t in np.linspace(0, 1, n):
+            if not F.outside(a + (b - a) * t, clear): bad += 1
+    return bad
+
+def strand(m, S, F, a, length, width, column, columns, *, layer=0, fractions=(0, 0.2, 0.55, 1.0), crown=None,
+           taper=0.75, back=0.9, centre=0.12, joints=None, lateral=0.0, clear=1.0, twist=0.0):
+    (yr, rr), (ym, rm) = root_and_rim(S, a, layer)
+    rim = point(a, rm, ym)
+    path = fall(F, rim, length, back=back, centre=centre, lateral=lateral, clear=clear + 0.15 * layer)
+    rows = clear_chords(F, simplify(path, len(fractions)))
+    pts = [point(a, rr, yr)] + rows
+    if crown is not None:
+        ac = a * 0.75
+        sc = S.body_radius(ac, crown); sh = S.shell_inner(ac, crown) - SHELL_CLEAR
+        rc = min((sc if sc > 0 else rr) + SCALP_CLEAR + 0.15 * layer, sh if math.isfinite(sh) else 99)
+        pts = [point(ac, rc, crown)] + pts
+    n = len(pts)
+    a_list = [math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z))) for p in pts]
+    widths = [width * (1 - (1 - taper) * k / (n - 1)) for k in range(n)]
+    if crown is not None: widths[0] *= 0.8
+    vs = list(np.linspace(0.0, 1.0, n)) if crown is None else [0.0] + list(np.linspace(0.12, 1.0, n - 1))
+    js = joints or (['head'] * (n - len(fractions) + 1) + ['neck'] + ['thorax'] * (len(fractions) - 2))
+    js = (js + [js[-1]] * n)[:n]
+    pad = 0.06 / columns
+    card2(m, pts, widths, column / columns + pad, (column + 1) / columns - pad, vs, js, a_list, twist=twist)
+    return chord_violations(F, pts[(2 if crown is not None else 1):], clear=0.2)
+
+
+def card2(m, pts, widths, u0, u1, vs, joints, a_list, twist=0.0):
+    """A ribbon whose width stays across the strand: horizontal and perpendicular to the strand's own horizontal
+    run where it travels sideways or backwards (so a strand crossing a pad is never seen edge-on as a wire)."""
+    rows = len(pts); ids = []
+    for i in range(rows):
+        c = np.asarray(pts[i], float)
+        d = np.asarray(pts[min(i + 1, rows - 1)], float) - np.asarray(pts[max(i - 1, 0)], float)
+        t = tangent(a_list[i])
+        dh = np.array([d[0], 0.0, d[2]])
+        if np.linalg.norm(dh) > 0.35 * np.linalg.norm(d):
+            across = np.cross(dh, [0.0, 1.0, 0.0]); across /= np.linalg.norm(across)
+            if across @ t < 0: across = -across
+            w = min(1.0, (np.linalg.norm(dh) / np.linalg.norm(d) - 0.35) / 0.35)
+            across = (1 - w) * t + w * across; across /= np.linalg.norm(across)
+        else:
+            across = t
+        n = np.cross(across, d) if np.linalg.norm(d) > 1e-6 else radial(c)
+        if np.linalg.norm(n) < 1e-6: n = radial(c)
+        if n @ radial(c) < 0: n = -n
+        n /= np.linalg.norm(n)
+        if twist:
+            tw = twist * min(1.0, i / 2.0)          # the roots stay flat against the head
+            across, n = math.cos(tw) * across + math.sin(tw) * n, math.cos(tw) * n - math.sin(tw) * across
+            if n @ radial(c) < 0: n = -n
+        half = widths[i] / 2
+        L = m.add(c - half * across, n, (u0, vs[i]), joints[i])
+        R = m.add(c + half * across, n, (u1, vs[i]), joints[i])
+        ids += [L, R]
+    # first triangle (L0, R0, L1) must face out
+    a_, b_, c_ = (np.asarray(m.P[k]) for k in ids[:3])
+    if np.cross(b_ - a_, c_ - a_) @ radial((a_ + b_ + c_) / 3) < 0:
+        ids = [ids[k ^ 1] for k in range(len(ids))]
+    m.strip_append(ids)
+
+
+def afro(m, S, F, hi):
+    """A rounded volume: a dome over the skull (inside the shell when the helmet is on) and a full roll that bulges out
+    under the rim at the nape and round the ears, clamped above the collar and pads."""
+    cols = 13 if hi else 7
+    base = np.linspace(-1.0, 1.0, cols)
+    centre = np.array([0.0, 41.0, AXIS_Z])
+    # rows: (kind, value, azimuth span)
+    rows = ([('crown', 54.0, 168), ('crown', 51.5, 158), ('crown', 48.0, 145), ('crown', 44.0, 130)] if hi else
+            [('crown', 47.0, 140)])
+    rows += [('root', 0.0, 118), ('roll', (-0.5, 1.7), 108), ('roll', (-2.0, 2.4), 100), ('roll', (-3.5, 1.6), 94),
+             ('roll', (-4.6, 0.3), 90)] if hi else [('root', 0.0, 112), ('roll', (-1.6, 2.2), 100), ('roll', (-4.2, 0.6), 90)]
+    grid = np.zeros((len(rows), cols), int)
+    for j, f in enumerate(base):
+        for i, (kind, val, span) in enumerate(rows):
+            a = f * span
+            if kind == 'crown':
+                y = val
+                sc = S.body_radius(a, y, da=12, dy=1.5)
+                sh = S.shell_inner(a, y, da=12, dy=1.5) - 0.35
+                r = min((sc if sc > 0 else 2.0) + 2.4, sh if math.isfinite(sh) else 99)
+            else:
+                (yr, rr), (ym, rm) = root_and_rim(S, a)
+                if kind == 'root':
+                    y, r = yr, rr
+                else:
+                    dy, dr = val
+                    rim, rim_r = S.rim(a), S.rim_radius(a)
+                    neck = S.body_radius(a, rim + dy, da=10, dy=1.5)
+                    y = rim + dy
+                    r = max(rim_r + dr, (neck if neck > 0 else rim_r - 2) + 0.6)
+            p = point(a, r, y)
+            top = F.h(p[0], p[2])
+            if math.isfinite(top) and p[1] < top + 0.6 and kind == 'roll':
+                p[1] = top + 0.6
+            n = p - centre; n /= np.linalg.norm(n)
+            grid[i, j] = m.add(p, n, (j / (cols - 1), i / (len(rows) - 1)), 'head')
+    for j in range(cols - 1):
+        run = []
+        for i in range(len(rows)):
+            run += [grid[i, j], grid[i, j + 1]]
+        a_, b_, c_ = (np.asarray(m.P[k]) for k in run[:3])
+        if np.cross(b_ - a_, c_ - a_) @ ((a_ + b_ + c_) / 3 - centre) < 0:
+            run = [run[k ^ 1] for k in range(len(run))]
+        m.strip_append(run)
+    return m
+
+
+def curtain2(m, S, F, azimuths, length, steps, *, crown=None, joints=None, layer=0, crown_taper=0.3, back=1.0,
+             centre=0.08, clear=1.0, bulge=0.0):
+    """curtain with the gravity fall: every column falls from under the rim onto the collar, pads and back."""
+    cols = []
+    for a in azimuths:
+        (yr, rr), (ym, rm) = root_and_rim(S, a, layer)
+        rows = []
+        if crown:
+            top = max(crown)
+            for yc in crown:
+                ac = a * (1.0 - crown_taper * (yc - yr) / max(top - yr, 1e-6))
+                sc = S.body_radius(ac, yc); sh = S.shell_inner(ac, yc) - SHELL_CLEAR
+                r = min((sc if sc > 0 else rr) + SCALP_CLEAR + 0.2, sh if math.isfinite(sh) else 99)
+                rows.append(point(ac, r, yc))
+        rows.append(point(a, rr, yr))
+        path = fall(F, point(a, rm + bulge, ym), length, back=back, centre=centre, clear=clear)
+        rows += clear_chords(F, simplify(path, steps + 1))
+        cols.append(rows)
+    R, C = len(cols[0]), len(cols)
+    # horizontal edges between neighbouring columns must clear the jersey too: push both rows back together
+    for _ in range(30):
+        moved = False
+        for i in range(R - steps - 1, R):
+            for j in range(C - 1):
+                A, B = cols[j][i], cols[j + 1][i]
+                if any(not F.outside(A + (B - A) * t, 0.25) for t in np.linspace(0.1, 0.9, 9)):
+                    for jj in (j, j + 1):
+                        cols[jj][i] = cols[jj][i] + np.array([0.0, 0.08, -0.25])
+                    moved = True
+        if not moved: break
+    ids = np.zeros((R, C), int)
+    jl = joints or (['head'] * (R - steps) + ['neck'] + ['thorax'] * (steps - 1))
+    for j in range(C):
+        for i in range(R):
+            p = np.asarray(cols[j][i], float)
+            ids[i, j] = m.add(p, radial(p), (j / (C - 1), i / (R - 1)), jl[min(i, len(jl) - 1)])
+    P = np.array(m.P)
+    for i in range(R):
+        for j in range(C):
+            du = P[ids[i, min(j + 1, C - 1)]] - P[ids[i, max(j - 1, 0)]]
+            dv = P[ids[min(i + 1, R - 1), j]] - P[ids[max(i - 1, 0), j]]
+            n = np.cross(du, dv)
+            if n @ radial(P[ids[i, j]]) < 0: n = -n
+            if np.linalg.norm(n) > 1e-9: m.N[ids[i, j]] = n / np.linalg.norm(n)
+    for j in range(C - 1):
+        run = []
+        for i in range(R):
+            run += [ids[i, j], ids[i, j + 1]]
+        a_, b_, c_ = (np.array(m.P[k]) for k in run[:3])
+        if np.cross(b_ - a_, c_ - a_) @ radial((a_ + b_ + c_) / 3) < 0:
+            run = [run[k ^ 1] for k in range(len(run))]
+        m.strip_append(run)
+    return ids
+
+
+def push_out(m, F, clear=0.15, rounds=60):
+    """Final pass: any triangle edge that dips into the jersey moves its two vertices back (and a touch up)."""
+    P = [np.asarray(p, float) for p in m.P]
+    tris = m.tris()
+    edges = sorted({tuple(sorted((int(t[u]), int(t[w])))) for t in tris for u, w in ((0, 1), (1, 2), (2, 0))})
+    def inside(p):
+        return p[1] < 37 and not (p[1] > F.h(p[0], p[2]) + clear or p[2] < F.zb(p[0], p[1]) - clear)
+    for _ in range(rounds):
+        moved = set()
+        for a, b in edges:
+            if any(inside(P[a] + (P[b] - P[a]) * t) for t in np.linspace(0, 1, 7)):
+                moved.update((a, b))
+        if not moved: break
+        for k in moved:
+            P[k] = P[k] + np.array([0.0, 0.05, -0.2])
+    m.P = P
+    return len(moved) if moved else 0
 
 
 # ------------------------------------------------------------------------------------------------ art

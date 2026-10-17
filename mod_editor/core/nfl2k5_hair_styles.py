@@ -978,6 +978,78 @@ def apply_to_image(path: Path | str, *, progress: Callable[[str, int, int], None
     return receipt
 
 
+# ------------------------------------------------------------------------------------------------ 2026 assignments
+
+ASSIGNMENTS_PATH = ROOT / "data" / "nfl2k5_hair_styles_2026_roster_edits.json"
+ASSIGNMENT_FLOOR = 0.9      # the main roster must hold at least this share of the listed players by name
+
+
+def load_assignments(path: Path | None = None) -> list[dict[str, Any]]:
+    document = json.loads((ASSIGNMENTS_PATH if path is None else Path(path)).read_text(encoding="utf-8"))
+    require(document.get("schema") == "2k5_mod_studio_roster_edits/v1", "foreign hair assignments")
+    rows = document["edits"]
+    require(all(set(r["fields"]) == {"hair_style"} and 0 <= int(r["fields"]["hair_style"]) <= 15 for r in rows),
+            "a hair assignment sets something other than hair_style")
+    return rows
+
+
+def _surname(text: str) -> str:
+    return str(text).replace(".", "").split()[0].casefold() if str(text).strip() else ""
+
+
+def plan_assignments(document, rows: Sequence[Mapping[str, Any]] | None = None) -> dict[str, Any]:
+    """Which listed 2026 players the roster document holds (same pool, index and surname), and the byte each one
+    gets. A player whose hair style is already set to something else (the user's own choice) is left alone."""
+    rows = load_assignments() if rows is None else rows
+    players = {(p.pool, p.index): p for p in document.players}
+    writes, missing, kept = [], [], []
+    for row in rows:
+        player = players.get((row["pool"], int(row["index"])))
+        if player is None or _surname(player.last) != _surname(row["last"]):
+            missing.append(f"{row['first']} {row['last']}")
+            continue
+        style = int(row["fields"]["hair_style"])
+        current = player.record.get("hair_style")
+        if current not in (0, style):
+            kept.append(f"{row['first']} {row['last']}")
+            continue
+        writes.append((player.offset + 0x0D, style, f"{row['first']} {row['last']}"))
+    matched = len(writes) + len(kept)
+    return {"writes": writes, "missing": missing, "kept": kept, "matched": matched, "listed": len(rows),
+            "league": matched >= ASSIGNMENT_FLOOR * len(rows)}
+
+
+def apply_assignments(path: Path | str) -> dict[str, Any]:
+    """Write the 2026 hair styles into the image's main roster (record +0x0D bits 0-3 only), when the roster is the
+    2026 league one; any other roster (retail, a user's own league) is left untouched and the receipt says so."""
+    from . import nfl2k5_roster_records as rr
+    with rr._outer_image()(str(path), writable=True) as archive:
+        entry = rr._entry(archive)
+        resource = archive.read(entry.virtual_offset, entry.size)
+        document = rr.RosterDocument(resource[rr.RESOURCE_HEADER_SIZE:], base=0, source="image",
+                                     resource_header=resource[:rr.RESOURCE_HEADER_SIZE])
+        plan = plan_assignments(document)
+        receipt = {k: plan[k] if not isinstance(plan[k], list) else len(plan[k]) for k in plan if k != "writes"}
+        if not plan["league"]:
+            receipt.update(status="skipped", reason="the main roster is not the 2026 league roster these players "
+                           "were assigned on; hair styles stay 0 (set them in the Players page)")
+            return receipt
+        base = entry.virtual_offset + rr.RESOURCE_HEADER_SIZE
+        written = 0
+        for offset, style, _name in plan["writes"]:
+            old = resource[rr.RESOURCE_HEADER_SIZE + offset]
+            new = (old & 0xF0) | style
+            if new != old:
+                require(archive.write(base + offset, bytes([new])) == 1, "short hair style write")
+                written += 1
+        after = archive.read(entry.virtual_offset, entry.size)
+        changed = [i for i in range(len(after)) if after[i] != resource[i]]
+        require(all((i - rr.RESOURCE_HEADER_SIZE - 0x0D) in {p.offset for p in document.players} for i in changed),
+                "a hair style write touched a byte other than record +0x0D")
+    receipt.update(status="applied", written=written, writes=len(plan["writes"]))
+    return receipt
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     import argparse
     parser = argparse.ArgumentParser(prog="python3 -m mod_editor.core.nfl2k5_hair_styles", description=LABEL)

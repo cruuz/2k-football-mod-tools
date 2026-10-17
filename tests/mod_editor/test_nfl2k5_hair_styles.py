@@ -108,8 +108,8 @@ class CatalogueTests(unittest.TestCase):
                 stride = sum(document["scenes"][key]["strides"])
                 self.assertEqual(len(records) % stride, 0)
                 self.assertLess(max(strip), len(records) // stride)
-                # polycount in line with the retail dreads (80 close-up, 52 distant vertices)
-                self.assertLessEqual(len(records) // stride, 150 if key == hs.HI else 64)
+                # polycount in line with the retail dreads (80 close-up, 52 distant vertices): at most 176 / 64
+                self.assertLessEqual(len(records) // stride, 176 if key == hs.HI else 64)
 
     def test_roster_field_is_the_low_nibble_of_0x0d(self):
         record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE))
@@ -148,6 +148,35 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(by_name[("Trevor", "Lawrence")], 4)
         self.assertEqual(by_name[("Cam", "Ward")], 3)
         self.assertEqual(by_name[("Isaac", "TeSlaa")], 4)
+
+
+class AssignmentPlanTests(unittest.TestCase):
+    """The build step writes the 2026 assignments only into a roster that holds those players (runs everywhere)."""
+
+    class Doc:
+        def __init__(self, rows, rename=0, preset=None):
+            from types import SimpleNamespace
+            self.players = []
+            for k, row in enumerate(rows):
+                record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE))
+                if preset is not None and k == 0:
+                    record.set("hair_style", preset)
+                last = "Someone" if k < rename else row["last"]
+                self.players.append(SimpleNamespace(pool=row["pool"], index=row["index"], last=last,
+                                                    offset=0x54 * k, record=record))
+
+    def test_league_roster_gets_every_listed_player(self):
+        rows = hs.load_assignments()
+        plan = hs.plan_assignments(self.Doc(rows))
+        self.assertTrue(plan["league"])
+        self.assertEqual(len(plan["writes"]), len(rows))
+        self.assertTrue(all(offset % 0x54 == 0x0D for offset, _style, _name in plan["writes"]))
+
+    def test_other_rosters_and_user_choices_are_left_alone(self):
+        rows = hs.load_assignments()
+        self.assertFalse(hs.plan_assignments(self.Doc(rows, rename=len(rows) // 2))["league"])
+        plan = hs.plan_assignments(self.Doc(rows, preset=hs.NONE_STYLE if rows[0]["fields"]["hair_style"] != hs.NONE_STYLE else 2))
+        self.assertEqual(len(plan["kept"]), 1)
 
 
 @unittest.skipUnless(PACK0.is_file(), "private USA pack 0 required")

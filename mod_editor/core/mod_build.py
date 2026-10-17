@@ -4502,12 +4502,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         hair_receipt = hair.apply_to_image(target, progress=progress)
         hair_xbe, hair_xbe_receipt = hair.apply(_xbe_bytes(target))
         _write_xbe_bytes(target, hair_xbe)
+        # the 2026 assignments (data/nfl2k5_hair_styles_2026_roster_edits.json, sourced per player) go into the main
+        # roster here, after every roster writer, and only when it is the 2026 league roster they were made on
+        hair_roster = hair.apply_assignments(target)
         if hair.image_status(target) != "applied":
             raise RuntimeError("Hair styles: the output image does not read back as applied")
         receipt["steps"].append({"step": "hair_styles", **{k: v for k, v in hair_receipt.items() if k != "scenes"},
                                  "scenes": [{k: v for k, v in r.items() if k in ("key", "growth", "added_vertices")}
                                             for r in hair_receipt.get("scenes", [])],
-                                 "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"}})
+                                 "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"},
+                                 "roster": hair_roster})
         receipt["result"]["hair_styles"] = "applied"
     if _commentary_final_wanted(plan, loaded_espn25_plan):
         # b77-c2: the last roster writer has run (main roster, historic and Anniversary files, the user's Anniversary
