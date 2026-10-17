@@ -136,6 +136,58 @@ class HeldHistoricTeamTests(unittest.TestCase):
             self.assertEqual(bytes(m.uc.mem_read(pool[0], 84)), before)   # the split record is left alone
 
 
+@unittest.skipUnless(HAVE_UC and XBE.is_file(), "pinned USA XBE, ROST and Unicorn required")
+class DiscDraftSaveLoadTests(unittest.TestCase):
+    """Discord D01 'drafted, then save or exit, then load failed': the draft path saved and cold-loaded at Senior
+    Bowl preparation, after ten picks on the NFL Draft screen (Save / Quit to main menu) and on the Apartment after
+    the draft, on a SOFTDRINK disc executable with the Studio's current MyCareer owner. The pinned f0 franchise at
+    the Combine stands in for the native prior season (the 40-minute bootstrap is evidence, not a test)."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not OCT13_DISC.is_file():
+            raise unittest.SkipTest("the Oct 13 played disc is absent")
+        from tools.b77 import frz_xbe_bisect as bisect
+        from tools.b77 import mc2_repair
+        from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
+        shipped, _ = bisect.read_xbe(OCT13_DISC)
+        if hashlib.sha256(shipped).hexdigest() != OCT13_XBE:
+            raise unittest.SkipTest("Oct 13 disc executable pin differs")
+        cls.payload = mc2_repair.build(shipped)[0]
+        code, state = mode.legacy.allocations(cls.payload)
+        cls.labels = mc2_repair.studio_owner(cls.payload, code, state)[1]
+        cls.roster = retail_roster()
+
+    def reload(self, saved, menu):
+        from tests.nfl2k5_my_career_draft_fixture import Machine
+        self.assertEqual(saved[-128:-124], b"MCPL")                 # the career footer is present
+        with Machine(self.payload) as cold:
+            cold.labels = self.labels
+            cold.cold(self.roster, saved)
+            self.assertNotIn(("notice", "Career load failed."), cold.events)
+            self.assertEqual(cold.top(), self.labels[menu])
+            return cold.call("primary"), bytes(cold.uc.mem_read(cold.state + 40, 16)), saved[-128 + 36]
+
+    def test_prep_mid_draft_and_after_draft_saves_load(self):
+        from tests.nfl2k5_my_career_draft_fixture import Machine
+        with Machine(self.payload) as m:
+            m.labels = self.labels
+            p = m.prepare_draft(self.roster)
+            token = bytes(m.uc.mem_read(m.state + 40, 16))
+            self.assertEqual(self.reload(m.native_save(budget=500000000), "m3_prep_menu"), (p, token, 2))
+            m.select(0, budget=200000000)                           # Continue to the draft
+            for _ in range(10):
+                m.frame(budget=500000000)
+            self.assertEqual(m.top(), self.labels["m3_draft_menu"])
+            self.assertEqual(self.reload(m.native_save(budget=500000000), "m3_draft_menu")[:2], (p, token))
+            for _ in range(260):
+                if m.get(0xE576A4) != 5:
+                    break
+                m.frame(budget=6000000000)
+            self.assertEqual(m.top(), self.labels["apartment"])
+            self.assertEqual(self.reload(m.native_save(budget=500000000), "apartment"), (p, token, 3))
+
+
 class RosterSplitNameRecordTests(unittest.TestCase):
     """Which shipped main rosters can hand MyCareer a split free record at all (read-only disc ROSTs)."""
 
