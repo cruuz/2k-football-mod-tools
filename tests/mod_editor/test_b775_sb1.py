@@ -245,35 +245,37 @@ class Hosts(unittest.TestCase):
         after, receipt = hosts.rost_hosts(self.rost, hosts.HOSTS)
         self.assertEqual(len(after), len(self.rost))
         records = hosts._records(after[rr.RESOURCE_HEADER_SIZE:])
-        self.assertEqual(records['s42'][1]['name'][1], 'Super Bowl LXII')
-        self.assertEqual(records['s42'][1]['display_name'][1], 'Mercedes-Benz Stadium')
-        self.assertEqual(records['s43'][1]['location'][1], 'Las Vegas, NV')
-        self.assertEqual(records['s41'][1]['display_name'][1], 'Nissan Stadium')
+        self.assertFalse({'s41', 's42', 's43'} & set(records))
+        self.assertEqual(records['h42'][1]['name'][1], 'Super Bowl LXII')
+        self.assertEqual(records['h42'][1]['display_name'][1], 'Mercedes-Benz Stadium')
+        self.assertEqual(records['h43'][1]['location'][1], 'Las Vegas, NV')
+        self.assertEqual(records['h41'][1]['display_name'][1], 'Nissan Stadium')
+        before = hosts._records(self.rost[rr.RESOURCE_HEADER_SIZE:])
         for code in ('s40', 's44', 's45', 's01', 's20', 's28'):
-            self.assertEqual(records[code], hosts._records(self.rost[rr.RESOURCE_HEADER_SIZE:])[code])
+            self.assertEqual(records[code], before[code])
         again, receipt2 = hosts.rost_hosts(after, hosts.HOSTS)
         self.assertEqual(again, after)
         self.assertEqual({r['state'] for r in receipt2}, {'already_applied'})
+        # the new codes keep '4' second and never '8' third: the Super Bowl team packages still load (0x62D68)
+        for h in hosts.HOSTS:
+            self.assertEqual(h['code'][1], '4')
+            self.assertNotEqual(h['code'][2], '8')
 
-    def test_repoint_keeps_every_other_row(self):
-        from mod_editor.core import nfl2k5_anniversary_pack as ap
-        from mod_editor.core import nfl2k5_espn25_more_moments as mm
-        from mod_editor.core import nfl2k5_music_archive as archive
-        with archive.Disc(Path(BUILT), descriptors=()) as disc:
-            p0, pf = disc.pack_extents['0'], disc.pack_extents['F']
-            raw0, raw_f = disc.read(p0.size, p0.byte_offset), disc.read(pf.size, pf.byte_offset)
-        rep = {'s42dd.iff': b'sb1' * 1000, 's43nr.iff': bytes(range(256)) * 40}
-        out0, out_f, receipt = hosts.repoint_packs(raw0, raw_f, rep)
-        before, after = ap.entries(raw0), ap.entries(out0)
-        self.assertEqual(len(before), len(after))
-        self.assertEqual(sum(a != b for a, b in zip(before, after)), 2)
-        self.assertEqual(out_f[:len(raw_f)], raw_f)
-        f_start = sum(struct.unpack_from('<16I', out0, 12)[:15]) * 2048
-        for name, raw in rep.items():
-            row = [r for r in after if r[0] == mm.name_id(name)][0]
-            at = row[2] * 2048 - f_start
-            self.assertEqual(out_f[at:at + row[1]], raw)
-        self.assertEqual(len(out_f) % 2048, 0)
+
+@unittest.skipUnless(RETAIL_XBE, 'SB1_RETAIL_XBE not set')
+class HostCodes(unittest.TestCase):
+    def test_season_codes_point_at_the_hosts(self):
+        xbe = Path(RETAIL_XBE).read_bytes()
+        self.assertEqual(set(hosts.xbe_status(xbe).values()), {'retail'})
+        out, receipt = hosts.apply_xbe(xbe, hosts.HOSTS)
+        self.assertEqual(set(hosts.xbe_status(out).values()), {'applied'})
+        self.assertEqual(len(out), len(xbe))
+        changed = [i for i, (a, b) in enumerate(zip(xbe, out)) if a != b]
+        digest = set(range(0, 0x1000))   # the header holds the section digests
+        self.assertEqual(len([i for i in changed if i not in digest]), 3)
+        again, receipt2 = hosts.apply_xbe(out, hosts.HOSTS)
+        self.assertEqual(again, out)
+        self.assertTrue(receipt2['already_applied'])
 
 
 if __name__ == '__main__':

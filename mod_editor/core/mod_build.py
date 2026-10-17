@@ -4537,14 +4537,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "broadcast_greens", **greens_receipt})
         receipt["result"]["broadcast_greens"] = greens_receipt["state"]
     if plan.season_2026 and tt.is_disc_image(target):
-        # sb1: the announced Super Bowl hosts (LXII Atlanta, LXIII Las Vegas, LXIV Nashville) in the neutral rows the
-        # executable picks for franchise seasons 1 to 3, copied from the finished host bundles after every field and
-        # colour pass, with Super Bowl fields.
+        # sb1: the announced Super Bowl hosts (LXII Atlanta, LXIII Las Vegas, LXIV Nashville) for franchise seasons 1
+        # to 3: new bundles copied from the finished host bundles after every field and colour pass, with Super Bowl
+        # fields; the neutral rows and the executable's season codes point at them.
         hosts = _core_module("nfl2k5_super_bowl_hosts")
         if hosts is None:
             raise ValueError("the Super Bowl hosts step is unavailable")
         progress("Super Bowl hosts for the franchise", 0, 0)
-        hosts_receipt = hosts.apply_to_image(target, user_art=plan.super_bowl_user_art or None, progress=progress)
+        hosts_receipt = hosts.apply_to_image(target, user_art=plan.super_bowl_user_art or None, progress=progress,
+                                             xbe=_xbe_bytes(target))
+        executable = hosts_receipt.pop("executable", None)
+        if executable is not None:
+            _write_xbe_bytes(target, executable)
         for line in hosts_receipt.get("log", ()):
             progress(line, 0, 0)
         receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})

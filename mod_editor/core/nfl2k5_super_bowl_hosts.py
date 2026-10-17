@@ -2,38 +2,41 @@
 field art.
 
 How the game picks the venue (PROVED OFFLINE, u6 section 10 and this job): in week 20 FUN_001332b0 takes the
-franchise season index and maps it through a jump table (0x133354) to one of six asset codes in ``.data`` (0xE79528
-on): index 0 ``s40``, 1 ``s42``, 2 ``s43``, 3 ``s41``, 4 ``s44``, 5 and later ``s45``, then finds the first stadium row
-of the main ROST with that code and builds the bundle name ``%s%c%c.iff`` (0x62C82) from it. The team packages take
-their Super Bowl variant only for these six codes, so the codes and the executable stay as they are.
+franchise season index and maps it through a jump table (0x133354) to one of six UTF-16 asset codes in ``.data``
+(0xE79528, 8 bytes each): index 0 ``s40``, 1 ``s42``, 2 ``s43``, 3 ``s41``, 4 ``s44``, 5 and later ``s45``. It finds the
+first stadium row of the main ROST with that code, and 0x62C82 builds the bundle name ``%s%c%c.iff`` from it. The team
+packages take their Super Bowl variant when the name's second character is ``4`` and its third is not ``8``
+(0x62D68: ``cmp word [0xB306D2],'4'`` / ``cmp word [0xB306D4],'8'``); the first character is never read.
 
 The 2026 franchise's first season (index 0) plays Super Bowl LXI at SoFi Stadium in row ``s40`` (nfl2k5_sofi_model).
 This step dresses the next three neutral rows as the announced hosts (NFL announcements: LXII 2024-10-15, LXIII
 2026-03-30, LXIV 2026-05-19; Wikipedia, checked 2026-10-17):
 
-========  ==========  ============  ===================  ========================================================
-index     Super Bowl  date          neutral row (retail)  host (the mod's own built model of the building)
-========  ==========  ============  ===================  ========================================================
-1         LXII        2028-02-13    s42 "Super Bowl 2006"  Mercedes-Benz Stadium, Atlanta (s01, Mercedes-Benz model)
-2         LXIII       2029-02-11    s43 "Super Bowl 2007"  Allegiant Stadium, Las Vegas (s20, Allegiant model)
-3         LXIV        2030-02-10    s41 "Super Bowl 2008"  Nissan Stadium, Nashville (s28; the new enclosed stadium
-                                                           opens in 2027, so the current building stands in)
-========  ==========  ============  ===================  ========================================================
+=====  ==========  ==========  ===============================  ==========================================================
+index  Super Bowl  date        neutral row -> new code          host (the mod's own built model of the building)
+=====  ==========  ==========  ===============================  ==========================================================
+1      LXII        2028-02-13  s42 "Super Bowl 2006" -> h42     Mercedes-Benz Stadium, Atlanta (s01, Mercedes-Benz model)
+2      LXIII       2029-02-11  s43 "Super Bowl 2007" -> h43     Allegiant Stadium, Las Vegas (s20, Allegiant model)
+3      LXIV        2030-02-10  s41 "Super Bowl 2008" -> h41     Nissan Stadium, Nashville (s28; the new enclosed stadium
+                                                                opens in 2027, so the current building stands in)
+=====  ==========  ==========  ===============================  ==========================================================
 
 Index 4 (LXV, no host announced) keeps ``s44`` and later seasons ``s45`` with the yearless Super Bowl type.
 
 For each host whose source row already names the real building (its model or 2026 venue rename is installed):
 
-* the neutral row's nine bundles become copies of the host's finished bundles, appended to the archive's last pack
-  with the directory rows of the neutral names pointing at them (the retail bundles stay on the disc, unreferenced);
-* each copy's field is a Super Bowl field: the current NFL shield at midfield at its real size (the midfield
-  material renamed so the native team-texture swap cannot replace it), the event mark on both 25-yard lines
+* nine new bundles ``h4N<time><weather>.iff`` are copies of the host's finished bundles, appended to the archive's last
+  pack like the Anniversary aliases (every existing bundle, the retail neutral ones included, keeps its bytes);
+* each copy's field is a Super Bowl field: the current NFL shield at midfield at its real size (the midfield material
+  renamed so the native team-texture swap cannot replace it), the event mark on both 25-yard lines
   (nfl2k5_super_bowl_fields: authored generic current-system marks, since none of these logos is revealed, or the
-  user's ``super_bowl/<NUMERALS>.png``), the host club's own end zones painted plain turf (the native swap still
-  loads the home team's end zones over them, as in every retail Super Bowl, whose neutral fields carry no end-zone
-  texture at all) and the sideline playoff strips cleared;
-* the neutral ROST row takes the event as its name, the host's display name and location, and the host row's
-  capacity, roof and surface words and climate. The asset code and the secondary label stay.
+  user's ``super_bowl/<NUMERALS>.png``), the host club's own end zones painted plain turf (the native swap still loads
+  the home team's end zones over them, as in every retail Super Bowl, whose neutral fields carry no end-zone texture)
+  and the sideline playoff strips cleared;
+* the neutral ROST row takes the new code, the event as its name, the host's display name and location, and the host
+  row's capacity, roof and surface words and climate (the secondary label stays empty);
+* the executable's code for that season index points at the new code (6 bytes of ``.data`` each, the section digest
+  recomputed). The new codes keep ``4`` as their second character, so the Super Bowl team packages still load.
 
 The stadium dressing (walls, boards, banners) is the host building's own as built. EXPERIMENTAL and UNWITNESSED in game.
 """
@@ -45,11 +48,14 @@ import struct
 OWNER = "nfl2k5_super_bowl_hosts"
 LABEL = "EXPERIMENTAL / UNWITNESSED"
 HOSTS = (
-    dict(index=1, event="LXII", slot="s42", source="s01", display="Mercedes-Benz Stadium", date="2028-02-13",
+    dict(index=1, event="LXII", slot="s42", code="h42", va=0xE79530, source="s01",
+         display="Mercedes-Benz Stadium", date="2028-02-13",
          announced="2024-10-15"),
-    dict(index=2, event="LXIII", slot="s43", source="s20", display="Allegiant Stadium", date="2029-02-11",
+    dict(index=2, event="LXIII", slot="s43", code="h43", va=0xE79538, source="s20",
+         display="Allegiant Stadium", date="2029-02-11",
          announced="2026-03-30"),
-    dict(index=3, event="LXIV", slot="s41", source="s28", display="Nissan Stadium", date="2030-02-10",
+    dict(index=3, event="LXIV", slot="s41", code="h41", va=0xE79540, source="s28",
+         display="Nissan Stadium", date="2030-02-10",
          announced="2026-05-19"),
 )
 VARIANTS = tuple(t + w for t in "dan" for w in "drs")
@@ -148,40 +154,45 @@ def _records(body):
 
 def wanted_strings(host, source_fields):
     return dict(name=SB_STRING.format(event=host["event"]), display_name=host["display"],
-                location=source_fields["location"][1], asset_code=host["slot"], secondary_label="")
+                location=source_fields["location"][1], asset_code=host["code"], secondary_label="")
 
 
 def ready(body, host):
-    """True when the host's source row names the real building (its model or 2026 rename is installed)."""
+    """True when the host's source row names the real building (its model or 2026 rename is installed) and the
+    neutral row is there (retail code, or this step's)."""
     records = _records(body)
-    if host["source"] not in records:
+    if host["source"] not in records or not ({host["slot"], host["code"]} & set(records)):
         return False
     _o, f = records[host["source"]]
     return f["display_name"][1] == host["display"] and f["name"][1] == host["display"]
 
 
 def rost_hosts(resource, hosts):
-    """(ROST resource, receipt) with each host's neutral row renamed and given the host row's words and climate.
-    Strings are repacked in the row's own contiguous block (Modern MetLife's method); nothing else changes."""
+    """(ROST resource, receipt) with each host's neutral row recoded and renamed and given the host row's words and
+    climate. Strings are repacked in the row's own contiguous block (Modern MetLife's method); nothing else changes."""
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_roster_records as rr
     header = rr.RESOURCE_HEADER_SIZE
     require(resource[:4] == b"ROST", "outer 5 is not a ROST resource")
     body = bytearray(resource[header:])
     receipt = []
+    a, b = CLIMATE
     for host in hosts:
         records = _records(body)
-        offset, fields = records[host["slot"]]
         src_offset, src_fields = records[host["source"]]
         wanted = wanted_strings(host, src_fields)
-        texts = {k: v[1] for k, v in fields.items()}
-        a, b = CLIMATE
         words = [struct.unpack_from("<I", body, src_offset + f)[0] for f in WORD_FIELDS]
-        if (texts == wanted and [struct.unpack_from("<I", body, offset + f)[0] for f in WORD_FIELDS] == words
-                and body[offset + a:offset + b] == body[src_offset + a:src_offset + b]):
-            receipt.append(dict(slot=host["slot"], state="already_applied"))
+        if host["code"] in records:
+            offset, fields = records[host["code"]]
+            require({k: v[1] for k, v in fields.items()} == wanted
+                    and [struct.unpack_from("<I", body, offset + f)[0] for f in WORD_FIELDS] == words
+                    and body[offset + a:offset + b] == body[src_offset + a:src_offset + b],
+                    f"{host['code']}: the host row is foreign")
+            receipt.append(dict(slot=host["slot"], code=host["code"], state="already_applied"))
             continue
-        require(texts["asset_code"] == host["slot"] and texts["secondary_label"] == "",
+        offset, fields = records[host["slot"]]
+        texts = {k: v[1] for k, v in fields.items()}
+        require(texts["secondary_label"] == "" and texts["name"].startswith("Super Bowl"),
                 f"{host['slot']}: the neutral row is foreign")
         records_all = mm._stadium_records(bytes(body))
         text_spans = [(t, t + 2 * len(txt) + 2) for _o, fs in records_all for t, txt in fs.values()]
@@ -203,57 +214,119 @@ def rost_hosts(resource, hosts):
         for field, value in zip(WORD_FIELDS, words):
             struct.pack_into("<I", body, offset + field, value)
         body[offset + a:offset + b] = body[src_offset + a:src_offset + b]
-        check = {k: v[1] for k, v in _records(body)[host["slot"]][1].items()}
-        require(check == wanted, f"{host['slot']}: the renamed row reads back differently")
-        receipt.append(dict(slot=host["slot"], state="applied", event=host["event"], strings=wanted,
-                            words_before=before, words_after=words, block=[start, end], bytes_used=len(payload)))
+        check = {k: v[1] for k, v in _records(body)[host["code"]][1].items()}
+        require(check == wanted and host["slot"] not in _records(body), f"{host['slot']}: the row reads back differently")
+        receipt.append(dict(slot=host["slot"], code=host["code"], state="applied", event=host["event"],
+                            strings=wanted, words_before=before, words_after=words, block=[start, end],
+                            bytes_used=len(payload)))
     return bytes(resource[:header]) + bytes(body), receipt
 
 
-# --- the archive ----------------------------------------------------------------------------------------------------
+# --- the executable ---------------------------------------------------------------------------------------------------
 
-def repoint_packs(pack0, pack_f, replacements):
-    """(pack 0, pack F, receipt): each named resource's bytes appended to pack F and its directory row pointed at
-    them. Every other row, every existing payload and the old bytes of the replaced resources are kept."""
+def _code_bytes(code):
+    return code.encode("utf-16le") + b"\0\0"
+
+
+def xbe_status(payload, hosts=HOSTS):
+    """{slot: 'retail' | 'applied' | 'foreign'} of the season-index codes."""
+    from .nfl2k5_season_length import _offset
+    from .nfl2k5_bump_strength import _sections
+    sections = _sections(payload)
+    out = {}
+    for host in hosts:
+        off = _offset(payload, host["va"], sections)
+        have = bytes(payload[off:off + 8])
+        out[host["slot"]] = ("retail" if have == _code_bytes(host["slot"]) else
+                             "applied" if have == _code_bytes(host["code"]) else "foreign")
+    return out
+
+
+def apply_xbe(payload, hosts):
+    """(executable, receipt): each host's season-index code points at its new code (6 bytes each, the section digest
+    recomputed). Refuses a code that is neither retail nor this step's."""
+    from .nfl2k5_season_length import _offset
+    from .nfl2k5_bump_strength import _section_for_offset, _sections, section_digest
+    sections = _sections(payload)
+    states = xbe_status(payload, hosts)
+    require("foreign" not in states.values(), f"foreign Super Bowl venue codes: {states}")
+    buf = bytearray(payload)
+    touched, edits = set(), []
+    for host in hosts:
+        off = _offset(payload, host["va"], sections)
+        if states[host["slot"]] == "applied":
+            continue
+        buf[off:off + 8] = _code_bytes(host["code"])
+        touched.add(_section_for_offset(sections, off).index)
+        edits.append(dict(index=host["index"], va=f"0x{host['va']:08x}", file_offset=f"0x{off:x}", size=6,
+                          before=host["slot"], after=host["code"]))
+    for section in sections:
+        if section.index in touched:
+            at = section.header_offset + 36
+            buf[at:at + 20] = section_digest(bytes(buf), section)
+    require(set(xbe_status(bytes(buf), hosts).values()) == {"applied"}, "Super Bowl venue codes read back differently")
+    return bytes(buf), dict(edits=edits, sections_repinned=sorted(touched), already_applied=not edits)
+
+
+# --- the image --------------------------------------------------------------------------------------------------------
+
+ALIGNMENT_MEMBER = "sb1_super_bowl_hosts_alignment.bin"
+
+
+def append_to_image(path, resources):
+    """Append the host bundles like the Anniversary aliases (pack 0 directory rows, pack F payloads), with rollback.
+    A private alignment member of this step's own keeps the directory's last entry sector aligned."""
     from . import nfl2k5_anniversary_pack as ap
-    from . import nfl2k5_espn25_more_moments as mm
-    from . import nfl2k5_music_archive as archive
-    rows = ap.entries(pack0)
-    sizes = list(struct.unpack_from("<16I", pack0, 12))
-    require(sizes[0] * 2048 == len(pack0) and sizes[15] * 2048 == len(pack_f), "pack size mismatch")
-    ids = {r[0]: i for i, r in enumerate(rows)}
-    require(len(ids) == len(rows), "the archive directory repeats an identity")
-    f_start = sum(sizes[:15]) * 2048
-    new0, new_f = bytearray(pack0), bytearray(pack_f)
-    moved = []
-    for name, raw in replacements.items():
-        identity = mm.name_id(name)
-        require(identity in ids, f"{name} is not in the archive directory")
-        i = ids[identity]
-        _, size, sector = rows[i]
-        at = archive.align_up(len(new_f))
-        new_f.extend(bytes(at - len(new_f)))
-        new_f.extend(raw)
-        new_f.extend(bytes(archive.align_up(len(new_f)) - len(new_f)))
-        struct.pack_into("<III", new0, ap.HEADER + 12 * i, identity, len(raw), (f_start + at) // 2048)
-        moved.append(dict(name=name, before=dict(size=size, sector=sector), after_size=len(raw),
-                          pack_f_offset=at, sha256=sha(raw)))
-    struct.pack_into("<I", new0, 12 + 15 * 4, len(new_f) // 2048)
-    require(new_f[:len(pack_f)] == pack_f, "existing pack F changed")
-    return bytes(new0), bytes(new_f), dict(moved=moved, pack_f_growth=len(new_f) - len(pack_f))
+    resources = dict(resources)
+    marker = b"Super Bowl host resource alignment; generated by 2K5 Mod Studio.\n"
+    resources[ALIGNMENT_MEMBER] = (marker * (2048 // len(marker) + 1))[:2048]
+    return _append(path, resources, ap.update_packs)
 
 
-def apply_to_image(path, *, user_art=None, progress=None):
-    """Dress the announced hosts' neutral rows on a finished Studio build (after every field and colour pass)."""
+def _append(path, resources, update_packs):
     import os
     from pathlib import Path
-    from . import nfl2k5_modern_metlife as ml
+    from . import nfl2k5_espn25_more_moments as mm
     from . import nfl2k5_music_archive as archive
+    from . import platform_compat as io
+    with archive.Disc(Path(path), descriptors=()) as disc:
+        p0, pf = disc.pack_extents["0"], disc.pack_extents["F"]
+        raw0, raw_f = disc.read(p0.size, p0.byte_offset), disc.read(pf.size, pf.byte_offset)
+        out0, out_f, receipt = update_packs(raw0, raw_f, resources, situation=None)
+        if receipt["status"] == "already_applied":
+            return receipt
+        old_size = disc.image_size
+        at0 = archive.align_up(old_size)
+        at_f = archive.align_up(at0 + len(out0))
+        nodes = [(disc.nodes["0"][0], struct.pack("<II", p0.sector, p0.size)),
+                 (disc.nodes["F"][0], struct.pack("<II", pf.sector, pf.size))]
+        with Path(path).open("r+b") as f:
+            fd = f.fileno()
+            try:
+                for at, raw in ((at0, out0), (at_f, out_f)):
+                    archive.write_all(fd, raw, at)
+                    mm.require(io.pread(fd, len(raw), at) == raw, "Super Bowl host pack read-back")
+                archive.write_all(fd, struct.pack("<II", (at0 - disc.partition) // 2048, len(out0)), nodes[0][0])
+                archive.write_all(fd, struct.pack("<II", (at_f - disc.partition) // 2048, len(out_f)), nodes[1][0])
+                os.fsync(fd)
+            except BaseException:
+                for at, raw in nodes:
+                    archive.write_all(fd, raw, at)
+                os.ftruncate(fd, old_size)
+                os.fsync(fd)
+                raise
+    receipt["image_growth"] = at_f + len(out_f) - old_size
+    return receipt
+
+
+def apply_to_image(path, *, user_art=None, progress=None, xbe=None):
+    """Dress the announced hosts on a finished Studio build (after every field and colour pass). ``xbe`` is the
+    image's executable bytes; the caller writes back the returned ``executable`` (None when nothing changed)."""
+    from . import nfl2k5_modern_metlife as ml
     from . import nfl2k5_historic_styles as styles
     from . import nfl2k5_super_bowl_walls as walls
     from . import nfl2k5_super_bowl_fields as sbf
     from . import nfl2k5_roster_records as rr
-    from . import platform_compat as io
     say = progress or (lambda *a: None)
     with ml._outer_image()(str(path)) as image:
         e = image.entries[ml.ROST_OUTER_INDEX]
@@ -263,73 +336,42 @@ def apply_to_image(path, *, user_art=None, progress=None):
     skipped = [dict(slot=h["slot"], event=h["event"], reason=f"{h['source']} does not name {h['display']}")
                for h in HOSTS if h not in hosts]
     if not hosts:
-        return dict(state="skipped", skipped=skipped)
+        return dict(state="skipped", skipped=skipped, executable=None,
+                    log=[f"Super Bowl {s['event']}: kept the neutral {s['slot']} ({s['reason']})" for s in skipped])
+    executable, xbe_receipt = (None, None)
+    if xbe is not None:
+        executable, xbe_receipt = apply_xbe(xbe, hosts)
+        if xbe_receipt["already_applied"]:
+            executable = None
     marks = walls.Marks(None, user_art)
-    replacements, fields_receipt = {}, []
+    resources, fields_receipt = {}, []
     with styles.Source(path) as built:
         for host in hosts:
             for k, variant in enumerate(VARIANTS):
-                name = f"{host['slot']}{variant}.iff"
+                name = f"{host['code']}{variant}.iff"
                 say(f"Super Bowl {host['event']} at {host['display']}: {name}", k + 1, len(VARIANTS))
-                source = built.get(f"{host['source']}{variant}.iff")
-                current = built.get(name)
-                if current[:64] and _is_copy(current, host):
-                    continue
-                copy, receipt = super_bowl_field(source, host, marks)
-                replacements[name] = copy
+                copy, receipt = super_bowl_field(built.get(f"{host['source']}{variant}.iff"), host, marks)
+                resources[name] = copy
                 fields_receipt.append(dict(name=name, source=f"{host['source']}{variant}.iff", size=len(copy),
                                            sha256=sha(copy), flanks=receipt["flanks"]))
     after_rost, rost_receipt = rost_hosts(rost, hosts)
-    with ml._outer_image()(str(path), writable=True) as image:
-        e = image.entries[ml.ROST_OUTER_INDEX]
-        require(image.read(e.virtual_offset, e.size) == rost, "the ROST changed while preparing")
-        require(len(after_rost) == len(rost), "the host rows changed the ROST size")
-        image.write(e.virtual_offset, after_rost)
-    pack_receipt = None
-    if replacements:
-        with archive.Disc(Path(path), descriptors=()) as disc:
-            p0, pf = disc.pack_extents["0"], disc.pack_extents["F"]
-            raw0, raw_f = disc.read(p0.size, p0.byte_offset), disc.read(pf.size, pf.byte_offset)
-            out0, out_f, pack_receipt = repoint_packs(raw0, raw_f, replacements)
-            old_size = disc.image_size
-            at0 = archive.align_up(old_size)
-            at_f = archive.align_up(at0 + len(out0))
-            nodes = [(disc.nodes["0"][0], struct.pack("<II", p0.sector, p0.size)),
-                     (disc.nodes["F"][0], struct.pack("<II", pf.sector, pf.size))]
-            with Path(path).open("r+b") as f:
-                fd = f.fileno()
-                try:
-                    for at, raw in ((at0, out0), (at_f, out_f)):
-                        archive.write_all(fd, raw, at)
-                        require(io.pread(fd, len(raw), at) == raw, "Super Bowl host pack read-back")
-                    archive.write_all(fd, struct.pack("<II", (at0 - disc.partition) // 2048, len(out0)), nodes[0][0])
-                    archive.write_all(fd, struct.pack("<II", (at_f - disc.partition) // 2048, len(out_f)), nodes[1][0])
-                    os.fsync(fd)
-                except BaseException:
-                    for at, raw in nodes:
-                        archive.write_all(fd, raw, at)
-                    os.ftruncate(fd, old_size)
-                    os.fsync(fd)
-                    raise
-        pack_receipt["image_growth"] = at_f + len(out_f) - old_size
+    if after_rost != rost:
+        with ml._outer_image()(str(path), writable=True) as image:
+            e = image.entries[ml.ROST_OUTER_INDEX]
+            require(image.read(e.virtual_offset, e.size) == rost, "the ROST changed while preparing")
+            require(len(after_rost) == len(rost), "the host rows changed the ROST size")
+            image.write(e.virtual_offset, after_rost)
+            require(image.read(e.virtual_offset, e.size) == after_rost, "the host rows read back differently")
+    pack_receipt = append_to_image(path, resources)
     with styles.Source(path) as built:
         for item in fields_receipt:
             require(sha(built.get(item["name"])) == item["sha256"], f"{item['name']}: host copy read-back differs")
-    log = [f"Super Bowl {h['event']}: {h['display']} ({h['slot']})" for h in hosts]
+    log = [f"Super Bowl {h['event']}: {h['display']} ({h['slot']} -> {h['code']})" for h in hosts]
     log += [f"Super Bowl {s['event']}: kept the neutral {s['slot']} ({s['reason']})" for s in skipped]
     log += sbf.user_art_lines([f["flanks"] for f in fields_receipt[:1]] if fields_receipt else [])
-    return dict(state="applied", label=LABEL, hosts=[h["slot"] for h in hosts], skipped=skipped,
-                bundles=fields_receipt, rost=rost_receipt, packs=pack_receipt, log=log)
-
-
-def _is_copy(bundle, host):
-    """True when the neutral bundle is already this host's Super Bowl copy (a replay)."""
-    from . import nfl2k5_espn25_fields as fields
-    try:
-        _c, rec, _d = fields._field_chunk(bundle)
-    except ValueError:
-        return False
-    return "era_midlogo" in {m["name"] for m in rec["materials"]}
+    return dict(state="applied", label=LABEL, hosts=[h["code"] for h in hosts], skipped=skipped,
+                bundles=fields_receipt, rost=rost_receipt, packs=pack_receipt, xbe=xbe_receipt,
+                executable=executable, log=log)
 
 
 def status(path):
@@ -340,5 +382,5 @@ def status(path):
         e = image.entries[ml.ROST_OUTER_INDEX]
         body = image.read(e.virtual_offset, e.size)[rr.RESOURCE_HEADER_SIZE:]
     records = _records(body)
-    states = {records[h["slot"]][1]["name"][1] == SB_STRING.format(event=h["event"]) for h in HOSTS}
+    states = {h["code"] in records for h in HOSTS}
     return "applied" if states == {True} else "retail" if states == {False} else "mixed"
