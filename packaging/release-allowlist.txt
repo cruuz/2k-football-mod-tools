@@ -756,6 +756,7 @@ data/nfl2k5_classic_teams/teams.json
 data/nfl2k5_classic_teams/manifest.json
 data/nfl2k5_classic_teams/appearance.json
 data/nfl2k5_classic_teams/classic.json
+data/nfl2k5_classic_teams/honours.json
 data/nfl2k5_classic_teams/bears_2006.csv
 data/nfl2k5_classic_teams/broncos_2015.csv
 data/nfl2k5_classic_teams/browns_2017.csv

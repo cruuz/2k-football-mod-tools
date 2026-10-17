@@ -260,5 +260,92 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(ct.xbe_status(payload), "retail")
 
 
+class HonoursTests(unittest.TestCase):
+    """Coordinator 10/17: every rating override follows a sourced season honour and a short list of floor rules."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc = json.loads((ROOT / "data/nfl2k5_classic_teams/honours.json").read_text(encoding="utf-8"))
+        cls.data = ct.Data.load()
+        cls.manifest = json.loads((ROOT / "data/nfl2k5_classic_teams/manifest.json").read_text(encoding="utf-8"))
+
+    def test_rules_are_the_documented_floors(self):
+        self.assertEqual(self.doc["rules"], {"MVP": 95, "OPOY": 93, "DPOY": 93, "AP1": 90, "LEADER": 90, "AP2": 87,
+                                             "PB": 84})
+
+    def test_every_honour_names_its_source_and_the_source_line_says_so(self):
+        import re
+        teams = json.loads((ROOT / "data/nfl2k5_classic_teams/teams.json").read_text(encoding="utf-8"))["teams"]
+        sys.path.insert(0, str(ROOT / "tools"))
+        import nfl2k5_classic_teams_honours as hb
+        for key, src in self.doc["sources"].items():
+            self.assertRegex(src["sha256"], r"^[0-9a-f]{64}$")
+            self.assertTrue(src["url"].startswith(("https://en.wikipedia.org/w/index.php?title=",
+                                                   "https://github.com/nflverse/")), key)
+            if "wikipedia" in src["url"]:
+                self.assertIn("oldid=", src["url"])          # a fixed revision
+        for p in self.doc["players"]:
+            team = teams[p["team"]]
+            rows = [r for r in self.data.rosters[p["team"]] if f"{r['first']} {r['last']}" == p["name"]]
+            self.assertEqual(len(rows), 1, p["name"])
+            best = max(self.doc["rules"][h["honour"]] for h in p["honours"])
+            self.assertEqual(p["floor"], best)
+            for h in p["honours"]:
+                self.assertIn(h["source"], self.doc["sources"])
+                line = h["line"]
+                if h["honour"] == "LEADER":
+                    self.assertTrue(line.startswith("led the NFL in"), line)
+                    self.assertEqual(h["source"], f"nflverse_stats_{team['season']}")
+                    continue
+                last = hb.fold(p["name"]).split()[-1] if not p["name"].endswith((" Jr.", " III", " II")) else \
+                    hb.fold(p["name"]).split()[-2]
+                self.assertIn(last.rstrip(".").lower(), hb.plain(line).lower(), (p["name"], line))
+                if h["honour"] in ("AP1", "AP2", "PB"):
+                    self.assertIn(hb.FULL_NAMES[team["selector"]].lower(), line.lower(), line)
+                    self.assertTrue(h["source"].startswith("allpro_" if h["honour"] != "PB" else "probowl_"))
+                    self.assertTrue(h["source"].endswith(str(team["season"])))
+                if h["honour"] == "AP2":
+                    self.assertIn("AP-2", line)
+                if h["honour"] == "AP1":
+                    self.assertRegex(hb.plain(line), r"\bAP\b(?!-)")
+                if h["honour"] in ("MVP", "OPOY", "DPOY"):
+                    self.assertEqual(h["source"], h["honour"].lower())
+
+    def test_the_named_stars_carry_their_season_honours(self):
+        named = {("titans_2019", "Derrick Henry"): {"LEADER", "PB"}, ("ravens_2019", "Lamar Jackson"): {"MVP"},
+                 ("chiefs_2022", "Patrick Mahomes"): {"MVP"}, ("panthers_2015", "Cam Newton"): {"MVP"},
+                 ("packers_2011", "Aaron Rodgers"): {"MVP"}, ("chargers_2006", "LaDainian Tomlinson"): {"MVP"},
+                 ("bears_2006", "Devin Hester"): {"AP1"}, ("seahawks_2013", "Richard Sherman"): {"AP1"},
+                 ("seahawks_2013", "Earl Thomas"): {"AP1"}, ("eagles_2017", "Carson Wentz"): {"AP2"},
+                 ("colts_2014", "Andrew Luck"): {"PB"}, ("browns_2020", "Nick Chubb"): {"PB"},
+                 ("eagles_2024", "Saquon Barkley"): {"OPOY"}}
+        found = {(p["team"], p["name"]): {h["honour"] for h in p["honours"]} for p in self.doc["players"]}
+        for key, want in named.items():
+            self.assertTrue(want <= found.get(key, set()), key)
+
+    def test_overrides_reach_their_floor_and_the_rows_meet_every_floor(self):
+        for o in self.manifest["overrides"]:
+            self.assertGreaterEqual(o["native_overall_after"], o["floor"], o["name"])
+            self.assertIn(o["rule"], self.doc["rules"])
+        if _main_roster() is None:
+            self.skipTest("private retail roster archive is absent (native overall template)")
+        sys.path.insert(0, str(ROOT / "tools"))
+        import nfl2k5_classic_teams_build as cb
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        template = cb.template_record(XBE.parent)
+        for p in self.doc["players"]:
+            row = next(r for r in self.data.rosters[p["team"]] if f"{r['first']} {r['last']}" == p["name"])
+            self.assertGreaterEqual(cb.native_ovr(row, template), p["floor"], p["name"])
+
+    def test_the_honours_rebuild_from_the_pinned_pages(self):
+        cache = Path("/home/noah/2k-worktrees/.b77-scratch/f5/sources")
+        inputs = Path("/home/noah/2k-worktrees/.b77-scratch/ct1/nflverse")
+        if not (cache / "provenance.json").is_file() or not inputs.is_dir():
+            self.skipTest("private source cache absent")
+        sys.path.insert(0, str(ROOT / "tools"))
+        import nfl2k5_classic_teams_honours as hb
+        self.assertEqual(hb.build(cache, inputs), self.doc)
+
+
 if __name__ == "__main__":
     unittest.main()

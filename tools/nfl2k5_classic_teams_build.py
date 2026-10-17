@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import argparse
 import collections
+import csv
+import io
 import hashlib
 import json
 import sys
@@ -189,6 +191,89 @@ def featured_starters(spec: dict, inputs) -> dict[str, list[str]]:
     return out
 
 
+HONOURS = ROOT / "data/nfl2k5_classic_teams/honours.json"
+
+
+def honours():
+    return json.loads(HONOURS.read_text(encoding="utf-8"))
+
+
+def honour_levels(key, team, reader):
+    """{nflverse name: model honour level} of the team's honoured players (the m2 model's existing input)."""
+    names = {r["gsis_id"]: m2.ascii_name(r["full_name"]) for r in reader.rows(f"roster_{team['season']}.csv")
+             if r.get("gsis_id")}
+    out = {}
+    for p in honours()["players"]:
+        if p["team"] == key and p["gsis_id"] in names:
+            out[names[p["gsis_id"]]] = p["model_level"]
+    return out
+
+
+def native_ovr(row, template):
+    """The game's own integer overall of one CSV row, on a copy of a retail player record."""
+    from mod_editor.core import nfl2k5_my_career_prospects as prospects
+    from mod_editor.core import nfl2k5_roster_records as rr
+    record = template.copy()
+    v = record.values
+    v["position"] = rr.POSITIONS.index(row["position"])
+    v["height"], v["weight_raw"] = int(row["height"]), int(row["weight"]) - 150
+    for rating in rr.RATING_BYTE_ORDER:
+        v[rating] = int(row[rating])
+    return prospects.native_overall(record)
+
+
+def template_record(retail):
+    from mod_editor.core import nfl2k5_roster_records as rr
+    with rr._outer_image()(retail) as archive:
+        entry = archive.entries[5]
+        doc = rr.RosterDocument(archive.read(entry.virtual_offset, entry.size)[32:])
+    return next(p.record for p in doc.players if p.group == "team").copy()
+
+
+def apply_floors(files, retail):
+    """Raise each honoured player to his rule's overall floor: every rating the game weighs for his position goes up by
+    one point at a time (99 at most) until the native overall reaches the floor. Returns the override list."""
+    from mod_editor.core import nfl2k5_roster_records as rr
+    template = template_record(retail)
+    doc = honours()
+    manifest_players = {}
+    out = []
+    for p in doc["players"]:
+        name = f"{p['team']}.csv"
+        text = files[name].decode("utf-8")
+        rows = list(csv.DictReader(io.StringIO(text)))
+        fields = list(rows[0].keys())
+        idx = [i for i, r in enumerate(rows) if f"{r['first']} {r['last']}" == p["name"]]
+        m2.require(len(idx) == 1, f"{p['team']}: honoured player {p['name']} not found once in the roster")
+        row = rows[idx[0]]
+        before = native_ovr(row, template)
+        weights = rr.OVERALL_WEIGHTS.get(row["position"]) or {}
+        raised = {}
+        steps = 0
+        while native_ovr(row, template) < p["floor"] and steps < 60:
+            moved = False
+            for rating, w in weights.items():
+                if w > 0 and int(row[rating]) < 99:
+                    row[rating] = str(int(row[rating]) + 1)
+                    raised[rating] = raised.get(rating, 0) + 1
+                    moved = True
+            steps += 1
+            if not moved:
+                break
+        after = native_ovr(row, template)
+        if raised:
+            buffer = io.StringIO()
+            writer = csv.DictWriter(buffer, fields, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+            files[name] = buffer.getvalue().encode("utf-8")
+        best = max(p["honours"], key=lambda h: doc["rules"][h["honour"]])
+        out.append(dict(team=p["team"], name=p["name"], position=row["position"], floor=p["floor"],
+                        rule=best["honour"], source=best["source"], native_overall_before=before,
+                        native_overall_after=after, raised=raised))
+    return out
+
+
 def generate(spec_path: Path, inputs: Path, retail: Path, out: Path) -> dict:
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     shared = json.loads(m2.SPEC.read_text(encoding="utf-8"))
@@ -204,6 +289,9 @@ def generate(spec_path: Path, inputs: Path, retail: Path, out: Path) -> dict:
         teams[key] = {k: v for k, v in team.items() if k not in ("why", "lineup")}
         if featured.get(key):
             teams[key]["featured"] = featured[key]
+        levels = honour_levels(key, team, reader)
+        if levels:
+            teams[key]["honors"] = {"source": "data/nfl2k5_classic_teams/honours.json", "players": levels}
     merged = {"schema": 1, "about": spec["about"], "left_handed": shared["left_handed"],
               "display_names": shared["display_names"], "handedness": shared["handedness"],
               "teams": teams, "moments": []}
@@ -220,6 +308,7 @@ def generate(spec_path: Path, inputs: Path, retail: Path, out: Path) -> dict:
         files = {}
         for path in sorted(made.glob("*.csv")):
             files[path.name] = path.read_bytes()
+        overrides = apply_floors(files, retail)
         teams_doc = json.loads((made / "teams.json").read_text(encoding="utf-8"))
         teams_doc["evidence"] = EVIDENCE
         for key, record in teams_doc["teams"].items():
@@ -229,6 +318,10 @@ def generate(spec_path: Path, inputs: Path, retail: Path, out: Path) -> dict:
         manifest.update(generator=GENERATOR, evidence=EVIDENCE, spec_sha256=sha(spec_path.read_bytes()),
                         schema="nfl2k5.classic_teams.manifest.v1")
         manifest["shared_spec_sha256"] = sha(m2.SPEC.read_bytes())
+        manifest["honours_sha256"] = sha(HONOURS.read_bytes())
+        manifest["overrides"] = overrides
+        for key in manifest["teams"]:
+            manifest["teams"][key]["csv_sha256"] = sha(files[f"{key}.csv"])
         for key, lineup in lineups.items():
             manifest["teams"][key]["lineup"] = lineup
             manifest["teams"][key]["why"] = spec["teams"][key]["why"]
@@ -259,7 +352,7 @@ def main(argv=None) -> int:
             m2.require(shipped.is_file() and shipped.read_bytes() == (Path(folder) / name).read_bytes(),
                        f"regeneration differs: {name}")
         extra = {p.name for p in args.out.iterdir() if p.suffix in (".csv", ".json")} - set(result["files"])
-        extra -= {"appearance.json", "classic.json"}
+        extra -= {"appearance.json", "classic.json", "honours.json"}
         m2.require(not extra, f"unexpected files in {args.out}: {sorted(extra)}")
     print(f"all {len(result['files'])} generated files reproduce exactly")
     return 0

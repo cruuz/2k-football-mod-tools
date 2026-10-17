@@ -2,6 +2,1593 @@
  "evidence": "EXPERIMENTAL / UNWITNESSED: sourced nflverse rosters, depth charts and statistics through the m2 ratings model; no lab run, not played by Noah",
  "forty_sources_sha256": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
  "generator": "tools/nfl2k5_classic_teams_build.py",
+ "honours_sha256": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
+ "overrides": [
+  {
+   "floor": 84,
+   "name": "Ruben Brown",
+   "native_overall_after": 85,
+   "native_overall_before": 80,
+   "position": "G",
+   "raised": {"agility": 3, "pass_blocking": 3, "run_blocking": 3, "strength": 3},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Olin Kreutz",
+   "native_overall_after": 100,
+   "native_overall_before": 100,
+   "position": "C",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Tommie Harris",
+   "native_overall_after": 85,
+   "native_overall_before": 85,
+   "position": "DT",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 87,
+   "name": "Lance Briggs",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Brian Urlacher",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "ILB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Brendon Ayanbadejo",
+   "native_overall_after": 85,
+   "native_overall_before": 85,
+   "position": "ILB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Devin Hester",
+   "native_overall_after": 90,
+   "native_overall_before": 87,
+   "position": "CB",
+   "raised": {"agility": 2, "catch": 2, "coverage": 2, "jumping": 2, "speed": 2, "tackle": 2},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Robbie Gould",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "K",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "bears_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Von Miller",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2015",
+   "team": "broncos_2015"
+  },
+  {
+   "floor": 84,
+   "name": "DeMarcus Ware",
+   "native_overall_after": 85,
+   "native_overall_before": 85,
+   "position": "OLB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2015",
+   "team": "broncos_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Aqib Talib",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "CB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2015",
+   "team": "broncos_2015"
+  },
+  {
+   "floor": 87,
+   "name": "Chris Harris",
+   "native_overall_after": 87,
+   "native_overall_before": 84,
+   "position": "CB",
+   "raised": {"agility": 2, "catch": 2, "coverage": 2, "jumping": 2, "speed": 2, "tackle": 2},
+   "rule": "AP2",
+   "source": "allpro_2015",
+   "team": "broncos_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Joe Schobert",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "ILB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2017",
+   "team": "browns_2017"
+  },
+  {
+   "floor": 84,
+   "name": "Nick Chubb",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2020",
+   "team": "browns_2020"
+  },
+  {
+   "floor": 90,
+   "name": "Jack Conklin",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "T",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2020",
+   "team": "browns_2020"
+  },
+  {
+   "floor": 87,
+   "name": "Joel Bitonio",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "G",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2020",
+   "team": "browns_2020"
+  },
+  {
+   "floor": 87,
+   "name": "Wyatt Teller",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "G",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2020",
+   "team": "browns_2020"
+  },
+  {
+   "floor": 90,
+   "name": "Myles Garrett",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "DE",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2020",
+   "team": "browns_2020"
+  },
+  {
+   "floor": 84,
+   "name": "Jason Pierre-Paul",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "OLB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2020",
+   "team": "buccaneers_2020"
+  },
+  {
+   "floor": 87,
+   "name": "Devin White",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "ILB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2020",
+   "team": "buccaneers_2020"
+  },
+  {
+   "floor": 87,
+   "name": "Lavonte David",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "ILB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2020",
+   "team": "buccaneers_2020"
+  },
+  {
+   "floor": 84,
+   "name": "Philip Rivers",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 95,
+   "name": "LaDainian Tomlinson",
+   "native_overall_after": 98,
+   "native_overall_before": 98,
+   "position": "HB",
+   "raised": {},
+   "rule": "MVP",
+   "source": "mvp",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Lorenzo Neal",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "FB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Kassim Osgood",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Antonio Gates",
+   "native_overall_after": 98,
+   "native_overall_before": 98,
+   "position": "TE",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Marcus McNeill",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Nick Hardwick",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 84,
+   "name": "David Binn",
+   "native_overall_after": 85,
+   "native_overall_before": 85,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Jamal Williams",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Shawne Merriman",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 87,
+   "name": "Nate Kaeding",
+   "native_overall_after": 87,
+   "native_overall_before": 86,
+   "position": "K",
+   "raised": {"kick_accuracy": 2, "kick_power": 2},
+   "rule": "AP2",
+   "source": "allpro_2006",
+   "team": "chargers_2006"
+  },
+  {
+   "floor": 95,
+   "name": "Patrick Mahomes",
+   "native_overall_after": 100,
+   "native_overall_before": 100,
+   "position": "QB",
+   "raised": {},
+   "rule": "MVP",
+   "source": "mvp",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 90,
+   "name": "Travis Kelce",
+   "native_overall_after": 98,
+   "native_overall_before": 98,
+   "position": "TE",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 84,
+   "name": "Orlando Brown",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 87,
+   "name": "Joe Thuney",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "G",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 87,
+   "name": "Creed Humphrey",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "C",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 90,
+   "name": "Chris Jones",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 90,
+   "name": "Tommy Townsend",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "P",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2022",
+   "team": "chiefs_2022"
+  },
+  {
+   "floor": 90,
+   "name": "Peyton Manning",
+   "native_overall_after": 100,
+   "native_overall_before": 100,
+   "position": "QB",
+   "raised": {},
+   "rule": "LEADER",
+   "source": "nflverse_stats_2006",
+   "team": "colts_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Marvin Harrison",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "WR",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2006",
+   "team": "colts_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Reggie Wayne",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "colts_2006"
+  },
+  {
+   "floor": 84,
+   "name": "Tarik Glenn",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2006",
+   "team": "colts_2006"
+  },
+  {
+   "floor": 87,
+   "name": "Jeff Saturday",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "C",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2006",
+   "team": "colts_2006"
+  },
+  {
+   "floor": 90,
+   "name": "Andrew Luck",
+   "native_overall_after": 98,
+   "native_overall_before": 98,
+   "position": "QB",
+   "raised": {},
+   "rule": "LEADER",
+   "source": "nflverse_stats_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 84,
+   "name": "D'Qwell Jackson",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "ILB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 84,
+   "name": "Vontae Davis",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "CB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 84,
+   "name": "Mike Adams",
+   "native_overall_after": 96,
+   "native_overall_before": 96,
+   "position": "SS",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 90,
+   "name": "Adam Vinatieri",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "K",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 90,
+   "name": "Pat McAfee",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "P",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2014",
+   "team": "colts_2014"
+  },
+  {
+   "floor": 87,
+   "name": "Carson Wentz",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "QB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 84,
+   "name": "Zach Ertz",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "TE",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 90,
+   "name": "Lane Johnson",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "T",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 84,
+   "name": "Brandon Brooks",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "G",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 90,
+   "name": "Jason Kelce",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "C",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 87,
+   "name": "Fletcher Cox",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 84,
+   "name": "Malcolm Jenkins",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "SS",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2017",
+   "team": "eagles_2017"
+  },
+  {
+   "floor": 93,
+   "name": "Saquon Barkley",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "HB",
+   "raised": {},
+   "rule": "OPOY",
+   "source": "opoy",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Jordan Mailata",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "T",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Lane Johnson",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "T",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Landon Dickerson",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "G",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Cam Jurgens",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Jalen Carter",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 90,
+   "name": "Zack Baun",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2024",
+   "team": "eagles_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Odell Beckham",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "WR",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 84,
+   "name": "Dwayne Harris",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 87,
+   "name": "Olivier Vernon",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "DE",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 90,
+   "name": "Damon Harrison",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 87,
+   "name": "Dominique Rodgers-C.",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 87,
+   "name": "Janoris Jenkins",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 90,
+   "name": "Landon Collins",
+   "native_overall_after": 98,
+   "native_overall_before": 98,
+   "position": "SS",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2016",
+   "team": "giants_2016"
+  },
+  {
+   "floor": 84,
+   "name": "Saquon Barkley",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2022",
+   "team": "giants_2022"
+  },
+  {
+   "floor": 87,
+   "name": "Andrew Thomas",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "T",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2022",
+   "team": "giants_2022"
+  },
+  {
+   "floor": 87,
+   "name": "Dexter Lawrence",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2022",
+   "team": "giants_2022"
+  },
+  {
+   "floor": 84,
+   "name": "Jared Goff",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Jahmyr Gibbs",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 90,
+   "name": "Amon-Ra St. Brown",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "WR",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Kalif Raymond",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "WR",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Taylor Decker",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 90,
+   "name": "Penei Sewell",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "T",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 87,
+   "name": "Frank Ragnow",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "C",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 90,
+   "name": "Kerby Joseph",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "FS",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Brian Branch",
+   "native_overall_after": 96,
+   "native_overall_before": 96,
+   "position": "SS",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 90,
+   "name": "Jack Fox",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "P",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2024",
+   "team": "lions_2024"
+  },
+  {
+   "floor": 84,
+   "name": "Greg Jennings",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 84,
+   "name": "Donald Driver",
+   "native_overall_after": 86,
+   "native_overall_before": 86,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 84,
+   "name": "Chad Clifton",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 90,
+   "name": "Clay Matthews",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 87,
+   "name": "Charles Woodson",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 84,
+   "name": "Tramon Williams",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "CB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 87,
+   "name": "Nick Collins",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "FS",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2010",
+   "team": "packers_2010"
+  },
+  {
+   "floor": 95,
+   "name": "Aaron Rodgers",
+   "native_overall_after": 100,
+   "native_overall_before": 100,
+   "position": "QB",
+   "raised": {},
+   "rule": "MVP",
+   "source": "mvp",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 87,
+   "name": "John Kuhn",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "FB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2011",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 84,
+   "name": "Greg Jennings",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2011",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 84,
+   "name": "Scott Wells",
+   "native_overall_after": 96,
+   "native_overall_before": 96,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2011",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 84,
+   "name": "Clay Matthews",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "OLB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2011",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 90,
+   "name": "Charles Woodson",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2011",
+   "team": "packers_2011"
+  },
+  {
+   "floor": 95,
+   "name": "Cam Newton",
+   "native_overall_after": 99,
+   "native_overall_before": 99,
+   "position": "QB",
+   "raised": {},
+   "rule": "MVP",
+   "source": "mvp",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Jonathan Stewart",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 90,
+   "name": "Mike Tolbert",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "FB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 87,
+   "name": "Greg Olsen",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "TE",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Trai Turner",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "G",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 90,
+   "name": "Ryan Kalil",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "C",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 87,
+   "name": "Kawann Short",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "DT",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Thomas Davis",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "OLB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 90,
+   "name": "Luke Kuechly",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "ILB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 90,
+   "name": "Josh Norman",
+   "native_overall_after": 90,
+   "native_overall_before": 88,
+   "position": "CB",
+   "raised": {"agility": 1, "catch": 1, "coverage": 1, "jumping": 1, "speed": 1, "tackle": 1},
+   "rule": "AP1",
+   "source": "allpro_2015",
+   "team": "panthers_2015"
+  },
+  {
+   "floor": 84,
+   "name": "Tom Brady",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2018",
+   "team": "patriots_2018"
+  },
+  {
+   "floor": 87,
+   "name": "Cordarrelle Patterson",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "WR",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2018",
+   "team": "patriots_2018"
+  },
+  {
+   "floor": 90,
+   "name": "Stephon Gilmore",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2018",
+   "team": "patriots_2018"
+  },
+  {
+   "floor": 95,
+   "name": "Lamar Jackson",
+   "native_overall_after": 100,
+   "native_overall_before": 100,
+   "position": "QB",
+   "raised": {},
+   "rule": "MVP",
+   "source": "mvp",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Mark Ingram",
+   "native_overall_after": 86,
+   "native_overall_before": 86,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Patrick Ricard",
+   "native_overall_after": 90,
+   "native_overall_before": 90,
+   "position": "FB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Mark Andrews",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "TE",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 90,
+   "name": "Ronnie Stanley",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "T",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Orlando Brown",
+   "native_overall_after": 96,
+   "native_overall_before": 96,
+   "position": "T",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 87,
+   "name": "Marshal Yanda",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "G",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Marlon Humphrey",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "CB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 87,
+   "name": "Marcus Peters",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Earl Thomas",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "FS",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 90,
+   "name": "Justin Tucker",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "K",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2019",
+   "team": "ravens_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Russell Wilson",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 84,
+   "name": "Marshawn Lynch",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "HB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 84,
+   "name": "Max Unger",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 90,
+   "name": "Richard Sherman",
+   "native_overall_after": 93,
+   "native_overall_before": 93,
+   "position": "CB",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 90,
+   "name": "Earl Thomas",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "FS",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 87,
+   "name": "Kam Chancellor",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "SS",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2013",
+   "team": "seahawks_2013"
+  },
+  {
+   "floor": 84,
+   "name": "Sam Darnold",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 93,
+   "name": "Jaxon Smith-Njigba",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "WR",
+   "raised": {},
+   "rule": "OPOY",
+   "source": "opoy",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 84,
+   "name": "Rashid Shaheed",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "WR",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 87,
+   "name": "Leonard Williams",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "DE",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 84,
+   "name": "DeMarcus Lawrence",
+   "native_overall_after": 84,
+   "native_overall_before": 84,
+   "position": "OLB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 87,
+   "name": "Ernest Jones",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "ILB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 87,
+   "name": "Devon Witherspoon",
+   "native_overall_after": 87,
+   "native_overall_before": 85,
+   "position": "CB",
+   "raised": {"agility": 1, "catch": 1, "coverage": 1, "jumping": 1, "speed": 1, "tackle": 1},
+   "rule": "AP2",
+   "source": "allpro_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 87,
+   "name": "Michael Dickson",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "P",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2025",
+   "team": "seahawks_2025"
+  },
+  {
+   "floor": 90,
+   "name": "Alan Faneca",
+   "native_overall_after": 92,
+   "native_overall_before": 92,
+   "position": "G",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2005",
+   "team": "steelers_2005"
+  },
+  {
+   "floor": 84,
+   "name": "Jeff Hartings",
+   "native_overall_after": 91,
+   "native_overall_before": 91,
+   "position": "C",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2005",
+   "team": "steelers_2005"
+  },
+  {
+   "floor": 84,
+   "name": "Casey Hampton",
+   "native_overall_after": 88,
+   "native_overall_before": 88,
+   "position": "DT",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2005",
+   "team": "steelers_2005"
+  },
+  {
+   "floor": 87,
+   "name": "Joey Porter",
+   "native_overall_after": 89,
+   "native_overall_before": 89,
+   "position": "OLB",
+   "raised": {},
+   "rule": "AP2",
+   "source": "allpro_2005",
+   "team": "steelers_2005"
+  },
+  {
+   "floor": 90,
+   "name": "Troy Polamalu",
+   "native_overall_after": 97,
+   "native_overall_before": 97,
+   "position": "SS",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2005",
+   "team": "steelers_2005"
+  },
+  {
+   "floor": 84,
+   "name": "Ryan Tannehill",
+   "native_overall_after": 94,
+   "native_overall_before": 94,
+   "position": "QB",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "titans_2019"
+  },
+  {
+   "floor": 90,
+   "name": "Derrick Henry",
+   "native_overall_after": 96,
+   "native_overall_before": 96,
+   "position": "HB",
+   "raised": {},
+   "rule": "LEADER",
+   "source": "nflverse_stats_2019",
+   "team": "titans_2019"
+  },
+  {
+   "floor": 84,
+   "name": "Jurrell Casey",
+   "native_overall_after": 87,
+   "native_overall_before": 87,
+   "position": "DE",
+   "raised": {},
+   "rule": "PB",
+   "source": "probowl_2019",
+   "team": "titans_2019"
+  },
+  {
+   "floor": 90,
+   "name": "Brett Kern",
+   "native_overall_after": 95,
+   "native_overall_before": 95,
+   "position": "P",
+   "raised": {},
+   "rule": "AP1",
+   "source": "allpro_2019",
+   "team": "titans_2019"
+  }
+ ],
  "ratings_model": "m2-ratings-3",
  "schema": "nfl2k5.classic_teams.manifest.v1",
  "shared_spec_sha256": "d45ee6ceb693bbcd8ee61ed69844f20a18c2254573cb47cfbf675a6289db3375",
@@ -119,7 +1706,7 @@
    "abbreviation": "CHI",
    "asset_code": "05",
    "city": "Chicago",
-   "csv_sha256": "082c17617500f70f65a3ff65015514e6a77335bdc086953dd6868f9beafade0f",
+   "csv_sha256": "abf52356abea92f8d83dfa6a270b9899298093e27adb1338f3d4225f5cea8bb8",
    "game_id": "2006_17_GB_CHI",
    "jerseys_from_pbp": 32,
    "lineup": {
@@ -642,10 +2229,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 4 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.8553,
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -717,10 +2305,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8942,
+      "q_value": 0.97,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -867,10 +2456,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "DT",
-      "q_aspects": {"rush": 0.9105, "stop": 0.7432},
-      "q_value": 0.8851,
+      "q_aspects": {"rush": 0.9179, "stop": 0.8},
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -992,9 +2582,10 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.9891, "rush": 0.8261, "stop": 0.9907},
+      "q_aspects": {"cover": 0.9891, "rush": 0.84, "stop": 0.9907},
       "q_value": 0.9845,
       "season": 2006,
       "speed_source": "retail_anchor"
@@ -1068,10 +2659,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "ILB",
-      "q_aspects": {"cover": 0.97, "rush": 0.875, "stop": 0.96},
-      "q_value": 0.955,
+      "q_aspects": {"cover": 0.9775, "rush": 0.8825, "stop": 0.9675},
+      "q_value": 0.97,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -1117,10 +2709,11 @@
      "position_source": "depth chart week 17: SLB 2",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "ILB",
-      "q_aspects": {"cover": 0.3575, "rush": 0.365, "stop": 0.4875},
-      "q_value": 0.485,
+      "q_aspects": {"cover": 0.8, "rush": 0.8, "stop": 0.8},
+      "q_value": 0.9,
       "season": 2006,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -1243,10 +2836,11 @@
      "ratings_basis": {
       "forty": 4.41,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.2566, "cover": 0.2035, "stop": 0.2646},
-      "q_value": 0.2527,
+      "q_aspects": {"ball": 0.87, "cover": 0.87, "stop": 0.87},
+      "q_value": 0.97,
       "season": 2006,
       "speed_source": "combine"
      },
@@ -1444,9 +3038,10 @@
      "position_source": "depth chart week 17: PK 2",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "K",
-      "q_aspects": {"accuracy": 0.9929, "power": 0.6389},
+      "q_aspects": {"accuracy": 0.9929, "power": 0.87},
       "q_value": 0.9861,
       "season": 2006,
       "speed_flag": "no 40-yard time found: speed from the position profile",
@@ -1498,7 +3093,7 @@
    "abbreviation": "DEN",
    "asset_code": "08",
    "city": "Denver",
-   "csv_sha256": "81193890a0998dce108b08b7162f7a6a36ddd20fff415036636483aff9db9309",
+   "csv_sha256": "65cccf4a438b42fb9e65038b6e1d08c49f9a8af0faaf3aa8a7de2f6e68846d0b",
    "game_id": "2015_17_SD_DEN",
    "jerseys_from_pbp": 34,
    "lineup": {
@@ -2376,10 +3971,11 @@
      "ratings_basis": {
       "forty": 4.42,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.769, "rush": 0.9674, "stop": 0.8696},
-      "q_value": 0.9375,
+      "q_aspects": {"cover": 0.87, "rush": 0.9836, "stop": 0.8858},
+      "q_value": 0.97,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -2401,10 +3997,11 @@
      "ratings_basis": {
       "forty": 4.56,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.4715, "rush": 0.8152, "stop": 0.6671},
-      "q_value": 0.6766,
+      "q_aspects": {"cover": 0.8, "rush": 0.9269, "stop": 0.8},
+      "q_value": 0.9,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -2601,6 +4198,7 @@
      "ratings_basis": {
       "forty": 4.44,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.9186, "cover": 0.9128, "stop": 0.8142},
@@ -2627,9 +4225,10 @@
       "forty": 4.48,
       "forty_source": "https://en.wikipedia.org/wiki/Chris_Harris_Jr.",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.8933, "cover": 0.8372, "stop": 0.9358},
+      "q_aspects": {"ball": 0.8933, "cover": 0.84, "stop": 0.9358},
       "q_value": 0.961,
       "season": 2015,
       "speed_source": "pro_day"
@@ -3907,6 +5506,7 @@
      "ratings_basis": {
       "forty": 4.76,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "ILB",
       "q_aspects": {"cover": 0.9167, "rush": 0.964, "stop": 0.955},
@@ -4261,7 +5861,7 @@
    "abbreviation": "CLE",
    "asset_code": "30",
    "city": "Cleveland",
-   "csv_sha256": "1aa8ffa1ed9be0b1ecd53d484ab47bfd724b2684e7ce383e47b2946247323b68",
+   "csv_sha256": "6b9bb53eb48a80493802ca1142828fc058398321df6592210799c3783c30be4d",
    "game_id": "2020_04_CLE_DAL",
    "jerseys_from_pbp": 31,
    "lineup": "nflverse depth_charts_2020.csv week 4 (the spec's chosen week)",
@@ -4332,6 +5932,7 @@
      "ratings_basis": {
       "forty": 4.52,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.825, "security": 0.9231},
@@ -4683,10 +6284,11 @@
      "ratings_basis": {
       "forty": 5.0,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8639,
+      "q_value": 0.97,
       "season": 2020,
       "speed_source": "combine"
      },
@@ -4758,6 +6360,7 @@
      "ratings_basis": {
       "forty": 4.92,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
@@ -4783,10 +6386,11 @@
      "ratings_basis": {
       "forty": 5.24,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.6493,
+      "q_value": 0.94,
       "season": 2020,
       "speed_source": "combine"
      },
@@ -4908,10 +6512,11 @@
      "ratings_basis": {
       "forty": 4.64,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "DE",
-      "q_aspects": {"rush": 0.9761, "stop": 0.9654},
-      "q_value": 0.9654,
+      "q_aspects": {"rush": 0.9784, "stop": 0.9677},
+      "q_value": 0.97,
       "season": 2020,
       "speed_source": "combine"
      },
@@ -6461,6 +8066,7 @@
      "ratings_basis": {
       "forty": 4.71,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "OLB",
       "q_aspects": {"cover": 0.9761, "rush": 0.9761, "stop": 0.9229},
@@ -6561,6 +8167,7 @@
      "ratings_basis": {
       "forty": 4.42,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "ILB",
       "q_aspects": {"cover": 0.8942, "rush": 0.9962, "stop": 0.9923},
@@ -6586,6 +8193,7 @@
      "ratings_basis": {
       "forty": 4.57,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "ILB",
       "q_aspects": {"cover": 0.9442, "rush": 0.8673, "stop": 0.95},
@@ -6989,7 +8597,7 @@
    "abbreviation": "SD",
    "asset_code": "24",
    "city": "San Diego",
-   "csv_sha256": "604a9c1e0edff5c550efb73a83e06568ec3e7113523eac96addf78d75a197b00",
+   "csv_sha256": "83401e69b9b8f787d6ce4644e91d6a8e8e30254faeb2b0527a37927b7d4db079",
    "game_id": "2006_17_ARI_SD",
    "jerseys_from_pbp": 0,
    "lineup": {
@@ -7036,9 +8644,10 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9735, "arm": 0.9692, "mobility": 0.3229, "read": 0.9842},
+      "q_aspects": {"accuracy": 0.9735, "arm": 0.9692, "mobility": 0.8, "read": 0.9842},
       "q_value": 0.9643,
       "season": 2006,
       "speed_source": "retail_anchor"
@@ -7111,6 +8720,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.9808, "security": 0.9965},
@@ -7160,10 +8770,11 @@
      "position_source": "depth chart week 17: FB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "FB",
-      "q_aspects": {"receiving": 0.8016, "security": 0.9465},
-      "q_value": 0.8968,
+      "q_aspects": {"receiving": 0.87, "security": 0.985},
+      "q_value": 0.97,
       "season": 2006,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -7337,10 +8948,11 @@
      "ratings_basis": {
       "forty": 4.68,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.0972},
-      "q_value": 0.0972,
+      "q_aspects": {"hands": 0.9},
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "combine"
      },
@@ -7362,6 +8974,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "TE",
       "q_aspects": {"hands": 0.995},
@@ -7437,10 +9050,11 @@
      "ratings_basis": {
       "forty": 5.07,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8551,
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "combine"
      },
@@ -7612,10 +9226,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8942,
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -7662,10 +9277,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 4 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.2788,
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -7788,10 +9404,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "DT",
-      "q_aspects": {"rush": 0.7483, "stop": 0.9172},
-      "q_value": 0.848,
+      "q_aspects": {"rush": 0.87, "stop": 0.9782},
+      "q_value": 0.97,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -7889,9 +9506,10 @@
      "ratings_basis": {
       "forty": 4.64,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.9627, "rush": 0.9876, "stop": 0.8602},
+      "q_aspects": {"cover": 0.9627, "rush": 0.9876, "stop": 0.87},
       "q_value": 0.9783,
       "season": 2006,
       "speed_source": "combine"
@@ -8316,10 +9934,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "K",
-      "q_aspects": {"accuracy": 0.9655, "power": 0.7986},
-      "q_value": 0.9306,
+      "q_aspects": {"accuracy": 0.9703, "power": 0.84},
+      "q_value": 0.94,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -8369,7 +9988,7 @@
    "abbreviation": "KC",
    "asset_code": "13",
    "city": "Kansas City",
-   "csv_sha256": "4b6bdddbdf867f9bd7115fbda18536d6db4107c96ffc1bc1f26f862e54326194",
+   "csv_sha256": "b1460b6a9b061729d31c454f81e931ab00d8c71afe13c5536eec388f01152580",
    "game_id": "2022_18_KC_LV",
    "jerseys_from_pbp": 32,
    "lineup": {
@@ -8416,9 +10035,10 @@
      "ratings_basis": {
       "forty": 4.8,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9976, "arm": 0.9936, "mobility": 0.7788, "read": 0.998},
+      "q_aspects": {"accuracy": 0.9976, "arm": 0.9936, "mobility": 0.87, "read": 0.998},
       "q_value": 0.9948,
       "season": 2022,
       "speed_source": "combine"
@@ -8743,6 +10363,7 @@
      "ratings_basis": {
       "forty": 4.63,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "TE",
       "q_aspects": {"hands": 0.9967},
@@ -8818,6 +10439,7 @@
      "ratings_basis": {
       "forty": 5.85,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
@@ -8943,10 +10565,11 @@
      "ratings_basis": {
       "forty": 4.95,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.7641,
+      "q_value": 0.94,
       "season": 2022,
       "speed_source": "combine"
      },
@@ -9018,6 +10641,7 @@
      "ratings_basis": {
       "forty": 5.11,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
@@ -9221,6 +10845,7 @@
      "ratings_basis": {
       "forty": 5.03,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "DT",
       "q_aspects": {"rush": 0.9973, "stop": 0.9674},
@@ -9723,10 +11348,11 @@
      "ratings_basis": {
       "forty": 4.75,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "P",
-      "q_aspects": {"placement": 0.8133, "power": 0.8728},
-      "q_value": 0.7763,
+      "q_aspects": {"placement": 0.976, "power": 0.9846},
+      "q_value": 0.97,
       "season": 2022,
       "speed_source": "combine"
      },
@@ -9751,7 +11377,7 @@
    "abbreviation": "IND",
    "asset_code": "11",
    "city": "Indianapolis",
-   "csv_sha256": "e273957d8503a3f37d929b8a9b2cff09d9c83b7419fda835e27ff023d56c8a33",
+   "csv_sha256": "14ef5278ec81df6e34dc264e3be3f4acd2c62f7d437b5463fb709882e80aab08",
    "game_id": "2006_17_MIA_IND",
    "jerseys_from_pbp": 28,
    "lineup": {
@@ -9797,9 +11423,10 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.998, "arm": 0.9963, "mobility": 0.2604, "read": 0.9981},
+      "q_aspects": {"accuracy": 0.998, "arm": 0.9963, "mobility": 0.87, "read": 0.9981},
       "q_value": 0.9949,
       "season": 2006,
       "speed_source": "retail_anchor"
@@ -9972,6 +11599,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 4 for age",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.995},
@@ -9997,6 +11625,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.9882},
@@ -10172,10 +11801,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8551,
+      "q_value": 0.9,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -10323,10 +11953,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 1 for age",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.7692,
+      "q_value": 0.94,
       "season": 2006,
       "speed_source": "retail_anchor"
      },
@@ -11129,7 +12760,7 @@
    "abbreviation": "IND",
    "asset_code": "11",
    "city": "Indianapolis",
-   "csv_sha256": "e8982559c7d17f609304587fd76cabd9781e78b95cba7ea6625ee307ec50ab2f",
+   "csv_sha256": "72f3d62d9a4a11365851bfc28bc7a1f2ab04189b504d56d3477ccab487343ba5",
    "game_id": "2014_17_IND_TEN",
    "jerseys_from_pbp": 33,
    "lineup": {
@@ -11174,10 +12805,11 @@
      "ratings_basis": {
       "forty": 4.59,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9068, "arm": 0.9421, "mobility": 0.8256, "read": 0.962},
-      "q_value": 0.9286,
+      "q_aspects": {"accuracy": 0.9603, "arm": 0.9759, "mobility": 0.87, "read": 0.9844},
+      "q_value": 0.97,
       "season": 2014,
       "speed_source": "combine"
      },
@@ -12077,9 +13709,10 @@
      "ratings_basis": {
       "forty": 4.73,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "ILB",
-      "q_aspects": {"cover": 0.7642, "rush": 0.9593, "stop": 0.9634},
+      "q_aspects": {"cover": 0.8, "rush": 0.9593, "stop": 0.9634},
       "q_value": 0.9553,
       "season": 2014,
       "speed_source": "combine"
@@ -12202,10 +13835,11 @@
      "ratings_basis": {
       "forty": 4.4,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.9294, "cover": 0.9387, "stop": 0.7766},
-      "q_value": 0.8866,
+      "q_aspects": {"ball": 0.9361, "cover": 0.9454, "stop": 0.8},
+      "q_value": 0.9,
       "season": 2014,
       "speed_source": "combine"
      },
@@ -12403,6 +14037,7 @@
      "position_source": "depth chart week 17: SS 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "SS",
       "q_aspects": {"ball": 0.9881, "cover": 0.9881, "stop": 0.9167},
@@ -12455,10 +14090,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 11 for age",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "K",
-      "q_aspects": {"accuracy": 0.963, "power": 0.7368},
-      "q_value": 0.9079,
+      "q_aspects": {"accuracy": 0.9884, "power": 0.87},
+      "q_value": 0.97,
       "season": 2014,
       "speed_source": "retail_anchor"
      },
@@ -12479,10 +14115,11 @@
      "position_source": "depth chart week 17: P 2",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "P",
-      "q_aspects": {"placement": 0.7785, "power": 0.7533},
-      "q_value": 0.6618,
+      "q_aspects": {"placement": 0.9831, "power": 0.9806},
+      "q_value": 0.97,
       "season": 2014,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -12508,7 +14145,7 @@
    "abbreviation": "PHI",
    "asset_code": "21",
    "city": "Philadelphia",
-   "csv_sha256": "a656fd49128ffbee1862656b4f4b102068982e8d2fd1dee1fb235d84abad5587",
+   "csv_sha256": "308404a6f9f9e0608c8bf23dc4bf2c824be6e7ed2920fa278bc5b7eedc4c4a37",
    "game_id": "2017_13_PHI_SEA",
    "jerseys_from_pbp": 29,
    "lineup": {
@@ -12555,9 +14192,10 @@
      "ratings_basis": {
       "forty": 4.77,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.966, "arm": 0.9826, "mobility": 0.837, "read": 0.989},
+      "q_aspects": {"accuracy": 0.966, "arm": 0.9826, "mobility": 0.84, "read": 0.989},
       "q_value": 0.974,
       "season": 2017,
       "speed_source": "combine"
@@ -12907,6 +14545,7 @@
      "ratings_basis": {
       "forty": 4.76,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "TE",
       "q_aspects": {"hands": 0.9887},
@@ -13007,10 +14646,11 @@
      "ratings_basis": {
       "forty": 4.72,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.7804,
+      "q_value": 0.97,
       "season": 2017,
       "speed_source": "combine"
      },
@@ -13106,10 +14746,11 @@
      "position_source": "depth chart week 13: RG 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.8586,
+      "q_value": 0.9,
       "season": 2017,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -13157,10 +14798,11 @@
      "ratings_basis": {
       "forty": 4.89,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8527,
+      "q_value": 0.97,
       "season": 2017,
       "speed_source": "combine"
      },
@@ -13308,10 +14950,11 @@
      "ratings_basis": {
       "forty": 4.77,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DT",
-      "q_aspects": {"rush": 0.9233, "stop": 0.7745},
-      "q_value": 0.8865,
+      "q_aspects": {"rush": 0.9501, "stop": 0.84},
+      "q_value": 0.94,
       "season": 2017,
       "speed_source": "combine"
      },
@@ -13785,10 +15428,11 @@
      "ratings_basis": {
       "forty": 4.51,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "SS",
-      "q_aspects": {"ball": 0.8765, "cover": 0.9036, "stop": 0.8916},
-      "q_value": 0.8976,
+      "q_aspects": {"ball": 0.8777, "cover": 0.9048, "stop": 0.8928},
+      "q_value": 0.9,
       "season": 2017,
       "speed_source": "combine"
      },
@@ -13888,7 +15532,7 @@
    "abbreviation": "PHI",
    "asset_code": "21",
    "city": "Philadelphia",
-   "csv_sha256": "8cb0bab65980ba0d8450c8840e3dc402adeea0535bb3b06baaaf15e95c1b6230",
+   "csv_sha256": "f7071409dd7852e2299c9a5899d429a5f32f9a7f339048571a3596f47887f2fe",
    "game_id": "2024_15_PIT_PHI",
    "jerseys_from_pbp": 25,
    "lineup": {
@@ -14011,6 +15655,7 @@
      "ratings_basis": {
       "forty": 4.4,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.9214, "security": 0.9954},
@@ -14337,10 +15982,11 @@
      "position_source": "depth chart week 15: LT 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.7,
+      "q_value": 0.94,
       "season": 2024,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -14363,10 +16009,11 @@
      "ratings_basis": {
       "forty": 4.72,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8143,
+      "q_value": 0.94,
       "season": 2024,
       "speed_source": "combine"
      },
@@ -14462,10 +16109,11 @@
      "position_source": "depth chart week 15: LG 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.7448,
+      "q_value": 0.9,
       "season": 2024,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -14538,10 +16186,11 @@
      "ratings_basis": {
       "forty": 4.92,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8899,
+      "q_value": 0.9,
       "season": 2024,
       "speed_source": "combine"
      },
@@ -14738,6 +16387,7 @@
      "position_source": "depth chart week 15: DT 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DT",
       "q_aspects": {"rush": 0.9528, "stop": 0.9667},
@@ -14864,9 +16514,10 @@
      "ratings_basis": {
       "forty": 4.65,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.9615, "rush": 0.8531, "stop": 0.986},
+      "q_aspects": {"cover": 0.9615, "rush": 0.87, "stop": 0.986},
       "q_value": 0.9825,
       "season": 2024,
       "speed_source": "combine"
@@ -15270,7 +16921,7 @@
    "abbreviation": "NYG",
    "asset_code": "18",
    "city": "New York",
-   "csv_sha256": "d6a633d4e03d4787430746da1be160a1aff255dfa24e79930edf3281016f4500",
+   "csv_sha256": "e69e95c6f198adb2b854e191b939e526a7a8a604816f24f468bcc211dcfa14ba",
    "game_id": "2016_16_NYG_PHI",
    "jerseys_from_pbp": 29,
    "lineup": {
@@ -15468,6 +17119,7 @@
      "ratings_basis": {
       "forty": 4.38,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.9948},
@@ -15594,10 +17246,11 @@
      "ratings_basis": {
       "forty": 4.53,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.4807},
-      "q_value": 0.4797,
+      "q_aspects": {"hands": 0.9003},
+      "q_value": 0.9,
       "season": 2016,
       "speed_source": "combine"
      },
@@ -15945,6 +17598,7 @@
      "ratings_basis": {
       "forty": 4.73,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DE",
       "q_aspects": {"rush": 0.9813, "stop": 0.993},
@@ -16070,10 +17724,11 @@
      "position_source": "depth chart week 16: LDT 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "DT",
-      "q_aspects": {"rush": 0.8743, "stop": 0.95},
-      "q_value": 0.9171,
+      "q_aspects": {"rush": 0.9007, "stop": 0.9764},
+      "q_value": 0.97,
       "season": 2016,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -16347,10 +18002,11 @@
      "ratings_basis": {
       "forty": 4.29,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.9455, "cover": 0.9464, "stop": 0.8625},
-      "q_value": 0.8979,
+      "q_aspects": {"ball": 0.9665, "cover": 0.9674, "stop": 0.8835},
+      "q_value": 0.94,
       "season": 2016,
       "speed_source": "combine"
      },
@@ -16372,10 +18028,11 @@
      "ratings_basis": {
       "forty": 4.41,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.9403, "cover": 0.9567, "stop": 0.8858},
-      "q_value": 0.936,
+      "q_aspects": {"ball": 0.9423, "cover": 0.9588, "stop": 0.8878},
+      "q_value": 0.94,
       "season": 2016,
       "speed_source": "combine"
      },
@@ -16572,6 +18229,7 @@
      "ratings_basis": {
       "forty": 4.53,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "SS",
       "q_aspects": {"ball": 0.9909, "cover": 0.9955, "stop": 0.9955},
@@ -16651,7 +18309,7 @@
    "abbreviation": "NYG",
    "asset_code": "18",
    "city": "New York",
-   "csv_sha256": "c55159b1c802bdde1e9182dbe2b9101ab288dd3b383fdec2a5361ff06230205b",
+   "csv_sha256": "fee530bc19ad9276ee1c4840da6b24d3bdb212ba734d9e7aabba0d23bf8e8efc",
    "game_id": "2022_17_IND_NYG",
    "jerseys_from_pbp": 30,
    "lineup": {
@@ -16742,6 +18400,7 @@
      "ratings_basis": {
       "forty": 4.4,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.9506, "security": 0.987},
@@ -17071,10 +18730,11 @@
      "ratings_basis": {
       "forty": 5.22,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8404,
+      "q_value": 0.94,
       "season": 2022,
       "speed_source": "combine"
      },
@@ -17397,6 +19057,7 @@
      "ratings_basis": {
       "forty": 5.05,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DT",
       "q_aspects": {"rush": 0.9783, "stop": 0.962},
@@ -19410,7 +21071,7 @@
    "abbreviation": "DET",
    "asset_code": "09",
    "city": "Detroit",
-   "csv_sha256": "1436ab83e2be504a4687b493bd37a4cd1007a6b626e2dc5a528b2c243d209c84",
+   "csv_sha256": "3ec6d1edcd3ed4c4d1ca2dc476f0c91ce2dd6b9148022c5061574f12a914d51b",
    "game_id": "2024_18_MIN_DET",
    "jerseys_from_pbp": 25,
    "lineup": {
@@ -19453,9 +21114,10 @@
      "ratings_basis": {
       "forty": 4.82,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9895, "arm": 0.9605, "mobility": 0.0938, "read": 0.9895},
+      "q_aspects": {"accuracy": 0.9895, "arm": 0.9605, "mobility": 0.8, "read": 0.9895},
       "q_value": 0.9737,
       "season": 2024,
       "speed_source": "combine"
@@ -19503,6 +21165,7 @@
      "ratings_basis": {
       "forty": 4.36,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.9811, "security": 0.9782},
@@ -19604,6 +21267,7 @@
      "ratings_basis": {
       "forty": 4.51,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.9964},
@@ -19678,10 +21342,11 @@
      "position_source": "depth chart week 18: WR 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.6668},
-      "q_value": 0.5536,
+      "q_aspects": {"hands": 0.9619},
+      "q_value": 0.94,
       "season": 2024,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -19804,10 +21469,11 @@
      "ratings_basis": {
       "forty": 5.23,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.7343,
+      "q_value": 0.9,
       "season": 2024,
       "speed_source": "combine"
      },
@@ -19829,6 +21495,7 @@
      "ratings_basis": {
       "forty": 5.13,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
@@ -20003,10 +21670,11 @@
      "position_source": "depth chart week 18: C 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8853,
+      "q_value": 0.94,
       "season": 2024,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -20680,6 +22348,7 @@
      "position_source": "depth chart week 18: S 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "FS",
       "q_aspects": {"ball": 0.995, "cover": 0.995, "stop": 0.9158},
@@ -20706,6 +22375,7 @@
      "ratings_basis": {
       "forty": 4.58,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "SS",
       "q_aspects": {"ball": 0.9578, "cover": 0.9759, "stop": 0.9639},
@@ -20756,10 +22426,11 @@
      "ratings_basis": {
       "forty": 4.73,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "P",
-      "q_aspects": {"placement": 0.8331, "power": 0.853},
-      "q_value": 0.7564,
+      "q_aspects": {"placement": 0.9811, "power": 0.9837},
+      "q_value": 0.97,
       "season": 2024,
       "speed_source": "combine"
      },
@@ -20784,7 +22455,7 @@
    "abbreviation": "GB",
    "asset_code": "10",
    "city": "Green Bay",
-   "csv_sha256": "4482fdd87beafd5ba106975dbab3c826e388b39656f62d68d39f40bcbd92fbee",
+   "csv_sha256": "e84c7c09542789e30b4f198df9c994e1a3f7712056cf786467e3ade8b597278a",
    "game_id": "2010_17_CHI_GB",
    "jerseys_from_pbp": 31,
    "lineup": {
@@ -21057,6 +22728,7 @@
      "ratings_basis": {
       "forty": 4.42,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.9885},
@@ -21082,10 +22754,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 5 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.7924},
-      "q_value": 0.7394,
+      "q_aspects": {"hands": 0.9237},
+      "q_value": 0.9,
       "season": 2010,
       "speed_source": "retail_anchor"
      },
@@ -21259,10 +22932,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 4 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.8593,
+      "q_value": 0.9,
       "season": 2010,
       "speed_source": "retail_anchor"
      },
@@ -21662,6 +23336,7 @@
      "ratings_basis": {
       "forty": 4.58,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "OLB",
       "q_aspects": {"cover": 0.9467, "rush": 0.9809, "stop": 0.9344},
@@ -21862,6 +23537,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 3 for age",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.8707, "cover": 0.9159, "stop": 0.9683},
@@ -21888,6 +23564,7 @@
       "forty": 4.57,
       "forty_source": "https://en.wikipedia.org/wiki/Tramon_Williams",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.978, "cover": 0.9854, "stop": 0.9061},
@@ -22014,10 +23691,11 @@
      "ratings_basis": {
       "forty": 4.36,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "FS",
-      "q_aspects": {"ball": 0.9367, "cover": 0.9494, "stop": 0.8608},
-      "q_value": 0.9304,
+      "q_aspects": {"ball": 0.9415, "cover": 0.9542, "stop": 0.8656},
+      "q_value": 0.94,
       "season": 2010,
       "speed_source": "combine"
      },
@@ -22167,7 +23845,7 @@
    "abbreviation": "GB",
    "asset_code": "10",
    "city": "Green Bay",
-   "csv_sha256": "d482344e8a7e3cae843fde75f0ff87f6972b26becfe1d8d4bd69abc20748f52d",
+   "csv_sha256": "579780c7b4c005ce517b8924327b1cba0bc09afe7ca9adfbfff5632b39a04ca6",
    "game_id": "2011_16_CHI_GB",
    "jerseys_from_pbp": 31,
    "lineup": {
@@ -22213,9 +23891,10 @@
      "ratings_basis": {
       "forty": 4.71,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9938, "arm": 0.987, "mobility": 0.8438, "read": 0.9942},
+      "q_aspects": {"accuracy": 0.9938, "arm": 0.987, "mobility": 0.87, "read": 0.9942},
       "q_value": 0.9847,
       "season": 2011,
       "speed_source": "combine"
@@ -22363,10 +24042,11 @@
      "position_source": "depth chart week 16: FB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "FB",
-      "q_aspects": {"receiving": 0.8605, "security": 0.9049},
-      "q_value": 0.8721,
+      "q_aspects": {"receiving": 0.8944, "security": 0.9563},
+      "q_value": 0.94,
       "season": 2011,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -22389,6 +24069,7 @@
      "ratings_basis": {
       "forty": 4.42,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.961},
@@ -22815,10 +24496,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8737,
+      "q_value": 0.9,
       "season": 2011,
       "speed_source": "retail_anchor"
      },
@@ -23017,6 +24699,7 @@
      "ratings_basis": {
       "forty": 4.58,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "OLB",
       "q_aspects": {"cover": 0.9826, "rush": 0.9593, "stop": 0.8576},
@@ -23267,6 +24950,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 4 for age",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.9939, "cover": 0.9914, "stop": 0.9681},
@@ -23547,7 +25231,7 @@
    "abbreviation": "CAR",
    "asset_code": "04",
    "city": "Carolina",
-   "csv_sha256": "e2325dd51abb561777cdafbb3eb4e2126a16dc13b7a3d05ca02802655568dc15",
+   "csv_sha256": "7b0e713d07ab09753ef179b6c2a97453639e3d96ce2de42f6184332f134c5916",
    "game_id": "2015_17_TB_CAR",
    "jerseys_from_pbp": 32,
    "lineup": {
@@ -23594,10 +25278,11 @@
      "ratings_basis": {
       "forty": 4.56,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9401, "arm": 0.9756, "mobility": 0.9681, "read": 0.9795},
-      "q_value": 0.9628,
+      "q_aspects": {"accuracy": 0.9515, "arm": 0.9804, "mobility": 0.9681, "read": 0.9836},
+      "q_value": 0.97,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -23669,10 +25354,11 @@
      "ratings_basis": {
       "forty": 4.46,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
-      "q_aspects": {"receiving": 0.7167, "security": 0.8433},
-      "q_value": 0.8633,
+      "q_aspects": {"receiving": 0.8, "security": 0.8847},
+      "q_value": 0.9,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -23768,10 +25454,11 @@
      "position_source": "depth chart week 17: FB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "FB",
-      "q_aspects": {"receiving": 0.9286, "security": 0.9699},
-      "q_value": 0.9464,
+      "q_aspects": {"receiving": 0.9404, "security": 0.9833},
+      "q_value": 0.97,
       "season": 2015,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -23944,6 +25631,7 @@
      "ratings_basis": {
       "forty": 4.51,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "TE",
       "q_aspects": {"hands": 0.9688},
@@ -24119,10 +25807,11 @@
      "ratings_basis": {
       "forty": 4.93,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.8043,
+      "q_value": 0.9,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -24169,10 +25858,11 @@
      "ratings_basis": {
       "forty": 4.96,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.8645,
+      "q_value": 0.97,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -24395,6 +26085,7 @@
      "ratings_basis": {
       "forty": 5.08,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DT",
       "q_aspects": {"rush": 0.9795, "stop": 0.976},
@@ -24470,6 +26161,7 @@
      "ratings_basis": {
       "forty": 4.6,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "OLB",
       "q_aspects": {"cover": 0.9891, "rush": 0.9253, "stop": 0.981},
@@ -24546,10 +26238,11 @@
      "ratings_basis": {
       "forty": 4.58,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "ILB",
-      "q_aspects": {"cover": 0.9227, "rush": 0.8182, "stop": 0.8955},
-      "q_value": 0.85,
+      "q_aspects": {"cover": 0.9827, "rush": 0.8782, "stop": 0.9555},
+      "q_value": 0.97,
       "season": 2015,
       "speed_source": "combine"
      },
@@ -24646,6 +26339,7 @@
      "ratings_basis": {
       "forty": 4.61,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.9805, "cover": 0.9862, "stop": 0.9312},
@@ -24925,7 +26619,7 @@
    "abbreviation": "NE",
    "asset_code": "16",
    "city": "New England",
-   "csv_sha256": "e1e3c5e65c55a829026584c279612721882e316a8b1d91502254ed9952a18841",
+   "csv_sha256": "851cfdd54e24b691358953c21013a84edfef322a56c043584ecc711565d2ee41",
    "game_id": "2018_17_NYJ_NE",
    "jerseys_from_pbp": 32,
    "lineup": {
@@ -24972,9 +26666,10 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 11 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9204, "arm": 0.9155, "mobility": 0.1413, "read": 0.9519},
+      "q_aspects": {"accuracy": 0.9204, "arm": 0.9155, "mobility": 0.8, "read": 0.9519},
       "q_value": 0.9185,
       "season": 2018,
       "speed_source": "retail_anchor"
@@ -25174,10 +26869,11 @@
      "ratings_basis": {
       "forty": 4.42,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.7718},
-      "q_value": 0.6596,
+      "q_aspects": {"hands": 0.9647},
+      "q_value": 0.94,
       "season": 2018,
       "speed_source": "combine"
      },
@@ -26005,9 +27701,10 @@
      "ratings_basis": {
       "forty": 4.38,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.928, "cover": 0.9903, "stop": 0.8648},
+      "q_aspects": {"ball": 0.928, "cover": 0.9903, "stop": 0.87},
       "q_value": 0.9903,
       "season": 2018,
       "speed_source": "combine"
@@ -26311,7 +28008,7 @@
    "abbreviation": "BAL",
    "asset_code": "02",
    "city": "Baltimore",
-   "csv_sha256": "a2f0e8555a19dc28a0ebc2f65099264217e50d5d3bcc5216fe0a4c9ef610be35",
+   "csv_sha256": "4c31a5d8d8e421ab9288039441cfb43c9c454610294ff1ca2c526b6a52fb4aad",
    "game_id": "2019_16_BAL_CLE",
    "jerseys_from_pbp": 28,
    "lineup": {
@@ -26354,6 +28051,7 @@
      "position_source": "depth chart week 16: QB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "QB",
       "q_aspects": {"accuracy": 0.9966, "arm": 0.9958, "mobility": 0.9886, "read": 0.998},
@@ -26430,6 +28128,7 @@
      "ratings_basis": {
       "forty": 4.62,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.8688, "security": 0.8716},
@@ -26504,10 +28203,11 @@
      "position_source": "depth chart week 16: FB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "FB",
-      "q_aspects": {"receiving": 0.8056, "security": 0.8611},
-      "q_value": 0.8611,
+      "q_aspects": {"receiving": 0.825, "security": 0.9},
+      "q_value": 0.9,
       "season": 2019,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -26756,6 +28456,7 @@
      "ratings_basis": {
       "forty": 4.67,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "TE",
       "q_aspects": {"hands": 0.9486},
@@ -26781,10 +28482,11 @@
      "ratings_basis": {
       "forty": 5.2,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
-      "q_value": 0.7485,
+      "q_value": 0.97,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -26806,6 +28508,7 @@
      "ratings_basis": {
       "forty": 5.85,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "T",
       "q_aspects": {},
@@ -26881,10 +28584,11 @@
      "ratings_basis": {
       "forty": 5.15,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.7336,
+      "q_value": 0.94,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -27359,6 +29063,7 @@
      "ratings_basis": {
       "forty": 4.41,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.955, "cover": 0.966, "stop": 0.963},
@@ -27384,6 +29089,7 @@
      "ratings_basis": {
       "forty": 4.53,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
       "q_aspects": {"ball": 0.976, "cover": 0.972, "stop": 0.88},
@@ -27510,10 +29216,11 @@
      "ratings_basis": {
       "forty": 4.43,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "FS",
-      "q_aspects": {"ball": 0.8094, "cover": 0.7797, "stop": 0.7302},
-      "q_value": 0.7871,
+      "q_aspects": {"ball": 0.8658, "cover": 0.8361, "stop": 0.8},
+      "q_value": 0.9,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -27634,10 +29341,11 @@
      "position_source": "depth chart week 16: K 2",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "K",
-      "q_aspects": {"accuracy": 0.9656, "power": 0.6395},
-      "q_value": 0.9186,
+      "q_aspects": {"accuracy": 0.9877, "power": 0.87},
+      "q_value": 0.97,
       "season": 2019,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -27688,7 +29396,7 @@
    "abbreviation": "SEA",
    "asset_code": "26",
    "city": "Seattle",
-   "csv_sha256": "a6f51af25a00823dc46775394f46c20ad6f7f0091cbf931242ed0e4c1619b3e7",
+   "csv_sha256": "b33a0521847ee5614d972fe58d2ad36d02225643e94517539434e6ecf1cf0e54",
    "game_id": "2013_17_STL_SEA",
    "jerseys_from_pbp": 29,
    "lineup": {
@@ -27738,10 +29446,11 @@
      "ratings_basis": {
       "forty": 4.53,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.931, "arm": 0.9302, "mobility": 0.8977, "read": 0.9455},
-      "q_value": 0.8956,
+      "q_aspects": {"accuracy": 0.934, "arm": 0.9332, "mobility": 0.8977, "read": 0.9479},
+      "q_value": 0.9,
       "season": 2013,
       "speed_source": "combine"
      },
@@ -27788,6 +29497,7 @@
      "ratings_basis": {
       "forty": 4.46,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "HB",
       "q_aspects": {"receiving": 0.9218, "security": 0.9722},
@@ -28340,10 +30050,11 @@
      "ratings_basis": {
       "forty": 5.26,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
-      "q_value": 0.7165,
+      "q_value": 0.9,
       "season": 2013,
       "speed_source": "combine"
      },
@@ -28790,9 +30501,10 @@
      "ratings_basis": {
       "forty": 4.54,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.9878, "cover": 0.9854, "stop": 0.8366},
+      "q_aspects": {"ball": 0.9878, "cover": 0.9854, "stop": 0.87},
       "q_value": 0.978,
       "season": 2013,
       "speed_source": "combine"
@@ -28917,6 +30629,7 @@
      "ratings_basis": {
       "forty": 4.43,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "FS",
       "q_aspects": {"ball": 0.9861, "cover": 0.9778, "stop": 0.9667},
@@ -28967,10 +30680,11 @@
      "ratings_basis": {
       "forty": 4.62,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "SS",
-      "q_aspects": {"ball": 0.8906, "cover": 0.8625, "stop": 0.8812},
-      "q_value": 0.8812,
+      "q_aspects": {"ball": 0.92, "cover": 0.8919, "stop": 0.9106},
+      "q_value": 0.94,
       "season": 2013,
       "speed_source": "combine"
      },
@@ -29071,7 +30785,7 @@
    "abbreviation": "SEA",
    "asset_code": "26",
    "city": "Seattle",
-   "csv_sha256": "a4d2ac5551cd6155525e8de7d97f15bdff02e66e1915fedbc69faa59ed014ea6",
+   "csv_sha256": "3c35e6be68c2b3aa9ceba45df6ac63300686f64c3fbaee66f8a558516b09594d",
    "game_id": "2025_18_SEA_SF",
    "jerseys_from_pbp": 25,
    "lineup": "nflverse depth_charts_2025.csv snapshot on or before 2026-01-03",
@@ -29092,10 +30806,11 @@
      "ratings_basis": {
       "forty": 4.85,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9413, "arm": 0.8929, "mobility": 0.2596, "read": 0.9386},
-      "q_value": 0.8894,
+      "q_aspects": {"accuracy": 0.9472, "arm": 0.9032, "mobility": 0.8, "read": 0.9448},
+      "q_value": 0.9,
       "season": 2025,
       "speed_source": "combine"
      },
@@ -29267,6 +30982,7 @@
      "position_source": "depth chart week 18: WR 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "WR",
       "q_aspects": {"hands": 0.998},
@@ -29317,10 +31033,11 @@
      "position_source": "depth chart week 18: WR 3",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "WR",
-      "q_aspects": {"hands": 0.8736},
-      "q_value": 0.8536,
+      "q_aspects": {"hands": 0.9143},
+      "q_value": 0.9,
       "season": 2025,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -29793,10 +31510,11 @@
      "ratings_basis": {
       "forty": 4.97,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "DE",
-      "q_aspects": {"rush": 0.9286, "stop": 0.9422},
-      "q_value": 0.9354,
+      "q_aspects": {"rush": 0.9309, "stop": 0.9445},
+      "q_value": 0.94,
       "season": 2025,
       "speed_source": "combine"
      },
@@ -29944,10 +31662,11 @@
      "ratings_basis": {
       "forty": 4.8,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.73, "rush": 0.8429, "stop": 0.84},
-      "q_value": 0.82,
+      "q_aspects": {"cover": 0.8, "rush": 0.8829, "stop": 0.88},
+      "q_value": 0.9,
       "season": 2025,
       "speed_source": "combine"
      },
@@ -30094,10 +31813,11 @@
      "ratings_basis": {
       "forty": 4.65,
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "ILB",
-      "q_aspects": {"cover": 0.9167, "rush": 0.7222, "stop": 0.8464},
-      "q_value": 0.8464,
+      "q_aspects": {"cover": 0.9635, "rush": 0.84, "stop": 0.8932},
+      "q_value": 0.94,
       "season": 2025,
       "speed_source": "combine"
      },
@@ -30168,10 +31888,11 @@
      "position_source": "depth chart week 18: LCB 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "CB",
-      "q_aspects": {"ball": 0.7915, "cover": 0.7868, "stop": 0.8642},
-      "q_value": 0.8208,
+      "q_aspects": {"ball": 0.8511, "cover": 0.8464, "stop": 0.9238},
+      "q_value": 0.94,
       "season": 2025,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -30394,10 +32115,11 @@
      "position_source": "depth chart week 18: P 1",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "P",
-      "q_aspects": {"placement": 0.6402, "power": 0.7608},
-      "q_value": 0.6622,
+      "q_aspects": {"placement": 0.9343, "power": 0.9621},
+      "q_value": 0.94,
       "season": 2025,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"
@@ -30423,7 +32145,7 @@
    "abbreviation": "PIT",
    "asset_code": "22",
    "city": "Pittsburgh",
-   "csv_sha256": "3e626ebfaae2e44f505c336b63c90d11817c3dc4b527e7879c23b128b4c0787d",
+   "csv_sha256": "91a595d872e8858581fda781957fba1a9e83583df86f06bea505b07d86d52754",
    "game_id": "2005_17_DET_PIT",
    "jerseys_from_pbp": 26,
    "lineup": {
@@ -30998,10 +32720,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "G",
       "q_aspects": {},
-      "q_value": 0.8527,
+      "q_value": 0.97,
       "season": 2005,
       "speed_source": "retail_anchor"
      },
@@ -31074,6 +32797,7 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player, minus 3 for age",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "C",
       "q_aspects": {},
@@ -31275,10 +32999,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "DT",
-      "q_aspects": {"rush": 0.4047, "stop": 0.6853},
-      "q_value": 0.6187,
+      "q_aspects": {"rush": 0.8, "stop": 0.8259},
+      "q_value": 0.9,
       "season": 2005,
       "speed_source": "retail_anchor"
      },
@@ -31351,10 +33076,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP2",
       "model": "m2-ratings-3",
       "position": "OLB",
-      "q_aspects": {"cover": 0.9253, "rush": 0.9598, "stop": 0.8247},
-      "q_value": 0.9224,
+      "q_aspects": {"cover": 0.9341, "rush": 0.9686, "stop": 0.84},
+      "q_value": 0.94,
       "season": 2005,
       "speed_source": "retail_anchor"
      },
@@ -31701,10 +33427,11 @@
      "ratings_basis": {
       "anchor": "retail 2004 physical ratings of the same player",
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "SS",
-      "q_aspects": {"ball": 0.8506, "cover": 0.8872, "stop": 0.8811},
-      "q_value": 0.8841,
+      "q_aspects": {"ball": 0.8935, "cover": 0.9301, "stop": 0.924},
+      "q_value": 0.97,
       "season": 2005,
       "speed_source": "retail_anchor"
      },
@@ -31804,7 +33531,7 @@
    "abbreviation": "TEN",
    "asset_code": "28",
    "city": "Tennessee",
-   "csv_sha256": "529afe209a3c7e2ad5d7451193729872d38d40c6b1af963b07ae8d510bd34944",
+   "csv_sha256": "d36f51291aa908221e01a16626e6c2ec2694adc0c90441db5215896cf67f466c",
    "game_id": "2019_17_TEN_HOU",
    "jerseys_from_pbp": 34,
    "lineup": {
@@ -31851,10 +33578,11 @@
      "ratings_basis": {
       "forty": 4.65,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "QB",
-      "q_aspects": {"accuracy": 0.9297, "arm": 0.893, "mobility": 0.7159, "read": 0.9113},
-      "q_value": 0.8474,
+      "q_aspects": {"accuracy": 0.9555, "arm": 0.9312, "mobility": 0.8, "read": 0.9434},
+      "q_value": 0.9,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -31901,10 +33629,11 @@
      "ratings_basis": {
       "forty": 4.54,
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "HB",
-      "q_aspects": {"receiving": 0.85, "security": 0.933},
-      "q_value": 0.9594,
+      "q_aspects": {"receiving": 0.87, "security": 0.9502},
+      "q_value": 0.97,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -32427,10 +34156,11 @@
      "ratings_basis": {
       "forty": 5.04,
       "has_stats": true,
+      "honor": "PB",
       "model": "m2-ratings-3",
       "position": "DE",
-      "q_aspects": {"rush": 0.7984, "stop": 0.8161},
-      "q_value": 0.8387,
+      "q_aspects": {"rush": 0.829, "stop": 0.8468},
+      "q_value": 0.9,
       "season": 2019,
       "speed_source": "combine"
      },
@@ -33156,10 +34886,11 @@
      "position_source": "depth chart week 17: P 2",
      "ratings_basis": {
       "has_stats": true,
+      "honor": "AP1",
       "model": "m2-ratings-3",
       "position": "P",
-      "q_aspects": {"placement": 0.9758, "power": 0.9769},
-      "q_value": 0.9595,
+      "q_aspects": {"placement": 0.9822, "power": 0.983},
+      "q_value": 0.97,
       "season": 2019,
       "speed_flag": "no 40-yard time found: speed from the position profile",
       "speed_source": "profile"

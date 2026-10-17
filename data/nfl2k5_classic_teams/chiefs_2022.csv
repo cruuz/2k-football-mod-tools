@@ -1,5 +1,5 @@
 pool,index,first,last,position,jersey,college,speed,agility,pass_arm_strength,stamina,kick_power,durability,strength,jumping,coverage,run_route,tackle,break_tackle,pass_accuracy,pass_read_coverage,catch,run_blocking,pass_blocking,hold_onto_ball,pass_rush,run_coverage,kick_accuracy,kicking_style,leadership,power_run_style,composure,scramble,consistency,aggressiveness,depth,height,weight,birth_date,years_pro,hand
-primary,0,Patrick,Mahomes,QB,15,Texas Tech,72,74,98,46,13,75,39,64,30,26,33,46,95,98,24,26,24,28,22,26,16,49,98,50,97,80,94,29,1,74,230,1995-09-17,6,Right
+primary,0,Patrick,Mahomes,QB,15,Texas Tech,72,74,98,46,13,75,39,64,30,26,33,46,95,98,24,26,24,28,22,26,16,49,98,50,97,86,94,29,1,74,230,1995-09-17,6,Right
 primary,1,Chad,Henne,QB,4,Michigan,65,71,55,25,12,73,32,56,30,25,32,31,57,55,23,23,23,34,20,27,15,49,43,50,53,42,36,25,2,75,222,1985-07-02,15,Right
 primary,2,Shane,Buechele,QB,12,,67,70,69,28,11,73,29,62,29,24,30,31,66,60,21,22,22,31,19,27,14,49,55,50,60,42,50,24,3,72,205,1998-01-08,2,Right
 primary,3,Jerick,McKinnon,HB,1,Georgia Southern,91,79,28,81,15,87,56,78,13,67,12,82,27,17,67,37,38,89,11,11,17,49,60,1,52,5,59,50,1,69,205,1992-05-03,9,Right
@@ -20,7 +20,7 @@ primary,17,Andrew,Wylie,T,77,Eastern Michigan,48,60,11,85,18,95,68,54,17,33,31,2
 primary,18,Darian,Kinnard,T,75,Kentucky,46,63,11,63,15,82,66,52,11,27,23,14,9,9,19,56,57,9,19,28,12,49,32,99,39,5,35,26,3,77,345,1999-12-29,1,Right
 primary,19,Prince Tega,Wanogho,T,70,Auburn,48,57,12,67,15,86,69,54,14,31,25,25,10,11,25,68,69,11,20,27,14,49,41,99,41,5,40,24,4,77,310,1997-11-22,3,Right
 primary,20,Lucas,Niang,T,67,Texas Christian,48,58,12,65,15,85,66,53,12,29,26,18,9,9,21,65,64,9,24,30,13,49,37,99,35,5,33,24,5,78,328,1998-08-19,3,Right
-primary,21,Joe,Thuney,G,62,North Carolina St,64,58,12,79,21,94,67,50,16,27,28,20,10,11,21,80,80,8,25,27,18,49,60,99,63,5,65,41,1,77,308,1992-11-18,7,Right
+primary,21,Joe,Thuney,G,62,North Carolina St,64,54,13,85,23,96,69,52,18,29,30,23,10,10,24,90,88,9,29,30,21,49,70,99,72,5,70,40,1,77,308,1992-11-18,7,Right
 primary,22,Trey,Smith,G,65,Tennessee,45,58,12,80,21,95,68,51,17,28,29,21,10,11,23,81,81,9,26,28,19,49,63,99,64,5,65,41,2,78,325,1999-06-16,2,Right
 primary,23,Nick,Allegretti,G,73,Illinois,43,56,11,73,18,83,68,50,18,27,27,26,11,11,24,68,67,9,25,27,16,49,44,99,44,5,41,22,3,76,320,1996-04-21,4,Right
 primary,24,Creed,Humphrey,C,52,Oklahoma,56,58,11,93,24,96,65,50,26,21,30,18,10,10,24,91,88,7,33,34,21,49,74,99,75,5,80,52,1,76,316,1999-06-28,2,Right
@@ -51,4 +51,4 @@ primary,48,Bryan,Cook,FS,6,Cincinnati,85,81,10,83,19,79,44,71,72,13,69,12,11,10,
 primary,49,Justin,Reid,SS,20,Stanford,92,79,10,84,18,78,59,79,82,22,84,8,11,11,29,25,29,42,57,78,18,49,71,1,57,5,78,70,1,73,204,1997-02-15,5,Right
 primary,50,Deon,Bush,SS,26,,80,84,10,84,21,82,54,72,67,13,59,12,11,10,18,28,30,41,44,55,22,49,45,1,37,5,46,53,2,72,200,1993-08-14,7,Right
 primary,51,Harrison,Butker,K,7,Georgia Tech,38,43,11,42,83,80,32,38,21,21,30,19,11,13,24,25,22,30,18,15,71,99,48,50,65,5,63,30,1,76,205,1995-07-14,6,Right
-primary,52,Tommy,Townsend,P,5,Florida,74,49,35,66,89,90,38,55,26,27,48,27,38,21,28,24,19,26,24,15,85,1,63,50,74,5,76,26,1,73,176,1996-11-12,3,Right
+primary,52,Tommy,Townsend,P,5,Florida,74,44,37,47,94,93,34,40,17,19,36,18,37,23,12,14,11,27,11,10,93,1,60,50,87,5,84,25,1,73,176,1996-11-12,3,Right
