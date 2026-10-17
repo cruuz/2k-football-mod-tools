@@ -550,5 +550,11 @@
   "read_only",
   464,
   16
+ ],
+ [
+  "nfl2k5_classic_teams",
+  "read_only",
+  240,
+  16
  ]
 ]

@@ -62,7 +62,7 @@ class PlannerTests(unittest.TestCase):
         report = space.plan(requests)
         self.assertEqual({tuple(row) for row in requests}, set(space.dormant_union()))
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [16, 0, 304])  # b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
+                         [16, 0, 64])  # b775-ct1: the classic teams' 240 RO; b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
         # e2 adds 3,584 RX, 16 RW and 2,176 RO bytes. The old fixture also
         # reserved the nonexistent nfl2k5_guardian_cap_overlay (2,048 RX,
         # 336 RW), in addition to the real nfl2k5_guardian_overlay owner.

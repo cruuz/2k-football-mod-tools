@@ -4,8 +4,8 @@
  "teams": {
   "bears_2006": {
    "kit": "modern",
-   "kit_quality": "close",
-   "kit_note": "Current kit is the same design (navy home); the 2006 road paired the white jersey with navy pants, GUD 2006_CHI_3/1.",
+   "kit_quality": "match",
+   "kit_note": "The current Bears kit is the same design: navy over white pants at home, white over navy pants on the road (GUD 2006_CHI_3/1); only sock striping differs.",
    "stadium": "franchise",
    "stadium_note": ""
   },
@@ -26,7 +26,7 @@
   "browns_2020": {
    "kit": "modern",
    "kit_quality": "match",
-   "kit_note": "The 2020 redesign is the current kit, GUD 2020_CLE_H/C.",
+   "kit_note": "The 2020 redesign is the current kit (GUD 2020_CLE_H/C). The most-worn 2020 home look paired the brown jersey with orange pants; the kit's home pants are white.",
    "stadium": "franchise",
    "stadium_note": ""
   },
@@ -84,8 +84,8 @@
     "prefer": 9,
     "fallback": "retail"
    },
-   "kit_quality": "match with ek1 style 9",
-   "kit_note": "ek1's 2005-2016 Giants kit (style 9: home = retail 18H8 blue over grey pants, road white with red numerals and grey pants, GUD 2016_NYG_3/4). Without ek1's kit on the disc the retail 2004 look is used.",
+   "kit_quality": "close",
+   "kit_note": "ek1's 2005-2016 Giants kit (style 9: road white with red numerals and grey pants, GUD 2016_NYG_4; home = the retail 18H8 blue over grey pants, while GUD 2016_NYG_3 shows white home pants). Without ek1's kit on the disc the retail 2004 look is used.",
    "stadium": "franchise",
    "stadium_note": ""
   },

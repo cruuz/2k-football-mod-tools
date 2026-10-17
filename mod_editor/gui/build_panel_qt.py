@@ -231,6 +231,7 @@ ANNIVERSARY_DEPENDENCIES = {
     "espn25_named_previews": ("espn25_more_moments",),
     "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
     "historic_rosters_2026": ("historic_teams_quick_game",),
+    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
 }
 
 
@@ -1082,6 +1083,10 @@ class BuildPanel(QWidget):
         self.historic_rosters_2026_check = self._option(
             r, "historic_rosters_2026", historic_seasons.CAPTION,
             historic_seasons.HELP_TEXT, needs_image=True)
+        from mod_editor.core import nfl2k5_classic_teams as classic_teams  # b775-ct1
+        self.classic_teams_check = self._option(
+            r, "classic_teams", classic_teams.UI_LABEL, classic_teams.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -2318,6 +2323,7 @@ class BuildPanel(QWidget):
         gate(self.position_pools_keep_olb_check, "position_pools_keep_olb", needs_image=True)
         gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
         gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
+        gate(self.classic_teams_check, "classic_teams", needs_image=True)  # b775-ct1
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -2552,6 +2558,7 @@ class BuildPanel(QWidget):
             "custom_intro": self.custom_intro_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "historic_rosters_2026": self.historic_rosters_2026_check,
+            "classic_teams": self.classic_teams_check,  # b775-ct1
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -2630,6 +2637,7 @@ class BuildPanel(QWidget):
             position_pools_keep_olb=False,
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             historic_rosters_2026=self.historic_rosters_2026_check.isChecked(),
+            classic_teams=self.classic_teams_check.isChecked(),  # b775-ct1
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
