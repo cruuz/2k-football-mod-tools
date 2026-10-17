@@ -97,6 +97,8 @@ class DataTests(unittest.TestCase):
     def test_kits_reuse_existing_styles_and_stadiums_are_franchise_rows(self):
         for key, row in self.data.presentation.items():
             self.assertIn(row["kit_quality"], ("match", "close", "stand-in"))
+            if isinstance(row["kit"], dict):
+                self.assertIn(row["kit"]["fallback"], ("retail", "modern"))
             self.assertEqual(row["stadium"], "franchise")
 
 

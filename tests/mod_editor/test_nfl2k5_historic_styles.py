@@ -57,7 +57,8 @@ class RetailTests(unittest.TestCase):
         # retail art past the tables (06: 6, 7; 19: 7) plus the b775-ek1 moment kits' own new indexes
         self.assertEqual(hs.taken_styles(self.src, self.styles),
                          {"06": {6, 7}, "19": {7}, "07": {10}, "08": {8, 9}, "13": {6}, "18": {9}, "20": {6},
-                          "23": {13}, "26": {6}, "29": {10}, "30": {5}})
+                          "23": {13}, "26": {6}, "29": {10}, "30": {5, 14},
+                          "28": {14}})  # b775-ct1: the classic Titans and Browns kits are reserved too
 
     def test_aggregate_records_match_their_slots(self):
         for aggregate in hs.AGGREGATES:
