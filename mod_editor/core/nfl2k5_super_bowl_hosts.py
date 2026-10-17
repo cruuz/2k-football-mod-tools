@@ -38,7 +38,12 @@ For each host whose source row already names the real building (its model or 202
 * the executable's code for that season index points at the new code (6 bytes of ``.data`` each, the section digest
   recomputed). The new codes keep ``4`` as their second character, so the Super Bowl team packages still load.
 
-The stadium dressing (walls, boards, banners) is the host building's own as built. EXPERIMENTAL and UNWITNESSED in game.
+* the host club's own stadium surfaces (Mercedes-Benz: field wall, ribbons, Halo graphics, column, crowd banners;
+  Allegiant: field wall, ribbon, mesh band, board panel, crowd banners; Nissan: Titans wall panels, exit banner, crowd
+  banners) carry authored Super Bowl dressing (the event mark, SUPER BOWL and the numerals, the NFL shield, the host
+  city), drawn by tools/nfl2k5_super_bowl_marks_art.py. Sponsor boards and permanent venue signs keep their bytes.
+
+EXPERIMENTAL and UNWITNESSED in game.
 """
 from __future__ import annotations
 
@@ -143,6 +148,67 @@ def super_bowl_field(bundle, host, marks):
     require(back == bytes(out), f"{host['slot']}: Super Bowl field read-back differs")
     require("era_midlogo" in {m["name"] for m in rec2["materials"]}, f"{host['slot']}: midfield not protected")
     return after, dict(detail, flanks=flanks, field_before=sha(before), field_after=sha(span))
+
+
+# --- the stadium dressing ------------------------------------------------------------------------------------------
+
+def dressing(code):
+    """{material: (RGBA, alpha mode)} of a host's authored Super Bowl surfaces (pinned in the field marks manifest)."""
+    from . import nfl2k5_super_bowl_fields as sbf
+    from PIL import Image
+    import numpy as np
+    out = {}
+    for material, item in sbf.manifest().get("host_dressing", {}).get(code, {}).items():
+        path = (sbf.ART / item["file"]).resolve()
+        require(path.is_relative_to(sbf.ART.resolve()), "host dressing path escapes its folder")
+        raw = path.read_bytes()
+        require(len(raw) < 1024 * 1024 and sha(raw) == item["sha256"], f"{item['file']}: dressing hash differs")
+        with Image.open(path) as im:
+            require(list(im.size) == item["size"], f"{item['file']}: dressing dimensions differ")
+            out[material] = (np.asarray(im.convert("RGBA")).copy(), item["alpha"])
+    return out
+
+
+def dress_stadium(bundle, host):
+    """(bundle, receipt): the host club's own surfaces (walls, ribbons, the halo or boards, the crowd's banners) carry
+    the Super Bowl's dressing; a surface whose size differs from the authored art keeps its bytes and is reported."""
+    from . import nfl2k5_espn25_fields as fields
+    from . import nfl2k5_modern_metlife as mm
+    from . import nfl2k5_modern_venues_2026 as mv
+    from . import nfl2k5_super_bowl_walls as walls
+    import numpy as np
+    art = dressing(host["code"])
+    if not art:
+        return bundle, dict(painted=[], kept=[])
+    chunk, rec, decoded = walls._stadium_chunk(bundle)
+    rows, materials = mv.p8_rows(rec), mv.rows_by_material(rec)
+    out = bytearray(decoded)
+    painted, kept, textures = [], [], []
+    for material, (rgba, alpha) in sorted(art.items()):
+        if material not in materials:
+            kept.append(dict(material=material, reason="absent"))
+            continue
+        r = rows[materials[material]]
+        if (int(r["width"]), int(r["height"])) != (rgba.shape[1], rgba.shape[0]) or materials[material] in textures:
+            kept.append(dict(material=material, reason="size or shared texture differs"))
+            continue
+        target = rgba.copy()
+        if alpha == "source":
+            current = mv.read_texture(decoded, rec, r)
+            target[..., 3] = np.where(current[..., 3] >= 128, 255, 0).astype(np.uint8)
+        else:
+            target[..., 3] = 255
+        mm.write_p8(out, rec["system_bytes"], r, target, 256)
+        textures.append(materials[material])
+        painted.append(material)
+    if not textures:
+        return bundle, dict(painted=[], kept=kept)
+    span, detail = fields._seal_field(bundle, chunk, rec, decoded, out, textures)
+    before = mm.scene_span(bundle, chunk)
+    after = bundle[:chunk.offset] + span + bundle[chunk.offset + len(before):]
+    _c, _r, back = walls._stadium_chunk(after)
+    require(back == bytes(out), f"{host['code']}: stadium dressing read-back differs")
+    return after, dict(painted=painted, kept=kept, stadium_after=detail["field"])
 
 
 # --- the ROST rows --------------------------------------------------------------------------------------------------
@@ -351,9 +417,11 @@ def apply_to_image(path, *, user_art=None, progress=None, xbe=None):
                 name = f"{host['code']}{variant}.iff"
                 say(f"Super Bowl {host['event']} at {host['display']}: {name}", k + 1, len(VARIANTS))
                 copy, receipt = super_bowl_field(built.get(f"{host['source']}{variant}.iff"), host, marks)
+                copy, dressed = dress_stadium(copy, host)
+                receipt["dressing"] = dressed
                 resources[name] = copy
                 fields_receipt.append(dict(name=name, source=f"{host['source']}{variant}.iff", size=len(copy),
-                                           sha256=sha(copy), flanks=receipt["flanks"]))
+                                           sha256=sha(copy), flanks=receipt["flanks"], dressing=receipt["dressing"]))
     after_rost, rost_receipt = rost_hosts(rost, hosts)
     if after_rost != rost:
         with ml._outer_image()(str(path), writable=True) as image:

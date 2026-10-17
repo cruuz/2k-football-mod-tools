@@ -59,14 +59,14 @@ class ModernArtReleaseTests(unittest.TestCase):
     def test_every_modern_png_is_authored_and_catalogued(self):
         """pr2 leaves 595 coach, fan and official PNGs; me1 adds 122 event walls and one ball; sb2 adds 101 authored
         ``.marks.png`` slot layers to the walls (223 wall PNGs in all); fn1 adds the block yard numerals atlas (820 files);
-        sb1 adds 23 authored Super Bowl field marks (843 files).
+        sb1 adds 23 authored Super Bowl field marks and 19 franchise host surfaces (862 files).
 
         Portrait photos remain external and shoe/clipboard pixels come from the user's disc.
         """
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 843)
+        self.assertEqual(len(document["files"]), 862)
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):

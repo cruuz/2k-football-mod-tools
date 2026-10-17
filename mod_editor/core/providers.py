@@ -517,7 +517,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_espn25_fields.py": "b69cb10713f8f36ce6453754386a372e80cc4e1fd6735a6e1291991cf445dc2e",
         "mod_editor/core/nfl2k5_super_bowl_walls.py": "55dce3e1e700d56a2895e5f206503700cb246dfeb1cfdf866240e5e04f9d8917",
         "mod_editor/core/nfl2k5_super_bowl_fields.py": "dc0f9488b0feffb30ebf934573c606e973ba1980c444b7a1cd8c1eb71005570d",
-        "mod_editor/core/nfl2k5_super_bowl_hosts.py": "03cc806701466200fd1c637d5ec034a2d7be0043b469de181a3c520a7eb19355",
+        "mod_editor/core/nfl2k5_super_bowl_hosts.py": "2048bb3aa21ff53150288bf6d4484405ffffadddeebac258789b60f42564f31f",
         "mod_editor/core/nfl2k5_era_ball.py": "f2996e9e0d8080d6796ba4e1a5325fc3101747ad4f168687191fe11b4bafc33f",
         "mod_editor/core/exact_math.py": "31b977deeda09cbb68dcde7561ea54c9ebfad2cb4ff74f6601d681e3f4d68564",
         "mod_editor/core/nfl2k5_allegiant_model.py": "fe092ff909859b0041c6e47cdedb85c15a206bc4a430a2a8a49bfc66f7fe8993",

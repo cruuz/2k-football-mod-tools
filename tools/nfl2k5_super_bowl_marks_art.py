@@ -672,6 +672,149 @@ EVENT_MARKS = {
 }
 
 
+# --- franchise host dressing (the host building's club surfaces become Super Bowl surfaces) ------------------------
+
+NAVY_SB = (12, 28, 66)
+#: host code -> (event, city, {material: (width, height, layout)}); sizes and banner cloth boxes measured on the
+#: finished host bundles (Mercedes-Benz s01, Allegiant s20, Nissan s28); no pixel of them is read here
+BANNER_BOXES = {
+    ("h42", "banner_home_team"): [(5, 2, 123, 62), (5, 66, 123, 126)],
+    ("h42", "banner_away_team"): [(5, 2, 123, 62), (5, 66, 123, 126)],
+    ("h42", "banner_home_player"): [(5, 2, 123, 62), (133, 2, 252, 62), (5, 66, 123, 126), (133, 66, 251, 126)],
+    ("h43", "banner_home_team"): [(5, 2, 123, 61), (5, 66, 123, 126)],
+    ("h43", "banner_away_team"): [(5, 2, 123, 62), (5, 66, 123, 126)],
+    ("h43", "banner_home_player"): [(5, 2, 123, 62), (133, 2, 252, 62), (2, 70, 254, 125)],
+    ("h41", "banner_home_team"): [(4, 1, 125, 62), (4, 65, 125, 126)],
+    ("h41", "banner_away_team"): [(4, 1, 125, 62), (4, 65, 125, 126)],
+    ("h41", "banner_home_player"): [(4, 1, 125, 62), (132, 1, 253, 62), (4, 65, 125, 126), (132, 65, 253, 126)],
+}
+HOST_SURFACES = {
+    "h42": ("LXII", "ATLANTA", {"banner_home_team": (128, 128, "banner"), "banner_away_team": (128, 128, "banner"),
+                                "banner_home_player": (256, 128, "banner"), "mb_wall": (256, 32, "wall"),
+                                "LIGHT_mb_ribbon": (256, 64, "ribbon"), "LIGHT_mb_halo": (256, 128, "halo"),
+                                "LIGHT_mb_column": (32, 128, "column")}),
+    "h43": ("LXIII", "LAS VEGAS", {"banner_home_team": (128, 128, "banner"), "banner_away_team": (128, 128, "banner"),
+                                   "banner_home_player": (256, 128, "banner"), "ag_wall": (256, 32, "wall"),
+                                   "LIGHT_ag_ribbon": (256, 64, "ribbon"), "LIGHT_ag_mesh": (256, 64, "ribbon"),
+                                   "LIGHT_ag_board_panel": (128, 128, "board")}),
+    "h41": ("LXIV", "NASHVILLE", {"banner_home_team": (128, 128, "banner"), "banner_away_team": (128, 128, "banner"),
+                                  "banner_home_player": (256, 128, "banner"), "wall05": (256, 256, "bands"),
+                                  "exitbanner": (128, 128, "plate")}),
+}
+HOST_SCALE = 4
+
+
+def _shield_img():
+    with Image.open(ROOT / "data/nfl2k5_espn25_fields/row45/center_logo.png") as im:
+        return bbox_crop(im.convert("RGBA"), 0)
+
+
+def _type(text, colour, px=300, path=wa.BLACK, tracking=0.06):
+    return solid(text_mask_safe(text, px, path, tracking), colour)
+
+
+def text_mask_safe(text, px, path, tracking):
+    return wa.text_mask(text, px, path, tracking)
+
+
+def _row_items(W, H, items, gap):
+    """Lay RGBA items left to right, each fitted to the band height, repeated to fill W; RGBA (W, H)."""
+    out = rgba((W, H))
+    fitted = [wa.fit(im, W, H * frac) for im, frac in items]
+    total = sum(im.width for im in fitted) + gap * len(fitted)
+    if total > W:  # the whole sequence shows at least once across the surface
+        f = W / total
+        fitted = [im.resize((max(1, int(im.width * f)), max(1, int(im.height * f))), Image.LANCZOS) for im in fitted]
+        gap *= f
+    x = gap / 2
+    k = 0
+    while x < W:
+        im = fitted[k % len(fitted)]
+        out.alpha_composite(im, (int(x), int((H - im.height) / 2)))
+        x += im.width + gap
+        k += 1
+    return out
+
+
+def _band(W, H, event, city, mark, shield, light=False):
+    bg = gradient((W, H), [(0, (226, 230, 236)), (1, (172, 178, 190))]) if light else \
+        gradient((W, H), [(0, (22, 44, 92)), (1, NAVY_SB)])
+    ink = NAVY_SB if light else WHITE
+    out = bg.copy()
+    trim = max(2, H // 14)
+    out.alpha_composite(solid(poly((W, H), [(0, 0), (W, 0), (W, trim), (0, trim)]), (200, 206, 216)))
+    out.alpha_composite(solid(poly((W, H), [(0, H - trim), (W, H - trim), (W, H), (0, H)]), (200, 206, 216)))
+    items = [(mark, 0.84), (_type("SUPER BOWL " + event, ink), 0.42), (shield, 0.70), (_type(city, ink), 0.42)]
+    out.alpha_composite(_row_items(W, H, items, H * 0.35))
+    return out
+
+
+def _cloth(w, h, k, event, city, mark, shield):
+    styles = [((22, 44, 92), NAVY_SB, None), ((250, 250, 252), (220, 224, 232), NAVY_SB),
+              ((214, 218, 226), (166, 172, 184), NAVY_SB)]
+    top, bottom, ink = styles[k % 3]
+    out = gradient((w, h), [(0, top), (1, bottom)])
+    shade = wa.cloth_shade(w, h, seed=k, folds=3)
+    out = wa.apply_shade(out, shade)
+    if k % 3 == 0:
+        wa.paste_c(out, wa.fit(mark, w * 0.86, h * 0.84), w / 2, h / 2)
+    elif k % 3 == 1:
+        sb = _type("SUPER BOWL", ink)
+        num = _type(event, ink, path=wa.BLACK, tracking=0.02)
+        wa.paste_c(out, wa.fit(sb, w * 0.80, h * 0.26), w / 2, h * 0.27)
+        wa.paste_c(out, wa.fit(num, w * 0.80, h * 0.46), w / 2, h * 0.66)
+    else:
+        wa.paste_c(out, wa.fit(shield, w * 0.30, h * 0.70), w * 0.20, h / 2)
+        wa.paste_c(out, wa.fit(_type(city, ink), w * 0.62, h * 0.40), w * 0.62, h / 2)
+    return out
+
+
+def host_surface(code, material, event, city, mark, shield):
+    w, h, layout = HOST_SURFACES[code][2][material]
+    S = HOST_SCALE
+    W, H = w * S, h * S
+    if layout == "banner":
+        out = rgba((W, H))
+        for k, (x0, y0, x1, y1) in enumerate(BANNER_BOXES[(code, material)]):
+            piece = _cloth((x1 - x0) * S, (y1 - y0) * S, k + (1 if material == "banner_away_team" else 0), event, city,
+                           mark, shield)
+            out.alpha_composite(piece, (x0 * S, y0 * S))
+    elif layout in ("wall", "ribbon"):
+        out = _band(W, H, event, city, mark, shield)
+    elif layout == "halo":
+        out = rgba((W, H))
+        out.alpha_composite(_band(W, H // 2, event, city, mark, shield), (0, 0))
+        out.alpha_composite(_band(W, H // 2, event, city, mark, shield, light=True), (0, H // 2))
+    elif layout == "bands":
+        out = rgba((W, H))
+        for k in range(4):
+            out.alpha_composite(_band(W, H // 4, event, city, mark, shield, light=bool(k % 2)), (0, k * H // 4))
+    elif layout == "column":
+        out = gradient((W, H), [(0, (22, 44, 92)), (1, NAVY_SB)])
+        wa.paste_c(out, wa.fit(shield, W * 0.8, W * 0.9), W / 2, W * 0.6)
+        t = _type("SUPER BOWL " + event, WHITE).rotate(90, expand=True)
+        wa.paste_c(out, wa.fit(t, W * 0.66, H * 0.78), W / 2, H * 0.58)
+    elif layout == "board":
+        out = gradient((W, H), [(0, (30, 32, 38)), (1, (10, 10, 14))])
+        panel = gradient((W, int(H * 0.42)), [(0, (226, 230, 236)), (1, (160, 166, 178))])
+        out.alpha_composite(panel, (0, int(H * 0.58)))
+        wa.paste_c(out, wa.fit(mark, W * 0.80, H * 0.48), W / 2, H * 0.30)
+        wa.paste_c(out, wa.fit(_type("SUPER BOWL " + event, NAVY_SB), W * 0.84, H * 0.20), W / 2, H * 0.79)
+    elif layout == "plate":
+        out = gradient((W, H), [(0, (22, 44, 92)), (1, NAVY_SB)])
+        wa.paste_c(out, wa.fit(mark, W * 0.84, H * 0.56), W / 2, H * 0.38)
+        wa.paste_c(out, wa.fit(_type("SUPER BOWL " + event, WHITE), W * 0.86, H * 0.16), W / 2, H * 0.76)
+        wa.paste_c(out, wa.fit(_type(city, (200, 206, 216)), W * 0.70, H * 0.11), W / 2, H * 0.90)
+    else:
+        raise ValueError(layout)
+    out = out.resize((w, h), Image.LANCZOS)
+    if layout != "banner":
+        a = np.asarray(out).copy()
+        a[..., 3] = 255
+        out = Image.fromarray(a, "RGBA")
+    return out, ("source" if layout == "banner" else "opaque")
+
+
 def team_mark(row, code, season):
     """The club's mark for a team flank: the mod's own logo where it is the season's, else a club roundel."""
     if (row, code) not in wa.PERIOD_LOGO_GAPS:
@@ -708,8 +851,10 @@ def build():
         files[rel] = png_bytes(im)
         marks[key] = dict(file=rel, size=list(im.size), sha256=hashlib.sha256(files[rel]).hexdigest())
 
+    drawn = {}
     for key, draw in EVENT_MARKS.items():
-        add(key, draw())
+        drawn[key] = draw()
+        add(key, drawn[key])
     rows = []
     for row, (event, season, kind, yard, box, teams) in sorted(ROWS.items()):
         entry = dict(row=row, event=event, season=season,
@@ -725,6 +870,18 @@ def build():
         "current-system marks for franchise seasons whose logo is not revealed. The user's super_bowl/<NUMERALS>.png "
         "and teams/<CODE>[_<SEASON>].png replace them at build time."),
         rows=rows, franchise_generic=list(FRANCHISE_GENERIC), marks=dict(sorted(marks.items())))
+    shield = _shield_img()
+    hosts = {}
+    for code, (event, city, surfaces) in HOST_SURFACES.items():
+        mark = bbox_crop(Image.open(__import__("io").BytesIO(files[f"marks/{event}.png"])).convert("RGBA"), 0)
+        hosts[code] = {}
+        for material in surfaces:
+            im, alpha = host_surface(code, material, event, city, mark, shield)
+            rel = f"hosts/{code}/{material}.png"
+            files[rel] = png_bytes(im)
+            hosts[code][material] = dict(file=rel, size=list(im.size), alpha=alpha,
+                                         sha256=hashlib.sha256(files[rel]).hexdigest())
+    doc["host_dressing"] = hosts
     return files, doc
 
 

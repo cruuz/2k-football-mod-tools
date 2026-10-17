@@ -238,6 +238,25 @@ class Hosts(unittest.TestCase):
         again, _ = hosts.super_bowl_field(self.s01, hosts.HOSTS[0], walls.Marks(None, None))
         self.assertEqual(again, copy)
 
+    def test_host_dressing(self):
+        from mod_editor.core import nfl2k5_super_bowl_walls as w
+        from mod_editor.core import nfl2k5_modern_venues_2026 as mv
+        copy, receipt = hosts.dress_stadium(self.s01, hosts.HOSTS[0])
+        self.assertEqual(sorted(receipt['painted']), sorted(hosts.dressing('h42')))
+        self.assertEqual(receipt['kept'], [])
+        _c, rec, dec = w._stadium_chunk(copy)
+        _c0, rec0, dec0 = w._stadium_chunk(self.s01)
+        rows, mats = mv.p8_rows(rec), mv.rows_by_material(rec)
+        rows0, mats0 = mv.p8_rows(rec0), mv.rows_by_material(rec0)
+        for material in ('jumbo_tron', 'mb_star', 'banner_corp', 'mb_seat_front'):
+            if material in mats:
+                np.testing.assert_array_equal(mv.read_texture(dec, rec, rows[mats[material]]),
+                                              mv.read_texture(dec0, rec0, rows0[mats0[material]]))
+        # the crowd banners keep their cloth cut-outs
+        a = mv.read_texture(dec, rec, rows[mats['banner_home_team']])[..., 3] >= 128
+        b = mv.read_texture(dec0, rec0, rows0[mats0['banner_home_team']])[..., 3] >= 128
+        np.testing.assert_array_equal(a, b)
+
     def test_rost_rows(self):
         from mod_editor.core import nfl2k5_roster_records as rr
         body = self.rost[rr.RESOURCE_HEADER_SIZE:]

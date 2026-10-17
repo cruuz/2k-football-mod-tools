@@ -427,5 +427,184 @@
    ],
    "sha256": "854cb6755e02baba4648c1a427a233bbe077148ac98277b7d72334d67719603b"
   }
+ },
+ "host_dressing": {
+  "h42": {
+   "banner_home_team": {
+    "file": "hosts/h42/banner_home_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "4223c8b2cf1aeb09fb42b9d625b9758b95bc02a5264fb42a88653669e2e4449a"
+   },
+   "banner_away_team": {
+    "file": "hosts/h42/banner_away_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "f6db2c7dbf79520ab0d910866e0e86e8eb01ddaa512cf663c7cb2be66484d78f"
+   },
+   "banner_home_player": {
+    "file": "hosts/h42/banner_home_player.png",
+    "size": [
+     256,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "113a0a64b26bb3391ad0707612e18dac77948bba76581c8b6d922947e4b32e3b"
+   },
+   "mb_wall": {
+    "file": "hosts/h42/mb_wall.png",
+    "size": [
+     256,
+     32
+    ],
+    "alpha": "opaque",
+    "sha256": "37cebc5538c35beba31add48fc6be8cbf707c68e78d14d7314d959bce2ccbc7d"
+   },
+   "LIGHT_mb_ribbon": {
+    "file": "hosts/h42/LIGHT_mb_ribbon.png",
+    "size": [
+     256,
+     64
+    ],
+    "alpha": "opaque",
+    "sha256": "9f7b796366b70d747e6b09ac5a18131d9a24cb79a640bf1959440b222cb3742f"
+   },
+   "LIGHT_mb_halo": {
+    "file": "hosts/h42/LIGHT_mb_halo.png",
+    "size": [
+     256,
+     128
+    ],
+    "alpha": "opaque",
+    "sha256": "4c055e28080e2db2a61d95eb6cc636ec36b2a84c7a454ec79de061a13976d39e"
+   },
+   "LIGHT_mb_column": {
+    "file": "hosts/h42/LIGHT_mb_column.png",
+    "size": [
+     32,
+     128
+    ],
+    "alpha": "opaque",
+    "sha256": "2c7171ac1ccb6a5751dd97d2a3fb311aad1c134088d98463b6ed2bcf251b0a28"
+   }
+  },
+  "h43": {
+   "banner_home_team": {
+    "file": "hosts/h43/banner_home_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "d5c906fa284c90616e6c678935058391ec5e7b7d8b8078e86cd4a932f1929806"
+   },
+   "banner_away_team": {
+    "file": "hosts/h43/banner_away_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "aa325d48b28959f18d4e8402dcb22e2df5fbe216f0167ded6dd3f9abf36f95d7"
+   },
+   "banner_home_player": {
+    "file": "hosts/h43/banner_home_player.png",
+    "size": [
+     256,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "a2c38f4d04d062cf3e8ea918dbac59bee6a6f8097de23bc46ca03e9de044f82a"
+   },
+   "ag_wall": {
+    "file": "hosts/h43/ag_wall.png",
+    "size": [
+     256,
+     32
+    ],
+    "alpha": "opaque",
+    "sha256": "a5696fbe19a19ffe834e6ef52158f0a6b9b6ee3fee94cf42346ae12fc42b04d0"
+   },
+   "LIGHT_ag_ribbon": {
+    "file": "hosts/h43/LIGHT_ag_ribbon.png",
+    "size": [
+     256,
+     64
+    ],
+    "alpha": "opaque",
+    "sha256": "8a84dcca2e45e288257418a06ce490493b74ef2189ff3190c7d47f5936469fc5"
+   },
+   "LIGHT_ag_mesh": {
+    "file": "hosts/h43/LIGHT_ag_mesh.png",
+    "size": [
+     256,
+     64
+    ],
+    "alpha": "opaque",
+    "sha256": "8a84dcca2e45e288257418a06ce490493b74ef2189ff3190c7d47f5936469fc5"
+   },
+   "LIGHT_ag_board_panel": {
+    "file": "hosts/h43/LIGHT_ag_board_panel.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "opaque",
+    "sha256": "fb0ac2f00787ea3474a86a1d964d686597e63f2575c86f4c1cac325fc5e39031"
+   }
+  },
+  "h41": {
+   "banner_home_team": {
+    "file": "hosts/h41/banner_home_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "a61606f33ed3ff0ae00741f5e0007b160ae3f2c499c50c922a0235c50cdb4224"
+   },
+   "banner_away_team": {
+    "file": "hosts/h41/banner_away_team.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "460618bcbc119f33df223c42bb827b5dcd0293867e653710747f3aa4cd511e31"
+   },
+   "banner_home_player": {
+    "file": "hosts/h41/banner_home_player.png",
+    "size": [
+     256,
+     128
+    ],
+    "alpha": "source",
+    "sha256": "64d3e6591dc1ae8fc7d6eb56b9876719595a82da726e11282f04865b0591b416"
+   },
+   "wall05": {
+    "file": "hosts/h41/wall05.png",
+    "size": [
+     256,
+     256
+    ],
+    "alpha": "opaque",
+    "sha256": "0db00a156f0478bf3d96b8fcb88229a54dd3e35f62f1c3c4dd77babdc6022d7a"
+   },
+   "exitbanner": {
+    "file": "hosts/h41/exitbanner.png",
+    "size": [
+     128,
+     128
+    ],
+    "alpha": "opaque",
+    "sha256": "2f3d031000ced2ce7e8722792148a9e0a83d61128baa9e246c37294bf41268a6"
+   }
+  }
  }
 }
