@@ -1,0 +1,543 @@
+{
+ "schema": "nfl2k5_moment_kits/v1",
+ "about": "ek1 (Noah 10/17): every 25th Anniversary team wears the uniform it wore in that game. Where an existing kit matches the game (88 of 102 sides) the moment keeps or switches to it; where none does, a NEW style index is added for the franchise (never a replacement): two kit packages composed from existing kits of the build copy (whole kits, colour-swapped H/A sets, or chunk mixes), nine aggregate card members renamed from existing ones, and a year pair in the moment's team file only, so modern Team Select never offers the new index. References: Gridiron Uniform Database per-game graphics and Super Bowl XLII broadcast frames, kept in ek1 scratch, never shipped.",
+ "free_index_rule": "a new style is a free index: no kit package and no aggregate member with that (asset code, style) on the build copy",
+ "kits": [
+  {
+   "id": "K1",
+   "team": "NYG",
+   "code": "18",
+   "style": 9,
+   "label": [
+    2007,
+    2011
+   ],
+   "look": "2007-2011 road: white jersey, red numerals with no outline, red name, red thin/thick/thin sleeve stripes, grey pants with blue-red-blue stripe, red socks, Reebok-era blue ny helmet; home is the retail 2000-2011 blue over grey",
+   "sides": {
+    "H": {
+     "base": "18H8"
+    },
+    "A": {
+     "base": "18A8",
+     "chunks": {
+      "1": "18A0",
+      "3": "18A0",
+      "4": "18A0",
+      "13-22": "18A0",
+      "33-44": "18A0",
+      "45": "18A0",
+      "46": "18A0",
+      "48": "18A0"
+     },
+     "art": [
+      {
+       "chunk": 3,
+       "kind": "tset",
+       "texture": "sleeve00",
+       "size": [
+        128,
+        128,
+        5
+       ],
+       "note": "remove the two 2026 maker marks above the stripes (2007 sleeves carry none)",
+       "ops": [
+        {
+         "op": "poly",
+         "color": "#FFFFFF",
+         "points": [
+          [
+           56,
+           0
+          ],
+          [
+           87,
+           0
+          ],
+          [
+           87,
+           17
+          ],
+          [
+           56,
+           17
+          ]
+         ]
+        },
+        {
+         "op": "poly",
+         "color": "#FFFFFF",
+         "points": [
+          [
+           42,
+           63
+          ],
+          [
+           72,
+           63
+          ],
+          [
+           72,
+           81
+          ],
+          [
+           42,
+           81
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "cards": {
+    "H": "18H8",
+    "A": "18A8",
+    "unif_a": "18A0",
+    "logo": "18H8"
+   },
+   "moments": [
+    [
+     27,
+     "away"
+    ],
+    [
+     29,
+     "away"
+    ]
+   ],
+   "evidence": [
+    "GUD 2007_NYG_3.png (Super Bowl XLII)",
+    "GUD 2011_NYG_1b.png (Super Bowl XLVI)",
+    "Super Bowl XLII broadcast frames (YouTube YvuPod2Wd58 at 265, 275, 415, 465 s)"
+   ]
+  },
+  {
+   "id": "K2",
+   "team": "DAL",
+   "code": "07",
+   "style": 10,
+   "label": [
+    1977,
+    1981
+   ],
+   "look": "1977-1981 with Dallas in white at home: white jersey with royal numerals and sleeve stripes (retail 07A2) over the light silver-blue pants of the 1977-1980 set (07A3, also on the far players); navy road jersey (retail 07H3)",
+   "sides": {
+    "H": {
+     "base": "07A2",
+     "chunks": {
+      "2": "07A3",
+      "47": "07A3"
+     },
+     "atlas": {
+      "format": "A8R8G8B8",
+      "overlays": [
+       {
+        "donor": "07A3",
+        "boxes": [
+         "pants"
+        ]
+       }
+      ]
+     }
+    },
+    "A": {
+     "base": "07H3"
+    }
+   },
+   "cards": {
+    "H": "07A2",
+    "A": "07H3",
+    "logo": "07H3"
+   },
+   "moments": [
+    [
+     6,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 1979_DAL_1.png (week 16, WAS at DAL)"
+   ]
+  },
+  {
+   "id": "K3",
+   "team": "WAS",
+   "code": "29",
+   "style": 10,
+   "label": [
+    1979,
+    1983
+   ],
+   "look": "1979-1983 with Washington in white at home: white jersey and burgundy pants (retail 29A2) at home, burgundy jersey and white pants (retail 29H2) on the road",
+   "sides": {
+    "H": {
+     "base": "29A2"
+    },
+    "A": {
+     "base": "29H2"
+    }
+   },
+   "cards": {
+    "H": "29A2",
+    "A": "29H2",
+    "logo": "29H2"
+   },
+   "moments": [
+    [
+     6,
+     "away"
+    ],
+    [
+     10,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 1979_WAS_2.png (week 16 at DAL)",
+    "GUD 1983_WAS_3.png (week 5, LA Raiders at WAS)"
+   ]
+  },
+  {
+   "id": "K4",
+   "team": "RAI",
+   "code": "20",
+   "style": 6,
+   "label": [
+    1982,
+    1994
+   ],
+   "look": "Los Angeles Raiders in black on the road: black jersey, silver numerals, silver pants (retail 20H1) both ways",
+   "sides": {
+    "H": {
+     "base": "20H1"
+    },
+    "A": {
+     "base": "20H1"
+    }
+   },
+   "cards": {
+    "H": "20H1",
+    "A": "20H1",
+    "logo": "20H1"
+   },
+   "moments": [
+    [
+     10,
+     "away"
+    ]
+   ],
+   "evidence": [
+    "GUD 1983_RAI_2.png (week 5 at WAS)"
+   ]
+  },
+  {
+   "id": "K5",
+   "team": "DEN",
+   "code": "08",
+   "style": 8,
+   "label": [
+    1986,
+    1994
+   ],
+   "look": "Broncos in orange both ways: orange jersey, white numerals, white pants, blue D helmet (retail 08H1)",
+   "sides": {
+    "H": {
+     "base": "08H1"
+    },
+    "A": {
+     "base": "08H1"
+    }
+   },
+   "cards": {
+    "H": "08H1",
+    "A": "08H1",
+    "logo": "08H1"
+   },
+   "moments": [
+    [
+     11,
+     "away"
+    ],
+    [
+     19,
+     "away"
+    ]
+   ],
+   "evidence": [
+    "GUD 1986_DEN_2.png (AFC Championship at CLE)",
+    "GUD 1994_DEN_3.png (MNF, KC at DEN; the retail row loads Denver on the away side)"
+   ]
+  },
+  {
+   "id": "K6",
+   "team": "CLE",
+   "code": "30",
+   "style": 5,
+   "label": [
+    1986,
+    1986
+   ],
+   "look": "1986 Browns in white at home: white jersey, white pants (retail 30A2) at home, brown jersey and white pants (retail 30H2) on the road",
+   "sides": {
+    "H": {
+     "base": "30A2"
+    },
+    "A": {
+     "base": "30H2"
+    }
+   },
+   "cards": {
+    "H": "30A2",
+    "A": "30H2",
+    "logo": "30H2"
+   },
+   "moments": [
+    [
+     11,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 1986_CLE_1.png (AFC Championship, DEN at CLE)"
+   ]
+  },
+  {
+   "id": "K7",
+   "team": "SEA",
+   "code": "26",
+   "style": 6,
+   "label": [
+    2009,
+    2011
+   ],
+   "look": "2010 Seahawks blue over blue: retail 2002-2011 home jersey (26H5) with the blue pants of 26A5 (also on the far players); road 26A5",
+   "sides": {
+    "H": {
+     "base": "26H5",
+     "chunks": {
+      "2": "26A5",
+      "47": "26A5"
+     },
+     "atlas": {
+      "format": "A8R8G8B8",
+      "overlays": [
+       {
+        "donor": "26A5",
+        "boxes": [
+         "pants"
+        ]
+       }
+      ]
+     }
+    },
+    "A": {
+     "base": "26A5"
+    }
+   },
+   "cards": {
+    "H": "26H5",
+    "A": "26A5",
+    "logo": "26H5"
+   },
+   "moments": [
+    [
+     37,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 2010_SEA_2.png (NFC Wild Card, NO at SEA)"
+   ]
+  },
+  {
+   "id": "K9",
+   "team": "KC",
+   "code": "13",
+   "style": 6,
+   "label": [
+    1994,
+    1994
+   ],
+   "look": "Chiefs in white with the 1991-1993 set (retail 13A2) on the home side, red (13H2) on the road",
+   "sides": {
+    "H": {
+     "base": "13A2"
+    },
+    "A": {
+     "base": "13H2"
+    }
+   },
+   "cards": {
+    "H": "13A2",
+    "A": "13H2",
+    "logo": "13H2"
+   },
+   "moments": [
+    [
+     19,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 1994_KC_1.png (MNF, KC at DEN; the retail row loads Kansas City on the home side)"
+   ]
+  },
+  {
+   "id": "K11",
+   "team": "LAR",
+   "code": "23",
+   "style": 13,
+   "label": [
+    2021,
+    2021
+   ],
+   "look": "Super Bowl LVI road: white jersey with royal and sol shoulders, royal numerals, sol pants (1999 set 23A2) under the 2020 royal helmet with the sol horn (23A0 helmet and helmet numbers); home 23H0",
+   "sides": {
+    "H": {
+     "base": "23H0"
+    },
+    "A": {
+     "base": "23A2",
+     "chunks": {
+      "11": "23A0",
+      "12": "23A0",
+      "23-32": "23A0"
+     }
+    }
+   },
+   "cards": {
+    "H": "23H0",
+    "A": "23A2",
+    "helm_a": "23A0",
+    "mini_a": "23A0",
+    "logo": "23H0"
+   },
+   "moments": [
+    [
+     48,
+     "away"
+    ]
+   ],
+   "evidence": [
+    "GUD 2021_LAR_D2.png (Super Bowl LVI)"
+   ]
+  }
+ ],
+ "selections": [
+  {
+   "row": 6,
+   "side": "away",
+   "file": "h-29-1982-redskins-2.iff",
+   "before": 3,
+   "style": 10,
+   "kit": "K3"
+  },
+  {
+   "row": 6,
+   "side": "home",
+   "file": "h-07-1977-cowboys-3.iff",
+   "before": 3,
+   "style": 10,
+   "kit": "K2"
+  },
+  {
+   "row": 10,
+   "side": "away",
+   "file": "h-20-1983-raiders-0.iff",
+   "before": 1,
+   "style": 6,
+   "kit": "K4"
+  },
+  {
+   "row": 10,
+   "side": "home",
+   "file": "h-29-1982-redskins-2.iff",
+   "before": 2,
+   "style": 10,
+   "kit": "K3"
+  },
+  {
+   "row": 11,
+   "side": "away",
+   "file": "h-08-1986-broncos-1.iff",
+   "before": 1,
+   "style": 8,
+   "kit": "K5"
+  },
+  {
+   "row": 11,
+   "side": "home",
+   "file": "h-30-1986-browns-1.iff",
+   "before": 1,
+   "style": 5,
+   "kit": "K6"
+  },
+  {
+   "row": 19,
+   "side": "away",
+   "file": "h-08-1986-broncos-1.iff",
+   "before": 1,
+   "style": 8,
+   "kit": "K5"
+  },
+  {
+   "row": 19,
+   "side": "home",
+   "file": "h-13-1993-chiefs-2.iff",
+   "before": 1,
+   "style": 6,
+   "kit": "K9"
+  },
+  {
+   "row": 20,
+   "side": "away",
+   "file": "h-11-1970-colts-5.iff",
+   "before": 1,
+   "style": 2,
+   "reuse": "11A2",
+   "why": "white jersey over white pants (GUD 1997_IND_1); 11A1 has blue pants"
+  },
+  {
+   "row": 27,
+   "side": "away",
+   "file": "h-18-2007-giants-9.iff",
+   "before": 8,
+   "style": 9,
+   "kit": "K1"
+  },
+  {
+   "row": 28,
+   "side": "away",
+   "file": "h-22-2008-steelers-9.iff",
+   "before": 0,
+   "style": 6,
+   "reuse": "22A6",
+   "why": "the Reebok-era white over gold road set (GUD 2008_PIT_2) instead of the 2026 Nike kit"
+  },
+  {
+   "row": 29,
+   "side": "away",
+   "file": "h-18-2011-giants-9.iff",
+   "before": 8,
+   "style": 9,
+   "kit": "K1"
+  },
+  {
+   "row": 37,
+   "side": "home",
+   "file": "h-26-2010-seahawks-9.iff",
+   "before": 5,
+   "style": 6,
+   "kit": "K7"
+  },
+  {
+   "row": 48,
+   "side": "away",
+   "file": "h-23-2021-rams-9.iff",
+   "before": 2,
+   "style": 13,
+   "kit": "K11"
+  }
+ ]
+}
