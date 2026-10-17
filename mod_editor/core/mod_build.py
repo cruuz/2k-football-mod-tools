@@ -250,6 +250,10 @@ class BuildPlan:
     # history (MVP, OPOY, DPOY, ROY, Super Bowls, SB MVP, Pro Bowls, All-Pro, rushing titles, with years); the game adds
     # each season's winners itself. An allocator owner (late, after the letter grades). Off in Basic.
     honors_page: bool = False
+    # ui1 (Noah 10/17 test menu): with MyCareer, its Apartment becomes Career Home (five sections and Quit, a live
+    # MyPlayer panel in club colours; the old Apartment stays as "Classic Apartment"). On by default for the test disc;
+    # off keeps the Apartment exactly as before. It takes the extra section slot, so not with a jukebox music library.
+    my_career_home: bool = True
     # b77-f5: real award history for the players on the roster: "" = none, "builtin" = data/nfl2k5_honors_2026.json
     # (the 2026 rosters; every honor cited), or a path to an edited honors JSON or CSV. Disc images only; written into the
     # career-stat history after the career and TEAM history.
@@ -832,6 +836,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("read_option_runtime", "nfl2k5_read_option_runtime"),
                                ("guardian_overlay", "nfl2k5_guardian_resources"),
                                ("my_career", "nfl2k5_my_career"),
+                               ("my_career_home", "nfl2k5_my_career_home"),
                                ("franchise_autosave", "nfl2k5_franchise_autosave"),
                                ("screen_hooks", "nfl2k5_screen_hooks"),
                                ("coverage_trail", "nfl2k5_coverage_trail"),
@@ -1017,7 +1022,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
-            "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "k128_settings", "letter_grades", "letter_grades_settings", "honors_page", "honors_page_settings",
+            "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "k128_settings", "letter_grades", "letter_grades_settings", "honors_page", "honors_page_settings", "my_career_home",
             "reserves_16", "created_teams_extra", "roster_arena_growth", "roster_arena_settings", "roster_arena_resource", "defensive_try", "zone_drop_cap", "zone_drop_settings", "all_stadiums", "coverage_slider", "scramble_tuning",
             "flatter_deep_ball", "chop_block_toggle", "chop_block_evidence",
             "music_shuffle", "music_shuffle_state", "practice_squad_screen", "abilities", "abilities_settings", "qb_spy", "calendar_engine")},
@@ -2233,8 +2238,12 @@ def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
                "team_logo_swap", "period_goalposts"}
-    return {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
-            for key in tt.R62_RUNTIME_KEYS}
+    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+               for key in tt.R62_RUNTIME_KEYS}
+    # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
+    # the music library wins and MyCareer keeps its Classic Apartment.
+    options["my_career_home"] = bool(plan.my_career_home and not plan.music_library)
+    return options
 
 
 def _commentary_final_wanted(plan, loaded_espn25_plan):
