@@ -1,4 +1,6 @@
 """Single-pool H-back roles: native readers and complete position selectors.
+rc1 (2026-10-17): B774_MC2_XBE is the integrated exe WITH the mc2 MyCareer repair (the pre-mc2 B77_RO1_XBE reports MyCareer as foreign
+after mc2); provenance in the private fixture folder (.b77-scratch/i4/inputs/sp2_mc2/PROVENANCE.txt).
 
 Private integrated XBE/ROST inputs are opt-in. Renderer/heap seams are named
 in the reused native fixture; label/pool/count/getter routines execute x86.
@@ -54,11 +56,11 @@ class Validation(unittest.TestCase):
             self.assertEqual(receipt['steps'],[dict(step='hback_roles',native_position=8)])
 
 
-@unittest.skipUnless(os.environ.get('B77_RO1_XBE') and os.environ.get('B77_RO1_HBACK'), 'private integrated image and role plan required')
+@unittest.skipUnless(os.environ.get('B774_MC2_XBE') and os.environ.get('B77_RO1_HBACK'), 'private integrated image and role plan required')
 class Native(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.base=Path(os.environ['B77_RO1_XBE']).read_bytes()
+        cls.base=Path(os.environ['B774_MC2_XBE']).read_bytes()
         cls.plan=json.loads(Path(os.environ['B77_RO1_HBACK']).read_text())
         cls.payload,cls.receipt=hb.apply(cls.base,cls.plan)
         cls.image=XbeImage(cls.payload)

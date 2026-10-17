@@ -1,6 +1,8 @@
 """Complete-table validation and real x86 initialization/rollover proof.
+rc1 (2026-10-17): B774_MC2_XBE is the integrated exe WITH the mc2 MyCareer repair (the pre-mc2 B77_RO1_XBE reports MyCareer as foreign
+after mc2); provenance in the private fixture folder (.b77-scratch/i4/inputs/sp2_mc2/PROVENANCE.txt).
 
-Set B77_RO1_XBE and B77_RO1_PICKS for the private integrated image/data proof.
+Set B774_MC2_XBE and B77_RO1_PICKS for the private integrated image/data proof.
 No proprietary bytes or live emulator dependencies are bundled here.
 """
 import copy
@@ -91,11 +93,11 @@ class Runtime(unittest.TestCase):
             self.assertTrue(all(dp.BANK<=a and a+n<=dp.BANK+448 or self.sp-64<=a<self.sp for a,n in writes))
 
 
-@unittest.skipUnless(u and os.environ.get('B77_RO1_XBE') and os.environ.get('B77_RO1_PICKS'), 'private integrated XBE and complete ownership map required')
+@unittest.skipUnless(u and os.environ.get('B774_MC2_XBE') and os.environ.get('B77_RO1_PICKS'), 'private integrated XBE and complete ownership map required')
 class Native(Runtime):
     @classmethod
     def setUpClass(cls):
-        cls.before=Path(os.environ['B77_RO1_XBE']).read_bytes()
+        cls.before=Path(os.environ['B774_MC2_XBE']).read_bytes()
         cls.plan=json.loads(Path(os.environ['B77_RO1_PICKS']).read_text())
         cls.after,cls.receipt=dp.apply(cls.before,cls.plan)
         cls.table=dp.table_for(cls.plan)

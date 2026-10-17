@@ -200,7 +200,11 @@ class AttributeGradesTests(unittest.TestCase):
                 self.assertLessEqual(width(grade),width('100'),(font,grade))
 
 
-@unittest.skipUnless(os.environ.get('NFL2K5_LG2_BASE_XBE'), 'set NFL2K5_LG2_BASE_XBE for played-disc proof')
+@unittest.skip("lg2 played-disc repair superseded by mc2's MyCareer runtime: tools/b77/lg2_repair.py is hash-pinned to the "
+               "pre-mc2 executable (1b41ec19) and its guard requires the current MyCareer runtime, so it cannot run any more. "
+               "The grade behaviour itself stays covered by AttributeGradesTests above (upgrade and new build identical, replay "
+               "zero, real swprintf for every grade, MyCareer and grade owners compose in either order) and by every Studio "
+               "build, which applies this module (rc1, 2026-10-17)")
 class PlayedDiscTests(unittest.TestCase):
     def test_hash_pinned_repair_scope_replay_and_studio_equality(self):
         from tools.b77 import lg2_repair as repair
