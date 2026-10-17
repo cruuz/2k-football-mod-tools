@@ -229,15 +229,17 @@ class HostBudgetTests(unittest.TestCase):
         pins = {
             'tools/mycareer_mode/b69_budget.json':
                 '738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73',
+            # mc2 reviewed native changes: menu-port ownership, B quit on the
+            # entry/Apartment, backup prompt, first clean free record (D01).
             'tools/mycareer_mode/runtime.c':
-                '1abd185bb7cb38993c073a0f0ce49d0105a78df654008c36885f7b6bac0e4627',
+                'c5aead8a81976c3b3f0f64c132b39d69a5c68d0eb3ac980c5c339e9995c7350c',
             'tools/mycareer_mode/runtime.S':
-                '74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64',
+                '9993d7d2331cb5d49ede81323ceae37fd71a07cfbfd28e343b307989de599e65',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
                 # prefetch path; the budget, assembly and progression pins stay fixed.
-                'd46c86943c44a5428d4c885f8226daf464979884cce7d915f65e8aa7c4105b2b',
+                '94b40a84b1aee82246f50515aedfb68e8cb467d827e4d4189c11c328fc3494f6',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

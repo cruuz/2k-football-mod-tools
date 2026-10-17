@@ -169,12 +169,15 @@ inline_load_end:
 
 .global native_new_player, mode_creation_done, mode_handler
 native_new_player:
- /* Enter the native NEW branch, never the existing-player list selection. */
+ /* Enter the native NEW branch, never the existing-player list selection.
+  * mc2: EDX is the free record mode_create validated; it replaces the
+  * branch's own first-free BFF50 call (34621C), whose result was stored. */
  push esi
  push edi
  mov esi,ecx
  xor edi,edi
- jmp 0x34621c
+ mov eax,edx
+ jmp 0x346221
 mode_creation_done:
  push ecx
  push edx

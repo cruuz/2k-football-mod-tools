@@ -21,6 +21,10 @@ REQUESTS = legacy.REQUESTS + ((EXTRA_OWNER, "data", 4096, 16),)
 CODE_SIZE, DATA_SIZE = legacy.CODE_SIZE, legacy.DATA_SIZE
 TAG = b"MC-INLINE-M003\0\0\0"
 TAG_OFFSET = CODE_SIZE - len(TAG)
+POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3_unsigned_text", "m3_bench_text"))
+# mc2: a second pool in M3 RW past its menus (<= 256 + 1900) and before +2700.
+POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
+                     "m3_confirm_text"))
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
 SAVE_HOOKS = (
@@ -247,9 +251,16 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
         return at
 
     text_pool = bytearray()
+    text_pool2 = bytearray()
 
     def string(name, value):
-        if name not in ("mode_text", "team_text") and not name.startswith("m3_"):
+        if name in POOLED2:
+            labels[name] = EXTRA_VA + 2160 + 2 * len(text_pool2)
+            text_pool2.extend((value + "\0").encode("ascii"))
+            return
+        # mc2: these M3 notes are drawn only after init_menus, so they use the
+        # RW text pool (one RX byte per character) to make room for the fixes.
+        if name in POOLED or (name not in ("mode_text", "team_text") and not name.startswith("m3_")):
             labels[name] = data_va + 1408 + 2 * len(text_pool)
             text_pool.extend((value + "\0").encode("ascii"))
             return
@@ -320,6 +331,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
         ("m3_prospect_3", "Prospect: 3rd Day (64)"),
         ("m3_prospect_4", "Prospect: Undrafted (59)"),
         ("m3_prospect_error", "Overall unavailable. Change style or prospect tier."),
+        ("m3_bench_text", "MyPlayer is a backup. Yes: start him. No: Supersim to his snaps."),
     ):
         string(name, value)
     at = reserve("m3_prospect_labels", 20)
@@ -339,6 +351,10 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
     at = reserve("text_template", len(text_pool))
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
+    legacy.require(2160 + 2 * len(text_pool2) <= 2700, "MyCareer M3 text RW exceeds 2160..2699")
+    at = reserve("text2_template", len(text_pool2))
+    out[at:at + len(text_pool2)] = text_pool2
+    labels["text2_bytes"] = len(text_pool2)
     menu = bytearray()
     extra_menu = bytearray()
 
@@ -373,7 +389,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_undrafted"),
                         ("load_text", "mode_load"), ("quit_text", "mode_quit"),
                         ("m3_prospect_0", "mode_prospect_toggle")))
-    rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
+    rows("hub_rows", (("play_text", "mode_play_row"), (0xE9C3BC, "mode_practice"),
                       ("card_text", "mode_card"), ("start_text", "mode_start"),
                       ("m3_upgrade_text", "m3_upgrade_open"),
                       ("m3_settings_text", "mode_settings_open"),
@@ -406,8 +422,9 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
     at = reserve("m3_menu_template", len(compressed))
     out[at:at + len(compressed)] = compressed
     labels["m3_menu_bytes"] = len(extra_menu)
-    for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
-                                      ("apartment", "apartment_text", "hub_rows", 3),
+    # mc2: flag 0x10 lets B reach mode_event (native event 10) on these two.
+    for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 0x13),
+                                      ("apartment", "apartment_text", "hub_rows", 0x13),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
         struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
                          0, labels[table], 0, 0xE7F928,
