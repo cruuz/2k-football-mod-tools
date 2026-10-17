@@ -3,14 +3,17 @@
 The 10/16 Studio build of Noah's disc stopped after 2 h 55 min at the Unc Bowl finish: the Studio never composed the
 a5k era kits (only the v0.6 native repair did), so PIT 22A4 was still the retail 1961-62 kit the Unc Bowl pins do
 not know. The native tests rebuild the ten kits from retail and v0.6 inputs, check them against the pins and the
-v0.6 bytes, and run the Unc Bowl finish on the result (private inputs, skipped when absent).
+v0.6 bytes, and run the Unc Bowl finish on the result; the chain test replays every late step against the build's
+verified project manifest (private inputs, skipped when absent).
 """
 import hashlib
+import io
 import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(ROOT / "tools" / "b77")]
@@ -19,6 +22,10 @@ from mod_editor.core import nfl2k5_unc_bowl_uniforms as unc  # noqa: E402
 
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 V06 = Path(os.environ.get("B771_V06_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6 (2026-10-09).xiso.iso"))
+V061 = Path(os.environ.get("NFL2K5_IC1_BASE",
+                           "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 fixes (2026-10-13).xiso.iso"))
+MANIFEST = Path(os.environ.get("B773_I4_PROJECT_MANIFEST",
+                               "/home/noah/2k-worktrees/.b77-scratch/i4/studio-builds/onuser-verified-project-manifest.json"))
 
 
 def sha(data):
@@ -152,6 +159,18 @@ class Native(unittest.TestCase):
                 self.assertEqual(sha(data[p["offset"]:p["offset"] + p["length"]]), p["after_sha256"], p["label"])
         with self.assertRaises(ValueError):
             unc.validate_owned("22A4.IFF", self.retail["22A4.IFF"])     # the 10/16 failure
+
+
+@unittest.skipUnless(RETAIL.is_file() and V06.is_file() and V061.is_file() and MANIFEST.is_file(),
+                     "private build manifest or discs absent")
+class ProjectChain(unittest.TestCase):
+    def test_unc_bowl_kits_pass_every_late_step_against_the_project_manifest(self):
+        import kit_pin_chain_check as check
+        out = io.StringIO()
+        with redirect_stdout(out):
+            status = check.main(["--manifest", str(MANIFEST), "--retail", str(RETAIL), "--reference", str(V06),
+                                 "--reference", str(V061), "--only", "06H5", "22A4", "22H4", "22H0"])
+        self.assertEqual(status, 0, out.getvalue()[-3000:])
 
 
 if __name__ == "__main__":
