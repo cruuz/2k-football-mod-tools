@@ -515,7 +515,7 @@ class Nfl2k5UnifiedVisualProvider:
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
         "mod_editor/core/nfl2k5_espn25_fields.py": "b69cb10713f8f36ce6453754386a372e80cc4e1fd6735a6e1291991cf445dc2e",
-        "mod_editor/core/nfl2k5_super_bowl_walls.py": "816cacb280cdb5ade0f92017eeeb9449c011955ecd92fa66f35695e11f0ae716",
+        "mod_editor/core/nfl2k5_super_bowl_walls.py": "55dce3e1e700d56a2895e5f206503700cb246dfeb1cfdf866240e5e04f9d8917",
         "mod_editor/core/nfl2k5_super_bowl_fields.py": "dc0f9488b0feffb30ebf934573c606e973ba1980c444b7a1cd8c1eb71005570d",
         "mod_editor/core/nfl2k5_super_bowl_hosts.py": "b600f2a9194e12d375771277c99b98def8ee16ae17afda2f2a751e10f0c1bd4a",
         "mod_editor/core/nfl2k5_era_ball.py": "f2996e9e0d8080d6796ba4e1a5325fc3101747ad4f168687191fe11b4bafc33f",

@@ -708,6 +708,8 @@ def user_art_readme():
         "- The recommended size is a comfortable source size; the largest slot in the game is much smaller, so a",
         "  sharp, simple mark reads best. Up to 4096 pixels on a side and 8 MB per file.",
         "- The build log lists which slots were filled from this folder and which kept the authored marks.",
+        "- An event logo also fills that game's field marks on the 25s, 30s or 35s, and a team file the club marks on",
+        "  the 30s of Super Bowls XXXII, XXXIV and XXXVI. Franchise Super Bowls take LXII.png, LXIII.png, LXIV.png.",
         "- The NFL shield is not taken from this folder: seasons from 2008 use the mod's official shield, and earlier",
         "  seasons use the period shield read from your own retail disc.",
         "",

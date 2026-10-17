@@ -26,7 +26,8 @@ from pathlib import Path
 CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
 SCHEMA = "nfl2k5_modern_art_pngs/v1"
 FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/",
-           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/")
+           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/",
+           "data/nfl2k5_super_bowl_fields/")
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
@@ -46,7 +47,12 @@ CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co
                   "NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only "
                   "the fine feature detail of co2's authored faces. "
                   "No photograph or photo crop and no "
-                  "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
+                  "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time."
+                  " sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by "
+                  "tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design "
+                  "system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise "
+                  "seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 "
+                  "team logos at mark size or a plain club roundel.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.

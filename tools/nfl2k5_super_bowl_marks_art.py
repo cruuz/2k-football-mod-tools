@@ -337,14 +337,19 @@ def modern(word, *, fill_stops=None, fill_img=None, accent=(120, 128, 140), bar_
     """The 2016-on system: slab numerals (chrome, or filled with ``fill_img`` and a chrome rim) with the trophy
     standing after the ``trophy_after``-th numeral, over the SUPER BOWL bar."""
     H = 520
-    letters = [glyph(c, H, weight=0.25, serif=0.085) for c in word]
-    gap = H * 0.05
-    tro = trophy(int(H * 1.42))
+    # the current system's numerals are tall and condensed: geometric slabs squeezed to 70 % of their width
+    letters = []
+    for c in word:
+        m, _adv = glyph(c, H, weight=0.30, serif=0.085)
+        m = m.resize((max(4, int(m.width * 0.70)), m.height), Image.LANCZOS)
+        letters.append((m, m.width))
+    gap = H * 0.04
+    tro = trophy(int(H * 1.62))
     widths = [m.width for m, _ in letters]
-    slot = tro.width * 0.60
+    slot = tro.width * 0.55
     total = sum(widths) + gap * (len(word) - 1) + slot + gap
     W = int(total + 80)
-    top = int(H * 0.52)
+    top = int(H * 0.72)
     canvas_h = top + H + int(H * 0.30) + 40
     out = rgba((W, canvas_h))
     x = 40.0

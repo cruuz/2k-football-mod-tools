@@ -3596,57 +3596,57 @@
       "width": 127
     },
     "data/nfl2k5_super_bowl_fields/marks/LI.png": {
-      "height": 461,
-      "sha256": "b4182cc606e65414c8eb02f3f771185c9fe94dfa724c83964a018d938a7e22d0",
-      "size": 70840,
-      "width": 512
+      "height": 512,
+      "sha256": "b5bf59acc8fe65f3125bf0bbbfa7d9b145944fd8d76eb676c86c256bff5b176c",
+      "size": 71405,
+      "width": 420
     },
     "data/nfl2k5_super_bowl_fields/marks/LII.png": {
-      "height": 348,
-      "sha256": "aa309524c788d82f491466cb3e0f2ec6dc15cf685d6f81f4d18d13de03dc6dcf",
-      "size": 57520,
+      "height": 470,
+      "sha256": "c9eb73c100d907c0953c03811e171ca64347077e07c7659245aff44f3e03c9fb",
+      "size": 69284,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LIV.png": {
-      "height": 305,
-      "sha256": "8471fc417647920c120f8041574d080ed96366c32a0f64a0d59e1a1f33e6a601",
-      "size": 71727,
+      "height": 435,
+      "sha256": "5256be400e7cc799d5a9960a1e0b47b39df9d95536321c63910e0f6f55b907e8",
+      "size": 90728,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LVI.png": {
-      "height": 305,
-      "sha256": "38f4451dbe4e719156638bc9c8c52f42b26b7a1a44b75deb04a800419e991e8c",
-      "size": 82597,
+      "height": 435,
+      "sha256": "52728acbf9484a94856f24d91adf5700c6cadde8b02be51b97109b2c0e25e69e",
+      "size": 105021,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LVIII.png": {
-      "height": 213,
-      "sha256": "467a083b37a5d870f5ebe2ccf99904a69178509ad2212af166b479e14d781e36",
-      "size": 56127,
+      "height": 299,
+      "sha256": "a0e6d409a2869467e3dd92ec9fd70cd981f79b22129a20c45a846ee048584a8a",
+      "size": 71474,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LXII.png": {
-      "height": 248,
-      "sha256": "101b74580aa7c22d98b440df4d41b1c38db0efcea608df38e4d4f24b05733e58",
-      "size": 67313,
+      "height": 350,
+      "sha256": "729504b437d6cf364322fcf9a5e0741fbc884c72bc4035faf677eb997c732afb",
+      "size": 85339,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LXIII.png": {
-      "height": 211,
-      "sha256": "65f1c4dcf65b91e0854b7844e7e02d2c69c2dce1492c524c46764aca5b42f4f2",
-      "size": 58109,
+      "height": 296,
+      "sha256": "a64d7f6d2733d119ff9268f07d19daf104b4189ae1081496cd576d765dc531b0",
+      "size": 74028,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LXIV.png": {
-      "height": 225,
-      "sha256": "a7d963f0960312c04f852c2a308df703d931aa8bae3db973ca694f3ea5013f1c",
-      "size": 74235,
+      "height": 330,
+      "sha256": "5d18a2aac8f8934f06eb6cc106cf7c771585f255e828be8281057a4f96adcff9",
+      "size": 96473,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/LXV.png": {
-      "height": 268,
-      "sha256": "2a93b324cb3c2f848e6082a4cf84bfd5df6207c013e6c5e4a91df47e8a2c8b2f",
-      "size": 87771,
+      "height": 399,
+      "sha256": "470da358a0400275f3af4098a8405d5f0339dfb3b5f7e064f6c4b8187bb56f15",
+      "size": 113986,
       "width": 512
     },
     "data/nfl2k5_super_bowl_fields/marks/NE_2001.png": {

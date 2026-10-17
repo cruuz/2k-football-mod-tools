@@ -20,6 +20,26 @@ banners and the crowd's banners. Permanent venue signs keep their bytes. Row 34 
 The art is drawn by `tools/nfl2k5_super_bowl_walls_art.py` into `data/nfl2k5_super_bowl_walls/`: for each surface a
 base PNG and a `.marks.png` layer with the authored marks of its slots. The manifest lists every slot box.
 
+## The field marks on the 25s and 30s (sb1)
+
+The executable hides the period field's two title-week quads (`AFC_shield`, `NFC_shield`) outside a conference
+title week, so no Anniversary field could show a mark away from midfield. On the 17 Super Bowl rows those quads are
+renamed (`era_flankA`, `era_flankN`, names the game never looks up), painted and moved to where the real game painted
+its marks, at the measured size (`data/nfl2k5_super_bowl_fields/manifest.json`):
+
+- XXXVIII and every Super Bowl from XLII on: the event logo on both 25-yard lines, the NFL shield at midfield;
+- XXIII: the event logo on both 35s; XXV: the period NFL shield on both 35s (its midfield is the SB XXV mark);
+- XXXII, XXXIV and XXXVI: each club's mark on the 30 at its own end zone.
+
+The shipped event marks are drawn by `tools/nfl2k5_super_bowl_marks_art.py` from geometry and type in each game's
+design system (no logo is copied or traced). A `super_bowl/<NUMERALS>.png` in your folder replaces the mark on the
+field too, and `teams/<CODE>_<SEASON>.png` or `teams/<CODE>.png` replaces a club mark on the 30s.
+
+Franchise Super Bowls: LXI at SoFi Stadium has the NFL shield at midfield and the LXI mark on both 25s. With the
+2026 season on, the next three seasons' Super Bowls are played in the announced hosts (LXII Mercedes-Benz Stadium,
+LXIII Allegiant Stadium, LXIV Nissan Stadium) with Super Bowl fields and generic current-system marks, since those
+logos are not revealed yet (`super_bowl/LXII.png` and so on replace them).
+
 ## Your own logos (optional)
 
 On **Build**, beside the official marks pack, **Your Super Bowl logos** takes a folder. **Create folder...** makes
