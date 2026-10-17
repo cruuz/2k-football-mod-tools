@@ -176,14 +176,20 @@ MIN_ARC_LOB_SPEED_YD_S = 10.0
 # 60-80 air yards, apex 13-20 yd. Retail's flat 20 yd/s past 40 yd was already close;
 # this keeps the short game retail and slightly lengthens the very deep ball.
 REALISTIC_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (45.0, 19.0), (80.0, 21.0))
-# Arc by distance (2026-10-02): keep Noah's retail short-game rule through 40 yd,
-# then add touch without the 2026-09-03 profile's punt-height 45..60 yd lobs.
+# Arc by distance (b77 db1, 2026-10-17): keep Noah's retail short-game rule through 40 yd,
+# never fly a deep lob slower than retail's 20 yd/s, and keep 76.2's flatter 80-yard bomb.
 # The same eight-point header slot and FUN_002d8970 reader operands stay in use.
-# At 45/60/80 yd: hang 2.57/3.20/3.81 s, modeled apex 8.86/13.73/19.46 yd.
-# Hang increases throughout the deep band. Retail itself decreases from 6..10 yd;
+# At 45/60/80 yd: hang 2.25/2.93/3.81 s, modeled apex 6.8/11.5/19.5 yd (retail 2.25/3.00/4.00 s).
+# Why not slower (76.2 flew 45 yd at 17.5 and 60 yd at 18.75 yd/s): the target solver
+# FUN_002da8e0 leads the receiver by the hang and times the throw for the LOB ceiling, then
+# the accuracy pass FUN_002d9700 pulls the point back to the bullet ceiling without retiming.
+# A longer hang leads the receiver past that ceiling, so mid-arm deep balls came down 3-8 yd
+# short of a receiver in stride, and the CPU's target grid (hold 0.75 speed estimate) judged
+# deep men open for a ball 0.5 s quicker than the real lob. Native model: tools/b77/db1_deep_ball_probe.py.
+# Hang never decreases through the deep band. Retail itself decreases from 6..10 yd;
 # preserving those bytes takes precedence over globally monotonic hang.
 ARC_BY_DISTANCE_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
-                            (45.0, 17.5), (60.0, 18.75), (80.0, 21.0))
+                            (45.0, 20.0), (60.0, 20.5), (80.0, 21.0))
 
 # The native Challenges branch can deliberately miscall a forward outlet as a
 # lateral. Fall through to the existing velocity-sign test instead. This does
@@ -267,6 +273,14 @@ def apply_forward_pass_ruling(payload: bytes) -> tuple[bytes, dict[str, object]]
 HIGH_ARC_BAND_SPEED_YD_S = 12.0
 HIGH_ARC_20260903_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
                             (45.0, HIGH_ARC_BAND_SPEED_YD_S), (60.0, HIGH_ARC_BAND_SPEED_YD_S), (63.0, 21.0))
+# Beta 76.2 .. SOFTDRINK v0.6.1 (2026-10-02): slower 45..60 yd band; deep balls led past the
+# arm ceiling (b77 db1). Recognised on read and upgraded on apply, never newly written.
+TOUCH_BAND_20261002_LOBSPEED = ((6.0, 6.0), (10.0, 12.0), (20.0, 16.0), (35.0, 18.0), (40.0, 20.0),
+                                (45.0, 17.5), (60.0, 18.75), (80.0, 21.0))
+LEGACY_RELOCATED_LOBSPEEDS = {
+    "2026-09-03 high arc": HIGH_ARC_20260903_LOBSPEED,
+    "2026-10-02 touch band": TOUCH_BAND_20261002_LOBSPEED,
+}
 # The superseded five-point in-place profile (discs p..y of 9/3); recognised on read, never written.
 LEGACY_ARC_BY_DISTANCE_LOBSPEED = ((6.0, 6.0), (20.0, 16.0), (45.0, HIGH_ARC_BAND_SPEED_YD_S),
                                    (60.0, HIGH_ARC_BAND_SPEED_YD_S), (63.0, 21.0))
@@ -673,8 +687,16 @@ def _arc_table_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes, int |
     ]
 
 
+def _legacy_relocated_label(blob: bytes) -> str | None:
+    for label, points in LEGACY_RELOCATED_LOBSPEEDS.items():
+        if blob == ARC_TABLE_CURVE.encode(points):
+            return label
+    return None
+
+
 def arc_table_status(payload: bytes) -> str:
-    """'retail', 'applied', 'legacy_high_arc' (2026-09-03), or 'foreign'."""
+    """'retail', 'applied', 'legacy_high_arc' (an older relocated profile: 2026-09-03 high arc
+    or the 2026-10-02 touch band, both upgraded on apply), or 'foreign'."""
 
     try:
         sites = _arc_table_sites(payload)
@@ -683,7 +705,7 @@ def arc_table_status(payload: bytes) -> str:
     states = set()
     for label, off, before, after, _section in sites:
         got = payload[off: off + len(before)]
-        if label == "arc_table" and got == ARC_TABLE_CURVE.encode(HIGH_ARC_20260903_LOBSPEED):
+        if label == "arc_table" and _legacy_relocated_label(got) is not None:
             states.add("legacy_high_arc")
         else:
             states.add("retail" if got == before else "applied" if got == after else "foreign")
@@ -706,6 +728,9 @@ def read_arc_table(payload: bytes) -> dict[str, object]:
     if state in ("applied", "legacy_high_arc"):
         off = _header_offset(payload, ARC_TABLE_VA)
         points = ARC_TABLE_CURVE.decode(payload[off: off + ARC_TABLE_CURVE.size])
+        legacy = _legacy_relocated_label(payload[off: off + ARC_TABLE_CURVE.size])
+        if state == "legacy_high_arc" and legacy is not None:
+            label = f"arc by distance ({legacy})"
     elif state == "retail":
         curve = CURVES["lobspeed"]
         off = locate_curve(payload, curve)
@@ -2902,6 +2927,8 @@ __all__ = [
     "EDITABLE_CURVES",
     "LEGACY_ARC_BY_DISTANCE_LOBSPEED",
     "HIGH_ARC_20260903_LOBSPEED",
+    "TOUCH_BAND_20261002_LOBSPEED",
+    "LEGACY_RELOCATED_LOBSPEEDS",
     "LOBSPEED_COUNT_SITE_VA",
     "LOBSPEED_PAIRS_SITE_VA",
     "RETAIL_ARC_TABLE_SLOT",
