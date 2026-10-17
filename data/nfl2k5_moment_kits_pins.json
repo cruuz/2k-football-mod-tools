@@ -1,7 +1,7 @@
 {
  "schema": "nfl2k5_moment_kits_pins/v1",
  "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots; team files and SITU: before/after.",
- "data_sha256": "388f7340b214dcd80e597e8f6c61fe1fbbb0d12b365701b2cb720d7f491c2f73",
+ "data_sha256": "552963e0e58048c3a7f2f354e05bed745575643a1c2fb7a167944cad8992f65f",
  "donors": {
   "07A2": "bf6f09f7ec7edb8144942a3b449f3ed076aa092e878f8380927d6cf4d6506e1a",
   "07A3": "75e7677ce28c5892a3d244fc716d5223365f234d14de4069b4cf6fc6f79e1b38",
@@ -46,7 +46,7 @@
   "13h6.iff": "2d8649b8735d9c780533dd27b113a9a6f3d34f069e34b79e8b75962225931db2",
   "13a6.iff": "dabc4344bfa887f6286b4b3d28f4c42d47af51c0ce89feb71f30f5b39b117da2",
   "23h13.iff": "3116c6c46058229ff8f0ed444e33c56e74380e628e7b788f3cdf1214c96f7fdc",
-  "23a13.iff": "d2c0378f159b232452d93f452b46408c3eb98c0bd75884924aca4de4d2b6b223"
+  "23a13.iff": "269be1a7bd14aaa7bab25a47a83f953a05325f6ea264500b58c91b8c62c14139"
  },
  "sizes": {
   "18h9.iff": 1490704,
@@ -68,7 +68,7 @@
   "13h6.iff": 1534912,
   "13a6.iff": 1524160,
   "23h13.iff": 1508560,
-  "23a13.iff": 1505440
+  "23a13.iff": 1526720
  },
  "members": {
   "logos": {

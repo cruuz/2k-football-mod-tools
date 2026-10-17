@@ -699,7 +699,7 @@
     2021,
     2021
    ],
-   "look": "Super Bowl LVI road: white jersey with royal and sol shoulders, royal numerals, sol pants (1999 set 23A2) under the 2020 royal helmet with the sol horn (23A0 helmet and helmet numbers); home 23H0",
+   "look": "Super Bowl LVI road: white jersey with royal and sol shoulders, royal numerals, sol pants (1999 set 23A2) under the 2020 royal helmet with the sol horn and the royal socks (23A0 helmet, helmet numbers and socks, also on the far players); home 23H0",
    "sides": {
     "H": {
      "base": "23H0"
@@ -707,9 +707,23 @@
     "A": {
      "base": "23A2",
      "chunks": {
+      "4": "23A0",
       "11": "23A0",
       "12": "23A0",
-      "23-32": "23A0"
+      "23-32": "23A0",
+      "48": "23A0"
+     },
+     "atlas": {
+      "format": "A8R8G8B8",
+      "overlays": [
+       {
+        "donor": "23A0",
+        "boxes": [
+         "sock_low",
+         "sock"
+        ]
+       }
+      ]
      }
     }
    },
