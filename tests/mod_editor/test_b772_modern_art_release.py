@@ -20,7 +20,8 @@ TOOL_SPEC = importlib.util.spec_from_file_location("modern_art_catalog_tool", RO
 tool = importlib.util.module_from_spec(TOOL_SPEC)
 TOOL_SPEC.loader.exec_module(tool)
 FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5_modern_officials",
-           "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers")
+           "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers",
+           "data/nfl2k5_hair_styles/art")  # b775-hs1
 
 
 class ModernArtReleaseTests(unittest.TestCase):
