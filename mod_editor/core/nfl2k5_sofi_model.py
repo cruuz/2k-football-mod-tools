@@ -1669,7 +1669,7 @@ SOFI_SHOTS = {venue: [_PRESSBOX, _CRANE, _EXTERIOR, _ENDZONE, _PLAZA] for venue 
 #: south down the field's axis at the whole lit Infinity Screen (a night game; zero angles look along -z in every
 #: retail camera the model writes). PROVED IN GAME (lab 6, 2026-09-25): with every angle 0 the s40 camera looks down
 #: about 24 degrees at the field's centre from the eye, with a horizontal field of about 40 degrees: the whole LXI field
-#: from above the north end (both neutral end zones, the LXI mark, the shields on the 25s), the screen just above the
+#: from above the north end (both neutral end zones, the midfield mark, the 25-yard marks), the screen just above the
 #: frame. The s40 angle channels still play unlike s23/s24's, so the shot stays at zero angles.
 _SUPER_BOWL = dict(eye=(0.0, 44.0, 100.0), target=(0.0, 44.0, -10.0), fov=44.0, screen=True)
 SOFI_SHOTS["s40"] = [_SUPER_BOWL]
@@ -1909,8 +1909,8 @@ def paint_field(decoded, rec, system, venue, *, dry=None, turf=None, cap=256, ha
     overlays = _field_shape(rec, "D_graphic_overlays")
     st0, st1 = _stream(overlays, 0), _stream(overlays, 1)
     su, sv, ou, ov = struct.unpack_from("<4f", out, overlays["record_offset"] + 0x30)
-    for material, art_name, centre_along in FIELD_QUADS[venue]:
-        across, along = art_manifest()[f"field/{art_name}"]["quad_m"]
+    for material, art_name, centre_along, *size in FIELD_QUADS[venue]:
+        across, along = size[0] if size else art_manifest()[f"field/{art_name}"]["quad_m"]
         idx = _submesh_vertices(rec, out, overlays, material)
         for quad in [idx[k:k + 4] for k in range(0, len(idx), 4)]:
             centre = np.mean([struct.unpack_from("<3f", out, st0["offset"] + st0["stride"] * i) for i in quad], axis=0)
@@ -1931,16 +1931,19 @@ def paint_field(decoded, rec, system, venue, *, dry=None, turf=None, cap=256, ha
 TURF_SOURCE = "s23dd.iff"
 TURF_MATERIALS = ("color_premipped", "grass_outside_premipped", "numbers")
 #: the field textures SoFi paints in full, and their art: the three end-zone panels (both ends share them) and the
-#: midfield mark for the teams; the LXI mark at midfield and the NFL shield on the 25s for the Super Bowl (the retail s40
-#: field has no end-zone textures, only these two logo textures)
+#: midfield mark for the teams; for the Super Bowl the NFL shield at midfield and the LXI mark on both 25s, the layout
+#: of every Super Bowl field since XXXVIII (sb1, 2026-10-17: LX at Levi's Stadium and LVIII at Allegiant were painted
+#: this way; the retail s40 field has no end-zone textures, only these two logo textures)
 FIELD_MARKS = {venue: [(f"endzone_N_{part}", f"{venue}_endzone_{part}") for part in "LMR"]
                + [("center_logo", f"{venue}_midfield")] for venue in VENUES}
-FIELD_MARKS["s40"] = [("center_logo", "s40_midfield"), ("logo", "s40_shield")]
+FIELD_MARKS["s40"] = [("center_logo", "s40_shield"), ("logo", "s40_midfield")]
 #: the overlay quads sized to their art's true proportions, each around its own centre or, where a third value is given,
-#: moved along the field to that many metres from midfield (the Super Bowl shields to the 25-yard lines: the retail
-#: s40 logos sat on the 30s)
+#: moved along the field to that many metres from midfield (the Super Bowl marks to the 25-yard lines: the retail
+#: s40 logos sat on the 30s). A fourth value sets the quad's (across, along) metres at the art's own aspect: the
+#: midfield shield of a modern Super Bowl is about 12 yards across (measured on the LVIII and LX field diagrams).
 FIELD_QUADS = {venue: [("center_logo", f"{venue}_midfield", None)] for venue in VENUES}
-FIELD_QUADS["s40"] = [("center_logo", "s40_midfield", None), ("logo", "s40_shield", 25 * 0.9144)]
+SUPER_BOWL_SHIELD_M = (11.0, 11.0 * 4.9508 / 6.8129)
+FIELD_QUADS["s40"] = [("center_logo", "s40_shield", None, SUPER_BOWL_SHIELD_M), ("logo", "s40_midfield", 25 * 0.9144)]
 
 
 def mark_materials(venue):
@@ -2056,7 +2059,7 @@ HELP_TEXT = (
     "sunk below grade, the translucent canopy on its 37 columns, the Infinity Screen with the live feed, the plaza, "
     "Rivers Lake and a new pregame flyover with an exterior pass; both teams' 2026 end zones and midfield; the venue "
     "named SoFi Stadium, Inglewood, CA, roofed (no rain or snow on the field) and on turf. A franchise's first Super "
-    "Bowl (Super Bowl LXI) is played there too, with the LXI mark at midfield. The 2026 venue art leaves these two "
+    "Bowl (Super Bowl LXI) is played there too, with the NFL shield at midfield and the LXI mark on the 25s. The 2026 venue art leaves these two "
     "venues to it. Off in every preset; appearance in game is unwitnessed."
 )
 _PINS = None

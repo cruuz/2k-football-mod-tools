@@ -562,8 +562,8 @@ class Pins(unittest.TestCase):
 
     @requires_real_pack("modern_sofi")
     def test_the_super_bowl_field(self):
-        """s40: the LXI mark at midfield and the NFL shield on both 25s, each quad at its art's true proportions, the
-        marks' palettes kept through Modern colour, and the SoFi turf."""
+        """s40: the NFL shield at midfield and the LXI mark on both 25s (sb1: the modern Super Bowl layout), each quad
+        at its art's true proportions, the marks' palettes kept through Modern colour, and the SoFi turf."""
         from mod_editor.core import nfl2k5_modern_color as colour
         ml = sm._ml()
         tx = ml._tools()[0]
@@ -575,15 +575,15 @@ class Pins(unittest.TestCase):
         ov = sm._field_shape(rec, "D_graphic_overlays")
         st0 = sm._stream(ov, 0)
         art = sm.art_manifest()
-        for material, name, count in (("center_logo", "s40_midfield", 1), ("logo", "s40_shield", 2)):
-            across, along = art[f"field/{name}"]["quad_m"]
+        for material, name, count in (("center_logo", "s40_shield", 1), ("logo", "s40_midfield", 2)):
+            across, along = sm.SUPER_BOWL_SHIELD_M if material == "center_logo" else art[f"field/{name}"]["quad_m"]
             idx = sm._submesh_vertices(rec, dec, ov, material)
             self.assertEqual(len(idx), 4 * count)
             for quad in [idx[k:k + 4] for k in range(0, len(idx), 4)]:
                 P = np.array([struct.unpack_from("<3f", dec, st0["offset"] + st0["stride"] * i) for i in quad]) / 100.0
                 self.assertAlmostEqual(P[:, 0].max() - P[:, 0].min(), across, places=2)
                 self.assertAlmostEqual(P[:, 2].max() - P[:, 2].min(), along, places=2)
-                if material == "logo":                                   # the shields sit on the 25-yard lines
+                if material == "logo":                                   # the LXI marks sit on the 25-yard lines
                     self.assertAlmostEqual(abs(P[:, 2].mean()), 25 * 0.9144, places=2)
         # the grade's end-zone pass leaves these marks alone (design A: none of their colours is turf-like); any entry
         # it did move would be restored

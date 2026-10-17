@@ -1,0 +1,431 @@
+{
+ "schema": "nfl2k5_super_bowl_fields/v1",
+ "note": "sb1: Super Bowl flank marks on the Anniversary fields (yards measured on the reference field diagrams). Marks are authored from geometry and type (tools/nfl2k5_super_bowl_marks_art.py); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed. The user's super_bowl/<NUMERALS>.png and teams/<CODE>[_<SEASON>].png replace them at build time.",
+ "rows": [
+  {
+   "row": 14,
+   "event": "XXIII",
+   "season": 1988,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 15,
+    "box_yd": [
+     7.6,
+     4.0
+    ]
+   }
+  },
+  {
+   "row": 15,
+   "event": "XXV",
+   "season": 1990,
+   "flank": {
+    "kind": "shield",
+    "from_mid_yd": 15,
+    "box_yd": [
+     5.8,
+     7.0
+    ]
+   }
+  },
+  {
+   "row": 21,
+   "event": "XXXII",
+   "season": 1997,
+   "flank": {
+    "kind": "team",
+    "from_mid_yd": 20,
+    "box_yd": [
+     7.0,
+     6.0
+    ],
+    "teams": {
+     "N": "DEN",
+     "S": "GB"
+    }
+   }
+  },
+  {
+   "row": 22,
+   "event": "XXXIV",
+   "season": 1999,
+   "flank": {
+    "kind": "team",
+    "from_mid_yd": 20,
+    "box_yd": [
+     7.0,
+     6.0
+    ],
+    "teams": {
+     "N": "TEN",
+     "S": "STL"
+    }
+   }
+  },
+  {
+   "row": 23,
+   "event": "XXXVI",
+   "season": 2001,
+   "flank": {
+    "kind": "team",
+    "from_mid_yd": 20,
+    "box_yd": [
+     7.0,
+     6.0
+    ],
+    "teams": {
+     "N": "NE",
+     "S": "STL"
+    }
+   }
+  },
+  {
+   "row": 27,
+   "event": "XLII",
+   "season": 2007,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     9.0,
+     7.0
+    ]
+   }
+  },
+  {
+   "row": 28,
+   "event": "XLIII",
+   "season": 2008,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     9.4,
+     5.0
+    ]
+   }
+  },
+  {
+   "row": 29,
+   "event": "XLVI",
+   "season": 2011,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     8.2,
+     9.2
+    ]
+   }
+  },
+  {
+   "row": 30,
+   "event": "LI",
+   "season": 2016,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     8.5,
+     8.6
+    ]
+   }
+  },
+  {
+   "row": 34,
+   "event": "XXXVIII",
+   "season": 2003,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     9.0,
+     6.6
+    ]
+   }
+  },
+  {
+   "row": 35,
+   "event": "XLIV",
+   "season": 2009,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     12.0,
+     5.2
+    ]
+   }
+  },
+  {
+   "row": 40,
+   "event": "XLVII",
+   "season": 2012,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     8.2,
+     8.8
+    ]
+   }
+  },
+  {
+   "row": 42,
+   "event": "XLIX",
+   "season": 2014,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     9.7,
+     9.4
+    ]
+   }
+  },
+  {
+   "row": 45,
+   "event": "LII",
+   "season": 2017,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     9.4,
+     8.2
+    ]
+   }
+  },
+  {
+   "row": 46,
+   "event": "LIV",
+   "season": 2019,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     8.8,
+     7.2
+    ]
+   }
+  },
+  {
+   "row": 48,
+   "event": "LVI",
+   "season": 2021,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     13.0,
+     10.3
+    ]
+   }
+  },
+  {
+   "row": 50,
+   "event": "LVIII",
+   "season": 2023,
+   "flank": {
+    "kind": "event",
+    "from_mid_yd": 25,
+    "box_yd": [
+     14.0,
+     10.0
+    ]
+   }
+  }
+ ],
+ "franchise_generic": [
+  "LXII",
+  "LXIII",
+  "LXIV",
+  "LXV"
+ ],
+ "marks": {
+  "DEN_1997": {
+   "file": "marks/DEN_1997.png",
+   "size": [
+    126,
+    79
+   ],
+   "sha256": "d248687e7a2faad73c5d9558bd929e318a9e399e433329bde9146dd6a9befbbb"
+  },
+  "GB_1997": {
+   "file": "marks/GB_1997.png",
+   "size": [
+    127,
+    86
+   ],
+   "sha256": "2982645e807266d82e96b13f98bdc6b40e277fa5c44d1841c53367370bafcd56"
+  },
+  "LI": {
+   "file": "marks/LI.png",
+   "size": [
+    512,
+    461
+   ],
+   "sha256": "b4182cc606e65414c8eb02f3f771185c9fe94dfa724c83964a018d938a7e22d0"
+  },
+  "LII": {
+   "file": "marks/LII.png",
+   "size": [
+    512,
+    348
+   ],
+   "sha256": "aa309524c788d82f491466cb3e0f2ec6dc15cf685d6f81f4d18d13de03dc6dcf"
+  },
+  "LIV": {
+   "file": "marks/LIV.png",
+   "size": [
+    512,
+    305
+   ],
+   "sha256": "8471fc417647920c120f8041574d080ed96366c32a0f64a0d59e1a1f33e6a601"
+  },
+  "LVI": {
+   "file": "marks/LVI.png",
+   "size": [
+    512,
+    305
+   ],
+   "sha256": "38f4451dbe4e719156638bc9c8c52f42b26b7a1a44b75deb04a800419e991e8c"
+  },
+  "LVIII": {
+   "file": "marks/LVIII.png",
+   "size": [
+    512,
+    213
+   ],
+   "sha256": "467a083b37a5d870f5ebe2ccf99904a69178509ad2212af166b479e14d781e36"
+  },
+  "LXII": {
+   "file": "marks/LXII.png",
+   "size": [
+    512,
+    248
+   ],
+   "sha256": "101b74580aa7c22d98b440df4d41b1c38db0efcea608df38e4d4f24b05733e58"
+  },
+  "LXIII": {
+   "file": "marks/LXIII.png",
+   "size": [
+    512,
+    211
+   ],
+   "sha256": "65f1c4dcf65b91e0854b7844e7e02d2c69c2dce1492c524c46764aca5b42f4f2"
+  },
+  "LXIV": {
+   "file": "marks/LXIV.png",
+   "size": [
+    512,
+    225
+   ],
+   "sha256": "a7d963f0960312c04f852c2a308df703d931aa8bae3db973ca694f3ea5013f1c"
+  },
+  "LXV": {
+   "file": "marks/LXV.png",
+   "size": [
+    512,
+    268
+   ],
+   "sha256": "2a93b324cb3c2f848e6082a4cf84bfd5df6207c013e6c5e4a91df47e8a2c8b2f"
+  },
+  "NE_2001": {
+   "file": "marks/NE_2001.png",
+   "size": [
+    128,
+    66
+   ],
+   "sha256": "82ee314b6b2b4c998eec94ae37be57497f1d230dc8221eedbe3d27b5c46e8986"
+  },
+  "STL_1999": {
+   "file": "marks/STL_1999.png",
+   "size": [
+    471,
+    471
+   ],
+   "sha256": "3b0660fea0325d9cbed3da05f46943b9e753809974557ecd87fec5025e467b5d"
+  },
+  "STL_2001": {
+   "file": "marks/STL_2001.png",
+   "size": [
+    471,
+    471
+   ],
+   "sha256": "47d9ac8e2bcee57db787d5efa94d09fb7189f6918abe2c51a2198f9c709c15ff"
+  },
+  "TEN_1999": {
+   "file": "marks/TEN_1999.png",
+   "size": [
+    126,
+    126
+   ],
+   "sha256": "206501eb8f7a61deedb7847a17f1c159443d4d601758385d76dd4eb0bcc5506b"
+  },
+  "XLII": {
+   "file": "marks/XLII.png",
+   "size": [
+    512,
+    416
+   ],
+   "sha256": "f78299b90ef66188f7ed3c70c5c0a6301628d0355ef70e44bfa26f83dda6c843"
+  },
+  "XLIII": {
+   "file": "marks/XLIII.png",
+   "size": [
+    512,
+    261
+   ],
+   "sha256": "d67b39c541fe3d038d16aefd12964c2b705f280bb8933c8b06ecb3d496b8ce90"
+  },
+  "XLIV": {
+   "file": "marks/XLIV.png",
+   "size": [
+    512,
+    148
+   ],
+   "sha256": "99cae1319db14a1279b03c05a634fee30632c1f760adf2eeefad43b76d527ad8"
+  },
+  "XLIX": {
+   "file": "marks/XLIX.png",
+   "size": [
+    512,
+    488
+   ],
+   "sha256": "c8490296d22d021d0139ca8af924f334a1481e2846edaa4bc314e46576ff8ad8"
+  },
+  "XLVI": {
+   "file": "marks/XLVI.png",
+   "size": [
+    512,
+    507
+   ],
+   "sha256": "72599e0d8a9beb937e35f461b09f8e6b649fda6e694691f75477aab2a098f28c"
+  },
+  "XLVII": {
+   "file": "marks/XLVII.png",
+   "size": [
+    495,
+    512
+   ],
+   "sha256": "096c2397f9ddabbe7814e636eabc43baa53615f725229ba33fd7529431c3bdbf"
+  },
+  "XXIII": {
+   "file": "marks/XXIII.png",
+   "size": [
+    512,
+    238
+   ],
+   "sha256": "34ff9f8bb1cb1553474acf258f03de0a07148d8f5c54e4fa2bdeb87f9b1dba19"
+  },
+  "XXXVIII": {
+   "file": "marks/XXXVIII.png",
+   "size": [
+    512,
+    344
+   ],
+   "sha256": "854cb6755e02baba4648c1a427a233bbe077148ac98277b7d72334d67719603b"
+  }
+ }
+}

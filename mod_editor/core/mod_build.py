@@ -4533,6 +4533,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             target, progress=progress, anniversary_receipt=field_receipt if plan.espn25_named_previews else None)
         receipt["steps"].append({"step": "broadcast_greens", **greens_receipt})
         receipt["result"]["broadcast_greens"] = greens_receipt["state"]
+    if plan.season_2026 and tt.is_disc_image(target):
+        # sb1: the announced Super Bowl hosts (LXII Atlanta, LXIII Las Vegas, LXIV Nashville) in the neutral rows the
+        # executable picks for franchise seasons 1 to 3, copied from the finished host bundles after every field and
+        # colour pass, with Super Bowl fields.
+        hosts = _core_module("nfl2k5_super_bowl_hosts")
+        if hosts is None:
+            raise ValueError("the Super Bowl hosts step is unavailable")
+        progress("Super Bowl hosts for the franchise", 0, 0)
+        hosts_receipt = hosts.apply_to_image(target, user_art=plan.super_bowl_user_art or None, progress=progress)
+        for line in hosts_receipt.get("log", ()):
+            progress(line, 0, 0)
+        receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
+        receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
     if plan.indicator_names_folder:
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
