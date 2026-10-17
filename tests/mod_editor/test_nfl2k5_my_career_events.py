@@ -231,15 +231,17 @@ class HostBudgetTests(unittest.TestCase):
                 '738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73',
             # mc2 reviewed native changes: menu-port ownership, B quit on the
             # entry/Apartment, backup prompt, first clean free record (D01).
+            # nl1: the "You were drafted by the <city> <nickname>." notice.
             'tools/mycareer_mode/runtime.c':
-                'c5aead8a81976c3b3f0f64c132b39d69a5c68d0eb3ac980c5c339e9995c7350c',
+                '02fd3dc404c0417ab4dee60492f48de113e7119a79b8eb165e2517264d1f0b53',
             'tools/mycareer_mode/runtime.S':
                 '9993d7d2331cb5d49ede81323ceae37fd71a07cfbfd28e343b307989de599e65',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
                 # prefetch path; the budget, assembly and progression pins stay fixed.
-                '94b40a84b1aee82246f50515aedfb68e8cb467d827e4d4189c11c328fc3494f6',
+                # nl1: drafted-notice format in the M3 pool, Team Select side guard.
+                'acaa0a654ddc4a2cfe2b7769f4ca4c3ccd460461d3b9b5c8fe65c314d4ba1d79',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

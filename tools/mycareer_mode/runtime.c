@@ -1083,6 +1083,18 @@ void FC m3_begin_draft(u32 manager) {
     if(G(0xE576A4)==5) CALL2(0x6e2e0,manager,(u32)m3_draft_menu);
     else notice(manager,draft_notice);
 }
+/* nl1 (Noah, 2026-10-17: "a little pop-up, like 'You were drafted by the
+ * Cowboys'"): one native notice after the draft places MyPlayer, with the
+ * club's full name (city +0x138 and nickname +0x104 of its team record).
+ * The notice keeps the text pointer for its modal loop, so the text lives
+ * in this frame, not in the two buffers the Apartment draw rewrites. */
+extern const u16 m3_drafted_format[];
+static NI void drafted(u32 manager) {
+    u16 text[80]; u32 args[2]; u8 *t=(u8 *)S(2588);
+    if(!t || !(args[0]=W(t,0x138)) || !(args[1]=W(t,0x104))) return;
+    ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)((u8 *)text,80,m3_drafted_format,args);
+    notice(manager,text);
+}
 void FC m3_draft_tick(u32 manager) {
     u32 option;
     if(!owner(manager) || !inline_active() || !primary() || G(0xE576A4)!=5) return;
@@ -1098,6 +1110,7 @@ void FC m3_draft_tick(u32 manager) {
         if(S(24)==3) {
             CALL1(0x13ec90,S(2588)); start_player();
             CALL2(0x6e2e0,manager,(u32)apartment);
+            drafted(manager);
         } else if(S(24)==4) {
             S(2680)=2; S(2684)=0;
             CALL2(0x6e2e0,manager,(u32)team_menu);
