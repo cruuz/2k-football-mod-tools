@@ -20,7 +20,8 @@ TOOL_SPEC = importlib.util.spec_from_file_location("modern_art_catalog_tool", RO
 tool = importlib.util.module_from_spec(TOOL_SPEC)
 TOOL_SPEC.loader.exec_module(tool)
 FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5_modern_officials",
-           "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers")
+           "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers",
+           "data/nfl2k5_super_bowl_fields")
 
 
 class ModernArtReleaseTests(unittest.TestCase):
@@ -57,14 +58,15 @@ class ModernArtReleaseTests(unittest.TestCase):
 
     def test_every_modern_png_is_authored_and_catalogued(self):
         """pr2 leaves 595 coach, fan and official PNGs; me1 adds 122 event walls and one ball; sb2 adds 101 authored
-        ``.marks.png`` slot layers to the walls (223 wall PNGs in all); fn1 adds the block yard numerals atlas (820 files).
+        ``.marks.png`` slot layers to the walls (223 wall PNGs in all); fn1 adds the block yard numerals atlas (820 files);
+        sb1 adds 23 authored Super Bowl field marks and 19 franchise host surfaces (862 files).
 
         Portrait photos remain external and shoe/clipboard pixels come from the user's disc.
         """
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 820)
+        self.assertEqual(len(document["files"]), 862)
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):

@@ -302,7 +302,7 @@ def _endzone(row,end,wordmarks):
     return np.asarray(canvas)
 
 
-def _field(template,row,wordmarks=None,old_shield=None):
+def _field(template,row,wordmarks=None,old_shield=None,marks=None):
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     from PIL import Image
@@ -331,10 +331,18 @@ def _field(template,row,wordmarks=None,old_shield=None):
             paint=old_shield
         paint=np.asarray(Image.fromarray(paint).resize((r['width'],r['height']),Image.Resampling.LANCZOS))
         mm.write_p8(out,rec['system_bytes'],r,paint,256);textures.append(materials[key])
-    return _seal_field(template,chunk,rec,decoded,out,textures)
+    # sb1: the Super Bowl rows' marks on the 30s/25s (renamed, painted and placed title-week quads)
+    from . import nfl2k5_super_bowl_fields as super_bowl_fields
+    flank_textures,extra,flanks=super_bowl_fields.apply_field(out,rec,decoded,row['row'],marks)
+    if flank_textures:
+        textures=textures+[t for t in flank_textures if t not in textures]
+    span,detail=_seal_field(template,chunk,rec,decoded,out,textures,extra)
+    if flanks:
+        detail['super_bowl_flanks']=flanks
+    return span,detail
 
 
-def _seal_field(template,chunk,rec,decoded,out,textures):
+def _seal_field(template,chunk,rec,decoded,out,textures,extra_ranges=()):
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     tx,_,_,HEADER,_=mm._tools();rows=mv.p8_rows(rec)
@@ -357,9 +365,12 @@ def _seal_field(template,chunk,rec,decoded,out,textures):
         for at,size in ((rec['system_bytes']+r['pixel_offset'],r['palette_offset']-r['pixel_offset']),
                         (rec['system_bytes']+r['palette_offset'],1024)):
             protected[at:at+size]=original[at:at+size]
+    for at,size in extra_ranges:
+        protected[at:at+size]=original[at:at+size]
     require(protected==original,'period paint changed protected geometry or texture metadata')
     return span,dict(template_field=sha(mm.scene_span(template,chunk)),field=sha(span),
-                     decoded=sha(out),geometry_and_descriptors_preserved=True,stored_size=stored,
+                     decoded=sha(out),geometry_and_descriptors_preserved=not extra_ranges,
+                     flank_ranges=[list(x) for x in extra_ranges],stored_size=stored,
                      overlap_scratch=scratch,texture_indices=textures)
 
 
@@ -389,6 +400,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     from . import nfl2k5_super_bowl_walls as super_bowl_walls
+    from . import nfl2k5_super_bowl_fields as super_bowl_fields
     require(struct.unpack_from('<I',situ,32+0x40)[0]==51,'expected 51 physical Anniversary rows')
     output={};receipts=[];templates={};wordmarks={};old_shield=None
     # sb2: the Super Bowl walls' NFL shield; seasons before 2008 take the period shield from the retail disc
@@ -416,7 +428,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
             # generic retail field also carries conference-title stamps, which
             # do not belong to these wildcard/divisional matchups.
             span,detail=_retail_playoff_field(source)
-        else:span,detail=_field(templates[code],row,wordmarks,old_shield)
+        else:span,detail=_field(templates[code],row,wordmarks,old_shield,marks)
         after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
         if row['row'] not in PRESERVED_RETAIL_ROWS:
             after, protection = protect_period_field(after)
@@ -435,10 +447,13 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
             outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail))
         if progress:progress(row['row'],51,alias)
     walls_receipts=[r['detail']['super_bowl_walls'] for r in receipts if r['detail'].get('super_bowl_walls')]
+    flank_receipts=[r['detail']['super_bowl_flanks'] for r in receipts if r['detail'].get('super_bowl_flanks')]
     return output,dict(schema='nfl2k5_espn25_fields_receipt/v1',catalog_sha256=sha(DATA.read_bytes()),
         manifest_sha256=sha((ART/'manifest.json').read_bytes()),runtime_witnessed=False,
         assets=receipts,total_bytes=sum(map(len,output.values())),
         super_bowl_walls=dict(manifest_sha256=sha((super_bowl_walls.ART/'manifest.json').read_bytes()),
             period_shield=shield_receipt,user_art=str(user_art) if user_art else None,
             log=super_bowl_walls.user_art_summary(walls_receipts) if user_art else []),
+        super_bowl_fields=dict(manifest_sha256=sha((super_bowl_fields.ART/'manifest.json').read_bytes()),
+            flanks=flank_receipts,log=super_bowl_fields.user_art_lines(flank_receipts)),
         scope='Separate Anniversary resources only; existing modern and retail venue files are read only.')

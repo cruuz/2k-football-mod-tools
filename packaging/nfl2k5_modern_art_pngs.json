@@ -1,5 +1,5 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel.",
   "files": {
     "data/nfl2k5_era_ball/modern_ball.png": {
       "height": 256,
@@ -3582,6 +3582,258 @@
       "sha256": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
       "size": 2329,
       "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png": {
+      "height": 128,
+      "sha256": "460618bcbc119f33df223c42bb827b5dcd0293867e653710747f3aa4cd511e31",
+      "size": 22971,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h41/banner_home_player.png": {
+      "height": 128,
+      "sha256": "64d3e6591dc1ae8fc7d6eb56b9876719595a82da726e11282f04865b0591b416",
+      "size": 43164,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h41/banner_home_team.png": {
+      "height": 128,
+      "sha256": "a61606f33ed3ff0ae00741f5e0007b160ae3f2c499c50c922a0235c50cdb4224",
+      "size": 21914,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h41/exitbanner.png": {
+      "height": 128,
+      "sha256": "2f3d031000ced2ce7e8722792148a9e0a83d61128baa9e246c37294bf41268a6",
+      "size": 18177,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h41/wall05.png": {
+      "height": 256,
+      "sha256": "0db00a156f0478bf3d96b8fcb88229a54dd3e35f62f1c3c4dd77babdc6022d7a",
+      "size": 36412,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/LIGHT_mb_column.png": {
+      "height": 128,
+      "sha256": "2c7171ac1ccb6a5751dd97d2a3fb311aad1c134088d98463b6ed2bcf251b0a28",
+      "size": 5391,
+      "width": 32
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/LIGHT_mb_halo.png": {
+      "height": 128,
+      "sha256": "177c73df8450f9f5a920ad5bd96a34adbe5db0d7efc511bc431d0ccbef548b76",
+      "size": 18555,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/LIGHT_mb_ribbon.png": {
+      "height": 64,
+      "sha256": "9f7b796366b70d747e6b09ac5a18131d9a24cb79a640bf1959440b222cb3742f",
+      "size": 9314,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/banner_away_team.png": {
+      "height": 128,
+      "sha256": "f6db2c7dbf79520ab0d910866e0e86e8eb01ddaa512cf663c7cb2be66484d78f",
+      "size": 21527,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/banner_home_player.png": {
+      "height": 128,
+      "sha256": "113a0a64b26bb3391ad0707612e18dac77948bba76581c8b6d922947e4b32e3b",
+      "size": 39608,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/banner_home_team.png": {
+      "height": 128,
+      "sha256": "4223c8b2cf1aeb09fb42b9d625b9758b95bc02a5264fb42a88653669e2e4449a",
+      "size": 19753,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h42/mb_wall.png": {
+      "height": 32,
+      "sha256": "37cebc5538c35beba31add48fc6be8cbf707c68e78d14d7314d959bce2ccbc7d",
+      "size": 8615,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/LIGHT_ag_board_panel.png": {
+      "height": 128,
+      "sha256": "f36dccec4754d978f51e3f7a0f89b4c1c5262a19519e0eb0d4e3b5915caa1bda",
+      "size": 8967,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/LIGHT_ag_mesh.png": {
+      "height": 64,
+      "sha256": "8a84dcca2e45e288257418a06ce490493b74ef2189ff3190c7d47f5936469fc5",
+      "size": 9242,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/LIGHT_ag_ribbon.png": {
+      "height": 64,
+      "sha256": "8a84dcca2e45e288257418a06ce490493b74ef2189ff3190c7d47f5936469fc5",
+      "size": 9242,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/ag_wall.png": {
+      "height": 32,
+      "sha256": "a5696fbe19a19ffe834e6ef52158f0a6b9b6ee3fee94cf42346ae12fc42b04d0",
+      "size": 9027,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/banner_away_team.png": {
+      "height": 128,
+      "sha256": "aa325d48b28959f18d4e8402dcb22e2df5fbe216f0167ded6dd3f9abf36f95d7",
+      "size": 21687,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/banner_home_player.png": {
+      "height": 128,
+      "sha256": "a2c38f4d04d062cf3e8ea918dbac59bee6a6f8097de23bc46ca03e9de044f82a",
+      "size": 38855,
+      "width": 256
+    },
+    "data/nfl2k5_super_bowl_fields/hosts/h43/banner_home_team.png": {
+      "height": 128,
+      "sha256": "d5c906fa284c90616e6c678935058391ec5e7b7d8b8078e86cd4a932f1929806",
+      "size": 20126,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/marks/DEN_1997.png": {
+      "height": 79,
+      "sha256": "d248687e7a2faad73c5d9558bd929e318a9e399e433329bde9146dd6a9befbbb",
+      "size": 10060,
+      "width": 126
+    },
+    "data/nfl2k5_super_bowl_fields/marks/GB_1997.png": {
+      "height": 86,
+      "sha256": "2982645e807266d82e96b13f98bdc6b40e277fa5c44d1841c53367370bafcd56",
+      "size": 10859,
+      "width": 127
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LI.png": {
+      "height": 512,
+      "sha256": "b5bf59acc8fe65f3125bf0bbbfa7d9b145944fd8d76eb676c86c256bff5b176c",
+      "size": 71405,
+      "width": 420
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LII.png": {
+      "height": 470,
+      "sha256": "c9eb73c100d907c0953c03811e171ca64347077e07c7659245aff44f3e03c9fb",
+      "size": 69284,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LIV.png": {
+      "height": 435,
+      "sha256": "5256be400e7cc799d5a9960a1e0b47b39df9d95536321c63910e0f6f55b907e8",
+      "size": 90728,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LVI.png": {
+      "height": 435,
+      "sha256": "52728acbf9484a94856f24d91adf5700c6cadde8b02be51b97109b2c0e25e69e",
+      "size": 105021,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LVIII.png": {
+      "height": 299,
+      "sha256": "a0e6d409a2869467e3dd92ec9fd70cd981f79b22129a20c45a846ee048584a8a",
+      "size": 71474,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LXII.png": {
+      "height": 350,
+      "sha256": "729504b437d6cf364322fcf9a5e0741fbc884c72bc4035faf677eb997c732afb",
+      "size": 85339,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LXIII.png": {
+      "height": 296,
+      "sha256": "a64d7f6d2733d119ff9268f07d19daf104b4189ae1081496cd576d765dc531b0",
+      "size": 74028,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LXIV.png": {
+      "height": 330,
+      "sha256": "5d18a2aac8f8934f06eb6cc106cf7c771585f255e828be8281057a4f96adcff9",
+      "size": 96473,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/LXV.png": {
+      "height": 399,
+      "sha256": "470da358a0400275f3af4098a8405d5f0339dfb3b5f7e064f6c4b8187bb56f15",
+      "size": 113986,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/NE_2001.png": {
+      "height": 66,
+      "sha256": "82ee314b6b2b4c998eec94ae37be57497f1d230dc8221eedbe3d27b5c46e8986",
+      "size": 7308,
+      "width": 128
+    },
+    "data/nfl2k5_super_bowl_fields/marks/STL_1999.png": {
+      "height": 471,
+      "sha256": "3b0660fea0325d9cbed3da05f46943b9e753809974557ecd87fec5025e467b5d",
+      "size": 17787,
+      "width": 471
+    },
+    "data/nfl2k5_super_bowl_fields/marks/STL_2001.png": {
+      "height": 471,
+      "sha256": "47d9ac8e2bcee57db787d5efa94d09fb7189f6918abe2c51a2198f9c709c15ff",
+      "size": 17956,
+      "width": 471
+    },
+    "data/nfl2k5_super_bowl_fields/marks/TEN_1999.png": {
+      "height": 126,
+      "sha256": "206501eb8f7a61deedb7847a17f1c159443d4d601758385d76dd4eb0bcc5506b",
+      "size": 15057,
+      "width": 126
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLII.png": {
+      "height": 416,
+      "sha256": "f78299b90ef66188f7ed3c70c5c0a6301628d0355ef70e44bfa26f83dda6c843",
+      "size": 130162,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLIII.png": {
+      "height": 261,
+      "sha256": "d67b39c541fe3d038d16aefd12964c2b705f280bb8933c8b06ecb3d496b8ce90",
+      "size": 84838,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLIV.png": {
+      "height": 148,
+      "sha256": "99cae1319db14a1279b03c05a634fee30632c1f760adf2eeefad43b76d527ad8",
+      "size": 42111,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLIX.png": {
+      "height": 488,
+      "sha256": "c8490296d22d021d0139ca8af924f334a1481e2846edaa4bc314e46576ff8ad8",
+      "size": 90850,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLVI.png": {
+      "height": 507,
+      "sha256": "72599e0d8a9beb937e35f461b09f8e6b649fda6e694691f75477aab2a098f28c",
+      "size": 90134,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XLVII.png": {
+      "height": 512,
+      "sha256": "096c2397f9ddabbe7814e636eabc43baa53615f725229ba33fd7529431c3bdbf",
+      "size": 94060,
+      "width": 495
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XXIII.png": {
+      "height": 238,
+      "sha256": "34ff9f8bb1cb1553474acf258f03de0a07148d8f5c54e4fa2bdeb87f9b1dba19",
+      "size": 51394,
+      "width": 512
+    },
+    "data/nfl2k5_super_bowl_fields/marks/XXXVIII.png": {
+      "height": 344,
+      "sha256": "854cb6755e02baba4648c1a427a233bbe077148ac98277b7d72334d67719603b",
+      "size": 96449,
+      "width": 512
     },
     "data/nfl2k5_super_bowl_walls/row14/banner_away_team.marks.png": {
       "height": 128,

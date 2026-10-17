@@ -212,6 +212,8 @@ def apply_fields_to_image(path, retail_source, *, progress=None, user_art=None, 
             log(f"Super Bowl walls: your logos folder {user_art}" + ("" if found else " was not found"))
         for line in art_receipt['super_bowl_walls']['log']:
             log(line)
+        for line in art_receipt.get('super_bowl_fields', {}).get('log', ()):
+            log(line)
     receipt = append_to_image(path, resources, situation=situ)
     receipt.update(fields=art_receipt, situation=situ_receipt, situation_after_sha256=sha(situ))
     return receipt
