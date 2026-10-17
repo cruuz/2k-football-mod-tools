@@ -220,46 +220,39 @@ def code_for(cave, state):
     a.label("sb_out")
     a.b("c3")
     # --- 0x20CC05 (select handler; ESI = the selected SITU record, still loaded): copy this row's baselines.
+    # A row without a block leaves the state alone: the armed row then differs from the selected one.
     a.label("select")
-    a.b("60")                                   # pushad (flags are rebuilt by the displaced cmp)
-    a.b("c705" + _imm(state + 4) + _imm(-1))    # disarm
-    a.b("8b5608")                               # mov edx,[esi+8]   the objective text
-    a.b("85d2")
+    a.b("60")                                   # pushad (the displaced cmp rebuilds the flags)
+    a.b("8b7e08")                               # mov edi,[esi+8]   the objective text
+    a.b("85ff")
     a.j8("74", "sel_done")
-    a.b("b900020000")                           # bounded scan: 512 characters
-    a.label("sel_scan")
-    a.b("66833a00")                             # cmp word [edx],0
-    a.j8("74", "sel_nul")
-    a.b("83c20249")                             # add edx,2; dec ecx
-    a.j8("75", "sel_scan")
-    a.j8("eb", "sel_done")
-    a.label("sel_nul")
-    a.b("83c202")                               # past the NUL
-    a.b("813a" + COACH_MAGIC.hex())             # cmp dword [edx],'MCO1'
-    a.j8("75", "sel_nocoach")
-    a.b("81c2" + _imm(COACH_SIZE))
-    a.label("sel_nocoach")
-    a.b("813a" + MAGIC.hex())                   # cmp dword [edx],'MST1'
+    a.b("fc33c0b900020000f266af")               # cld; xor eax,eax; mov ecx,512; repne scasw (EDI past the NUL)
     a.j8("75", "sel_done")
-    a.b("0fb74a04")                             # movzx ecx,word [edx+4]
-    a.b("81f9" + _imm(MAX_ENTRIES))
-    a.j8("77", "sel_done")
-    a.b("a1" + _imm(state))                     # mov eax,[state]
+    a.b("813f" + COACH_MAGIC.hex())             # cmp dword [edi],'MCO1'
+    a.j8("75", "sel_nocoach")
+    a.b("81c7" + _imm(COACH_SIZE))              # skip the coach block
+    a.label("sel_nocoach")
+    a.b("813f" + MAGIC.hex())                   # cmp dword [edi],'MST1'
+    a.j8("75", "sel_done")
+    a.b("0fb74f04")                             # movzx ecx,word [edi+4]  (entry count)
+    a.b("f6c5fe")                               # test ch,0xFE: refuse 512 entries or more
+    a.j8("75", "sel_done")
+    a.b("8d7704")                               # lea esi,[edi+4]   count, reserved, entries
+    a.b("a1" + _imm(state))                     # mov eax,[state]   the session block
     a.b("85c0")
     a.j8("75", "sel_have")
-    a.b("5152")                                 # push ecx; push edx
+    a.b("51")                                   # push ecx
     a.b("b9" + _imm(MAIN_HEAP))                 # ecx = main heap
     a.b("ba" + _imm(BUFFER_SIZE))               # edx = size
-    a.j32("e8", HEAP_ALLOC)
-    a.b("5a59")                                 # pop edx; pop ecx
+    a.j32("e8", HEAP_ALLOC)                     # keeps ESI and EDI
+    a.b("59")                                   # pop ecx
     a.b("85c0")
     a.j8("74", "sel_done")
     a.b("a3" + _imm(state))
     a.label("sel_have")
     a.b("8bf8")                                 # mov edi,eax
-    a.b("8d7204")                               # lea esi,[edx+4]   count, reserved, entries
     a.b("8d0c8d04000000")                       # lea ecx,[ecx*4+4]
-    a.b("fcf3a4")                               # cld; rep movsb
+    a.b("f3a4")                                 # rep movsb
     a.b("a1" + _imm(MOMENT))
     a.b("a3" + _imm(state + 4))                 # arm with the selected row
     a.label("sel_done")
@@ -267,22 +260,21 @@ def code_for(cave, state):
     a.b("8b461083f8ff")                         # the two displaced instructions
     a.j32("e9", SELECT_BACK)
     # --- 0xCB295: player live value (EAX = stat, ECX = bank, [esp+4] = player); ret 4 like 0xCA470.
+    # EBX and EDI are free: 0xCB29A pops both before returning.
     a.label("player_stat")
-    a.b("51")                                   # push ecx (bank)
-    a.b("50")                                   # push eax (stat)
-    a.b("ff74240c")                             # push [esp+0xc] (player)
+    a.b("51" "50" "ff74240c")                   # push bank; push stat; push the player argument
     a.j32("e8", PLAYER_LIVE)                    # st0 = live value (ret 4)
-    a.b("5a59")                                 # pop edx (stat); pop ecx (bank)
+    a.b("5b59")                                 # pop ebx (stat); pop ecx (bank)
     a.b("85c9")
-    a.j8("75", "ps_out")                        # bank 0 only
-    a.b("8b4c2404")                             # mov ecx,[esp+4]
-    a.b("81e9" + _imm(LIVE_PLAYERS))
-    a.b("81f9" + _imm(LIVE_SLOTS * PLAYER_SIZE))
+    a.j8("75", "ps_out")                        # bank 0 (this game) only
+    a.b("8b442404")                             # mov eax,[esp+4]
+    a.b("2d" + _imm(LIVE_PLAYERS))              # sub eax,first live record
+    a.b("3d" + _imm(LIVE_SLOTS * PLAYER_SIZE))
     a.j8("73", "ps_out")
-    a.b("5052")                                 # push eax; push edx
-    a.b("8bc1" "33d2" "b9" + _imm(PLAYER_SIZE) + "f7f1")   # eax = offset / 84, edx = remainder
-    a.b("85d2" "8bc8" "5a58")                   # test edx,edx; mov ecx,eax; pop edx; pop eax (flags kept)
-    a.j8("75", "ps_out")
+    a.b("33d2" "b9" + _imm(PLAYER_SIZE) + "f7f1")   # eax = live index, edx = remainder
+    a.b("85d2")
+    a.j8("75", "ps_out")                        # not a record start
+    a.b("8bc8" "8bd3")                          # ecx = key, edx = stat
     a.j32("e8", "look")
     a.label("ps_out")
     a.b("c20400")
@@ -290,13 +282,13 @@ def code_for(cave, state):
     a.label("team_stat")
     a.b("51" "50" "ff74240c")
     a.j32("e8", TEAM_LIVE)
-    a.b("5a59" "85c9")
+    a.b("5a59" "85c9")                          # pop edx (stat); pop ecx (bank)
     a.j8("75", "ts_out")
     a.b("8b442404")                             # mov eax,[esp+4]
-    a.b("b9" + _imm(HOME_TEAM_KEY))
+    a.b("b1" + "%02x" % HOME_TEAM_KEY)          # mov cl,0xFE
     a.b("3d" + _imm(LIVE_TEAMS[0]))
     a.j8("74", "ts_go")
-    a.b("41")                                   # inc ecx -> 0xFF
+    a.b("fec1")                                 # inc cl -> 0xFF
     a.b("3d" + _imm(LIVE_TEAMS[1]))
     a.j8("75", "ts_out")
     a.label("ts_go")
