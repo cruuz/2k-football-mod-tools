@@ -1,0 +1,27 @@
+{
+ "art_sha256": {
+  "braids_dark": "0aa7d4675c19b42110b7faa436b6e081e070dd60bf36f7c9c317c8884a75de33",
+  "bun_dark": "af3297d677a60f71e3528765040ddebe7549638df8e5237cd602108cc5c0733f",
+  "curls_dark": "3e7ae39080661c28c2f059e776fd5002bebc8c70c2d4b5f27f7028734c0771b5",
+  "locs_dark": "067329ce2cc92cc47fa19f9d49cd6a0b98b145a27563a3c3e6dea17bd3516a05",
+  "locs_light": "6bcc7b245ec85f1dfce7fec705610c78abe1d8a35b7c81809b8440d7ea333dfa",
+  "strands_black": "03aa3574df2b6b4b4fe0417c6b89af4e3d71b6b82aced802c9ef18884bf39932",
+  "strands_blond": "d13bb2e486e1eff3207a99954194ad7b25ffdcbfc2569b98a01873b0e6b0fe0c",
+  "strands_brown": "7dfe5e7ccccd639325860dbe4ab70e7db1706cc8c3a6b5e90487da590a5e1545",
+  "twists_dark": "aed5a3821de82d594a811a0f8525df02ea591879d608e9556bd5c1757ec95f52"
+ },
+ "geometry_sha256": "b7948111187f9aec065f93744cf0fb881b5840d8326ed5831e601a1d51d38211",
+ "pointer_fields_sha256": "6f9a2fd4d9480578ef14a31cd9d2a531eee6bad8c90c9af260c9eba57e9775fc",
+ "schema": "nfl2k5_hair_styles/v1",
+ "textures": {
+  "braids_dark": "85c9717fea89f39241c9a30e229cd74b503d4743c78b875784777a0fbb444a28",
+  "bun_dark": "52d230c3120fa13bcc2dfb6741380882635c51c864896d9c5beb84f308b6d8d1",
+  "curls_dark": "66d368bc8b9416765bf588ee16aa7373f6dc134df366bef4310fc419545a9f8b",
+  "locs_dark": "45da4b7d84d36136590661d576be1bc802ee1de2be71cd01618474d6adc9081a",
+  "locs_light": "0fd45c47c07c74dd0815c496d11f60e4ce4b7db65913a05f47f8b416bbb2b1a7",
+  "strands_black": "7018afc7b12dba0a7ee4ff73ba5f1a37425a7c90765a7a10fbb8d467d5d0e9ea",
+  "strands_blond": "e0eb929ae3530df5782bea9a02c74f9ef7e5462e051c724ae4ff989bd1a52fcd",
+  "strands_brown": "de92fb0efc72f7ad99cf1d1599389e0eddb846823d1f6e50ae3b0cee3873f3a7",
+  "twists_dark": "089d9dc8b9876a6a63fb1000a4a8e1664b2c7fb4aad8a5e8417aa9d76bea6d31"
+ }
+}

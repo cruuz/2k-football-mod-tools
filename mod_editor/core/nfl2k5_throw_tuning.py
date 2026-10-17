@@ -140,6 +140,7 @@ from . import nfl2k5_period_goalposts as period_goalposts_patch  # b77-v1b
 from . import nfl2k5_k128 as k128_patch  # b76-k1
 from . import nfl2k5_letter_grades as letter_grades_patch  # b77-f4
 from . import nfl2k5_honors as honors_patch  # b77-f5
+from . import nfl2k5_hair_styles as hair_styles_patch  # noqa: F401  b775-hs1: its late owner is installed by the hair_styles image step; imported here so the cave manifest recorder observes it
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
 from . import nfl2k5_resource_load_guard as resource_load_guard_patch  # b76-dn

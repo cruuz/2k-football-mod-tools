@@ -59,7 +59,7 @@ def fixture(data):
         pool, index = ("primary", number) if number < 2479 else ("secondary", number - 2479)
         offset = PLAYERS_OFF + number * rr.PLAYER_SIZE
         values = dict(base)
-        values.update(player_type=4, unknown_09=0xA5, unknown_0d=0x6B, unknown_1f_high=3,
+        values.update(player_type=4, unknown_09=0xA5, hair_style=0xB, unknown_0d_high=6, unknown_1f_high=3,
                       pbp_id=37, photo_id=509, position=0, contract_value=432, star_tag=1)
         for key in rr.POINTER_FIELDS:
             values[key] = 0
