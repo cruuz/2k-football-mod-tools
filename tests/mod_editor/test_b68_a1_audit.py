@@ -254,6 +254,11 @@ class CacheKeyTests(unittest.TestCase):
                 path = compiler / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b'original')
+            # b77.4 fast1: independent units (p8, digits, faces, portraits, kit
+            # layers) bind their compiler code inside the entry and refuse a hit
+            # when any loaded module changes (test_b774_fast_units); grouped
+            # and scene units keep the whole-tree compiler hash in the key.
+            base = dict(kind=tool.CRIB_STANDALONE_TEXTURE_KIND, selector='first', png='art.png')
             with patch.object(tool, 'ROOT', compiler):
                 key, _ = lookup(base); cache.put(key, {'cached': True})
                 for relative in ('tools/codec.py', 'mod_editor/core/writer.py',
