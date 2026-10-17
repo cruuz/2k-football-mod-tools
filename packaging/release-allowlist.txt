@@ -1251,6 +1251,7 @@ mod_editor/core/nfl2k5_hair_styles.py
 data/nfl2k5_hair_styles/geometry.json
 data/nfl2k5_hair_styles/pins.json
 data/nfl2k5_hair_styles/pointer_fields.json
+data/nfl2k5_hair_styles_2026_roster_edits.json
 data/nfl2k5_hair_styles/art/locs_dark.png
 data/nfl2k5_hair_styles/art/locs_light.png
 data/nfl2k5_hair_styles/art/twists_dark.png
