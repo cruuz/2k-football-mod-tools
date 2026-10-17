@@ -514,7 +514,7 @@ class Nfl2k5UnifiedVisualProvider:
     backend_module_sha256 = "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
-        "mod_editor/core/nfl2k5_espn25_fields.py": "18b905331cdef8eeba9994b243f120d5bc38370bf2340aebaa834099443241c0",
+        "mod_editor/core/nfl2k5_espn25_fields.py": "9c7df18da35fb2428b17a9a914d046a9e8c914ccbc16c3d883691da96c63ebd3",
         "mod_editor/core/nfl2k5_super_bowl_walls.py": "816cacb280cdb5ade0f92017eeeb9449c011955ecd92fa66f35695e11f0ae716",
         "mod_editor/core/nfl2k5_era_ball.py": "f2996e9e0d8080d6796ba4e1a5325fc3101747ad4f168687191fe11b4bafc33f",
         "mod_editor/core/exact_math.py": "31b977deeda09cbb68dcde7561ea54c9ebfad2cb4ff74f6601d681e3f4d68564",
@@ -557,7 +557,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_state_farm_venue.py": "05a3163dae06970f52263dda7994f798879843f915c5cba42b541584d26548c7",
         "mod_editor/core/nfl2k5_usbank_model.py": "a5f2b35c8a6d9c85874dad7aef670127605474cb618133d576aa411ec344bc17",
         "mod_editor/core/nfl2k5_usbank_venue.py": "388044c9675a4d76ac615772e6772b52f4107f3b93c76a9cc6f342e2a30901a0",
-        "mod_editor/core/nfl2k5_anniversary_pack.py": "025af70c2e6da72f654cc2f955e9af162f794220af3832e2a42d590f3265f39d",
+        "mod_editor/core/nfl2k5_anniversary_pack.py": "edf00efeeedcea3791a86e68f4c87c2bb1cf91c91a363d3b3e45f3e585e0bd39",
         "mod_editor/core/nfl2k5_marks_store.py": "cc0049a7b10fdd31ed43c183e29470d920e0bf8af6b24b704e989095c0dc0659",
         "mod_editor/core/xdvdfs_compact.py": "fff8750e5879128101e2a8dc51d97622974659a7c09b27014be60bab679d8ed3",
         "mod_editor/core/nfl2k5_moment_venues.py": "8271ad4d9478a8e7a86b0132262b2bb95ebba3f0a292421b669d4f7c4c233e41",

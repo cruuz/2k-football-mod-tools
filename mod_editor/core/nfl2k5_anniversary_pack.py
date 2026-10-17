@@ -219,6 +219,7 @@ def apply_fields_to_image(path, retail_source, *, progress=None, user_art=None, 
 
 def verify_fields_on_image(path, receipt):
     """Check every installed alias and SITU after the builder's final relocation."""
+    from . import nfl2k5_espn25_fields as fields
     from . import nfl2k5_historic_styles as styles
     assets = receipt['fields']['assets']
     mm.require(len(assets) == 51 and len({row['alias'] for row in assets}) == 51,
@@ -230,4 +231,10 @@ def verify_fields_on_image(path, receipt):
             raw = built.get(row['alias'])
             mm.require(len(raw) == row['size'] and sha(raw) == row['after'],
                        'Anniversary field changed after compilation: ' + row['alias'])
-    return dict(status='applied', assets_verified=51, situation_verified=True)
+        # b775-fan2: a built alias is a copy of a finished venue; a later pass
+        # that changes that venue's fans must rebuild the aliases too.
+        drift = fields.crowd_drift(built.get, assets)
+        mm.require(not drift, 'Anniversary stadium crowd differs from its venue: ' +
+                   ', '.join(f"{d['alias']} vs {d['source']}" for d in drift))
+    return dict(status='applied', assets_verified=51, situation_verified=True,
+                crowd_rows_verified=sum(row.get('source_kind') == 'built' for row in assets))
