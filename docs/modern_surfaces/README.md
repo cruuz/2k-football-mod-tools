@@ -68,6 +68,8 @@ where the fine texture lives.
 - End zones painted over the old turf: palette entries inside the old turf's colour envelope (hue +-12 degrees,
   saturation and value +-0.10) take the new turf colour with their shading; team paint is untouched (tests: sol gold,
   dark greens, white, navy, midnight green).
+- The detail texture (tf-v4 since 2026-10-16; the tf-v3 text below is its history): see "tf-v4: the grain Noah
+  picked" at the end of this section.
 - The detail texture (tf-v3): the look's kind (`fibre`, `helix`, `blade_bermuda`, `blade_bluegrass`) from the shipped
   palette PNG. The game shows this texture through its palette ALPHA (see the measured response), so the 256 entries
   carry one flat normal and alpha = the index, and the pixels carry short blades or fibres (2 to 3.5 texels, 2.5 to
@@ -85,6 +87,53 @@ where the fine texture lives.
 - Fit ladder per field: (pattern detail 2, 256 colours), (2, 64), (1, 64), (1, 32), (0, 32), the greedy encoder over
   the whole ladder first and the optimal parser only if none fits. The retail 32-byte wrapper, loader scratch word
   included, never changes.
+
+### tf-v4: the grain Noah picked (gr3, 2026-10-16; DESIGN, PROVED OFFLINE, unwitnessed in game)
+
+Noah's playtest of v0.6.1 (10/14 and 10/16): "the grass just doesn't look good ... it needs texture". gr2 measured why
+(`.b77-scratch/gr2/DIAGNOSIS.md`): tf-v3.1's far mips were a 2 x 2 box of mip 0, so the play camera (mips 1.4 to 5)
+drew about a quarter of retail's grain, and the grass colour was bright and yellow. Noah rejected the strong candidates
+and picked the in-between steps: synthetic turf at 15 % and natural grass at 20 % of the way from tonight's look toward
+candidate A, with grass a touch warmer than tonight's turf.
+
+- One premipped art per kind (`tools/nfl2k5_modern_surfaces_art.py`): each mip is the box of the level above mixed
+  with fresh clump noise at that level's own texel scale (fresh 0, .25, .45, .6, .7, .8; Helix .7 at mips 2 and 3),
+  stored at FULL strength (candidate A: 0.20, 0.17, 0.15, 0.12, 0.09, 0.065 sd/mean), every level mean on the kind's
+  alpha. Bermuda and fibre use the noise draws of gr2's pick sheet.
+- `DETAIL_STRENGTH = {"synthetic": 0.15, "grass": 0.20}`: the module scales each level's spread to
+  `rel_t = anchor + t (full - anchor)` (anchor = tf-v3.1) with integer arithmetic, so the bytes do not depend on the
+  machine. Turf (fibre) per mip: 0.094, 0.071, 0.065, 0.042, 0.025, 0.016; Bermuda: 0.104, 0.071, 0.056, 0.038,
+  0.025, 0.017. Mip 0 stays at less than half of the 0.225 that read as gravel on painted logos (lab 5). A build may
+  pass another strength (`apply_to_image(detail_strength=...)`); the receipt records it and the status recognizes it.
+- Natural grass colour: (63, 98, 45) on screen by day AFTER Broadcast greens (gr1 multiplies grass by 102/111), so
+  `grass_bermuda`'s day target is (68.6, 106.6, 49.0); the other grass looks take the same per-channel step and land
+  at the same luminance (bluegrass stays 4 degrees bluer), and every other light keeps its measured ratio to the day.
+  The measured medians stay in each grass look's `broadcast`. A grass venue with its own broadcast row keeps only its
+  character (its broadcast over the look's median, at unit luminance, hue turn capped at 6 degrees); Allegiant's
+  `design` row is still met exactly. Turf colours and gr1 are unchanged.
+- Loan venues (`LOAN_NORMAL_VENUES`: DET s09 and CLE s30 end-zone loan, PIT s22 late midfield, WAS s29 field normal
+  loan): the premipped full art no longer compresses into their loans (gr2: 174,029 to 191,864 bytes against 146,880
+  to 174,192), so they take the TILED art, compressed with the fixed-distance repeat encoder into exactly the loan the
+  v0.6.1 disc carries (`nfl2k5_midfield_art.TILED_NORMAL_LOANS`: 20,592, 26,208, 1,680 and 28,992 bytes), filled with
+  literals up to that size. Every field span keeps the size its paint was proved in. The final pass keeps the
+  compressed tiled normal (`normal_span(preserve_full=True)` accepts the tiled art), and the Studio passes PIT through
+  `tiled_normal_prefixes` when its late midfield is selected.
+- Revision `tf-v4`; the eight tf-v3.1 detail hashes moved to `LEGACY_DETAIL_SHA256`, so v0.6 and v0.6.1 discs still
+  read as this option.
+- Proof (gr3, PROVED OFFLINE, memory only, `.b77-scratch/gr3/REPORT.md`): all 288 home bundles of the v0.6.1 disc,
+  painted as a first pass and then through Broadcast greens, refit inside their fixed spans with the retail wrapper
+  (169 greedy and 3 optimal refits at full pattern detail and 256 colours, 9 Highmark bundles at detail 1 and 64
+  colours as on v0.6.1, 107 turf fields byte-identical; every chunk keeps its offset and size). The four loan venues
+  through their real routes from the retail packs: WAS and PIT 18 of 18 (PIT with its late midfield), DET and CLE
+  18 of 18 through the 2026 venue writer with the v0.6 author art (end-zone split at its first padding). The decoded
+  output draws its target through the module's calibrated model within 0.5 per channel on every unclamped bundle
+  (grass by day (63, 98, 45) after gr1), and detail mip 0 is at most 0.104 (the gravel level was 0.225). Offline
+  renders of the decoded output match the pick sheets: grass gameplay grain 0.036 (pick 0.036), turf 0.042 (between
+  the 10 % sheet's 0.038 and the 20 % sheet's 0.045).
+- Limits: unwitnessed in game. The lab must read the median (the brightness response was measured with the same
+  level means, so FIELD_RESPONSE should hold), the play-camera grain, the coin-toss logo and a slow pan for shimmer.
+  Afternoon and rain grass still reach MAP_CEILING (they draw 0.69 to 0.99 of the deeper target, as they did of the
+  old one). The loan venues show the tiled grain (three 64 x 64 tiles) up close.
 
 Build step: last of the stadium writers (after Modern colour, Arrowhead, MetLife and its model, the 2026 venue art,
 SoFi and Highmark). It repaints what they left, updates Modern colour's receipt (bundle pins, the MetLife and
@@ -226,9 +275,11 @@ the target.
 | `synthetic_fieldturf` | synthetic | fibre | +-7 %, 5 yd | (88, 108, 64) |
 | `synthetic_helix` | synthetic | helix | +-9.5 % | (86, 107, 58) |
 | `synthetic_vivid` | synthetic | fibre | +-6 % | (84, 114, 56) |
-| `grass_bluegrass` | grass | blade_bluegrass | +-5 % stripes | (88, 110, 64) |
-| `grass_bermuda` | grass | blade_bermuda | +-6 % stripes | (102, 121, 70) |
-| `grass_checker` | grass | blade_bermuda | +-5 % checkerboard | (100, 120, 68) |
+| `grass_bluegrass` | grass | blade_bluegrass | +-5 % stripes | (65.8, 107.9, 49.8) (measured (88, 110, 64)) |
+| `grass_bermuda` | grass | blade_bermuda | +-6 % stripes | (68.6, 106.6, 49.0) (measured (102, 121, 70)) |
+| `grass_checker` | grass | blade_bermuda | +-5 % checkerboard | (68.0, 107.1, 48.2) (measured (100, 120, 68)) |
+
+Since tf-v4 the grass day targets are authored before Broadcast greens, so Bermuda draws (63, 98, 45) on screen.
 
 The table assigns FieldTurf, Act Global and Turf Nation venues `synthetic_fieldturf`, Hellas venues
 `synthetic_helix`, bluegrass and hybrid venues `grass_bluegrass` and Bermuda venues `grass_bermuda`.

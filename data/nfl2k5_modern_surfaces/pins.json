@@ -7770,24 +7770,24 @@
   ],
   "details": {
     "blade_bermuda": {
-      "full": "54b17f691baed3947e9dd81494185623eb62c28798e26092ccab1474d06d6e80",
-      "tiled": "e39acb34cd29056a089fe0195bb3f11d8d80e0c4e96189627a5fca6f0456c77e"
+      "full": "8038bf08d3a90e88022db4c4195d123d438fe5b6c5c05b6c579d1dcb3f491477",
+      "tiled": "d771aca0c49af907030fe4eca88439ca5b26a0fa076b3e6bfaa417248390cfa3"
     },
     "blade_bluegrass": {
-      "full": "ee09ce1a4f3e50e6f59a79f531453bf2d1185b1664749f326ddd0534e0f7ce28",
-      "tiled": "6eb9a2457f235335da6906600655b7d9ee7bdb8083580d8870b07c427a070e09"
+      "full": "0151901a11e4bd99467363c5385fdeecea769f730cb9669a55f83707fad6f8d0",
+      "tiled": "aea88d1c7500c5669004d4efefcd881922f2040b6871525e60d1b04b880c2680"
     },
     "fibre": {
-      "full": "c62a960c8bdfd4426a1a04d230dc3c72b36ec53c872c74a1077f4fd2fe62927b",
-      "tiled": "7b570c7a27e647cc6e5624388b03b7a6b429e80cd56246a28d532884002279b5"
+      "full": "d42e8eddc35bdfc31b50648a7ba84779251b351f30f3d58b2ac85578c8bba7ee",
+      "tiled": "498872710721b9ce886aa3b9fec4cb85c7bfbf1034af8e7583e8881b4bec7860"
     },
     "helix": {
-      "full": "c4c5916f2b5b32f1d048d4f1aeb6cbb998eeff82ec92b0a97db8f1570eeb4620",
-      "tiled": "178a93f98a1b888408443b54ef99e707614d95e279ae1219a4535cf207e18ef1"
+      "full": "eaf231ed5bb3f50ba23adcb6053fcac79796055ab2e803dbbf77802db4fb6aec",
+      "tiled": "0e2846170148b100dc7a43431c42364be47083417ed071e68f9432adc0a1cd41"
     }
   },
   "label": "EXPERIMENTAL / UNWITNESSED",
-  "revision": "tf-v3.1",
+  "revision": "tf-v4",
   "schema": "nfl2k5_modern_surfaces_pins/v1",
   "uv_constant": [
     7.999755859375,

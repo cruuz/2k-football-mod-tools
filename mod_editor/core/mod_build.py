@@ -4359,6 +4359,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             normal_loans = venues.field_normal_loan_prefixes(plan.modern_venues_2026)
             if normal_loans:
                 surface_options["field_normal_loan_prefixes"] = normal_loans
+            # gr3: PIT's late midfield compresses the surfaced normal for its loan, so it takes the tiled art
+            midfield_loans = venues.midfield_normal_loan_prefixes(plan.modern_venues_2026)
+            if midfield_loans:
+                surface_options["tiled_normal_prefixes"] = midfield_loans
         surfaces_receipt = surfaces.apply_to_image(target, progress=progress, **surface_options)
         receipt["steps"].append({"step": "modern_surfaces", **surfaces_receipt})
         receipt["result"]["modern_surfaces"] = surfaces_receipt["state"]

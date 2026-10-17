@@ -153,7 +153,8 @@ def split_bundle(data, name, *, painter=None):
     from . import nfl2k5_midfield_art as mf
     field, layer, normal, old_normal = mf.pit_sites(data)
     span = ml.scene_span(data, field)
-    new_normal, loan = mf.compress_detail_normal(ml.scene_span(data, normal))
+    normal_span = ml.scene_span(data, normal)
+    new_normal, loan = mf.compress_detail_normal(normal_span, loan_bytes=mf.normal_loan(name[:3], normal_span))
     header = list(tx.HEADER.unpack_from(span))
     header[1] += loan["loan"]
     enlarged = tx.HEADER.pack(*header) + span[tx.HEADER.size:] + bytes(loan["loan"])

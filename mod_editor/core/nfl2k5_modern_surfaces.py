@@ -26,14 +26,20 @@ How the field is drawn (PROVED OFFLINE from the retail packs and the executable)
   the retail map's visible grain goes with its alpha, and tf-v1's tilted normals under one alpha showed nothing even
   up close). tf-v3 therefore carries short blades or fibres in the alpha (one flat normal, alpha = the index), every
   mip level's mean on the alpha the colours were measured with (DETAIL_ALPHA) and the spread falling with distance;
-  it is replaced in place (the two compressed chunks take three 64 x 64 tiles in TILE_GRID).
+  it is replaced in place (the two compressed chunks take three 64 x 64 tiles in TILE_GRID). tf-v4 (gr3, Noah's pick
+  of 2026-10-16) premips the levels so the grain survives to the mips the play camera samples, and a STRENGTH sets
+  the spread between tf-v3.1's calm (0) and gr2's candidate A (1): synthetic turf 15 %, natural grass 20 %
+  (DETAIL_STRENGTH). The four venues whose normal lends allocation to the field (LOAN_NORMAL_VENUES) take the tiled
+  art, compressed into the same loan the v0.6.1 disc carries.
 * ``divots`` (64 x 64 P8) is the wear decal the engine draws on grass-word venues; on synthetic venues its alpha is
   cleared (no divots in turf), on grass venues its greens follow the new grass. The Fldd dirt colour (word 1) becomes
   a dark worn-turf tone on synthetic venues that keep the retail grass word.
 
 Colour targets are the medians of 2026 broadcast stills measured with Modern colour's method (see
 ``docs/modern_surfaces/README.md``), per surface and light (day, afternoon, night, dome, rain, snow), and a venue whose
-own 2026 broadcast was measured follows it (``broadcast`` in the venue table). The colour map of each bundle is solved
+own 2026 broadcast was measured follows it (``broadcast`` in the venue table). tf-v4: natural grass is deeper, (63,
+98, 45) on screen by day after Broadcast greens (Noah's pick), and a grass venue keeps only the character of its own
+broadcast at that level (venue_target). The colour map of each bundle is solved
 against the light rig that bundle is drawn under (retail rigs, or Modern colour's configured rigs when that option
 graded the disc) with Modern colour's calibrated screen factor, the bundle's Fldd tint and the grass vertex tint, then
 divided by the response the game was MEASURED to add on top of that model (FIELD_RESPONSE, QUAD_RESPONSE,
@@ -84,7 +90,7 @@ PINS_PATH = DATA_DIR / "pins.json"
 VENUES_SCHEMA = "nfl2k5_modern_surfaces_venues/v1"
 PINS_SCHEMA = "nfl2k5_modern_surfaces_pins/v1"
 RECEIPT_SCHEMA = "nfl2k5_modern_surfaces_receipt/v1"
-TRANSFORM_REVISION = "tf-v3.1"
+TRANSFORM_REVISION = "tf-v4"
 HOME_PREFIXES = tuple(f"s{i:02d}" for i in range(31)) + ("s37",)
 TIMES, WEATHERS = "dan", "drs"
 CODES = tuple(t + w for t in TIMES for w in WEATHERS)
@@ -123,6 +129,14 @@ SYNTHETIC_WEAR = 0x9A2A3324
 #: day = Lumen/Nissan/Paycor, afternoon = Lumen 5:20 PM PT, night = MetLife SNF, dome = Lucas Oil/Reliant/U.S. Bank/
 #: SoFi; grass day = Acrisure/EverBank, afternoon = Lincoln Financial, night = Arrowhead MNF, dome = Allegiant.
 #: Rain and snow are extrapolated (DESIGN). Each look nudges the family's targets (DESIGN, Noah picks).
+#: tf-v4 (gr3, Noah 2026-10-16): natural grass is DEEPER. Noah judged the measured grass bright, pale and yellow next to
+#: retail and picked gr2's in-between sheet whose grass sits at tonight's turf level (gr1's MetLife turf, (59, 99, 58)
+#: on screen) a touch warmer: (63, 98, 45) by day ON SCREEN, after Broadcast greens multiplies grass by GR1_GRASS_GAIN.
+#: So the grass targets here are authored before gr1: Bermuda's day is (63, 98, 45) / GR1_GRASS_GAIN, every grass look
+#: takes the same per-channel step from its measured day and lands at Bermuda's luminance (bluegrass stays 4 degrees
+#: bluer, the checker look with Bermuda), and each other light keeps its measured per-channel ratio to the day. The
+#: measured medians stay in ``broadcast`` (a venue's own broadcast row is read against them, venue_target). Turf is
+#: unchanged: its targets are the measured medians and gr1 lands them on tonight's turf.
 LIGHT_CLASSES = ("day", "afternoon", "night", "dome", "rain", "snow")
 LOOKS = {
     "synthetic_fieldturf": dict(family="synthetic", detail="fibre", targets=dict(
@@ -132,12 +146,21 @@ LOOKS = {
     "synthetic_vivid": dict(family="synthetic", detail="fibre", targets=dict(
         day=(84, 114, 56), afternoon=(84, 112, 60), night=(70, 100, 54), dome=(94, 130, 62))),
     "grass_bluegrass": dict(family="grass", detail="blade_bluegrass", targets=dict(
-        day=(88, 110, 64), afternoon=(94, 118, 68), night=(90, 110, 56), dome=(82, 106, 58))),
+        day=(65.8, 107.9, 49.8), afternoon=(70.3, 115.7, 52.9), night=(67.3, 107.9, 43.6), dome=(61.3, 104.0, 45.1)),
+        broadcast=dict(day=(88, 110, 64), afternoon=(94, 118, 68), night=(90, 110, 56), dome=(82, 106, 58))),
     "grass_bermuda": dict(family="grass", detail="blade_bermuda", targets=dict(
-        day=(102, 121, 70), afternoon=(110, 132, 76), night=(106, 121, 56), dome=(88, 114, 58))),
+        day=(68.6, 106.6, 49.0), afternoon=(73.9, 116.3, 53.2), night=(71.2, 106.6, 39.2), dome=(59.1, 100.5, 40.6)),
+        broadcast=dict(day=(102, 121, 70), afternoon=(110, 132, 76), night=(106, 121, 56), dome=(88, 114, 58))),
     "grass_checker": dict(family="grass", detail="blade_bermuda", targets=dict(
-        day=(100, 120, 68), afternoon=(108, 130, 74), night=(104, 120, 56), dome=(86, 112, 58))),
+        day=(68.0, 107.1, 48.2), afternoon=(73.5, 116.0, 52.4), night=(70.8, 107.1, 39.7), dome=(58.5, 99.9, 41.1)),
+        broadcast=dict(day=(100, 120, 68), afternoon=(108, 130, 74), night=(104, 120, 56), dome=(86, 112, 58))),
 }
+#: Broadcast greens (nfl2k5_broadcast_greens.GRASS_GAIN, gr1, frozen) multiplies every grass green after this option
+GR1_GRASS_GAIN = 102 / 111
+#: Noah's grass by day, on screen after gr1 (gr2's pick sheet)
+GRASS_DAY_ON_SCREEN = (63, 98, 45)
+#: how far a grass venue's own broadcast may turn the look's hue (degrees), tf-v4
+VENUE_HUE_CAP = 6.0
 #: rain darkens and cools (wet), snow lays a light cover over the surface (DESIGN; the retail snow fields whiten too)
 RAIN_GAIN = (0.84, 0.88, 0.93)
 SNOW_COVER, SNOW_RGB = 0.40, (205, 212, 220)
@@ -259,8 +282,9 @@ MIP_ORIGINS = ((0, 0), (0, 256), (256, 256), (384, 256), (448, 256), (480, 256))
 
 
 @lru_cache(maxsize=None)
-def detail_art(kind):
-    """(index levels [6 arrays], palette BGRA bytes) of one shipped detail normal (data/.../detail_<kind>.png)."""
+def _full_detail_art(kind):
+    """(index levels [6 arrays], palette BGRA bytes) of one shipped detail atlas (data/.../detail_<kind>.png): the
+    premipped levels at FULL strength (DETAIL_REL_FULL)."""
     import numpy as np
     from PIL import Image
     path = ART_DIR / f"detail_{kind}.png"
@@ -280,12 +304,83 @@ def detail_art(kind):
     return tuple(levels), bgra.tobytes()
 
 
-#: The palette alpha of each detail kind (tf-v1 and v2 as one constant, tf-v3 as every mip level's mean): the game
-#: draws the field's brightness nearly in proportion to it, and FIELD_RESPONSE was measured with these values, so the
-#: v3 blades vary around them without moving the mean.
+def detail_art(kind, strength=None):
+    """(index levels [6 arrays], palette BGRA bytes) of one detail kind at a grain strength (None: the build's default
+    for the kind's family, DETAIL_STRENGTH)."""
+    levels, palette = _full_detail_art(kind)
+    return _scaled_levels(kind, strength_percent(kind, strength), levels), palette
+
+
+#: The palette alpha of each detail kind (tf-v1 and v2 as one constant, tf-v3 and v4 as every mip level's mean): the
+#: game draws the field's brightness nearly in proportion to it, and FIELD_RESPONSE was measured with these values, so
+#: the blades vary around them without moving the mean, whatever the strength.
 DETAIL_ALPHA = {"fibre": 163, "helix": 168, "blade_bermuda": 143, "blade_bluegrass": 143}
+DETAIL_FAMILY = {"fibre": "synthetic", "helix": "synthetic", "blade_bermuda": "grass", "blade_bluegrass": "grass"}
+#: tf-v4 (gr2 and gr3, Noah's pick of 2026-10-16). The alpha spread (standard deviation / mean) of each mip level 0..5:
+#: ANCHOR is tf-v3.1's (the calm look of v0.6.1: lab 5 found tf-v3's 0.225 at mip 0 read as gravel on painted logos
+#: from the overhead coin-toss camera, and its far mips were a plain box of mip 0, so the play camera, which samples
+#: mips 1.4 to 5, saw almost no grain: 0.025 against retail's 0.103 in Noah's 10/14 frames). FULL is gr2's candidate A
+#: (mips 0 and 1 at about half of retail, mips 2 to 5 at or above retail), which Noah found too noisy. A build goes a
+#: STRENGTH t of the way from the one to the other, rel_t = anchor + t (full - anchor), through one premipped art per
+#: kind (each level carries its own short clumps, so the grain survives the mips; the PNG stores FULL).
+DETAIL_REL_ANCHOR = {
+    "fibre": (0.075, 0.053, 0.050, 0.028, 0.014, 0.007),
+    "helix": (0.075, 0.051, 0.048, 0.027, 0.013, 0.007),
+    "blade_bermuda": (0.080, 0.046, 0.032, 0.017, 0.009, 0.005),
+    "blade_bluegrass": (0.075, 0.045, 0.034, 0.018, 0.009, 0.005),
+}
+DETAIL_REL_FULL = (0.20, 0.17, 0.15, 0.12, 0.09, 0.065)
+#: Noah 2026-10-16: synthetic turf at the 15 % step, natural grass at the 20 % step (sheets 23_turf_10pct and
+#: 50_pick_sheet of gr2). Bluegrass and Helix follow their family with their own blade or fibre kind.
+DETAIL_STRENGTH = {"synthetic": 0.15, "grass": 0.20}
+#: the mip-0 spread that read as gravel on painted logos at the coin toss (tf-v3, lab 5); no strength may reach it
+GRAVEL_REL = 0.225
+
+
+def strength_percent(kind, strength=None):
+    """The grain strength of one detail kind in whole percent (0..100): ``strength`` is a number for every kind, a
+    {family: number} mapping, or None for DETAIL_STRENGTH. Whole percents keep the bytes reproducible and the receipts
+    readable."""
+    require(kind in DETAIL_ALPHA, f"unknown detail kind {kind}")
+    if strength is None or isinstance(strength, dict):
+        require(set(strength or {}) <= set(DETAIL_STRENGTH), "a detail strength table is {family: 0..1}")
+        table = dict(DETAIL_STRENGTH, **(strength or {}))
+        strength = table[DETAIL_FAMILY[kind]]
+    require(isinstance(strength, (int, float)) and not isinstance(strength, bool) and 0 <= strength <= 1,
+            "a detail strength is a number from 0 to 1")
+    percent = int(round(strength * 100))
+    require(abs(strength * 100 - percent) < 1e-6, "a detail strength is a whole percent (0.15, 0.2 ...)")
+    return percent
+
+
+def detail_rel(kind, strength=None):
+    """The alpha spread per mip level at a strength: anchor + t (full - anchor)."""
+    t = strength_percent(kind, strength) / 100.0
+    return tuple(a + t * (f - a) for a, f in zip(DETAIL_REL_ANCHOR[kind], DETAIL_REL_FULL))
+
+
+def _scaled_levels(kind, percent, levels):
+    """The full-strength levels with each level's spread scaled to the strength: alpha = mean + round((full - mean) x
+    rel_t / rel_full), then the level mean put back on the kind's alpha with a whole-index shift. Integer and IEEE
+    multiply-and-round only, so every machine writes the same bytes; at 100 % the stored levels come back unchanged."""
+    import numpy as np
+    if percent == 100:
+        return tuple(levels)
+    mean = DETAIL_ALPHA[kind]
+    rel = detail_rel(kind, percent / 100.0)
+    out = []
+    for k, level in enumerate(levels):
+        factor = rel[k] / DETAIL_REL_FULL[k]
+        q = np.rint((level.astype(np.int32) - mean) * factor).astype(np.int64) + mean
+        n = q.size
+        shift = (2 * (mean * n - int(q.sum())) + n) // (2 * n)       # round((mean - q.mean())), integers only
+        out.append(np.ascontiguousarray(np.clip(q + shift, 0, 255).astype(np.uint8)))
+    return tuple(out)
+
+
 #: SHA-256 of the detail videos earlier revisions wrote (tf-v1 and v2: normals in the palette, one alpha; tf-v3: the
-#: alpha blades before v3.1 calmed mips 0 and 1): discs built with them keep reading this option's signature.
+#: alpha blades before v3.1 calmed mips 0 and 1; tf-v3.1: the boxed mips of v0.6 and v0.6.1, last eight rows): discs
+#: built with them keep reading this option's signature.
 LEGACY_DETAIL_SHA256 = {
     "67963d00b6a73109eb853082770886544b8d1a2c6c027230cc4c99cf42adb9b2": ("blade_bermuda", "full"),
     "7a57a3fe44720d42e5e4adfb1ebfb978894ed0a690d11e0448bab696944624c6": ("blade_bermuda", "tiled"),
@@ -303,6 +398,14 @@ LEGACY_DETAIL_SHA256 = {
     "f86060c942c38af5feb9937adbc0e00c1814dddcc01321d0f6a2aa6a6f5d2921": ("fibre", "tiled"),
     "1e23a2d295921cdbc80c48e4cfa89057b73070d496dcb57df7d5ddb5d759d8f9": ("helix", "full"),
     "178467740fa03967a8316de949eecd2489c317c23623a27ed9e2bd5131a3a05f": ("helix", "tiled"),
+    "54b17f691baed3947e9dd81494185623eb62c28798e26092ccab1474d06d6e80": ("blade_bermuda", "full"),
+    "e39acb34cd29056a089fe0195bb3f11d8d80e0c4e96189627a5fca6f0456c77e": ("blade_bermuda", "tiled"),
+    "ee09ce1a4f3e50e6f59a79f531453bf2d1185b1664749f326ddd0534e0f7ce28": ("blade_bluegrass", "full"),
+    "6eb9a2457f235335da6906600655b7d9ee7bdb8083580d8870b07c427a070e09": ("blade_bluegrass", "tiled"),
+    "c62a960c8bdfd4426a1a04d230dc3c72b36ec53c872c74a1077f4fd2fe62927b": ("fibre", "full"),
+    "7b570c7a27e647cc6e5624388b03b7a6b429e80cd56246a28d532884002279b5": ("fibre", "tiled"),
+    "c4c5916f2b5b32f1d048d4f1aeb6cbb998eeff82ec92b0a97db8f1570eeb4620": ("helix", "full"),
+    "178a93f98a1b888408443b54ef99e707614d95e279ae1219a4535cf207e18ef1": ("helix", "tiled"),
 }
 TILE_ORIGINS = ((0, 0), (0, 64), (32, 64), (48, 64), (56, 64), (60, 64))
 #: which of the three 64 x 64 tiles fills each 64 x 64 block (4 rows x 8 columns) of the 512 x 256 texture, and the
@@ -317,8 +420,8 @@ TILED_DISTANCES = (12288, 3072, 768, 192, 48, 12, 4096, 1024, 256, 64, 16, 4, 81
 
 
 @lru_cache(maxsize=None)
-def detail_tile_art(kind):
-    """((index levels [64, 32, 16, 8, 4, 2] of each of the three 64 x 64 tiles), palette BGRA) of one detail kind."""
+def _full_detail_tile_art(kind):
+    """((index levels [64, 32, 16, 8, 4, 2] of each of the three 64 x 64 tiles) at FULL strength, palette BGRA)."""
     import numpy as np
     from PIL import Image
     path = ART_DIR / f"detail_{kind}_tile.png"
@@ -333,7 +436,15 @@ def detail_tile_art(kind):
             n = 64 >> k
             levels.append(np.ascontiguousarray(idx[oy:oy + n, 64 * t + ox:64 * t + ox + n]))
         tiles.append(tuple(levels))
-    return tuple(tiles), detail_art(kind)[1]
+    return tuple(tiles), _full_detail_art(kind)[1]
+
+
+def detail_tile_art(kind, strength=None):
+    """((index levels [64, 32, 16, 8, 4, 2] of each of the three 64 x 64 tiles), palette BGRA) of one detail kind at a
+    grain strength (each tile level scaled like the full art's)."""
+    tiles, palette = _full_detail_tile_art(kind)
+    percent = strength_percent(kind, strength)
+    return tuple(_scaled_levels(kind, percent, tile) for tile in tiles), palette
 
 
 @lru_cache(maxsize=None)
@@ -389,18 +500,53 @@ def target_rgb(look, cls):
     return t[cls]
 
 
+def broadcast_rgb(look, cls):
+    """The measured 2026 broadcast median of a look under one light (``broadcast`` for the deep grass looks of tf-v4,
+    else the targets themselves)."""
+    t = LOOKS[look].get("broadcast") or LOOKS[look]["targets"]
+    if cls == "rain":
+        return tuple(v * g for v, g in zip(t["day"], RAIN_GAIN))
+    if cls == "snow":
+        return t["day"]
+    return t[cls]
+
+
+def _luma(rgb):
+    return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+
+
+def _cap_hue(rgb, reference, cap):
+    """``rgb`` with its hue held within ``cap`` degrees of ``reference``'s (saturation and value kept)."""
+    h, s, v = colorsys.rgb_to_hsv(*rgb)
+    h0 = colorsys.rgb_to_hsv(*reference)[0]
+    d = (h - h0 + 0.5) % 1.0 - 0.5
+    limit = cap / 360.0
+    if abs(d) <= limit:
+        return tuple(rgb)
+    return colorsys.hsv_to_rgb((h0 + math.copysign(limit, d)) % 1.0, s, v)
+
+
 def venue_target(prefix, look, cls):
     """The broadcast target of one venue's surface under one light: the look's, scaled per channel by the venue's own
     measured 2026 broadcast when the table has one (its ratio to the look at the light it was measured under carries
     to the venue's other lights). A venue row may carry a ``design`` target of the same shape that replaces its measured
-    broadcast (Allegiant, Beta 77 pass 4: the measurement stays in the row as the evidence)."""
+    broadcast (Allegiant, Beta 77 pass 4: the measurement stays in the row as the evidence; it is met exactly).
+
+    tf-v4 deep grass: the look's target is no longer the broadcast median, so a grass venue keeps only its CHARACTER:
+    its broadcast over the look's measured median at that light, at unit luminance (the venue lands at the deep level,
+    not at its bright broadcast) and with its hue turn capped at VENUE_HUE_CAP."""
     target = target_rgb(look, cls)
     row = venues()[prefix]
     seen = row.get("design") or row.get("broadcast")
     if not seen:
         return target
-    base = target_rgb(look, seen["light"])
-    return tuple(t * (m / max(1e-6, b)) for t, m, b in zip(target, seen["rgb"], base))
+    if row.get("design") or "broadcast" not in LOOKS[look]:
+        base = target_rgb(look, seen["light"])
+        return tuple(t * (m / max(1e-6, b)) for t, m, b in zip(target, seen["rgb"], base))
+    ratio = [m / max(1e-6, b) for m, b in zip(seen["rgb"], broadcast_rgb(look, seen["light"]))]
+    out = _cap_hue([t * k for t, k in zip(target, ratio)], target, VENUE_HUE_CAP)
+    scale = _luma(target) / max(1e-6, _luma(out))
+    return tuple(v * scale for v in out)
 
 
 def field_response(look, cls, layout="grid"):
@@ -848,13 +994,20 @@ def paint_field(decoded, rec, system, *, look, cls, rig, colour_settings=None, t
 
 
 # --- the bundle -------------------------------------------------------------------------------------------------------
-def detail_video(kind, *, tiled=False):
-    """The detail_normal TXTR's video bytes (six swizzled mip levels, then the BGRA palette) for one detail kind; tiled
-    repeats the 64 x 64 variant (8 x 4 at mip 0) so a compressed chunk can hold it."""
+def detail_video(kind, *, tiled=False, strength=None):
+    """The detail_normal TXTR's video bytes (six swizzled mip levels, then the BGRA palette) for one detail kind at a
+    grain strength (None: DETAIL_STRENGTH); tiled repeats the 64 x 64 variant (8 x 4 at mip 0) so a compressed chunk,
+    or a loan venue's normal, can hold it."""
+    return _detail_video(kind, bool(tiled), strength_percent(kind, strength))
+
+
+@lru_cache(maxsize=32)
+def _detail_video(kind, tiled, percent):
     import numpy as np
     tx, HEADER = _tools()
+    strength = percent / 100.0
     if tiled:
-        tiles, palette = detail_tile_art(kind)
+        tiles, palette = detail_tile_art(kind, strength)
         levels = []
         for k in range(6):
             n = 64 >> k
@@ -864,9 +1017,17 @@ def detail_video(kind, *, tiled=False):
                     level[by * n:(by + 1) * n, bx * n:(bx + 1) * n] = tiles[t][k]
             levels.append(level)
     else:
-        levels, palette = detail_art(kind)
+        levels, palette = detail_art(kind, strength)
     out = b"".join(tx.swizzle_2d(np.ascontiguousarray(lv).tobytes(), lv.shape[1], lv.shape[0], 1) for lv in levels)
     return out + palette
+
+
+def tiled_video(video):
+    """True when a detail_normal video repeats its 64 x 64 blocks like the tiled art (every block of mip 0 the one three
+    blocks back in swizzled order, TILE_GRID): such a video compresses with ``_encode_repeats`` in a moment, while the
+    general encoders walk very long hash chains on it."""
+    level0 = bytes(video[:131072])
+    return len(level0) == 131072 and level0[12288:] == level0[:131072 - 12288]
 
 
 def flattened_palette(palette, residual=0.45):
@@ -979,11 +1140,14 @@ def _fit_encoded(span, decoded, encoded):
     raise ModernSurfacesError("the stream cannot keep the retail scratch word")
 
 
-def normal_span(span, kind, *, preserve_full=False):
+def normal_span(span, kind, *, preserve_full=False, variant="full", strength=None):
     """(detail_normal chunk with this kind's normals, variant): the same size, wrapper and descriptor. A raw chunk takes
-    the full art; a compressed chunk (s11, s15) takes the tiled art refit inside its span, or, if that misses, its
-    retail indices with a flattened palette."""
+    the full art (or the tiled art when ``variant`` is "tiled": the loan venues, whose normal is compressed afterwards
+    to lend part of its allocation to the field); a compressed chunk (s11, s15) takes the tiled art refit inside its
+    span, or, if that misses, its retail indices with a flattened palette. ``preserve_full`` keeps a loan venue's
+    already compressed normal when it decodes to this option's art at this strength (tiled since tf-v4, full before)."""
     tx, HEADER = _tools()
+    require(variant in ("full", "tiled"), "a detail normal variant is full or tiled")
     chunk = tx.parse_chunks(span, allow_trailing=True)[0]
     output, info0 = tx.decode_chunk(span, chunk)
     info = tx.parse_texture(output, chunk)
@@ -991,20 +1155,22 @@ def normal_span(span, kind, *, preserve_full=False):
             == (512, 256, 6) and info.pixel_offset == 0, "detail_normal is not the 512 x 256 P8 texture")
     body = chunk.system_bytes
     if info0 is None:
-        video = detail_video(kind)
+        video = detail_video(kind, tiled=variant == "tiled", strength=strength)
         require(len(video) == chunk.video_bytes and len(span) == HEADER.size + body + len(video),
                 "detail_normal size differs")
-        return span[:HEADER.size + body] + video, "full"
+        return span[:HEADER.size + body] + video, variant
     if preserve_full:
-        require(output == bytes(output[:body]) + detail_video(kind),
-                "the selected field allocation needs its exact full-resolution normal")
-        return bytes(span), "full"
+        for kept in ("tiled", "full"):
+            if output == bytes(output[:body]) + detail_video(kind, tiled=kept == "tiled", strength=strength):
+                return bytes(span), kept
+        raise ModernSurfacesError("the selected field allocation needs its exact full-resolution normal "
+                                  "(this option's tiled or full art at this strength)")
     from . import nfl2k5_modern_color as colour
     fields = HEADER.unpack_from(span)
     prefix = span[HEADER.size:HEADER.size + 9]
     _declared, tag = struct.unpack_from("<II", prefix)
     bits = prefix[8]
-    tiled = bytes(output[:body]) + detail_video(kind, tiled=True)
+    tiled = bytes(output[:body]) + detail_video(kind, tiled=True, strength=strength)
     require(len(tiled) == len(output), "detail_normal size differs")
     try:
         # a block repeats the one three blocks back in swizzled order (TILE_GRID) at every mip
@@ -1157,20 +1323,35 @@ def _span_surfaced(span):
     return surfaced(decoded, rec)
 
 
+#: The venues whose detail normal lends part of its allocation to the field when a 2026 venue option selects it: DET and
+#: CLE (the end-zone loan, nfl2k5_split_endzone_art), PIT (the late midfield, nfl2k5_midfield_art) and WAS (the field
+#: normal loan). Their normal is compressed after this option writes it, and the premipped full-resolution art of tf-v4
+#: does not compress (gr2: 174,029 to 191,864 bytes for every step, against 146,880 to 174,192 stored), so they take
+#: the TILED art, which their reviewed allocation holds with room to spare.
+LOAN_NORMAL_VENUES = frozenset(("s09", "s22", "s29", "s30"))
+
+
 def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
-                   preserve_full_normal=False, full_detail=False, field_normal_loan=False):
+                   preserve_full_normal=False, full_detail=False, field_normal_loan=False, tiled_normal=False,
+                   detail_strength=None):
     """(new bundle bytes of the same size, receipt) for one home-venue bundle as it stands (retail, graded, or
-    written by a stadium option)."""
+    written by a stadium option). ``detail_strength`` is DETAIL_STRENGTH's shape ({family: 0..1}) or None for it;
+    ``tiled_normal`` writes the tiled art into a loan venue's raw normal (implied by the two loan routes)."""
     prefix, t, _w = bundle_parts(name)
     require(type(preserve_full_normal) is bool and type(full_detail) is bool,
             "surface allocation options must be booleans")
-    require(type(field_normal_loan) is bool, "field normal allocation option must be a boolean")
+    require(type(field_normal_loan) is bool and type(tiled_normal) is bool,
+            "field normal allocation options must be booleans")
     require(not field_normal_loan or prefix == "s29", "field normal allocation is reviewed only for WAS")
+    require(not tiled_normal or prefix in LOAN_NORMAL_VENUES, "a tiled loan normal is not reviewed for " + prefix)
     if preserve_full_normal or full_detail:
         from . import nfl2k5_split_endzone_art as endzone_art
         require(prefix in endzone_art.LOAN_VENUES, "full surface allocation is not reviewed for " + prefix)
     look = venue_look(prefix, overrides)
     family = LOOKS[look]["family"]
+    kind = LOOKS[look]["detail"]
+    strength = strength_percent(kind, detail_strength) / 100.0
+    variant = "tiled" if (tiled_normal or preserve_full_normal or field_normal_loan) else "full"
     cls = light_class(name, indoor)
     rig = rig_name(cls, t)
     sites = bundle_sites(data)
@@ -1183,8 +1364,9 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
     if field_normal_loan:
         from . import nfl2k5_midfield_art as midfield
         normal_at, normal_size = sites["normal"]
-        new_normal, normal_variant = normal_span(bytes(data[normal_at:normal_at + normal_size]), LOOKS[look]["detail"])
-        require(normal_variant == "full", "WAS allocation donor must be the ordinary full-resolution normal")
+        new_normal, normal_variant = normal_span(bytes(data[normal_at:normal_at + normal_size]), kind,
+                                                 variant=variant, strength=strength)
+        require(normal_variant == "tiled", "WAS allocation donor must be the raw tiled normal (tf-v4)")
         def painter(span):
             from . import nfl2k5_modern_color as colour
             ml = _ml()
@@ -1205,8 +1387,8 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
                                      response=venue_response(prefix, cls), **field_args)
         out[at:at + size] = new_field
         at, size = sites["normal"]
-        normal_args = dict(preserve_full=True) if preserve_full_normal else {}
-        new_normal, normal_variant = normal_span(bytes(data[at:at + size]), LOOKS[look]["detail"], **normal_args)
+        new_normal, normal_variant = normal_span(bytes(data[at:at + size]), kind, preserve_full=preserve_full_normal,
+                                                 variant=variant, strength=strength)
         out[at:at + size] = new_normal
     if "divots" in sites and (not again or preserve_full_normal):
         at, size = sites["divots"]
@@ -1227,7 +1409,8 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
         before, after = bytes(data[at:at + size]), bytes(out[at:at + size])
         if before != after:
             edits.append(dict(kind=kind, offset=at, size=size, before=sha(before), after=sha(after)))
-    receipt = dict(name=name, look=look, family=family, light=cls, rig=rig, field=frec, normal=normal_variant, edits=edits)
+    receipt = dict(name=name, look=look, family=family, light=cls, rig=rig, field=frec, normal=normal_variant,
+                   detail_strength=strength, edits=edits)
     if loan_receipt is not None:
         receipt["field_normal_loan"] = loan_receipt
     return bytes(out), receipt
@@ -1320,6 +1503,28 @@ def _detail_by_hash():
     return out
 
 
+@lru_cache(maxsize=8)
+def _detail_by_hash_at(strengths):
+    """The pinned signatures plus the normals of a receipt's own detail strength ({family: t} as sorted pairs), when a
+    build chose another than DETAIL_STRENGTH (this one compiles the art, so it runs only then)."""
+    out = dict(_detail_by_hash())
+    table = dict(strengths)
+    if all(strength_percent(kind, table) == strength_percent(kind) for kind in DETAIL_FAMILY):
+        return out
+    for kind in sorted({look["detail"] for look in LOOKS.values()}):
+        for variant in ("full", "tiled"):
+            out[sha(detail_video(kind, tiled=variant == "tiled", strength=table))] = (kind, variant)
+    return out
+
+
+def _receipt_strengths(receipt):
+    """A receipt's detail strength as hashable sorted pairs, or None (DETAIL_STRENGTH)."""
+    table = (receipt or {}).get("detail_strength")
+    if not isinstance(table, dict) or not table:
+        return None
+    return tuple(sorted((str(k), float(v)) for k, v in table.items()))
+
+
 @lru_cache(maxsize=1)
 def _retail_sites():
     """{bundle name: {site kind: retail SHA-256}} from the pins (the retail extraction the option was pinned on)."""
@@ -1355,8 +1560,9 @@ def field_uv_constant(span):
     raise ModernSurfacesError("the field has no colour shape")
 
 
-def _normal_state(name, data):
-    """('ours', kind, variant) / ('retail', None, None) / ('other', None, None) for a bundle's detail normal."""
+def _normal_state(name, data, strengths=None):
+    """('ours', kind, variant) / ('retail', None, None) / ('other', None, None) for a bundle's detail normal
+    (``strengths``: a receipt's detail strength as sorted pairs, None for the pinned DETAIL_STRENGTH)."""
     tx, HEADER = _tools()
     at, size = bundle_sites(data)["normal"]
     span = bytes(data[at:at + size])
@@ -1366,7 +1572,7 @@ def _normal_state(name, data):
     else:
         decoded, _ = tx.decode_chunk(span, chunk)
         video = decoded[chunk.system_bytes:]
-    hit = _detail_by_hash().get(sha(video))
+    hit = (_detail_by_hash() if strengths is None else _detail_by_hash_at(strengths)).get(sha(video))
     if hit is not None:
         return ("ours",) + hit
     if _retail_sites().get(name, {}).get("normal") == sha(span):
@@ -1388,7 +1594,8 @@ def bundle_report(archive, name, entry, receipt, *, deep=False):
     if row is not None and sha(data) == row.get("applied_sha256"):
         return dict(state="applied", reason="receipt")
     try:
-        normal, kind, variant = _normal_state(name, data)
+        strengths = _receipt_strengths(receipt)
+        normal, kind, variant = _normal_state(name, data) if strengths is None else _normal_state(name, data, strengths)
     except (ModernSurfacesError, ValueError, KeyError, IndexError, struct.error) as exc:
         return dict(state="foreign", reason=f"unreadable bundle: {exc}")
     if normal == "ours":
@@ -1462,11 +1669,16 @@ def check_request(source):
 
 
 def _job(args):
-    """Worker: (name, bundle bytes, indoor, colour settings, overrides) -> (name, new bytes, receipt)."""
+    """Worker: (name, bundle bytes, indoor, colour settings, overrides[, full-normal loan, WAS loan, tiled loan normal,
+    detail strength]) -> (name, new bytes, receipt)."""
     name, data, indoor, settings, overrides, *selected = args
     options = dict(preserve_full_normal=True, full_detail=True) if selected and selected[0] else {}
     if len(selected) > 1 and selected[1]:
         options["field_normal_loan"] = True
+    if len(selected) > 2 and selected[2]:
+        options["tiled_normal"] = True
+    if len(selected) > 3 and selected[3] is not None:
+        options["detail_strength"] = selected[3]
     out, rec = surface_bundle(data, name, indoor=indoor, colour_settings=settings, overrides=overrides, **options)
     return name, out, rec
 
@@ -1491,16 +1703,24 @@ def _update_colour_receipt(colour_receipt, name, after):
 
 
 def apply_to_image(target, *, progress=None, workers=None, overrides=None, preserve_full_normal_prefixes=(),
-                   field_normal_loan_prefixes=()):
+                   field_normal_loan_prefixes=(), tiled_normal_prefixes=(), detail_strength=None):
     """Build step (after every stadium writer): the modern surface in all 288 home-venue bundles of a DISPOSABLE
     output image, written in place (same sizes), with read-back; the colour and 2026 venue receipts are updated so
-    those options still read applied, and this option's receipt is written beside the image."""
+    those options still read applied, and this option's receipt is written beside the image. ``tiled_normal_prefixes``
+    names the loan venues whose raw normal a later step compresses (PIT's late midfield); ``detail_strength`` is
+    {family: 0..1} over DETAIL_STRENGTH."""
     from . import nfl2k5_modern_color as colour
     from . import nfl2k5_split_endzone_art as endzone_art
     selected = frozenset(preserve_full_normal_prefixes)
     require(selected <= endzone_art.LOAN_VENUES, "full surface allocation includes an unreviewed venue")
     loan_selected = frozenset(field_normal_loan_prefixes)
     require(loan_selected <= {"s29"}, "field normal allocation includes an unreviewed venue")
+    tiled_selected = frozenset(tiled_normal_prefixes)
+    require(tiled_selected <= LOAN_NORMAL_VENUES, "a tiled loan normal includes an unreviewed venue")
+    require(detail_strength is None or (isinstance(detail_strength, dict) and set(detail_strength) <= {"synthetic", "grass"}),
+            "detail strength is {family: 0..1}")
+    strengths = {family: strength_percent(kind, detail_strength) / 100.0
+                 for kind, family in sorted(DETAIL_FAMILY.items())}
     say = progress or (lambda message, done, total: None)
     before_report = image_report(target)
     allowed_prepass = bool(selected) and all(row["state"] == "retail" or
@@ -1525,9 +1745,11 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
         for name in HOME_BUNDLES:
             data = archive.read(entries[name].virtual_offset, entries[name].size)
             before[name] = (entries[name].virtual_offset, sha(data))
-            args = (name, data, indoor[name[:3]], settings, overrides)
-            jobs.append(args + (name[:3] in selected, True) if name[:3] in loan_selected
-                        else args + (True,) if name[:3] in selected else args)
+            extra = [name[:3] in selected, name[:3] in loan_selected, name[:3] in tiled_selected,
+                     detail_strength]
+            while extra and not extra[-1]:      # the default call keeps its five-item shape
+                extra.pop()
+            jobs.append((name, data, indoor[name[:3]], settings, overrides) + tuple(extra))
     say(f"Modern surfaces: {len(jobs)} home-venue bundles", 0, len(jobs))
     results = {}
     count = _workers(workers)
@@ -1543,7 +1765,9 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
             results[name] = (out, rec)
             say(f"Modern surfaces: {index + 1} of {len(jobs)} bundles", index + 1, len(jobs))
     receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False, revision=TRANSFORM_REVISION,
-                   overrides=overrides or {}, colour=settings is not None, bundles={})
+                   overrides=overrides or {}, colour=settings is not None, detail_strength=strengths, bundles={})
+    if tiled_selected:
+        receipt["tiled_normal_prefixes"] = sorted(tiled_selected)
     if selected:
         receipt["preserve_full_normal_prefixes"] = sorted(selected)
     if loan_selected:
@@ -1559,6 +1783,7 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
                 require(archive.write(at + edit["offset"], chunk) == len(chunk), f"{name}: short write")
             require(archive.read(at, len(out)) == out, f"{name}: read-back differs")
             receipt["bundles"][name] = dict(look=rec["look"], light=rec["light"], rig=rec["rig"], normal=rec["normal"],
+                                            detail_strength=rec.get("detail_strength"),
                                             before_sha256=before_hash, applied_sha256=sha(out),
                                             pattern_detail=rec["field"].get("pattern_detail"),
                                             palette_cap=rec["field"].get("palette_cap"),
@@ -1586,7 +1811,7 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
     for row in receipt["bundles"].values():
         looks[row["look"]] = looks.get(row["look"], 0) + 1
     return dict(state="applied", label=LABEL, runtime_witnessed=False, bundles=len(receipt["bundles"]), looks=looks,
-                colour=settings is not None, detail_fallbacks=sorted(n for n, r in receipt["bundles"].items() if r["normal"] != "full"),
+                colour=settings is not None, detail_strength=strengths, detail_fallbacks=sorted(n for n, r in receipt["bundles"].items() if r["normal"] != "full"),
                 reduced_patterns=sorted(n for n, r in receipt["bundles"].items() if (r.get("pattern_detail") or 2) < 2))
 
 
