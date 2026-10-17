@@ -5,14 +5,24 @@ Noah: "make a test MyCareer new menu system/screen to push the limits of what we
 What it is
 ----------
 * The MyCareer Apartment's descriptor becomes **Career Home**: five section rows (Play next game, Practice,
-  MyPlayer, Upgrades, Settings and save) plus Quit to main menu, all inside the native seven-row window, and a
-  live panel on the right (MyPlayer, club, overall, XP, depth chart spot, next game and date, this season's stat
-  line), drawn with the game's own text routine after the native draw.
-* **Settings and save** opens a native sub-list: Settings, Save, Sim to next appearance, Start MyPlayer,
+  MyPlayer, Upgrades, Settings + Save) plus Quit to Menu, all inside the native seven-row window, and a live panel
+  on the right drawn after the native list: MyPlayer's name, position and club; three chips (overall from the
+  game's own unboosted overall, XP, depth chart spot with starter/backup); the next game and its date; this
+  season's stat line (the Player Card's season bank).
+* Club colours: the header card is a gradient from the club's primary to its secondary colour and every card has
+  an accent bar, from the retail colour accessors (0x68D70 / 0x68DC0).
+* Full-colour art: the MyPlayer position photo (FRONTEND ``position_photos_*``) and the helmet silhouette
+  (FRONTEND_SYNC ``ghostlogo_h``), textures the front end already holds, found by name each frame and drawn as
+  textured quads. Nothing is loaded or allocated; if a texture or the font is absent that piece is skipped.
+* Panels and art use the retail immediate path the text itself uses (2D2A0 begin, 2CBE0 colour, 2CB90 UV,
+  2CA70 vertex, 2CA00 end) with an aligned stack copy of a loaded font's material, like the player star.
+* **Settings + Save** opens a native sub-list: Settings, Save, Sim to next appearance, Start MyPlayer,
   **Classic Apartment** (the old nine-row Apartment, unchanged, with its two info lines) and Back.
 * Every row except the two screen openers is an existing MyCareer row action. B on Career Home is MyCareer's own
-  quit question (the descriptor is still the Apartment); B on the sub-list and the Classic Apartment goes back.
-  The controller port rule is MyCareer's (the pad that pressed A owns MyPlayer).
+  quit question (the descriptor is still the Apartment); B on the sub-list, the Classic Apartment and (with Career
+  Home) Upgrades goes back. The controller port rule is MyCareer's (the pad that pressed A owns MyPlayer).
+* Native rows draw the first word heavy and the rest light with no space (retail ESPN style, PLAY|NEXTGAME), so
+  the new labels are chosen to read that way.
 
 Where it lives
 --------------

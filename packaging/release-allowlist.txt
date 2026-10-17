@@ -939,6 +939,8 @@ mod_editor/core/nfl2k5_my_career.py
 mod_editor/core/nfl2k5_my_career_code.py
 mod_editor/core/nfl2k5_my_career_mode.py
 mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_home.py
+mod_editor/core/nfl2k5_my_career_home_code.py
 mod_editor/core/nfl2k5_my_career_save.py
 mod_editor/core/nfl2k5_franchise_autosave.py
 mod_editor/core/nfl2k5_franchise_autosave_code.py

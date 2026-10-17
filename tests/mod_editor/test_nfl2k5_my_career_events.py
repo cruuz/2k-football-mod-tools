@@ -241,7 +241,7 @@ class HostBudgetTests(unittest.TestCase):
                 # refreshes this host pin. v1h also repairs the reviewed native C
                 # prefetch path; the budget, assembly and progression pins stay fixed.
                 # nl1: drafted-notice format in the M3 pool, Team Select side guard.
-                'acaa0a654ddc4a2cfe2b7769f4ca4c3ccd460461d3b9b5c8fe65c314d4ba1d79',
+                'ae42ffe741413c36f17c8567f5eccf1b518ed8e384c2d5c4ec92b0dbd1bad7ca',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':
