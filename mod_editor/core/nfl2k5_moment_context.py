@@ -458,26 +458,32 @@ def last_key(last):
 def map_players(source_players, roster):
     """source players of one side -> {source index: roster slot}; roster: [(first, last)] in slot order.
 
-    Exact full-name match first; a unique last-name match with the same first initial second (sources abbreviate
-    first names, e.g. nflverse 'Mike'/'Michael' or PFR's 'Ed'/'Eddie'). Anything else stays team-only."""
+    Candidate names are the source's display name and its legal first/last (nflverse lists Antonio Romo as
+    'Tony Romo'); the display name is tried first. An exact full name wins; otherwise a unique surname with the same
+    first initial, where a roster surname cut with a period ('Rodgers-C.') matches its full form. Anything else stays
+    in the team totals only."""
     full = {}
     for slot, (first, last) in enumerate(roster):
         full.setdefault(name_key(first, last), []).append(slot)
     out, notes = {}, []
     for i, p in enumerate(source_players):
-        first, last = p.get("first"), p.get("last")
-        if not (first and last):
-            parts = p["name"].split()
-            first, last = parts[0], " ".join(parts[1:]) if len(parts) > 1 else parts[0]
-        hits = full.get(name_key(first, last), [])
-        if len(hits) == 1:
-            out[i] = hits[0]
+        cands = []
+        parts = (p.get("name") or "").split()
+        if len(parts) >= 2:
+            cands.append((parts[0], " ".join(parts[1:])))
+        if p.get("first") and p.get("last"):
+            cands.append((p["first"], p["last"]))
+        exact = next((hits for f, l in cands if len(hits := full.get(name_key(f, l), [])) == 1), None)
+        if exact:
+            out[i] = exact[0]
             continue
-        cands = [s for s, (f, l) in enumerate(roster)
-                 if last_key(l) == last_key(last) and f[:1].lower() == first[:1].lower()]
-        if len(cands) == 1:
-            out[i] = cands[0]
-            notes.append(f"{p['name']} -> {roster[cands[0]][0]} {roster[cands[0]][1]} (surname and initial)")
+        loose = {s for f, l in cands for s, (rf, rl) in enumerate(roster)
+                 if rf[:1].lower() == f[:1].lower() and (last_key(rl) == last_key(l) or (
+                     rl.endswith(".") and len(rl) > 3 and last_key(l).startswith(last_key(rl[:-1]))))}
+        if len(loose) == 1:
+            slot = loose.pop()
+            out[i] = slot
+            notes.append(f"{p['name']} -> {roster[slot][0]} {roster[slot][1]} (surname and initial)")
     return out, notes
 
 

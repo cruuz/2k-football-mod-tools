@@ -64,13 +64,17 @@ def metadata(row):
     return bytes(out)
 
 
-def situation(raw):
+def situation(raw, stats=None):
     """Rebuild SITU string pointers, putting versioned coach data after each goal's NUL.
 
     Retail text consumers stop at the same NUL. Only our selection hook reads the
     extension while SITU is alive. It copies names before the collection unloads.
     Scalars, visible text and sibling chunks are preserved exactly.
+
+    b775 mo2: the moment context's stats block ("MST1") follows the coach block. ``stats`` ({physical row: block})
+    replaces every row's block; without it an existing block is kept byte for byte, so this rebuild stays idempotent.
     """
+    from . import nfl2k5_moment_context as moment_context
     from . import nfl2k5_espn25_scenarios as sc
     require(raw[:4] == b'SITU' and struct.unpack_from('<I', raw, 8)[0] == 51, 'expected 51 moments')
     end = 32 + struct.unpack_from('<I', raw, 4)[0]
@@ -88,6 +92,11 @@ def situation(raw):
             out.extend((text+'\0').encode('utf-16le'))
             if field == 8:
                 out.extend(metadata(row))
+                if stats is not None:
+                    out.extend(stats.get(row['row'], b''))
+                else:
+                    tail = sc.rel(src, site) + 2 * len(text) + 2
+                    out.extend(moment_context.trailer_after_coaches(src[tail:]))
     out.extend(bytes(-len(out)%16))
     header = bytearray(raw[:32]);struct.pack_into('<I', header, 4, len(out))
     return bytes(header+out)+raw[end:]
@@ -219,7 +228,10 @@ def resource_plan(target, source):
         by_id = {e.name_id: e for e in disc.archive_entries}
         situ_entry = disc.archive_entries[22]
         old_situ = disc.read_entry_range(situ_entry, 0, situ_entry.size)
-        new_situ = situation(old_situ)
+        # b775 mo2: the moment stats ride in the same SITU write; their roster slots come from this disc's team files.
+        from . import nfl2k5_moment_context as moment_context
+        stat_blocks, stat_receipts = moment_context.stat_blocks(disc)
+        new_situ = situation(old_situ, stats=stat_blocks)
         present = [name_id(n) in by_id for n in resources]
         if any(present):
             require(new_situ == old_situ, 'foreign historical coach SITU extension')
@@ -228,7 +240,8 @@ def resource_plan(target, source):
                 e = by_id[name_id(name)]
                 require(e.size == len(raw) and disc.read_entry_range(e, 0, e.size) == raw,
                         name + ': foreign historical coach resource')
-            return [], dict(status='already_applied', resources=len(resources), bytes_written=0)
+            return [], dict(status='already_applied', resources=len(resources), bytes_written=0,
+                            moment_stats=stat_receipts)
         p0, pf = disc.pack_extents['0'], disc.pack_extents['F']
         old0, oldf = disc.read(p0.size, p0.byte_offset), disc.read(pf.size, pf.byte_offset)
         # A distinct final alignment member keeps the outer archive's last-entry invariant.
@@ -239,7 +252,7 @@ def resource_plan(target, source):
         writes = [(at0, new0), (atf, newf)]
         for key, at, raw in (('0', at0, new0), ('F', atf, newf)):
             writes.append((disc.nodes[key][0], struct.pack('<II', (at-disc.partition)//2048, len(raw))))
-        return writes, dict(status='applied', resources=len(resources)-1,
+        return writes, dict(status='applied', resources=len(resources)-1, moment_stats=stat_receipts,
                             image_growth=atf+len(newf)-disc.image_size, archive=detail)
 
 
