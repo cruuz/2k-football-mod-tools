@@ -1,0 +1,5212 @@
+{
+ "schema": "2k5_mod_studio_roster_edits/v1",
+ "name": "b775 hs1 hair styles (2026 rosters)",
+ "author": "b775 hs1",
+ "notes": "Sets only the hair_style field (record +0x0D bits 0-3) of 2026 NFL players whose current hair matches an added hair model; needs the Hair styles build step. The Dreads bit is never changed. Evidence per player: the 2026 ESPN roster headshot (a.espncdn.com headshot or espn.com player page), read by eye, plus written sources where found; low-confidence reads and medium-confidence afros were left at style 0. Isaac TeSlaa follows Noah's N20 note.",
+ "styles": {
+  "0": "Retail (Dreads bit)",
+  "1": "Retail dreads",
+  "2": "Long locs",
+  "3": "Short twists",
+  "4": "Long hair, blond",
+  "5": "Long hair, brown",
+  "6": "Afro puff",
+  "7": "Braids",
+  "8": "Bun",
+  "9": "Mullet, brown",
+  "10": "Mullet, blond",
+  "11": "Long locs, light ends",
+  "12": "Long hair, black",
+  "13": "No hair model"
+ },
+ "edits": [
+  {
+   "pool": "primary",
+   "index": 2,
+   "first": "Andrew",
+   "last": "Wingard",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight blond hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3918331/andrew-wingard"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 6,
+   "first": "Roy",
+   "last": "Lopez",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): hair gathered up under a black headband with a bun/puff at the back.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4040805/roy-lopez"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 8,
+   "first": "Baron",
+   "last": "Browning",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Current ESPN roster headshot shows locs hanging past the collar to mid-chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4241987.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 16,
+   "first": "Denzel",
+   "last": "Burke",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long loose braid/twist hanging to the chest on one side plus shorter strands.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4432668/denzel-burke"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 26,
+   "first": "Darius",
+   "last": "Robinson",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4569480.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 30,
+   "first": "L.J.",
+   "last": "Collier",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3116449/lj-collier"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 36,
+   "first": "Gardner",
+   "last": "Minshew",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length straight brown hair under a headband, long moustache; known mullet/long-hair history.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4038524/gardner-minshew-ii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 41,
+   "first": "Isaac",
+   "last": "Seumalo",
+   "team": "ARI",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): dark hair in a top-knot bun.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2978247/isaac-seumalo"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 46,
+   "first": "Marvin",
+   "last": "Harrison",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot (new Texans photo) shows locs past the collar onto the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4432708.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 54,
+   "first": "Jessie",
+   "last": "Bates",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot shows short cropped hair, no locs.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3919512.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 60,
+   "first": "Za'Darius",
+   "last": "Smith",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: thick locs hanging to the chest, with beard.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3043168.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 65,
+   "first": "Gervon",
+   "last": "Dexter",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot shows short cropped hair; no locs.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4429014.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 68,
+   "first": "Jared",
+   "last": "Ivey",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4605478.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 72,
+   "first": "Mike",
+   "last": "Ford",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3050916/mike-ford-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 81,
+   "first": "Christian",
+   "last": "Harris",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-to-shoulder locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4567099/christian-harris"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 83,
+   "first": "Kendal",
+   "last": "Daniels",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs reaching the collarbone/chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4595343.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 85,
+   "first": "Harold",
+   "last": "Perkins",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685502.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 92,
+   "first": "Avieon",
+   "last": "Terrell",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twisted/curly top, nothing hanging below ear line.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4870988.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 100,
+   "first": "Zachariah",
+   "last": "Branch",
+   "team": "ATL",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4870612/zachariah-branch"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 123,
+   "first": "Emery",
+   "last": "Jones",
+   "team": "BAL",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists/locs.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4685736/emery-jones-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 161,
+   "first": "Davison",
+   "last": "Igbinosun",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: two-strand twists on top, faded sides, short.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4832035.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 164,
+   "first": "Michael",
+   "last": "Danna",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3915487.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 168,
+   "first": "T.J.",
+   "last": "Sanders",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4684527.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 173,
+   "first": "James",
+   "last": "Cook",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: twisted locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4379399.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 182,
+   "first": "Dorian",
+   "last": "Williams",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4568624.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 183,
+   "first": "Kaleb",
+   "last": "Elarms-Orr",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): twisted locs ends to the chest under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4594321/kaleb-elarms-orr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 203,
+   "first": "Skyler",
+   "last": "Bell",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: twists on top, faded sides, only slight length at the back.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4683153.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 208,
+   "first": "Jalon",
+   "last": "Kilgore",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twists on top with faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/5076951.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 209,
+   "first": "Jude",
+   "last": "Bowry",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4869533.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 213,
+   "first": "Lathan",
+   "last": "Ransom",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4429110/lathan-ransom"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 215,
+   "first": "Will",
+   "last": "Lee",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids/twists to the shoulders under a cap.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/5151083/will-lee-iii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 217,
+   "first": "Patrick",
+   "last": "Jones",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4036063/patrick-jones-ii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 223,
+   "first": "Princely",
+   "last": "Umanmielen",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-blond",
+    "confidence": "high",
+    "evidence": "Roster headshot: honey/blond dyed locs reaching past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4429166.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 232,
+   "first": "Robert",
+   "last": "Hunt",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs/twists under a headband (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3917592/robert-hunt"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 249,
+   "first": "Kenny",
+   "last": "Pickett",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length wavy light-brown/blond hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4240703/kenny-pickett"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 261,
+   "first": "Jalen",
+   "last": "Coker",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4695883/jalen-coker"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 266,
+   "first": "Skyler",
+   "last": "Thomas",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4879561.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 272,
+   "first": "Daniel",
+   "last": "Hardy",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4365629/daniel-hardy"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 278,
+   "first": "Jamree",
+   "last": "Kromah",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4372463/jamree-kromah"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 294,
+   "first": "Devin",
+   "last": "Bush",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4036261.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 315,
+   "first": "Jayden",
+   "last": "Loving",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids hanging below the ears to the neck.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4877376/jayden-loving"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 321,
+   "first": "Jordan",
+   "last": "Battle",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: cornrows with braid tails at the sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4567098.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 325,
+   "first": "Cashius",
+   "last": "Howell",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "dyed-blond",
+    "confidence": "medium",
+    "evidence": "Roster headshot: blond-dyed locs tied up in a top knot with a loose strand hanging.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4710752.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 328,
+   "first": "Jonathan",
+   "last": "Allen",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3054840/jonathan-allen"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 329,
+   "first": "Shemar",
+   "last": "Stewart",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twists, faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685562.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 346,
+   "first": "Kris",
+   "last": "Jenkins",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists on top.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4432301/kris-jenkins-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 352,
+   "first": "Kyle",
+   "last": "Dugger",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4401811.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 356,
+   "first": "Jacob",
+   "last": "Bayer",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): dark hair with an obvious mullet (long back) plus moustache.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4879478/jacob-bayer"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 373,
+   "first": "Malik",
+   "last": "Hooker",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down to the chest with beard.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3121415.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 376,
+   "first": "Rashan",
+   "last": "Gary",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: two long twisted/loc plaits hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4046523.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 377,
+   "first": "James",
+   "last": "Houston",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4240608.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 387,
+   "first": "Tyler",
+   "last": "Guyton",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Roster headshot: long brown-tinted locs past the collar, one side over the shoulder.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4609048.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 399,
+   "first": "Jaishawn",
+   "last": "Barham",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long twisted locs to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685266.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 415,
+   "first": "Alijah",
+   "last": "Clark",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twists on top, sides faded.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4595352.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 416,
+   "first": "CeeDee",
+   "last": "Lamb",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4241389.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 417,
+   "first": "KaVontae",
+   "last": "Turpin",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest, with a light-dyed strand.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3676833.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 418,
+   "first": "George",
+   "last": "Pickens",
+   "team": "DAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs reaching just past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4426354.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 447,
+   "first": "Lil'Jordan",
+   "last": "Humphrey",
+   "team": "DEN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot (headband): long locs down to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4039057.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 454,
+   "first": "Jordan",
+   "last": "Turner",
+   "team": "DEN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest with full beard.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4693373.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 463,
+   "first": "Luke",
+   "last": "Wattenberg",
+   "team": "DEN",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long wavy dark-brown hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4039018/luke-wattenberg"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 472,
+   "first": "Troy",
+   "last": "Franklin",
+   "team": "DEN",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4431280/troy-franklin"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 479,
+   "first": "Bishop",
+   "last": "Fitzgerald",
+   "team": "DET",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/5151810.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 481,
+   "first": "Ennis",
+   "last": "Rakestraw",
+   "team": "DET",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twists, only slightly longer at the back.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4566092.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 491,
+   "first": "Jahmyr",
+   "last": "Gibbs",
+   "team": "DET",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot (headband): short locs reaching about the neck line.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4429795.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 509,
+   "first": "Tyleik",
+   "last": "Williams",
+   "team": "DET",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): locs tied up in a tall top-knot under a headband.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4431615/tyleik-williams"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 516,
+   "first": "Khalil",
+   "last": "Dorsey",
+   "team": "DET",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4027919/khalil-dorsey"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 519,
+   "first": "Tate",
+   "last": "Ratledge",
+   "team": "DET",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Headshot (front only) shows short top; mullet documented at the 2025 combine (SI, published 2025-03-03, \"majestic mullet\") and in 2025 draft coverage. No source found saying he cut it; 2026 length unconfirmed.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4429035/tate-ratledge",
+     "https://www.si.com/nfl/georgia-offensive-lineman-majestic-mullet-wins-the-nfl-scouting-combine",
+     "https://www.prideofdetroit.com/2025/4/26/24417215/5-things-to-know-about-new-detroit-lions-g-tate-ratledge"
+    ],
+    "evidence_date": "2025-04"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 525,
+   "first": "Jameson",
+   "last": "Williams",
+   "team": "DET",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4426388/jameson-williams"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 526,
+   "first": "Tay",
+   "last": "Martin",
+   "team": "DET",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Roster headshot: brown-tinted locs reaching past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4245144.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 527,
+   "first": "Isaac",
+   "last": "TeSlaa",
+   "team": "DET",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "medium",
+    "evidence": "Noah (N20, 2026-10-14) from this season's Lions game frames: long light/blond hair. The ESPN roster headshot (likely his 2025 draft photo) shows shorter curly light-brown hair.",
+    "sources": [
+     "Noah 2026-10-14 (b77 FEEDBACK N20)",
+     "https://a.espncdn.com/i/headshots/nfl/players/full/5123663.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 530,
+   "first": "Keisean",
+   "last": "Nixon",
+   "team": "GB",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twisted locs on top.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4259493/keisean-nixon"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 531,
+   "first": "Evan",
+   "last": "Williams",
+   "team": "GB",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4428863/evan-williams"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 533,
+   "first": "J. Michael",
+   "last": "Sturdivant",
+   "team": "GB",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-to-shoulder locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4635009/j-michael-sturdivant"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 534,
+   "first": "Xavier",
+   "last": "McKinney",
+   "team": "GB",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4241470.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 545,
+   "first": "Jonathan",
+   "last": "Ford",
+   "team": "GB",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): locs to the shoulders under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4259762/jonathan-ford"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 551,
+   "first": "John",
+   "last": "Williams",
+   "team": "GB",
+   "fields": {
+    "hair_style": 12
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length curly black hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2312707/john-williams"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 553,
+   "first": "Jordan",
+   "last": "Morgan",
+   "team": "GB",
+   "fields": {
+    "hair_style": 12
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long curly black hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3821571/jordan-morgan"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 558,
+   "first": "Ty'Ron",
+   "last": "Hopper",
+   "team": "GB",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4567406.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 567,
+   "first": "Chris",
+   "last": "McClellan",
+   "team": "GB",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): locs to the chin under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4820574/chris-mcclellan"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 568,
+   "first": "Javon",
+   "last": "Bullard",
+   "team": "GB",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs reaching past the collar onto the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4688930.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 582,
+   "first": "Sean",
+   "last": "Rhyan",
+   "team": "GB",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length big curly dark-brown hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4426411/sean-rhyan"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 583,
+   "first": "Sauce",
+   "last": "Gardner",
+   "team": "IND",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: curly twist-out on top with faded sides, no length below ear.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4427250.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 584,
+   "first": "Jonathan",
+   "last": "Owens",
+   "team": "IND",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: cornrows with braid tails at the back/sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4331768.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 590,
+   "first": "Jaylahn",
+   "last": "Tuimoloau",
+   "team": "IND",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4566154/jaylahn-tuimoloau"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 594,
+   "first": "Jonathan",
+   "last": "Taylor",
+   "team": "IND",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: cornrows with braid tails hanging to the neck/collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4242335.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 598,
+   "first": "Quenton",
+   "last": "Nelson",
+   "team": "IND",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): dark hair to the collar, longer at the sides/back (mullet-leaning).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3129308/quenton-nelson"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 601,
+   "first": "DJ",
+   "last": "Giddens",
+   "team": "IND",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: twisted top with short locs poking out at the back of the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4874509.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 606,
+   "first": "Tahj",
+   "last": "Chambers",
+   "team": "IND",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4692638.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 616,
+   "first": "Anthony",
+   "last": "Richardson",
+   "team": "IND",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "dyed-blond",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short twists on top with yellow-dyed twists, faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4429084.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 623,
+   "first": "Tanor",
+   "last": "Bortolini",
+   "team": "IND",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short-top brown hair with visibly longer back/neck hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4430957/tanor-bortolini"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 626,
+   "first": "Tyler",
+   "last": "Warren",
+   "team": "IND",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length wavy blond hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4431459/tyler-warren"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 631,
+   "first": "Josh",
+   "last": "Downs",
+   "team": "IND",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: twists on top, short at the sides, slightly longer behind.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4688813.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 632,
+   "first": "Ashton",
+   "last": "Dulin",
+   "team": "IND",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs tied in a high top knot with faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4061956.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 634,
+   "first": "Luke",
+   "last": "Tenuta",
+   "team": "IND",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): brown hair visibly longer at the back, ponytail-length.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4361979/luke-tenuta"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 644,
+   "first": "DaVon",
+   "last": "Hamilton",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest, with beard.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3915520.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 661,
+   "first": "Dennis",
+   "last": "Gardeck",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length brown hair pulled back.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4334300/dennis-gardeck"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 665,
+   "first": "Jahlani",
+   "last": "Tavai",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 12
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long curly black hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3124587/jahlani-tavai"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 669,
+   "first": "Trevor",
+   "last": "Lawrence",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "Headshot shows shoulder-length light-brown/blond hair; Jaguars May 2026 schedule-video haircut was a wig and Lawrence said he has no plans to cut it.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4360310/trevor-lawrence",
+     "https://www.wokv.com/news/local/did-trevor-lawrence-really-cut-his-hair-jaguars-viral-schedule-release-creates-stir/6WSYAWM4BNDH5EQZQ7V3SKKETY/",
+     "https://newsweek.com/sports/nfl/trevor-lawrence-didnt-actually-cut-his-hair-for-jaguars-schedule-release-11958357"
+    ],
+    "evidence_date": "2026-05"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 681,
+   "first": "Jakobi",
+   "last": "Meyers",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: locs hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3916433.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 683,
+   "first": "Brian",
+   "last": "Thomas",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: locs hanging past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4432773.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 688,
+   "first": "Jonah",
+   "last": "Monheim",
+   "team": "JAX",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long wavy brown hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4430481/jonah-monheim"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 695,
+   "first": "Ashton",
+   "last": "Gillotte",
+   "team": "KC",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): collar-length curly dark-brown hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4684432/ashton-gillotte"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 700,
+   "first": "Bryson",
+   "last": "Eason",
+   "team": "KC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs reaching just past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4431561.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 703,
+   "first": "Emmett",
+   "last": "Johnson",
+   "team": "KC",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: short locs/twists reaching about the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4832955.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 708,
+   "first": "Diego",
+   "last": "Pounds",
+   "team": "KC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4602984/diego-pounds"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 716,
+   "first": "Nick",
+   "last": "Bolton",
+   "team": "KC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs down to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362759.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 725,
+   "first": "Nohl",
+   "last": "Williams",
+   "team": "KC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Roster headshot: long locs with brown/orange tips reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4610705.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 730,
+   "first": "Hunter",
+   "last": "Nourzad",
+   "team": "KC",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length wavy dark-brown hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4367645/hunter-nourzad"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 753,
+   "first": "Jordan",
+   "last": "Phillips",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4837188.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 755,
+   "first": "Jaylen",
+   "last": "Wright",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Roster headshot (cap): locs with lighter tips past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4682745.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 757,
+   "first": "Marcellas",
+   "last": "Dial",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: cornrows on top with braided side tails.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4875079.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 758,
+   "first": "Julius",
+   "last": "Wood",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4872841.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 761,
+   "first": "Aaron",
+   "last": "Brewer",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Roster headshot: honey-brown tipped locs past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4040537.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 782,
+   "first": "Jonah",
+   "last": "Savaiinaea",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: large top bun with faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4819257.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 784,
+   "first": "Greg",
+   "last": "Dulcich",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long curly dark-brown hair to the chest.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4367209/greg-dulcich"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 789,
+   "first": "Caleb",
+   "last": "Douglas",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: locs past the collar to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4869645.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 797,
+   "first": "Josh",
+   "last": "Metellus",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "Roster headshot: long locs past the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4046537.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 799,
+   "first": "Andrew",
+   "last": "Van Ginkel",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight blond hair to the chest.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3133487/andrew-van-ginkel"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 802,
+   "first": "Elijah",
+   "last": "Williams",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "Roster headshot: box braids/cornrows on top, short length.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4696782.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 803,
+   "first": "Tyrion",
+   "last": "Ingram-Dawkins",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4629149/tyrion-ingram-dawkins"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 806,
+   "first": "Levi Drake",
+   "last": "Rodriguez",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long dark hair tied in a top-knot bun.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/5093973/levi-drake-rodriguez"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 810,
+   "first": "Demond",
+   "last": "Claiborne",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows bushy locs falling to the shoulders.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4832846.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 817,
+   "first": "Aaron",
+   "last": "Jones",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching chest level.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3042519.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 818,
+   "first": "DeeJay",
+   "last": "Dallas",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching chest level.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4240631.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 825,
+   "first": "Jay",
+   "last": "Ward",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs past the collar onto the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4568007.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 827,
+   "first": "Ivan",
+   "last": "Pace",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4430280/ivan-pace-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 829,
+   "first": "Kyler",
+   "last": "Murray",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braided plaits/cornrows at front with braid tails hanging to the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3917315.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 838,
+   "first": "T.J.",
+   "last": "Hockenson",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long wavy auburn-brown hair past the shoulders, headband/cap.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4036133/tj-hockenson"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 840,
+   "first": "Gavin",
+   "last": "Bartholomew",
+   "team": "MIN",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): dark swept top with clearly longer curly hair at the back/neck.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4708049/gavin-bartholomew"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 849,
+   "first": "Jaylen",
+   "last": "Reed",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long brown locs with lighter tips reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4432758.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 864,
+   "first": "Karon",
+   "last": "Prunty",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4606666/karon-prunty"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 868,
+   "first": "Rhamondre",
+   "last": "Stevenson",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long brown locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4569173.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 869,
+   "first": "Corey",
+   "last": "Kiner",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs reaching the collarbone/upper chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4431431.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 888,
+   "first": "Jared",
+   "last": "Wilson",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs past the collar onto the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4599198.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 892,
+   "first": "Romeo",
+   "last": "Doubs",
+   "team": "NE",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists/locs that stay near the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4361432.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 894,
+   "first": "DeMario",
+   "last": "Douglas",
+   "team": "NE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4427095.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 904,
+   "first": "Jordan",
+   "last": "Howden",
+   "team": "NO",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long braids/twists to the chest.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4360949/jordan-howden"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 906,
+   "first": "Carl",
+   "last": "Granderson",
+   "team": "NO",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length twists/locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3918310/carl-granderson"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 908,
+   "first": "Chase",
+   "last": "Young",
+   "team": "NO",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs past the collar with blond-dyed tips.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4241986.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 913,
+   "first": "Chris",
+   "last": "Rumph",
+   "team": "NO",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4240475/chris-rumph-ii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 922,
+   "first": "Jeremiah",
+   "last": "Wright",
+   "team": "NO",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4433938/jeremiah-wright"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 931,
+   "first": "Christen",
+   "last": "Miller",
+   "team": "NO",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): locs tied up in a top-knot bun.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4685479/christen-miller"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 933,
+   "first": "Khristian",
+   "last": "Boyd",
+   "team": "NO",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long brown locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4384595.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 940,
+   "first": "Martin",
+   "last": "Emerson",
+   "team": "NO",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4429568.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 950,
+   "first": "Justin",
+   "last": "Reid",
+   "team": "NO",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-blond",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long thin twisted locs to the chest with blond-dyed strands.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3931399.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 955,
+   "first": "Nikko",
+   "last": "Reed",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists with small tails.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4691043/nikko-reed"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 961,
+   "first": "Darius",
+   "last": "Alexander",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4426542/darius-alexander"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 982,
+   "first": "Tremaine",
+   "last": "Edmunds",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3929950.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 986,
+   "first": "Jordan",
+   "last": "Stout",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): collar-length wavy brown hair (punter).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4260224/jordan-stout"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 995,
+   "first": "Isaiah",
+   "last": "Likely",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4361050/isaiah-likely"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1012,
+   "first": "Kingsley",
+   "last": "Enagbare",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists that end around the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362840.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1015,
+   "first": "Darrell",
+   "last": "Jackson",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4612836/darrell-jackson-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1019,
+   "first": "T'Vondre",
+   "last": "Sweat",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs to the chest (headband).",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4428617.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1021,
+   "first": "Jowon",
+   "last": "Briggs",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4426676/jowon-briggs"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1028,
+   "first": "Joe",
+   "last": "Tippmann",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long wavy light-brown hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4428681/joe-tippmann"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1033,
+   "first": "Demario",
+   "last": "Davis",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs past the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/14958.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1049,
+   "first": "Dylan",
+   "last": "Parham",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the shoulder pads/chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4243375.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1061,
+   "first": "Treydan",
+   "last": "Stukes",
+   "team": "LV",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4697757/treydan-stukes"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1074,
+   "first": "Jermod",
+   "last": "McCoy",
+   "team": "LV",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/5157289.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1080,
+   "first": "Ashton",
+   "last": "Jeanty",
+   "team": "LV",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-amber",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs with amber/ginger-dyed tips.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4890973.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1092,
+   "first": "AJ",
+   "last": "Cole",
+   "team": "LV",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): collar-to-shoulder wavy light-brown/auburn hair (punter).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3686689/aj-cole"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1099,
+   "first": "Spencer",
+   "last": "Burford",
+   "team": "LV",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twists ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362999.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1103,
+   "first": "Ian",
+   "last": "Thomas",
+   "team": "LV",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs past the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4045305.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1106,
+   "first": "Jalen",
+   "last": "Nailor",
+   "team": "LV",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braids around the face with tails.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4382466.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1113,
+   "first": "Riq",
+   "last": "Woolen",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short top locs with small twists at the sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4245185.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1123,
+   "first": "Jalen",
+   "last": "Carter",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows bushy short twists ending above the shoulders.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685759.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1136,
+   "first": "E.J.",
+   "last": "Jenkins",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short cropped hair, no locs visible.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4248557.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1155,
+   "first": "Dallas",
+   "last": "Goedert",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length curly brown hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3121023/dallas-goedert"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1161,
+   "first": "Dontayvion",
+   "last": "Wicks",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4428850/dontayvion-wicks"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1162,
+   "first": "Makai",
+   "last": "Lemon",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4870795.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1170,
+   "first": "Rayshawn",
+   "last": "Jenkins",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/2969961.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1171,
+   "first": "Brandin",
+   "last": "Echols",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs tied up in a high top knot.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4567979.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1180,
+   "first": "Riley",
+   "last": "Nowakowski",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4693370.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1187,
+   "first": "Jaylen",
+   "last": "Warren",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists ending around the jaw/ears.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4569987.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1213,
+   "first": "Ben",
+   "last": "Skowronek",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length wavy sandy-blond hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4035656/ben-skowronek"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1227,
+   "first": "Poona",
+   "last": "Ford",
+   "team": "LAR",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists/locs.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3125114/poona-ford"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1231,
+   "first": "Desjuan",
+   "last": "Johnson",
+   "team": "LAR",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted locs ending around the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362294.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1270,
+   "first": "Tutu",
+   "last": "Atwell",
+   "team": "LAR",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs reaching the collar/upper chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4360797.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1275,
+   "first": "Rodney",
+   "last": "Shelley",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists ending around the neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4838693.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1277,
+   "first": "Tuli",
+   "last": "Tuipulotu",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): curly top with a long single braid down the back.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4431442/tuli-tuipulotu"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1281,
+   "first": "Dalvin",
+   "last": "Tomlinson",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2979860/dalvin-tomlinson"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1284,
+   "first": "Nick",
+   "last": "Barrett",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4682818/nick-barrett"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1287,
+   "first": "Donte",
+   "last": "Jackson",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3843769/donte-jackson"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1304,
+   "first": "J.K.",
+   "last": "Scott",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "red",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length straight ginger-blond hair (punter).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3126368/jk-scott"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1307,
+   "first": "Kendall",
+   "last": "Williamson",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs tied up in a top knot with faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4360745.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1314,
+   "first": "Charlie",
+   "last": "Kolar",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): collar-length wavy dark-brown hair.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4241263/charlie-kolar"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1325,
+   "first": "Renardo",
+   "last": "Green",
+   "team": "SF",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short locs ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4427325.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1329,
+   "first": "Malik",
+   "last": "Mustapha",
+   "team": "SF",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): twisted braids to the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4696211/malik-mustapha"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1365,
+   "first": "Connor",
+   "last": "Colby",
+   "team": "SF",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "Headshot front view only; mullet documented since high school (49erswebzone 2025-04-26 recaps 2021 quotes: \"started out I wanted one because my dad had one\"). Current length not confirmed in 2026.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4431523/connor-colby",
+     "https://www.49erswebzone.com/articles/190634-things-49ers-seventh-round-connor-colby/",
+     "https://en.wikipedia.org/wiki/Connor_Colby"
+    ],
+    "evidence_date": "2025-04"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1366,
+   "first": "George",
+   "last": "Kittle",
+   "team": "SF",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "red",
+    "confidence": "high",
+    "evidence": "Headshot shows chest-length reddish-blond hair; SI (published 2025-05-29) calls him recognizable for \"his long hair and big beard\".",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3040151/george-kittle",
+     "https://www.si.com/onsi/athlete-lifestyle/news/49ers-star-george-kittle-unrecognizable-high-school-photo-without-beard-long-hair"
+    ],
+    "evidence_date": "2025-05"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1382,
+   "first": "DeMarcus",
+   "last": "Lawrence",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists/braids to the neck.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/16802/demarcus-lawrence"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1385,
+   "first": "Leonard",
+   "last": "Williams",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 12
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long dark hair to the shoulders (hangs past the collar).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2971622/leonard-williams"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1388,
+   "first": "Byron",
+   "last": "Murphy",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short cropped hair.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4570040.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1395,
+   "first": "Charles",
+   "last": "Cross",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted/braided locs ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4426376.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1396,
+   "first": "Christian",
+   "last": "Haynes",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted locs ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362135.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1403,
+   "first": "Tyrice",
+   "last": "Knight",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs reaching the collar/upper chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4686540.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1439,
+   "first": "Yaya",
+   "last": "Diaby",
+   "team": "TB",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braids with tails reaching the neck/jaw.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4686334.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1455,
+   "first": "Alex",
+   "last": "Anzalone",
+   "team": "TB",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight blond hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3043107/alex-anzalone"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1461,
+   "first": "Elijah",
+   "last": "Simmons",
+   "team": "TB",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs tied up in a high top knot.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4430478.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1471,
+   "first": "Dan",
+   "last": "Feeney",
+   "team": "TB",
+   "fields": {
+    "hair_style": 9
+   },
+   "research": {
+    "style": "MULLET",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): dark mullet with moustache, long back.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2979482/dan-feeney"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1474,
+   "first": "Ko",
+   "last": "Kieft",
+   "team": "TB",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "red",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long ginger hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4034779/ko-kieft"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1483,
+   "first": "Cody",
+   "last": "Mauch",
+   "team": "TB",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "red",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long ginger/red hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4248545/cody-mauch"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1494,
+   "first": "Oluwafemi",
+   "last": "Oladejo",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short cropped hair.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4876057.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1495,
+   "first": "Truman",
+   "last": "Jones",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids/twists to the neck.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4367828/truman-jones"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1500,
+   "first": "Julius",
+   "last": "Chestnut",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short cropped hair.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4367567.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1508,
+   "first": "Nicholas",
+   "last": "Singleton",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists ending around the ears/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685555.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1517,
+   "first": "Anthony",
+   "last": "Hill",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short cropped natural hair.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4870805.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1518,
+   "first": "Tommy",
+   "last": "Townsend",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight brown hair past the shoulders (punter).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3915398/tommy-townsend"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1519,
+   "first": "Cam",
+   "last": "Ward",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists ending around the neck, matching the style-codes Cam Ward example.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4688380.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1521,
+   "first": "Nazir",
+   "last": "Stackhouse",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): locs to the chin under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4429142/nazir-stackhouse"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1523,
+   "first": "Kevin",
+   "last": "Winston",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): short twists to the neck.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4685617/kevin-winston-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1537,
+   "first": "Rasul",
+   "last": "Douglas",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braids ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3943270.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1541,
+   "first": "Tyler",
+   "last": "Owens",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs past the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4572460.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1545,
+   "first": "Javontae",
+   "last": "Jean-Baptiste",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows plaits/braids reaching the chin.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4361357.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1549,
+   "first": "Tim",
+   "last": "Settle",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs reaching the collarbone/upper chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3929956.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1575,
+   "first": "Sam",
+   "last": "Cosmi",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 5
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight dark-brown hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4262199/sam-cosmi"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1577,
+   "first": "Chig",
+   "last": "Okonkwo",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4360635.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1583,
+   "first": "Dyami",
+   "last": "Brown",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braids with tails to the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4361577.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1591,
+   "first": "Ronnie",
+   "last": "Hickman",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs to the chest with lighter highlights.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4569620.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1594,
+   "first": "Isaiah",
+   "last": "McGuire",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4427963.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1597,
+   "first": "Malachi",
+   "last": "Corley",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long braids to the chest.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4613104/malachi-corley"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1607,
+   "first": "Mekhi",
+   "last": "Blackmon",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short twists on top only.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4360677.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1608,
+   "first": "Spencer",
+   "last": "Fano",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 12
+   },
+   "research": {
+    "style": "LONG_DARK",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long wavy black hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4870723/spencer-fano"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1611,
+   "first": "Quinshon",
+   "last": "Judkins",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-blond",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs to the collar/upper chest, front section dyed blond.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4685702.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1614,
+   "first": "Grant",
+   "last": "Delpit",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows cornrows on top with braided tails hanging to the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4242208.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1616,
+   "first": "Quincy",
+   "last": "Williams",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 11
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "dyed-green",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted locs to the upper chest, dyed green and orange.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3110565.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1627,
+   "first": "Myles",
+   "last": "Harden",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows braids with tails reaching the collar.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4695783.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1629,
+   "first": "Tytus",
+   "last": "Howard",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 3
+   },
+   "research": {
+    "style": "TWISTS_SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows twisted plaits ending around the jaw/neck.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3131498.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1635,
+   "first": "Jerry",
+   "last": "Jeudy",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chest-length locs under a headband (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4241463/jerry-jeudy"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1636,
+   "first": "Isaiah",
+   "last": "Bond",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "dyed-blond",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short bleached-blond hair.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4808839.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1639,
+   "first": "Denzel",
+   "last": "Boston",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids tailing past the ears.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4832800/denzel-boston"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1642,
+   "first": "Parker",
+   "last": "Brailsford",
+   "team": "CLE",
+   "fields": {
+    "hair_style": 6
+   },
+   "research": {
+    "style": "AFRO",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): large round afro/high-top that puffs out around the head.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4816090/parker-brailsford"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1643,
+   "first": "Derek",
+   "last": "Stingley",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long brown locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4426434.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1645,
+   "first": "Calen",
+   "last": "Bullock",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows long locs reaching the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4431517.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1655,
+   "first": "Jadeveon",
+   "last": "Clowney",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "brown",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows very long locs past the chest.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/16734.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1659,
+   "first": "Tremon",
+   "last": "Smith",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 8
+   },
+   "research": {
+    "style": "BUN",
+    "colour": "brown",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows locs tied up in a top knot.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/3134448.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1664,
+   "first": "Brevin",
+   "last": "Jordan",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short curly top with faded sides.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4362504.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 1677,
+   "first": "C.J.",
+   "last": "Stroud",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 13
+   },
+   "research": {
+    "style": "SHORT",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster photo (as of 2026-10-17) shows short curly top.",
+    "sources": [
+     "https://a.espncdn.com/i/headshots/nfl/players/full/4432577.png"
+    ],
+    "evidence_date": "2026-10"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2471,
+   "first": "Kenny",
+   "last": "Moore",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs/twists (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4218312/kenny-moore-ii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2476,
+   "first": "Deatrich",
+   "last": "Wise",
+   "team": "WAS",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/2980080/deatrich-wise-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2482,
+   "first": "Sean",
+   "last": "Murphy-Bunting",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long box braids past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/3932886/sean-murphy-bunting"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2484,
+   "first": "Greg",
+   "last": "Dortch",
+   "team": "BUF",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-to-shoulder locs/twists (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4037235/greg-dortch"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2489,
+   "first": "Larrell",
+   "last": "Murchison",
+   "team": "LAR",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4240123/larrell-murchison"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2491,
+   "first": "Malik",
+   "last": "Harrison",
+   "team": "NYG",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids to the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4040615/malik-harrison"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2494,
+   "first": "Trevon",
+   "last": "Diggs",
+   "team": "SEA",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4040966/trevon-diggs"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2495,
+   "first": "K'Von",
+   "last": "Wallace",
+   "team": "BAL",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4035463/kvon-wallace"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2500,
+   "first": "Michael",
+   "last": "Carter",
+   "team": "TEN",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4240657/michael-carter"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2502,
+   "first": "Ifeatu",
+   "last": "Melifonwu",
+   "team": "TB",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids with long ends to the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4240401/ifeatu-melifonwu"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2505,
+   "first": "Brenden",
+   "last": "Schooler",
+   "team": "NE",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long straight dark-blond hair to the chest.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4047941/brenden-schooler"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2514,
+   "first": "Terell",
+   "last": "Smith",
+   "team": "PIT",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long locs to the chest (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4360935/terell-smith"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2515,
+   "first": "Cam",
+   "last": "Jones",
+   "team": "KC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): very long locs to the chest under a cap (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4371959/cam-jones"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2522,
+   "first": "Mitchell",
+   "last": "Tinsley",
+   "team": "CIN",
+   "fields": {
+    "hair_style": 7
+   },
+   "research": {
+    "style": "BRAIDS",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): braids to the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4690070/mitchell-tinsley"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2524,
+   "first": "Carson",
+   "last": "Steele",
+   "team": "PHI",
+   "fields": {
+    "hair_style": 4
+   },
+   "research": {
+    "style": "LONG_LIGHT",
+    "colour": "blond",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long straight blond hair past the shoulders.",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4714365/carson-steele"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2527,
+   "first": "Nate",
+   "last": "Lynn",
+   "team": "NYJ",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4574142/nate-lynn"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2532,
+   "first": "Kenneth",
+   "last": "Grant",
+   "team": "MIA",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): chin-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4894654/kenneth-grant"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2535,
+   "first": "Theo",
+   "last": "Wease",
+   "team": "LAC",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs past the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4426535/theo-wease-jr"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2544,
+   "first": "Torricelli",
+   "last": "Simpkins",
+   "team": "CAR",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4696902/torricelli-simpkins-iii"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2547,
+   "first": "Shemar",
+   "last": "Turner",
+   "team": "CHI",
+   "fields": {
+    "hair_style": 1
+   },
+   "research": {
+    "style": "LOCS_MEDIUM",
+    "colour": "black",
+    "confidence": "medium",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): shoulder-length locs (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4432804/shemar-turner"
+    ],
+    "evidence_date": "unknown"
+   }
+  },
+  {
+   "pool": "primary",
+   "index": 2553,
+   "first": "Kayden",
+   "last": "McDonald",
+   "team": "HOU",
+   "fields": {
+    "hair_style": 2
+   },
+   "research": {
+    "style": "LOCS_LONG",
+    "colour": "black",
+    "confidence": "high",
+    "evidence": "ESPN 2026 roster headshot (helmet off, fetched 2026-10-17): long locs to the shoulders (CSV dreads=0).",
+    "sources": [
+     "https://www.espn.com/nfl/player/_/id/4870893/kayden-mcdonald"
+    ],
+    "evidence_date": "unknown"
+   }
+  }
+ ]
+}

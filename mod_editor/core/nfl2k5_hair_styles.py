@@ -16,7 +16,8 @@ the two player scenes, and ADDS seven meshes and nine textures:
 * nine 64 x 64 P8 hair textures are appended to outer 3 as raw TXTR resources (``hair_locs_dark`` ...), found by
   name at run time exactly as retail finds ``dread`` (0x449E0 with no container: the resident global.iff);
 * roster record byte +0x0D, low nibble = hair style (the Studio field ``hair_style``; zero in every retail and
-  SOFTDRINK record). 0 = retail (the Dreads bit decides), 1 = the retail dreads, 2..12 = the styles below;
+  SOFTDRINK record). 0 = retail (the Dreads bit decides), 1 = the retail dreads, 2..12 = the styles below, 13 = no
+  hair model even with the Dreads bit (players who have cut their locs), 14..15 = reserved (behave like 0);
 * a code cave replaces the 45-byte dreads block of the player builder (0x8F5B9): style 0 tests the Dreads bit and
   runs the original block, style 1 runs the original block, a new style looks its texture up by name and shows
   ``HAIR_<mesh>`` through the same routine retail uses (0x8E3F0). The cave first checks that the model row is lo_body
@@ -93,8 +94,10 @@ STYLES = (
     Style(12, "long_flow_black", "Long hair, black", "long_flow", "strands_black"),
 )
 MAX_STYLE = 12
+#: style 13 draws no hair model at all, even for a player with the Dreads bit (players who have cut their locs)
+NONE_STYLE = 13
 STYLE_LABELS = (("Retail (Dreads bit)", "Retail dreads") + tuple(s.label for s in STYLES)
-                + tuple(f"Reserved {i}" for i in range(MAX_STYLE + 1, 16)))
+                + ("No hair model",) + tuple(f"Reserved {i}" for i in range(NONE_STYLE + 1, 16)))
 STYLE_BY_INDEX = {s.index: s for s in STYLES}
 STYLE_BY_KEY = {s.key: s for s in STYLES}
 
@@ -742,6 +745,8 @@ def code_for(code_va: int) -> bytes:
     a.j32("0f84", "retail")          # 0: retail (the Dreads bit decides)
     a.b("83f801")                    # cmp eax, 1
     a.j32("0f84", "dreads")          # 1: the retail dreads
+    a.b("83f8" + f"{NONE_STYLE:02x}")  # cmp eax, NONE_STYLE
+    a.j32("0f84", "done")            # 13: no hair model, whatever the Dreads bit says
     a.b("83f8" + f"{MAX_STYLE:02x}")  # cmp eax, MAX_STYLE
     a.j32("0f87", "retail")          # reserved styles behave like style 0
     a.b("8b4d08")                    # mov ecx, [ebp+8]               (model row)

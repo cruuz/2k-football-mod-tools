@@ -437,7 +437,7 @@ VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap", "abil
 # b775-hs1: roster +0x0D bits 0-3 (labels kept in step with nfl2k5_hair_styles.STYLE_LABELS by its tests)
 HAIR_STYLES = ("Retail (Dreads bit)", "Retail dreads", "Long locs", "Short twists", "Long hair, blond",
                "Long hair, brown", "Afro puff", "Braids", "Bun", "Mullet, brown", "Mullet, blond",
-               "Long locs, light ends", "Long hair, black", "Reserved 13", "Reserved 14", "Reserved 15")
+               "Long locs, light ends", "Long hair, black", "No hair model", "Reserved 14", "Reserved 15")
 
 ENUMS: dict[str, Sequence[str]] = {
     "ability_tier": ABILITY_TIERS,
@@ -785,8 +785,8 @@ FIELDS: tuple[Field, ...] = (
     _f("helmet", 0x0C, 1, 6, 1, "Helmet"),
     _f("headless", 0x0C, 1, 7, 1, "Headless Bit", "Finn's 12Unk1; a set bit renders the model without a head"),
     _f("hair_style", 0x0D, 1, 0, 4, "Hair Style",
-       "b775-hs1: 0 = retail (the Dreads bit decides), 1 = retail dreads, 2-12 = the added hair models "
-       "(nfl2k5_hair_styles; needs that build step); zero in every retail record"),
+       "b775-hs1: 0 = retail (the Dreads bit decides), 1 = retail dreads, 2-12 = the added hair models, "
+       "13 = no hair model (nfl2k5_hair_styles; needs that build step); zero in every retail record"),
     _f("unknown_0d_high", 0x0D, 1, 4, 4, "Unknown +0x0D bits 4-7"),
     _f("unknown_0e", 0x0E, 1, 0, 8, "Unknown +0x0E"),
     _f("unknown_0f", 0x0F, 1, 0, 8, "Unknown +0x0F"),
