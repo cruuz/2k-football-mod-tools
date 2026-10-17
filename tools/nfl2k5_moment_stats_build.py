@@ -199,8 +199,11 @@ def nflverse_stats(plays, start_play, names):
             team[pos]["sack_yds"] += -int(num(r["yards_gained"]))
             if r["sack_player_id"] not in ("", "NA"):
                 credit(r["sack_player_id"], r["sack_player_name"], de, "half_sacks", 2)
+                team[de]["half_sacks"] += 2
             for k in ("half_sack_1", "half_sack_2"):
-                credit(r[k + "_player_id"], r[k + "_player_name"], de, "half_sacks", 1)
+                if r[k + "_player_id"] not in ("", "NA"):
+                    credit(r[k + "_player_id"], r[k + "_player_name"], de, "half_sacks", 1)
+                    team[de]["half_sacks"] += 1
         elif flag(r, "pass_attempt") and r["passer_player_id"] not in ("", "NA"):
             team[pos]["pass_plays"] += 1
             for stat, v in (("pass_att", 1), ("pass_cmp", int(flag(r, "complete_pass"))),
