@@ -355,61 +355,114 @@ def roster_labels(roster):
     return out
 
 
+def _kit_task(task):
+    """Worker: one composed kit. A pure function of the target, donor, parts and recipe bytes."""
+    raw, donor, parts, recipe = task
+    return compile_kit(raw, donor, parts, recipe)
+
+
+def _compile_kits(pending):
+    """[compile_kit(...)] for each pending kit, in order, in worker processes with a verified cache.
+
+    NFL2K5_SERIAL_ERA_KITS=1 or NFL2K5_BUILD_WORKERS=1 compile them here one at a time;
+    NFL2K5_DISABLE_COMPILE_CACHE=1 turns the cache off. The caller still checks every result against its output pin.
+    """
+    from . import nfl2k5_late_steps as late
+    cache = late.StepCache.open("era-kits", **late.step_code("era-kits"))
+    fixed, keys, misses = {}, {}, []
+    for position, item in enumerate(pending):
+        raw, donor, parts, recipe = item["task"]
+        if cache is not None:
+            keys[position] = cache.key(recipe, sha(raw), sha(donor), {k: sha(v) for k, v in sorted(parts.items())})
+            hit = cache.get(keys[position])
+            if isinstance(hit, dict) and isinstance(hit.get("after"), bytes) and len(hit["after"]) == len(raw) \
+                    and hit.get("after_sha256") == sha(hit["after"]) and hit.get("before_sha256") == sha(raw):
+                fixed[position] = hit["after"]
+                continue
+        misses.append(position)
+    computed = late.ordered_map(_kit_task, [pending[i]["task"] for i in misses],
+                                late.worker_count(len(misses), "NFL2K5_SERIAL_ERA_KITS", per_worker_mb=700))
+    for position in misses:
+        fixed[position] = next(computed)
+        if cache is not None:
+            raw = pending[position]["task"][0]
+            cache.put(keys[position], dict(after=fixed[position], after_sha256=sha(fixed[position]), before_sha256=sha(raw)))
+    return [fixed[position] for position in range(len(pending))]
+
+
+def _finish_kits(rows, pending):
+    """Compile the pending kits and fill their rows (the row slot of each is None until now)."""
+    compiled = _compile_kits(pending)
+    for item, fixed in zip(pending, compiled):
+        raw, selector, row = item["task"][0], item["selector"], item["row"]
+        if item["pinned"]:
+            require(sha(fixed) == item["pin"]["after_sha256"], selector + ": composed kit differs from its output pin")
+        rows[item["slot"]] = (selector, fixed, dict(row, state="composed", pinned_inputs=item["pinned"],
+                                                    before_sha256=item["digest"], after_sha256=sha(fixed),
+                                                    changed_bytes=sum(a != b for a, b in zip(raw, fixed)),
+                                                    inputs={k: sha(v) for k, v in item["sources"].items()}))
+
+
 def plan(kits, labels, retail_parts=None, document=None):
     """Decide and compile every era kit from already-read packages; nothing is written here.
 
     ``kits`` maps "SELECTOR.IFF" to the build copy's package bytes (targets, donors and parts); ``retail_parts``
     maps "SELECTOR.IFF" to retail packages for ``retail_`` parts (needed only when a kit is composed).
     Returns [(selector, new bytes or None, receipt row)].
+
+    Every composed kit is independent of the others (the inputs are all read first), so the decisions are made
+    here in order and the kits compile together (_compile_kits); the rows come out in the original order.
     """
     document = document or pins()
-    rows = []
-    for recipe in recipes():
-        wanted = tuple(recipe["label"])
-        for side, selector in targets(recipe).items():
-            pin = document["kits"][selector]
-            name = selector + ".IFF"
-            raw = kits.get(name)
-            row = dict(selector=selector, id=recipe["id"], label=list(wanted))
-            if raw is None:
-                rows.append((selector, None, dict(row, state="absent")))
-                continue
-            digest = sha(raw)
-            if labels.get((recipe["code"], recipe["style"])) != wanted:
-                # A build without the SOFTDRINK slot labels keeps the retail kit the slot still advertises.
-                rows.append((selector, None, dict(row, state="retail_label", sha256=digest)))
-                continue
-            if digest == pin["after_sha256"]:
-                rows.append((selector, None, dict(row, state="applied", sha256=digest)))
-                continue
-            if digest != pin["before_sha256"]:
-                # The user's recipe already put its own art in the era slot: keep it.
-                rows.append((selector, None, dict(row, state="other_uniform", sha256=digest)))
-                continue
-            donor_name, part_names = inputs_of(recipe, side)
-            missing = [n for n in [donor_name] + list(part_names.values())
-                       if not n.startswith(RETAIL_PREFIX) and n + ".IFF" not in kits]
-            if missing:
-                # e.g. no historic spare styles on this build: the donor packages do not exist
-                rows.append((selector, None, dict(row, state="donor_absent", missing=missing, sha256=digest)))
-                continue
-            donor = kits[donor_name + ".IFF"]
-            parts = {}
-            for key, part in part_names.items():
-                if part.startswith(RETAIL_PREFIX):
-                    require(retail_parts is not None, "the retail source is needed for " + part)
-                    parts[key] = retail_parts[part[len(RETAIL_PREFIX):] + ".IFF"]
-                else:
-                    parts[key] = kits[part + ".IFF"]
-            sources = {donor_name: donor, **{part_names[k]: v for k, v in parts.items()}}
-            pinned = all(sha(data) == pin["inputs"][label] for label, data in sources.items())
-            fixed = compile_kit(raw, donor, parts, recipe)
-            if pinned:
-                require(sha(fixed) == pin["after_sha256"], selector + ": composed kit differs from its output pin")
-            rows.append((selector, fixed, dict(row, state="composed", pinned_inputs=pinned, before_sha256=digest,
-                                               after_sha256=sha(fixed),
-                                               changed_bytes=sum(a != b for a, b in zip(raw, fixed)),
-                                               inputs={k: sha(v) for k, v in sources.items()})))
+    rows, pending = [], []
+    try:
+        for recipe in recipes():
+            wanted = tuple(recipe["label"])
+            for side, selector in targets(recipe).items():
+                pin = document["kits"][selector]
+                name = selector + ".IFF"
+                raw = kits.get(name)
+                row = dict(selector=selector, id=recipe["id"], label=list(wanted))
+                if raw is None:
+                    rows.append((selector, None, dict(row, state="absent")))
+                    continue
+                digest = sha(raw)
+                if labels.get((recipe["code"], recipe["style"])) != wanted:
+                    # A build without the SOFTDRINK slot labels keeps the retail kit the slot still advertises.
+                    rows.append((selector, None, dict(row, state="retail_label", sha256=digest)))
+                    continue
+                if digest == pin["after_sha256"]:
+                    rows.append((selector, None, dict(row, state="applied", sha256=digest)))
+                    continue
+                if digest != pin["before_sha256"]:
+                    # The user's recipe already put its own art in the era slot: keep it.
+                    rows.append((selector, None, dict(row, state="other_uniform", sha256=digest)))
+                    continue
+                donor_name, part_names = inputs_of(recipe, side)
+                missing = [n for n in [donor_name] + list(part_names.values())
+                           if not n.startswith(RETAIL_PREFIX) and n + ".IFF" not in kits]
+                if missing:
+                    # e.g. no historic spare styles on this build: the donor packages do not exist
+                    rows.append((selector, None, dict(row, state="donor_absent", missing=missing, sha256=digest)))
+                    continue
+                donor = kits[donor_name + ".IFF"]
+                parts = {}
+                for key, part in part_names.items():
+                    if part.startswith(RETAIL_PREFIX):
+                        require(retail_parts is not None, "the retail source is needed for " + part)
+                        parts[key] = retail_parts[part[len(RETAIL_PREFIX):] + ".IFF"]
+                    else:
+                        parts[key] = kits[part + ".IFF"]
+                sources = {donor_name: donor, **{part_names[k]: v for k, v in parts.items()}}
+                pinned = all(sha(data) == pin["inputs"][label] for label, data in sources.items())
+                pending.append(dict(slot=len(rows), selector=selector, row=row, pin=pin, pinned=pinned, digest=digest,
+                                    sources=sources, task=(raw, donor, parts, recipe)))
+                rows.append(None)
+    except BaseException:
+        # A kit that was due to compile before the failing one would have failed first.
+        _finish_kits(rows, pending)
+        raise
+    _finish_kits(rows, pending)
     return rows
 
 

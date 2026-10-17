@@ -1027,6 +1027,7 @@ mod_editor/core/studio_inspection.py
 mod_editor/gui/stall_watchdog.py
 mod_editor/gui/workspace_runtime.py
 mod_editor/core/nfl2k5_compile_cache.py
+mod_editor/core/nfl2k5_late_steps.py
 tools/nfl2k5_equipment_optimal
 tools/nfl2k5_equipment_optimal.c
 # Beta 69 shared UI help and product FAQ

@@ -1600,12 +1600,12 @@ def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[
     if packs is None:
         raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
     payload = _xbe_bytes(target)
-    rows = []
     with packs._outer_image().OuterImage(target) as archive:
-        for entry in archive.entries_with_head(b"PLAY"):
-            progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
-            row = scoring.require_safe(archive.read_entry(entry.index), payload)
-            rows.append({"entry": entry.index, **row})
+        books = [(entry.index, archive.read_entry(entry.index)) for entry in archive.entries_with_head(b"PLAY")]
+    # The books are scored in worker processes and consumed in book order (nfl2k5_play_scoring.require_safe_many).
+    rows = scoring.require_safe_many(
+        books, payload, progress=lambda index, done, total: progress(
+            f"Checking native play scoring: book {index}", done, 37))
     if not rows:
         raise RuntimeError("Native PLAY scoring found no books in the build")
     return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
