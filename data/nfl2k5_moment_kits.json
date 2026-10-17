@@ -868,5 +868,170 @@
    "style": 13,
    "kit": "K11"
   }
- ]
+ ],
+ "classic_defaults": [
+  {
+   "file": "h-00-2008-cardinals-9.iff",
+   "style": 9,
+   "before": 3,
+   "why": "wears style 9 in row(s) 28 home"
+  },
+  {
+   "file": "h-01-2016-falcons-9.iff",
+   "style": 14,
+   "before": 1,
+   "why": "wears style 14 in row(s) 30 home"
+  },
+  {
+   "file": "h-02-2012-ravens-9.iff",
+   "style": 1,
+   "before": 4,
+   "why": "wears style 1 in row(s) 39 away, 40 away"
+  },
+  {
+   "file": "h-06-2025-bengals-9.iff",
+   "style": 5,
+   "before": 1,
+   "why": "wears style 5 in row(s) 51 home"
+  },
+  {
+   "file": "h-07-1971-cowboys-4.iff",
+   "style": 5,
+   "before": 4,
+   "why": "wears style 5 in row(s) 1 away"
+  },
+  {
+   "file": "h-07-1977-cowboys-3.iff",
+   "style": 10,
+   "before": 3,
+   "why": "wears style 10 in row(s) 6 home, 9 away"
+  },
+  {
+   "file": "h-08-2012-broncos-9.iff",
+   "style": 9,
+   "before": 7,
+   "why": "wears style 9 in row(s) 39 home"
+  },
+  {
+   "file": "h-09-2015-lions-9.iff",
+   "style": 10,
+   "before": 3,
+   "why": "wears style 10 in row(s) 43 home"
+  },
+  {
+   "file": "h-10-1996-packers-2.iff",
+   "style": 7,
+   "before": 2,
+   "why": "wears style 7 in row(s) 21 away"
+  },
+  {
+   "file": "h-11-1970-colts-5.iff",
+   "style": 2,
+   "before": 5,
+   "why": "wears style 2 in row(s) 20 away"
+  },
+  {
+   "file": "h-13-1969-chiefs-4.iff",
+   "style": 3,
+   "before": 4,
+   "why": "wears style 3 in row(s) 3 home"
+  },
+  {
+   "file": "h-16-2017-patriots-9.iff",
+   "style": 11,
+   "before": 12,
+   "why": "wears style 11 in row(s) 45 home"
+  },
+  {
+   "file": "h-17-1991-saints-4.iff",
+   "style": 5,
+   "before": 4,
+   "why": "wears style 5 in row(s) 7 away"
+  },
+  {
+   "file": "h-17-2009-saints-9.iff",
+   "style": 6,
+   "before": 2,
+   "why": "wears style 6 in row(s) 35 away"
+  },
+  {
+   "file": "h-17-2011-saints-9.iff",
+   "style": 6,
+   "before": 2,
+   "why": "wears style 6 in row(s) 38 away"
+  },
+  {
+   "file": "h-18-2007-giants-9.iff",
+   "style": 9,
+   "before": 8,
+   "why": "wears style 9 in row(s) 27 away"
+  },
+  {
+   "file": "h-18-2011-giants-9.iff",
+   "style": 9,
+   "before": 8,
+   "why": "wears style 9 in row(s) 29 away"
+  },
+  {
+   "file": "h-20-1976-raiders-0.iff",
+   "style": 1,
+   "before": 5,
+   "why": "wears style 1 in row(s) 5 home"
+  },
+  {
+   "file": "h-20-1983-raiders-0.iff",
+   "style": 6,
+   "before": 5,
+   "why": "wears style 6 in row(s) 10 away"
+  },
+  {
+   "file": "h-21-2010-eagles-9.iff",
+   "style": 10,
+   "before": 9,
+   "why": "wears style 10 in row(s) 36 away"
+  },
+  {
+   "file": "h-21-2017-eagles-9.iff",
+   "style": 14,
+   "before": 9,
+   "why": "wears style 14 in row(s) 45 away"
+  },
+  {
+   "file": "h-22-2025-steelers-9.iff",
+   "style": 4,
+   "before": 6,
+   "why": "wears style 4 in row(s) 51 away"
+  },
+  {
+   "file": "h-23-2021-rams-9.iff",
+   "style": 13,
+   "before": 2,
+   "why": "wears style 13 in row(s) 48 away"
+  },
+  {
+   "file": "h-26-2010-seahawks-9.iff",
+   "style": 6,
+   "before": 1,
+   "why": "wears style 6 in row(s) 37 home"
+  },
+  {
+   "file": "h-28-1979-oilers-2.iff",
+   "style": 1,
+   "before": 2,
+   "why": "wears style 1 in row(s) 16 away, 18 away"
+  },
+  {
+   "file": "h-29-1982-redskins-2.iff",
+   "style": 10,
+   "before": 2,
+   "why": "wears style 10 in row(s) 6 away, 10 home"
+  },
+  {
+   "file": "h-30-1986-browns-1.iff",
+   "style": 5,
+   "before": 1,
+   "why": "wears style 5 in row(s) 11 home"
+  }
+ ],
+ "classic_defaults_note": "Quick Game classic-team default (team +0x192) of the moment team files, so a classic team's main uniform is the one it wore in its moment (Noah 10/17). Files whose moment side wears the 2026 kit (style 0) keep their byte: historic_styles moves every style-0 historic file to its franchise spare. Files used by several moments keep their byte unless listed."
 }

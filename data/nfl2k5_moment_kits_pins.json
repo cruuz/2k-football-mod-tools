@@ -1,7 +1,7 @@
 {
  "schema": "nfl2k5_moment_kits_pins/v1",
  "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots; team files and SITU: before/after.",
- "data_sha256": "552963e0e58048c3a7f2f354e05bed745575643a1c2fb7a167944cad8992f65f",
+ "data_sha256": "f03c5b3857dd92009b996708385992f7e88624c3dc466c932fde8033839d2dc4",
  "donors": {
   "07A2": "bf6f09f7ec7edb8144942a3b449f3ed076aa092e878f8380927d6cf4d6506e1a",
   "07A3": "75e7677ce28c5892a3d244fc716d5223365f234d14de4069b4cf6fc6f79e1b38",
@@ -171,15 +171,15 @@
  "team_files": {
   "h-29-1982-redskins-2.iff": {
    "before_sha256": "7024552dc9bd07e059b2a5831880a11a5df9da15a5b1c43f98594ba0405fda5a",
-   "after_sha256": "913b062fb4086f41d21abbaebef684b1e35ab18ef91edc0761e3b016e48ead80"
+   "after_sha256": "6ee138cb0679b7cc41902f6c7dab5e7a031bda5319327d0afbd95bd3ba1c5538"
   },
   "h-07-1977-cowboys-3.iff": {
    "before_sha256": "2612afc1356e8897575c9eb35969b033e07c94b860db6df047125e53161ca54c",
-   "after_sha256": "3f2320a19655c91f3808d9e3e446e462da09fb44ded8dcd8b07d26e67d645114"
+   "after_sha256": "5d8f9fd175f5610d3a1f3b7256314838ac094ab1286fc0ce83de898b36c5b07e"
   },
   "h-20-1983-raiders-0.iff": {
    "before_sha256": "c2a3b2c96895f9d9a6c34a4ed05c6fb14f01cc09b3f3621bf70a22af4cfe6dad",
-   "after_sha256": "7d633b431f73502752864ed7b4d92d527d7f5cf815a52937f8799a65232720e2"
+   "after_sha256": "da3cff2ab00e9e8f46cbf607718b0347953150500c465a50bf8c101be285da56"
   },
   "h-08-1986-broncos-1.iff": {
    "before_sha256": "c70ff74a7168d8b4d43c9fb564102b97e11a85fe4b43ec7e6cf1288adbe6e649",
@@ -187,7 +187,7 @@
   },
   "h-30-1986-browns-1.iff": {
    "before_sha256": "01d7ff5ceba45b46a7a020331952d211bbd3c90c00db1a16e1176d9a11771945",
-   "after_sha256": "707d999e9e4eb2350d36204c703b164df73ff28c00dc8c5f3865362d18e77bf2"
+   "after_sha256": "05781ffe211b33c83a979c4fa74fea9c966676f725b2fca1e544ed5ca3b26030"
   },
   "h-13-1993-chiefs-2.iff": {
    "before_sha256": "c9b5e122f696987d68e290e0343f28cf4692107135d6b502ebf5faf9e08f06bd",
@@ -195,11 +195,11 @@
   },
   "h-11-1970-colts-5.iff": {
    "before_sha256": "d627689ff8c4b0f2d91ed17046ffd178e04ad972d980b5469f0bda5f59982dff",
-   "after_sha256": "d627689ff8c4b0f2d91ed17046ffd178e04ad972d980b5469f0bda5f59982dff"
+   "after_sha256": "40c56567845a150e9f7e96023bcc11dda916f8abcc5d9860424fd2122fc701b5"
   },
   "h-18-2007-giants-9.iff": {
    "before_sha256": "47570d7ae8b2b24ed4d4b738d48612667b023cf15941ff8953c61e633d88dac6",
-   "after_sha256": "fcdc33523814ec54156cf2581d21e8665b8d6f0c465acc01fc0f82c3c0600457"
+   "after_sha256": "095654340d3d6ead24944e6d01f74d5190e395a6a2c2bde279ab763722f3ad29"
   },
   "h-22-2008-steelers-9.iff": {
    "before_sha256": "0002afda8d121a50c30b380be70e30d81063e42945d216974052968fc12157a6",
@@ -207,19 +207,87 @@
   },
   "h-18-2011-giants-9.iff": {
    "before_sha256": "125f8406c8d5bec425f11492fe028db243be11448544072d9186a8893b586a81",
-   "after_sha256": "d921743f1f4fc64f76524891e92a6758df76596466ecf8ae73fbb43735d4c811"
+   "after_sha256": "47218a6f0dfa10581d7568d65323df8e7205dc648d1f7e17b76ef28c46b3c3e9"
   },
   "h-26-2010-seahawks-9.iff": {
    "before_sha256": "99f9859e3d8fde05408dec4d82640a8718ad3c48465314a6a7c11df302a11bf5",
-   "after_sha256": "557caf7c86671e37812c6a5e95b427f3ff9607f28748de00392220e2c93ba18d"
+   "after_sha256": "9d8520ceceb2e83f433b5f24a0549d6ecac829448a033b5217c06b1c29dfa6f0"
   },
   "h-08-2012-broncos-9.iff": {
    "before_sha256": "3a2294a6b6e870a8ad2b435762b05642f4893d14938bf62ee9b2eebd92d344e0",
-   "after_sha256": "9a15545ccc535c4995771dd000f74033ce1bc91311d70975c0410c7fdcf7cf67"
+   "after_sha256": "d5eb7a60b413b1dbcd832e9decbfbf10e3a19d3fa9e91d52e16996bb10282060"
   },
   "h-23-2021-rams-9.iff": {
    "before_sha256": "cc46262ad3b440354733f50c3f0bf0edaa7417c1309d24b901339b4a297764e9",
-   "after_sha256": "1df930feb590e651dae6982e132a98db5e11ad73ba952fc09e620c284cf9314a"
+   "after_sha256": "b5219ee103eb3c1082defe6a4c899bfbab0d8b48bc56fa0848be440fa4d914f5"
+  },
+  "h-00-2008-cardinals-9.iff": {
+   "before_sha256": "716a0f076fb18409779812a56b1fba3763fc0054772575544014e4344c12ef5d",
+   "after_sha256": "558caee1e86981d607d2450c6a764347deaa3ed34a514ebf1315e338e1a25b6d"
+  },
+  "h-01-2016-falcons-9.iff": {
+   "before_sha256": "a32472bcb98e96d753e034bd58ae1cd915b9527e1ec3d06c0f73fe91a0fefa58",
+   "after_sha256": "42e4a75acf2eb081691d618da558dc30da3e2f418d637f6387ac48e9098095d9"
+  },
+  "h-02-2012-ravens-9.iff": {
+   "before_sha256": "a11e7521d9931a6b75da67d56cdcc0815eff7903d544893da460f4d7adea91ac",
+   "after_sha256": "66d50c9671d132cea0f398996611201be7a823f6f178771eda781ff865bdb45d"
+  },
+  "h-06-2025-bengals-9.iff": {
+   "before_sha256": "ba73fa28ecce6f5f4d39584a1a4ca5c4431b94a96884a94ac18b60919b4ef114",
+   "after_sha256": "5e0fff8420f03a11ab124b681676d84909c233d416bde6f2893fa570237fece2"
+  },
+  "h-07-1971-cowboys-4.iff": {
+   "before_sha256": "d22abcf91f7c92c70e5fcdf1f451c5f54605f3a9bb837aee4977516fe34bd1f1",
+   "after_sha256": "3db247e8d7d9b2a455b8d09919e10191c71b8326989f0de19bba23c0b8163a3e"
+  },
+  "h-09-2015-lions-9.iff": {
+   "before_sha256": "56f387b45360a327b968f1f8393aae41ed9d20acd1c0acdb2079c18dc3f632fd",
+   "after_sha256": "855d8238a3f49bfd22ff5daf9a5f57bc6d4ecefae0fb2b573eb4e7d0277b0650"
+  },
+  "h-10-1996-packers-2.iff": {
+   "before_sha256": "e4edb1ef0fa54a04892e4f1242fe2721a3d9b4761aa38560f61d6ed4c5b1ba17",
+   "after_sha256": "ab3774b8a2b36c52a033b9aa50352f3ed31d2268b22013ba7b4052b31b8f163b"
+  },
+  "h-13-1969-chiefs-4.iff": {
+   "before_sha256": "caccee47320898e1fb0022dec6285809bfde95e19c4d54bc34c4b2473b451997",
+   "after_sha256": "021af0b04eb4063b303e6a67a4ced64936e6601622190d825a658d9e6f7f19f4"
+  },
+  "h-16-2017-patriots-9.iff": {
+   "before_sha256": "ebb90a51a71c8dc20dcfc46f1d272ba82cf92e2b298a2dd5c427021e38599b08",
+   "after_sha256": "42bc6ddf5149f7eff560ad58f45bd502ed5729b2e935b2d50c3a25c6076d55cd"
+  },
+  "h-17-1991-saints-4.iff": {
+   "before_sha256": "e8594c0d491afeb0a507fbaa5cb00c930f605397e0ebdf5b7391969951a12225",
+   "after_sha256": "1145fc97d083cbd3ef1f55f88dd8ed5c13193f2aca29e700f55a853e89fb3e8f"
+  },
+  "h-17-2009-saints-9.iff": {
+   "before_sha256": "b70d663612a2931b1d1bf849a095177bb53038b29b6e420398ffc0876427657e",
+   "after_sha256": "afad6a25b9dadf0709f2da1853b9cb9e9e3ace72492245438edea1d08af15cdc"
+  },
+  "h-17-2011-saints-9.iff": {
+   "before_sha256": "cbbc9f5ff0738ace8ad3b0efa560caf9485bf77fbf80fc185624d87320b19487",
+   "after_sha256": "308c6654c840ef18a55bf7e451b77c281fb5898dd4241b38ba8bd3bb70ef3cf0"
+  },
+  "h-20-1976-raiders-0.iff": {
+   "before_sha256": "191a44592b2929655258553eb59cfbbd3692d6c690813a5198bb0ad057ae9ba1",
+   "after_sha256": "034c3391ffa44c0d8b722d5b19e8da256e37d47e62514c013cd5f363b39ee774"
+  },
+  "h-21-2010-eagles-9.iff": {
+   "before_sha256": "a788cac814802613f6acf5cfffcfec8255d1d1bc4f98cc467be402d4ef75eb2f",
+   "after_sha256": "745049c31e0ab82706956af1c41141da51383f5974b9715306d681f9d4fba9c2"
+  },
+  "h-21-2017-eagles-9.iff": {
+   "before_sha256": "505c979c2e614e957a8897daa305b16abd15422405430d92504f2bb8f9365e1c",
+   "after_sha256": "cf14a3054765c509201afbd8a8a245fe81a55bfbdc3279348953c5d6e9b9a0a0"
+  },
+  "h-22-2025-steelers-9.iff": {
+   "before_sha256": "ce15aabc6ca7e3e5f39f0f3dccb8e477fbbcec2fde71b09bb81e8480c941f29b",
+   "after_sha256": "00e375ff67d75590995022a2096b5a84cdb1b1bd848d445b5f43e6681134edb1"
+  },
+  "h-28-1979-oilers-2.iff": {
+   "before_sha256": "3eaf6b295eef4235605bddf806e4ac996c43a684a0bfe19ed6fbd189490c6108",
+   "after_sha256": "8c622d1d222846cc118ab1cc79f5cf60cb93bea79e67574504167b151a600ff3"
   }
  },
  "situ": {

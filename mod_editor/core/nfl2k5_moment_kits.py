@@ -81,6 +81,10 @@ def document(path=None):
             require(kit["style"] == s["style"] and s["file"][2:4] == kit["code"], f"row {s['row']}: kit/file mismatch")
         else:
             require(s["reuse"][:2] == s["file"][2:4] and int(s["reuse"][3:]) == s["style"], f"row {s['row']}: reuse")
+    files = [c["file"] for c in doc.get("classic_defaults", [])]
+    require(len(set(files)) == len(files), "a team file has two classic defaults")
+    for c in doc.get("classic_defaults", []):
+        require(type(c["style"]) is int and 1 <= c["style"] <= MAX_STYLE, c["file"] + ": classic default style")
     return doc
 
 
@@ -278,14 +282,19 @@ def main_label(main_roster, code, style):
     raise ValueError("no NFL team uses asset code " + code)
 
 
-def file_edit(raw, labels):
-    """The team file with each {style: (first, last)} pair set where it is still (0, 0); other pairs stay."""
+def file_edit(raw, labels, default=None):
+    """The team file with each {style: (first, last)} pair set where it is still (0, 0) (other pairs stay) and, when
+    given, its default style byte (+0x192: the classic team's main uniform in Quick Game) set to ``default``."""
     from . import nfl2k5_historic_styles as hs
     _code, t, pairs = _team_file_pairs(raw)
     out = bytearray(raw)
     for style, pair in sorted(labels.items()):
         if pairs[style - 1] == (0, 0):
             struct.pack_into("<HH", out, t + hs.TABLE + 4 * (style - 1), *pair)
+    if default is not None:
+        require(struct.unpack_from("<HH", out, t + hs.TABLE + 4 * (default - 1)) != (0, 0),
+                f"classic default {default} has no year pair in its team file")
+        out[t + hs.STYLE] = default
     return bytes(out)
 
 
@@ -348,9 +357,9 @@ def read_inputs(target, doc):
     for selector in donors(doc):
         require(target.has(selector_name(selector)), selector + ": donor kit absent from the copy")
         inputs["packages"][selector] = target.get(selector_name(selector))
-    for s in doc["selections"]:
-        require(target.has(s["file"]), s["file"] + ": team file absent from the copy")
-        inputs["files"][s["file"]] = target.get(s["file"])
+    for name in [s["file"] for s in doc["selections"]] + [c["file"] for c in doc.get("classic_defaults", [])]:
+        require(target.has(name), name + ": team file absent from the copy")
+        inputs["files"][name] = target.get(name)
     inputs["situ"] = target.get(identity=hs.SITU_OUTER_ID)
     inputs["main"] = target.get(identity=hs.ROSTER_OUTER_ID)
     for a in hs.AGGREGATES:
@@ -370,7 +379,8 @@ def expected(doc, inputs):
             record, cdf = inputs["members"][aggregate]
             members[aggregate][new] = hs.rename_slot(hs.member_slot(record, cdf, old), new)
     labels = wanted_labels(doc, inputs["main"], inputs["files"])
-    files = {name: file_edit(raw, labels.get(name, {})) for name, raw in inputs["files"].items()}
+    defaults = {c["file"]: c["style"] for c in doc.get("classic_defaults", [])}
+    files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
     situ = bytearray(inputs["situ"])
     fields = _situ_fields(inputs["situ"])
     require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")

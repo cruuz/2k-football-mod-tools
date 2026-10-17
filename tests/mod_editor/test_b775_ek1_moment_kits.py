@@ -202,13 +202,27 @@ class Disc(unittest.TestCase):
         for s in self.doc["selections"]:
             _code, _t, pairs = mk._team_file_pairs(files[s["file"]])
             self.assertNotEqual(pairs[s["style"] - 1], (0, 0), s)
-        # only the pair changes in a team file
+        # only year pairs and the default style byte change in a team file
+        defaults = {c["file"]: c["style"] for c in self.doc["classic_defaults"]}
         for name, data in files.items():
             old = self.inputs["files"][name]
             diff = [i for i in range(len(old)) if old[i] != data[i]]
             _code, t, _pairs = mk._team_file_pairs(old)
-            self.assertTrue(all(t + hs.TABLE <= i < t + hs.TABLE + 56 for i in diff), name)
-            self.assertEqual(mk.without_added_pairs(data, name), old if name in mk.added_pairs() else data)
+            self.assertTrue(all(t + hs.TABLE <= i < t + hs.TABLE + 56 or i == t + hs.STYLE for i in diff), name)
+            if name in defaults:
+                self.assertEqual(old[t + hs.STYLE], next(c["before"] for c in self.doc["classic_defaults"]
+                                                         if c["file"] == name))
+                self.assertEqual(data[t + hs.STYLE], defaults[name])
+                self.assertNotEqual(defaults[name], 0)        # never style 0: historic_styles owns those files
+
+    def test_classic_defaults_follow_the_moment_kit(self):
+        situ = mk.expected(self.doc, self.inputs)[3]
+        sides = {(row + 1, side): kit for row, side, _s, _y, kit, _f in hs.situ_sides(situ)}
+        for c in self.doc["classic_defaults"]:
+            if c["file"] == "h-07-1977-cowboys-3.iff":
+                continue                                       # two moments; the white-home 1979 set is chosen
+            rows = [part.split() for part in c["why"].split("row(s) ")[1].split(", ")]
+            self.assertTrue(all(sides[(int(r), sd)] == c["style"] for r, sd in rows), c)
 
     def test_applied_overlay_reads_back_applied_and_refuses_a_second_install(self):
         packages, members, files, situ = mk.expected(self.doc, self.inputs)
