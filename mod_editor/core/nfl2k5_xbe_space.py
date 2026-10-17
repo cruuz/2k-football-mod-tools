@@ -661,12 +661,13 @@ LATE_OWNER = "nfl2k5_k128"
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
                "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
-               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display")
+               "nfl2k5_moment_coaches", "nfl2k5_moment_context", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display")
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
 # Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
-TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"), ("nfl2k5_moment_coaches", "data"))
+TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"), ("nfl2k5_moment_coaches", "data"),
+               ("nfl2k5_moment_context", "data"))  # b775 mo2: 16 bytes under the coach records
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
@@ -715,6 +716,7 @@ def dormant_union():
     from . import nfl2k5_period_goalposts as period  # b77-v1b
     from . import nfl2k5_coach_ai as coach_ai
     from . import nfl2k5_moment_coaches as moment_coaches
+    from . import nfl2k5_moment_context as moment_context  # b775 mo2
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
@@ -737,7 +739,7 @@ def dormant_union():
             # Historical coaches remain last so installed owners retain their addresses.
             # Fixed directory slots do not move any earlier owner.
             + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
-            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS)
+            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS)
 
 
 def is_scaleout(payload):

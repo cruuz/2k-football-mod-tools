@@ -998,6 +998,9 @@ def _recognize(payload, data, *, legacy=False):
     payload = historical_venues.underlying(payload)
     from . import nfl2k5_moment_coaches as historical_coaches
     payload = historical_coaches.underlying(payload)
+    # b775 mo2: the moment context copies the row's stats block at 0x20CC05, inside the guarded select handler.
+    from . import nfl2k5_moment_context as moment_context
+    payload = moment_context.underlying(payload, ("select",))
     layout = space.layout(payload)
     image = XbeImage(payload)
     entries = table_entries(data) if data is not None else []

@@ -629,6 +629,14 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(defensive_try.status(payload) == "applied", "foreign live-stat companion")
         after = defensive_try._hook_bytes("player_stat", defensive_try.assembled(payload)[3])
         camera_edits.append(("defensive_try_player_stat", hook, before, after))
+    # b775 mo2: the Anniversary moment context wraps the live call at 0xCB295 (inside the pinned 0xCB240 span).
+    # Accept it only after that owner's complete status, then restore the exact call in this hash view.
+    from . import nfl2k5_moment_context as moment_context
+    for name, va, before, after in moment_context.view_edits(payload):
+        if name == "player_stat":
+            camera_edits.append(("moment_context_player_stat", va, before, after))
+    if image.read(0xCB295, 5) != bytes.fromhex("e8d6f1ffff"):
+        legacy.require(moment_context.status(payload) == "applied", "foreign live player-stat companion")
     # Dynamic kickoffs extends this same readiness predicate. Accept only
     # its complete verified legacy or relocated implementation, then restore
     # the exact entry hook in our private native-context hash view.

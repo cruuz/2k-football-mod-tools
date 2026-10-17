@@ -550,5 +550,11 @@
   "read_only",
   464,
   16
+ ],
+ [
+  "nfl2k5_moment_context",
+  "data",
+  16,
+  16
  ]
 ]
