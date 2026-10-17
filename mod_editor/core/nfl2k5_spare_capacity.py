@@ -56,12 +56,17 @@ def _decode(body):
             'spare capacity requires the audited 68 secondary records')
     return document
 
-def _table_layout(document, *, extended):
+def _table_layout(document, *, extended, extra=0, typed_free_agents=False):
+    """extra: blank records the import floor added after the 140 (b775); typed_free_agents: the free-agent count is
+    the dated refresh's own list (its table does not move), so only its offset is sealed."""
     point = NATIVE_TABLES['secondary'][1]
+    require(extended or not extra, 'the import floor follows the restored historic spare capacity')
     for name, (count, offset) in NATIVE_TABLES.items():
         table = document.tables[name]
-        expected_count = PRIMARY_AFTER if extended and name == 'primary' else count
-        expected_offset = offset + (INSERT_BYTES if extended and offset >= point else 0)
+        expected_count = PRIMARY_AFTER + extra if extended and name == 'primary' else count
+        if typed_free_agents and name == 'free_agents':
+            expected_count = table.count
+        expected_offset = offset + ((INSERT_BYTES + extra * 84) if extended and offset >= point else 0)
         require(table.count == expected_count and table.offset == expected_offset + 32,
                 'foreign native ' + name + ' table count/offset')
     return document
@@ -254,6 +259,170 @@ def apply_body(body):
         each_new_blank_has_distinct_first_and_last_name_storage=True,
         no_live_pointer_or_selected_text_in_reclaimed_gap=True, arena_size_unchanged=True,
         roster_schema_unchanged=True, native_xbe_changes=False, remaining_free_name_bytes=final.names.free_bytes)
+
+# ---------------------------------------------------------------------------------------------- import floor
+# b775 mo1 (Noah's 10/17 video: "Patriots at Patriots", "Cardinals-Cardinals", "Colts at Colts"). An Anniversary
+# moment or a historic Quick Game imports two historic team files (53 players each) into the spare clubs. The
+# practice-squad importer (0x374114, tools/practice_squad/runtime.c ps_import) refuses a file when fewer vacant
+# primary records ((flags & 5) == 1, no owner, not listed) remain than it has players. 20CB30 then reads the
+# loader's cached team (2D1440), which is the home side, so both sides become the home team. The dated roster
+# refresh (nfl2k5_roster_refresh) gives its new identities vacant create records: the 2026-10-14 plan's 90 new
+# players left 65 of the 155 vacancies, enough for one import and not two. The floor below runs after the refresh
+# and inserts real blank primary records, with the same mechanics as apply_body, into unused player-name space,
+# so every existing identity, membership, history word and the arena size stay as they are.
+TEAM_FILE_PLAYERS = 53                     # every retail historic and moment team file
+IMPORT_FLOOR = 2 * TEAM_FILE_PLAYERS       # one moment or historic game imports two team files at once
+RETAIL_VACANCIES = 155                     # what retail ships; restored when the name space allows it
+MAX_FLOOR_RECORDS = RETAIL_VACANCIES       # bound on records this step may ever add (layout recognition)
+BLANK_NAME = '****************'.encode('utf-16le') + b'\0\0'
+
+
+def import_vacancies(body):
+    """Primary records the native importer may take: flags (byte +8) & 5 == 1, not on a team or reserve list,
+    not a listed free agent (ps_import's own test). `body` is the bare main ROST body."""
+    from . import nfl2k5_roster_records as rr
+    roster = rr.load_body(bytes(body), scheme='one_pool', reference_year=2026)
+    listed = set(roster.free_agents)
+    return sum(1 for p in roster.by_pool('primary') if body[p.offset + 8] & 5 == 1 and p.group == 'pool'
+               and not p.teams and p.offset not in listed)
+
+
+def _floor_fit(names_free, point, want):
+    """(records, gap): the most records up to `want` whose 84-byte slots fit in one free name gap after `point`
+    (wrapped offsets) and whose adjacent first/last name pair (68 bytes, the layout the native Create Player and
+    nfl2k5_roster_refresh._repair_create_buffers require) fits in the remaining free spans."""
+    pair = 2 * len(BLANK_NAME)
+    gaps = sorted(((size, offset + 32) for offset, size in names_free.items() if offset + 32 > point),
+                  reverse=True)
+    if not gaps:
+        return 0, None
+    size, gap = gaps[0]
+    others = sum(s // pair for o, s in names_free.items() if o + 32 != gap)
+    for k in range(min(want, size // 84), 0, -1):
+        if others + (size - k * 84) // pair >= k:
+            return k, gap
+    return 0, gap
+
+
+def restore_import_floor(body, *, floor=IMPORT_FLOOR, target=RETAIL_VACANCIES):
+    """Add blank primary records after the dated refresh until `target` import vacancies exist, as far as unused
+    name space allows; refuse below `floor`. Replay on an output of this step is a no-op."""
+    from . import nfl2k5_roster_arena as arena, nfl2k5_roster_records as rr
+    before = bytes(body)
+    document = _decode(before)
+    primary = document.tables['primary']
+    require(PRIMARY_AFTER <= primary.count <= PRIMARY_AFTER + MAX_FLOOR_RECORDS,
+            'the import floor follows the restored historic spare capacity (2619 primary records)')
+    _table_layout(document, extended=True, extra=primary.count - PRIMARY_AFTER, typed_free_agents=True)
+    have = import_vacancies(before)
+    base = dict(owner=OWNER, step='import_floor', floor=floor, target=target, vacancies_before=have,
+                primary_before=primary.count, before_sha256=sha(before))
+    if have >= target or (primary.count > PRIMARY_AFTER and have >= floor):
+        return before, dict(base, already_applied=True, added_records=0, vacancies_after=have,
+                            primary_after=primary.count, after_sha256=sha(before), changed_bytes=0)
+    source = rr.load_body(before, scheme='one_pool', reference_year=2026)
+    original = _wrapped(before)
+    point = primary.offset + primary.count * 84
+    require(all(t.offset is None or t.name == 'primary' or t.offset >= point
+                or t.offset + t.count * t.stride <= primary.offset for t in document.tables.values()),
+            'primary insertion crosses another table')
+    room = MAX_FLOOR_RECORDS - (primary.count - PRIMARY_AFTER)
+    extra, gap = _floor_fit(source.names.free, point, min(target - have, room))
+    require(have + extra >= floor,
+            f'the main roster keeps {have} import vacancies and unused name space fits {extra} more; '
+            f'Anniversary moments and historic games import two {TEAM_FILE_PLAYERS}-player teams and need {floor}. '
+            'Reduce the dated refresh\'s new players or free player-name space')
+    insert = extra * 84
+    require(source.names.start + 32 <= gap and gap + insert <= source.names.end + 32 and point < gap,
+            'reclaimed player-name gap is outside its declared pool')
+    fields = arena.pointer_fields(document)
+    targets = {field: document.rel(field, label='import floor relocation') for field in fields}
+    require(not any(gap <= field < gap + insert for field in fields),
+            'a relocation field occupies the proposed unused name gap')
+    require(not any(t is not None and gap <= t < gap + insert for t in targets.values()),
+            'a live native pointer selects the proposed unused name gap')
+    require(not any(gap < block.offset + 32 + block.capacity and block.offset + 32 < gap + insert
+                    for block in source.names.blocks.values()), 'selected player text occupies the reclaimed gap')
+
+    def moved(value):
+        require(not gap <= value < gap + insert, 'a live object occupies the reclaimed gap')
+        return value + (insert if point <= value < gap else 0)
+    blanks = [p for p in document.players if p.pool == 'primary' and before[p.offset - 32 + 8] & 5 == 1]
+    template = next((p for p in reversed(blanks)
+                     if source.by_offset[p.offset - 32].first == source.by_offset[p.offset - 32].last
+                     == '****************'), None)
+    require(template is not None, 'no blank vacant record to copy')
+    out = bytearray(original[:point]) + bytearray(insert) + bytearray(original[point:gap]) \
+        + bytearray(original[gap + insert:])
+    for field, target_at in targets.items():
+        at = moved(field)
+        struct.pack_into('<i', out, at, 0 if target_at is None else moved(target_at) - at + 1)
+    struct.pack_into('<I', out, document.layout.root, primary.count + extra)
+    for index in range(extra):
+        at = point + index * 84
+        out[at:at + 84] = original[template.offset:template.offset + 84]
+        for offset in arena.TABLE_POINTERS['primary']:
+            target_at = targets[template.offset + offset]
+            struct.pack_into('<i', out, at + offset, 0 if target_at is None else moved(target_at) - at - offset + 1)
+    require(len(out) == len(original), 'import floor changed native resource geometry')
+    names = rr.load_body(bytes(out[32:]), scheme='one_pool').names
+    free = dict(names.free)
+    new_name_offsets = []
+    pair = 2 * len(BLANK_NAME)
+    for index in range(extra):
+        at = point + index * 84
+        fits = [(capacity, offset) for offset, capacity in free.items() if capacity >= pair]
+        require(fits, 'unused player-name space cannot give each new vacancy a private adjacent name pair')
+        capacity, offset = min(fits)
+        del free[offset]
+        if capacity > pair:
+            free[offset + pair] = capacity - pair
+        for slot, field in enumerate((0x10, 0x14)):
+            dest = offset + 32 + slot * len(BLANK_NAME)
+            new_name_offsets.append(dest)
+            out[dest:dest + len(BLANK_NAME)] = BLANK_NAME
+            struct.pack_into('<i', out, at + field, dest - at - field + 1)
+    require(len(set(new_name_offsets)) == 2 * extra, 'new vacancy name buffers alias')
+    candidate = bytes(out)
+    readback = _decode(candidate[32:])
+    _table_layout(readback, extended=True, extra=primary.count + extra - PRIMARY_AFTER, typed_free_agents=True)
+    require(readback.layout == document.layout, 'import floor changed native schema/arena geometry')
+    for name, table in document.tables.items():
+        require(readback.tables[name].count == (primary.count + extra if name == 'primary' else table.count)
+                and readback.tables[name].stride == table.stride, 'an unrelated native table changed')
+    for field, target_at in targets.items():
+        require(readback.rel(moved(field), label='relocation readback') == (None if target_at is None else moved(target_at)),
+                'native relative pointer readback differs')
+    old_by = {p.key: p for p in document.players}
+    new_by = {p.key: p for p in readback.players}
+    for key, player in old_by.items():
+        other = new_by[key]
+        require((player.first, player.last) == (other.first, other.last), 'an existing player name changed')
+        a = bytearray(original[player.offset:player.offset + 84])
+        b = bytearray(candidate[other.offset:other.offset + 84])
+        for offset in arena.TABLE_POINTERS[player.pool]:
+            a[offset:offset + 4] = b[offset:offset + 4] = bytes(4)
+        require(a == b and document.history_words[key] == readback.history_words[key],
+                'an existing record or its history changed')
+    for old, new in zip(document.teams, readback.teams):
+        require((old.index, old.asset_id, old.abbreviation, tuple(moved(p) for p in old.player_offsets))
+                == (new.index, new.asset_id, new.abbreviation, new.player_offsets), 'a team or membership changed')
+    output = candidate[32:]
+    final = rr.load_body(output, scheme='one_pool', reference_year=2026)
+    require([(source.by_offset[p].pool, source.by_offset[p].index) for p in source.free_agents]
+            == [(final.by_offset[p].pool, final.by_offset[p].index) for p in final.free_agents],
+            'free-agent identities or order changed')
+    require(final.to_body(normalise_commentary=False) == output, 'new roster codec roundtrip differs')
+    after = import_vacancies(output)
+    require(after == have + extra and after >= floor, 'native import vacancies were not restored')
+    return output, dict(base, already_applied=False, added_records=extra, vacancies_after=after,
+                        primary_after=primary.count + extra, after_sha256=sha(output),
+                        changed_bytes=sum(x != y for x, y in zip(before, output)),
+                        insert_body_offset=point - 32, reclaimed_name_body_offset=gap - 32, insertion_bytes=insert,
+                        new_blank_name_bytes=2 * extra * len(BLANK_NAME),
+                        remaining_free_name_bytes=final.names.free_bytes, arena_size_unchanged=True,
+                        all_original_record_nonpointer_bytes_names_history_equal=True, native_xbe_changes=False)
+
 
 def repair_resource(resource, *, approved_input_sha256=()):
     """Hash-gated native owner; the complete fixed main ROST is its scope."""
