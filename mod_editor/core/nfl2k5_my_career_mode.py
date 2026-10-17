@@ -24,7 +24,7 @@ TAG_OFFSET = CODE_SIZE - len(TAG)
 POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3_unsigned_text", "m3_bench_text"))
 # mc2: a second pool in M3 RW past its menus (<= 256 + 1900) and before +2700.
 POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
-                     "m3_confirm_text"))
+                     "m3_confirm_text", "m3_drafted_format"))
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
 SAVE_HOOKS = (
@@ -198,6 +198,8 @@ GUARDS = (
     (0x3e7c0, 0x14a, "fff3acc5372da3a7eccde98e3eb7c91090ad3308adb5dd71144a442edcc8873d"),
     (0x3da90, 0x130, "4fa22becdf00ce39929ba994562c059ada8c4ca5faf028309cd35bf4db031109"),
     (0x3cf20, 0x59, "a482b4f07daf4cd2114141ea2fa72c3fd2d49e8169bfecfe7655db7a77fe9efb"),
+    # nl1: Franchise Team Select's side permission (its 13EC30 return sites 27B2F4 and 27B306).
+    (0x27b2e8, 0x34, "1b5f28761d7dc6b7258eef08c8802ec9554937b163cfc22fa9d312126f8e9e17"),
 )
 
 
@@ -332,6 +334,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_prospect_4", "Prospect: Undrafted (59)"),
         ("m3_prospect_error", "Overall unavailable. Change style or prospect tier."),
         ("m3_bench_text", "MyPlayer is a backup. Yes: start him. No: Supersim to his snaps."),
+        # nl1: the notice after the draft places MyPlayer (city, nickname).
+        ("m3_drafted_format", "You were drafted by the %s %s."),
     ):
         string(name, value)
     at = reserve("m3_prospect_labels", 20)

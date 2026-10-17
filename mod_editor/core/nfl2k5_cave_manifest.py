@@ -450,7 +450,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 build.build(replace(plan, camera=False, scorebug_runtime=False, xbe_space=False, kickoff_relocated=False,
                                     # The first build observed the private FONT. This probe has no sprite scene;
                                     # its executable name owner is observed separately below with the full union.
-                                    indicator_names_folder="",
+                                    indicator_names_folder="", indicator_names_style="retail",
                                     scorebug=bool(plan.scorebug or plan.scorebug_runtime),
                                     season_cap=False, calendar_engine=False, momentum=0, momentum_contact=False,
                                     defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False,

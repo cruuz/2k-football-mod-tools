@@ -227,5 +227,95 @@ class AtlasTests(unittest.TestCase):
             n.apply_hud(fixed,self.folder)
 
 
+try:
+    from tests.nfl2k5_my_career_fixture import XBE as RETAIL_XBE  # the pinned retail extraction, if present
+except Exception:  # the fixture is absent from an installed release tree
+    RETAIL_XBE=Path("absent")
+
+
+class LabelStyleTests(unittest.TestCase):
+    """nl1 (Noah 2026-10-17): the old retail indicator is the default; nm1's label is kept as a choice."""
+
+    def test_styles_default_to_retail_and_select_their_native_sites(self):
+        self.assertEqual(n.DEFAULT_STYLE,"retail")
+        self.assertEqual(n.STYLES,("retail","retail_persistent","scorebug"))
+        sites=lambda style:[va for va,*_ in n.style_edits(style)]
+        self.assertEqual(sites("retail"),[])
+        self.assertEqual(sites("retail_persistent"),[n.CONTROL,n.SELECTOR])
+        self.assertEqual(sites("scorebug"),[n.HOOK,n.CONTROL,n.SELECTOR])
+        # The guards and cave reservations keep the union of every style.
+        self.assertEqual([va for va,*_ in n.code_edits()],[n.HOOK,n.CONTROL,n.SELECTOR])
+        with self.assertRaisesRegex(ValueError,"unknown label style"):
+            n.style_edits("big")
+
+    @unittest.skipUnless(RETAIL_XBE.is_file(),"retail default.xbe required")
+    def test_each_style_on_the_retail_executable(self):
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from mod_editor.core.nfl2k5_bump_strength import _sections,section_digest
+        retail=RETAIL_XBE.read_bytes()
+        same,receipt=n.apply_xbe(retail,"retail")
+        self.assertEqual(same,retail)
+        self.assertEqual((receipt["changed_bytes"],receipt["private_font"],receipt["persistent_human_names"]),(0,False,False))
+        for style in ("retail_persistent","scorebug"):
+            with self.subTest(style=style):
+                out,receipt=n.apply_xbe(retail,style)
+                image=XbeImage(out)
+                self.assertEqual(image.read(n.CONTROL,len(n.control_bytes())),n.control_bytes())
+                self.assertEqual(image.read(n.SELECTOR,len(n.selector_bytes())),n.selector_bytes())
+                # The font binding (the private scorebug FONT) only in the scorebug style.
+                self.assertEqual(image.read(n.HOOK,len(n.HOOK_BEFORE)),
+                                 n.hook_bytes() if style=="scorebug" else n.HOOK_BEFORE)
+                self.assertEqual(receipt["private_font"],style=="scorebug")
+                self.assertTrue(receipt["persistent_human_names"])
+                for section in _sections(out):
+                    self.assertEqual(out[section.header_offset+36:section.header_offset+56],section_digest(out,section))
+                # Bytes change only inside the declared sites and the .text digest.
+                text=next(s for s in _sections(retail) if s.virtual_address<=n.HOOK<s.virtual_address+s.raw_size)
+                allowed=set(range(text.header_offset+36,text.header_offset+56))
+                for va,_,after,_ in n.style_edits(style):
+                    at=XbeImage(retail).offset(va,len(after));allowed|=set(range(at,at+len(after)))
+                self.assertEqual({i for i,(a,b) in enumerate(zip(retail,out)) if a!=b}-allowed,set())
+                self.assertEqual(n.apply_xbe(out,style)[0],out)  # replay writes nothing new
+        # Styles never mix: rebuild from the base to change the style.
+        scorebug,_=n.apply_xbe(retail,"scorebug")
+        with self.assertRaisesRegex(ValueError,"another label style"):
+            n.apply_xbe(scorebug,"retail_persistent")
+        with self.assertRaisesRegex(ValueError,"another label style"):
+            n.apply_xbe(scorebug,"retail")
+
+    def test_presets_keep_the_retail_label_and_the_atlas_choice(self):
+        from mod_editor.core import mod_build
+        for name,values in mod_build.PRESETS.items():
+            self.assertEqual(values["indicator_names_style"],"retail",name)
+        self.assertEqual(mod_build.BuildPlan(source="a.iso",target="b.iso").indicator_names_style,"retail")
+        plan=mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso",target="out.iso"),"softdrink_experimental")
+        self.assertEqual(plan.indicator_names_style,"retail")
+        # The nm1 atlas stays in the bundle and the preset, one key away from the scorebug label.
+        self.assertTrue(plan.indicator_names_folder.endswith("data/nfl2k5_indicator_names"))
+        import dataclasses
+        bare=mod_build.BuildPlan(source="a.iso",target="b.iso",indicator_names_folder=plan.indicator_names_folder)
+        self.assertFalse(bare.wants_xbe_patch())  # an atlas folder alone no longer installs anything
+        for style in ("retail_persistent","scorebug"):
+            self.assertTrue(dataclasses.replace(bare,indicator_names_style=style).wants_xbe_patch())
+        from mod_editor.core import nfl2k5_build_settings as settings
+        self.assertIn("indicator_names_style",settings.FEATURE_KEYS)
+
+    def test_build_refuses_unknown_style_and_a_scorebug_label_without_its_atlas(self):
+        from mod_editor.core import mod_build
+        import dataclasses
+        with tempfile.TemporaryDirectory() as folder:
+            base=mod_build.BuildPlan(source=str(Path(folder)/"missing.iso"),target=str(Path(folder)/"out.iso"))
+            with self.assertRaisesRegex(ValueError,"Player name label must be"):
+                mod_build._build(dataclasses.replace(base,indicator_names_style="big"),_preflight_only=True)
+
+    def test_build_step_installs_only_a_non_retail_style(self):
+        import inspect
+        from mod_editor.core import mod_build
+        source=inspect.getsource(mod_build._build)
+        self.assertIn('if plan.indicator_names_style != "retail":\n        # Final HUD writer',source)
+        self.assertIn("style=plan.indicator_names_style",source)
+        self.assertNotIn("if plan.indicator_names_folder:\n        # Final HUD writer",source)
+
+
 if __name__=='__main__':
     unittest.main()

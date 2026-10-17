@@ -35,6 +35,17 @@ CONTROL_BEFORE = bytes.fromhex(
     "7407b801000000eb0233c00bc8")
 SELECTOR, SELECTOR_END = 0xF9D0A, 0xF9D1B
 SELECTOR_BEFORE = bytes.fromhex("a190ffe50083e8007438480f85ac000000")
+# nl1 (Noah, 2026-10-17: "let's go back to the old player name indicator ... or at least make it way
+# smaller"): the label style is a choice, and the default is the old retail indicator.
+#   retail             no change: the native FONT4 name or number, shown for about two seconds after a
+#                      control change, as on the retail disc (the default).
+#   retail_persistent  the same native FONT4 text (small, mixed case), but the controlled player's last
+#                      name stays on while he is controlled: nm1's two collector edits without its FONT.
+#   scorebug           nm1's label (b773): the private scorebug-style FONT plus both collector edits.
+STYLES = ("retail", "retail_persistent", "scorebug")
+DEFAULT_STYLE = "retail"
+STYLE_TITLES = {"retail": "Retail (old indicator)", "retail_persistent": "Retail look, stays on",
+                "scorebug": "Scorebug style (b773 nm1)"}
 
 
 def require(ok, message):
@@ -277,9 +288,23 @@ def selector_bytes():
 
 
 def code_edits():
+    """Every nm1 native site (the union of all styles; cave reservations and guards use it)."""
     return ((HOOK, HOOK_BEFORE, hook_bytes(), "indicator FONT binding"),
             (CONTROL, CONTROL_BEFORE, control_bytes(), "persistent human-only label flag"),
             (SELECTOR, SELECTOR_BEFORE, selector_bytes(), "last name for both enabled text settings"))
+
+
+def check_style(style):
+    require(style in STYLES, "unknown label style %r; choose one of %s" % (style, ", ".join(STYLES)))
+    return style
+
+
+def style_edits(style):
+    """The native sites a style installs. Sites outside the style must stay retail."""
+    check_style(style)
+    if style == "retail":
+        return ()
+    return code_edits() if style == "scorebug" else code_edits()[1:]
 
 
 def canonical_context(va, raw):
@@ -293,12 +318,17 @@ def canonical_context(va, raw):
     return bytes(result)
 
 
-def apply_xbe(payload):
+def apply_xbe(payload, style="scorebug"):
     image = XbeImage(payload)
     require(image.read(NAME_VA, len((NAME+"\0").encode("utf-16le"))) == (NAME+"\0").encode("utf-16le"), "resource name changed")
     buf = bytearray(payload)
     installed = []
+    wanted = style_edits(style)
     for va, before, after, label in code_edits():
+        if (va, before, after, label) not in wanted:
+            # Another style's site: rebuild from the base instead of mixing styles.
+            require(image.read(va, len(before)) == before, label + " belongs to another label style; rebuild from the base")
+    for va, before, after, label in wanted:
         current = image.read(va, len(before))
         require(current in (before, after), "unknown " + label)
         at = image.offset(va, len(after))
@@ -307,10 +337,11 @@ def apply_xbe(payload):
                               sha256=sha(after), changed=current != after))
     for section in _sections(buf):
         if any(section.virtual_address <= va < section.virtual_address + section.raw_size
-               for va, _, _, _ in code_edits()):
+               for va, _, _, _ in wanted):
             buf[section.header_offset+36:section.header_offset+56] = section_digest(buf,section)
-    return bytes(buf), dict(state="applied" if bytes(buf) == payload else "repaired", code=installed,
-                            persistent_human_names=True, controller_ports=[0,1,2,3],
+    return bytes(buf), dict(state="applied" if bytes(buf) == payload else "repaired", code=installed, style=style,
+                            private_font=style == "scorebug", persistent_human_names=style != "retail",
+                            controller_ports=[0,1,2,3] if style != "retail" else [],
                             changed_bytes=sum(a != b for a,b in zip(payload,buf)))
 
 
@@ -356,8 +387,11 @@ def export_placeholder(donor_span, folder):
     return spec
 
 
-def image_plan(stream, folder=None):
-    """Prepare all fixed spans without writing, using the current disc extents."""
+def image_plan(stream, folder=None, style="scorebug"):
+    """Prepare all fixed spans without writing, using the current disc extents.
+
+    Only the scorebug style rewrites the HUD (private FONT); retail_persistent writes its two
+    collector sites and the .text digest; retail writes nothing."""
     from . import xdvdfs_compact as xd
     from .nfl2k5_scorebug_ingame import tx  # also establishes the bundled tools path
     import nfl_outer as outer
@@ -372,29 +406,36 @@ def image_plan(stream, folder=None):
     hud = stream.read(size)
     stream.seek(executable.byte_offset)
     xbe = stream.read(executable.size)
-    fixed_hud, hr = apply_hud(hud, folder)
-    fixed_xbe, xr = apply_xbe(xbe)
-    start, end = hr["start"], hr["end"]
-    edits = [(hud_offset+start, hud[start:end], fixed_hud[start:end], "private FONT and lossless scorebug scene")]
+    check_style(style)
+    if style == "scorebug":
+        fixed_hud, hr = apply_hud(hud, folder)
+    else:
+        fixed_hud, hr = hud, dict(state="retail", private_font=False)
+    fixed_xbe, xr = apply_xbe(xbe, style)
+    edits = []
+    if style == "scorebug":
+        start, end = hr["start"], hr["end"]
+        edits.append((hud_offset+start, hud[start:end], fixed_hud[start:end], "private FONT and lossless scorebug scene"))
     image = XbeImage(xbe)
-    for va, before, after, label in code_edits():
+    for va, before, after, label in style_edits(style):
         at = image.offset(va, len(after))
         edits.append((executable.byte_offset+at, xbe[at:at+len(after)], fixed_xbe[at:at+len(after)], label))
-    section = next(s for s in _sections(xbe) if s.virtual_address <= HOOK < s.virtual_address+s.raw_size)
-    at = section.header_offset+36
-    edits.append((executable.byte_offset+at, xbe[at:at+20], fixed_xbe[at:at+20], "derived .text SHA1"))
+    if style != "retail":
+        section = next(s for s in _sections(xbe) if s.virtual_address <= HOOK < s.virtual_address+s.raw_size)
+        at = section.header_offset+36
+        edits.append((executable.byte_offset+at, xbe[at:at+20], fixed_xbe[at:at+20], "derived .text SHA1"))
     require(len(hud) == len(fixed_hud) and len(xbe) == len(fixed_xbe), "disc file grew")
-    return edits, dict(schema="nfl2k5_indicator_names_write/v1", font=hr, xbe=xr,
+    return edits, dict(schema="nfl2k5_indicator_names_write/v1", style=style, font=hr, xbe=xr,
                        xbe_before_sha256=sha(xbe), xbe_after_sha256=sha(fixed_xbe),
                        hud_before_sha256=sha(hud), hud_after_sha256=sha(fixed_hud),
                        disc_layout_unchanged=True)
 
 
-def apply_to_image(path, *, folder=None, progress=None):
+def apply_to_image(path, *, folder=None, style="scorebug", progress=None):
     """Studio final-stage writer. The caller owns its writable output image."""
     fd = os.open(path, os.O_RDWR | getattr(os,"O_BINARY",0))
     with os.fdopen(fd,"r+b") as stream:
-        edits, receipt = image_plan(stream,folder)
+        edits, receipt = image_plan(stream,folder,style)
         written = 0
         for offset, before, after, label in edits:
             if before == after:

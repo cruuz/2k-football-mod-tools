@@ -97,6 +97,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "scorebug_watermark",  # the ESPN watermark combo beside the sprite scorebug check box (build_panel_qt.py:899)
             "super_bowl_user_art",  # b773-sb2: the Your Super Bowl logos folder field beside the official marks pack
             "indicator_names_folder",  # b773-nm1: the private indicator atlas folder comes from the Studio preset or the project file, with no Build tab control
+            "indicator_names_style",  # b775-nl1: the player name label style (retail default) comes from the Studio preset or the project file, like the atlas folder
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
