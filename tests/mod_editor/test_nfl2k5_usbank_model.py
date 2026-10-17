@@ -19,6 +19,33 @@ from mod_editor.core import nfl2k5_usbank_model as um  # noqa: E402
 EXTRACTED = ROOT / "extracted" / "ESPN NFL 2K5 (USA)"
 
 
+class SharedBuilderKeepsOtherRoofs(unittest.TestCase):
+    """rc1: Lucas Oil Stadium and State Farm Stadium subclass ``um.USBank`` and call its ``_roof_stations``. st2's coarser
+    U.S. Bank stations changed their roof grids (1,168 to 396 roof vertices at Lucas Oil, 847 to 329 at State Farm) and
+    broke their pins, so the new stations apply to the U.S. Bank model alone (add, don't replace)."""
+
+    def test_other_models_keep_the_v1_stations(self):
+        from mod_editor.core import nfl2k5_lucas_oil_model as lucas
+        from mod_editor.core import nfl2k5_state_farm_model as farm
+        for model in (lucas.LucasOil(), farm.StateFarm()):
+            self.assertEqual(um.USBank._roof_stations(model), model._roof_stations_v1(), type(model).__name__)
+
+    def test_us_bank_has_the_new_stations(self):
+        model = um.USBank()
+        self.assertNotEqual(model._roof_stations(), model._roof_stations_v1())
+        zs = [round(z, 3) for z, _a, _b in model._roof_stations()]
+        for must in (-157.3, -125.0, -75.0, 108.0, 126.5):
+            self.assertIn(must, zs)
+
+    def test_the_roof_meshes_of_the_other_models_are_unchanged(self):
+        """The roof grids of the two models: row counts equal those of the v1 stations."""
+        from mod_editor.core import nfl2k5_lucas_oil_model as lucas
+        model = lucas.LucasOil().build()
+        top = model.meshes["los_roof_top"]
+        self.assertEqual(top.count(), 1168)
+        self.assertEqual(model.meshes["los_roof_under"].count(), 1168)
+
+
 class Geometry(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

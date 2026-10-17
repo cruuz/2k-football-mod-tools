@@ -567,9 +567,36 @@ class USBank(sm.SoFi):
     def roof_under(self, x, z):
         return self.roof_top(x, z) - self.p["roof"]["depth"]
 
+    def _roof_stations_v1(self):
+        """The cross-sections the roof used before st2 (rc1, 2026-10-16): every ``station`` metres and at every outline
+        vertex. Lucas Oil Stadium and State Farm Stadium subclass this builder and call ``_roof_stations``; st2's
+        U.S. Bank roof stations (below) changed their roof grids (1,168 roof vertices to 396 at Lucas Oil), which their
+        pins and v0.6.1 do not have. They keep this version (add, don't replace)."""
+        q = self.p["roof"]
+        P = self.outline()
+        zs = set(np.round(P[:, 1], 3))
+        z0, z1 = P[:, 1].min(), P[:, 1].max()
+        for z in np.arange(math.ceil(z0 / q["station"]) * q["station"], z1, q["station"]):
+            zs.add(round(float(z), 3))
+        out = []
+        for z in sorted(zs):
+            z_ = min(max(z, z0 + 0.05), z1 - 0.05)
+            xs = []
+            for i in range(len(P)):
+                a, b = P[i], P[(i + 1) % len(P)]
+                if (a[1] - z_) * (b[1] - z_) <= 0 and a[1] != b[1]:
+                    t = (z_ - a[1]) / (b[1] - a[1])
+                    xs.append(a[0] + (b[0] - a[0]) * t)
+            if len(xs) >= 2:
+                out.append((z_, min(xs), max(xs)))
+        return out
+
     def _roof_stations(self):
         """(z, x_south, x_north) cross-sections of the outline at key vertices and every ``station`` metres, filtered so
-        near-duplicate east/south outline vertices do not create sliver rows."""
+        near-duplicate east/south outline vertices do not create sliver rows. U.S. Bank Stadium only: the stations
+        are tied to its own outline (the must-keep z values), so the models that reuse this builder keep v1."""
+        if type(self) is not USBank:
+            return self._roof_stations_v1()
         q = self.p["roof"]
         P = self.outline()
         z0, z1 = float(P[:, 1].min()), float(P[:, 1].max())
