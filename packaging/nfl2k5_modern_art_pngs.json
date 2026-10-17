@@ -1,11 +1,65 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
+  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.",
   "files": {
     "data/nfl2k5_era_ball/modern_ball.png": {
       "height": 256,
       "sha256": "1e9acff58f27c7fbfb1f6e72060618fa3735736c1a7ed8ee1e96355f3e176b98",
       "size": 96452,
       "width": 256
+    },
+    "data/nfl2k5_hair_styles/art/braids_dark.png": {
+      "height": 64,
+      "sha256": "0aa7d4675c19b42110b7faa436b6e081e070dd60bf36f7c9c317c8884a75de33",
+      "size": 5426,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/bun_dark.png": {
+      "height": 64,
+      "sha256": "af3297d677a60f71e3528765040ddebe7549638df8e5237cd602108cc5c0733f",
+      "size": 1837,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/curls_dark.png": {
+      "height": 64,
+      "sha256": "3e7ae39080661c28c2f059e776fd5002bebc8c70c2d4b5f27f7028734c0771b5",
+      "size": 7486,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/locs_dark.png": {
+      "height": 64,
+      "sha256": "067329ce2cc92cc47fa19f9d49cd6a0b98b145a27563a3c3e6dea17bd3516a05",
+      "size": 5036,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/locs_light.png": {
+      "height": 64,
+      "sha256": "6bcc7b245ec85f1dfce7fec705610c78abe1d8a35b7c81809b8440d7ea333dfa",
+      "size": 5042,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/strands_black.png": {
+      "height": 64,
+      "sha256": "03aa3574df2b6b4b4fe0417c6b89af4e3d71b6b82aced802c9ef18884bf39932",
+      "size": 4326,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/strands_blond.png": {
+      "height": 64,
+      "sha256": "d13bb2e486e1eff3207a99954194ad7b25ffdcbfc2569b98a01873b0e6b0fe0c",
+      "size": 5065,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/strands_brown.png": {
+      "height": 64,
+      "sha256": "7dfe5e7ccccd639325860dbe4ab70e7db1706cc8c3a6b5e90487da590a5e1545",
+      "size": 4848,
+      "width": 64
+    },
+    "data/nfl2k5_hair_styles/art/twists_dark.png": {
+      "height": 64,
+      "sha256": "aed5a3821de82d594a811a0f8525df02ea591879d608e9556bd5c1757ec95f52",
+      "size": 5614,
+      "width": 64
     },
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,

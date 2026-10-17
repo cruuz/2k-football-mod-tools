@@ -26,7 +26,8 @@ from pathlib import Path
 CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
 SCHEMA = "nfl2k5_modern_art_pngs/v1"
 FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/",
-           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/")
+           "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/",
+           "data/nfl2k5_hair_styles/art/")  # b775-hs1
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
@@ -45,6 +46,8 @@ CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co
                   "b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, "
                   "NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only "
                   "the fine feature detail of co2's authored faces. "
+                  "b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn "
+                  "procedurally by tools/nfl2k5_hair_styles_generate.py. "
                   "No photograph or photo crop and no "
                   "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time.")
 
