@@ -702,6 +702,9 @@ HOST_SURFACES = {
                                   "exitbanner": (128, 128, "plate")}),
 }
 HOST_SCALE = 4
+#: dark screen boxes the host models keep (the game's digits are drawn over them: the Halo's graphics panels and the
+#: Allegiant board); measured on the finished host bundles, kept near-black here
+KEEP_DARK = {("h42", "LIGHT_mb_halo"): [(77, 10, 179, 37)], ("h43", "LIGHT_ag_board_panel"): [(8, 18, 120, 64)]}
 
 
 def _shield_img():
@@ -783,7 +786,15 @@ def host_surface(code, material, event, city, mark, shield):
         out = _band(W, H, event, city, mark, shield)
     elif layout == "halo":
         out = rgba((W, H))
-        out.alpha_composite(_band(W, H // 2, event, city, mark, shield), (0, 0))
+        top = gradient((W, H // 2), [(0, (22, 44, 92)), (1, NAVY_SB)])
+        trim = max(2, H // 28)
+        top.alpha_composite(solid(poly((W, H // 2), [(0, 0), (W, 0), (W, trim), (0, trim)]), (200, 206, 216)))
+        top.alpha_composite(solid(poly((W, H // 2), [(0, H // 2 - trim), (W, H // 2 - trim), (W, H // 2),
+                                                     (0, H // 2)]), (200, 206, 216)))
+        # the digits' dark box sits in the middle (KEEP_DARK): the mark on its left, the city on its right
+        wa.paste_c(top, wa.fit(mark, 70 * S, H * 0.40), 38 * S, H * 0.25)
+        wa.paste_c(top, wa.fit(_type(city, WHITE), 70 * S, H * 0.16), 217 * S, H * 0.25)
+        out.alpha_composite(top, (0, 0))
         out.alpha_composite(_band(W, H // 2, event, city, mark, shield, light=True), (0, H // 2))
     elif layout == "bands":
         out = rgba((W, H))
@@ -796,10 +807,11 @@ def host_surface(code, material, event, city, mark, shield):
         wa.paste_c(out, wa.fit(t, W * 0.66, H * 0.78), W / 2, H * 0.58)
     elif layout == "board":
         out = gradient((W, H), [(0, (30, 32, 38)), (1, (10, 10, 14))])
-        panel = gradient((W, int(H * 0.42)), [(0, (226, 230, 236)), (1, (160, 166, 178))])
-        out.alpha_composite(panel, (0, int(H * 0.58)))
-        wa.paste_c(out, wa.fit(mark, W * 0.80, H * 0.48), W / 2, H * 0.30)
-        wa.paste_c(out, wa.fit(_type("SUPER BOWL " + event, NAVY_SB), W * 0.84, H * 0.20), W / 2, H * 0.79)
+        panel = gradient((W, int(H * 0.46)), [(0, (226, 230, 236)), (1, (160, 166, 178))])
+        out.alpha_composite(panel, (0, int(H * 0.54)))
+        wa.paste_c(out, wa.fit(mark, W * 0.36, H * 0.38), W * 0.22, H * 0.77)
+        wa.paste_c(out, wa.fit(_type("SUPER BOWL", NAVY_SB), W * 0.56, H * 0.14), W * 0.68, H * 0.70)
+        wa.paste_c(out, wa.fit(_type(event, NAVY_SB), W * 0.56, H * 0.18), W * 0.68, H * 0.86)
     elif layout == "plate":
         out = gradient((W, H), [(0, (22, 44, 92)), (1, NAVY_SB)])
         wa.paste_c(out, wa.fit(mark, W * 0.84, H * 0.56), W / 2, H * 0.38)
@@ -807,6 +819,9 @@ def host_surface(code, material, event, city, mark, shield):
         wa.paste_c(out, wa.fit(_type(city, (200, 206, 216)), W * 0.70, H * 0.11), W / 2, H * 0.90)
     else:
         raise ValueError(layout)
+    for x0, y0, x1, y1 in KEEP_DARK.get((code, material), ()):
+        out.alpha_composite(solid(poly((W, H), [(x0 * S, y0 * S), (x1 * S, y0 * S), (x1 * S, y1 * S),
+                                                (x0 * S, y1 * S)]), (12, 12, 14)))
     out = out.resize((w, h), Image.LANCZOS)
     if layout != "banner":
         a = np.asarray(out).copy()
