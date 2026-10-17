@@ -3547,7 +3547,8 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
 CSV_LOCK_COLUMNS = tuple("lock_" + role for role in ("rank", "side", "kr1", "kr2", "pr"))
 CSV_COLUMNS = (CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) +
                ("guardian_cap", "ability_tier", "birth_month", "birth_day", "birth_year",
-                "power_run_style_bucket", "throw_style") + CSV_LOCK_COLUMNS)
+                "power_run_style_bucket", "throw_style") + CSV_LOCK_COLUMNS
+               + ("hair_style",))  # b775-hs1: last, so earlier columns keep their places
 CSV_TEXT_COLUMNS = frozenset({"team", "first", "last", "college", "birth_date"})
 CSV_HELP = (
     "CSV uses pool + index from the loaded roster; keep both columns. Import previews every changed "
@@ -3597,6 +3598,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
         "contract_remaining": record.values["contract_remaining"],
         "skin": record.skin, "face": record.values["face"],
         "body": BODIES[record.values["body"]], "dreads": YES_NO[record.values["dreads"]],
+        "hair_style": HAIR_STYLES[record.values["hair_style"]],
         "eye_black": YES_NO[record.values["eye_black"]], "helmet": HELMETS[record.values["helmet"]],
         "face_mask": record.values["face_mask"],
         "face_shield": FACE_SHIELDS[record.values["face_shield"]] if record.values["face_shield"] < len(FACE_SHIELDS) else record.values["face_shield"],

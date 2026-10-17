@@ -851,7 +851,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_spare_capacity.py": "791b12973e57969c537f733e7271695dd9bcf0ae4f575cc71d2446b36af4cdd1",
         "mod_editor/core/nfl2k5_free_agents.py": "fff6b37814f6ea33d22a1f276e9457321ce7abafe4ddb073bc233d64e158b388",
         "mod_editor/core/nfl2k5_roster_appearance_transfer.py": "b8264599eaa0ccbfac1412d4f9d96af796b1d00eb4abb2dd68d6ba95f9480704",
-        "mod_editor/core/nfl2k5_roster_records.py": "c5f151acb6d6a2c1f372a124c1345640bee966e15645b491ec55dc0b61b66ec2",
+        "mod_editor/core/nfl2k5_roster_records.py": "939224579222290c10df000863fe7d61406a6154e902550973c41431f9f21572",
         "mod_editor/core/nfl2k5_qb_throw_power.py": "81f4cc0119e3b6ddddbaddd798a1a19274cf2301c07f275863acb72825d8cd65",
         "mod_editor/core/nfl2k5_roster_snapshot.py": "9bcbb4eebd82b02ab2237166f3b016f207fc4ac7e779d144fc59d08932239cc8",
         "mod_editor/core/nfl2k5_roster_save_to_disc.py": "70fae49ace3c573adb8fdff3fb8b81073d6348e24055dac592ab5eb07caf69ac",
