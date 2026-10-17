@@ -4,7 +4,7 @@ from copy import deepcopy
 from PyQt5.QtCore import Qt, QSignalBlocker, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel,
                              QPushButton, QCheckBox, QComboBox, QSlider, QDoubleSpinBox,
-                             QTabWidget, QStackedWidget)
+                             QTabWidget, QStackedWidget, QScrollArea, QFrame)
 from mod_editor.core import nfl2k5_modern_color as colour
 
 
@@ -52,12 +52,12 @@ class ColourLightingControls(QWidget):
         self.tabs = QTabWidget()
         root.addWidget(self.tabs)
         for group in ("turf", "endzones", "outside"):
-            self.tabs.addTab(self._group(group), colour.GROUPS[group])
+            self._add_tab(self._group(group), colour.GROUPS[group])
         detail = QWidget()
         details = QVBoxLayout(detail)
         for group in ("divots", "normal", "tints"):
             details.addWidget(self._group(group))
-        self.tabs.addTab(detail, "Detail & tints")
+        self._add_tab(detail, "Detail & tints")
         lights = QWidget()
         light_layout = QVBoxLayout(lights)
         light_layout.addWidget(QLabel("Uses the selected condition above. Night and dome share the retail table.\n"
@@ -66,11 +66,25 @@ class ColourLightingControls(QWidget):
         for name in colour.RIG_LABELS:
             self.light_stack.addWidget(self._group("rig_" + name))
         light_layout.addWidget(self.light_stack)
-        self.tabs.addTab(lights, "Light rigs")
+        self._add_tab(lights, "Light rigs")
         self.class_combo.currentIndexChanged.connect(self._selection)
         self.rig_combo.currentIndexChanged.connect(self._selection)
         self.set_settings(self._settings)
         self.set_active(False)
+        # N34: Build & Share gives this widget its floor, not its size hint, and the five widgets on each
+        # lever row were crushed to a sliver with no height of their own. Ask for the height the tabs'
+        # own hints need; a page taller than the floor now scrolls inside its tab instead of clipping.
+        self.setMinimumHeight(self.sizeHint().height())
+
+    def _add_tab(self, page, label):
+        scroll = QScrollArea()
+        scroll.setObjectName("colourTabScroll")
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setWidget(page)
+        self.tabs.addTab(scroll, label)
 
     def _group(self, group):
         page = QWidget()

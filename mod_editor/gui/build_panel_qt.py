@@ -2422,6 +2422,10 @@ class BuildPanel(QWidget):
             box.blockSignals(True)
             box.setChecked(bool(values.get(key, False)))
             box.blockSignals(False)
+        for key, box in self.abilities_lock_checks.items():   # N35: a preset must clear a leftover move lock too
+            box.blockSignals(True)
+            box.setChecked(bool(values.get(key, False)))
+            box.blockSignals(False)
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         boxes = self._boxes()
         applied, skipped = [], []
