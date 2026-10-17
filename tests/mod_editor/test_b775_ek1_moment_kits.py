@@ -64,6 +64,8 @@ class Data(unittest.TestCase):
         swapped = mk.card_sources(k3)
         self.assertEqual(swapped["unif_h29_10"], ("logos", "unif_a29_2"))   # white at home
         self.assertEqual(swapped["unif_a29_10"], ("logos", "unif_h29_2"))   # burgundy on the road
+        k2 = next(k for k in mk.document()["kits"] if k["id"] == "K2")
+        self.assertEqual(mk.card_sources(k2)["unif_a07_10"], ("logos", "unif_a07_2"))  # Dallas: white is the A kit
 
     def test_palette_map_keeps_shading_and_white_blends_exactly(self):
         import numpy as np
@@ -113,7 +115,7 @@ class Wiring(unittest.TestCase):
 
     def test_added_pairs_are_only_the_new_kit_labels(self):
         added = mk.added_pairs()
-        self.assertEqual(added["h-29-1982-redskins-2.iff"], {10: (1979, 1983)})
+        self.assertEqual(added["h-29-1982-redskins-2.iff"], {10: (1982, 1983)})
         self.assertNotIn("h-11-1970-colts-5.iff", added)            # reuse of an existing style: nothing added
 
 
@@ -157,6 +159,7 @@ class Disc(unittest.TestCase):
     def test_whole_kit_copies_and_swaps_are_byte_copies(self):
         packages = mk.compose(self.doc, self.inputs["packages"])
         p = self.inputs["packages"]
+        self.assertEqual(packages["07h10.iff"], p["07H3"])
         self.assertEqual(packages["29h10.iff"], p["29A2"])
         self.assertEqual(packages["29a10.iff"], p["29H2"])
         self.assertEqual(packages["20a6.iff"], p["20H1"])
@@ -219,8 +222,8 @@ class Disc(unittest.TestCase):
         situ = mk.expected(self.doc, self.inputs)[3]
         sides = {(row + 1, side): kit for row, side, _s, _y, kit, _f in hs.situ_sides(situ)}
         for c in self.doc["classic_defaults"]:
-            if c["file"] == "h-07-1977-cowboys-3.iff":
-                continue                                       # two moments; the white-home 1979 set is chosen
+            if "row(s) " not in c["why"]:
+                continue                                       # a file used by two moments: the chosen set
             rows = [part.split() for part in c["why"].split("row(s) ")[1].split(", ")]
             self.assertTrue(all(sides[(int(r), sd)] == c["style"] for r, sd in rows), c)
 
@@ -248,6 +251,86 @@ class Disc(unittest.TestCase):
     @unittest.skipUnless(RETAIL.is_file(), "retail disc absent")
     def test_historic_spares_still_read_applied(self):
         self.assertEqual(hs.image_status(DISC, RETAIL), "applied")
+
+
+@unittest.skipUnless(DISC.is_file(), "release-candidate test disc absent")
+class Native(unittest.TestCase):
+    """The game's own 20CB30 select, Load Historic Team, 617E0 staging and 615A0 era clamp + kit filename formatter
+    (Unicorn) on the RC test disc's executable, rosters and SITU, before and after the stage's edits (in memory):
+    exactly the 15 selected sides change, each to its new or reused kit file, with the same teams, the game's own
+    H/A letter (at Dallas the home team takes its A kit), and every requested package present."""
+
+    def test_all_51_moments_request_the_game_accurate_kits(self):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError as exc:
+            self.skipTest(f"Unicorn unavailable: {exc}")
+        for entry in (ROOT / "tests",):
+            if str(entry) not in sys.path:
+                sys.path.insert(0, str(entry))
+        from mod_editor.core import nfl2k5_espn25_more_moments as mm
+        from mod_editor.core import nfl2k5_espn25_rosters as e
+        from mod_editor.core import nfl2k5_music_archive as archive
+        from mod_editor.core import nfl2k5_spare_capacity as capacity
+        from tools.b77 import frz_xbe_bisect as bisect
+        from nfl2k5_espn25_more_moments_native import FastMomentsCPU
+        payload, _ = bisect.read_xbe(DISC)
+        manifest, _ = e.dataset()
+        data = mm.Data.load()
+        with archive.Disc(DISC, descriptors=()) as d:
+            entries = d.archive_entries
+            resources = {i: d.read_entry_range(entries[i], 0, entries[i].size)
+                         for i in (5, 22, *(t["outer"] for t in manifest["resources"]))}
+            by_id = {x.name_id: x for x in entries}
+            extra = {n: d.read_entry_range(by_id[mm.name_id(n)], 0, by_id[mm.name_id(n)].size)
+                     for _k, n, _e, _s, _i in mm.table_entries(data)}
+            listing = [type("Entry", (), dict(index=i, name_id=x.name_id, size=x.size))() for i, x in enumerate(entries)]
+            identities = {x.name_id for x in entries}
+        rost = resources[5]
+        size = struct.unpack_from("<I", rost, 4)[0]
+        body, _ = capacity.restore_import_floor(rost[32:32 + size])     # mo1's floor (the RC test disc predates it)
+        resources[5] = rost[:32] + body + rost[32 + size:]
+
+        def run(res, ext, ids):
+            context = e.describe_context(res[5], res[22], listing)
+            situ = res[22]
+            cpu = FastMomentsCPU(payload, res, context, ids, situ_chunk=situ[:32 + mm.sc.u32(situ, 4)], extra_files=ext)
+            order = list(mm.display_order(data))
+            out = {}
+            for row in range(1, 52):
+                cpu.events.clear()
+                cpu.select(order.index(row - 1))
+                m = cpu.match()
+                out[row] = {s: (m["sides"][s]["name"], m["sides"][s]["kit"].lower(), m["sides"][s]["kit_exists"])
+                            for s in ("away", "home")}
+                cpu.run(0x20C3C0)
+            return out
+
+        before = run(resources, extra, identities)
+        doc = mk.document()
+        with hs.Source(DISC) as src:
+            inputs = mk.read_inputs(src, doc)
+        packages, _members, files, situ = mk.expected(doc, inputs)
+        outer_of = {t["filename"]: t["outer"] for t in manifest["resources"]}
+        after_res, after_extra = dict(resources), dict(extra)
+        after_res[22] = situ
+        for name, raw in files.items():
+            if name in outer_of:
+                after_res[outer_of[name]] = raw
+            else:
+                after_extra[name] = raw
+        after = run(after_res, after_extra, identities | {mm.name_id(n) for n in packages})
+        selected = {(s["row"], s["side"]): s for s in doc["selections"]}
+        changed = {(r, side) for r in before for side in ("away", "home") if before[r][side] != after[r][side]}
+        self.assertEqual(changed, set(selected))
+        for (row, side), s in selected.items():
+            letter = before[row][side][1][2]
+            self.assertEqual(after[row][side][1], f"{s['file'][2:4]}{letter}{s['style']}.iff", (row, side))
+        for row in after:
+            for side in ("away", "home"):
+                self.assertEqual(after[row][side][0], before[row][side][0])
+                self.assertTrue(after[row][side][2], (row, side))
+        self.assertEqual((before[6]["home"][1], before[6]["away"][1]), ("07a3.iff", "29h3.iff"))
 
 
 class Overlay:
