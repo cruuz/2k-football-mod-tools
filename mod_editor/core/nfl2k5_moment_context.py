@@ -435,6 +435,49 @@ def apply(payload):
                         super_bowl_rows=list(SUPER_BOWL_ROWS), labels={k: hex(v) for k, v in labels.items()})
 
 
+def image_plan(target):
+    """[(offset, bytes)] that install this owner in the disc image's default.xbe (only the differing runs)."""
+    from .nfl2k5_music_archive import Disc
+    with Disc(target, descriptors=()) as disc:
+        e = disc.entries["default.xbe"]
+        before = disc.read(e.size, e.byte_offset)
+        after, receipt = apply(before)
+        writes, i = [], 0
+        while i < len(before):
+            if before[i] == after[i]:
+                i += 1
+                continue
+            start = i
+            while i < len(before) and before[i] != after[i]:
+                i += 1
+            writes.append((e.byte_offset + start, after[start:i]))
+    receipt["writes"] = [dict(offset=at, size=len(raw), sha256=sha(raw)) for at, raw in writes]
+    return writes, receipt
+
+
+def apply_to_image(target):
+    """Install on a built copy; every write is read back and the replay must be empty."""
+    from .nfl2k5_music_archive import write_all
+    from . import platform_compat as io
+    writes, receipt = image_plan(target)
+    with Path(target).open("r+b") as f:
+        for at, raw in writes:
+            write_all(f.fileno(), raw, at)
+            require(io.pread(f.fileno(), len(raw), at) == raw, "moment context image readback")
+        os.fsync(f.fileno())
+    replay, _ = image_plan(target)
+    require(not replay, "moment context image replay must be empty")
+    receipt["bytes_written"] = sum(len(raw) for _, raw in writes)
+    return receipt
+
+
+def image_status(target):
+    from .nfl2k5_music_archive import Disc
+    with Disc(target, descriptors=()) as disc:
+        e = disc.entries["default.xbe"]
+        return status(disc.read(e.size, e.byte_offset))
+
+
 # ------------------------------------------------------------------------------------------------ baselines
 def stats_doc():
     doc = json.loads(STATS_JSON.read_text(encoding="utf-8"))
@@ -597,4 +640,4 @@ def stat_blocks(disc):
 
 __all__ = ["OWNER", "REQUESTS", "HOOKS", "CAVE_VA", "CAVE_SIZE", "SUPER_BOWL_ROWS", "UI_TEXT", "apply", "status",
            "underlying", "view_edits", "code_for", "block_for", "stat_blocks", "parse_block", "trailer_after_coaches",
-           "moment_team_files", "map_players", "super_bowl_mask"]
+           "moment_team_files", "map_players", "super_bowl_mask", "image_plan", "apply_to_image", "image_status"]

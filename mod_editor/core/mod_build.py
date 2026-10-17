@@ -4506,6 +4506,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         coach_receipt = historical_coaches.apply_to_image(target, coach_source)
         receipt["steps"].append({"step": "moment_coaches", **coach_receipt})
         receipt["result"]["moment_coaches"] = "applied"
+        # b775 mo2: the Super Bowl game type and the moment stats readers (the stats blocks rode in the coach SITU).
+        progress("Adding Super Bowl context and historical moment stats", 0, 0)
+        moment_context = _core_module("nfl2k5_moment_context")
+        context_receipt = moment_context.apply_to_image(target)
+        receipt["steps"].append({"step": "moment_context", **context_receipt})
+        receipt["result"]["moment_context"] = "applied"
     # Use the completed venue models and edited SITU, after all other resource passes.
     if plan.espn25_named_previews:
         progress("Building period Anniversary fields", 0, 51)
