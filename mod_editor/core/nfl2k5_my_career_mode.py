@@ -420,7 +420,9 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         struct.pack_into("<11I", extra_menu, labels[name] - EXTRA_VA - 256,
                          labels[title], 0, labels["mode_handler"], 0, labels[table], 0,
                          0xE7F928, 0xAA281C, 0x02400044, 0x018D0052,
-                         0x13 if name == "m3_settings_menu" else 3)
+                         # ui1: with Career Home, B also leaves Upgrades (native back, flag 0x10).
+                         0x13 if name == "m3_settings_menu" or (home is not None and name == "m3_upgrade_menu")
+                         else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
     compressed = _encode_menu(extra_menu)
     at = reserve("m3_menu_template", len(compressed))

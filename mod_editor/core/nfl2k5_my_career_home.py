@@ -274,3 +274,122 @@ def reservations():
     return [dict(owner=OWNER, start=hex(VA), end=hex(VA + SIZE), size=SIZE,
                  basis="owned optional preloaded writable+executable section in the extra section slot; "
                        "Career Home code, tables and padding")]
+
+
+# ---------------------------------------------------------------------------------------------------- static checker
+# The native menu engine does not validate descriptors (a bad pointer faults the game, ledger v1f), so every
+# descriptor, row table, layout and pointer this owner creates or re-points is checked here on the final image.
+DESCRIPTOR_FLAGS = 0x13
+NAVIGATION = "navigation"
+
+
+def _unpack_template(blob):
+    """MyCareer's bounded LZ template (nfl2k5_my_career_mode._encode_menu) back to its RW bytes."""
+    out, i = bytearray(), 0
+    while True:
+        n = blob[i]
+        i += 1
+        if not n:
+            return bytes(out)
+        if n & 128:
+            count, distance = (n & 127) + 3, struct.unpack_from("<H", blob, i)[0]
+            i += 2
+            _require(0 < distance <= len(out), "template back-reference outside its output")
+            for _ in range(count):
+                out.append(out[-distance])
+        else:
+            out.extend(blob[i:i + n])
+            i += n
+
+
+def check_static(payload):
+    """Validate every Career Home descriptor, row, string, handler and action pointer. Returns a receipt; raises."""
+    from . import nfl2k5_my_career_mode as mode
+    _require(status(payload) == "applied", "Career Home is not applied")
+    image = XbeImage(payload)
+    career = career_labels(payload)
+    content, labels = code_for(career)
+    code, data = legacy.allocations(payload)
+    text_pool = {career[n] for n in career if n.endswith("_text")}
+
+    def read(va, size):
+        if VA <= va and va + size <= VA + SIZE:
+            return payload[RAW + va - VA:RAW + va - VA + size]
+        return image.read(va, size)
+
+    # MyCareer's RW strings are expanded from ASCII templates by init_menus before any menu event; rebuild them.
+    pool = {}
+    blob = image.read(code["va"], legacy.CODE_SIZE)
+    for name, base, template, count in (("text", data["va"] + 1408, "text_template", "text_bytes"),
+                                        ("text2", mode.EXTRA_VA + 2160, "text2_template", "text2_bytes")):
+        raw = blob[career[template] - code["va"]:career[template] - code["va"] + career[count]]
+        for i, byte in enumerate(raw):
+            pool[base + 2 * i] = byte
+
+    def string(va, limit=64):
+        if va in pool:
+            out = []
+            while pool.get(va, 0):
+                out.append(chr(pool[va]))
+                va += 2
+                _require(len(out) <= limit, "unterminated MyCareer pool string")
+            return "".join(out)
+        raw = read(va, 2 * (limit + 1))
+        end = next((i for i in range(0, len(raw), 2) if raw[i:i + 2] == b"\0\0"), None)
+        _require(end is not None and end > 0, f"no UTF-16 label at {va:#x}")
+        text = raw[:end].decode("utf-16le")
+        _require(all(0x20 <= ord(c) <= 0x7E for c in text), f"label at {va:#x} has glyphs the fonts lack")
+        return text
+
+    executable = [(s.start, s.start + s.raw_size) for s in image.sections if s.executable]
+
+    def entry(va, name):
+        _require(any(lo <= va < hi for lo, hi in executable), f"{name} {va:#x} is not in an executable section")
+        known = {v for v in career.values()} | {v for v in labels.values()}
+        _require(va in known, f"{name} {va:#x} is not a known function entry")
+
+    # The Apartment descriptor in MyCareer's own RW template (state + 200).
+    menu = _unpack_template(blob[career["menu_template"] - code["va"]:])
+    at = career["apartment"] - data["va"] - 200
+    descriptors = {"apartment": struct.unpack_from("<11I", menu, at)}
+    for name in ("home_classic", "home_options"):
+        descriptors[name] = struct.unpack_from("<11I", read(labels[name], 44))
+    receipt = {"descriptors": {}, "rows": {}}
+    expected_rows = {"apartment": labels["home_rows"], "home_classic": career["hub_rows"],
+                     "home_options": labels["home_options_rows"]}
+    for name, fields in descriptors.items():
+        title, events, handler, _c, rows, _14, layout, binding, frame0, frame1, flags = fields
+        _require(events == 0 and _c == 0 and _14 == 0, f"{name}: unexpected event table or spare words")
+        _require(handler == labels["home_handler"], f"{name}: handler is not Career Home's")
+        _require(rows == expected_rows[name], f"{name}: foreign row table")
+        _require(read(layout, 22) == (NAVIGATION + "\0").encode("utf-16le"), f"{name}: layout is not 'navigation'")
+        _require((binding, frame0, frame1, flags) == (BINDINGS, *FRAME, DESCRIPTOR_FLAGS),
+                 f"{name}: binding/frame/flags differ from every MyCareer list screen")
+        receipt["descriptors"][name] = string(title)
+        # Rows: kind 9 (call), a label, an executable action; kind 3 ends the table within the visible window.
+        table = []
+        if rows == career["hub_rows"]:
+            raw = _unpack_template(blob[career["m3_menu_template"] - code["va"]:])
+            source = lambda off, n: raw[rows - mode.EXTRA_VA - 256 + off:rows - mode.EXTRA_VA - 256 + off + n]
+            limit = 10
+        else:
+            source = lambda off, n: read(rows + off, n)
+            limit = MAX_VISIBLE_ROWS
+        for i in range(limit + 1):
+            row = struct.unpack("<13I", source(52 * i, 52))
+            if row[0] == 3:
+                break
+            _require(i < limit, f"{name}: no end marker within {limit} rows")
+            _require(row[0] == 9 and not any(row[2:10]) and not any(row[11:]), f"{name} row {i}: not a call row")
+            entry(row[10], f"{name} row {i} action")
+            table.append(string(row[1]))
+        receipt["rows"][name] = table
+    _require(len(receipt["rows"]["apartment"]) == len(HOME_ROWS) <= 6, "Career Home must show every row")
+    entry(labels["home_handler"], "handler")
+    entry(labels["home_draw"], "draw")
+    for key in [k for k in labels if k.startswith("home_tex_")]:
+        string(labels[key])
+    receipt.update(section=hex(VA), size=SIZE, content_bytes=len(content), spare_bytes=SIZE - HEADER - len(content),
+                   mycareer_spare_bytes=mode.TAG_OFFSET - (mode.code_for(code["va"], data["va"], home=apartment_fields(labels))[1]["content_end"] - code["va"]))
+    _require(receipt["mycareer_spare_bytes"] >= 0, "MyCareer code budget exceeded")
+    return receipt
