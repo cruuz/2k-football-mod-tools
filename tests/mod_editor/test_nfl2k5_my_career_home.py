@@ -367,3 +367,21 @@ class CareerHomeNativeTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required')
+class CareerHomeUnionTests(unittest.TestCase):
+    def test_every_allocator_owner_then_career_home_composes_and_replays(self):
+        """The full-union gate stack without the music library (which takes the same section slot), then Career
+        Home last as the Studio applies it: every owner stays applied and replays without a byte."""
+        from unittest import mock
+        import tests.nfl2k5_allocator_stack as stack
+        calls = tuple(c for c in stack.owner_calls() if c[0] is not stack.music)
+        with mock.patch.object(stack, 'owner_calls', lambda **_: calls):
+            union, _ = stack.compose(retail_bytes(), scaleout=True)
+        result, receipt = home.apply(union)
+        self.assertEqual(home.status(result), 'applied')
+        self.assertEqual([m.OWNER for m, kwargs in calls
+                          if m.status(result) != 'applied' or m.apply(result, **kwargs)[0] != result], [])
+        self.assertGreaterEqual(home.check_static(result)['mycareer_spare_bytes'], 0)
+        self.assertEqual(home.apply(result)[0], result)
