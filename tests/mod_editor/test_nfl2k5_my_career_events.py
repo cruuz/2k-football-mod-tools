@@ -239,7 +239,7 @@ class HostBudgetTests(unittest.TestCase):
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
                 # prefetch path; the budget, assembly and progression pins stay fixed.
-                '94b40a84b1aee82246f50515aedfb68e8cb467d827e4d4189c11c328fc3494f6',
+                '9f8c54e73dbe66b411a0321603a0cbab025a0eab91eaa26d1bb470bf4b2fb323',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

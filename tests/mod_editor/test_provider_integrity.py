@@ -363,6 +363,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_era_rules.json": "fab269783f2f4524b01e031a15de8156629a6728d86249b9402822594778d1e4",
                 "data/nfl2k5_stock_books.json": "87d779bb2be3c4b20b901c4afa0a620bb4b0aae29ef833bc4440a38c396417fd",
                 "data/nfl2k5_moment_coaches.json": "3b38c524f4a861ac100e96f847939f8d12ffe62c6eef3aba93e7f33144e9148b",
+                "data/nfl2k5_moment_stats.json": "1aea510df6cd581b7d992b640f3c0be0b07a89308592f691cda6c87dde052cc2",
                 "data/nfl2k5_moment_playbook_eras.json": "e359e298f0240072d0a6662d434c171a981519beb65ccafe4120b5adf63ac208",
                 "data/nfl2k5_modern_color_pins.json": "670a9f1df1abe67c12d373318e4bca0c388e9e7a3c54d42e44ad37f52981719d",
                 "data/nfl2k5_modern_helmets/geometry.json": "3bd4a970dd27a614040c307fcca3f66e4a83fef6d008a8efa1384e4b76ef0c7a",
