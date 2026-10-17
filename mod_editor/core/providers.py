@@ -1046,7 +1046,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_espn25_more_moments_appearance.json": "2397399d6681a1c05f7e1287d3e4e83ff710e4fdc40b759621593a296643e3f3",
         "data/nfl2k5_classic_teams/teams.json": "9034908931dce9508abc2ab8f466df4fcae0262351ff327172016a31d67c3b02",
         "data/nfl2k5_classic_teams/manifest.json": "be998bf49a0e8ddd0ef772728f0f97fc7aaed0e1709081933f245b3b19ba2e8b",
-        "data/nfl2k5_classic_teams/appearance.json": "3d7f2506a4821874acf87c23684cae649ee34330f991cf8cb8f95be111659517",
+        "data/nfl2k5_classic_teams/appearance.json": "e493fc9f05ad89aacb1a12b10462a31d399844e1646be59011feb1645fa1493f",
         "data/nfl2k5_classic_teams/classic.json": "ac216a820308d70b90cb5be1fd305ab0fb13446f6e9b1342720b3e9f30b850f6",
         "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
         "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",

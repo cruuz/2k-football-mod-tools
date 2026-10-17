@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "about": "Per-player appearance for the classic teams (job ct1, 2026-10-17), row for row with <team>.csv, in the format of data/nfl2k5_espn25_more_moments_appearance.json. tone = 2K5 skin tone 0 (lightest) .. 5 (darkest); null keeps the template record. retail = the player's own retail 2004 record. Sources, in order of use: the same person's row in the Anniversary appearance data (name and birth date through the moment CSVs; its own source is kept); headshot_2026 (his 2026 team file's skin_tone_by_eye; same name, active in 2025); retail_2004 (his own 2004 record); headshot_review (official NFL headshot from nflverse players.csv, else the ESPN headshot by espn_id, reviewed by eye against 18 reference players whose tones the Anniversary data already holds); photo_review (Wikipedia photo of him); none (no usable photo). Reference photos stay in scratch, never in the repo. Hair: dreads only where the reused source records them.",
+ "about": "Per-player appearance for the classic teams (job ct1, 2026-10-17), row for row with <team>.csv, in the format of data/nfl2k5_espn25_more_moments_appearance.json. tone = 2K5 skin tone 0 (lightest) .. 5 (darkest); null keeps the template record. retail = the player's own retail 2004 record. Sources, in order of use: the same person's row in the Anniversary appearance data (name and birth date through the moment CSVs; its own source is kept); headshot_2026 (his 2026 team file's skin_tone_by_eye; same name, active in 2025); retail_2004 (his own 2004 record); headshot_review (official NFL headshot from nflverse players.csv, else the ESPN headshot by espn_id, reviewed by eye against 18 reference players whose tones the Anniversary data already holds); photo_review (Wikipedia photo of him); none (no usable photo). Reference photos stay in scratch, never in the repo. Hair: dreads where the reused source records them, and for 58 players ct1 reviewed whose official headshot shows locks (headshots can postdate the season).",
  "teams": {
   "bears_2006": [
    {
@@ -48,7 +48,7 @@
    {
     "name": "Cedric Benson",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -734,7 +734,7 @@
    {
     "name": "Todd Davis",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -764,7 +764,7 @@
    {
     "name": "Bradley Roby",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -788,7 +788,7 @@
    {
     "name": "T.J. Ward",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -886,7 +886,7 @@
    {
     "name": "Sammie Coates",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1164,7 +1164,7 @@
    {
     "name": "Dontrell Hilliard",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1314,7 +1314,7 @@
    {
     "name": "Sheldon Richardson",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1386,7 +1386,7 @@
    {
     "name": "Terrance Mitchell",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1398,7 +1398,7 @@
    {
     "name": "M.J. Stewart",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1428,7 +1428,7 @@
    {
     "name": "Ronnie Harrison",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1478,7 +1478,7 @@
    {
     "name": "Ronald Jones",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1712,7 +1712,7 @@
    {
     "name": "Sean Murphy-Bunting",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1730,7 +1730,7 @@
    {
     "name": "Ryan Smith",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -1754,7 +1754,7 @@
    {
     "name": "Jordan Whitehead",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -2274,7 +2274,7 @@
    {
     "name": "Ronald Jones",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -2316,7 +2316,7 @@
    {
     "name": "Ihmir Smith-Marsette",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -2514,7 +2514,7 @@
    {
     "name": "Chris Lammons",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -2990,7 +2990,7 @@
    {
     "name": "Bob Sanders",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3064,7 +3064,7 @@
    {
     "name": "Trent Richardson",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3082,7 +3082,7 @@
    {
     "name": "T.Y. Hilton",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3112,7 +3112,7 @@
    {
     "name": "Joshua Cribbs",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3154,7 +3154,7 @@
    {
     "name": "Xavier Nixon",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3244,7 +3244,7 @@
    {
     "name": "Erik Walden",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3304,7 +3304,7 @@
    {
     "name": "Gregory Toler",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3752,7 +3752,7 @@
    {
     "name": "A.J. Brown",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3776,7 +3776,7 @@
    {
     "name": "Ainias Smith",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -3980,7 +3980,7 @@
    {
     "name": "Avonte Maddox",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4048,7 +4048,7 @@
    {
     "name": "Paul Perkins",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4204,13 +4204,13 @@
    {
     "name": "Ishaq Williams",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
     "name": "Damon Harrison",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4264,7 +4264,7 @@
    {
     "name": "Kelvin Sheppard",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4282,7 +4282,7 @@
    {
     "name": "Janoris Jenkins",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4318,7 +4318,7 @@
    {
     "name": "Nat Berhe",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4374,7 +4374,7 @@
    {
     "name": "Gary Brightwell",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4398,7 +4398,7 @@
    {
     "name": "Isaiah Hodgins",
     "tone": 2,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -4566,7 +4566,7 @@
    {
     "name": "Jaylon Smith",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5302,7 +5302,7 @@
    {
     "name": "Myles Adams",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5398,19 +5398,19 @@
    {
     "name": "Ifeatu Melifonwu",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
     "name": "Morice Norris Jr.",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
     "name": "Stantley Thomas-Oliver",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5466,7 +5466,7 @@
    {
     "name": "Dimitri Nance",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5490,7 +5490,7 @@
    {
     "name": "Quinn Johnson",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5682,7 +5682,7 @@
    {
     "name": "Erik Walden",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -5778,7 +5778,7 @@
    {
     "name": "Atari Bigby",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6014,7 +6014,7 @@
    {
     "name": "Erik Walden",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6122,7 +6122,7 @@
    {
     "name": "M.D. Jennings",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6274,7 +6274,7 @@
    {
     "name": "Chris Scott",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6382,7 +6382,7 @@
    {
     "name": "Shaq Thompson",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6406,7 +6406,7 @@
    {
     "name": "Josh Norman",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6436,7 +6436,7 @@
    {
     "name": "Tre Boston",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6528,7 +6528,7 @@
    {
     "name": "Cordarrelle Patterson",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6744,7 +6744,7 @@
    {
     "name": "Keion Crossen",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -6824,7 +6824,7 @@
    {
     "name": "Gus Edwards",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -7010,13 +7010,13 @@
    {
     "name": "Matt Judon",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
     "name": "Jaylon Ferguson",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -7064,7 +7064,7 @@
    {
     "name": "Anthony Averett",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -7174,7 +7174,7 @@
    {
     "name": "Sidney Rice",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -7626,7 +7626,7 @@
    {
     "name": "Byron Murphy II",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -7740,7 +7740,7 @@
    {
     "name": "Coby Bryant",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -8320,7 +8320,7 @@
    {
     "name": "A.J. Brown",
     "tone": 5,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -8368,7 +8368,7 @@
    {
     "name": "MyCole Pruitt",
     "tone": 3,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
@@ -8554,7 +8554,7 @@
    {
     "name": "Tye Smith",
     "tone": 4,
-    "dreads": 0,
+    "dreads": 1,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    },
    {
