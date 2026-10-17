@@ -198,7 +198,7 @@ class AllocatorTests(unittest.TestCase):
         # which the native repairs append after F4 and so never exist without it
         later = space.LATE_OWNERS[space.LATE_OWNERS.index(lg.OWNER):]
         without = tuple(r for r in union if r[0] not in later)
-        self.assertEqual(len(union) - len(without), 16)  # Includes five fixed tap/draft/H-back/rating slot requests.
+        self.assertEqual(len(union) - len(without), 17)  # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state.
         plan_with, plan_without = space.plan(union), space.plan(without)
         key = lambda a: (a["owner"], a["kind"])           # noqa: E731
         old = {key(a): a for a in space._scale_allocations(without)}
@@ -216,6 +216,7 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
                                         ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data"),
+                                        ("nfl2k5_moment_context", "data"),  # b775 mo2
                                         ("nfl2k5_human_tap_burst_spill", "code"),
                                         ("nfl2k5_draft_picks_spill", "code"), ("nfl2k5_hback_spill", "code"),
                                         ("nfl2k5_team_ratings_spill", "code"), ("nfl2k5_team_ratings_spill", "read_only")]))
