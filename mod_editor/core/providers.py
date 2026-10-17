@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007"
+    backend_module_sha256 = "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
         "mod_editor/core/nfl2k5_espn25_fields.py": "18b905331cdef8eeba9994b243f120d5bc38370bf2340aebaa834099443241c0",
@@ -674,7 +674,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_catch_slider.py": "0ea12e1f558463538a154f50c38036389a8c0432c7ba55ac2862cd706b85498f",
         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
         "mod_editor/core/nfl2k5_college_check.py": "b4752a4a015c2b39a19e9887ef67ffdcc2b2b9ac044642a45201a2fae500709d",
-        "mod_editor/core/nfl2k5_compile_cache.py": "0ef3f49e681793ba7b251f5c5e887910e87a4c6ffbd58b5d4146a056b3123480",
+        "mod_editor/core/nfl2k5_compile_cache.py": "edb1b2fc3a47fa08e41bef67ab93876fcc98703af14b10b65239be4e394fd760",
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
         "mod_editor/core/nfl2k5_coverage_trail.py": "68b6548fc60cf8cbed4a912403b6323c44818eeba358cdc28fa8090642a3e969",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "746874dbef2fbf16355affd2b373840fb96e235fc0f2592c9c2858c826080e66",
@@ -799,7 +799,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_play_scoring.py": "097d354b00f849507a715d088c58180d932f0065539ee64babc72769c86d61ba",
         "mod_editor/core/nfl2k5_screen_authored_pins.py": "5ab9fa4b46e60fb8ba46e77fcb6d115357c017c187691dd08ddcc16719082c61",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "296b94fe2565486665c6e820658fd149d22b3ddaeec42cc87b606325f5f7167f",
-        "mod_editor/core/nfl2k5_playbook_pack.py": "fd167cc276d2eaa46b000f0d37b431cb1f588b82b481d80086ff86e0cc7c236a",
+        "mod_editor/core/nfl2k5_playbook_pack.py": "7374abff99e171845bbe6afec24ba7a44d104126b4cabcd7ba346c8fcd8e6008",
         "mod_editor/core/nfl2k5_coach_ai.py": "7042160254621085f8d6420a4803d31e9aa53fdf7efbea0c5489bafe447994fc",
         "mod_editor/core/nfl2k5_coach_ai_code.py": "54df1f0a8f58bf43e7ecb33b89512b4f5856d09104265b82094c744e9c644731",
         "mod_editor/core/nfl2k5_vip.py": "3248f69357db95f5b8cb49e56d8c6ecfd3c99f3c82d2efb8d7e1cd2ccc01dedf",
@@ -944,7 +944,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435",
         "tools/nfl2k5_roster_reclassify.py": "569bd7021f7fa8259a6ffd9c4473e8c1d08e22d9e383593c288f747d2e2fd867",
-        "tools/nfl2k5_visual_mod_project.py": "302bf7333777414dc74b67050c443364a0380eccf8d6f049b00e1385fc24e007",
+        "tools/nfl2k5_visual_mod_project.py": "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd",
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",

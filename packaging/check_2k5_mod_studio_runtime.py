@@ -2245,6 +2245,7 @@ def main() -> int:
         "nfl_stadium_studio_cache",
         "nfl_static_gltf",
         "nfl2k5_playbook_pack",
+        "nfl2k5_playbook_warm",
         "string_table_inventory",
     )
     loaded = {name: importlib.import_module(name) for name in tool_modules}

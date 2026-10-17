@@ -791,6 +791,7 @@ mod_editor/gui/playbook_pack_dialog_qt.py
 mod_editor/gui/task_delivery.py
 mod_editor/gui/ux_text.py
 tools/nfl2k5_playbook_pack.py
+tools/nfl2k5_playbook_warm.py
 mod_editor/core/nfl2k5_season_cap.py
 mod_editor/core/nfl2k5_xbe_space.py
 mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py

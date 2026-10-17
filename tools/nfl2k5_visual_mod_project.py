@@ -3471,6 +3471,486 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
                     future.cancel()
 
 
+# --- Independent single-edit units (b77.4 fast1) -----------------------------
+#
+# Most of a league build is thousands of one-edit texture units (digits,
+# portraits, faces, P8 art, kit layers).  Each is a pure function of its own
+# edit, its own pinned input bytes, the pinned reports and the canonical
+# index, so worker processes compile them and the serial loop consumes the
+# results in project order.  The loop alone writes spans, receipts and
+# previews, so every byte it writes is the byte the serial path wrote.
+#
+# Receipt file names carry an order number.  The first set has been compiled
+# with its project edit index wherever the previous parallel path ran (several
+# encode workers, four or more such edits); everything else uses the span
+# order, which is only known when the serial loop reaches the edit.  Those
+# compile under a placeholder order, and the loop substitutes the real one; a
+# result that names the placeholder anywhere else is discarded and compiled
+# serially instead.
+
+_UNIT_EDIT_ORDER_KINDS = frozenset({"torso", "sleeve", "pants", "live_helmet", "team_select"})
+_UNIT_SPAN_ORDER_KINDS = frozenset({"live_number_nameplate", "live_face", "player_portrait",
+                                    P8_TEXTURE_KIND})
+UNIT_KINDS = _UNIT_EDIT_ORDER_KINDS | _UNIT_SPAN_ORDER_KINDS
+#: Larger than any span order a MAX_EDITS project can reach.
+_UNIT_PLACEHOLDER_ORDER = 918273
+_UNIT_PLACEHOLDER_TEXT = str(_UNIT_PLACEHOLDER_ORDER)
+_UNIT_PLACEHOLDER_PREFIX = f"{_UNIT_PLACEHOLDER_ORDER:05d}_"
+#: Fewer units than this compile in the build process itself.
+_UNIT_POOL_MINIMUM = 8
+#: Bump when the unit cache record or the placeholder scheme changes.
+_UNIT_CACHE_VERSION = 1
+#: Environment that selects workers or caching only; never part of a cache key.
+_UNIT_ENV_NOT_IN_KEY = frozenset({"NFL2K5_BUILD_WORKERS", "NFL2K5_DISABLE_COMPILE_CACHE",
+                                  "NFL2K5_COMPILE_CACHE_MAX_MB"})
+#: Native helpers run as subprocesses; they are code even though never imported.
+_UNIT_NATIVE_HELPERS = ("tools/nfl2k5_equipment_optimal", "tools/nfl2k5_equipment_optimal.c",
+                        "tools/nfl2k5_equipment_optimal.exe", "tools/apf_h7a_optimal",
+                        "tools/apf_h7a_optimal.c")
+
+
+def _available_memory() -> int | None:
+    try:
+        if sys.platform.startswith("linux"):
+            for line in Path("/proc/meminfo").read_text().splitlines():
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) * 1024
+        if os.name == "nt":
+            import ctypes
+
+            class MemoryStatus(ctypes.Structure):
+                _fields_ = [("length", ctypes.c_ulong), ("load", ctypes.c_ulong),
+                            ("total_physical", ctypes.c_ulonglong),
+                            ("available_physical", ctypes.c_ulonglong),
+                            ("total_page_file", ctypes.c_ulonglong),
+                            ("available_page_file", ctypes.c_ulonglong),
+                            ("total_virtual", ctypes.c_ulonglong),
+                            ("available_virtual", ctypes.c_ulonglong),
+                            ("available_extended_virtual", ctypes.c_ulonglong)]
+            status = MemoryStatus()
+            status.length = ctypes.sizeof(MemoryStatus)
+            if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+                return None
+            return int(status.available_physical)
+        return os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
+    except (AttributeError, OSError, ValueError, IndexError):
+        return None
+
+
+def unit_worker_count() -> int:
+    """Workers for independent units: NFL2K5_BUILD_WORKERS, else cores - 1.
+
+    Each spawned worker imports this module and its importers (100-600 MB
+    resident while compiling), so available memory also bounds the default.
+    """
+    configured = os.environ.get("NFL2K5_BUILD_WORKERS", "").strip()
+    if configured:
+        try:
+            return max(1, int(configured))
+        except ValueError:
+            pass
+    cpus = (len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity")
+            else (os.cpu_count() or 1))
+    workers = cpus - 1
+    memory = _available_memory()
+    if memory is not None:
+        workers = min(workers, memory // (640 * 1024 ** 2))
+    if os.name == "nt":
+        # ProcessPoolExecutor's WaitForMultipleObjects limit on Windows.
+        workers = min(workers, 61)
+    return max(1, workers)
+
+
+def _build_p8_unit(order: int, edit: dict[str, Any], project: ProjectFile,
+                   input_pins: dict[Path, InputPin], index: Path,
+                   temp_root: ownership.OwnedPath,
+                   temp_files: list[ownership.OwnedPath]):
+    """The serial loop's P8 branch, shared verbatim with the unit workers."""
+    png_pin = resolve_asset(project, edit["png"], input_pins)
+    png = _copy_edit_input(order, "input", png_pin, temp_root, temp_files)
+    try:
+        if presentation_adapter.is_presentation_asset(edit["asset_id"]):
+            return presentation_adapter.build_unified_presentation_mark_imports(
+                index, str(edit["asset_id"]), png
+            )
+        return p8_texture_adapter.build_unified_p8_texture_imports(
+            index, str(edit["asset_id"]), png
+        )
+    except (p8_texture_adapter.P8TextureWriterError,
+            presentation_adapter.PresentationMarkError) as exc:
+        raise ProjectError(str(exc)) from exc
+
+
+def _unit_compile(kind, order, edit, project, input_pins, report_paths, index, inventory,
+                  temp_root, temp_files):
+    """One independent unit, through exactly the calls the serial loop makes.
+
+    Returns ("ok", built) or ("kept", kept_retail_row); anything else raises.
+    """
+    if kind == "player_portrait":
+        return "ok", build_player_portrait_imports(
+            order, edit, project, input_pins, report_paths[kind], index, temp_root, temp_files)
+    if kind == P8_TEXTURE_KIND:
+        return "ok", _build_p8_unit(order, edit, project, input_pins, index, temp_root, temp_files)
+    try:
+        with _naming_the_failing_edit(edit):
+            return "ok", [build_one_import(order, edit, project, input_pins, report_paths,
+                                           index, inventory, temp_root, temp_files, -1, None)]
+    except ProjectError as exc:
+        if kind == "live_number_nameplate" and isinstance(exc.__cause__, QualityBudgetError):
+            kept = kept_retail_record(edit, exc, resolve_asset(project, edit["png"], input_pins),
+                                      report_paths[kind])
+            if kept is not None:
+                return "kept", kept
+        raise
+
+
+_UNIT_MODULE_FILES: dict[str, str | None] = {}
+
+
+def _loaded_code_files() -> tuple[str, ...]:
+    """Repository source files loaded in this process, relative to ROOT.
+
+    A compile can only have executed code from modules that are loaded, so
+    these files (plus the native helpers) are the compiler's code version.
+    """
+    files = set()
+    for module in list(sys.modules.values()):
+        path = getattr(module, "__file__", None)
+        if not isinstance(path, str):
+            continue
+        relative = _UNIT_MODULE_FILES.get(path, "")
+        if relative == "":
+            try:
+                relative = Path(path).resolve().relative_to(ROOT).as_posix()
+            except (OSError, ValueError):
+                relative = None
+            _UNIT_MODULE_FILES[path] = relative
+        if relative is not None:
+            files.add(relative)
+    return tuple(sorted(files))
+
+
+def _unit_worker(task):
+    """Worker entry point: top-level and picklable for the spawn start method.
+
+    Returns ("ok"|"kept", value, code_files, console) or ("error", text, ()).  Errors
+    come back as text: the serial loop recompiles that edit itself, so the
+    user sees the exact message, kept-retail row and label the serial path
+    gives, with no exception pickling involved.
+    """
+    kind, order, edit, project, pins, report_paths, index, inventory, scratch = task
+    import io
+    console = io.StringIO()
+    try:
+        # An importer's notes (NAMEPLATE_MIP_FALLBACK ...) are handed back and
+        # printed by the loop in project order, never interleaved with the
+        # NFL2K5_* lines the build service parses.
+        with contextlib.redirect_stdout(console), contextlib.redirect_stderr(console), \
+                tempfile.TemporaryDirectory(prefix=".unit-compile-", dir=scratch) as folder:
+            root = ownership.track_existing(Path(folder), True)
+            files: list[ownership.OwnedPath] = []
+            try:
+                outcome, value = _unit_compile(kind, order, edit, project, pins, report_paths,
+                                               index, inventory, root, files)
+            finally:
+                ownership.cleanup_owned(files, [])
+    except Exception as exc:  # noqa: BLE001 - reported by the serial recompile
+        return "error", f"{type(exc).__name__}: {exc}", ()
+    return outcome, value, _loaded_code_files(), console.getvalue()
+
+
+def _unit_toolchain() -> dict[str, Any]:
+    import platform
+    toolchain: dict[str, Any] = {
+        "python": sys.version, "implementation": sys.implementation.name,
+        "platform": sys.platform, "machine": platform.machine(),
+        "byteorder": sys.byteorder,
+        "environment": {name: value for name, value in sorted(os.environ.items())
+                        if name.startswith("NFL2K5_") and name not in _UNIT_ENV_NOT_IN_KEY},
+    }
+    for name in ("PIL", "numpy"):
+        try:
+            module = __import__(name)
+            toolchain[name] = getattr(module, "__version__", "unknown")
+        except ImportError:
+            toolchain[name] = None
+    return toolchain
+
+
+def _unit_walk_strings(value, change):
+    if isinstance(value, str):
+        return change(value)
+    if isinstance(value, list):
+        return [_unit_walk_strings(item, change) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_unit_walk_strings(item, change) for item in value)
+    if isinstance(value, dict):
+        return {(_unit_walk_strings(key, change) if isinstance(key, str) else key):
+                _unit_walk_strings(item, change) for key, item in value.items()}
+    return value
+
+
+def unit_assign_order(value, order: int | None, edit: dict[str, Any], kind: str):
+    """Give a unit result its real span order, or None to compile serially.
+
+    Only whole names the importers derive from the order (``<order>_name``)
+    change.  The receipt the loop will write (the normalized import report),
+    the preview names, selector and target must then mention neither the
+    placeholder nor the worker's private folder; anything else means this
+    result is not known to be identical to a serial compile.
+    """
+    if order is not None:
+        actual = f"{order:05d}_"
+
+        def change(text):
+            if text.startswith(_UNIT_PLACEHOLDER_PREFIX):
+                return actual + text[len(_UNIT_PLACEHOLDER_PREFIX):]
+            return text
+        value = _unit_walk_strings(value, change)
+    leftovers = []
+
+    def check(text):
+        if (order is not None and _UNIT_PLACEHOLDER_TEXT in text) or ".unit-compile-" in text:
+            leftovers.append(text)
+        return text
+    for _, previews, report, selector, target in value:
+        _unit_walk_strings([normalized_import_report(report, edit, kind),
+                            [name for name, _ in previews], selector, target], check)
+    return None if leftovers else value
+
+
+class IndependentUnits:
+    """Compile independent units ahead of the serial loop, in bounded order.
+
+    ``take(index, span_order)`` returns ("ok", built) or ("kept", row) for the
+    next submitted index, or None when the serial loop must compile the edit
+    itself (a worker error, a lost worker, or a result that is not provably
+    order-independent).  Cache hits are verified before they are returned.
+    """
+
+    def __init__(self, project: ProjectFile, input_pins: dict[Path, InputPin],
+                 report_paths: dict[str, Path], report_pins: dict[str, InputPin],
+                 index_pin, inventory_pin, scratch: Path, workers: int,
+                 cache: CompileCache, indices: list[int],
+                 edit_order_kinds: Iterable[str] = _UNIT_EDIT_ORDER_KINDS):
+        self.project = project
+        self.input_pins = input_pins
+        self.report_paths = dict(report_paths)
+        self.index = index_pin.path
+        self.inventory = inventory_pin.path
+        self.scratch = scratch
+        self.workers = max(1, workers)
+        self.cache = cache
+        self.edit_order_kinds = frozenset(edit_order_kinds) & _UNIT_EDIT_ORDER_KINDS
+        self.hits = self.misses = self.fallbacks = 0
+        self._indices = list(indices)
+        self._handled = set(self._indices)
+        self._next = 0
+        self._pending = __import__("collections").deque()
+        self._window = self.workers * 4
+        self._pool = None
+        self._broken = False
+        self._code_sha: dict[str, str | None] = {}
+        self._code_valid: dict[str, bool] = {}
+        self._context = {
+            "unit_cache": _UNIT_CACHE_VERSION,
+            "index": index_pin.sha256, "inventory": inventory_pin.sha256,
+            "reports": {kind: pin.sha256 for kind, pin in sorted(report_pins.items())},
+            "toolchain": _unit_toolchain(),
+        }
+        # Spawning costs a second or two per worker; a handful of units (and
+        # the bounded regression projects) compile in this process instead.
+        if self.workers > 1 and len(self._indices) >= _UNIT_POOL_MINIMUM:
+            from concurrent.futures import ProcessPoolExecutor
+            import multiprocessing
+            self._pool = ProcessPoolExecutor(
+                max_workers=min(self.workers, len(self._indices)),
+                mp_context=multiprocessing.get_context("spawn"))
+
+    def handles(self, index: int) -> bool:
+        return index in self._handled
+
+    # -- keys and code identity ------------------------------------------
+    @staticmethod
+    def input_fields(kind: str) -> tuple[str, ...]:
+        return ("clean_png", "mud_png") if kind in {"torso", "sleeve", "pants"} else ("png",)
+
+    def _edit_pins(self, edit: dict[str, Any]) -> dict[Path, InputPin]:
+        pins = {}
+        for field_name in self.input_fields(edit["kind"]):
+            if edit.get(field_name) is not None:
+                pin = resolve_asset(self.project, edit[field_name], self.input_pins)
+                pins[pin.path] = pin
+        return pins
+
+    def key(self, index: int) -> str:
+        edit = self.project.value["edits"][index]
+        inputs = {field_name: (None if edit.get(field_name) is None else
+                               resolve_asset(self.project, edit[field_name], self.input_pins).sha256)
+                  for field_name in self.input_fields(edit["kind"])}
+        order = index if edit["kind"] in self.edit_order_kinds else None
+        return digest(canonical_json({**self._context, "kind": edit["kind"], "edit": edit,
+                                      "order": order, "inputs": inputs}))
+
+    def _current_sha(self, relative: str) -> str | None:
+        if relative not in self._code_sha:
+            try:
+                self._code_sha[relative] = digest((ROOT / relative).read_bytes())
+            except OSError:
+                self._code_sha[relative] = None
+        return self._code_sha[relative]
+
+    def code_manifest(self, files: Iterable[str]) -> dict[str, str | None]:
+        names = set(files) | {name for name in _UNIT_NATIVE_HELPERS if (ROOT / name).exists()}
+        return {name: self._current_sha(name) for name in sorted(names)}
+
+    def _code_matches(self, manifest: Any) -> bool:
+        if not isinstance(manifest, dict) or not manifest:
+            return False
+        stamp = digest(canonical_json(manifest))
+        if stamp not in self._code_valid:
+            self._code_valid[stamp] = all(
+                isinstance(name, str) and isinstance(sha, str) and self._current_sha(name) == sha
+                for name, sha in manifest.items()) and all(
+                name in manifest for name in _UNIT_NATIVE_HELPERS if (ROOT / name).exists())
+        return self._code_valid[stamp]
+
+    # -- the cache record ------------------------------------------------
+    @staticmethod
+    def _digests(outcome, value):
+        if outcome != "ok":
+            return [], []
+        return ([digest(item[0]) for item in value],
+                [[digest(payload) for _, payload in item[1]] for item in value])
+
+    def _remember(self, key, outcome, value, code_files):
+        if self.cache.root is None or key is None:
+            return
+        from mod_editor.core.nfl2k5_compile_cache import _decode, _encode
+        spans, previews = self._digests(outcome, value)
+        record = {"version": _UNIT_CACHE_VERSION, "outcome": outcome, "value": value,
+                  "code": self.code_manifest(code_files), "spans": spans, "previews": previews}
+        if any(sha is None for sha in record["code"].values()):
+            return
+        # Insertion order is kept (no sort) and the round trip must be exact:
+        # a value JSON cannot represent (an int dict key, say) is not cached.
+        text = json.dumps(_encode(record), separators=(",", ":"), ensure_ascii=True)
+        if _decode(json.loads(text)) != record:
+            return
+        import zlib
+        self.cache.put(key, {"unit_zlib": zlib.compress(text.encode("ascii"), 6)})
+
+    def _recall(self, key):
+        if self.cache.root is None:
+            return None
+        stored = self.cache.get(key)
+        if stored is None:
+            return None
+        from mod_editor.core.nfl2k5_compile_cache import MAX_ENTRY_BYTES, _decode
+        import zlib
+        try:
+            inflater = zlib.decompressobj()
+            text = inflater.decompress(stored["unit_zlib"], 4 * MAX_ENTRY_BYTES)
+            if inflater.unconsumed_tail or not inflater.eof:
+                raise ValueError("unit cache record is truncated or oversized")
+            record = _decode(json.loads(text))
+            outcome, value = record["outcome"], record["value"]
+            valid = (record["version"] == _UNIT_CACHE_VERSION and outcome in {"ok", "kept"}
+                     and self._code_matches(record["code"])
+                     and (record["spans"], record["previews"]) == self._digests(outcome, value))
+        except (KeyError, TypeError, ValueError, IndexError, RecursionError, zlib.error):
+            valid = False
+        if not valid:
+            # Counted as a miss: the entry is stale or damaged and is replaced.
+            self.cache.hits -= 1
+            self.cache.misses += 1
+            return None
+        return outcome, value
+
+    # -- scheduling ------------------------------------------------------
+    def _task(self, index: int):
+        edit = self.project.value["edits"][index]
+        kind = edit["kind"]
+        order = index if kind in self.edit_order_kinds else _UNIT_PLACEHOLDER_ORDER
+        project = replace(self.project, payload=b"", value={
+            "schema": self.project.value["schema"], "purpose": self.project.value["purpose"],
+            "edits": [edit]}, equipment_compile_cache=None)
+        return (kind, order, edit, project, self._edit_pins(edit), self.report_paths,
+                self.index, self.inventory, self.scratch)
+
+    def _launch(self):
+        index = self._indices[self._next]
+        self._next += 1
+        key = self.key(index) if self.cache.root is not None else None
+        recalled = self._recall(key) if key is not None else None
+        if recalled is not None:
+            self.hits += 1
+            self._pending.append((index, key, None, recalled))
+            return
+        if key is not None:
+            self.misses += 1
+        future = None
+        if self._pool is not None and not self._broken:
+            try:
+                future = self._pool.submit(_unit_worker, self._task(index))
+            except Exception:  # noqa: BLE001 - a broken pool falls back to serial
+                self._broken = True
+        self._pending.append((index, key, future, None))
+
+    def _fill(self):
+        while self._next < len(self._indices) and len(self._pending) < self._window:
+            self._launch()
+
+    def take(self, index: int, span_order: int):
+        if not self._pending:
+            self._fill()
+        require(self._pending and self._pending[0][0] == index,
+                f"independent unit consumed out of order at edit {index}")
+        _, key, future, recalled = self._pending.popleft()
+        self._fill()
+        edit = self.project.value["edits"][index]
+        if recalled is not None:
+            outcome, value = recalled
+        else:
+            if future is not None:
+                try:
+                    answer = future.result()
+                except Exception:  # noqa: BLE001 - lost worker; compile serially
+                    self._broken = True
+                    answer = ("error", "", ())
+            elif self._pool is None:
+                answer = _unit_worker(self._task(index))
+            else:
+                answer = ("error", "", ())
+            if answer[0] == "error":
+                self.fallbacks += 1
+                return None
+            outcome, value, code_files, console = answer
+        result = value
+        if outcome == "ok":
+            result = unit_assign_order(
+                value, None if edit["kind"] in self.edit_order_kinds else span_order,
+                edit, edit["kind"])
+            if result is None:
+                self.fallbacks += 1
+                return None
+        if recalled is None:
+            if console:
+                sys.stdout.write(console)
+                sys.stdout.flush()
+            # Only a result the loop can use is remembered, before the span
+            # order is applied (a hit gets its own order every time).
+            self._remember(key, outcome, value, code_files)
+        return outcome, result
+
+    def close(self):
+        if self._pool is not None:
+            self._pool.shutdown(wait=True, cancel_futures=True)
+            self._pool = None
+        self._pending.clear()
+
+
 _EQUIPMENT_WORKER_CACHE = None
 
 
@@ -3746,7 +4226,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
     temp_root = ownership.track_existing(temporary, True)
     temp_files: list[ownership.OwnedPath] = []
     report_paths: dict[str, Path] = {}
-    parallel_imports = None
+    units = None
     try:
         for number, (kind, pin) in enumerate(sorted(report_pins.items())):
             path = temporary / f"report_{number:02d}_{kind}.json"
@@ -3896,9 +4376,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             project_items=sum(len(rows) for rows in equipment_groups.values()))
         ausb_pack_hashes: dict[str, str] = {}
         unif_color_pack_hashes: dict[str, str] = {}
-        independent_kinds = {"torso", "sleeve", "pants", "live_helmet", "team_select"}
         workers = _encode_worker_count() if parallelism is None else max(1, parallelism)
-        uniform_orders = [n for n, row in enumerate(project.value['edits']) if row['kind'] in independent_kinds]
+        unit_workers = unit_worker_count() if parallelism is None else max(1, parallelism)
         # Build refits (exactly what Refit equipment would stage) replace only
         # the compiled input; project art and its pins are never changed.
         equipment_substitutes: dict[str, bytes] = {}
@@ -3907,10 +4386,19 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             equipment_substitutes, equipment_refits = _parallel_equipment_fits(
                 equipment_groups, project, input_pins, index_pin.path,
                 equipment_compile_cache, workers, output_parent)
-        if workers > 1 and len(uniform_orders) >= 4 and historical_import_reports is None:
-            parallel_imports = _parallel_uniform_imports([project.value['edits'][n] for n in uniform_orders], project,
-                input_pins, report_paths, index_pin.path, inventory_pin.path, output_parent, workers, cache, key_for,
-                orders=uniform_orders)
+        if historical_import_reports is None:
+            # A historical (verify) reconstruction keeps the serial loop.
+            # Kit layers and team cards keep the receipt order they always
+            # had: their project edit index where the previous parallel path
+            # ran (several encode workers, four or more such edits), else the
+            # span order like every other unit.
+            legacy = [n for n, row in enumerate(project.value["edits"])
+                      if row["kind"] in _UNIT_EDIT_ORDER_KINDS]
+            units = IndependentUnits(
+                project, input_pins, report_paths, report_pins, index_pin, inventory_pin,
+                output_parent, unit_workers, cache,
+                [n for n, row in enumerate(project.value["edits"]) if row["kind"] in UNIT_KINDS],
+                _UNIT_EDIT_ORDER_KINDS if workers > 1 and len(legacy) >= 4 else ())
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         for edit_index, edit in enumerate(project.value["edits"]):
             _item_progress('Preparing ' + project_edit_label(edit, edit_index), edit_index, len(project.value['edits']))
@@ -3931,7 +4419,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 dependencies = compile_dependencies(edit_index, project.value["edits"], dependency_groups)
                 cache_key = None
                 cached = None
-                if dependencies and cache.root is not None and not (parallel_imports is not None and kind in independent_kinds):
+                if dependencies and cache.root is not None and not (units is not None and units.handles(edit_index)):
                     cache_key = key_for(edit_index, dependencies)
                     cached = cache.get(cache_key)
                 if isinstance(cached, dict) and set(cached) == {"kept_retail"}:
@@ -3941,7 +4429,16 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 if cached is not None:
                     built, effective_edit, effective_input_hashes, kind = cached
                 else:
-                    if kind == CRIB_SCENE_TEXTURE_KIND:
+                    # An independent unit compiled ahead by a worker (or from
+                    # the verified cache); None compiles it right here instead.
+                    unit = (units.take(edit_index, len(prepared))
+                            if units is not None and units.handles(edit_index) else None)
+                    if unit is not None and unit[0] == "kept":
+                        kept_retail.append(unit[1])
+                        continue
+                    if unit is not None:
+                        built = unit[1]
+                    elif kind == CRIB_SCENE_TEXTURE_KIND:
                         selector_text = str(edit["selector"])
                         edit_chunk = crib_scene_adapter.TARGETS[selector_text][1]
                         if edit_chunk in geometry_scene_by_chunk:
@@ -4246,22 +4743,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                             },
                         }
                     elif kind == P8_TEXTURE_KIND:
-                        png_pin = resolve_asset(project, edit["png"], input_pins)
-                        png = _copy_edit_input(
-                            len(prepared), "input", png_pin, temp_root, temp_files
-                        )
-                        try:
-                            if presentation_adapter.is_presentation_asset(edit["asset_id"]):
-                                built = presentation_adapter.build_unified_presentation_mark_imports(
-                                    index_pin.path, str(edit["asset_id"]), png
-                                )
-                            else:
-                                built = p8_texture_adapter.build_unified_p8_texture_imports(
-                                    index_pin.path, str(edit["asset_id"]), png
-                                )
-                        except (p8_texture_adapter.P8TextureWriterError,
-                                presentation_adapter.PresentationMarkError) as exc:
-                            raise ProjectError(str(exc)) from exc
+                        built = _build_p8_unit(len(prepared), edit, project, input_pins,
+                                               index_pin.path, temp_root, temp_files)
                     elif kind == CRIB_STANDALONE_TEXTURE_KIND:
                         built = build_crib_standalone_texture_imports(
                             len(prepared), edit, project, input_pins,
@@ -4375,9 +4858,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         # bound", which names no team, no slot, and no image.
                         staged_before = len(temp_files)
                         try:
+                            # A unit kind keeps its unit order when it falls
+                            # back here, so its receipt names cannot change.
+                            order_number = (edit_index if units is not None
+                                            and kind in units.edit_order_kinds else len(prepared))
                             with _naming_the_failing_edit(edit):
-                                built = [next(parallel_imports) if parallel_imports is not None and kind in independent_kinds else build_one_import(
-                                    len(prepared), edit, project, input_pins, report_paths,
+                                built = [build_one_import(
+                                    order_number, edit, project, input_pins, report_paths,
                                     index_pin.path, inventory_pin.path, temp_root, temp_files,
                                     source_fd, historical_import)]
                         except ProjectError as exc:
@@ -4491,14 +4978,16 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         if historical_import_reports is not None:
             require(set(historical_import_reports) == set(range(len(prepared))),
                     "historical import receipt orders differ from reconstructed spans")
-        if parallel_imports is not None:
-            parallel_imports.close()
+        if units is not None:
+            units.close()
+            print(f"NFL2K5_UNIT_COMPILE workers={units.workers} hits={units.hits} "
+                  f"misses={units.misses} serial_fallbacks={units.fallbacks}", flush=True)
         print(f"NFL2K5_COMPILE_CACHE hits={cache.hits} misses={cache.misses}", flush=True)
         return PreparedProject(prepared, temp_root, temp_files, input_pins,
                                report_pins, kept_retail)
     except BaseException:
-        if parallel_imports is not None:
-            parallel_imports.close()
+        if units is not None:
+            units.close()
         ownership.cleanup_owned(temp_files, [temp_root])
         raise
 
@@ -6782,4 +7271,9 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Independent units compile in spawned workers. A frozen Windows
+    # executable must hand its re-launched children to multiprocessing here,
+    # before any argument parsing; everywhere else this is a no-op.
+    import multiprocessing
+    multiprocessing.freeze_support()
     raise SystemExit(main())
