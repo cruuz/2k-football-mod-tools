@@ -449,7 +449,7 @@ def build(name, S, lod):
         curtain(m, S, az, 15.0, 3 if hi else 2, crown=[50.0, 45.0] if hi else [46.0], lean=0.06,
                 joints=(['head'] * 4 + ['neck', 'thorax', 'thorax']) if hi else (['head'] * 3 + ['neck', 'thorax']))
     elif name == 'afro_puff':
-        az = np.linspace(-125, 125, 11 if hi else 7)
+        az = np.linspace(-108, 108, 11 if hi else 7)
         curtain(m, S, az, 6.0, 2 if hi else 1, crown=[51.0, 46.0] if hi else [47.0], lean=0.75, bulge=2.4,
                 joints=['head'] * 8)
     elif name == 'braids':
@@ -471,8 +471,8 @@ def bun_mesh(m, S, hi):
     curtain(m, S, np.linspace(-40, 40, 5 if hi else 3), 2.0, 1, crown=[48.0] if hi else None, lean=0.6,
             joints=['head'] * 6)
     rim = S.rim(0); rr = S.rim_radius(0)
-    c = np.array([0.0, rim - 2.6, 9.0 - (rr + 0.4)])
-    rx, ry, rz = 3.2, 2.5, 2.0
+    c = np.array([0.0, rim - 2.9, 9.0 - (rr + 0.1)])
+    rx, ry, rz = 3.0, 2.4, 1.8
     nl, nv = (8, 5) if hi else (5, 3)
     ids = []
     for i in range(nv + 1):
