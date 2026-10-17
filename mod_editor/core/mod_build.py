@@ -2238,8 +2238,12 @@ def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
                "team_logo_swap", "period_goalposts"}
-    return {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
-            for key in tt.R62_RUNTIME_KEYS}
+    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+               for key in tt.R62_RUNTIME_KEYS}
+    # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
+    # the music library wins and MyCareer keeps its Classic Apartment.
+    options["my_career_home"] = bool(plan.my_career_home and not plan.music_library)
+    return options
 
 
 def _commentary_final_wanted(plan, loaded_espn25_plan):

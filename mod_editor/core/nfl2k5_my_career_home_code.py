@@ -179,6 +179,7 @@ LABELS = {
     'home_handler': 0,
     'home_options_open': 2173,
     'home_panel': 2241,
+    'home_rodata': 3603,
     'hub': 1695,
     'number': 274,
     'put': 205,

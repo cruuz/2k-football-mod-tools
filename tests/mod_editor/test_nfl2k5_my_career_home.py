@@ -111,6 +111,28 @@ class CareerHomeStaticTests(unittest.TestCase):
         self.assertEqual(home.status(bytes(mixed)), 'foreign')
         self.assertEqual(mode.status(bytes(mixed)), 'foreign')
 
+    def test_code_writes_only_stack_buffers_and_the_descriptor_handler_word(self):
+        """The memory-writes gate for this section: no absolute store anywhere in the machine code (it keeps all state
+        on the stack); register-relative stores are the string builders' caller buffers and the two handler-word
+        stores in home_handler (its own RWX descriptors and MyCareer's RW Apartment descriptor)."""
+        from mod_editor.core import nfl2k5_my_career_home_code as assembly
+        from mod_editor.core.nfl2k5_cave_oracle import absolute_writes
+        end = assembly.LABELS['home_rodata']
+        findings = absolute_writes(self.payload, [(home.CONTENT_VA, home.CONTENT_VA + end)])
+        self.assertFalse([f for f in findings if f['detail'] == 'undecoded trailing bytes'])
+        self.assertEqual([f for f in findings if f['target'] is not None], [])
+        starts = sorted((v, k) for k, v in assembly.LABELS.items() if v < end)
+        def owner(va):
+            offset = va - home.CONTENT_VA
+            return [k for v, k in starts if v <= offset][-1]
+        other = {owner(int(f['instruction'], 16)) for f in findings
+                 if 'esp' not in f['detail'] and 'ebp' not in f['detail']}
+        self.assertLessEqual(other, {'home_handler', 'put', 'ascii', 'number', 'stat_line', 'home_panel'})
+        handler = [f['detail'] for f in findings if owner(int(f['instruction'], 16)) == 'home_handler']
+        labels = home.code_for(home.career_labels(self.payload))[1]
+        self.assertEqual(handler, [f'mov dword ptr [eax + 8], {home.career_labels(self.payload)["mode_handler"]:#x}',
+                                   f'mov dword ptr [eax + 8], {labels["home_handler"]:#x}'])
+
     def test_music_section_and_career_home_are_exclusive(self):
         from mod_editor.core import nfl2k5_music_storage as music
         with_music, _ = music.install(self.career, b'synthetic music records')

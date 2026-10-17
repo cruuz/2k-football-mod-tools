@@ -26,7 +26,7 @@ def generate(source=SOURCE):
                         "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror",
                         "-c", str(source / "home.c"), "-o", str(d / "c.o")], check=True)
         subprocess.run(["as", "--32", str(source / "home.S"), "-o", str(d / "s.o")], check=True)
-        (d / "link.ld").write_text("SECTIONS { .text 0 : { *(.text*) *(.rodata*) } "
+        (d / "link.ld").write_text("SECTIONS { .text 0 : { *(.text*) home_rodata = .; *(.rodata*) } "
                                   "/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }")
         subprocess.run(["ld", "-r", "-m", "elf_i386", "-T", str(d / "link.ld"),
                         "-o", str(d / "home.o"), str(d / "s.o"), str(d / "c.o")], check=True)
