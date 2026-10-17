@@ -61,7 +61,23 @@ class ThrowTuningPanelTests(unittest.TestCase):
         table = self.panel.distance_preview
         self.assertEqual(table.rowCount(), 16)
         self.assertEqual([table.item(11, c).text() for c in range(7)],
-                         ["60", "12.00", "5.00", "33.51", "18.75", "3.20", "13.73"])
+                         ["60", "12.00", "5.00", "33.51", "20.50", "2.93", "11.48"])
+
+    def test_touch_band_source_previews_the_db1_upgrade(self):
+        # Beta 76.2 .. v0.6.1 discs: the 45..60 yd band flew slower than retail (b77 db1).
+        payload, _ = tt.apply_arc_table(self.source.read_bytes())
+        buf = bytearray(payload)
+        off = tt.ARC_TABLE_VA - tt.IMAGE_BASE
+        buf[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.TOUCH_BAND_20261002_LOBSPEED)
+        self.source.write_bytes(buf)
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.panel.target_field.setText(str(self.work / "upgrade.xbe"))
+        self.panel._refresh_controls()
+        self.assertIn("2026-10-02 touch band", self.panel.source_status.text())
+        self.assertTrue(self.panel.has_changes())
+        self.assertTrue(self.panel.write_button.isEnabled())
+        self.assertEqual([self.panel.distance_preview.item(11, c).text() for c in range(7)],
+                         ["60", "18.75", "3.20", "13.73", "20.50", "2.93", "11.48"])
 
     def test_new_arc_source_is_not_an_upgrade(self):
         payload, _ = tt.apply_arc_table(self.source.read_bytes())
