@@ -94,6 +94,8 @@ REQUESTS += coach_ai.REQUESTS  # vp2: installed after VIP-aware Modern 2 in its 
 from mod_editor.core import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
 from mod_editor.core import nfl2k5_team_ratings as team_ratings
 REQUESTS += moment_coaches.REQUESTS + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS
+from mod_editor.core import nfl2k5_classic_teams as classic_teams  # b775-ct1
+REQUESTS += classic_teams.REQUESTS
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 

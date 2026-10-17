@@ -661,7 +661,8 @@ LATE_OWNER = "nfl2k5_k128"
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
                "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
-               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display")
+               "nfl2k5_moment_coaches", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display",
+               "nfl2k5_classic_teams")  # b775-ct1: the classic teams' helpers, the last read-only bytes
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -718,6 +719,7 @@ def dormant_union():
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
+    from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -737,7 +739,7 @@ def dormant_union():
             # Historical coaches remain last so installed owners retain their addresses.
             # Fixed directory slots do not move any earlier owner.
             + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
-            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS)
+            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + classic_teams.REQUESTS)
 
 
 def is_scaleout(payload):

@@ -226,6 +226,7 @@ class BuildPlan:
     decided_clock_seconds: int = 60
     cpu_scrambles: str = "retail"
     historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
+    classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 24 classic teams; experimental
     kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
@@ -633,6 +634,13 @@ for _preset in PRESETS.values():
     _preset["historic_teams_quick_game"] = False
     _preset["historic_rosters_2026"] = False
 del _preset
+# b775-ct1: classic teams (Noah 10/17: "add a few more classic teams ... with their proper stadium, uniforms, rosters,
+# depth charts", for his next test disc): on in the experimental preset, the one the SOFTDRINK 2K28 recipe builds from.
+# They only act where historic teams in Quick Game is on (the recipe turns that on).
+for _preset in PRESETS.values():
+    _preset["classic_teams"] = False
+PRESETS["softdrink_experimental"]["classic_teams"] = True
+del _preset
 # b76-vb3 E1: the return blocking rule is Noah's feel test; off in every preset.
 for _preset in PRESETS.values():
     _preset["kickoff_return_blocking"] = False
@@ -922,6 +930,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "espn25_plan": _core_module("nfl2k5_espn25_scenarios") is not None,
         "espn25_rosters": _espn25_rosters_available(),
         "historic_rosters_2026": _core_module("nfl2k5_historic_rosters") is not None,
+        "classic_teams": _core_module("nfl2k5_classic_teams") is not None,  # b775-ct1
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -1192,6 +1201,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         seasons = _core_module("nfl2k5_historic_rosters")
         if seasons is not None:
             out["historic_rosters_2026"] = seasons.image_status(source)
+        classic = _core_module("nfl2k5_classic_teams")  # b775-ct1: the executable half (the files need the retail source)
+        if classic is not None:
+            try:
+                out["classic_teams"] = classic.xbe_status(rosters.read_xbe(source)) if rosters is not None else "foreign"
+            except Exception:  # noqa: BLE001
+                out["classic_teams"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -4084,6 +4099,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_draft_pick_ownership(plan, target, receipt, progress)
     _apply_hback_roles(plan, target, receipt, progress)
     _apply_team_ratings(plan, target, receipt, progress)
+    if plan.classic_teams and plan.historic_teams_quick_game and is_image:
+        # b775-ct1: last of the executable and roster writers: it reads the season route, the historic styles' spares,
+        # the moment table, the final main roster (own faces, colleges) and appends its files after theirs.
+        classic = _core_module("nfl2k5_classic_teams")
+        if classic is None:
+            raise RuntimeError("the classic teams module is not available in this build")
+        progress("Adding the classic teams to Quick Game", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
+        classic_receipt = classic.apply_to_image(target, retail)
+        receipt["steps"].append({"step": "classic_teams", **classic_receipt})
+        receipt["result"]["classic_teams"] = classic.image_status(target, retail)
+        if receipt["result"]["classic_teams"] != "applied":
+            raise ValueError("the classic teams failed their read-back on the copy")
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)

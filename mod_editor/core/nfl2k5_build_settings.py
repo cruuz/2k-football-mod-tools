@@ -62,6 +62,7 @@ FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uni
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off
 FEATURE_KEYS += ("historic_teams_quick_game",)  # b76-h1: historic teams in Quick Game Team Select
 FEATURE_KEYS += ("historic_rosters_2026",)  # ht: held until all source/routing gaps are resolved
+FEATURE_KEYS += ("classic_teams",)  # b775-ct1: Anniversary and classic team-seasons in Quick Game
 FEATURE_KEYS += ("kickoff_return_blocking",)  # b76-vb3 E1: return blockers claim distinct men after the catch (test)
 FEATURE_KEYS += ("espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules")  # b76-m1: 25 more ESPN 25th Anniversary moments
 FEATURE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")  # b76-k1: 128 MB memory (K128), the roster heap, the early form
