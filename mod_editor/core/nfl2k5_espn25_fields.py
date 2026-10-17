@@ -50,6 +50,69 @@ def require(ok,message):
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
 
+# b775-fan2: an alias is a copy of its source venue taken when the fields are
+# compiled. A later change to the venue's crowd (the cr1 proportion repair was
+# applied natively to the 153 sNN bundles only) left the v0.6.1 Oct 13 disc's
+# ten built aliases with the old squashed and stretched fans. The crowd digest
+# lets the compiler, the final build gate and disc audits prove that every
+# alias draws exactly the crowd of the venue it was made from.
+def stadium_crowd_digest(bundle):
+    """sha256 of what draws a venue's stadium crowd.
+
+    Covers every shape with a ``crowd`` submesh (name, UV scale and offset,
+    positions, UV lanes, draw words) and the embedded ``crowd`` atlas (pixels
+    and palette) when the bundle carries one. Baked vertex colours are left
+    out: lighting passes repaint them without changing the fans' shape.
+    """
+    from . import nfl2k5_modern_metlife as mm
+    from . import nfl2k5_scne_builder as sb
+    import numpy as np
+    tx=mm._tools()[0]
+    # The stadium is normally the largest scene: try it first (one decode).
+    chunks=sorted((c for c in tx.parse_chunks(bundle,allow_trailing=True) if c.kind=='SCNE'),
+                  key=lambda c:-c.stored_size)
+    for chunk in chunks:
+        decoded,_=tx.decode_chunk(bundle,chunk)
+        scene=sb.parse(decoded,chunk.system_bytes,secondary=True)
+        if scene.name!='stadium':continue
+        h=hashlib.sha256(b'fan2-stadium-crowd/v1')
+        lanes=np.dtype([('c','u1',4),('uv','<i2',2),('s','<i2')])
+        shapes=0
+        for shape in scene.shapes:
+            subs=[s for s in shape.submeshes if scene.materials[s.material].name=='crowd']
+            if not subs:continue
+            shapes+=1
+            h.update(shape.name.encode()+b'\0');h.update(bytes(shape.record[0x30:0x40]))
+            h.update(shape.streams[0] or b'')
+            if shape.streams[1] and shape.stride(1)==10:
+                h.update(np.frombuffer(shape.streams[1],dtype=lanes)['uv'].tobytes())
+            else:h.update(shape.streams[1] or b'')
+            for sub in subs:h.update(sub.words)
+        require(shapes,'venue stadium scene has no crowd')
+        for index in sorted({m.texture for m in scene.materials if m.name=='crowd' and m.texture is not None}):
+            atlas=scene.textures[index]
+            h.update(b'atlas');h.update(bytes(atlas.record[0x0C:0x10]));h.update(atlas.pixels);h.update(atlas.palette)
+        return h.hexdigest()
+    raise ValueError('venue resource lacks its stadium scene')
+
+
+def crowd_drift(get,assets):
+    """Rows whose alias no longer draws the crowd of its source venue.
+
+    ``get(name)`` reads the image; ``assets`` are compile receipt rows (or any
+    rows with ``row``, ``alias``, ``source`` and ``source_kind``). Only built
+    rows are compared: a retail row's source is the read-only retail venue,
+    which the image's own sNN file no longer equals.
+    """
+    drift=[]
+    for row in assets:
+        if row.get('source_kind')!='built':continue
+        alias,source=stadium_crowd_digest(get(row['alias'])),stadium_crowd_digest(get(row['source']))
+        if alias!=source:drift.append(dict(row=row['row'],alias=row['alias'],source=row['source'],
+                                           alias_crowd=alias,source_crowd=source))
+    return drift
+
+
 def protect_period_field(bundle):
     """Keep embedded period paint through the native team-texture swap.
 
@@ -362,9 +425,12 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
         if walls:
             detail['super_bowl_walls'] = walls
         _field_chunk(after)
+        # fan2: field paint and Super Bowl walls never touch the fans.
+        crowd=stadium_crowd_digest(after)
+        require(crowd==stadium_crowd_digest(source),f'row {row["row"]}: the alias changed its venue crowd')
         alias=f'a{index:02d}{code}.iff';require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
         output[alias]=after;receipts.append(dict(row=row['row'],alias=alias,source=name,
-            source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),
+            source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),crowd_sha256=crowd,
             field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
             outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail))
         if progress:progress(row['row'],51,alias)
