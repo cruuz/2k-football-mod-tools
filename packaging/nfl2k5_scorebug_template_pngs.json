@@ -4562,8 +4562,8 @@
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_facade_glass.png": {
       "height": 64,
-      "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9",
-      "size": 1914,
+      "sha256": "ca9df674eb0f66d02c1706039829a973850d3a91add775a8b198a5d707b03314",
+      "size": 8735,
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glass.png": {
@@ -4573,16 +4573,16 @@
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall.png": {
-      "height": 128,
-      "sha256": "5a624aa0412b9d9df4cda6cf9ae260cb8f4e7c412987866c2442e8a818d7118c",
-      "size": 784,
-      "width": 128
+      "height": 64,
+      "sha256": "641a4aa8601e4c3555d6897a97874ef9e21ee5f8c1baf5ee30eb85062b1a4726",
+      "size": 965,
+      "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall_n.png": {
-      "height": 128,
-      "sha256": "4361f2bece434a8e0d8a572062868e7c12073966ab2eaf2daa929b757ac808d8",
-      "size": 847,
-      "width": 128
+      "height": 64,
+      "sha256": "75bfe37a5a7ea30cebb38bc49f60afee8b4ab09dfbc8e275a4013b0719a296ba",
+      "size": 1133,
+      "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_lights.png": {
       "height": 32,
@@ -4591,9 +4591,9 @@
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_prow_display.png": {
-      "height": 128,
-      "sha256": "1ea9b0366b1324b7f82d7cb9eaef07a01e38100498e6977a2dc11b7e2e05ea31",
-      "size": 11114,
+      "height": 64,
+      "sha256": "48fcd78d9b29575fa2205b3778b78a0d1ab3c0a243bed548adf8db6d2e4c1380",
+      "size": 7719,
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_ribbon.png": {
@@ -4603,9 +4603,27 @@
       "width": 256
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_signs.png": {
+      "height": 64,
+      "sha256": "4cb325c7e9340e9fd6a3fad62006d9938183c9a05d7fe5a90d97605409363df3",
+      "size": 14284,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_a.png": {
       "height": 128,
-      "sha256": "96199464ecb41c51eacc9e2dc5a34865570cb65551348ee9d148726536c43d40",
-      "size": 29422,
+      "sha256": "59995e5b3b983503f2f4aefecb23b51709ef14c8c0c4510b86bdb5212ec85901",
+      "size": 22191,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_d.png": {
+      "height": 128,
+      "sha256": "6c3246b87a0a13e88d52947baba2dec470ea56d37e19b8af28a4e31e1b44578e",
+      "size": 22907,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_n.png": {
+      "height": 128,
+      "sha256": "b379a8c098b9ac743274abe8ed8bcc75eb896fbeef8e20b09e93a6e986b067fc",
+      "size": 34427,
       "width": 256
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_towers.png": {
@@ -4664,8 +4682,8 @@
     },
     "data/nfl2k5_usbank_model/art/usb_etfe_top.png": {
       "height": 64,
-      "sha256": "6946d882cdba2a9201d714ad289238403fbb8adebcfc628027fbd6d893702b8b",
-      "size": 345,
+      "sha256": "b3311d1642202c92ea8a1d730623e8b4192dcc9c1b2a9fcfbbdfb3105315c685",
+      "size": 588,
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/usb_etfe_under.png": {
@@ -4766,14 +4784,14 @@
     },
     "data/nfl2k5_usbank_model/art/usb_zinc.png": {
       "height": 64,
-      "sha256": "3d20ee7d47d1e2a30441f5c3d47e0212e4f91d60f9f76d84be8e17d3e077b858",
-      "size": 637,
+      "sha256": "b46e08ddba342f524324e750ebff8333b4c317040e921411e1b3f81f82758ea8",
+      "size": 1219,
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/usb_zinc_top.png": {
       "height": 64,
-      "sha256": "478f4e5d8c813d04b9e2165ac6bc057682faedfd0254a21607c2b1fb5331a463",
-      "size": 215,
+      "sha256": "9e1e1bf31c6fd7cfff468d38c1938d54bba862c0b52bb65e5b3649f75ec16af9",
+      "size": 464,
       "width": 64
     },
     "docs/mod_editor/scorebug_studio/page_fable_down.png": {

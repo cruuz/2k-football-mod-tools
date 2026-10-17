@@ -14030,7 +14030,7 @@
         "Nine pinned stretches (s15 Vikings, day/afternoon/night x dry/rain/snow): the stadium SCNE written from scratch by nfl2k5_scne_builder (U.S. Bank Stadium: the purple bowl in four stacks with the club and suite levels, the fixed roof on its ridge truss north of the axis with the pale ETFE to the south and the dark opaque half to the north, the open queen's post trusses, the clerestory windows, the Legacy Gate glass wall and the prow's blade with its wordmark and display, the west and east end-zone boards on the live feed, the east end's banner, flag and partner panels, the plaza, roads, blocks and downtown's towers on the OpenStreetMap outline) and the intro_cameras SCNE (five new flyover shots on s15's own channels, two of them outside; camera 1's animated field of view held); each fitted in the retail stored span; every bundle and archive entry keeps its size; the decoded scenes stay under retail. s15 carries no cityscape.",
         "The field scene of each bundle: the 2026 venue art folder's Vikings end zones (both ends share the retail textures) over clean turf when that folder is given, then the turf and the apron on the Modern playing surfaces palette for s15 (that option's own painter and fit: the synthetic look, the 2026 broadcast measured at U.S. Bank Stadium, the dome light) and a new midfield quad in the field scene carrying the folder's Vikings head; composed before the Modern colour grade when that option is on. The field keeps the retail scratch word; the surface word stays turf.",
         "The s15 row in the main ROST: U.S. Bank Stadium, Minneapolis, MN, capacity 66,202; the indoor word stays 1 (the fixed roof: no rain or snow), the turf word and the flat climate as retail.",
-        "45 authored PNGs in data/nfl2k5_usbank_model/art (the reviewed PNG catalog; plain type, the U.S. Bank Stadium wordmark and the 3M and Land O'Lakes marks cut from their Wikimedia Commons public-domain files, never redrawn; no players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_usbank_model/footprint.json; no retail bytes are shipped.",
+        "48 authored PNGs in data/nfl2k5_usbank_model/art (the reviewed PNG catalog; plain type, the U.S. Bank Stadium wordmark and the 3M and Land O'Lakes marks cut from their Wikimedia Commons public-domain files, never redrawn; no players) and the OpenStreetMap footprint (ODbL 1.0) in data/nfl2k5_usbank_model/footprint.json; no retail bytes are shipped.",
         "Appearance in game is unwitnessed by the owner.",
         "When a 2026 venue-art folder is selected, its existing fan banner items are composed onto retained model materials by the shared fan helper. Only those P8 allocations change. Original base-model pins stay valid; composed stretches carry receipt pins checked against their pinned parent."
       ],
@@ -14065,9 +14065,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s15 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s15 row of the main ROST",
         "hash_pins": [
           "e0e6744e35f064142a90a493fe306f511c1ee7855e55752076ad8caeef699376",
-          "2ad40a9f8dc13aad92c949da24942cf342897268933540457716269f8246b4ff",
+          "be501d21a08b3d9630dc9af206df89f333826f5922d2bc64528a4ee75aea49cf",
           "81f415d012a8294c5aa9ee1e1705fca97bdfbed943c7ac0cadfc64f942be75ec",
-          "f0f92d9397c5027d3b0901522db94f02ed90806e8ecab543ae8b3a4c6cad4f4e"
+          "04b89b3f00d2915d68676fe4a4fb0c3a936e3cbb7a318574391da8cb35c2bcca"
         ],
         "resource": "archive entries s15{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s15",
         "retail_file": "the vc_53450030 archive packs holding the Vikings stadium bundles, and the main roster"
