@@ -173285,7 +173285,7 @@
    "offset": 158320,
    "length": 11360,
    "before_sha256": "35a7685ff4e08c1cd3675e695cf31e28c5fa3f8b86ab3c913ba309ca129a772e",
-   "after_sha256": "3f6132a8a52e555032e8ed0dacf8a8edfae38810361d9d28b29e4b8e376ad112",
+   "after_sha256": "7b66145e4acee241367ef3955f7983f01eda21fda23e0e07c023bfc4489c8bd8",
    "defects": [
     "uw2-SF-away-7-sleeve-band-width"
    ],
@@ -173467,7 +173467,11 @@
       ]
      ]
     }
-   ]
+   ],
+   "after_equivalent_sha256": [
+    "3f6132a8a52e555032e8ed0dacf8a8edfae38810361d9d28b29e4b8e376ad112"
+   ],
+   "equivalent_note": "i4: the same decoded texture as compiled by the pre-fn1 codec (the v0.6.1 played disc); the current codec's native-decoder fit guard stores it differently"
   },
   {
    "selector": "25H7",
@@ -173637,7 +173641,7 @@
    "offset": 158320,
    "length": 11360,
    "before_sha256": "35a7685ff4e08c1cd3675e695cf31e28c5fa3f8b86ab3c913ba309ca129a772e",
-   "after_sha256": "3f6132a8a52e555032e8ed0dacf8a8edfae38810361d9d28b29e4b8e376ad112",
+   "after_sha256": "7b66145e4acee241367ef3955f7983f01eda21fda23e0e07c023bfc4489c8bd8",
    "defects": [
     "uw2-SF-home-7-sleeve-band-width"
    ],
@@ -173819,7 +173823,11 @@
       ]
      ]
     }
-   ]
+   ],
+   "after_equivalent_sha256": [
+    "3f6132a8a52e555032e8ed0dacf8a8edfae38810361d9d28b29e4b8e376ad112"
+   ],
+   "equivalent_note": "i4: the same decoded texture as compiled by the pre-fn1 codec (the v0.6.1 played disc); the current codec's native-decoder fit guard stores it differently"
   },
   {
    "selector": "26A0",
@@ -180017,7 +180025,7 @@
    "offset": 79600,
    "length": 87920,
    "before_sha256": "19d81ab9c92b7301ccb3964f3d18afd2f690f824504fd082b004d2382376408c",
-   "after_sha256": "ecb3f5f268a548ced94838d1299ed39c227d2f74a62a26399740bece437b5d96",
+   "after_sha256": "05543c4ce4720cba21d3aaaf838118bb4c6009e8d1e54e36cd9904bc05b30cec",
    "defects": [
     "uw2-SEA-away-4-pants-feather-panel"
    ],
@@ -181491,7 +181499,11 @@
       ]
      ]
     }
-   ]
+   ],
+   "after_equivalent_sha256": [
+    "ecb3f5f268a548ced94838d1299ed39c227d2f74a62a26399740bece437b5d96"
+   ],
+   "equivalent_note": "i4: the same decoded texture as compiled by the pre-fn1 codec (the v0.6.1 played disc); the current codec's native-decoder fit guard stores it differently"
   },
   {
    "selector": "26A4",

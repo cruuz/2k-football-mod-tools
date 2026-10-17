@@ -1126,8 +1126,10 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
         span = raw[chunk.offset:chunk.end_offset]
         layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
         digest = sha(span) if layout_ok else None
+        # ``after_equivalent_sha256``: the same finished texture stored by an earlier codec (an already repaired disc).
         states.append((row, chunk, span, "before" if digest == row["before_sha256"]
-                       else "after" if digest == row["after_sha256"] else "other"))
+                       else "after" if digest == row["after_sha256"] or digest in row.get("after_equivalent_sha256", ())
+                       else "other"))
     kinds = {s[3] for s in states}
     if kinds == {"after"}:
         return [], dict(selector=selector, state="applied", changed_bytes=0, parts=[], skipped_textures=[])

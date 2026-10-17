@@ -9569,12 +9569,16 @@
    "resource_size": 1529024,
    "offset": 79600,
    "length": 87920,
-   "before_sha256": "ecb3f5f268a548ced94838d1299ed39c227d2f74a62a26399740bece437b5d96",
+   "before_sha256": "05543c4ce4720cba21d3aaaf838118bb4c6009e8d1e54e36cd9904bc05b30cec",
    "legging": "#002244",
    "legging_wet": "#001429",
    "socks_chunk": 4,
    "socks_sha256": "a35604f0227d4c01c07076e596103ec9a398a742cedbf70d6c58c86b17fa00c0",
-   "after_sha256": "6514717624e397a5231affc392d6732fc6da788a2afa0f47a32eb2ff32b7713e"
+   "after_sha256": "6514717624e397a5231affc392d6732fc6da788a2afa0f47a32eb2ff32b7713e",
+   "before_equivalent_sha256": [
+    "ecb3f5f268a548ced94838d1299ed39c227d2f74a62a26399740bece437b5d96"
+   ],
+   "equivalent_note": "i4: the same decoded texture as compiled by the pre-fn1 codec (the v0.6.1 played disc); the current codec's native-decoder fit guard stores it differently"
   },
   {
    "selector": "26A4",
