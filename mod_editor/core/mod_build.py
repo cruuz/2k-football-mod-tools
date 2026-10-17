@@ -2405,9 +2405,12 @@ def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.position_pools:
         raise ValueError("Dated roster refresh requires modern position pools")
     progress("Applying the dated roster refresh", 0, 0)
-    result = records.apply(target, {"schema": records.EDITS_SCHEMA, "edits": [],
-                                   "roster_refresh": document["roster_refresh"]},
-                           scheme="one_pool", progress=lambda msg: progress(msg, 0, 0))
+    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    if plan.espn25_more_moments or plan.historic_teams_quick_game:
+        # b775 (Noah 10/17: both sides of a moment were the home team): the refresh's new players use vacant
+        # records; keep the two-team import floor, as the historic spare capacity does for the dated free agents.
+        directive["restore_import_floor"] = True
+    result = records.apply(target, directive, scheme="one_pool", progress=lambda msg: progress(msg, 0, 0))
     receipt["steps"].append({"step": "roster_refresh", **result})
 
 
