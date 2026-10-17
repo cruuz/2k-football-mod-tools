@@ -10,9 +10,12 @@
    "stadium_note": ""
   },
   "broncos_2015": {
-   "kit": "retail",
-   "kit_quality": "close",
-   "kit_note": "The 1997-2011 design on the franchise spare: road white matches; the 2015 home was the orange version of that design (the spare has the navy one). Orange-home kit is a new kit candidate.",
+   "kit": {
+    "prefer": 9,
+    "fallback": "retail"
+   },
+   "kit_quality": "match",
+   "kit_note": "ek1's 2012-2023 Broncos kit (style 9: the 1997 design with the orange home jersey, navy side panels; road white with navy panels), GUD 2015_DEN_2/1. Without ek1's kit on the disc the franchise spare (navy home of the same design) is used.",
    "stadium": "franchise",
    "stadium_note": ""
   },
@@ -85,7 +88,7 @@
     "fallback": "retail"
    },
    "kit_quality": "close",
-   "kit_note": "ek1's 2005-2016 Giants kit (style 9: road white with red numerals and grey pants, GUD 2016_NYG_4; home = the retail 18H8 blue over grey pants, while GUD 2016_NYG_3 shows white home pants). Without ek1's kit on the disc the retail 2004 look is used.",
+   "kit_note": "ek1's 2007-2011 Giants kit (style 9, the same road set Giants wore through 2016: road white with red numerals and grey pants, GUD 2016_NYG_4; home = the retail 18H8 blue over grey pants, while GUD 2016_NYG_3 shows white home pants). Without ek1's kit on the disc the retail 2004 look is used.",
    "stadium": "franchise",
    "stadium_note": ""
   },
