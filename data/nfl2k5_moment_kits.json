@@ -1,6 +1,6 @@
 {
  "schema": "nfl2k5_moment_kits/v1",
- "about": "ek1 (Noah 10/17): every 25th Anniversary team wears the uniform it wore in that game. Where an existing kit matches the game (88 of 102 sides) the moment keeps or switches to it; where none does, a NEW style index is added for the franchise (never a replacement): two kit packages composed from existing kits of the build copy (whole kits, colour-swapped H/A sets, or chunk mixes), nine aggregate card members renamed from existing ones, and a year pair in the moment's team file only, so modern Team Select never offers the new index. References: Gridiron Uniform Database per-game graphics and Super Bowl XLII broadcast frames, kept in ek1 scratch, never shipped.",
+ "about": "ek1 (Noah 10/17): every 25th Anniversary team wears the uniform it wore in that game. Where an existing kit matches the game (89 of 102 sides; two switch to a better existing kit) the moment keeps or switches to it; where none does, a NEW style index is added for the franchise (never a replacement): two kit packages composed from existing kits of the build copy (whole kits, colour-swapped H/A sets, or chunk mixes), nine aggregate card members renamed from existing ones, and a year pair in the moment's team file only, so modern Team Select never offers the new index. References: Gridiron Uniform Database per-game graphics and Super Bowl XLII broadcast frames, kept in ek1 scratch, never shipped.",
  "free_index_rule": "a new style is a free index: no kit package and no aggregate member with that (asset code, style) on the build copy",
  "kits": [
   {
@@ -270,6 +270,313 @@
    ]
   },
   {
+   "id": "K8",
+   "team": "DEN",
+   "code": "08",
+   "style": 9,
+   "label": [
+    2012,
+    2023
+   ],
+   "look": "2012-2023 orange home: the 1997 design's colours swapped (orange body, navy side panels and collar, orange sleeves, white numerals outlined navy) from retail 08H7, navy helmet and socks kept, the 2026 orange far-player atlas (08H0); road 08A7 (white, navy panels)",
+   "sides": {
+    "H": {
+     "base": "08H7",
+     "chunks": {
+      "51": "08H0"
+     },
+     "art": [
+      {
+       "chunk": 1,
+       "kind": "palette_map",
+       "texture_kind": "tset",
+       "tolerance": 12,
+       "map": [
+        {
+         "from": "#002E66",
+         "to": "#FB4F14"
+        },
+        {
+         "from": "#FF3D00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 3,
+       "kind": "palette_map",
+       "texture_kind": "tset",
+       "tolerance": 12,
+       "map": [
+        {
+         "from": "#002E66",
+         "to": "#FB4F14"
+        }
+       ]
+      },
+      {
+       "chunk": 13,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 14,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 15,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 16,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 17,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 18,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 19,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 20,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 21,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 22,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 33,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 34,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 35,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 36,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 37,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 38,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 39,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 40,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 41,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      },
+      {
+       "chunk": 42,
+       "kind": "palette_map",
+       "texture_kind": "txtr",
+       "tolerance": 24,
+       "map": [
+        {
+         "from": "#F12A00",
+         "to": "#002E66"
+        }
+       ]
+      }
+     ]
+    },
+    "A": {
+     "base": "08A7"
+    }
+   },
+   "cards": {
+    "H": "08H7",
+    "A": "08A7",
+    "unif_h": "08H0",
+    "logo": "08H7"
+   },
+   "moments": [
+    [
+     39,
+     "home"
+    ]
+   ],
+   "evidence": [
+    "GUD 2012_DEN_2.png (AFC Divisional, BAL at DEN)"
+   ]
+  },
+  {
    "id": "K6",
    "team": "CLE",
    "code": "30",
@@ -530,6 +837,14 @@
    "before": 5,
    "style": 6,
    "kit": "K7"
+  },
+  {
+   "row": 39,
+   "side": "home",
+   "file": "h-08-2012-broncos-9.iff",
+   "before": 0,
+   "style": 9,
+   "kit": "K8"
   },
   {
    "row": 48,

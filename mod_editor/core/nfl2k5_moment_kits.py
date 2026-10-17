@@ -144,7 +144,9 @@ def compose_side(side, packages):
         spans.append(donor[dc[c.index].offset:dc[c.index].end_offset])
     for row in side.get("art", []):
         i = row["chunk"]
-        if row["kind"] == "palette":
+        if row["kind"] == "palette_map":
+            spans[i] = palette_map(spans[i], row)
+        elif row["kind"] == "palette":
             spans[i], _receipt = fixes.compile_palette(spans[i], row)
         else:
             spans[i], _receipt = fixes.compile_texture(spans[i], row)
@@ -170,6 +172,64 @@ def compose_side(side, packages):
     require(video <= MAX_VIDEO_BYTES and system <= MAX_SYSTEM_BYTES,
             f"composed kit allocation {system}/{video} exceeds the largest existing kit")
     return out
+
+
+def _hex(text):
+    return tuple(int(text[k:k + 2], 16) for k in (1, 3, 5))
+
+
+def map_entries(palette, mapping, tolerance):
+    """Swap team colours in a palette, keeping shading and white blends: an entry that is w*white + s*from (least
+    squares, within ``tolerance`` per channel) becomes w*white + s*to. Entries on no colour's plane (black, grey,
+    blends of two team colours) stay. Exact rational arithmetic, so every platform writes the same bytes."""
+    from fractions import Fraction
+    import math
+    out = palette.copy()
+    white = (255, 255, 255)
+    dot = lambda u, v: sum(x * y for x, y in zip(u, v))
+    for i in range(256):
+        if palette[i, 3] == 0:
+            continue
+        rgb = tuple(int(v) for v in palette[i, :3])
+        best = None
+        for m in mapping:
+            a = _hex(m["from"])
+            g11, g12, g22 = dot(white, white), dot(white, a), dot(a, a)
+            r1, r2 = dot(white, rgb), dot(a, rgb)
+            det = g11 * g22 - g12 * g12
+            if det == 0:
+                continue
+            w, k = Fraction(r1 * g22 - r2 * g12, det), Fraction(g11 * r2 - g12 * r1, det)
+            if w < Fraction(-1, 50) or k <= Fraction(1, 20):
+                continue
+            residual = max(abs(w * 255 + k * a[c] - rgb[c]) for c in range(3))
+            if residual <= tolerance and (best is None or residual < best[0]):
+                best = (residual, max(w, Fraction(0)), k, _hex(m["to"]))
+        if best is not None:
+            _r, w, k, b = best
+            out[i, :3] = [min(255, max(0, math.floor(w * 255 + k * b[c] + Fraction(1, 2)))) for c in range(3)]
+    return out
+
+
+def palette_map(span, row):
+    """One chunk with its palettes colour-swapped (TSET: the clean palette and its _mud twin; TXTR: its palette);
+    indices, sizes, mips and the stored allocation stay the same."""
+    from . import nfl2k5_kit_fixes_2026 as fixes
+    tex = row.get("texture_kind", "tset")
+    if tex == "tset":
+        chunk, decoded, textures = fixes.native_textures(span, "tset")
+    else:
+        chunk, decoded, texture = fixes._txtr(span)
+        textures = [dict(palette=texture.palette_offset)]
+    new = decoded
+    for t in textures:
+        palette = fixes.read_palette(new, chunk, t)
+        mapped = map_entries(palette, row["map"], int(row.get("tolerance", 12)))
+        new = fixes.write_texture(new, chunk, dict(t, pixel=0, width=0, height=0, mips=0), [], mapped)
+    require(new != decoded, "the palette map changed nothing")
+    from . import nfl2k5_era_kits as era
+    # a new package has no fixed allocation to keep: re-encode the chunk (same decoded bytes and video allocation)
+    return era._encoded_span(span, new, chunk.video_bytes)
 
 
 def compose(doc, packages):

@@ -196,7 +196,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "from mod_editor.core.nfl2k5_unc_bowl_uniforms import PINS; "
                 "import json; assert json.loads(PINS.read_text())['schema'] == 'nfl2k5_unc_bowl_uniforms/v1'; "
                 "from mod_editor.core.nfl2k5_era_kits import pins as era_pins; assert len(era_pins()['kits']) == 10; "
-                "from mod_editor.core.nfl2k5_moment_kits import pins as kit_pins; assert len(kit_pins()['packages']) == 18; "
+                "from mod_editor.core.nfl2k5_moment_kits import pins as kit_pins; assert len(kit_pins()['packages']) == 20; "
                 "from mod_editor.core.nfl2k5_nyg_numbers import pins; assert len(pins()['digits']) == 10; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import spec; assert len(spec()['textures']) == 60; "
                 "from mod_editor.core.nfl2k5_kit_fixes_2026 import alternates; assert len(alternates()['textures']) == 544; "
@@ -347,8 +347,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
                 "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
                 "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
-                "data/nfl2k5_moment_kits.json": "a523b940b2f0ec9819e79698e6d9b5479fb6b417633f6f7ad865a958f69fa4d4",
-                "data/nfl2k5_moment_kits_pins.json": "cd33df517644883c3ef6365582f48db28562e8550c087e07fec44a87c3b06e04",
+                "data/nfl2k5_moment_kits.json": "388f7340b214dcd80e597e8f6c61fe1fbbb0d12b365701b2cb720d7f491c2f73",
+                "data/nfl2k5_moment_kits_pins.json": "74c41f293e7beaae41040ee0744f80ecd5685dc17b7803098689b47e2d29e611",
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
                 "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",

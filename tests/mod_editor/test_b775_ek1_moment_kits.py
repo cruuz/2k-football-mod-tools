@@ -30,8 +30,8 @@ def sha(data):
 class Data(unittest.TestCase):
     def test_document_validates_and_every_selection_is_wired(self):
         doc = mk.document()
-        self.assertEqual(len(doc["kits"]), 9)
-        self.assertEqual(len(doc["selections"]), 14)
+        self.assertEqual(len(doc["kits"]), 10)
+        self.assertEqual(len(doc["selections"]), 15)
         by_id = {k["id"]: k for k in doc["kits"]}
         for kit in doc["kits"]:
             users = [(s["row"], s["side"]) for s in doc["selections"] if s.get("kit") == kit["id"]]
@@ -64,6 +64,16 @@ class Data(unittest.TestCase):
         swapped = mk.card_sources(k3)
         self.assertEqual(swapped["unif_h29_10"], ("logos", "unif_a29_2"))   # white at home
         self.assertEqual(swapped["unif_a29_10"], ("logos", "unif_h29_2"))   # burgundy on the road
+
+    def test_palette_map_keeps_shading_and_white_blends_exactly(self):
+        import numpy as np
+        pal = np.zeros((256, 4), np.int64)
+        pal[:, 3] = 255
+        pal[:7, :3] = [(0, 46, 102), (0, 31, 82), (255, 61, 0), (253, 227, 223), (255, 255, 255), (0, 0, 0), (240, 57, 0)]
+        out = mk.map_entries(pal, [{"from": "#002E66", "to": "#FB4F14"}, {"from": "#FF3D00", "to": "#002E66"}], 12)
+        self.assertEqual(out[:7, :3].tolist(), [[251, 79, 20], [203, 64, 16], [0, 46, 102], [222, 227, 234],
+                                                [255, 255, 255], [0, 0, 0], [0, 43, 96]])
+        self.assertTrue((out[7:] == pal[7:]).all())
 
     def test_expand_ranges(self):
         self.assertEqual(mk._expand({"13-15": "X", "2": "Y"}), {13: "X", 14: "X", 15: "X", 2: "Y"})
@@ -165,6 +175,20 @@ class Disc(unittest.TestCase):
             self.assertTrue(colours, index)
             # every opaque texel is red (no blue outline): red dominant, blue low
             self.assertTrue(all(r > 120 and b < 110 and r > 2 * g for r, g, b in colours), index)
+
+    def test_broncos_2012_home_is_orange_with_navy_panels(self):
+        from nfl_txtr import decode_chunk, parse_chunks
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
+        raw = mk.compose(self.doc, self.inputs["packages"])["08h9.iff"]
+        span = raw[parse_chunks(raw)[1].offset:parse_chunks(raw)[1].end_offset]
+        chunk, decoded, textures = fixes.native_textures(span, "tset")
+        palette = fixes.read_palette(decoded, chunk, textures[0])
+        plane = fixes.read_planes(decoded, chunk, textures[0])[0]
+        rgb = palette[plane][..., :3].reshape(-1, 3)
+        orange = ((rgb[:, 0] > 200) & (rgb[:, 2] < 60)).sum()
+        navy = ((rgb[:, 0] < 30) & (rgb[:, 2] > 80)).sum()
+        self.assertGreater(orange, 2 * navy)                 # orange body
+        self.assertGreater(navy, rgb.shape[0] // 20)         # navy side panels and collar
 
     def test_selections_and_labels(self):
         _packages, _members, files, situ = mk.expected(self.doc, self.inputs)
