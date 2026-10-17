@@ -237,7 +237,7 @@ def _encode_menu(source):
     return bytes(encoded)
 
 
-def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
+def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=None):
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
     out = bytearray(assembly.CODE)
@@ -429,6 +429,13 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None):
         struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
                          0, labels[table], 0, 0xE7F928,
                          0xAA281C, 0x02400044, 0x018D0052, flags)
+    if home is not None:
+        # ui1 Career Home (nfl2k5_my_career_home): the same Apartment descriptor, so every MyCareer
+        # route, B/quit, autosave and hub() check is unchanged; only its title, row table and draw
+        # handler name the Career Home section. Its handler forwards every event but the draw here.
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200, home["title"])
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200 + 8, home["handler"])
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200 + 16, home["rows"])
     struct.pack_into("<11I", menu, 0, labels["team_text"], 0, labels["mode_handler"],
                      0, data_va + 432, 0, 0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 0x13)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
@@ -698,12 +705,18 @@ def _recognize(payload):
         legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
         blob = image.read(code["va"], CODE_SIZE)
         if blob != b"\xcc" * CODE_SIZE:
-            expected = code_for(code["va"], data["va"])[0]
+            # ui1: with the Career Home section the Apartment descriptor names it (and only then).
+            home = None
+            if space.has_home_section(payload):
+                from . import nfl2k5_my_career_home as career_home
+                career = {**code_for(code["va"], data["va"])[1], "state": data["va"], "m3": EXTRA_VA}
+                home = career_home.apartment_fields(career_home.code_for(career)[1])
+            expected = code_for(code["va"], data["va"], home=home)[0]
             if blob != expected:
                 from . import nfl2k5_letter_grades as grades
                 legacy.require(grades.status(payload) == "applied", "MyCareer grade formatter missing")
                 expected = code_for(code["va"], data["va"], letter_grades=True,
-                                    grade_bands=grades._owned_state(payload)[2])[0]
+                                    grade_bands=grades._owned_state(payload)[2], home=home)[0]
             legacy.require(blob == expected, "mixed generic MyCareer install")
             state = "applied"
     legacy.require(rdata.status(payload, edits) == state, "mixed generic MyCareer hooks/code")

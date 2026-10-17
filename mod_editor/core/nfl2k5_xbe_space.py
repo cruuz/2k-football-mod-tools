@@ -139,9 +139,22 @@ def _code_bytes(payload, requests):
     return b"".join(payload[r["raw"]:r["raw"] + PAGE] for r in _regions(requests) if r["kind"] == "code")
 
 
+# ui1 (Career Home): the scale-out image's one optional extra section slot (the music
+# section's descriptor, name and file gap) can instead hold the MyCareer Career Home
+# extension (nfl2k5_my_career_home), told apart by its block magic. The two are mutually
+# exclusive. An image with neither keeps exactly the same bytes and 28 sections.
+HOME_SECTION_MAGIC = b"MCHOMEX1"
+EXTRA_SECTION_OWNERS = ("nfl2k5_music_metadata", "nfl2k5_my_career_home")
+
+
+def has_home_section(payload):
+    return (is_scaleout(payload) and struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1
+            and payload[FILE_SIZE:FILE_SIZE + 8] == HOME_SECTION_MAGIC)
+
+
 def has_music(payload):
     if is_scaleout(payload):
-        return struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1
+        return struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1 and not has_home_section(payload)
     count = struct.unpack_from("<I", payload, 0x11C)[0]
     return count in (COUNT + 3, COUNT + 4) and any(
         struct.unpack_from("<I", payload, TABLE + i * 56 + 4)[0] == DATA_VA + PAGE
@@ -392,7 +405,7 @@ def reservations(payload: bytes | None = None) -> list[dict]:
         for a in layout(payload)["allocations"]:
             result.append(dict(start=hex(a["va"]), end=hex(a["va"] + a["size"]), size=a["size"],
                                owner=a["owner"], basis="named " + a["kind"] + " allocation",
-                               **({"parent_owner": OWNER} if a["owner"] != "nfl2k5_music_metadata" else {})))
+                               **({"parent_owner": OWNER} if a["owner"] not in EXTRA_SECTION_OWNERS else {})))
     return result
 
 
@@ -757,7 +770,7 @@ def _requests(requests):
                  "request must be (owner, kind, size, align)")
         owner, kind, size, align = request
         _require(isinstance(owner, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", owner), "invalid allocation owner")
-        _require(owner not in (OWNER, DIRECTORY_OWNER, "nfl2k5_music_metadata"), "reserved allocation owner")
+        _require(owner not in (OWNER, DIRECTORY_OWNER, *EXTRA_SECTION_OWNERS), "reserved allocation owner")
         _require(kind in ("code", "data", "read_only"), "kind must be code, data or read_only")
         _require(type(size) is int and 0 < size <= MAX_REQUEST_BYTES, "size exceeds allocation capacity")
         _require(type(align) is int and 0 < align <= PAGE and align & (align - 1) == 0,
@@ -1159,7 +1172,13 @@ def _validate_scaleout(payload):
             _require(all(owned or value == pad for owned, value in zip(mask, content)), "foreign unallocated page padding")
         expected[index * 56:(index + 1) * 56] = _scale_descriptor(index, region, _digest(content))
     from . import nfl2k5_music_storage as music
-    if count == SCALE_COUNT + 1:
+    if count == SCALE_COUNT + 1 and has_home_section(payload):
+        from . import nfl2k5_my_career_home as home
+        block = payload[music.RAW:music.RAW + music.CAPACITY]
+        home._block_content(block)
+        header, name, refs = scale_music_slots()
+        expected[header - META_START:header - META_START + 56] = home._descriptor(block)
+    elif count == SCALE_COUNT + 1:
         block = payload[music.RAW:music.RAW + music.CAPACITY]
         music._block_data(block)
         header, name, refs = scale_music_slots()
@@ -1272,7 +1291,7 @@ def _capacity(regions, allocations, *, scaleout):
         matching = [r for r in regions if r["kind"] == kind and not r.get("music")]
         capacity = sum(r["size"] for r in matching)
         capacity += directory_code if kind == "code" else -directory_code if kind == "read_only" else 0
-        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] != "nfl2k5_music_metadata")
+        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] not in EXTRA_SECTION_OWNERS)
         free = capacity - used
         # Existing beta-61 tails remain owned, but are not offered to new owners.
         available = 0
@@ -1313,6 +1332,12 @@ def _scaleout_layout(payload):
                             size=music.CAPACITY, flags=0x3A, music=True))
         allocations.append(dict(owner=music.OWNER, kind="read_only", va=music.VA, raw=music.RAW,
                                 size=music.CAPACITY, align=PAGE))
+    elif has_home_section(payload):
+        from . import nfl2k5_my_career_home as home
+        regions.append(dict(kind="code", va=home.VA, raw=home.RAW, size=home.SIZE, flags=home.FLAGS,
+                            music=True, home=True))
+        allocations.append(dict(owner=home.OWNER, kind="code", va=home.VA, raw=home.RAW, size=home.SIZE,
+                                align=PAGE))
     return dict(status="applied", version=3, special=special_status, file_size=len(payload),
                 image_size=SCALE_IMAGE_SIZE, headers_size=PAGE, regions=regions, allocations=allocations,
                 pages=_page_map(regions, allocations), capacity=_capacity(regions, allocations, scaleout=True))

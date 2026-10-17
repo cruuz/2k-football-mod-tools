@@ -1,0 +1,276 @@
+"""MyCareer Career Home (job ui1, Noah 2026-10-17). EXPERIMENTAL / UNWITNESSED.
+
+Noah: "make a test MyCareer new menu system/screen to push the limits of what we can get working in game."
+
+What it is
+----------
+* The MyCareer Apartment's descriptor becomes **Career Home**: five section rows (Play next game, Practice,
+  MyPlayer, Upgrades, Settings and save) plus Quit to main menu, all inside the native seven-row window, and a
+  live panel on the right (MyPlayer, club, overall, XP, depth chart spot, next game and date, this season's stat
+  line), drawn with the game's own text routine after the native draw.
+* **Settings and save** opens a native sub-list: Settings, Save, Sim to next appearance, Start MyPlayer,
+  **Classic Apartment** (the old nine-row Apartment, unchanged, with its two info lines) and Back.
+* Every row except the two screen openers is an existing MyCareer row action. B on Career Home is MyCareer's own
+  quit question (the descriptor is still the Apartment); B on the sub-list and the Classic Apartment goes back.
+  The controller port rule is MyCareer's (the pad that pressed A owns MyPlayer).
+
+Where it lives
+--------------
+The complete allocator union has no free code or writable bytes (job ui1 ledger, 10/17). Career Home is one
+preloaded writable+executable section (flags 0x07, like retail ``.data``) in the scale-out image's single
+optional extra section slot: the music section's descriptor slot, name and already-zero file gap
+(``VA 0x14BC000``, raw ``nfl2k5_xbe_space.FILE_SIZE``). The jukebox music library uses the same slot, so the two
+are mutually exclusive. An image without Career Home keeps exactly its bytes and 28 sections. The MyCareer code
+is not changed; only its Apartment descriptor (template data) names this owner's title, rows and handler.
+
+Section block: 128-byte header (magic, content length, content SHA-256, zeros), then the content (machine code,
+UTF-16 strings, two descriptors and two row tables), then zero padding to ``SIZE``. Resident cost: ``SIZE`` bytes
+of preloaded executable memory; no disc resource, no heap allocation.
+"""
+from __future__ import annotations
+
+import hashlib
+import struct
+
+from . import nfl2k5_my_career as legacy
+from . import nfl2k5_my_career_home_code as assembly
+from . import nfl2k5_xbe_space as space
+from .nfl2k5_cave_oracle import XbeImage
+
+OWNER = "nfl2k5_my_career_home"
+EVIDENCE = "EXPERIMENTAL"
+VA = space.DATA_VA + space.PAGE          # the music section's address (an unmapped hole in every scale-out image)
+RAW = space.FILE_SIZE                    # its zero file gap
+SIZE = 0x2000
+FLAGS = 0x07                             # writable | preload | executable (retail .data uses the same flags)
+HEADER = 128
+MAGIC = space.HOME_SECTION_MAGIC
+CONTENT_VA = VA + HEADER
+
+UI_LABEL = "MyCareer Career Home (test)"
+BUILD_CAPTION = UI_LABEL
+HELP_TEXT = (
+    "EXPERIMENTAL / UNWITNESSED. MyCareer's Apartment becomes Career Home: Play next game, Practice, MyPlayer, "
+    "Upgrades, Settings and save, and Quit, with no scrolling, and a live panel with MyPlayer's club, overall, XP, "
+    "depth chart spot, next game and this season's stats. Settings and save holds Settings, Save, Sim to next "
+    "appearance, Start MyPlayer and the Classic Apartment (the old screen, unchanged). Uses the optional extra "
+    "executable section, so it cannot be combined with a jukebox music library.")
+
+# Native list descriptor fields shared with every MyCareer screen: the retail 'navigation' layout name, its
+# standard binding table, the standard content rectangle, and flags 0x13 (0x10 lets B reach the handler).
+LAYOUT, BINDINGS, FRAME = 0xE7F928, 0xAA281C, (0x02400044, 0x018D0052)
+PRACTICE_LABEL = 0xE9C3BC  # the retail "Practice" literal MyCareer's Apartment already uses
+
+STRINGS = (
+    ("home_title", "Career Home"),
+    # Native rows draw the first word heavy and the rest light, with no space
+    # (retail ESPN style: PLAY|NEXTGAME), so labels are chosen to read that way.
+    ("home_text_more", "Settings + Save"),
+    ("home_text_quit", "Quit to Menu"),
+    ("home_text_classic", "Classic Apartment"),
+    ("home_text_next", "NEXT GAME"),
+    ("home_text_season", "THIS SEASON"),
+    ("home_text_overall", "OVERALL"),
+    ("home_text_xp", "XP"),
+    ("home_text_starter", "STARTER"),
+    ("home_text_backup", "BACKUP"),
+    ("home_text_none", "No game scheduled"),
+    ("home_text_options_note", "B: back to Career Home"),
+    ("home_fmt_matchup", "%s at %s"),
+    # Full-colour art already resident in the front end (no load): the FRONTEND
+    # position photos (outer 9) and the FRONTEND_SYNC helmet silhouette (outer 8).
+    ("home_tex_ghost", "ghostlogo_h"),
+    ("home_tex_qb", "position_photos_qb"), ("home_tex_k", "position_photos_k"),
+    ("home_tex_wr", "position_photos_wr"), ("home_tex_rb", "position_photos_rb"),
+    ("home_tex_te", "position_photos_te"), ("home_tex_def", "position_photos_def"),
+)
+# Retail position codes 0..16: QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE. Linemen have no photo.
+PHOTOS = ("qb", "k", "k", "wr", "def", "def", "def", "rb", "rb", "te", "def", "def", None, None, None, "def", "def")
+# (label, MyCareer or own action). Five sections and Quit: the native window shows seven rows.
+HOME_ROWS = (("play_text", "mode_play_row"), (PRACTICE_LABEL, "mode_practice"), ("card_text", "mode_card"),
+             ("m3_upgrade_text", "m3_upgrade_open"), ("home_text_more", "home_options_open"),
+             ("home_text_quit", "mode_quit"))
+OPTION_ROWS = (("m3_settings_text", "mode_settings_open"), ("save_text", "mode_save_menu"),
+               ("sim_appearance_text", "mode_sim_appearance"), ("start_text", "mode_start"),
+               ("home_text_classic", "home_classic_open"), ("m3_back_text", "m3_back"))
+DESCRIPTORS = (("home_classic", "apartment_text", "hub_rows"), ("home_options", "home_text_more", "home_options_rows"))
+MAX_VISIBLE_ROWS = 7
+
+
+def _require(ok, message):
+    if not ok:
+        raise ValueError(message)
+
+
+def career_labels(payload):
+    """MyCareer's label addresses for this image (independent of the Career Home variant)."""
+    from . import nfl2k5_my_career_mode as mode
+    code, data = legacy.allocations(payload)
+    return {**mode.code_for(code["va"], data["va"])[1], "state": data["va"], "m3": mode.EXTRA_VA}
+
+
+def code_for(career):
+    """Section content and labels. ``career`` is MyCareer's label map for the same image."""
+    out = bytearray(assembly.CODE)
+    labels = {name: CONTENT_VA + offset for name, offset in assembly.LABELS.items()}
+
+    def reserve(name, size):
+        out.extend(bytes((-len(out)) % 4))
+        labels[name] = CONTENT_VA + len(out)
+        out.extend(bytes(size))
+        return labels[name] - CONTENT_VA
+
+    for name, value in STRINGS:
+        content = (value + "\0").encode("utf-16le")
+        at = reserve(name, len(content))
+        out[at:at + len(content)] = content
+    at = reserve("home_photo_names", 4 * len(PHOTOS))
+    struct.pack_into("<17I", out, at, *(labels["home_tex_" + key] if key else 0 for key in PHOTOS))
+    names = {**career, **labels}
+
+    def rows(name, content):
+        _require(len(content) <= MAX_VISIBLE_ROWS, f"{name}: more rows than the native window shows")
+        at = reserve(name, 52 * (len(content) + 1))
+        for i, (label, action) in enumerate(content):
+            struct.pack_into("<13I", out, at + 52 * i, 9, names[label] if isinstance(label, str) else label,
+                             *([0] * 8), names[action], 0, 0)
+        struct.pack_into("<I", out, at + 52 * len(content), 3)
+
+    rows("home_rows", HOME_ROWS)
+    rows("home_options_rows", OPTION_ROWS)
+    names = {**career, **labels}
+    for name, title, table in DESCRIPTORS:
+        at = reserve(name, 44)
+        struct.pack_into("<11I", out, at, names[title], 0, labels["home_handler"], 0, names[table], 0,
+                         LAYOUT, BINDINGS, *FRAME, 0x13)
+    symbols = {"code": CONTENT_VA, "": 0, **career, **labels}
+    for off, kind, symbol, value in assembly.RELOCATIONS:
+        target = symbols[symbol] + value + struct.unpack_from("<I", out, off)[0]
+        if kind == 2:
+            target -= CONTENT_VA + off
+        struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
+    _require(HEADER + len(out) <= SIZE, f"Career Home needs {HEADER + len(out)} bytes; its section has {SIZE}")
+    labels["content_end"] = CONTENT_VA + len(out)
+    return bytes(out), labels
+
+
+def apartment_fields(labels):
+    """The three Apartment descriptor words MyCareer's template takes from this owner."""
+    return {"title": labels["home_title"], "handler": labels["home_handler"], "rows": labels["home_rows"]}
+
+
+def _block(content):
+    block = bytearray(SIZE)
+    block[:8] = MAGIC
+    struct.pack_into("<I", block, 8, len(content))
+    block[12:44] = hashlib.sha256(content).digest()
+    block[HEADER:HEADER + len(content)] = content
+    return bytes(block)
+
+
+def _block_content(block):
+    _require(len(block) >= SIZE and block[:8] == MAGIC, "foreign Career Home section magic")
+    size = struct.unpack_from("<I", block, 8)[0]
+    _require(0 < size <= SIZE - HEADER, "foreign Career Home section size")
+    content = block[HEADER:HEADER + size]
+    _require(block[12:44] == hashlib.sha256(content).digest() and not any(block[44:HEADER])
+             and not any(block[HEADER + size:]), "foreign Career Home section seal/padding")
+    return content
+
+
+def _descriptor(block):
+    _header, name, refs = space.scale_music_slots()
+    return struct.pack("<9I20s", FLAGS, VA, SIZE, RAW, SIZE, 0x10000 + name, 0, 0x10000 + refs,
+                       0x10000 + refs + 2, space._digest(bytes(block[:SIZE])))
+
+
+def _career_state(payload):
+    """(graded, home) of the installed MyCareer blob, or raise."""
+    from . import nfl2k5_my_career_mode as mode
+    from . import nfl2k5_letter_grades as grades
+    code, data = legacy.allocations(payload)
+    blob = XbeImage(payload).read(code["va"], legacy.CODE_SIZE)
+    bands = None
+    try:
+        bands = grades._owned_state(payload)[2]
+    except (ValueError, KeyError, IndexError, TypeError, struct.error):
+        bands = None
+    for graded in (False, True):
+        if graded and bands is None:
+            continue
+        for home in (None, "installed"):
+            fields = None
+            if home:
+                fields = apartment_fields(code_for(career_labels(payload))[1])
+            expected = mode.code_for(code["va"], data["va"], letter_grades=graded, grade_bands=bands,
+                                     home=fields)[0]
+            if blob == expected:
+                return graded, bands, home is not None
+    raise ValueError("foreign MyCareer code for Career Home")
+
+
+def status(payload):
+    try:
+        if not space.is_scaleout(payload):
+            return "retail" if not space.has_home_section(payload) else "foreign"
+        if not space.has_home_section(payload):
+            return "retail"
+        from . import nfl2k5_my_career_mode as mode
+        _require(mode.status(payload) == "applied", "Career Home needs the applied MyCareer owner")
+        block = payload[RAW:RAW + SIZE]
+        content = _block_content(block)
+        _require(content == code_for(career_labels(payload))[0], "foreign Career Home content")
+        _require(_career_state(payload)[2], "MyCareer Apartment does not name Career Home")
+        return "applied"
+    except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
+        return "foreign"
+
+
+def apply(payload):
+    """Install after MyCareer (and after letter grades, if used). Exact replay is a no-op."""
+    from . import nfl2k5_my_career_mode as mode
+    state = status(payload)
+    _require(state != "foreign", "foreign/mixed Career Home; rebuild from the original")
+    if state == "applied":
+        return payload, {"owner": OWNER, "already_applied": True, "changed_bytes": 0}
+    _require(space.is_scaleout(payload), "Career Home needs the scale-out allocator")
+    _require(not space.has_music(payload), "Career Home and the jukebox music library share one section slot")
+    _require(struct.unpack_from("<I", payload, 0x11C)[0] == space.SCALE_COUNT
+             and not any(payload[RAW:RAW + SIZE]), "the extra section slot is not free")
+    _require(mode.status(payload) == "applied", "install MyCareer before Career Home")
+    graded, bands, home = _career_state(payload)
+    _require(not home, "MyCareer already names Career Home without its section")
+    career = career_labels(payload)
+    content, labels = code_for(career)
+    code, data = legacy.allocations(payload)
+    blob = mode.code_for(code["va"], data["va"], letter_grades=graded, grade_bands=bands,
+                         home=apartment_fields(labels))[0]
+    requests = space._validate(payload)[2]
+    buf = bytearray(payload)
+    image = XbeImage(payload)
+    at = image.offset(code["va"], legacy.CODE_SIZE)
+    changed_career = sum(a != b for a, b in zip(buf[at:at + legacy.CODE_SIZE], blob))
+    buf[at:at + legacy.CODE_SIZE] = blob
+    block = _block(content)
+    buf[RAW:RAW + SIZE] = block
+    header, name, refs = space.scale_music_slots()
+    buf[header:header + 56] = _descriptor(block)
+    struct.pack_into("<I", buf, 0x11C, space.SCALE_COUNT + 1)
+    space._seal_scaleout(buf, requests)
+    result = bytes(buf)
+    _require(space.status(result) == "applied", "Career Home section postcondition failed")
+    _require(status(result) == "applied", "Career Home postcondition failed")
+    return result, {"owner": OWNER, "already_applied": False, "experimental": True, "runtime_witnessed": False,
+                    "section_va": hex(VA), "section_size": SIZE, "section_flags": FLAGS,
+                    "content_bytes": len(content), "spare_bytes": SIZE - HEADER - len(content),
+                    "mycareer_template_bytes_changed": changed_career,
+                    "changed_bytes": sum(a != b for a, b in zip(payload, result)),
+                    "labels": {k: hex(v) for k, v in labels.items()},
+                    "before_sha256": hashlib.sha256(payload).hexdigest(),
+                    "after_sha256": hashlib.sha256(result).hexdigest()}
+
+
+def reservations():
+    return [dict(owner=OWNER, start=hex(VA), end=hex(VA + SIZE), size=SIZE,
+                 basis="owned optional preloaded writable+executable section in the extra section slot; "
+                       "Career Home code, tables and padding")]
