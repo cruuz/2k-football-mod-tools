@@ -107,7 +107,10 @@ BUDGET_LIMITS: Mapping[str, int] = {
 SIGNATURE_CLASS: Mapping[str, str] = {
     "pass": "pass", "pa_pass": "pass", "run": "run", "draw": "run", "qb_run": "run", "flea": "pass",
 }
-PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense", "flea")
+#: b776 pb1: ``direct_snap`` (the centre snaps to a back, retail "H Direct Snap"; the QB chain is a decoy)
+#: and ``special`` (a complete-offense addition linked into a retained special-teams formation, e.g. a
+#: fake field goal cloned from the retail FG Pass) are complete-offense play types.
+PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense", "flea", "direct_snap", "special")
 
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
@@ -1070,6 +1073,15 @@ def check_pack(
         if family != 0:
             notes.append(f"play “{p.id}” is family {family} (not offence); the QB rule does not apply")
             continue
+        if p.play_type == "special":
+            # b776 pb1: a special-teams addition keeps its retail donor's exact header (validate_structure)
+            notes.append(f"play “{p.id}” is a special-teams addition with its donor's header")
+            continue
+        if p.play_type == "direct_snap":
+            if lib.play_class_label(flags) != "run":
+                errors.append(f"play “{p.id}”: a direct snap needs a run header")
+            notes.append(f"play “{p.id}” is a direct snap: the QB chain is a decoy, the class is run")
+            continue
         qb_chain = p.assignments[0]
         if p.option_intent and p.option_intent['preset'] == lib.OPTION_PRESETS[2]:
             if lib.play_class_label(flags) != 'pass':
@@ -1143,13 +1155,13 @@ def check_pack(
                 "donor-header rule cannot be checked offline"
             )
             continue
-        if p.donor.flags & lib.PLAY_FLAG_SPECIAL:
+        if p.donor.flags & lib.PLAY_FLAG_SPECIAL and p.play_type != "special":
             errors.append(
                 f"play “{p.id}”: donor {p.donor.index} (“{p.donor.name}”) is a special "
                 "(Take Knee / Spike / Hail Mary); reference_play_for never picks one"
             )
         qb_chain = p.assignments[0]
-        if qb_chain is None:
+        if qb_chain is None or p.play_type in ("special", "direct_snap"):
             continue
         authored = SIGNATURE_CLASS.get(lib.qb_signature(qb_chain))
         donor_class = SIGNATURE_CLASS.get(p.donor.signature)
