@@ -143,9 +143,13 @@ class Recorder:
                 self.reserve(int(reservation["start"], 0), reservation["size"],
                              reservation["owner"], reservation["basis"])
         if owner == "nfl2k5_indicator_names":
-            # nm1 receipts use code[] rather than edits[]. Reserve exactly its
-            # three verified native sites, including bytes unchanged from retail.
-            for va, _before, expected, label in module.code_edits():
+            # nm1 receipts use code[] rather than edits[]. Reserve exactly the
+            # verified native sites of the style this call installed (nl1: scorebug
+            # writes all three, retail_persistent the two collector sites, retail
+            # none), including bytes unchanged from retail. The dormant union's
+            # scorebug call still reserves all three.
+            style = receipt.get("style", "scorebug") if isinstance(receipt, dict) else "scorebug"
+            for va, _before, expected, label in module.style_edits(style):
                 if post_image.read(va, len(expected)) != expected:
                     raise OracleError("indicator-name declared site differs from generated code")
                 self.reserve(va, len(expected), owner, "declared edit: " + label)
