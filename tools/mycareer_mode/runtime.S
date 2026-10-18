@@ -209,7 +209,18 @@ mode_handler:
  pop ecx
  cmp edx,6
  je mode_frame
- cmp edx,7
+ /* mc4: while the prior season plays (M(0)==1) the real progress menu draws
+  * what the sim frames draw, so the native menu never shows between weeks.
+  * Event 7 draws the two lines, event 8 (native caption) draws nothing. */
+ cmp DWORD PTR [m3],1
+ jne 1f
+ lea eax,[edx-7]
+ cmp eax,1
+ ja 1f
+ je 2f
+ jmp m3_sim_draw
+2: ret
+1: cmp edx,7
  je mode_draw_frame
  jmp 0xf3e90
 mode_draw_frame:
