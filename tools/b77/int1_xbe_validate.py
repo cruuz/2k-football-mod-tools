@@ -41,10 +41,14 @@ class Report:
     def __init__(self, path):
         self.path = str(path)
         self.checks = []
+        self.notes = []
 
     def check(self, name, ok, detail=""):
         self.checks.append(dict(check=name, ok=bool(ok), detail=detail))
         return ok
+
+    def note(self, text):
+        self.notes.append(text)
 
     @property
     def ok(self):
@@ -123,7 +127,26 @@ def validate(path: Path, retail: Xbe) -> tuple[Report, dict]:
         rep.check(f"[{i}] {n}: inside image size", va + vs <= image_end, f"{va + vs:#x} <= {image_end:#x}")
         rep.check(f"[{i}] {n}: SHA-1 digest", s["digest_matches"])
     order = [s["virtual_address"] for s in secs]
-    rep.check("virtual addresses ascending", order == sorted(order))
+    if order != sorted(order):
+        # Retail tables are in VA order, but the loader maps each section by its own header; the scale-out design keeps
+        # its optional extra section (music or Career Home) in the last table slot with a VA below .AS0005. Reported, not
+        # failed: overlaps and shared-page counters are what break loading, and they are checked separately.
+        late = [f"[{s['index']}] {s['name']} {s['virtual_address']:#x}" for a, s in zip(secs, secs[1:])
+                if s["virtual_address"] < a["virtual_address"]]
+        rep.note("section table not in VA order: " + ", ".join(late))
+    pages = {}
+    for s in secs:
+        first, last = s["virtual_address"] // PAGE, (s["virtual_address"] + s["virtual_size"] - 1) // PAGE
+        pages.setdefault(first, []).append((s, "head"))
+        if last != first:
+            pages.setdefault(last, []).append((s, "tail"))
+    shared_ok = True
+    for page, users in pages.items():
+        if len(users) > 1:
+            counters = {u[0][f"{u[1]}_shared_page_reference_count_address"] for u in users}
+            if len(counters) != 1:
+                shared_ok = False
+    rep.check("sections sharing a page share its reference counter", shared_ok)
     by_va = sorted(secs, key=lambda s: s["virtual_address"])
     vover = [(a["name"], b["name"]) for a, b in zip(by_va, by_va[1:])
              if a["virtual_address"] + a["virtual_size"] > b["virtual_address"]]
@@ -231,7 +254,9 @@ def main(argv=None):
             print(f"    [{s['index']}] {s['name']:<10} va {s['va']:#09x}+{s['vsize']:#07x} raw {s['raw']:#08x}+{s['raw_size']:#07x} flags {s['flags']:#04x}")
         for c in failed:
             print(f"  FAIL {c['check']}: {c['detail']}")
-        out.append(dict(summary, ok=not failed, checks=rep.checks))
+        for text in rep.notes:
+            print(f"  NOTE {text}")
+        out.append(dict(summary, ok=not failed, checks=rep.checks, notes=rep.notes))
     if a.json:
         a.json.write_text(json.dumps(out, indent=2) + "\n")
     return 0 if ok else 1
