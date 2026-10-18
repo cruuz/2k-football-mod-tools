@@ -275,10 +275,12 @@ STEP_CODE: dict[str, dict] = {
             "mod_editor/core/nfl2k5_modern_venues_2026.py",
             "mod_editor/core/nfl2k5_official_marks.py",
             "mod_editor/core/nfl2k5_project_fit.py",
+            "mod_editor/core/nfl2k5_scne_builder.py",  # b775-int1: sb1 flank vertices
             "mod_editor/core/nfl2k5_source_cache.py",
             "mod_editor/core/nfl2k5_stadium_cache.py",
             "mod_editor/core/nfl2k5_stadium_studio.py",
             "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+            "mod_editor/core/nfl2k5_super_bowl_fields.py",  # b775-int1: sb1 Super Bowl flank marks
             "mod_editor/core/nfl2k5_super_bowl_walls.py",
             "mod_editor/core/platform_compat.py",
             "mod_editor/core/sources.py",
@@ -297,6 +299,7 @@ STEP_CODE: dict[str, dict] = {
             "data/nfl2k5_espn25_fields",
             "data/nfl2k5_espn25_fields.json",
             "data/nfl2k5_official_marks_catalog.json",
+            "data/nfl2k5_super_bowl_fields",  # b775-int1: sb1 marks and manifest
             "data/nfl2k5_super_bowl_walls",
         )),
     "play-scoring": dict(
