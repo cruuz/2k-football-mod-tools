@@ -222,6 +222,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         if start < space.CODE_VA or span["owner"] == space.OWNER:
             spans.append(span)
             continue
+        if span["owner"] == "nfl2k5_my_career_home":
+            # b775-int1 (ui1): Career Home is the extra section slot's alternative occupant (the union keeps the music
+            # library there). Its fixed slot never moves with the request union; keep spans that lie inside it.
+            from mod_editor.core import nfl2k5_my_career_home as home
+            if not home.VA <= start < end <= home.VA + home.SIZE:
+                raise AssertionError("Career Home span outside its extra section slot")
+            spans.append(span)
+            continue
         matches = [a for a in old if a["owner"] == span["owner"] and
                    a["va"] <= start < end <= a["va"] + a["size"]]
         if not matches and span["owner"] == camera.OWNER and span["basis"] == "declared edit: owned_camera_wrappers":

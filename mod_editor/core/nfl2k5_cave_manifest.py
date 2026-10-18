@@ -149,7 +149,8 @@ class Recorder:
             # none), including bytes unchanged from retail. The dormant union's
             # scorebug call still reserves all three.
             style = receipt.get("style", "scorebug") if isinstance(receipt, dict) else "scorebug"
-            for va, _before, expected, label in module.style_edits(style):
+            style_edits = getattr(module, "style_edits", None)
+            for va, _before, expected, label in (style_edits(style) if style_edits else module.code_edits()):
                 if post_image.read(va, len(expected)) != expected:
                     raise OracleError("indicator-name declared site differs from generated code")
                 self.reserve(va, len(expected), owner, "declared edit: " + label)
