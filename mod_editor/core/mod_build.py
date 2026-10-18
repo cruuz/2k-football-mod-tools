@@ -4129,6 +4129,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      **{k: v for k, v in overlap_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                               for kit in overlap_receipt["kits"]]})
+        # b776-fn2: the 2026 Bears and Chiefs nameplate letters (retail letter structure read from the source disc, in
+        # the kit colours: the I, the W/M/N counters and the small c come back) and the redrawn 2026 Titans 7.
+        # The runtime package check lists the module, so a release cannot ship without it (as pants_hem below).
+        glyph_fixes = _core_module("nfl2k5_glyph_fixes_2026")
+        if glyph_fixes is not None:
+            glyph_receipt = glyph_fixes.apply_to_image(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "2026 nameplate letters"))
+            if glyph_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "glyph_fixes_2026",
+                                         **{k: v for k, v in glyph_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in glyph_receipt["kits"]]})
         # b773-uf3: the 2026 Pittsburgh road miniature (schedule screens) with its Steelmark the right way up; only the
         # exact known art changes, retail and user art are left alone.
         uf3_icon = _core_module("nfl2k5_menu_icon_uf3")
