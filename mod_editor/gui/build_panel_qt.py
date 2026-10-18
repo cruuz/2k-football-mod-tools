@@ -1305,6 +1305,10 @@ class BuildPanel(QWidget):
         self.modern_coaches_check = self._option(
             r, "modern_coaches", coaches.BUILD_CAPTION, coaches.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_hair_styles as hair_styles  # b775-hs1
+        self.hair_styles_check = self._option(
+            r, "hair_styles", hair_styles.BUILD_CAPTION, hair_styles.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_modern_fans as fans  # b77-fr1
         self.modern_fans_check = self._option(
             r, "modern_fans", fans.BUILD_CAPTION, fans.HELP_TEXT,
@@ -2238,6 +2242,15 @@ class BuildPanel(QWidget):
         self._set_badge("modern_coaches", "EXPERIMENTAL / UNWITNESSED" if coach_ok else
                         "Already in this source (Off cannot restore it)" if coach_done else
                         "Needs a supported USA disc image with the retail coach models")
+        # b775-hs1: hair styles
+        hair_state = state.get("hair_styles")
+        hair_ok = bool(self._available.get("hair_styles", False) and is_image and hair_state == "retail")
+        hair_done = bool(self._available.get("hair_styles", False) and is_image and hair_state == "applied")
+        self.hair_styles_check.setEnabled(hair_ok)
+        self.hair_styles_check.setChecked(hair_done)
+        self._set_badge("hair_styles", "EXPERIMENTAL / UNWITNESSED" if hair_ok else
+                        "Already in this source (Off cannot restore it)" if hair_done else
+                        "Needs a supported USA disc image with the retail player models")
         # b77-fr1: 2026 fans
         fan_state = state.get("modern_fans")
         fan_ok = bool(self._available.get("modern_fans", False) and is_image and fan_state in ("retail", "mixed"))
@@ -2552,6 +2565,7 @@ class BuildPanel(QWidget):
             "kick_meter_2026": self.kick_meter_check,  # b76-km
             "modern_goalposts": self.modern_goalposts_check,  # b77-v1
             "modern_coaches": self.modern_coaches_check,  # b77-co1
+            "hair_styles": self.hair_styles_check,  # b775-hs1
             "modern_fans": self.modern_fans_check,  # b77-fr1
             "modern_officials": self.modern_officials_check,  # b77-rf1
             "trim_intro_videos": self.trim_intro_videos_check,
@@ -2684,6 +2698,7 @@ class BuildPanel(QWidget):
             kick_meter_2026=self._kick_meter_changed(),  # b76-km
             modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
             modern_coaches=self._modern_coaches_changed(),  # b77-co1
+            hair_styles=self._hair_styles_changed(),  # b775-hs1
             modern_fans=self._modern_fans_changed(),  # b77-fr1
             modern_officials=self._modern_officials_changed(),  # b77-rf1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
@@ -2749,6 +2764,8 @@ class BuildPanel(QWidget):
         if p.modern_goalposts:  # b77-v1
             return True
         if p.modern_coaches:  # b77-co1
+            return True
+        if p.hair_styles:  # b775-hs1
             return True
         if p.modern_fans:  # b77-fr1
             return True
@@ -2831,6 +2848,8 @@ class BuildPanel(QWidget):
                 if key == "modern_goalposts" and not self._modern_goalposts_changed():  # b77-v1
                     continue
                 if key == "modern_coaches" and not self._modern_coaches_changed():  # b77-co1
+                    continue
+                if key == "hair_styles" and not self._hair_styles_changed():  # b775-hs1
                     continue
                 if key == "modern_fans" and not self._modern_fans_changed():  # b77-fr1
                     continue
@@ -3577,6 +3596,11 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("modern_coaches")
         return bool(self.modern_coaches_check.isEnabled() and state in ("retail", "mixed")
                     and self.modern_coaches_check.isChecked())
+
+    def _hair_styles_changed(self):  # b775-hs1
+        """Only turning the option on counts: Off leaves an already-styled source as it is."""
+        state = (self._state or {}).get("hair_styles")
+        return bool(self.hair_styles_check.isEnabled() and state == "retail" and self.hair_styles_check.isChecked())
 
     def _modern_fans_changed(self):  # b77-fr1
         """Only turning the option on counts: Off leaves an already-2026 source as it is."""

@@ -462,6 +462,11 @@ class BuildPlan:
     # Dallas and Washington's Coach Matchup pictures (two free portrait slots and two coach-record photo ids).
     # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
     modern_coaches: bool = False
+    # b775-hs1: hair styles: seven new hair models (long locs, short twists, long flowing hair, afro puff, braids, bun,
+    # mullet) and nine hair textures ADDED to the player models next to the retail dreads, plus a late executable owner
+    # that shows the one a player's roster hair style (record +0x0D, Studio field hair_style) asks for. Style 0 keeps
+    # every player exactly as retail. EXPERIMENTAL / UNWITNESSED: on only in the experimental preset
+    hair_styles: bool = False
     # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
     # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
     # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
@@ -624,6 +629,12 @@ for _preset in PRESETS.values():
     _preset["modern_coaches"] = False
 PRESETS["softdrink_experimental"]["modern_coaches"] = True
 del _preset
+# b775-hs1: hair styles are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
+# 2K28 recipe builds from (Noah 10/17: "Hairstyles ... This goes in his next test disc").
+for _preset in PRESETS.values():
+    _preset["hair_styles"] = False
+PRESETS["softdrink_experimental"]["hair_styles"] = True
+del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
 for _preset in PRESETS.values():
@@ -781,6 +792,11 @@ def _kick_meter_available() -> bool:  # b76-km
     return module is not None and module.available()  # the pins, the art and the geometry must agree
 
 
+def _hair_styles_available() -> bool:  # b775-hs1
+    module = _core_module("nfl2k5_hair_styles")
+    return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
+
+
 def _modern_coaches_available() -> bool:  # b77-co1
     module = _core_module("nfl2k5_modern_coaches")
     return module is not None and module.available()  # the pins and the shipped art must agree
@@ -840,6 +856,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
+        "hair_styles": _hair_styles_available(),  # b775-hs1
         "modern_fans": _modern_fans_available(),  # b77-fr1
         "modern_officials": _modern_officials_available(),  # b77-rf1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1533,6 +1550,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_goalposts"] = goalposts.image_status(source)
         except (OSError, ValueError):
             out["modern_goalposts"] = "unknown"
+    # b775-hs1: hair styles (the two player scenes, nine hair textures in outer 3 and the executable owner)
+    hair = _core_module("nfl2k5_hair_styles")
+    if hair is None:
+        out["hair_styles"] = "unavailable"
+    elif not tt.is_disc_image(source):
+        out["hair_styles"] = "needs_image"
+    else:
+        try:
+            out["hair_styles"] = hair.image_status(source)
+        except (OSError, ValueError):
+            out["hair_styles"] = "unknown"
     # b77-co1: the 2026 head coaches (32 coach models, two portrait slots, two coach-record photo ids)
     coaches = _core_module("nfl2k5_modern_coaches")
     if coaches is None:
@@ -2601,6 +2629,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern goalposts must be Off or On.")
     if type(plan.modern_coaches) is not bool:  # b77-co1
         raise ValueError("2026 head coaches must be Off or On.")
+    if type(plan.hair_styles) is not bool:  # b775-hs1
+        raise ValueError("Hair styles must be Off or On.")
+    if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
+        raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
+                         "and the overlay pins their retail positions. Turn one of them off.")
     if type(plan.modern_fans) is not bool:  # b77-fr1
         raise ValueError("2026 fans must be Off or On.")
     if type(plan.modern_officials) is not bool:  # b77-rf1
@@ -3259,6 +3292,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"Modern goalposts cannot read the goalpost scenes: {exc}") from exc
         if goal_state not in ("retail", "applied"):
             raise ValueError("The goalpost, its shadow and the executable's goalpost sites are not the supported retail or already-modern set. Turn Modern goalposts off or rebuild from a supported USA source.")
+    if plan.hair_styles:  # b775-hs1
+        hair = _core_module("nfl2k5_hair_styles")
+        if hair is None or not is_image:
+            raise ValueError("Hair styles need a disc image (the player models live in the archive packs).")
+        progress("Checking the player models for hair styles", 0, 0)
+        try:
+            hair_state = hair.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Hair styles cannot read the player models: {exc}") from exc
+        if hair_state not in ("retail", "applied"):
+            raise ValueError("The player models, hair textures or the executable's hair hook are not the supported "
+                             "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
     if plan.modern_coaches:  # b77-co1
         coaches = _core_module("nfl2k5_modern_coaches")
         if coaches is None or not is_image:
@@ -4513,6 +4558,26 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         helmets_receipt = helmets.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_helmets", **helmets_receipt})
         receipt["result"]["modern_helmets"] = helmets_receipt["status"]
+    if plan.hair_styles:
+        # b775-hs1: after Modern helmets (its in-place scene writes are judged under the hair growth) and after every
+        # executable writer: the two player scenes grow, nine hair textures are appended to outer 3 (pack 0 is
+        # rewritten at the end of the copy), then the late allocator owner and its hook go into default.xbe.
+        hair = _core_module("nfl2k5_hair_styles")
+        progress("Hair styles: player models and hair textures", 0, 0)
+        hair_receipt = hair.apply_to_image(target, progress=progress)
+        hair_xbe, hair_xbe_receipt = hair.apply(_xbe_bytes(target))
+        _write_xbe_bytes(target, hair_xbe)
+        # the 2026 assignments (data/nfl2k5_hair_styles_2026_roster_edits.json, sourced per player) go into the main
+        # roster here, after every roster writer, and only when it is the 2026 league roster they were made on
+        hair_roster = hair.apply_assignments(target)
+        if hair.image_status(target) != "applied":
+            raise RuntimeError("Hair styles: the output image does not read back as applied")
+        receipt["steps"].append({"step": "hair_styles", **{k: v for k, v in hair_receipt.items() if k != "scenes"},
+                                 "scenes": [{k: v for k, v in r.items() if k in ("key", "growth", "added_vertices")}
+                                            for r in hair_receipt.get("scenes", [])],
+                                 "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"},
+                                 "roster": hair_roster})
+        receipt["result"]["hair_styles"] = "applied"
     if _commentary_final_wanted(plan, loaded_espn25_plan):
         # b77-c2: the last roster writer has run (main roster, historic and Anniversary files, the user's Anniversary
         # edits, the historic helmets). The final commentary pass gives every other ROST resource the play-by-play

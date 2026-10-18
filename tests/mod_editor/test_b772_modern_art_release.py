@@ -21,7 +21,8 @@ tool = importlib.util.module_from_spec(TOOL_SPEC)
 TOOL_SPEC.loader.exec_module(tool)
 FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5_modern_officials",
            "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers",
-           "data/nfl2k5_super_bowl_fields")
+           "data/nfl2k5_super_bowl_fields",
+           "data/nfl2k5_hair_styles/art")  # b775-hs1
 
 
 class ModernArtReleaseTests(unittest.TestCase):
@@ -59,14 +60,14 @@ class ModernArtReleaseTests(unittest.TestCase):
     def test_every_modern_png_is_authored_and_catalogued(self):
         """pr2 leaves 595 coach, fan and official PNGs; me1 adds 122 event walls and one ball; sb2 adds 101 authored
         ``.marks.png`` slot layers to the walls (223 wall PNGs in all); fn1 adds the block yard numerals atlas (820 files);
-        sb1 adds 23 authored Super Bowl field marks and 19 franchise host surfaces (862 files).
+        sb1 adds 23 authored Super Bowl field marks and 19 franchise host surfaces (862 files); hs1 adds nine hair textures (871).
 
         Portrait photos remain external and shoe/clipboard pixels come from the user's disc.
         """
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 862)
+        self.assertEqual(len(document["files"]), 871)   # b775-int1: sb1 862 + hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):

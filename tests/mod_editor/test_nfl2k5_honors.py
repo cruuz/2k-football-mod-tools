@@ -110,7 +110,8 @@ class TemplateTests(unittest.TestCase):
         # after those (none of them moves honors or the coach AI)
         self.assertEqual(late[late.index("nfl2k5_honors"):][:2], ("nfl2k5_honors", "nfl2k5_coach_ai"))
         self.assertLess(late.index("nfl2k5_coach_ai"), late.index("nfl2k5_moment_coaches"))
-        self.assertEqual(late[-2:], ("nfl2k5_team_ratings", "nfl2k5_team_ratings_display"))
+        # b775-hs1: the hair styles owner is appended after the team ratings owners (the last late owner)
+        self.assertEqual(late[-3:], ("nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_hair_styles"))
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
