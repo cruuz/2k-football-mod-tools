@@ -160,5 +160,20 @@ class QuietProgressTests(unittest.TestCase):
             self.assertTrue({'Enter the draft', 'Undrafted free agent', 'Quit to main menu'} <= rows, rows)
 
 
+@unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, ROST, FONT, LAYT, MRKS and Unicorn required')
+class QuietProgressWithCareerHomeTests(QuietProgressTests):
+    """The same proofs on the image that also carries the Career Home section (the b775 test disc's layout)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from mod_editor.core import nfl2k5_my_career_home as home
+        cls.payload = home.apply(cls.payload)[0]
+        assert mode.status(cls.payload) == 'applied' and home.status(cls.payload) == 'applied'
+
+    def test_other_owned_menus_still_draw_natively(self):
+        self.skipTest('the entry menu is covered on the plain image; Career Home only replaces the Apartment')
+
+
 if __name__ == '__main__':
     unittest.main()
