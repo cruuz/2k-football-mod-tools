@@ -580,6 +580,7 @@ mod_editor/core/nfl2k5_resource_load_guard.py
 mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_classic_teams.py
+mod_editor/core/nfl2k5_front_schemes.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code.py
 mod_editor/core/nfl2k5_espn25_more_moments.py
 mod_editor/core/nfl2k5_espn25_more_moments_code.py
@@ -699,6 +700,7 @@ data/nfl2k5_espn25_more_moments.json
 data/nfl2k5_moment_venues.json
 data/nfl2k5_moment_goalposts.json
 data/nfl2k5_stock_books.json
+data/nfl2k5_front_schemes.json
 data/nfl2k5_moment_playbook_eras.json
 data/nfl2k5_era_rules.json
 data/espn25_previews_2026.json

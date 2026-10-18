@@ -150,13 +150,26 @@ class RuleTests(unittest.TestCase):
         self.check("DE1 DE2 DT2 DT0 DT1 DE0 ILB0 OLB0 FS0 CB1 CB0", "EDGE1 EDGE2 DT2 DT0 DT1 EDGE0 LB0 LB1 FS0 CB1 CB0", "even", 0x0B)
         self.check("DE1 DE0 DT1 DT3 DT0 OLB1 ILB1 OLB0 FS1 CB1 CB0", "EDGE1 EDGE0 DT1 DT3 DT0 LB3 LB1 LB2 FS1 CB1 CB0", "even", 0x0B)
 
-    def test_prevent_default_and_two_edges(self) -> None:
-        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "EDGE0 DT2 DT1 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "odd", 0x10)
-        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "EDGE0 EDGE1 DT1 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "odd", 0x10,
+    def test_prevent_keeps_the_ends_as_edge_and_the_dropper_as_a_linebacker(self) -> None:
+        # b776-de1: slot 0 of a retail Prevent is a dropping linebacker in every coverage play; it must never be an EDGE
+        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "LB1 EDGE1 EDGE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "prevent", 0x10)
+        # the legacy flag no longer changes anything
+        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "LB1 EDGE1 EDGE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "prevent", 0x10,
                    prevent_two_edges=True)
-        # the option only touches Prevent
+        # the other retail Prevent shapes: the nose variant (GEN, WCO) and a slot 0 that is already an ILB (MIA, reference)
+        self.check("OLB1 DE1 DE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0", "LB2 EDGE1 EDGE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0", "prevent", 0x10)
+        self.check("ILB1 DE1 DE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0", "LB1 EDGE1 EDGE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0", "prevent", 0x10)
+        # the 3-4 itself still takes the odd rule, flag or not
         self.check("OLB1 DE1 DE0 DT0 ILB1 ILB0 OLB0 FS0 SS0 CB1 CB0", "EDGE1 DT2 DT1 DT0 LB1 LB0 EDGE0 FS0 SS0 CB1 CB0", "odd", 0x0D,
                    prevent_two_edges=True)
+
+    def test_no_prevent_slot_that_drops_is_ever_an_edge(self) -> None:
+        # slot 0 of every Prevent shape is an LB code after the recode
+        for before in ("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "OLB1 DE1 DE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0",
+                       "ILB1 DE1 DE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0"):
+            new, _ = pr.recode_codes(codes(before), 0x10)
+            self.assertEqual(new[0] & 0x1F, pr.KIND_ILB, before)
+            self.assertEqual([c & 0x1F for c in new[1:3]], [pr.KIND_DE, pr.KIND_DE], before)
 
     def test_offense_untouched(self) -> None:
         before = codes("QB0 T0 T1 C0 G0 G1 TE0 WR1 WR0 FB0 HB0")
@@ -281,12 +294,12 @@ class SyntheticImageTests(unittest.TestCase):
             arz = pr.load_books(archive, ["ARZ"])[0]
         self.assertEqual(arz.categories[0].codes, custom[0][2])
 
-    def test_prevent_two_edges_reads_applied_custom(self) -> None:
+    def test_prevent_two_edges_flag_is_the_default_recode(self) -> None:
         retail, applied = self.digests["retail"], self.digests["applied"]
         receipt = pr.apply(self.fixture.path, names=TEST_BOOKS, prevent_two_edges=True, retail=retail, applied=applied)
-        self.assertEqual(receipt["after"]["ARZ"], "applied-custom")
-        self.assertEqual(receipt["after"]["BAL"], "applied")          # no Prevent in that book
-        self.assertEqual(receipt["status"], "applied-custom")
+        self.assertEqual(receipt["after"]["ARZ"], "applied")
+        self.assertEqual(receipt["after"]["BAL"], "applied")
+        self.assertEqual(receipt["status"], "applied")
 
     def test_inspect_lists_every_defensive_category(self) -> None:
         with pr.OuterImage(self.fixture.path) as archive:

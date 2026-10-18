@@ -23,7 +23,7 @@ PICKS={'KR1':(4,0),'KR2':(4,2),'PR':(4,1),'K':(2,0),'P':(1,0),'LS':(6,1),'H':(3,
 CHART={'KR1':(0,254,0),'KR2':(1,254,0),'PR':(0,253,0), 'K':(0,1,0),'P':(0,2,0),'LS':(0,12,2)}
 
 class Probe:
-    def __init__(self, xbe, body):
+    def __init__(self, xbe, body, clubs=32):
         self.doc=rr.RosterDocument(body)
         self.m=m=Machine(xbe,trace_writes=False)
         self.calls={hex(a):0 for a in (0xc0500,0x243790,0x2bdcf0,0xe7c50,0xe8790)}
@@ -36,7 +36,7 @@ class Probe:
         m.fixup_roster(self.base+0x40)
         self.load_calls=dict(self.calls)
         # Only the 32 NFL clubs enter this bounded franchise-style sort.
-        m.put(m.root+0x18,32)
+        m.put(m.root+0x18,clubs)
         m.put(0xe60140,1)
         self.context=m.ARENA+0x150000
         self.assigned=self.context+0x1000

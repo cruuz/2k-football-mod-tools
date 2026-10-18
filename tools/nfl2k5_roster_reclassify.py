@@ -78,6 +78,8 @@ FRONT_ENUMS = (ENUM_OLB, ENUM_ILB, ENUM_DT, ENUM_DE)
 POOL_LABEL = {ENUM_ILB: "LB", ENUM_DT: "DT", ENUM_DE: "EDGE", ENUM_OLB: "OLB"}
 PLAYER_POSITION = 0x35
 PLAYER_ORDER_WORD = 0x28
+PLAYER_WEIGHT = 0x2A
+WEIGHT_BASE = 150
 RANK_SHIFT, SIDE_SHIFT, ORDER_MASK = 10, 13, 0x7
 ROW_CAP = 7
 TEAM_KIND_NFL = 0
@@ -128,6 +130,7 @@ class Player:
     word: int                   # +0x28 (u16)
     name: str
     teams: list[int] = field(default_factory=list)
+    weight: int = 0             # pounds: byte +0x2A plus 150
 
     @property
     def rank(self) -> int:
@@ -191,7 +194,7 @@ def parse_resource(entry_index: int, virtual_offset: int, raw: bytes) -> Resourc
             _, first = nr.string_pointer(body, off + 0x10, "first name")
             _, last = nr.string_pointer(body, off + 0x14, "last name")
             players[off] = Player(off, body[off + PLAYER_POSITION], struct.unpack_from("<H", body, off + PLAYER_ORDER_WORD)[0],
-                                  f"{first or ''} {last or ''}".strip())
+                                  f"{first or ''} {last or ''}".strip(), weight=body[off + PLAYER_WEIGHT] + WEIGHT_BASE)
     labels = tables["team_labels"]
     label_abbrs: list[str | None] = []
     for i in range(int(labels["count"])):
@@ -355,8 +358,19 @@ def pool_plan(scheme: str) -> dict[int, tuple[list[int], list[tuple[int, str]]]]
             ENUM_ILB: ([ENUM_ILB, ENUM_OLB], [(0, "rank"), (1, "rank"), (1, "side")])}
 
 
-def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) -> list[Move]:
-    """Moves for one team; players already ``claimed`` by an earlier team keep their fields."""
+MIN_LB_FOR_EVEN_BOOKS = 3        # the even fronts' MIKE / WILL / SAM
+LIGHT_END_POUNDS = 265           # a 3-4 "end" this light is an outside backer the data labelled DE (a 4-3 edge rusher)
+
+
+def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int], *, min_lb: int = 0,
+              light_end: int = 0) -> list[Move]:
+    """Moves for one team; players already ``claimed`` by an earlier team keep their fields.
+
+    ``min_lb`` (3-4 only, b776-de1): a 3-4 roster keeps its outside backers as EDGE, so its LB pool is only the inside
+    backers. A four-down book asks that pool for three starters; when the roster has fewer, the lowest-ranked outside
+    backers beyond the first three join the LB pool instead (never below three EDGE), so an LB slot is never filled
+    from another pool.
+    """
 
     moves: list[Move] = []
     by_position: dict[int, list[Player]] = {e: [] for e in FRONT_ENUMS}
@@ -364,8 +378,23 @@ def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) ->
         p = resource.players[off]
         if p.position in by_position:
             by_position[p.position].append(p)
+    if scheme == "3-4" and light_end:
+        light = [p for p in by_position[ENUM_DE] if 0 < p.weight <= light_end]
+        by_position[ENUM_DE] = [p for p in by_position[ENUM_DE] if p not in light]
+        by_position[ENUM_OLB] = by_position[ENUM_OLB] + light
+    topped_up: list[Player] = []
+    if scheme == "3-4" and min_lb:
+        need = min_lb - len(by_position[ENUM_ILB])
+        spare = len(by_position[ENUM_OLB]) - 3
+        if need > 0 and spare > 0:
+            outside = merged_order([by_position[ENUM_OLB]], [(0, "rank"), (0, "side")])
+            topped_up = outside[len(outside) - min(need, spare):]
     for new_enum, (sources, starters) in pool_plan(scheme).items():
         groups = [by_position[e] for e in sources]
+        if topped_up and new_enum == ENUM_DE:
+            groups = [[p for p in groups[0] if p not in topped_up]]
+        elif topped_up and new_enum == ENUM_ILB:
+            groups = [groups[0], topped_up]
         order = merged_order(groups, starters)
         for index, p in enumerate(order):
             rank = min(index, ROW_CAP)
@@ -380,14 +409,22 @@ def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) ->
 
 
 def plan_resource(resource: Resource, schemes: Mapping[str, str], *, three_four: Sequence[str] = (),
-                  four_three: Sequence[str] = ()) -> tuple[list[Move], dict[int, str]]:
+                  four_three: Sequence[str] = (), historic_scheme: str = "4-3",
+                  historic_min_lb: int = 0, historic_light_end: int = 0) -> tuple[list[Move], dict[int, str]]:
+    """``historic_scheme`` (b776-de1) is the rule a one-team historic / classic / moment file takes. Every retail
+    historic file keeps the 4-3 rule; a team-season that really ran a 3-4 (``nfl2k5_front_schemes``) takes ``"3-4"`` so
+    its outside backers are EDGE and its ends are interior, with ``historic_min_lb`` keeping three LBs."""
+
+    _require(historic_scheme in ("4-3", "3-4"), f"unknown historic scheme {historic_scheme!r}")
     claimed: set[int] = set()
     moves: list[Move] = []
     team_schemes: dict[int, str] = {}
     for team in resource.teams:
-        scheme = team_scheme(team, schemes, three_four, four_three) if resource.label == "roster" else "4-3"
+        scheme = team_scheme(team, schemes, three_four, four_three) if resource.label == "roster" else historic_scheme
         team_schemes[team.index] = scheme
-        moves.extend(plan_team(resource, team, scheme, claimed))
+        historic = resource.label != "roster"
+        moves.extend(plan_team(resource, team, scheme, claimed, min_lb=historic_min_lb if historic else 0,
+                               light_end=historic_light_end if historic else 0))
     secondary = int(resource.tables["secondary_players"]["offset"])
     secondary_end = int(resource.tables["secondary_players"]["end"])
     for p in resource.players.values():

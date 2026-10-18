@@ -1,0 +1,47 @@
+{
+  "schema": "nfl2k5_front_schemes/v1",
+  "evidence": "INFERRED from public team histories (base defensive front of the named coordinator's scheme that season) and cross-checked against each roster's own heavy-end share by tests/mod_editor/test_nfl2k5_front_schemes.py; not witnessed in game. A team-season not listed keeps the historic 4-3 rule, which is what every build before b776 gave every historic file.",
+  "about": "b776-de1 (Noah, 10/18 playtest: Kayvon Thibodeaux at middle linebacker and Leonard Williams at edge on the 22 Giants classic team). The generated rosters label players with retail positions (DE / DT / OLB / ILB). The One-pool build used to turn every one of them with the 4-3 rule (OLB to LB, DE to EDGE), which is wrong for a team-season that ran a 3-4: its pass-rushing outside linebackers became LBs and its heavy ends became EDGE. These lists name the team-seasons that ran a 3-4 so the 3-4 rule applies to them (OLB to EDGE, DE to the interior pool). See nfl2k5_front_schemes.mapping_scheme for when the rule is used (a pure 3-4 stock book keeps the retail slot meaning).",
+  "three_four": {
+    "classic": {
+      "broncos_2015": "Wade Phillips 3-4",
+      "buccaneers_2020": "Todd Bowles 3-4",
+      "chargers_2006": "Wade Phillips 3-4",
+      "colts_2014": "Greg Manusky 3-4",
+      "giants_2022": "Wink Martindale 3-4",
+      "packers_2010": "Dom Capers 3-4",
+      "packers_2011": "Dom Capers 3-4",
+      "ravens_2019": "Wink Martindale 3-4 base",
+      "seahawks_2025": "Mike Macdonald odd-front base (three heavy ends on the roster)",
+      "steelers_2005": "Dick LeBeau 3-4",
+      "titans_2019": "Dean Pees 3-4"
+    },
+    "moments": {
+      "49ers_2011": "Vic Fangio 3-4",
+      "49ers_2012": "Vic Fangio 3-4",
+      "cardinals_2008": "Clancy Pendergast 3-4",
+      "packers_2014": "Dom Capers 3-4",
+      "packers_2015": "Dom Capers 3-4",
+      "patriots_2001": "Bill Belichick 3-4",
+      "patriots_2003": "Bill Belichick 3-4",
+      "patriots_2007": "Bill Belichick 3-4",
+      "rams_2021": "Raheem Morris 3-4",
+      "ravens_2012": "Dean Pees 3-4",
+      "steelers_2008": "Dick LeBeau 3-4",
+      "steelers_2025": "Teryl Austin 3-4",
+      "vikings_2022": "Ed Donatell 3-4"
+    }
+  },
+  "heavy_end_cross_check": {
+    "about": "Cross-check used by the unit test: share of a team's three top-depth DE rows at 280 lb or more. Every listed 3-4 team is at 1/3 or more; every UNLISTED team at 2/3 or more is named here as reviewed and left on the 4-3 rule.",
+    "reviewed_four_three": {
+      "classic": [],
+      "moments": {
+        "patriots_2011": "Belichick hybrid, 4-3 base that year",
+        "saints_2009": "Gregg Williams 4-3",
+        "saints_2011": "Gregg Williams 4-3",
+        "vikings_1998": "Foge Fazio 4-3"
+      }
+    }
+  }
+}
