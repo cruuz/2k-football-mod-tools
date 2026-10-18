@@ -244,3 +244,25 @@ The C/assembly sources and reproducible assembler are development tools;
 Studio uses the checked-in generated code template. Derivation, manual USR
 export, native repair and Unicorn verification commands run from the source
 repository; they are not runtime dependencies of the packaged Studio.
+
+## Play variety (b776)
+
+The native CPU draws a ring member at random, never the one it called last, so the
+rings are the variety. After the charted-marginal fit, `nfl2k5_coach_diversity`
+spreads them: members are swapped only for members with the same pass/run, stance,
+play-action, screen, deep and run-lane flags, so every charted marginal and every
+pool's pass/shotgun joint is unchanged (the build re-checks this), and a bounded
+trade against the fit (stated tolerance, in the receipt) may widen the choice.
+Rules: no repeated (formation, concept family) pair in a ring, at most one screen
+of a family and two per ring and none adjacent, no Hail Mary-type play outside a
+late trailing pool, few repeated families, formations or primary targets in a ring,
+and few repeats of the same play across the situation pools. Defensive rings use the
+same swap inside the (man, five-plus rushers) class. Families come from the compiled
+play names (team code, personnel number and direction words dropped), never from play
+indices, so the step re-runs on any rebuilt book. The receipt carries `variety` and
+`defense_variety` (before/after counts). `build_profile(..., varied=False)` rebuilds the
+fit-only rings.
+
+`nfl2k5_formation_menu_pages` measures a different cause of repetition: a formation
+whose link count is not a multiple of three repeats its last play on the empty buttons
+of its last menu page.

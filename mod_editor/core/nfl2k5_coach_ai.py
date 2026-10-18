@@ -136,7 +136,7 @@ def expand_profile(resource):
     return bytes(out)
 
 
-def build_profile(resource, tendency):
+def build_profile(resource, tendency, *, varied=True):
     original = strip_profile(resource)
     row = next((r for r in portrait_rows() if r["team"] == tendency["team"]), None)
     require(row is not None, "No current NFL coach identity for team")
@@ -147,7 +147,7 @@ def build_profile(resource, tendency):
     empty = bytearray(vip.SIZE)
     struct.pack_into("<I", empty, 0, 1)
     save, receipt = vip.build_coach(vip.VipSave.decode(bytes(empty)), original, tendency,
-                                   row["name"], row["book_index"])
+                                   row["name"], row["book_index"], varied=varied)
     ctx = bytearray(save.payload[vip.CONTEXT:vip.CONTEXT + CONTEXT_SIZE])
     passes, runs = struct.unpack_from("<HH", ctx, 0x20B8)
     # Native game-start 281A90 decays pass and run totals independently at

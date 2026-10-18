@@ -3491,6 +3491,9 @@ mod_editor/core/nfl2k5_spare_capacity.py
 mod_editor/core/nfl2k5_coach_ai.py
 mod_editor/core/nfl2k5_coach_ai_code.py
 mod_editor/core/nfl2k5_vip.py
+# b776 pb2: CPU coach play-ring variety and the formation menu page check (nfl2k5_vip imports the first).
+mod_editor/core/nfl2k5_coach_diversity.py
+mod_editor/core/nfl2k5_formation_menu_pages.py
 data/vip/coach_sources_2026.json
 data/vip/coach_portraits_2026.json
 data/vip/coaches/ARI.json
