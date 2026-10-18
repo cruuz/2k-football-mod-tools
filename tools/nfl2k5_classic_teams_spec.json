@@ -1,0 +1,247 @@
+{
+ "schema": 1,
+ "about": "Hand-written half of the classic teams (job ct1, 2026-10-17, Noah's request: great and memorable teams of 2005-2025 that are not 25th Anniversary moment teams). Each team-season names one regular-season game: its week's nflverse weekly roster (ACT and INA) is the 53-man pool, that week's nflverse depth chart orders the starters, and that game's play-by-play gives the jersey numbers. Ratings come from the same m2 ratings model the Anniversary teams use. 'why' records the pick and the week choice. left_handed, display_names and handedness are read from tools/nfl2k5_espn25_more_moments_spec.json so both datasets share one answer. lineup: 'season' (default) puts the season's starters first (nflverse depth chart: listed first in at least half the regular-season weeks; missing starters join the pool from the season roster); 'week' keeps the chosen week's first string (2020 Browns: Noah asked for Beckham, who started 7 games). 2025 has dated snapshots instead of weekly charts: the snapshot of the game day is used.",
+ "teams": {
+  "bears_2006": {
+   "selector": "bears",
+   "season": 2006,
+   "nflverse": "CHI",
+   "week": 17,
+   "game_id": "2006_17_GB_CHI",
+   "city": "Chicago",
+   "nickname": "Bears",
+   "why": "NFC champions (Hester)"
+  },
+  "broncos_2015": {
+   "selector": "broncos",
+   "season": 2015,
+   "nflverse": "DEN",
+   "week": 17,
+   "game_id": "2015_17_SD_DEN",
+   "city": "Denver",
+   "nickname": "Broncos",
+   "why": "Super Bowl 50 champions"
+  },
+  "browns_2017": {
+   "selector": "browns",
+   "season": 2017,
+   "nflverse": "CLE",
+   "week": 17,
+   "game_id": "2017_17_CLE_PIT",
+   "city": "Cleveland",
+   "nickname": "Browns",
+   "why": "Noah: 0-16 lowlight"
+  },
+  "browns_2020": {
+   "selector": "browns",
+   "season": 2020,
+   "nflverse": "CLE",
+   "week": 4,
+   "game_id": "2020_04_CLE_DAL",
+   "city": "Cleveland",
+   "nickname": "Browns",
+   "why": "Noah: OBJ/Landry/Baker; week 4 at Dallas, the last game with Beckham and Chubb both healthy",
+   "lineup": "week"
+  },
+  "buccaneers_2020": {
+   "selector": "buccaneers",
+   "season": 2020,
+   "nflverse": "TB",
+   "week": 17,
+   "game_id": "2020_17_ATL_TB",
+   "city": "Tampa Bay",
+   "nickname": "Buccaneers",
+   "why": "Noah: Brady Super Bowl LV team"
+  },
+  "chargers_2006": {
+   "selector": "chargers",
+   "season": 2006,
+   "nflverse": "SD",
+   "week": 17,
+   "game_id": "2006_17_ARI_SD",
+   "city": "San Diego",
+   "nickname": "Chargers",
+   "why": "Noah: Rivers' best Chargers team (14-2)"
+  },
+  "chiefs_2022": {
+   "selector": "chiefs",
+   "season": 2022,
+   "nflverse": "KC",
+   "week": 18,
+   "game_id": "2022_18_KC_LV",
+   "city": "Kansas City",
+   "nickname": "Chiefs",
+   "why": "Super Bowl LVII champions"
+  },
+  "colts_2006": {
+   "selector": "colts",
+   "season": 2006,
+   "nflverse": "IND",
+   "week": 17,
+   "game_id": "2006_17_MIA_IND",
+   "city": "Indianapolis",
+   "nickname": "Colts",
+   "why": "Super Bowl XLI champions"
+  },
+  "colts_2014": {
+   "selector": "colts",
+   "season": 2014,
+   "nflverse": "IND",
+   "week": 17,
+   "game_id": "2014_17_IND_TEN",
+   "city": "Indianapolis",
+   "nickname": "Colts",
+   "why": "Noah: Luck's best Colts team (11-5, AFC Championship Game)"
+  },
+  "eagles_2017": {
+   "selector": "eagles",
+   "season": 2017,
+   "nflverse": "PHI",
+   "week": 13,
+   "game_id": "2017_13_PHI_SEA",
+   "city": "Philadelphia",
+   "nickname": "Eagles",
+   "why": "Noah: 2017 Eagles with Wentz AND Foles; week 13, before Wentz's week 14 injury"
+  },
+  "eagles_2024": {
+   "selector": "eagles",
+   "season": 2024,
+   "nflverse": "PHI",
+   "week": 15,
+   "game_id": "2024_15_PIT_PHI",
+   "city": "Philadelphia",
+   "nickname": "Eagles",
+   "why": "Super Bowl LIX champions; week 15, Hurts' last full game before his week 16 concussion (week 18 starters rested)"
+  },
+  "giants_2016": {
+   "selector": "giants",
+   "season": 2016,
+   "nflverse": "NYG",
+   "week": 16,
+   "game_id": "2016_16_NYG_PHI",
+   "city": "New York",
+   "nickname": "Giants",
+   "why": "Noah: 2016 playoff team; week 16 (week 17 was a resting finale)"
+  },
+  "giants_2022": {
+   "selector": "giants",
+   "season": 2022,
+   "nflverse": "NYG",
+   "week": 17,
+   "game_id": "2022_17_IND_NYG",
+   "city": "New York",
+   "nickname": "Giants",
+   "why": "Noah: 2022 playoff team; week 17 clincher (week 18 starters rested)"
+  },
+  "lions_2008": {
+   "selector": "lions",
+   "season": 2008,
+   "nflverse": "DET",
+   "week": 17,
+   "game_id": "2008_17_DET_GB",
+   "city": "Detroit",
+   "nickname": "Lions",
+   "why": "Noah: 0-16 lowlight"
+  },
+  "lions_2024": {
+   "selector": "lions",
+   "season": 2024,
+   "nflverse": "DET",
+   "week": 18,
+   "game_id": "2024_18_MIN_DET",
+   "city": "Detroit",
+   "nickname": "Lions",
+   "why": "15-2, NFC first seed"
+  },
+  "packers_2010": {
+   "selector": "packers",
+   "season": 2010,
+   "nflverse": "GB",
+   "week": 17,
+   "game_id": "2010_17_CHI_GB",
+   "city": "Green Bay",
+   "nickname": "Packers",
+   "why": "Super Bowl XLV champions"
+  },
+  "packers_2011": {
+   "selector": "packers",
+   "season": 2011,
+   "nflverse": "GB",
+   "week": 16,
+   "game_id": "2011_16_CHI_GB",
+   "city": "Green Bay",
+   "nickname": "Packers",
+   "why": "15-1; week 16 (Rodgers rested in week 17)"
+  },
+  "panthers_2015": {
+   "selector": "panthers",
+   "season": 2015,
+   "nflverse": "CAR",
+   "week": 17,
+   "game_id": "2015_17_TB_CAR",
+   "city": "Carolina",
+   "nickname": "Panthers",
+   "why": "15-1, Newton MVP, NFC champions"
+  },
+  "patriots_2018": {
+   "selector": "patriots",
+   "season": 2018,
+   "nflverse": "NE",
+   "week": 17,
+   "game_id": "2018_17_NYJ_NE",
+   "city": "New England",
+   "nickname": "Patriots",
+   "why": "Super Bowl LIII champions"
+  },
+  "ravens_2019": {
+   "selector": "ravens",
+   "season": 2019,
+   "nflverse": "BAL",
+   "week": 16,
+   "game_id": "2019_16_BAL_CLE",
+   "city": "Baltimore",
+   "nickname": "Ravens",
+   "why": "14-2, Jackson MVP; week 16 (starters rested in week 17)"
+  },
+  "seahawks_2013": {
+   "selector": "seahawks",
+   "season": 2013,
+   "nflverse": "SEA",
+   "week": 17,
+   "game_id": "2013_17_STL_SEA",
+   "city": "Seattle",
+   "nickname": "Seahawks",
+   "why": "Super Bowl XLVIII champions (Legion of Boom)"
+  },
+  "seahawks_2025": {
+   "selector": "seahawks",
+   "season": 2025,
+   "nflverse": "SEA",
+   "week": 18,
+   "game_id": "2025_18_SEA_SF",
+   "city": "Seattle",
+   "nickname": "Seahawks",
+   "why": "Super Bowl LX champions (29-13 over NE)"
+  },
+  "steelers_2005": {
+   "selector": "steelers",
+   "season": 2005,
+   "nflverse": "PIT",
+   "week": 17,
+   "game_id": "2005_17_DET_PIT",
+   "city": "Pittsburgh",
+   "nickname": "Steelers",
+   "why": "Super Bowl XL champions"
+  },
+  "titans_2019": {
+   "selector": "titans",
+   "season": 2019,
+   "nflverse": "TEN",
+   "week": 17,
+   "game_id": "2019_17_TEN_HOU",
+   "city": "Tennessee",
+   "nickname": "Titans",
+   "why": "Noah: peak Tannehill/Henry/A.J. Brown; 2019 = AFC Championship Game run (2020 is the swap)"
+  }
+ }
+}

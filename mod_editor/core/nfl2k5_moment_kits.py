@@ -153,7 +153,8 @@ def compose_side(side, packages):
         elif row["kind"] == "palette":
             spans[i], _receipt = fixes.compile_palette(spans[i], row)
         else:
-            spans[i], _receipt = fixes.compile_texture(spans[i], row)
+            # a row may ask for a fresh encoding (b775-ct1: whole new numerals do not fit the donor's stored span)
+            spans[i], _receipt = fixes.compile_texture(spans[i], row, fixed=not row.get("reencode", False))
     atlas = side.get("atlas")
     if atlas:
         span = spans[51]

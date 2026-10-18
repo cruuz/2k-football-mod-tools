@@ -809,7 +809,7 @@ def extend_palette(palette, free, wanted, alpha):
     return added
 
 
-def compile_texture(span, row, donors=None):
+def compile_texture(span, row, donors=None, *, fixed=True):
     """Paint ``row``'s art into one native chunk span; returns (new span, receipt). ``donors`` maps a chunk index
     of the same kit to its level-0 RGBA (stamp sources)."""
     chunk, decoded, textures = native_textures(span, row["kind"])
@@ -917,6 +917,14 @@ def compile_texture(span, row, donors=None):
         else:
             twin[slots] = MUD_RULES[rule](palette)[slots]
         new = write_texture(new, chunk, textures[1], new_planes, twin)
+    if not fixed:
+        # b775-ct1: a NEW kit package (nfl2k5_moment_kits) has no fixed allocation to keep: the chunk is re-encoded at
+        # its own size with the same decoded allocation (as the era-kit encoder does)
+        from . import nfl2k5_era_kits as era
+        fresh = era._encoded_span(span, new, chunk.video_bytes)
+        return fresh, dict(texture=clean["name"], mips=rows, palette_slots_added=added, mud_rule=rule,
+                           merged_twin_slots=merged_slots, protected_texels_moved_one_level=merged_moved,
+                           fit=None, level0_scope_texels=int(scope.sum()))
     fixed_span, fit = rebuild_fixed_span_filled(span, new, encoder="auto")
     require(len(fixed_span) == len(span) and fixed_span[:32] == span[:32], "wrapper or allocation changed")
     check, _ = decode_chunk(fixed_span, parse_chunks(fixed_span)[0])

@@ -113,7 +113,11 @@ def require(condition, message):
         raise HistoricQuickGameError(message)
 
 
-def code_for(code_va, data_va, *, seasons=False):
+def code_for(code_va, data_va, *, seasons=False, classic_va=None):
+    """The owned code. seasons: the HTS- season filename route (historic_rosters_2026). classic_va: the address of the
+    classic teams' helper allocation (nfl2k5_classic_teams); the list then runs on past the roster's historic entries
+    into the Anniversary moment team-seasons and the classic team-seasons, and an entry's year and file digit are read
+    through EDI (the helper's override record) instead of EAX."""
     symbols = dict(SYMBOLS, state=data_va)
     result = bytearray(assembly.CODE)
     for offset, kind, symbol, value in assembly.RELOCATIONS:
@@ -127,8 +131,52 @@ def code_for(code_va, data_va, *, seasons=False):
         at=result.index(operand)+1
         struct.pack_into('<I',result,at,code_va+len(result))
         result.extend('HTS-h-%s-%d-%s-%d.iff\0'.encode('utf-16le'))
+    if classic_va is not None:
+        result = bytearray(_classic_variant(bytes(result), code_va, classic_va, seasons=seasons))
     require(len(result) <= CODE_SIZE, "historic teams in Quick Game exceeds its RX budget")
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
+
+
+# The classic teams variant (job ct1, 2026-10-17). Each pattern is unique in the assembled code; it is replaced by a
+# same-length call into the classic helper allocation (CLASSIC_ENTRIES: offsets there) padded with NOPs, or by the
+# same instruction on another register.
+CLASSIC_ENTRIES = dict(total=0x00, cmp_total=0x10, entry=0x28, fmt=0x68)
+_ROOT = "1829b700"
+
+
+def _classic_variant(code, code_va, classic_va, *, seasons):
+    fmt = 0xE9F984 if not seasons else code_va + len(assembly.CODE)
+    replace = (
+        ("a1" + _ROOT + "8b4058", "total", 2),               # mov eax,[root]; mov eax,[eax+58h]  -> list length
+        ("8b0d" + _ROOT + "3b4158", "cmp_total", 2),          # mov ecx,[root]; cmp eax,[ecx+58h]  -> against it
+        ("8b0d" + _ROOT + "c1e00403415c", "entry", 1),        # mov ecx,[root]; shl eax,4; add eax,[ecx+5Ch]
+        ("ba" + struct.pack("<I", fmt).hex(), "fmt", 1),      # mov edx, file-name format
+    )
+    out = bytearray(code)
+    for pattern, entry, count in replace:
+        raw = bytes.fromhex(pattern)
+        require(out.count(raw) == count, f"classic variant: pattern {entry} changed")
+        while raw in out:
+            at = out.index(raw)
+            call = b"\xe8" + struct.pack("<i", classic_va + CLASSIC_ENTRIES[entry] - (code_va + at + 5))
+            out[at:at + len(raw)] = call.ljust(len(raw), b"\x90")
+    for before, after in (("0fb64802", "0fb64f02"), ("0fb708", "0fb70f")):   # digit [eax+2] / year [eax] -> [edi]
+        raw = bytes.fromhex(before)
+        require(out.count(raw) == 1, "classic variant: entry field read changed")
+        at = out.index(raw)
+        out[at:at + len(raw)] = bytes.fromhex(after)
+    return bytes(out)
+
+
+def _classic_va(payload):
+    """The classic teams' helper allocation, when the union carries it and it is installed (non-zero)."""
+    try:
+        rows = [a for a in space.layout(payload)["allocations"] if a["owner"] == "nfl2k5_classic_teams"]
+    except (ValueError, KeyError):
+        return None
+    if len(rows) != 1:
+        return None
+    return rows[0]["va"] if XbeImage(payload).read(rows[0]["va"], 4) != bytes(4) else None
 
 
 def allocations(payload):
@@ -165,9 +213,12 @@ def _recognize(payload):
     if owned:
         code, data = owned
         body = image.read(code["va"], CODE_SIZE)
-        states.add("retail" if body == b"\xcc" * CODE_SIZE else
-                   "applied" if body in (code_for(code["va"], data["va"]),
-                                          code_for(code["va"], data["va"], seasons=True)) else "foreign")
+        classic = _classic_va(payload)
+        variants = [code_for(code["va"], data["va"]), code_for(code["va"], data["va"], seasons=True)]
+        if classic is not None:
+            variants += [code_for(code["va"], data["va"], classic_va=classic),
+                         code_for(code["va"], data["va"], seasons=True, classic_va=classic)]
+        states.add("retail" if body == b"\xcc" * CODE_SIZE else "applied" if body in variants else "foreign")
     require(states in ({"retail"}, {"applied"}), "foreign/mixed historic Quick Game hooks or owned code")
     for va, size, digest, what in GUARDS:
         require(_guard_digest(image, va, size, edits) == digest, f"foreign {what} at {va:#x}")
@@ -185,11 +236,49 @@ def season_routing_status(payload):
     if status(payload) != 'applied':
         return False
     code,data=allocations(payload)
-    return XbeImage(payload).read(code['va'],CODE_SIZE)==code_for(code['va'],data['va'],seasons=True)
+    body=XbeImage(payload).read(code['va'],CODE_SIZE)
+    classic=_classic_va(payload)
+    return body==code_for(code['va'],data['va'],seasons=True) or (
+        classic is not None and body==code_for(code['va'],data['va'],seasons=True,classic_va=classic))
+
+
+def classic_status(payload):
+    """'applied' when the Quick Game code runs the classic teams variant, 'base' when it is installed without it."""
+    if status(payload) != 'applied':
+        return 'foreign'
+    code,data=allocations(payload)
+    body=XbeImage(payload).read(code['va'],CODE_SIZE)
+    classic=_classic_va(payload)
+    if classic is not None and body in (code_for(code['va'],data['va'],classic_va=classic),
+                                        code_for(code['va'],data['va'],seasons=True,classic_va=classic)):
+        return 'applied'
+    return 'base'
+
+
+def enable_classic(payload, classic_va):
+    """Switch the installed Quick Game code to the classic teams variant (keeping the season route if present).
+    Only nfl2k5_classic_teams calls this, after it installed its helper allocation at classic_va."""
+    require(status(payload)=='applied','classic teams require local historic selection')
+    code,data=allocations(payload)
+    seasons=season_routing_status(payload)
+    buffer=bytearray(payload)
+    buffer[code['raw']:code['raw']+CODE_SIZE]=code_for(code['va'],data['va'],seasons=seasons,classic_va=classic_va)
+    _,_,requests=space._validate(payload)
+    if space.is_scaleout(payload):
+        space._seal_scaleout(buffer,requests)
+    else:
+        buffer[space.DIRECTORY:space._directory_end(requests)]=space._directory(requests,space._code_bytes(buffer,requests))
+        for section in _sections(buffer):
+            buffer[section.header_offset+36:section.header_offset+56]=section_digest(buffer,section)
+    result=bytes(buffer)
+    require(classic_status(result)=='applied','classic Quick Game variant readback failed')
+    require(season_routing_status(result)==seasons,'classic variant changed the season route')
+    return result
 
 
 def enable_season_routing(payload):
     require(status(payload)=='applied','historic roster bank requires local historic selection')
+    require(classic_status(payload)!='applied','install the season route before the classic teams')
     code,data=allocations(payload)
     # This owner alone admits this exact, verified configuration transition.
     # The generic allocator continues refusing arbitrary filled-code replacement.
