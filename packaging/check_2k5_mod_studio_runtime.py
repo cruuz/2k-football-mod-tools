@@ -2003,6 +2003,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_kit_fixes_2026",                 # b772-uf1: 2026 home/away kit art fixes
         "mod_editor.core.nfl2k5_menu_icon_uf3",                  # b773-uf3: the Pittsburgh road miniature
         "mod_editor.core.nfl2k5_pants_hem_2026",                 # b773-pa1: the modern above-the-knee pants hem
+        "mod_editor.core.nfl2k5_glyph_fixes_2026",               # b776-fn2: Bears/Chiefs nameplate letters, Titans 7
         "mod_editor.core.nfl2k5_menu_helmet_w2026",              # b773-hu1: Washington menu helmets, 2026 W
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
