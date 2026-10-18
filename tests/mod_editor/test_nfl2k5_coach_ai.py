@@ -255,7 +255,8 @@ class NativeInstallation(unittest.TestCase):
         # Moment coaches joined after coach AI and follows it in both the
         # MyCareer code gap and the data tail. Check preservation in the
         # actual introduction order, including every current owner.
-        previous = [r for r in requests if r[0] != "nfl2k5_moment_coaches"]
+        # b775-int1: mo2's moment context state joined later still, 16 bytes under the coach records in the same tail.
+        previous = [r for r in requests if r[0] not in ("nfl2k5_moment_coaches", "nfl2k5_moment_context")]
         old = space._scale_allocations([r for r in previous if r[0] != ai.OWNER])
         new = space._scale_allocations(previous)
         self.assertTrue(all(r in new for r in old))
@@ -265,7 +266,8 @@ class NativeInstallation(unittest.TestCase):
         added = [r for r in complete if r not in new]
         self.assertEqual({(r["owner"], r["kind"], r["size"]) for r in added},
                          {("nfl2k5_moment_coaches", "code", 512),
-                          ("nfl2k5_moment_coaches", "data", 512)})
+                          ("nfl2k5_moment_coaches", "data", 512),
+                          ("nfl2k5_moment_context", "data", 16)})  # b775 mo2
 
     def test_native_repair_includes_policy_and_is_idempotent(self):
         from tools.b77.vp2_repair import repair_xbe

@@ -30,7 +30,7 @@ class PublicTests(unittest.TestCase):
         plan = space.plan(rows, scaleout=True)
         # Beta 77 also reserves letter-grade and period-goalpost tables,
         # reducing the previous 584-byte remainder by 280 including alignment.
-        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 304)
+        self.assertEqual(plan['capacity']['read_only']['available_bytes'], 64)  # b775-ct1: the classic teams take 240 more
         self.assertEqual(len(edit.read_only_bytes()), 704)
         self.assertEqual(edit.EDIT_ROW[2:5], (1, 0, 0))
         self.assertEqual(edit.EDIT_ROW[5:], (1,) * 10)
