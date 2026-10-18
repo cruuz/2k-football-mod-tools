@@ -390,13 +390,66 @@ def _retail_playoff_field(source):
     return span,detail
 
 
+def _row_job(job):
+    """Worker: one catalog row's field, from the bytes the caller read. No callback and no shared state.
+
+    The row's own end-zone wordmarks and the era shield travel with the job; ``Marks`` is rebuilt from its inputs
+    (its caches only save time). Returns (alias, field bytes, the row's receipt entry).
+    """
+    from . import nfl2k5_modern_metlife as mm
+    from . import nfl2k5_super_bowl_walls as super_bowl_walls
+    row,code,name,source,template,wordmarks,old_shield,period,user_art=job
+    marks=super_bowl_walls.Marks(period,user_art)
+    index=row['row']-1
+    chunk,_,_=_field_chunk(source);before=mm.scene_span(source,chunk)
+    if row['row'] in (24,25):
+        # Keep the actual 2003 helmet/wordmark/NFL PLAYOFFS paint. The
+        # generic retail field also carries conference-title stamps, which
+        # do not belong to these wildcard/divisional matchups.
+        span,detail=_retail_playoff_field(source)
+    else:span,detail=_field(template,row,wordmarks,old_shield,marks)  # sb1: Super Bowl flank marks
+    after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
+    if row['row'] not in PRESERVED_RETAIL_ROWS:
+        after, protection = protect_period_field(after)
+        detail['period_material_protection'] = protection
+    after, walls = super_bowl_walls.apply(after, row['row'], marks=marks)
+    if walls:
+        detail['super_bowl_walls'] = walls
+    _field_chunk(after)
+    # fan2: field paint and Super Bowl walls never touch the fans.
+    crowd=stadium_crowd_digest(after)
+    require(crowd==stadium_crowd_digest(source),f'row {row["row"]}: the alias changed its venue crowd')
+    alias=f'a{index:02d}{code}.iff'
+    return alias,after,dict(row=row['row'],alias=alias,source=name,
+        source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),crowd_sha256=crowd,
+        field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
+        outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail)
+
+
+def _user_art_digest(user_art):
+    """What the Super Bowl walls read from the user's own logos folder (names and content), for the step cache."""
+    from . import nfl2k5_late_steps as late
+    if not user_art:return None
+    folder=Path(user_art)
+    if not folder.is_dir():return ['missing']
+    return [[child.relative_to(folder).as_posix(),late.file_sha(child)] for child in sorted(folder.rglob('*')) if child.is_file()]
+
+
 def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
     """Return ``({alias filename: bytes}, receipt)`` from name-keyed read callbacks.
 
     get_built reads the completed target's existing venue resources. get_retail
     reads the unchanged retail source. No input callback is ever written to.
     ``user_art`` is the optional folder of the user's own Super Bowl logos.
+
+    The callbacks are read here, in catalog order, exactly as before. Each row's
+    field is then a pure function of the bytes read (nothing reads another
+    row's output), so the rows compile in worker processes
+    (nfl2k5_late_steps; NFL2K5_SERIAL_ANNIVERSARY_FIELDS=1 or
+    NFL2K5_BUILD_WORKERS=1 compile them here, one at a time) and unchanged rows
+    come from a verified cache. Results are consumed in row order either way.
     """
+    from . import nfl2k5_late_steps as late
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     from . import nfl2k5_super_bowl_walls as super_bowl_walls
@@ -407,6 +460,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
     marks=super_bowl_walls.Marks(None,user_art);shield_receipt=None
     if super_bowl_walls.period_shield_needed():
         marks.period,shield_receipt=super_bowl_walls.period_shield(get_retail(super_bowl_walls.PERIOD_SHIELD_RESOURCE))
+    jobs=[]
     for row in catalog():
         index=row['row']-1;code=variant(situ,index);name=row['source_prefix']+code+'.iff'
         source=(get_built if row['source_kind']=='built' else get_retail)(name)
@@ -422,29 +476,32 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
             # Retail 2004's many-star shield has a flat green outer fill.
             rgb=old_shield[:,:,:3].astype(int);grass=(rgb[:,:,1]>rgb[:,:,0])&(rgb[:,:,1]>rgb[:,:,2])
             old_shield[:,:,3]=__import__('numpy').where(grass,0,255).astype('uint8')
-        chunk,_,_=_field_chunk(source);before=mm.scene_span(source,chunk)
-        if row['row'] in (24,25):
-            # Keep the actual 2003 helmet/wordmark/NFL PLAYOFFS paint. The
-            # generic retail field also carries conference-title stamps, which
-            # do not belong to these wildcard/divisional matchups.
-            span,detail=_retail_playoff_field(source)
-        else:span,detail=_field(templates[code],row,wordmarks,old_shield,marks)
-        after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
-        if row['row'] not in PRESERVED_RETAIL_ROWS:
-            after, protection = protect_period_field(after)
-            detail['period_material_protection'] = protection
-        after, walls = super_bowl_walls.apply(after, row['row'], marks=marks)
-        if walls:
-            detail['super_bowl_walls'] = walls
-        _field_chunk(after)
-        # fan2: field paint and Super Bowl walls never touch the fans.
-        crowd=stadium_crowd_digest(after)
-        require(crowd==stadium_crowd_digest(source),f'row {row["row"]}: the alias changed its venue crowd')
-        alias=f'a{index:02d}{code}.iff';require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
-        output[alias]=after;receipts.append(dict(row=row['row'],alias=alias,source=name,
-            source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),crowd_sha256=crowd,
-            field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
-            outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail))
+        jobs.append((row,code,name,source,templates[code],{end['team']:wordmarks[end['team']] for end in row['endzones']},
+                     old_shield,marks.period,marks.user_art))
+    cache=late.StepCache.open('anniversary-fields',**late.step_code('anniversary-fields'))
+    keys={};answers={};misses=[]
+    for position,job in enumerate(jobs):
+        if cache is not None:
+            keys[position]=cache.key(late.digest(job[:1]),job[1],job[2],late.sha(job[3]),late.sha(job[4]),job[5],job[6],
+                                     job[7],job[8],_user_art_digest(job[8]))
+            hit=cache.get(keys[position])
+            if (isinstance(hit,dict) and isinstance(hit.get('after'),bytes) and isinstance(hit.get('row'),dict)
+                    and hit.get('after_sha256')==sha(hit['after']) and hit['row'].get('after')==hit.get('after_sha256')
+                    and hit['row'].get('before')==sha(job[3])):
+                answers[position]=(hit['row']['alias'],hit['after'],hit['row']);continue
+        misses.append(position)
+    # The rows with Super Bowl walls take 3 to 5 times as long as the others: start them first.
+    computed=late.ordered_map(_row_job,[jobs[i] for i in misses],
+                              late.worker_count(len(misses),'NFL2K5_SERIAL_ANNIVERSARY_FIELDS',per_worker_mb=600),
+                              cost=lambda job:1 if super_bowl_walls.entry(job[0]['row']) is not None else 0)
+    for position,job in enumerate(jobs):
+        row=job[0]
+        if position in answers:alias,after,entry=answers[position]
+        else:
+            alias,after,entry=next(computed)
+            if cache is not None:cache.put(keys[position],dict(after=after,after_sha256=sha(after),row=entry))
+        require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
+        output[alias]=after;receipts.append(entry)
         if progress:progress(row['row'],51,alias)
     walls_receipts=[r['detail']['super_bowl_walls'] for r in receipts if r['detail'].get('super_bowl_walls')]
     flank_receipts=[r['detail']['super_bowl_flanks'] for r in receipts if r['detail'].get('super_bowl_flanks')]

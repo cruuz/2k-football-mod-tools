@@ -288,11 +288,37 @@ def _bundle_job(job):
     return name, after, receipt
 
 
-def apply_to_image(target, *, progress=None, anniversary_receipt=None, workers=4):
-    """Last resource pass on a disposable Studio build, before compaction."""
+LEGACY_WORKERS = 4
+
+
+def _greens_task(job):
+    """Worker: one field bundle. Returns (name, after, receipt); a pure function of the job."""
+    return _bundle_job(job)
+
+
+def _remembered_bundle(cache, key, job):
+    """A cached (name, after, receipt) for exactly this bundle, or None; checked against its own digests."""
+    from . import nfl2k5_late_steps as late
+    record = cache.get(key) if cache is not None else None
+    name, family, before = job
+    if not (isinstance(record, dict) and isinstance(record.get("after"), bytes) and isinstance(record.get("rec"), dict)
+            and record["rec"].get("before") == late.sha(before) and record["rec"].get("after") == late.sha(record["after"])
+            and record["rec"].get("name") == name and len(record["after"]) == len(before)):
+        return None
+    return name, record["after"], record["rec"]
+
+
+def apply_to_image(target, *, progress=None, anniversary_receipt=None, workers=None):
+    """Last resource pass on a disposable Studio build, before compaction.
+
+    ``workers`` defaults to the late-step pool size (cores - 1, or NFL2K5_BUILD_WORKERS). The bundles are
+    independent and consumed in name order, so the written bytes do not depend on the count.
+    NFL2K5_SERIAL_BROADCAST_GREENS=1 (or NFL2K5_SERIAL_LATE_STEPS=1) restores the old four workers.
+    """
+    from . import nfl2k5_late_steps as late
     from . import nfl2k5_modern_color as colour
     from . import nfl2k5_modern_venues_2026 as venues
-    require(type(workers) is int and 1 <= workers <= 4, "workers must be 1..4")
+    require(workers is None or (type(workers) is int and workers >= 1), "workers must be a positive number")
     say = progress or (lambda *args: None)
     path = receipt_path(target)
     old = json.loads(path.read_text()) if path.exists() else None
@@ -311,17 +337,29 @@ def apply_to_image(target, *, progress=None, anniversary_receipt=None, workers=4
             before = archive.read(e.virtual_offset, e.size)
             jobs.append((name, kinds[name[:3]], before))
     work = {}
-    if workers > 1:
-        from concurrent.futures import ProcessPoolExecutor
-        with ProcessPoolExecutor(max_workers=workers) as pool:
-            for i, (name, after, rec) in enumerate(pool.map(_bundle_job, jobs, chunksize=1)):
-                work[name] = (names[name], after, rec)
-                say("Broadcast greens: " + name, i + 1, len(names))
-    else:
-        for i, job in enumerate(jobs):
-            name, after, rec = _bundle_job(job)
-            work[name] = (names[name], after, rec)
-            say("Broadcast greens: " + name, i + 1, len(names))
+    if workers is None:
+        workers = late.worker_count(len(jobs), "NFL2K5_SERIAL_BROADCAST_GREENS", per_worker_mb=600,
+                                    legacy=LEGACY_WORKERS)
+    cache = late.StepCache.open("broadcast-greens", **late.step_code("broadcast-greens"))
+    keys, answers, misses = {}, {}, []
+    for position, job in enumerate(jobs):
+        if cache is not None:
+            keys[position] = cache.key(job[0], job[1], late.sha(job[2]))
+            hit = _remembered_bundle(cache, keys[position], job)
+            if hit is not None:
+                answers[position] = hit
+                continue
+        misses.append(position)
+    computed = late.ordered_map(_greens_task, [jobs[i] for i in misses], workers)
+    for i, job in enumerate(jobs):
+        if i in answers:
+            name, after, rec = answers[i]
+        else:
+            name, after, rec = next(computed)
+            if cache is not None:
+                cache.put(keys[i], dict(after=after, rec=rec))
+        work[name] = (names[name], after, rec)
+        say("Broadcast greens: " + name, i + 1, len(names))
     cr, vr, sr = colour.read_image_receipt(target), venues.read_receipt(target), ms.read_receipt(target)
     written = 0
     with ms._outer_image()(str(target), writable=True) as archive:

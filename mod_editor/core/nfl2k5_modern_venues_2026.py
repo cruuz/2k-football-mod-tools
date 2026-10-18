@@ -1884,9 +1884,15 @@ def preflight(source, art_root, *, modern_arrowhead=False, sofi=False, highmark=
 # --- apply -------------------------------------------------------------------------------------------------
 
 def _workers(requested=None):
+    """Venue-art workers: the caller's count, else NFL2K5_BUILD_WORKERS, else the late-step pool (cores - 1).
+
+    NFL2K5_SERIAL_VENUE_ART=1 (or NFL2K5_SERIAL_LATE_STEPS=1) restores the old cap of min(16, cores // 2). Bundles
+    are independent and their results are collected by name, so the count never changes a byte."""
     if requested is not None:
         return max(1, int(requested))
-    return max(1, min(16, (os.cpu_count() or 2) // 2))
+    from . import nfl2k5_late_steps as late
+    return late.worker_count(1 << 30, "NFL2K5_SERIAL_VENUE_ART", per_worker_mb=900,
+                             legacy=max(1, min(16, (os.cpu_count() or 2) // 2)))
 
 
 def _compile_job(job):
@@ -1899,29 +1905,96 @@ def _compile_job(job):
     return name, after, edits
 
 
+def _job_key(cache, memo, job):
+    """Cache key of one bundle job: its bytes, the venue plan's art and the settings (the plan is digested once)."""
+    from . import nfl2k5_late_steps as late
+    name, data, graded, plan, base, outer, settings = job
+    if id(plan) not in memo:
+        masters = sorted({i["master"]: late.file_sha(Path(i["master"])) for i in plan["items"] if i.get("master")}.items())
+        # the memo holds the plan, so its id cannot be reused while the stream runs
+        memo[id(plan)] = (plan, late.digest(plan, base, masters))
+    return cache.key(name, late.sha(data), None if graded is None else late.sha(graded), memo[id(plan)][1],
+                     outer, settings)
+
+
+def _safe_job_key(cache, memo, job):
+    """The job's cache key, or None when there is no cache or the job holds something that cannot be digested."""
+    if cache is None:
+        return None
+    try:
+        return _job_key(cache, memo, job)
+    except (TypeError, ValueError, OSError):
+        return None
+
+
+def _remembered_job(cache, key, job):
+    from . import nfl2k5_late_steps as late
+    record = cache.get(key)
+    name, data = job[0], job[1]
+    if not (isinstance(record, dict) and record.get("name") == name and isinstance(record.get("after"), bytes)
+            and isinstance(record.get("edits"), list) and record.get("after_sha256") == late.sha(record["after"])
+            and len(record["after"]) == len(data)):
+        return None
+    return name, record["after"], record["edits"]
+
+
 def _stream(jobs, workers):
-    """Yield (name, after, edits) for every job, compiled in worker processes with a bounded queue."""
+    """Yield (name, after, edits) for every job, compiled in worker processes with a bounded queue.
+
+    Results are yielded in completion order (the caller collects them by name). Unchanged bundles come from a
+    verified cache (NFL2K5_DISABLE_COMPILE_CACHE=1 turns it off) and are yielded without a worker.
+    """
+    from . import nfl2k5_late_steps as late
     count = _workers(workers)
+    cache = late.StepCache.open("venue-art", **late.step_code("venue-art"))
+    memo = {}
+
+    def remember(key, job, result):
+        if cache is not None and key is not None:
+            cache.put(key, dict(name=result[0], after=result[1], edits=result[2], after_sha256=late.sha(result[1])))
+
     if count == 1:
         for job in jobs:
-            yield _compile_job(job)
+            key = _safe_job_key(cache, memo, job)
+            hit = _remembered_job(cache, key, job) if key is not None else None
+            if hit is not None:
+                yield hit
+                continue
+            result = _compile_job(job)
+            remember(key, job, result)
+            yield result
         return
     from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
     with ProcessPoolExecutor(max_workers=count) as pool:
-        pending = set()
+        pending = {}
+        ready = []
         iterator = iter(jobs)
         exhausted = False
         while True:
-            while not exhausted and len(pending) < 2 * count:
+            while not exhausted and len(pending) < 2 * count and len(ready) < count:
                 try:
-                    pending.add(pool.submit(_compile_job, next(iterator)))
+                    job = next(iterator)
                 except StopIteration:
                     exhausted = True
+                    break
+                key = _safe_job_key(cache, memo, job)
+                hit = _remembered_job(cache, key, job) if key is not None else None
+                if hit is not None:
+                    ready.append(hit)
+                    continue
+                pending[pool.submit(_compile_job, job)] = (key, job)
+            yield from ready
+            ready = []
             if not pending:
-                return
-            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+                if exhausted:
+                    return
+                continue
+            done, _ = wait(set(pending), return_when=FIRST_COMPLETED)
             for future in done:
-                yield future.result()
+                key, job = pending.pop(future)
+                result = future.result()
+                remember(key, job, result)
+                yield result
 
 
 def apply_to_image(target, art_root, *, progress=None, retail_source=None, modern_arrowhead=False, workers=None,

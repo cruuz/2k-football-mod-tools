@@ -1813,6 +1813,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_extended_visual_io",
         "mod_editor.core.nfl2k5_build_service",
         "mod_editor.core.nfl2k5_compile_cache",
+        "mod_editor.core.nfl2k5_late_steps",
         "mod_editor.core.nfl2k5_text_catalog",
         "mod_editor.core.nfl2k5_safe_text_banks",
         "mod_editor.core.nfl2k5_audio_catalog",
