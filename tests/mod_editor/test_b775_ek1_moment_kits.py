@@ -64,8 +64,30 @@ class Data(unittest.TestCase):
         swapped = mk.card_sources(k3)
         self.assertEqual(swapped["unif_h29_10"], ("logos", "unif_a29_2"))   # white at home
         self.assertEqual(swapped["unif_a29_10"], ("logos", "unif_h29_2"))   # burgundy on the road
+        # b776-sm1: the helmet cards keep the slot's own letter, whichever letter the jersey look comes from
+        self.assertEqual(swapped["helm_h29_10"], ("logos", "helm_h29_2"))
+        self.assertEqual(swapped["helm_a29_10"], ("logos", "helm_a29_2"))
+        self.assertEqual(swapped["mini_h29_10"], ("mini", "mini_h29_2"))
+        self.assertEqual(swapped["mini_a29_10"], ("mini", "mini_a29_2"))
         k2 = next(k for k in mk.document()["kits"] if k["id"] == "K2")
         self.assertEqual(mk.card_sources(k2)["unif_a07_10"], ("logos", "unif_a07_2"))  # Dallas: white is the A kit
+
+    def test_every_helmet_card_takes_its_slots_own_letter(self):
+        # Retail mini_h / helm_h face left and mini_a / helm_a face right; the Anniversary menu draws the away team with
+        # mini_a on the left and the home team with mini_h on the right. A card from the other letter faces away.
+        kits = mk.document()["kits"]
+        self.assertGreaterEqual(len(kits), 12)
+        for kit in kits:
+            for new, (aggregate, old) in mk.card_sources(kit).items():
+                kind = new.split("_")[0]
+                if kind in ("helm", "mini"):
+                    self.assertEqual(new[len(kind) + 1], old[len(kind) + 1], (kit["id"], new, old))
+                    self.assertEqual(old[len(kind) + 2:len(kind) + 4], kit["code"], (kit["id"], new, old))
+        # the five kits whose jersey look came from the other letter or from one letter alone are the ones this changes
+        for kit_id, slot in (("K3", "mini_h29_10"), ("K4", "mini_a20_6"), ("K5", "mini_a08_8"), ("K6", "mini_h30_5"),
+                             ("K9", "mini_h13_6")):
+            kit = next(k for k in kits if k["id"] == kit_id)
+            self.assertEqual(mk.card_sources(kit)[slot][1][5], slot[5], kit_id)
 
     def test_palette_map_keeps_shading_and_white_blends_exactly(self):
         import numpy as np
@@ -155,6 +177,36 @@ class Disc(unittest.TestCase):
         self.assertEqual(sha(situ), pins["situ"]["after_sha256"])
         for name, data in files.items():
             self.assertEqual(sha(data), pins["team_files"][name]["after_sha256"], name)
+
+    def test_new_mini_helmets_face_the_way_their_slot_does(self):
+        # b776-sm1: judge every composed mini helmet by its silhouette against the franchise's retail _0 pair (retail
+        # mini_h faces left, mini_a faces right; the silhouette overlap separates the two by at least 0.19 on all 522
+        # retail icons). The b775 disc shipped three menu rows with five of these turned the wrong way.
+        from nfl_txtr import decode_chunk, parse_chunks, parse_texture, texture_to_rgba
+        record, cdf = self.inputs["members"]["mini"]
+
+        def mask(slot):
+            chunk = parse_chunks(slot, allow_trailing=True)[0]
+            decoded, _ = decode_chunk(slot, chunk)
+            t = parse_texture(decoded, chunk)
+            rgba = texture_to_rgba(decoded, chunk, t)
+            return {(i // 4 % t.width, i // 4 // t.width) for i in range(0, len(rgba), 4) if rgba[i + 3] > 128}
+
+        def iou(a, b):
+            return len(a & b) / len(a | b)
+        _packages, members, _files, _situ = mk.expected(self.doc, self.inputs)
+        checked = 0
+        for name, slot in members["mini"].items():
+            if not name.startswith("mini_"):
+                continue
+            kind, code = name[5], name[6:8]
+            ref_h = mask(hs.member_slot(record, cdf, f"mini_h{code}_0"))
+            ref_a = mask(hs.member_slot(record, cdf, f"mini_a{code}_0"))
+            m = mask(slot)
+            self.assertGreater(abs(iou(m, ref_h) - iou(m, ref_a)), 0.15, name)
+            self.assertEqual("h" if iou(m, ref_h) > iou(m, ref_a) else "a", kind, name)
+            checked += 1
+        self.assertEqual(checked, 2 * len(self.doc["kits"]))
 
     def test_whole_kit_copies_and_swaps_are_byte_copies(self):
         packages = mk.compose(self.doc, self.inputs["packages"])
