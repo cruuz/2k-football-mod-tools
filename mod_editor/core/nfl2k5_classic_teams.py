@@ -334,8 +334,9 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
     for n, key in enumerate(data.order()):
         team = dict(data.teams[key], team_key=key)
         identity = FIRST_ID + n
+        missing = []
         raw = more.compile_team(templates[key], team, data.rosters[key], colleges, identity, people,
-                                appearance=data.appearance[key], main_photos=main_photos)
+                                appearance=data.appearance[key], main_photos=main_photos, missing_colleges=missing)
         if one_pool:
             raw = more._one_pool(raw)
         code = team["asset_code"]
@@ -343,7 +344,8 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
         raw = finish_file(raw, team, identity=identity, stadium_id=homes[code], style=style)
         files.append((data.filename(key, prefix), raw))
         receipts[key] = dict(file=data.filename(key, prefix), identity=identity, style=style, kit=how,
-                             stadium_id=homes[code], template=team["template"], sha256=sha(raw))
+                             stadium_id=homes[code], template=team["template"], sha256=sha(raw),
+                             template_colleges=missing)
     return files, receipts
 
 

@@ -588,9 +588,12 @@ def main_people(main_rost):
     return out
 
 
-def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset()):
+def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset(),
+                 missing_colleges=None):
     """A one-team historic roster file for one team-season, from a retail historic file of the same franchise.
-    appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster uses."""
+    appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster uses.
+    missing_colleges: None refuses a college the main table lacks. A list instead keeps the template's own college
+    for that player and records the name in it (classic teams: a user's roster may reuse a retail college slot)."""
     from . import nfl2k5_my_career_prospects as prospects
     require(template_raw[:4] == b"ROST" and struct.unpack_from("<I", template_raw, 4)[0] == len(template_raw) - 32,
             "template is not a one-team ROST resource")
@@ -661,7 +664,9 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
                 v["dreads"] = look.get("dreads", 0)
         v["star_tag"] = int(prospects.native_overall(record) >= STAR_MIN_OVERALL)
         college = row.get("college", "")
-        if college:
+        if college and missing_colleges is not None and college not in colleges:
+            missing_colleges.append(college)
+        elif college:
             require(colleges.count(college) == 1,
                     f"college must resolve exactly once in the main table: {college!r}")
             v["college_pointer"] = colleges.index(college)

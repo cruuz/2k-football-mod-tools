@@ -235,6 +235,32 @@ class NativeTests(unittest.TestCase):
         ct.compile_files(_main_roster(), templates, self.data, spares={}, has_kit=lambda c, s: True)
         self.assertEqual(templates, before)
 
+    def test_a_college_the_built_roster_relabelled_keeps_the_template_college(self):
+        # b775 disc build: the SOFTDRINK 2026 roster reuses retail college slot 223 (Tennessee-Martin) for Indiana
+        # State, so Montori Hughes (colts_2014) has no main-table college. The build keeps the template's own and
+        # records the name instead of stopping.
+        from mod_editor.core import nfl2k5_roster_records as rr
+        main = _main_roster()
+        doc = rr.RosterDocument(main[32:])
+        slot = doc.colleges.index("Tennessee-Martin")
+        other = doc.colleges.index("Sega U.")  # a label no classic player uses
+        doc.set_rel(doc.college_offsets[slot], doc.rel(doc.college_offsets[other]))
+        body = doc.to_body()
+        relabelled = main[:32] + body
+        self.assertNotIn("Tennessee-Martin", rr.RosterDocument(body).colleges)
+        with rr._outer_image()(self.retail_dir) as archive:
+            by_id = {e.name_id: e for e in archive.entries}
+            templates = {k: archive.read(by_id[mm.name_id(self.data.teams[k]["template"])].virtual_offset,
+                                         by_id[mm.name_id(self.data.teams[k]["template"])].size)
+                         for k in self.data.order()}
+        files, receipts = ct.compile_files(relabelled, templates, self.data, spares={}, has_kit=lambda c, s: True)
+        self.assertEqual(len(files), 24)
+        self.assertEqual(receipts["colts_2014"]["template_colleges"], ["Tennessee-Martin"])
+        self.assertEqual({k for k, r in receipts.items() if r["template_colleges"]}, {"colts_2014"})
+        with self.assertRaisesRegex(ValueError, "resolve exactly once"):
+            mm.compile_team(templates["colts_2014"], self.data.teams["colts_2014"], self.data.rosters["colts_2014"],
+                            rr.RosterDocument(body).colleges, ct.FIRST_ID)
+
     def test_executable_changes_stay_in_owned_spans(self):
         """Only the Quick Game code, the classic allocation, the allocator's own directory page and the section header
         digests change; every other byte of the executable stays."""
