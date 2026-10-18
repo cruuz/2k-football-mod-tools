@@ -140,7 +140,9 @@ def code_for(code_va, data_va, *, seasons=False, classic_va=None):
 # The classic teams variant (job ct1, 2026-10-17). Each pattern is unique in the assembled code; it is replaced by a
 # same-length call into the classic helper allocation (CLASSIC_ENTRIES: offsets there) padded with NOPs, or by the
 # same instruction on another register.
-CLASSIC_ENTRIES = dict(total=0x00, cmp_total=0x10, entry=0x28, fmt=0x68)
+# sm1: 'entry' is the chronological entry helper (it ranks the list position by season, then franchise code, then storage
+# index, and falls into the original entry body); the helper block was repacked to make room (see nfl2k5_classic_teams).
+CLASSIC_ENTRIES = dict(total=0x00, cmp_total=0x06, entry=0x3E, fmt=0x0C)
 _ROOT = "1829b700"
 
 

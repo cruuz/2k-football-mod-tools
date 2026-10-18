@@ -26,6 +26,20 @@ This option:
   own entry, then the moment table, then the new rows; a moment entry loads its plain "h-" file even when the season
   route (HTS- files) is on.
 Create a Team's own "Load Historic Team" list stays the retail 75. Franchise and season modes are unchanged.
+
+Job sm1 (Noah, 2026-10-18, after the b775 video: "they should all be organized by date properly"): Team Select used to
+step through the list in storage order (the retail 75 in franchise order, then the moments, then the classic rows). The
+list is now one chronological run. The Quick Game code still steps a list POSITION k; the entry helper (ENTRY_SORTED)
+turns k into the STORAGE index j whose rank is k, then falls into the unchanged entry body, so the stepping, the
+remembered position, the loader and the label lookup keep working on storage indexes. Rank = position in the sort by
+(season, franchise asset code, storage index): the season is the word at +0 of an entry, the asset code the two UTF-16
+digits at +4 and +6 of the retail entry the team borrows, and the storage index (retail, moments, classic) breaks exact
+ties, so a retail season and the moment of the same team-season sit side by side. The helper finds j by counting, for each
+candidate, the entries that sort before it (149 entries: about 20 thousand key reads per button press). It needs no
+table, which the all-owner allocator union has no room for (its read-only pages are full: this block may not grow past
+288 bytes), and it needs no build-time year lookup, so a moment table or a classic row is ordered by what the executable
+itself holds. Registers: it keeps EBX and clobbers the rest; the only call site (the loader's entry lookup) has no other
+live register.
 """
 from __future__ import annotations
 
@@ -42,10 +56,14 @@ from .nfl2k5_cave_oracle import XbeImage
 ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "data/nfl2k5_classic_teams"
 OWNER = "nfl2k5_classic_teams"
-RO_SIZE = 240
+RETAIL_ENTRIES = 75                                # the roster's own historic list
+# sm1: the helper block, repacked (offsets into the owned read-only block). total, cmp_total and fmt keep their bytes
+# and move; ENTRY_KEY and ENTRY_SORTED are the chronological entry helper; ENTRY_BODY is the unchanged entry body.
+OFF_TOTAL, OFF_CMP_TOTAL, OFF_FMT, OFF_KEY, OFF_SORTED, OFF_BODY = 0x00, 0x06, 0x0C, 0x27, 0x3E, 0x74
+ROWS_OFFSET = 0xB4                                 # 24 four-byte rows follow the helpers
+MAX_ROWS = 24                                      # the identity ceiling below (226..249)
+RO_SIZE = 288                                      # the all-owner union holds 304 here and keeps 16 for a synthetic constant
 REQUESTS = ((OWNER, "read_only", RO_SIZE, 16),)
-ROWS_OFFSET = 0x88
-MAX_ROWS = (RO_SIZE - ROWS_OFFSET) // 4            # 26 rows of list space
 FIRST_ID, LAST_ID = 226, 249                       # free team identities: the ceiling for new files (24)
 FILE_NUMBER = 8                                    # the file-name digit (moments use 9)
 FILLER = "ct1_classic_teams_end.bin"
@@ -121,24 +139,50 @@ class Data:
 
 # ------------------------------------------------------------------------------------------------- the executable
 
+# The chronological entry helper: the key function and the ranking loop (77 bytes, OFF_KEY..OFF_BODY), assembled with GNU as
+# (intel syntax) at its final offsets; its one variable is the list length, the imm8 marked below (the length is at most
+# 151, and the loop counter is compared in DL). Source:
+#   key:    call body; movzx ecx,word [edi]; shl ecx,8; mov cl,[eax+4]; shl ecx,8; mov cl,[eax+6]; mov eax,ecx; ret
+#           (EAX = key of list entry EAX = season<<16 | the two asset code characters; the body returns EAX/EDI = the entry)
+#   sorted: push ebx; mov ebp,eax; xor esi,esi
+#     Lj:   mov eax,esi; call key; push eax; xor ebx,ebx; xor edx,edx
+#     Li:   mov eax,edx; call key; cmp eax,[esp]; jb Lcount; ja Lnext; cmp edx,esi; jae Lnext
+#     Lcount: inc ebx
+#     Lnext:  inc edx; cmp dl,TOTAL; jb Li
+#           pop eax; cmp ebx,ebp; je Ldone; inc esi; jmp Lj
+#     Ldone: mov eax,esi; pop ebx; nop       ; falls into the entry body with EAX = the storage index
+_SORT_TOTAL_MARK = bytes.fromhex("80fa7f")
+_SORT_CODE = bytes.fromhex(
+    "e8480000000fb70fc1e1088a4804c1e1088a480689c8c3"
+    "5389c531f689f0e8ddffffff5031db31d289d0e8d1ffffff3b04247206770539f27301434280fa7f72e75839eb740346ebd389f05b90")
+
+
 def helper_code(va, *, moment_table, moment_count, rows, default_fmt):
-    """The owned bytes: total (0x00), cmp_total (0x10), entry (0x28), fmt (0x68), then one 4-byte row per new team (0x88).
-    rows: [(season, digit, retail entry index)]."""
-    require(len(rows) <= MAX_ROWS, "too many classic rows")
-    total = 75 + moment_count + len(rows)
+    """The owned bytes: total, cmp_total, fmt, the chronological entry helper (key, sorted) and the entry body, then one
+    4-byte row per new team. rows: [(season, digit, retail entry index)]. The list length is a constant (the build checks
+    the roster's own count is 75)."""
+    require(len(rows) <= MAX_ROWS and 0 <= moment_count <= 50, "too many classic rows or moment team-seasons")
     root = struct.pack("<I", ROOT_PTR)
     p32 = lambda v: struct.pack("<I", v & 0xFFFFFFFF)  # noqa: E731
+    total = RETAIL_ENTRIES + moment_count + len(rows)
+    require(total <= 151, "the list length exceeds the ranking loop's byte counter")
     out = bytearray(b"\xcc" * ROWS_OFFSET)
 
-    def put(offset, code):
-        require(len(code) <= {0x00: 0x10, 0x10: 0x18, 0x28: 0x40, 0x68: 0x20}[offset], "helper overflow")
+    def put(offset, code, size):
+        require(len(code) == size, "helper size drift")
         out[offset:offset + len(code)] = code
-    # total: EAX = the list length (the roster's count + moments + classic rows)
-    put(0x00, b"\xa1" + root + bytes.fromhex("8b4058") + b"\x05" + p32(moment_count + len(rows)) + b"\xc3")
-    # cmp_total: ECX = root, flags = cmp EAX, length
-    put(0x10, b"\x8b\x0d" + root + bytes.fromhex("528b5158") + b"\x81\xc2" + p32(moment_count + len(rows))
-        + bytes.fromhex("3bc25ac3"))
-    # entry: EAX = k -> EAX = the entry (asset code at +4, franchise text at +12), EDI = season (+0) and digit (+2)
+    # total: EAX = the list length (the roster's 75 + moments + classic rows); only EAX changes
+    put(OFF_TOTAL, b"\xb8" + p32(total) + b"\xc3", OFF_CMP_TOTAL - OFF_TOTAL)
+    # cmp_total: flags = cmp EAX, the list length (ECX is no longer loaded: no caller reads it)
+    put(OFF_CMP_TOTAL, b"\x3d" + p32(total) + b"\xc3", OFF_FMT - OFF_CMP_TOTAL)
+    # fmt: EDX = the file-name format; a moment entry (EDI inside the moment table) keeps the plain "h-" file
+    end = moment_table + 16 * moment_count
+    put(OFF_FMT, b"\xba" + p32(default_fmt) + b"\x81\xff" + p32(moment_table) + b"\x72\x0d"
+        + b"\x81\xff" + p32(end) + b"\x73\x05" + b"\xba" + p32(FMT_FILE) + b"\xc3", OFF_KEY - OFF_FMT)
+    # chronological entry helper (key + sorted): EAX = list position k -> storage index, then the entry body
+    require(_SORT_CODE.count(_SORT_TOTAL_MARK) == 1, "sorted entry marker")
+    put(OFF_KEY, _SORT_CODE.replace(_SORT_TOTAL_MARK, b"\x80\xfa" + bytes([total])), OFF_BODY - OFF_KEY)
+    # entry body: EAX = a STORAGE index -> EAX = the entry (asset code at +4, franchise text at +12), EDI = season (+0) and digit (+2)
     entry = bytearray(b"\x8b\x0d" + root + bytes.fromhex("3b4158"))      # mov ecx,[root]; cmp eax,[ecx+58h]
     retail = bytes.fromhex("c1e004" "03415c" "8bf8" "c3")                 # shl eax,4; add eax,[ecx+5Ch]; mov edi,eax
     moment = bytes.fromhex("2b4158") + b"\x3d" + p32(moment_count)      # sub eax,[ecx+58h]; cmp eax,M
@@ -147,12 +191,7 @@ def helper_code(va, *, moment_table, moment_count, rows, default_fmt):
                + bytes.fromhex("0fb64703" "c1e004" "03415c" "c3"))
     entry += b"\x73" + bytes([len(retail)]) + retail
     entry += moment + b"\x73" + bytes([len(moment_hit)]) + moment_hit + classic
-    put(0x28, bytes(entry))
-    # fmt: EDX = the file-name format; a moment entry (EDI inside the moment table) keeps the plain "h-" file
-    end = moment_table + 16 * moment_count
-    fmt = (b"\xba" + p32(default_fmt) + b"\x81\xff" + p32(moment_table) + b"\x72\x0d"
-           + b"\x81\xff" + p32(end) + b"\x73\x05" + b"\xba" + p32(FMT_FILE) + b"\xc3")
-    put(0x68, fmt)
+    put(OFF_BODY, bytes(entry), ROWS_OFFSET - OFF_BODY)
     for season, digit, index in rows:
         require(0 <= index < 75 and 0 <= digit <= 9 and 1900 < season < 2100, "classic row")
         out.extend(struct.pack("<HBB", season, digit, index))
@@ -221,7 +260,7 @@ def xbe_status(payload):
             return "retail" if h1.classic_status(payload) != "applied" else "foreign"
         rows = (len(body.rstrip(b"\0")) - ROWS_OFFSET + 3) // 4
         table, count = moment_table(payload)
-        default = struct.unpack_from("<I", body, 0x69)[0]
+        default = struct.unpack_from("<I", body, OFF_FMT + 1)[0]
         expected = helper_code(a["va"], moment_table=table, moment_count=count, default_fmt=default,
                                rows=[struct.unpack_from("<HBB", body, ROWS_OFFSET + 4 * i) for i in range(rows)])
         return "applied" if body == expected and h1.classic_status(payload) == "applied" else "foreign"

@@ -107,13 +107,55 @@ class HelperCodeTests(unittest.TestCase):
         code = ct.helper_code(0x1509E70, moment_table=0x14DE450, moment_count=50,
                               rows=[(2019, 8, 68), (2016, 8, 40)], default_fmt=ct.FMT_FILE)
         self.assertEqual(len(code), ct.RO_SIZE)
-        self.assertEqual(code[0], 0xA1)                                    # total: mov eax,[root]
-        self.assertEqual(struct.unpack_from("<I", code, 9)[0], 52)          # add eax, M + N
+        self.assertEqual(code[0], 0xB8)                                    # total: mov eax, the list length
+        self.assertEqual(struct.unpack_from("<I", code, 1)[0], 75 + 50 + 2)
         self.assertEqual(code[ct.ROWS_OFFSET:ct.ROWS_OFFSET + 8], struct.pack("<HBBHBB", 2019, 8, 68, 2016, 8, 40))
         self.assertEqual(code[ct.ROWS_OFFSET + 8:], bytes(ct.RO_SIZE - ct.ROWS_OFFSET - 8))
-        # every entry point the Quick Game variant calls holds code
+        # every entry point the Quick Game variant calls holds code, at the offsets the variant uses
+        self.assertEqual(h1.CLASSIC_ENTRIES, dict(total=ct.OFF_TOTAL, cmp_total=ct.OFF_CMP_TOTAL, entry=ct.OFF_SORTED,
+                                                  fmt=ct.OFF_FMT))
         for entry in h1.CLASSIC_ENTRIES.values():
             self.assertNotEqual(code[entry], 0xCC)
+
+    def test_helper_block_fits_the_all_owner_union(self):
+        # sm1: the union's read-only pages are nearly full: the classic block may grow 16 bytes at most (a synthetic
+        # 16-byte constant is kept in the scale-out tests).
+        self.assertEqual(ct.RO_SIZE, 288)
+        self.assertEqual(ct.ROWS_OFFSET + 4 * ct.MAX_ROWS, 276)
+        self.assertLessEqual(ct.ROWS_OFFSET + 4 * ct.MAX_ROWS, ct.RO_SIZE)
+        self.assertEqual(ct.MAX_ROWS, ct.LAST_ID - ct.FIRST_ID + 1)
+        self.assertEqual(len(ct.Data.load().teams), ct.MAX_ROWS)
+        rows = [a for a in space._scale_allocations(space.dormant_union()) if a["owner"] == ct.OWNER]
+        self.assertEqual([(r["kind"], r["size"]) for r in rows], [("read_only", ct.RO_SIZE)])
+        rest = [r for r in space.dormant_union() if r[0] != ct.OWNER]
+        space._scale_allocations(sorted(rest + [(ct.OWNER, "read_only", ct.RO_SIZE + 16, 16)]))
+        with self.assertRaisesRegex(ValueError, "page capacity exceeded"):
+            space._scale_allocations(sorted(rest + [(ct.OWNER, "read_only", ct.RO_SIZE + 32, 16)]))
+        # the budget fixture the other owners' tests read
+        fixture = json.loads((ROOT / "tests/fixtures/nfl2k5_allocator_beta62_requests.json").read_text())
+        self.assertIn([ct.OWNER, "read_only", ct.RO_SIZE, 16], fixture)
+
+    def test_sorted_entry_layout_is_contiguous_and_the_body_is_unchanged(self):
+        self.assertEqual(ct.OFF_TOTAL + 6, ct.OFF_CMP_TOTAL)
+        self.assertEqual(ct.OFF_CMP_TOTAL + 6, ct.OFF_FMT)
+        self.assertEqual(ct.OFF_FMT + 27, ct.OFF_KEY)
+        self.assertEqual(ct.OFF_KEY + 23, ct.OFF_SORTED)
+        self.assertEqual(len(ct._SORT_CODE), ct.OFF_BODY - ct.OFF_KEY)
+        self.assertEqual(ct.OFF_BODY + 64, ct.ROWS_OFFSET)
+        code = ct.helper_code(0x1509E70, moment_table=0x14DE450, moment_count=50, rows=[(2019, 8, 68)],
+                              default_fmt=ct.FMT_FILE)
+        self.assertEqual(code[ct.OFF_BODY:ct.OFF_BODY + 9], bytes.fromhex("8b0d1829b7003b4158"))   # mov ecx,[root]; cmp eax,[ecx+58h]
+        # the key function calls the body, and the ranking loop ends by falling into it
+        key = ct.OFF_KEY
+        self.assertEqual(code[key], 0xE8)
+        self.assertEqual(key + 5 + struct.unpack_from("<i", code, key + 1)[0], ct.OFF_BODY)
+        self.assertEqual(code[ct.OFF_BODY - 2:ct.OFF_BODY], bytes.fromhex("5b90"))        # pop ebx; nop; then the body
+        # the list length: the two constants and the ranking loop's bound
+        total = 75 + 50 + 1
+        self.assertEqual(code[ct.OFF_TOTAL:ct.OFF_CMP_TOTAL], b"\xb8" + struct.pack("<I", total) + b"\xc3")
+        self.assertEqual(code[ct.OFF_CMP_TOTAL:ct.OFF_FMT], b"\x3d" + struct.pack("<I", total) + b"\xc3")
+        at = code.index(bytes.fromhex("80fa"), ct.OFF_SORTED)
+        self.assertEqual(code[at + 2], total)
 
     def test_quick_game_variant_changes_only_its_patterns(self):
         for seasons in (False, True):
@@ -137,6 +179,99 @@ class HelperCodeTests(unittest.TestCase):
         region = next(r for r in space._scale_regions(space.dormant_union())
                       if r["va"] <= rows[0]["va"] < r["va"] + r["size"])
         self.assertTrue(region["flags"] & 4, "the helper page must be executable")
+
+
+class SortedEntryEmulationTests(unittest.TestCase):
+    """The chronological entry helper, executed (Unicorn) on synthetic memory: no retail bytes. The roster's 75 entries,
+    a moment table and the classic rows are made up with repeated seasons and codes; for every list position the helper
+    must return the entry the documented sort puts there, with EBX kept."""
+
+    ROOT_PTR = 0xB72918
+    RO_VA, ROOT_VA, RETAIL_VA, MOMENT_VA, STACK_VA, STOP = 0x1509000, 0x2000000, 0x2001000, 0x2003000, 0x3000000, 0x4000000
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn
+            from unicorn import x86_const as x86
+        except ImportError as exc:
+            raise unittest.SkipTest(f"Unicorn unavailable: {exc}")
+        cls.uc_mod, cls.x86 = unicorn, x86
+
+    def _machine(self, moment, rows):
+        import random
+        uc, x86 = self.uc_mod, self.x86
+        rng = random.Random(7)
+        codes = [f"{c:02d}" for c in range(31)]
+
+        def entry(year, code, digit=0, text=0):
+            return struct.pack("<HBB", year, digit, 0) + code.encode("utf-16le").ljust(8, b"\0") + struct.pack("<I", text)
+        retail = [(rng.choice(range(1953, 2005)), rng.choice(codes)) for _ in range(75)]
+        retail[3] = retail[4] = (1985, "05")                 # exact season and code ties
+        moments = [(rng.choice(range(1998, 2026)), rng.choice(codes)) for _ in range(moment)]
+        if moment >= 2:
+            moments[0], moments[1] = (1985, "05"), retail[10]
+        classic = [(rng.choice(range(2005, 2026)), rng.randrange(75)) for _ in range(rows)]
+        mu = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
+        for base, size in ((self.RO_VA, 0x1000), (self.ROOT_VA, 0x1000), (self.RETAIL_VA, 0x2000), (self.MOMENT_VA, 0x1000),
+                           (self.STACK_VA, 0x10000), (self.STOP, 0x1000), (self.ROOT_PTR & ~0xFFF, 0x1000)):
+            mu.mem_map(base, size)
+        code = ct.helper_code(self.RO_VA, moment_table=self.MOMENT_VA, moment_count=moment,
+                              rows=[(season, 8, index) for season, index in classic], default_fmt=ct.FMT_FILE)
+        mu.mem_write(self.RO_VA, code)
+        mu.mem_write(self.ROOT_PTR, struct.pack("<I", self.ROOT_VA))
+        mu.mem_write(self.ROOT_VA + 0x58, struct.pack("<II", 75, self.RETAIL_VA))
+        for i, (year, code_) in enumerate(retail):
+            mu.mem_write(self.RETAIL_VA + 16 * i, entry(year, code_, 1))
+        for i, (year, code_) in enumerate(moments):
+            mu.mem_write(self.MOMENT_VA + 16 * i, entry(year, code_, 9))
+        mu.mem_write(self.STOP, b"\xf4")
+        # storage order: (season, code, retail entry the team borrows or its own entry)
+        storage = [(y, c) for y, c in retail] + [(y, c) for y, c in moments] + [(y, retail[i][1]) for y, i in classic]
+        return mu, storage
+
+    def _run(self, mu, k):
+        x86 = self.x86
+        mu.reg_write(x86.UC_X86_REG_ESP, self.STACK_VA + 0x8000)
+        mu.mem_write(self.STACK_VA + 0x8000, struct.pack("<I", self.STOP))
+        for reg, value in ((x86.UC_X86_REG_EAX, k), (x86.UC_X86_REG_EBX, 0xB0B0B0B0), (x86.UC_X86_REG_ECX, 1),
+                           (x86.UC_X86_REG_EDX, 2), (x86.UC_X86_REG_ESI, 3), (x86.UC_X86_REG_EDI, 4), (x86.UC_X86_REG_EBP, 5)):
+            mu.reg_write(reg, value)
+        mu.emu_start(self.RO_VA + ct.OFF_SORTED, self.STOP, count=2_000_000)
+        return (mu.reg_read(x86.UC_X86_REG_EAX), mu.reg_read(x86.UC_X86_REG_EDI), mu.reg_read(x86.UC_X86_REG_EBX),
+                mu.reg_read(x86.UC_X86_REG_ESP))
+
+    def _check(self, moment, rows):
+        mu, storage = self._machine(moment, rows)
+        total = 75 + moment + rows
+        expected = sorted(range(total), key=lambda i: (storage[i][0], storage[i][1], i))
+        seen = []
+        for k in range(total):
+            eax, edi, ebx, esp = self._run(mu, k)
+            j = expected[k]
+            self.assertEqual(ebx, 0xB0B0B0B0, "EBX must be kept")
+            self.assertEqual(esp, self.STACK_VA + 0x8004, "stack must be balanced")
+            if j < 75:
+                want = (self.RETAIL_VA + 16 * j, self.RETAIL_VA + 16 * j)
+            elif j < 75 + moment:
+                want = (self.MOMENT_VA + 16 * (j - 75), self.MOMENT_VA + 16 * (j - 75))
+            else:
+                row = j - 75 - moment
+                index = struct.unpack_from("<B", mu.mem_read(self.RO_VA + ct.ROWS_OFFSET + 4 * row + 3, 1))[0]
+                want = (self.RETAIL_VA + 16 * index, self.RO_VA + ct.ROWS_OFFSET + 4 * row)
+            self.assertEqual((eax, edi), want, f"position {k}")
+            seen.append(j)
+        self.assertEqual(sorted(seen), list(range(total)))
+        keys = [storage[j][:2] for j in seen]
+        self.assertEqual(keys, sorted(keys))
+
+    def test_full_list_149_entries(self):
+        self._check(50, 24)
+
+    def test_shorter_lists(self):
+        self._check(0, 0)
+        self._check(7, 3)
+        self._check(50, 0)
 
 
 def _main_roster():
@@ -179,18 +314,35 @@ class NativeTests(unittest.TestCase):
         self.assertEqual((self.receipt["moment_teams"], self.receipt["classic_rows"], self.receipt["list_length"]),
                          (50, 24, 149))
 
-    def test_one_forward_lap_loads_retail_then_moments_then_classic_and_wraps(self):
+    def _storage_names(self):
+        """File names in STORAGE order: the retail 75, the moments, the classic rows."""
+        retail = [d["filename"] for d in ct._descriptors(_main_roster())]
+        moments = [name for _key, name, *_rest in mm.table_entries(mm.Data.load())]
+        return retail + moments + [name for name, _raw in self.files]
+
+    @staticmethod
+    def _key(name):
+        # h-<code>-<season>-<nickname>-<digit>.iff -> (season, asset code)
+        parts = name.split("-")
+        return int(parts[2]), parts[1]
+
+    def test_one_forward_lap_loads_every_team_season_in_chronological_order_and_wraps(self):
         cpu = self.cpu
         user1, _user2 = cpu.spare_slots()[:2]
         start = cpu.pool()["used"]
         cpu.team_select(cpu.last_resident(), cpu.team(15))
         steps = [cpu.press("home", +1) for _ in range(150)]
         loaded = [s["loaded"][0] for s in steps[:149]]
-        moment_names = [name for _key, name, *_rest in mm.table_entries(mm.Data.load())]
-        classic_names = [name for name, _raw in self.files]
-        self.assertEqual(loaded[75:125], moment_names)
-        self.assertEqual(loaded[125:], classic_names)
+        storage = self._storage_names()
+        self.assertEqual(len(storage), 149)
+        self.assertEqual(sorted(loaded), sorted(storage))                  # the same 149 team-seasons, none twice
         self.assertEqual(len(set(loaded)), 149)
+        seasons = [self._key(name)[0] for name in loaded]
+        self.assertEqual(seasons, sorted(seasons), "Team Select must run oldest to newest")
+        self.assertEqual((seasons[0], seasons[-1]), (1953, 2025))
+        # the whole order is the documented key: season, franchise asset code, storage index
+        expected = sorted(range(149), key=lambda i: (*self._key(storage[i]), i))
+        self.assertEqual(loaded, [storage[i] for i in expected])
         for step in steps[:149]:
             self.assertEqual(step["home"]["index"], cpu.index(user1))
             self.assertEqual((step["home"]["category"], step["home"]["players"]), (4, 53))
@@ -198,17 +350,31 @@ class NativeTests(unittest.TestCase):
         self.assertEqual((steps[149]["home"]["index"], steps[149]["loaded"]), (0, []))   # wraps to the 49ers
         self.assertEqual(steps[149]["pool"]["used"], start)
 
+    def test_one_backward_lap_is_the_forward_lap_reversed(self):
+        cpu = self.cpu
+        cpu.team_select(cpu.team(0), cpu.team(15))
+        back = [cpu.press("home", -1)["loaded"][0] for _ in range(149)]
+        other = self.make()            # a fresh machine: the harness caps archive events per run
+        other.team_select(other.last_resident(), other.team(15))
+        forward = [other.press("home", +1)["loaded"][0] for _ in range(149)]
+        self.assertEqual(back, list(reversed(forward)))
+
     def test_each_classic_team_imports_with_its_identity_home_row_and_kit(self):
         cpu = self.cpu
         user1, _ = cpu.spare_slots()[:2]
         cpu.team_select(cpu.team(0), cpu.team(15))
-        receipts = list(self.receipts.values())
-        for receipt in reversed(sorted(receipts, key=lambda r: r["identity"])):
+        by_file = {r["file"]: r for r in self.receipts.values()}
+        seen = set()
+        for _ in range(149):
             step = cpu.press("home", -1)
-            self.assertEqual(step["loaded"], [receipt["file"]])
+            receipt = by_file.get(step["loaded"][0])
+            if receipt is None:
+                continue
+            seen.add(receipt["file"])
             self.assertEqual(step["home"]["identity"], receipt["identity"])
             self.assertEqual(cpu.stadium_id(user1), receipt["stadium_id"])
             self.assertEqual(cpu.style(user1), receipt["style"])
+        self.assertEqual(seen, set(by_file))
 
     def test_both_sides_hold_classic_teams_and_never_the_same_slot(self):
         cpu = self.cpu
