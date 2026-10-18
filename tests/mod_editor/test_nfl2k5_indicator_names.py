@@ -285,14 +285,15 @@ class LabelStyleTests(unittest.TestCase):
 
     def test_presets_keep_the_retail_label_and_the_atlas_choice(self):
         from mod_editor.core import mod_build
-        # b775-int1 (coordinator decision): advanced and experimental keep the retail font on screen while the player is
-        # controlled; basic and a bare plan stay retail; the scorebug style stays selectable.
-        expected={"softdrink_basic":"retail","softdrink_advanced":"retail_persistent","softdrink_experimental":"retail_persistent"}
+        # b776-sm1 (Noah, 2026-10-18): every preset, the SOFTDRINK ones included, installs the retail label. The
+        # retail_persistent style (b775) labels only human-controlled players, so R1's show-names could not draw the
+        # others; it and the scorebug style stay selectable.
         for name,values in mod_build.PRESETS.items():
-            self.assertEqual(values["indicator_names_style"],expected.get(name,"retail"),name)
+            self.assertEqual(values["indicator_names_style"],"retail",name)
         self.assertEqual(mod_build.BuildPlan(source="a.iso",target="b.iso").indicator_names_style,"retail")
         plan=mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso",target="out.iso"),"softdrink_experimental")
-        self.assertEqual(plan.indicator_names_style,"retail_persistent")
+        self.assertEqual(plan.indicator_names_style,"retail")
+        self.assertEqual(mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso",target="out.iso"),"softdrink_advanced").indicator_names_style,"retail")
         self.assertIn("scorebug",__import__("mod_editor.core.nfl2k5_indicator_names",fromlist=["STYLES"]).STYLES)
         # The nm1 atlas stays in the bundle and the preset, one key away from the scorebug label.
         self.assertTrue(plan.indicator_names_folder.endswith("data/nfl2k5_indicator_names"))
