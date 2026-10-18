@@ -783,7 +783,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_music_playlist.py": "29c9b2fdc7449e482504d824bb9dd8c562389bef2c198361ef29583befaaf243",
         "mod_editor/core/nfl2k5_music_playlist_code.py": "565d8ad8b8e6435190dda20a137e7b8128c5716d72935ab30be5189efab48546",
         "mod_editor/core/nfl2k5_music_policy.py": "f1f21c182fa9f86844c6dcc0019f0463ef841799fd24a717131b4d762c8a99ec",
-        "mod_editor/core/nfl2k5_music_storage.py": "db13a224f6e04e2ebbe0f7639946e2e6c9626500939614a44f2539a25137904b",
+        "mod_editor/core/nfl2k5_music_storage.py": "7795e40f1c41d931260d45757ce07946eabd7573492bc523149db4db5107ad40",
         "mod_editor/core/nfl2k5_my_career.py": "d51cf5ab145f7426230938afcd90a759dff20ae3db2f0a812e4dcdcc55b7803e",
         "mod_editor/core/nfl2k5_my_career_advisory.py": "14aa17b6d3dc4aba6303de17eaa999c7599856110ee89ae14ccd522f0eaf00ba",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",

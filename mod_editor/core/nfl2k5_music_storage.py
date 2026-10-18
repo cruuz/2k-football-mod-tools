@@ -138,7 +138,9 @@ def allocation_evidence(retail, manifest):
     space._require(image.sha256 == RETAIL_SHA256 == manifest.document.get('retail_sha256'), 'music proof requires pinned retail')
     space._require(all(s.end <= VA for s in image.sections) and image.base+image.image_size <= VA,
                    'music allocation overlaps retail mapping')
-    space._require(not manifest.overlaps(VA, VA+CAPACITY, exclude_owner=OWNER), 'music allocation overlaps owner')
+    # b775-int1 (ui1): Career Home is the slot's mutually exclusive alternative occupant, observed on a side copy.
+    space._require(not [s for s in manifest.overlaps(VA, VA+CAPACITY, exclude_owner=OWNER)
+                        if s.detail.split(':', 1)[0] not in space.EXTRA_SECTION_OWNERS], 'music allocation overlaps owner')
     hits = []
     spans = [(image.base, retail[:image.headers_size], False)]
     spans += [(s.start, retail[s.raw:s.raw+s.raw_size], s.executable) for s in image.sections]
