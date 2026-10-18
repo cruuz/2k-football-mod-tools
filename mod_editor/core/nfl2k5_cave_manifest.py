@@ -470,7 +470,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
                                     # b77-i2: p9 made Advanced/Experimental select Modern 2; the money-downs owner is an allocator
                                     # owner like the others here, so the probe build leaves it off and the union below installs it.
-                                    cpu_money_downs="retail"),
+                                    cpu_money_downs="retail",
+                                    # b775-int1: hs1's hair styles owner is a late allocator owner its image step installs;
+                                    # the probe image must stay allocator-free (the preset build above observed it).
+                                    hair_styles=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
