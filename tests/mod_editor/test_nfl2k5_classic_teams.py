@@ -129,7 +129,8 @@ class HelperCodeTests(unittest.TestCase):
 
     def test_owner_is_a_late_read_only_owner_of_the_union(self):
         self.assertIn(ct.OWNER, space.LATE_OWNERS)
-        self.assertEqual(space.LATE_OWNERS[-1], ct.OWNER)
+        # b775-int1: the last read-only late owner; only hs1's hair styles code owner (no read-only bytes) follows it
+        self.assertEqual(space.LATE_OWNERS[-2:], (ct.OWNER, "nfl2k5_hair_styles"))
         self.assertIn(ct.REQUESTS[0], space.dormant_union())
         rows = [a for a in space._scale_allocations(space.dormant_union()) if a["owner"] == ct.OWNER]
         self.assertEqual(len(rows), 1)
