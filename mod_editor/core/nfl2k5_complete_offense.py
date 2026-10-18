@@ -33,8 +33,9 @@ SPECIAL_FORMATION_TYPES = range(8, 14)   # punt .. field goal / kick formations 
 
 
 def is_special_addition(play) -> bool:
-    """b776 pb1: an appended play linked into a retained (special-teams) formation by index."""
-    return play.replace_index is None and isinstance(play.link_formation, int) and play.play_type == 'special'
+    """b776 pb1: a play linked into a retained (special-teams) formation by index: appended into a free record, or
+    written over one ordinary offensive record when the book has no free record left."""
+    return isinstance(play.link_formation, int) and play.play_type == 'special'
 
 
 def snap_target(chains) -> int | None:
@@ -298,7 +299,7 @@ def compile_offense(resource, pack, *, asset_id):
     require(nf0 + len(app_forms) <= insp.FORMATION_CAPACITY, 'Appended formations exceed the 50 the book holds')
     require(np0 + len(app_plays) <= insp.PLAY_CAPACITY, 'Appended plays exceed the 270 the book holds')
     special_links = {}
-    for p in app_plays:
+    for p in [q for q in pack.plays if q.replace_index is None or is_special_addition(q)]:
         require(p.donor.index < np0, f'{p.id}: donor outside the book')
         if is_special_addition(p):
             fi = p.link_formation
@@ -318,7 +319,7 @@ def compile_offense(resource, pack, *, asset_id):
                                      for f in pack.formations),
                     plays=tuple(p if p.replace_index is not None else _replace(p, replace_index=np0 + app_plays.index(p))
                                 for p in pack.plays))
-    special_ids = {p.id for p in app_plays if is_special_addition(p)}
+    special_ids = {p.id for p in pack.plays if is_special_addition(p)}
     new_f = {nf0 + k for k in range(len(app_forms))}
     new_p = {np0 + k for k in range(len(app_plays))}
     new_cats = new_category_records(pack, source)
@@ -530,7 +531,7 @@ def compile_offense(resource, pack, *, asset_id):
                   option_intent={'schema': lib.OPTION_INTENT_SCHEMA, 'records': []},
                   new_formation_count=len(final.formations), new_play_count=len(final.plays),
                   new_node_count=final.node_count, replaced_formations=len(fs), replaced_plays=len(ps),
-                  appended_formations=len(app_forms), appended_plays=len(app_plays) - len(special_ids),
+                  appended_formations=len(app_forms), appended_plays=len([p for p in app_plays if p.id not in special_ids]),
                   special_additions=[dict(play_id=pid, play_index=play_ids[pid],
                                           formation=next(fi for fi, ids in special_links.items() if pid in ids))
                                      for pid in sorted(special_ids)],

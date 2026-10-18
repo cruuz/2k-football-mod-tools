@@ -1793,6 +1793,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_play_codec",
         "mod_editor.core.nfl2k5_play_library",
         "mod_editor.core.nfl2k5_offense_concepts",       # b77-p48o: modern offense concept engine
+        "mod_editor.core.nfl2k5_offense_modern",         # b776-pb1: modern catalog (routes, formations, runs)
         "mod_editor.core.nfl2k5_playbook_lint",          # b77-p13: playbook execution linter + repair rules
         "mod_editor.gui.animations_panel_qt",
         "mod_editor.core.nfl2k5_animation_math",

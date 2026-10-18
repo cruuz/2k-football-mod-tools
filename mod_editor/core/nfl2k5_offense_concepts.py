@@ -1794,4 +1794,7 @@ def engine_assignments(engine: str, positions_cm: Sequence, kinds: Sequence[int]
     return design(engine, FormationContext.build(positions_cm, list(kinds)))
 
 
+# b776 pb1: the modern catalog (every retail route, Madden 27 formations, retail-template runs, must-haves)
+from . import nfl2k5_offense_modern as _modern  # noqa: E402,F401  (registers into ROUTES / FORMATIONS / CONCEPTS)
+
 register_wizard_catalog()

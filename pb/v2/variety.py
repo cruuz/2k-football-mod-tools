@@ -285,6 +285,21 @@ def team_report(raw: bytes) -> dict:
         types = Counter(t for t in (screen_type(v) for v in vs) if t)
         screens_per_menu.append(sum(types.values()))
         same_screen_max.append(max(types.values()) if types else 0)
+    short_menus = sum(1 for vs in menus.values() if len(vs) % 3)
+    lanes = defaultdict(set)
+    for v in by_play.values():
+        sch = run_scheme(v)
+        pairs = lint.handoff_pairs(v) if sch else []
+        if pairs:
+            lane = (2, 4, 3, 3, 2, 2, 1, 1, 0)[pairs[0][3]]
+            lanes[min(lane, 4 - lane)].add(sch)
+    deep = 0
+    for v in by_play.values():
+        if lint.is_pass(v) and play_family(v) != "screen":
+            r = lint.first_read_slot(v)
+            if r is not None:
+                end = lint.route_end_depth(v.chains[r], v.positions[r][1])
+                deep += end is not None and end >= 20 * YD
     keys = Counter(play_key(v) for v in by_play.values())
     dup = sum(c - 1 for c in keys.values() if c > 1)
     return dict(
@@ -297,7 +312,8 @@ def team_report(raw: bytes) -> dict:
         route_shapes=len(shapes), primary_by_position=dict(primary.most_common()),
         primary_by_alignment=dict(primary_role.most_common()),
         screens_per_menu_max=max(screens_per_menu), same_screen_in_menu_max=max(same_screen_max),
-        duplicate_play_records=dup, play_keys=sorted(keys),
+        duplicate_play_records=dup, play_keys=sorted(keys), short_menu_formations=short_menus,
+        run_schemes_per_lane={str(k): len(v) for k, v in sorted(lanes.items())}, deep_shot_plays=deep,
         formation_names=sorted(n for n, _ in forms.values()))
 
 
@@ -306,7 +322,7 @@ def summarize(label: str, rows: dict) -> dict:
     def mean(key):
         return round(sum(r[key] for r in rows.values()) / len(rows), 1)
     for key in ("formations", "plays", "links", "run_blocking_signatures", "route_kinds_used", "route_shapes",
-                "duplicate_play_records"):
+                "duplicate_play_records", "short_menu_formations", "deep_shot_plays"):
         league[key + "_mean"] = mean(key)
     fam = Counter(); pf = Counter(); rs = Counter(); rk = Counter(); prim = Counter(); role = Counter()
     for r in rows.values():

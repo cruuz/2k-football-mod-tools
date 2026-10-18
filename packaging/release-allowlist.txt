@@ -811,7 +811,9 @@ docs/mod_editor/save_rost_codec.md
 docs/mod_editor/special_roles_audit.json
 mod_editor/core/nfl2k5_complete_offense.py
 mod_editor/core/nfl2k5_offense_concepts.py
+mod_editor/core/nfl2k5_offense_modern.py
 tests/mod_editor/test_nfl2k5_offense_concepts.py
+tests/mod_editor/test_b776_pb1_offense.py
 mod_editor/core/nfl2k5_play_intents.py
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/core/nfl2k5_play_scoring.py
