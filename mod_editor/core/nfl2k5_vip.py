@@ -8,6 +8,7 @@ No game assets, title key, or template are bundled.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import copy
 import hashlib
 import math
 from pathlib import Path
@@ -17,6 +18,7 @@ from . import nfl2k5_playbook_inspector as ip
 from . import nfl2k5_playbook_lint as lint
 from . import nfl2k5_play_library as library
 from . import nfl2k5_play_codec as codec
+from . import nfl2k5_coach_diversity as diversity
 from .nfl2k5_save_writer import derive_sig_key, sign_save, verify_extra
 
 SIZE, PRIMARY_SIZE, CONTEXT = 0x50F0, 0x1278, 0x2F1C
@@ -108,6 +110,10 @@ class Choice:
     run_gap: str | None = None
     flipped: bool = False
     run_lane: str | None = None
+    # Variety metadata (b776 pb2), read from the compiled play, never from its index: the concept family of the
+    # play name and the primary target / ball carrier as "KIND:side". Not part of any charted fit.
+    concept: str = ""
+    target: str = ""
 
     @property
     def category(self) -> str:
@@ -115,9 +121,22 @@ class Choice:
 
 
 CATEGORIES = ("run_under", "run_gun", "pass_under", "pass_gun")
+TARGET_KINDS = {0: "QB", 8: "TE", 9: "WR", 10: "HB", 11: "FB"}
 RUN_LANES = ("left_outside", "left_inside", "middle", "right_inside", "right_outside")
 # Native 281300's nine-hole -> five-lane table, independently checked in replay.
 HOLE_LANES = (2, 4, 3, 3, 2, 2, 1, 1, 0)
+
+
+def _slot_target(view, slot):
+    """"KIND:side" of a formation slot (WR:L, TE:R, HB:C ...), or None for a slot outside the skill spots."""
+    if slot is None or not 0 <= slot < len(view.codes):
+        return None
+    kind = TARGET_KINDS.get(view.codes[slot] & 31)
+    return f"{kind}:{diversity.side_of(view.positions[slot][0])}" if kind else None
+
+
+def _mirror_target(target):
+    return target.translate(str.maketrans("LR", "RL")) if target else target
 
 
 def choices_from_book(resource: bytes) -> tuple[Choice, ...]:
@@ -155,6 +174,8 @@ def choices_from_book(resource: bytes) -> tuple[Choice, ...]:
                                       for n in view.chains[primary])))
             location = lane = None
             handoffs = lint.handoff_pairs(view) if run else []
+            carrier = (_slot_target(view, handoffs[0][1]) if len(handoffs) == 1
+                       else _slot_target(view, lint.qb_slot(view)) if run else None)
             if len(handoffs) == 1:
                 hole = handoffs[0][3]
                 if 0 <= hole < len(codec.HANDOFF_HOLE_CM):
@@ -163,14 +184,17 @@ def choices_from_book(resource: bytes) -> tuple[Choice, ...]:
             result[formation.index, play.index] = Choice(formation.index, play.index, passed, gun,
                                                        formation.name.strip(), play.name.strip(), pa, screen,
                                                        False if screen else depth >= 20 * 91.44 if depth is not None else None,
-                                                       location, run_lane=lane)
+                                                       location, run_lane=lane,
+                                                       concept=diversity.play_family(play.name),
+                                                       target=(_slot_target(view, primary) if passed else carrier) or "")
     require(result, "Compiled book has no byte-addressable offensive menu choices")
     normal = tuple(result.values())
     # 17F1D0 returns an unconditional flip for record bit0 with bit2 clear.
     # Native exclusion still compares only formation/play, so a ring must not
     # contain both orientations of the same pair to fake extra precision.
     return normal + tuple(replace(c, flipped=True, run_location="right" if c.run_location == "left" else "left",
-                                  run_lane=RUN_LANES[4 - RUN_LANES.index(c.run_lane)])
+                                  run_lane=RUN_LANES[4 - RUN_LANES.index(c.run_lane)],
+                                  target=_mirror_target(c.target))
                           for c in normal if not c.passed and c.run_location in ("left", "right"))
 
 
@@ -282,7 +306,7 @@ def _feature_terms(choice):
     return [float(v) if v is not None else 0.0 for v in values] + [float(v is not None) for v in values]
 
 
-def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
+def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125, variety=None, sweeps=12):
     """Fit the observed pool-weighted marginal as well as each small ring.
 
     Otherwise a 7% screen target rounds to zero in nearly every four-pass
@@ -291,6 +315,10 @@ def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
     may move shotgun at most one eighth from the observed target, with a
     penalty for the complete pass/shotgun joint error. This lets inside runs
     use under-center calls when a gun menu has no inside-lane choice.
+
+    ``variety`` (b776 pb2) is None for the fit alone, or ``dict(spec=, lam=, penalty=)``: the same descent then
+    minimizes fit objective + lam * ring variety cost (``nfl2k5_coach_diversity``), keeping every pool's category
+    counts, so only secondary features can move. ``sweeps=0`` just measures. The result carries ``objective``.
     """
     target = _feature_targets(overall)
     weights = [p["target"].get("observations", {}).get("calls", 0) for p in pools]
@@ -317,7 +345,11 @@ def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
                    for k, value in enumerate(expected) if value is not None)
     errors = [loss(row, expected) for row, expected in zip(sums, targets)]
     global_error = loss(aggregate, target)
-    for _ in range(12):
+    ring_state = lam = None
+    if variety:
+        ring_state = diversity.RingSet(selected, variety["spec"], variety.get("penalty"))
+        lam = variety["lam"]
+    for _ in range(sweeps):
         improved = False
         for index, calls in enumerate(selected):
             weight = weights[index]
@@ -328,6 +360,8 @@ def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
                 best, best_delta = None, 0.0
                 for candidate in choices:
                     if candidate.passed != current.passed or (candidate.formation, candidate.play) in used:
+                        continue
+                    if ring_state is not None and candidate.category != current.category:
                         continue
                     counts = list(joint_counts[index])
                     counts[category_index[current.category]] -= 1
@@ -343,10 +377,14 @@ def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
                     change = weight * (local_error - errors[index] + (unknown[candidate] - unknown[current]) / 8)
                     change += 4 * (global_cost - global_error)
                     change += 4 * weight * (joint_cost - joint_errors[index])
+                    if ring_state is not None:
+                        change += lam * ring_state.delta(index, current, candidate)
                     if change < best_delta - 1e-12:
                         best_delta, best = change, (candidate, new_sum, new_global, local_error, global_cost, counts, joint_cost)
                 if best is not None:
                     candidate, sums[index], aggregate, errors[index], global_error, joint_counts[index], joint_errors[index] = best
+                    if ring_state is not None:
+                        ring_state.replace(index, slot, candidate)
                     calls[slot] = candidate
                     unknowns[index] += unknown[candidate] - unknown[current]
                     improved = True
@@ -361,12 +399,121 @@ def fit_secondary_history(pools, choices, overall, *, stance_slack=0.125):
     return dict(weight_basis="Observed coach call counts in each projected native pool",
                 objective="pool marginal error + 4 * overall marginal error + 4 * pool pass/shotgun joint error; unknown-call penalty",
                 constraints=dict(pass_counts="fixed", distinct_pairs=8, shotgun_absolute_target_slack=stance_slack),
+                objective_value=sum(w * (e + u / 8 + 4 * j) for w, e, u, j in zip(weights, errors, unknowns, joint_errors))
+                + 4 * global_error,
                 features=[dict(feature=k, part=sub, target=value,
                                modeled=aggregate[i] / aggregate[i + size] if aggregate[i + size] else None)
                           for i, ((k, sub), value) in enumerate(zip(FEATURE_KEYS, target))])
 
 
-def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int):
+def fit_class(choice: Choice):
+    """Everything the charted fit and each pool's joint can see. Same class means same fit contribution, exactly."""
+    return (choice.category, tuple(_feature_terms(choice)))
+
+
+def _feature_distance(a, b):
+    return sum(x != y for x, y in zip(_feature_terms(a), _feature_terms(b)))
+
+
+def _family(choice):
+    return choice.concept or diversity.play_family(choice.play_name)
+
+
+# Relaxation of the exact-class rule, tried from the largest variety weight down; the first that keeps the fit within
+# tolerance is used. Tolerances are on what the charts measure: the pool-weighted marginal of every secondary feature
+# (percentage points) and the fit objective (its own units; see fit_secondary_history).
+RELAX_LAMBDAS = (3e-4, 1e-4, 3e-5)
+RELAX_FEATURE_TOLERANCE = 0.01
+RELAX_OBJECTIVE_TOLERANCE = 0.002
+
+
+def _relax(pools, choices, overall, weights, penalty):
+    """Variety/fit trade that keeps pass/run, stance and every pool's category counts and moves secondary features
+    only within tolerance. Returns a report; ``pools`` is updated only when a weight is accepted."""
+    base = fit_secondary_history(copy.deepcopy(pools), choices, overall, sweeps=0)
+    if base is None:
+        return dict(status="skipped", reason="no charted secondary targets to hold within tolerance")
+    tries = []
+    for lam in RELAX_LAMBDAS:
+        trial = copy.deepcopy(pools)
+        fit = fit_secondary_history(trial, choices, overall, variety=dict(
+            spec=diversity.offense_spec(weights), lam=lam, penalty=penalty), sweeps=30)
+        drift = max((abs(a["modeled"] - b["modeled"]) for a, b in zip(fit["features"], base["features"])
+                     if a["modeled"] is not None and b["modeled"] is not None), default=0.0)
+        rise = fit["objective_value"] - base["objective_value"]
+        ok = drift <= RELAX_FEATURE_TOLERANCE and rise <= RELAX_OBJECTIVE_TOLERANCE
+        tries.append(dict(lam=lam, max_feature_drift=round(drift, 5), objective_rise=round(rise, 6), accepted=ok))
+        if ok:
+            for pool, done in zip(pools, trial):
+                pool.update({k: done[k] for k in ("choices", "secondary_quantized", "counts", "quantized_pass",
+                                                  "quantized_shotgun")})
+            return dict(status="applied", lam=lam, objective_before=base["objective_value"],
+                        objective_after=fit["objective_value"], tries=tries,
+                        tolerance=dict(feature=RELAX_FEATURE_TOLERANCE, objective=RELAX_OBJECTIVE_TOLERANCE))
+    return dict(status="none_within_tolerance", tries=tries, objective_before=base["objective_value"])
+
+
+def diversify_pools(pools, choices, overall=None, weights=diversity.DEFAULT_WEIGHTS, relax=True):
+    """Spread the eight-member rings over the callable menu while holding the charted marginals.
+
+    Step 1 swaps members only for members of the same ``fit_class`` (same pass/run, stance, play action, screen, deep
+    and run lane/location), so the pool's joint and every secondary marginal are unchanged to the bit (re-verified
+    below). Step 2 (``relax`` and ``overall`` given) lets the fit descent trade secondary features for variety inside
+    the stated tolerance. Both are deterministic descents on ``nfl2k5_coach_diversity``: no repeated (formation,
+    family) pair, at most one screen of a family and two per ring, no Hail Mary-type play outside a late
+    trailing pool, few repeated families/formations/targets per ring and few repeats of one play, family or
+    formation across the pools. Rings are finally laid out so look-alikes are never neighbours.
+    """
+    penalty = diversity.situational_penalty(weights)
+    spec = diversity.offense_spec(weights)
+
+    def exact():
+        rings = [[Choice(**c) for c in pool["choices"]] for pool in pools]
+        fits = [(choice_metrics(r), sorted(c.category for c in r)) for r in rings]
+        stats = diversity.improve(rings, choices, spec, fit_class=fit_class, penalty=penalty,
+                                  escape=(lambda c: (c.category, c.screen), _feature_distance))
+        # Pools listed in escaped_pools lost a Hail Mary-type play they may not hold and had no same-class
+        # replacement; every other pool must be unchanged to the bit.
+        require(all(choice_metrics(r) == m and sorted(c.category for c in r) == k for i, (r, (m, k))
+                    in enumerate(zip(rings, fits)) if i not in stats["escaped_pools"])
+                and all(len({(c.formation, c.play) for c in r}) == len(r) for r in rings),
+                "Variety pass changed a charted marginal")
+        for pool, ring in zip(pools, rings):
+            pool["choices"] = [vars(c) for c in ring]
+        return stats
+
+    rings = [[Choice(**c) for c in pool["choices"]] for pool in pools]
+    before = [diversity.ring_metrics(r) for r in rings]
+    spread_before = diversity.pool_metrics(rings)
+    fit_before = fit_secondary_history(copy.deepcopy(pools), choices, overall, sweeps=0) if overall else None
+    stats = exact()
+    relaxed = _relax(pools, choices, overall, weights, penalty) if relax and overall else None
+    if relaxed and relaxed["status"] == "applied":
+        stats = dict(stats, relaxed_then=exact())
+    rings = [diversity.order_ring([Choice(**c) for c in pool["choices"]], _family, lambda c: c.screen)
+             for pool in pools]
+    after = [diversity.ring_metrics(r) for r in rings]
+    state = diversity.RingSet(rings, spec, penalty)
+    for pool, ring, was, now in zip(pools, rings, before, after):
+        pool["choices"] = [vars(c) for c in ring]
+        pool["secondary_quantized"] = choice_metrics(ring)
+        pool["diversity"] = dict(before=was, after=now)
+    fit_after = fit_secondary_history(copy.deepcopy(pools), choices, overall, sweeps=0) if overall else None
+    fit = None
+    if fit_before and fit_after:
+        drift = [dict(feature=a["feature"], part=a["part"], target=a["target"], before=b["modeled"],
+                      after=a["modeled"]) for a, b in zip(fit_after["features"], fit_before["features"])]
+        fit = dict(objective_before=fit_before["objective_value"], objective_after=fit_after["objective_value"],
+                   max_feature_drift=max((abs(d["after"] - d["before"]) for d in drift
+                                          if d["after"] is not None and d["before"] is not None), default=0.0),
+                   features=drift)
+    return dict(schema=diversity.SCHEMA, weights=vars(weights), improve=stats, relaxation=relaxed, fit=fit,
+                hard_violations=state.hard_violations(), pools_before=before, pools_after=after,
+                spread_before=spread_before, spread_after=diversity.pool_metrics(rings))
+
+
+def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int, *,
+                  varied: bool = True):
     """Return an experimental candidate and a byte-scope receipt, never write input."""
     require(type(book_index) is int and 0 <= book_index < 36, "Unsupported native book-label index")
     encoded = name.encode("utf-16le")
@@ -410,7 +557,9 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
                                   quantized_pass=sum(c.passed for c in selected) / 8,
                                   quantized_shotgun=sum(c.shotgun for c in selected) / 8))
     secondary_fit = fit_secondary_history(pool_receipts, choices, tendency.get("overall", {}))
-    if secondary_fit:
+    weights = varied if isinstance(varied, diversity.Weights) else diversity.DEFAULT_WEIGHTS
+    variety = diversify_pools(pool_receipts, choices, tendency.get("overall", {}), weights) if varied else None
+    if secondary_fit or variety:
         for pool in pool_receipts:
             start = CONTEXT + OFFENSE + pool["index"] * POOL_SIZE
             for index, choice in enumerate(pool["choices"], 1):
@@ -428,7 +577,7 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
                    save_sha256=hashlib.sha256(result.payload).hexdigest(),
                    allowed_spans=[dict(offset=a, size=n) for a, n in spans], changed_bytes=len(changed),
                    pools=pool_receipts, attachment="manual Quick Game VIP Coaches; unpaired exact book only",
-                   secondary_fit=secondary_fit,
+                   secondary_fit=secondary_fit, variety=variety,
                    portrait="vip_logo_a1", native_replay_verified=False,
                    audible_policy="Disabled: unmeasured template numerator cleared because Coach's Pick shares its denominator",
                    preserved_template_features=["defense", "no_huddle_and_timing", "fourth_down", "two_point", "onside", "Crib", "preferences", "statistics"],
@@ -520,6 +669,15 @@ def defense_metrics(selected):
                 rush_five_plus=sum(c.rushers >= 5 for c in selected) / len(selected))
 
 
+def defense_row(selected):
+    row = bytearray(62)
+    row[:2] = bytes((1, 0))
+    for index, choice in enumerate(selected, 1):
+        start = 2 + index * 12
+        row[start + 3:start + 6] = bytes((choice.formation, choice.front, choice.coverage))
+    return bytes(row)
+
+
 def make_defense_pool(choices, target, rotation):
     selected = [(choices + choices)[rotation % len(choices) + i] for i in range(4)]
     def error(calls):
@@ -540,21 +698,45 @@ def make_defense_pool(choices, target, rotation):
         if best is None:
             break
         selected[best[0]] = best[1]
-    row = bytearray(62)
-    row[:2] = bytes((1, 0))
-    for index, choice in enumerate(selected, 1):
-        start = 2 + index * 12
-        row[start + 3:start + 6] = bytes((choice.formation, choice.front, choice.coverage))
-    return bytes(row), selected
+    return defense_row(selected), selected
 
 
-def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int):
+def defense_fit_class(choice):
+    return (choice.man, choice.rushers >= 5)
+
+
+def diversify_defense(rings, choices, weights=diversity.DEFAULT_WEIGHTS):
+    """Same idea for the four-record defensive rings: swap within the (man, five-plus rushers) class, so the
+    charted man and pressure rates of every ring are unchanged to the bit, to spread formations, fronts and
+    coverages inside a ring and across the fifteen situation pools."""
+    metrics = [defense_metrics(r) for r in rings]
+    before = [dict(formations=len({c.formation for c in r}), fronts=len({c.front for c in r}),
+                   coverages=len({c.coverage for c in r})) for r in rings]
+    spread = lambda rs: dict(distinct_triples=len({(c.formation, c.front, c.coverage) for r in rs for c in r}),
+                             distinct_formations=len({c.formation for r in rs for c in r}),
+                             distinct_fronts=len({c.front for r in rs for c in r}),
+                             distinct_coverages=len({c.coverage for r in rs for c in r}))
+    spread_before = spread(rings)
+    stats = diversity.improve(rings, choices, diversity.defense_spec(weights), fit_class=defense_fit_class,
+                              identity=lambda c: (c.formation, c.coverage))
+    for index, ring in enumerate(rings):
+        rings[index] = diversity.order_ring(ring, lambda c: (c.formation, c.front))
+    require(all(defense_metrics(r) == m for r, m in zip(rings, metrics)), "Variety pass changed a defensive rate")
+    after = [dict(formations=len({c.formation for c in r}), fronts=len({c.front for c in r}),
+                  coverages=len({c.coverage for c in r})) for r in rings]
+    return dict(schema=diversity.SCHEMA, rule="swap only within the (man, five-plus rushers) class",
+                improve=stats, pools_before=before, pools_after=after,
+                spread_before=spread_before, spread_after=spread(rings))
+
+
+def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int, *,
+                varied: bool = True):
     """Coach-derived offense history plus measured defensive pressure/coverage.
 
     The fifteen defensive contexts currently share the observed coach marginal;
     no unsupported situation or formation-conditioned charting is invented.
     """
-    offense, receipt = build_offense(template, resource, tendency, name, book_index)
+    offense, receipt = build_offense(template, resource, tendency, name, book_index, varied=varied)
     data = bytearray(offense.payload)
     choices = defense_choices_from_book(resource)
     target = tendency.get("defense", {})
@@ -564,11 +746,15 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
         value = target.get(key, {}).get("rate")
         require(value is None or type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1,
                 f"Invalid defensive {key} rate")
-    defense = []
+    defense, rings = [], []
     for index in range(15):
         row, selected = make_defense_pool(choices, target, index * 7)
+        rings.append(selected)
+    defense_variety = (diversify_defense(rings, choices, varied if isinstance(varied, diversity.Weights)
+                                         else diversity.DEFAULT_WEIGHTS) if varied else None)
+    for index, selected in enumerate(rings):
         start = CONTEXT + 0xA3C + index * 62
-        data[start:start + 62] = row
+        data[start:start + 62] = defense_row(selected)
         defense.append(dict(index=index, choices=[vars(c) for c in selected],
                             quantized=defense_metrics(selected),
                             targets={k: target.get(k) for k in ("man", "rush_five_plus")},
@@ -634,6 +820,7 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
                               scope="Conditional native policy; not an unconditional full-game frequency")
     struct.pack_into("<I", data, 0, coach_identity(tendency["team"], name))
     receipt.update(schema="nfl2k5_coach_vip/v1", status="EXPERIMENTAL_NATIVE_VIP_CANDIDATE", defense_pools=defense,
+                   defense_variety=defense_variety,
                    identity_scheme="stable_team_and_profile_name_v2",
                    decisions=decisions,
                    defense_mapping="Five-plus first-assignment rushers and four-plus man assignments in the effective front/coverage union; call proxies, not post-snap outcomes",
