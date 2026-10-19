@@ -802,6 +802,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_play_intents.py": "4d4f08fdeece4f45e8b23aaa5cccda971463b8cc8cfd10e52e8fcaa03508f64d",
         "mod_editor/core/nfl2k5_play_library.py": "f6e8113f4ecdcd8ab2cd1da8266bbf5dcddd84ec73f6af67316af21c1a94c0a9",
         "mod_editor/core/nfl2k5_offense_concepts.py": "9f76c973fe715cdf4586b13dc14cbfdede1ad2daebed06fd414771db6cf99ff4",
+        "mod_editor/core/nfl2k5_offense_modern.py": "6c7a9d34623c8e4cdf7cbf78f59e073a8923995fc1ae30859671a9c1ffa0684f",
         "mod_editor/core/nfl2k5_complete_offense.py": "8747e9815160efaf2fb23a5b0180c1cbd784934d665bcc6926f9ca6dd73d051d",
         "mod_editor/core/nfl2k5_playbook_lint.py": "0b405ddafa310be03a7b1a351e06e3c56302c5d53b0a4750720de3a39e2c4286",
         "mod_editor/core/nfl2k5_play_scoring.py": "8776325303e695d34543c462a276747dfa7d1a74ec14245027c53965d952bdfa",
