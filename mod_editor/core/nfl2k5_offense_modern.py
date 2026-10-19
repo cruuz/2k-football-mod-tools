@@ -1199,7 +1199,7 @@ def fake_fg_deep(positions, codes, donor_chains) -> list:
         chains[s] = ch
     order = ([right[1]] if len(right) > 1 else []) + ([right[0]] if right else []) + (left[:1])
     head = [n for n in chains[holder] if n[0] == 0x01]
-    chains[holder] = head + [move(0, -3), pass_node(order[:4])]
+    chains[holder] = head + [pass_node(order[:4])]          # retail FG Pass holder: two Start nodes, then the throw
     return chains
 
 
