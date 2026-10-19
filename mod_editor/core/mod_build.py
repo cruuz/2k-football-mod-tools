@@ -4644,6 +4644,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         context_receipt = moment_context.apply_to_image(target)
         receipt["steps"].append({"step": "moment_context", **context_receipt})
         receipt["result"]["moment_context"] = "applied"
+        # b776 sbc: the 17 Super Bowl moments open with the booth's "welcome to the Super Bowl" line.
+        progress("Adding the Super Bowl booth welcome to the Super Bowl moments", 0, 0)
+        moment_booth = _core_module("nfl2k5_moment_booth")
+        booth_receipt = moment_booth.apply_to_image(target)
+        receipt["steps"].append({"step": "moment_booth", **booth_receipt})
+        receipt["result"]["moment_booth"] = "applied"
     # Use the completed venue models and edited SITU, after all other resource passes.
     if plan.espn25_named_previews:
         progress("Building period Anniversary fields", 0, 51)
