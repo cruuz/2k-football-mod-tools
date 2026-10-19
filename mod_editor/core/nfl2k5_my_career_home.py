@@ -4,7 +4,7 @@ Noah: "make a test MyCareer new menu system/screen to push the limits of what we
 
 What it is
 ----------
-* The MyCareer Apartment's descriptor becomes **Career Home**: five section rows (Play next game, Practice,
+* The MyCareer Apartment's descriptor becomes **Career Home**: six section rows (Play next game, Schedule, Practice,
   MyPlayer, Upgrades, Settings + Save) plus Quit to Menu, all inside the native seven-row window, and a live panel
   on the right drawn after the native list: MyPlayer's name, position and club; three chips (overall from the
   game's own unboosted overall, XP, depth chart spot with starter/backup); the next game and its date; this
@@ -16,6 +16,13 @@ What it is
   textured quads. Nothing is loaded or allocated; if a texture or the font is absent that piece is skipped.
 * Panels and art use the retail immediate path the text itself uses (2D2A0 begin, 2CBE0 colour, 2CB90 UV,
   2CA70 vertex, 2CA00 end) with an aligned stack copy of a loaded font's material, like the player star.
+* **Schedule** (job mcs, Noah 2026-10-18: "it would be nice if we had a schedule we could look at") opens a native
+  list of the season's weeks (Week 1 .. the image's last regular week, then Wild Card, Divisional, Conference and
+  Super Bowl). The cursor starts on this week and the native list scrolls; beside each visible week a card shows the
+  club's game from the league grid MyCareer plays from: "vs"/"@" opponent, date and kickoff, and for a played game
+  the result and score (W 27-20) from the game's own cell scores; bye weeks and unset playoff rounds say so. This
+  week's card takes the club gradient, a scroll bar shows the position, the footer gives the club's regular-season
+  record. A does nothing, B goes back. Everything is read only; nothing is stored.
 * **Settings + Save** opens a native sub-list: Settings, Save, Sim to next appearance, Start MyPlayer,
   **Classic Apartment** (the old nine-row Apartment, unchanged, with its two info lines) and Back.
 * Every row except the two screen openers is an existing MyCareer row action. B on Career Home is MyCareer's own
@@ -33,8 +40,9 @@ optional extra section slot: the music section's descriptor slot, name and alrea
 are mutually exclusive. An image without Career Home keeps exactly its bytes and 28 sections. The MyCareer code
 is not changed; only its Apartment descriptor (template data) names this owner's title, rows and handler.
 
-Section block: 128-byte header (magic, content length, content SHA-256, zeros), then the content (machine code,
-UTF-16 strings, two descriptors and two row tables), then zero padding to ``SIZE``. Resident cost: ``SIZE`` bytes
+Section block: 128-byte header (magic, content length, content SHA-256, zeros), then the content (the title and
+the Career Home row table at fixed offsets, machine code, UTF-16 strings, three descriptors and two more row tables,
+the schedule's rows and week labels last), then zero padding to ``SIZE``. Resident cost: ``SIZE`` bytes
 of preloaded executable memory; no disc resource, no heap allocation.
 """
 from __future__ import annotations
@@ -51,7 +59,8 @@ OWNER = "nfl2k5_my_career_home"
 EVIDENCE = "EXPERIMENTAL"
 VA = space.DATA_VA + space.PAGE          # the music section's address (an unmapped hole in every scale-out image)
 RAW = space.FILE_SIZE                    # its zero file gap
-SIZE = 0x2000
+# 0x3000 since job mcs (the Schedule screen; ui1 used 0x2000). The music slot's file gap and VA hole hold 0x10000.
+SIZE = 0x3000
 FLAGS = 0x07                             # writable | preload | executable (retail .data uses the same flags)
 HEADER = 128
 MAGIC = space.HOME_SECTION_MAGIC
@@ -60,9 +69,10 @@ CONTENT_VA = VA + HEADER
 UI_LABEL = "MyCareer Career Home (test)"
 BUILD_CAPTION = UI_LABEL
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. MyCareer's Apartment becomes Career Home: Play next game, Practice, MyPlayer, "
-    "Upgrades, Settings and save, and Quit, with no scrolling, and a live panel with MyPlayer's club, overall, XP, "
-    "depth chart spot, next game and this season's stats. Settings and save holds Settings, Save, Sim to next "
+    "EXPERIMENTAL / UNWITNESSED. MyCareer's Apartment becomes Career Home: Play next game, Schedule, Practice, "
+    "MyPlayer, Upgrades, Settings and save, and Quit, with no scrolling, and a live panel with MyPlayer's club, "
+    "overall, XP, depth chart spot, next game and this season's stats. Schedule lists the club's season week by week "
+    "with opponents, dates and results. Settings and save holds Settings, Save, Sim to next "
     "appearance, Start MyPlayer and the Classic Apartment (the old screen, unchanged). Uses the optional extra "
     "executable section, so it cannot be combined with a jukebox music library.")
 
@@ -71,8 +81,8 @@ HELP_TEXT = (
 LAYOUT, BINDINGS, FRAME = 0xE7F928, 0xAA281C, (0x02400044, 0x018D0052)
 PRACTICE_LABEL = 0xE9C3BC  # the retail "Practice" literal MyCareer's Apartment already uses
 
+HOME_TITLE = "Career Home"
 STRINGS = (
-    ("home_title", "Career Home"),
     # Native rows draw the first word heavy and the rest light, with no space
     # (retail ESPN style: PLAY|NEXTGAME), so labels are chosen to read that way.
     ("home_text_more", "Settings + Save"),
@@ -93,18 +103,55 @@ STRINGS = (
     ("home_tex_qb", "position_photos_qb"), ("home_tex_k", "position_photos_k"),
     ("home_tex_wr", "position_photos_wr"), ("home_tex_rb", "position_photos_rb"),
     ("home_tex_te", "position_photos_te"), ("home_tex_def", "position_photos_def"),
+    # Schedule (job mcs). Row labels follow the native heavy/light style (WEEK|1, WILD|CARD).
+    ("home_text_schedule", "Schedule"),
+    ("home_title_schedule", "Season Schedule"),
+    ("home_text_bye", "BYE WEEK"),
+    ("home_text_tbd", "TBD"),
+    ("home_text_nogame", "NO GAME"),
+    ("home_text_now", "THIS WEEK"),
+    ("home_text_pre", "PRESEASON"),
+    ("home_fmt_home", "vs %s"),
+    ("home_fmt_away", "@ %s"),
+    ("home_fmt_date", "%u/%u/%u at %u:%02u"),
 )
 # Retail position codes 0..16: QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE. Linemen have no photo.
 PHOTOS = ("qb", "k", "k", "wr", "def", "def", "def", "rb", "rb", "te", "def", "def", None, None, None, "def", "def")
-# (label, MyCareer or own action). Five sections and Quit: the native window shows seven rows.
-HOME_ROWS = (("play_text", "mode_play_row"), (PRACTICE_LABEL, "mode_practice"), ("card_text", "mode_card"),
+# (label, MyCareer or own action). Six sections and Quit: the native window shows seven rows.
+HOME_ROWS = (("play_text", "mode_play_row"), ("home_text_schedule", "home_schedule_open"),
+             (PRACTICE_LABEL, "mode_practice"), ("card_text", "mode_card"),
              ("m3_upgrade_text", "m3_upgrade_open"), ("home_text_more", "home_options_open"),
              ("home_text_quit", "mode_quit"))
 OPTION_ROWS = (("m3_settings_text", "mode_settings_open"), ("save_text", "mode_save_menu"),
                ("sim_appearance_text", "mode_sim_appearance"), ("start_text", "mode_start"),
                ("home_text_classic", "home_classic_open"), ("m3_back_text", "m3_back"))
-DESCRIPTORS = (("home_classic", "apartment_text", "hub_rows"), ("home_options", "home_text_more", "home_options_rows"))
+DESCRIPTORS = (("home_classic", "apartment_text", "hub_rows"), ("home_options", "home_text_more", "home_options_rows"),
+               ("home_schedule", "home_title_schedule", "home_schedule_rows"))
 MAX_VISIBLE_ROWS = 7
+# Schedule rows: the image's regular weeks (the stage table's Season row byte +4, which the 18-week season owner
+# raises from 17), then the four postseason rounds, in grid-row order. The runtime reads the same byte.
+SEASON_WEEKS_VA = 0x005151C4
+PLAYOFF_ROUNDS = ("Wild Card", "Divisional", "Conference", "Super Bowl")
+GRID_ROWS = 22
+# Front block (job mcs). MyCareer's LZ-compressed RW template stores three of this section's addresses: the
+# Apartment's title, its row table and its handler. They sit at fixed offsets ahead of the code (the title in
+# TITLE_ROOM bytes, then the Career Home row table with room for the native window's seven rows and the end marker,
+# then the code, whose first byte is the handler), so no change to this section's code or tables moves them and
+# MyCareer's code block keeps its size (11 spare bytes at the b775 VAs, 7 on the retail test image, as with ui1).
+TITLE_ROOM = 32
+FRONT = TITLE_ROOM + 52 * (MAX_VISIBLE_ROWS + 1)
+CODE_VA = CONTENT_VA + FRONT
+
+
+def season_weeks(payload):
+    weeks = XbeImage(payload).read(SEASON_WEEKS_VA, 1)[0]
+    _require(weeks in (17, 18), f"Career Home schedule: unexpected regular season length {weeks}")
+    return weeks
+
+
+def schedule_labels(weeks):
+    _require(weeks in (17, 18), f"Career Home schedule: unexpected regular season length {weeks}")
+    return tuple(f"Week {i}" for i in range(1, weeks + 1)) + PLAYOFF_ROUNDS
 
 
 def _require(ok, message):
@@ -113,16 +160,27 @@ def _require(ok, message):
 
 
 def career_labels(payload):
-    """MyCareer's label addresses for this image (independent of the Career Home variant)."""
+    """MyCareer's label addresses for this image (independent of the Career Home variant), plus the image's regular
+    season length for the schedule rows (``season_weeks``; not an address)."""
     from . import nfl2k5_my_career_mode as mode
     code, data = legacy.allocations(payload)
-    return {**mode.code_for(code["va"], data["va"])[1], "state": data["va"], "m3": mode.EXTRA_VA}
+    return {**mode.code_for(code["va"], data["va"])[1], "state": data["va"], "m3": mode.EXTRA_VA,
+            "season_weeks": season_weeks(payload)}
 
 
 def code_for(career):
-    """Section content and labels. ``career`` is MyCareer's label map for the same image."""
-    out = bytearray(assembly.CODE)
-    labels = {name: CONTENT_VA + offset for name, offset in assembly.LABELS.items()}
+    """Section content and labels. ``career`` is MyCareer's label map for the same image.
+
+    Only the schedule's row table contents and week labels depend on ``career["season_weeks"]`` (default 18); they
+    are the last bytes of the content, so every label address (the Apartment fields MyCareer's template names
+    included) is the same for either season length."""
+    weeks = career.get("season_weeks", 18)
+    out = bytearray(FRONT) + assembly.CODE
+    labels = {name: CODE_VA + offset for name, offset in assembly.LABELS.items()}
+    title = (HOME_TITLE + "\0").encode("utf-16le")
+    _require(len(title) <= TITLE_ROOM, "Career Home title does not fit its fixed room")
+    out[:len(title)] = title
+    labels["home_title"], labels["home_rows"] = CONTENT_VA, CONTENT_VA + TITLE_ROOM
 
     def reserve(name, size):
         out.extend(bytes((-len(out)) % 4))
@@ -138,9 +196,9 @@ def code_for(career):
     struct.pack_into("<17I", out, at, *(labels["home_tex_" + key] if key else 0 for key in PHOTOS))
     names = {**career, **labels}
 
-    def rows(name, content):
-        _require(len(content) <= MAX_VISIBLE_ROWS, f"{name}: more rows than the native window shows")
-        at = reserve(name, 52 * (len(content) + 1))
+    def rows(name, content, limit=MAX_VISIBLE_ROWS):
+        _require(len(content) <= limit, f"{name}: more rows than the native window shows")
+        at = labels[name] - CONTENT_VA if name == "home_rows" else reserve(name, 52 * (len(content) + 1))
         for i, (label, action) in enumerate(content):
             struct.pack_into("<13I", out, at + 52 * i, 9, names[label] if isinstance(label, str) else label,
                              *([0] * 8), names[action], 0, 0)
@@ -148,17 +206,33 @@ def code_for(career):
 
     rows("home_rows", HOME_ROWS)
     rows("home_options_rows", OPTION_ROWS)
-    names = {**career, **labels}
+    # The schedule table goes last (its length and labels depend on the season length): reserve its address now,
+    # after the descriptors, so nothing before it moves.
     for name, title, table in DESCRIPTORS:
-        at = reserve(name, 44)
-        struct.pack_into("<11I", out, at, names[title], 0, labels["home_handler"], 0, names[table], 0,
-                         LAYOUT, BINDINGS, *FRAME, 0x13)
-    symbols = {"code": CONTENT_VA, "": 0, **career, **labels}
+        reserve(name, 44)
+    weekly = schedule_labels(weeks)
+    labels["home_schedule_rows"] = CONTENT_VA + len(out)
+    week_names = []
+    out.extend(bytes(52 * (GRID_ROWS + 1)))  # room for the longest season; the unused tail stays zero
+    for i, text in enumerate(weekly):
+        week_names.append("home_week_%d" % i)
+        content = (text + "\0").encode("utf-16le")
+        at = reserve(week_names[-1], len(content))
+        out[at:at + len(content)] = content
+    names = {**career, **labels}
+    at = labels["home_schedule_rows"] - CONTENT_VA
+    for i, name in enumerate(week_names):
+        struct.pack_into("<13I", out, at + 52 * i, 9, names[name], *([0] * 8), names["home_schedule_row"], 0, 0)
+    struct.pack_into("<I", out, at + 52 * len(week_names), 3)
+    for name, title, table in DESCRIPTORS:
+        struct.pack_into("<11I", out, labels[name] - CONTENT_VA, names[title], 0, labels["home_handler"], 0,
+                         names[table], 0, LAYOUT, BINDINGS, *FRAME, 0x13)
+    symbols = {"code": CODE_VA, "": 0, **career, **labels}
     for off, kind, symbol, value in assembly.RELOCATIONS:
-        target = symbols[symbol] + value + struct.unpack_from("<I", out, off)[0]
+        target = symbols[symbol] + value + struct.unpack_from("<I", out, FRONT + off)[0]
         if kind == 2:
-            target -= CONTENT_VA + off
-        struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
+            target -= CODE_VA + off
+        struct.pack_into("<I", out, FRONT + off, target & 0xFFFFFFFF)
     _require(HEADER + len(out) <= SIZE, f"Career Home needs {HEADER + len(out)} bytes; its section has {SIZE}")
     labels["content_end"] = CONTENT_VA + len(out)
     return bytes(out), labels
@@ -362,11 +436,11 @@ def check_static(payload):
     menu = _unpack_template(blob[career["menu_template"] - code["va"]:])
     at = career["apartment"] - data["va"] - 200
     descriptors = {"apartment": struct.unpack_from("<11I", menu, at)}
-    for name in ("home_classic", "home_options"):
+    for name in ("home_classic", "home_options", "home_schedule"):
         descriptors[name] = struct.unpack_from("<11I", read(labels[name], 44))
     receipt = {"descriptors": {}, "rows": {}}
     expected_rows = {"apartment": labels["home_rows"], "home_classic": career["hub_rows"],
-                     "home_options": labels["home_options_rows"]}
+                     "home_options": labels["home_options_rows"], "home_schedule": labels["home_schedule_rows"]}
     for name, fields in descriptors.items():
         title, events, handler, _c, rows, _14, layout, binding, frame0, frame1, flags = fields
         _require(events == 0 and _c == 0 and _14 == 0, f"{name}: unexpected event table or spare words")
@@ -384,7 +458,7 @@ def check_static(payload):
             limit = 10
         else:
             source = lambda off, n: read(rows + off, n)
-            limit = MAX_VISIBLE_ROWS
+            limit = GRID_ROWS if name == "home_schedule" else MAX_VISIBLE_ROWS
         for i in range(limit + 1):
             row = struct.unpack("<13I", source(52 * i, 52))
             if row[0] == 3:
@@ -394,12 +468,17 @@ def check_static(payload):
             entry(row[10], f"{name} row {i} action")
             table.append(string(row[1]))
         receipt["rows"][name] = table
-    _require(len(receipt["rows"]["apartment"]) == len(HOME_ROWS) <= 6, "Career Home must show every row")
+    _require(len(receipt["rows"]["apartment"]) == len(HOME_ROWS) <= MAX_VISIBLE_ROWS, "Career Home must show every row")
+    weeks = career["season_weeks"]
+    _require(tuple(receipt["rows"]["home_schedule"]) == schedule_labels(weeks)
+             and weeks + len(PLAYOFF_ROUNDS) <= GRID_ROWS, "Career Home schedule rows differ from the season")
     entry(labels["home_handler"], "handler")
     entry(labels["home_draw"], "draw")
+    entry(labels["home_schedule_open"], "schedule opener")
     for key in [k for k in labels if k.startswith("home_tex_")]:
         string(labels[key])
     receipt.update(section=hex(VA), size=SIZE, content_bytes=len(content), spare_bytes=SIZE - HEADER - len(content),
+                   season_weeks=weeks,
                    mycareer_spare_bytes=mode.TAG_OFFSET - (mode.code_for(code["va"], data["va"], home=apartment_fields(labels))[1]["content_end"] - code["va"]))
     _require(receipt["mycareer_spare_bytes"] >= 0, "MyCareer code budget exceeded")
     return receipt
