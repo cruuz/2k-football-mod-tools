@@ -9,7 +9,8 @@ interior linemen, so a four-down book fielded the rusher as a linebacker and the
 
 Rule (``mapping_scheme``): a team-season listed in ``data/nfl2k5_front_schemes.json`` as a 3-4 takes the 3-4 rule
 (``tools/nfl2k5_roster_reclassify``: OLB to EDGE, DE to the interior pool) when the book that will play it asks the pools
-for roles: every Anniversary moment from 2005 on (the franchise's current book, ``nfl2k5_stock_books``) and every stock
+for roles: every Anniversary moment and every classic team from 2010 on (b776; moments from 2005 before) (the franchise's
+current book, ``nfl2k5_stock_books``) and every stock
 bank book except the five pure 3-4 books. The "retail" group (b776-de2) is the 75 retail historic ROST files of the
 disc (outer entries 113 to 187), which tools/nfl2k5_roster_reclassify reclassifies with the same rule choice; they are
 played by the preserved bank, so the franchise's stock book decides (``retail_books``). The five pure 3-4 stock books (BAL HOU NE PIT SD) keep their retail slot
@@ -23,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/nfl2k5_front_schemes.json"
-MODERN_FIRST_SEASON = 2005          # nfl2k5_stock_books.MODERN_FIRST_SEASON: this season on, the franchise's current book
+MODERN_FIRST_SEASON = 2010          # nfl2k5_stock_books.MODERN_FIRST_SEASON: this season on, the franchise's current book (b776: was 2005)
 STOCK_ODD_BOOKS = ("BAL", "HOU", "NE", "PIT", "SD")   # retail books whose base front is the 3-4 (reclassify.PURE_THREE_FOUR_BOOKS)
 GROUPS = ("classic", "moments", "retail")
 MIN_LB = 3
@@ -50,8 +51,8 @@ def base_front(group: str, key: str, data: dict | None = None) -> str:
 
 def roles_book(group: str, abbreviation: str, season: int) -> bool:
     """True when the book that plays this team-season asks the pools for roles (EDGE / interior / LB)."""
-    if group == "moments" and season >= MODERN_FIRST_SEASON:
-        return True                                    # the franchise's current (modern) book
+    if group in ("moments", "classic") and season >= MODERN_FIRST_SEASON:
+        return True                                    # the franchise's current (modern) book (b776: classic teams of 2010 on too)
     return abbreviation not in STOCK_ODD_BOOKS          # the preserved retail bank: only the pure 3-4 books are literal
 
 

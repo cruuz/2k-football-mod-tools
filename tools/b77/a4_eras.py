@@ -5,7 +5,7 @@ What it records for each moment (physical row 1..51), per side:
 
 * the book the v0.5 executable picks today, as proved under Unicorn by ``--proof`` (the resolver ``62902`` run with the real
   team object of each side: franchise key, SITU season word, exit taken);
-* the book choice and why: a side whose season word is 2005 or later gets the franchise's current (v2) book, an older side
+* the book choice and why: a side whose season word is 2010 (b776; 2005 before) or later gets the franchise's current (v2) book, an older side
   keeps the preserved retail 2004 bank. The cut is the league's own shotgun adoption (nflverse, regular season, share of
   all run and pass snaps): 12 to 14 percent through 2004, 27 percent in 2007, 47 percent in 2012, 65 percent from 2016;
 * the real shotgun rate of that team-season (nflverse ``shotgun`` flag, regular season, by down) and, for the side the CPU
@@ -51,7 +51,7 @@ sys.path.insert(0, str(ROOT))
 
 SCHEMA = "b77/a4_moment_playbook_eras/v2"
 NFLVERSE = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{year}.csv.gz"
-MODERN_FIRST_SEASON = 2005
+MODERN_FIRST_SEASON = 2010   # b776-int2: Noah, 10/18 "<= 2009 = retail era" (was 2005)
 # nflverse team codes for the franchise keys the books use
 NFLVERSE_CODES = {"ARZ": ("ARI",), "STL": ("STL", "LA"), "SD": ("SD", "LAC"), "OAK": ("OAK", "LV")}
 SIT_D1 = ("1st&10 own20", "1st&10 own25", "1st&10 opp40")
@@ -350,11 +350,11 @@ def side_notes(side: dict, league: dict | None) -> tuple[str, str]:
     real_text = (f"{key} {season}: {real['gun_pct']}% of snaps in shotgun (first down {real['first_down_pct']}%, second {real['second_down_pct']}%, "
                  f"third {real['third_down_pct']}%), {real['no_huddle_pct']}% no-huddle") if real else ""
     if side["era"] == "classic":
-        offense = (f"Season {season} is before 2005: the preserved retail 2004 {key} book (E2R-{key}-pb.iff, a byte copy of the retail entry) is the period "
+        offense = (f"Season {season} is before {MODERN_FIRST_SEASON}: the preserved retail 2004 {key} book (E2R-{key}-pb.iff, a byte copy of the retail entry) is the period "
                    f"book; {league_text}. " + real_text).strip()
         defense = f"Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     else:
-        offense = (f"Season {season} is 2005 or later: the franchise's current {key} book (p48o v2 offense, shotgun, trips, bunch and "
+        offense = (f"Season {season} is {MODERN_FIRST_SEASON} or later: the franchise's current {key} book (p48o v2 offense, shotgun, trips, bunch and "
                    f"flea flicker included); {league_text}. " + real_text).strip()
         defense = (f"The same {key} book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the {season} coordinator's "
                    "base front and blitz rate are not modelled (listed as a limit in the report).")
@@ -393,7 +393,7 @@ def build(proof: dict, rates: dict, books_dir: Path | None, selection_dir: Path 
     league = {str(y): league_rate(rates, y) for y in sorted(int(k) for k in rates) if league_rate(rates, y)}
     teams = team_records(team_rates["bins"], books_dir, selection_model, team_rates["sources"]) if team_rates else {}
     return dict(schema=SCHEMA, modern_first_season=MODERN_FIRST_SEASON,
-                rule=("A side whose SITU season word is 2005 or later gets its franchise's current book; an older side keeps the preserved "
+                rule=(f"A side whose SITU season word is {MODERN_FIRST_SEASON} or later gets its franchise's current book; an older side keeps the preserved "
                       "retail 2004 bank. The selector stays the one in nfl2k5_stock_books (62902). gun_weight replaces the retail 0.05 "
                       "that 0x207EF0 gives every shotgun set beyond 10 yards of the goal line (nfl2k5_moment_gun_weight)."),
                 league_shotgun_pct=league, source="nflverse play_by_play (https://github.com/nflverse/nflverse-data/releases/tag/pbp), "
