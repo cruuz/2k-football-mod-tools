@@ -16,6 +16,7 @@ and re-stamps only ``base`` (book fingerprint, donor formation / play / node cou
 from __future__ import annotations
 
 import argparse
+import hashlib
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import replace
 import json
@@ -100,11 +101,14 @@ def check_team(job) -> dict:
     book, body = insp.parse_playbook_resource(composed, asset_id=f"book:{team}"), composed[pk.RESOURCE_HEADER_SIZE:]
     pack = pk.load_pack(defense_path)
     original_pack = pack
-    pack, moved = remap_categories(pack, team, book)
-    row = dict(team=team, category_index_moves=moved, pack=str(Path(defense_path).relative_to(ROOT)), composed_fingerprint=pk.book_fingerprint(body),
+    row = dict(team=team, pack=str(Path(defense_path).relative_to(ROOT)), composed_fingerprint=pk.book_fingerprint(body),
                composed_formations=len(book.formations), composed_plays=len(book.plays), composed_nodes=book.node_count)
-    if pk.book_fingerprint(body) == pack.base.book_fingerprint:
-        return {**row, "status": "current"}
+    if pk.book_fingerprint(body) == pack.base.book_fingerprint:     # already seated on this offense
+        compiled = pk.apply_pack_to_resource(composed, pk.load_pack(defense_path), asset_id=f"book:{team}", xbe=xbe)
+        return {**row, "status": "current", "replacement_sha256": hashlib.sha256(compiled.replacement).hexdigest(),
+                "after_defense_nodes": compiled.report["new_node_count"]}
+    pack, moved = remap_categories(pack, team, book)
+    row["category_index_moves"] = moved
     try:
         rebased = rebase(pack, book, body)
         if content(rebased) != content(original_pack):
@@ -115,11 +119,38 @@ def check_team(job) -> dict:
         compiled = pk.apply_pack_to_resource(composed, rebased, asset_id=f"book:{team}", xbe=xbe)
     except (ValueError, pk.PlaybookPackError) as exc:
         return {**row, "status": "refused", "reason": str(exc)}
-    row.update(after_defense_formations=compiled.report["new_formation_count"],
+    row.update(replacement_sha256=hashlib.sha256(compiled.replacement).hexdigest(),
+               after_defense_formations=compiled.report["new_formation_count"],
                after_defense_plays=compiled.report["new_play_count"], after_defense_nodes=compiled.report["new_node_count"])
     if apply:
         pk.save_pack(rebased, defense_path)
     return {**row, "status": "rebased" if apply else "stale"}
+
+
+def record_pins(rows: list[dict]) -> None:
+    """Point the defense freshness records (pb/v2/defense/out: offense_pins.json and manifest.json, read by
+    ``pb/v2/defense/regen.py --check``) at the re-seated packs and the offense they now pin.  Only the pins and the
+    compile digests change; the generation receipts (roles, misses, band loss) describe the unchanged content."""
+    sys.path.insert(0, str(ROOT / "pb" / "v2" / "defense"))
+    import regen
+    manifest_path = regen.OUT / "manifest.json"
+    doc = json.loads(manifest_path.read_text(encoding="utf-8"))
+    by_team = {r["team"]: r for r in rows}
+    now = regen.offense_pins()
+    for rec in doc["teams"]:
+        r = by_team.get(rec.get("team"))
+        if r is None or r["status"] not in ("rebased", "current"):
+            continue
+        dpath = ROOT / r["pack"]
+        rec.update(offense_pack_sha256=now["teams"][r["team"]]["sha256"], source_fingerprint=r["composed_fingerprint"],
+                   replacement_sha256=r["replacement_sha256"], nodes=r["after_defense_nodes"],
+                   formation_count=r["composed_formations"], play_count=r["composed_plays"],
+                   pack_sha256=hashlib.sha256(dpath.read_bytes()).hexdigest(),
+                   reseated_by="tools/b77/pb1_defense_rebase.py (b776 pb1: content unchanged, base re-stamped)")
+    manifest_path.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")
+    now["generated_at_head"] = regen.git_head()
+    now["reseated_by"] = "tools/b77/pb1_defense_rebase.py"
+    regen.PINS.write_text(json.dumps(now, indent=1) + "\n", encoding="utf-8", newline="\n")
 
 
 def main(argv=None) -> int:
@@ -129,6 +160,8 @@ def main(argv=None) -> int:
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--receipt", type=Path)
+    ap.add_argument("--record-pins", action="store_true",
+                    help="with --apply on all 32 teams: refresh pb/v2/defense/out pins for regen.py --check")
     args = ap.parse_args(argv)
     jobs = []
     for team in pk.TEAM_BOOKS:
@@ -144,6 +177,8 @@ def main(argv=None) -> int:
     for r in rows:
         print(f"{r['team']:4} {r['status']:8} {r.get('reason', '')[:300]} nodes={r.get('after_defense_nodes')}", flush=True)
     counts = {s: sum(1 for r in rows if r["status"] == s) for s in ("current", "stale", "rebased", "refused")}
+    if args.record_pins and args.apply and not args.teams and counts["refused"] == 0:
+        record_pins(rows)
     print(json.dumps(counts))
     if args.receipt:
         args.receipt.write_text(json.dumps(dict(schema="b776_pb1_defense_rebase/v1", counts=counts, teams=rows), indent=1)
