@@ -10,7 +10,7 @@ import unittest
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(ROOT / "tools/b77")]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
 from mod_editor.core import nfl2k5_glyph_fixes_2026 as glyphs
 from mod_editor.core import nfl2k5_menu_chiefs_2026 as menu
@@ -100,30 +100,30 @@ class Contract(unittest.TestCase):
         spec = json.loads((ROOT / "data/nfl2k5_teams_2026/KC.json").read_text())
         self.assertEqual((spec["albedo"]["red"], spec["albedo"]["gold"]), ("#E4282E", "#F7C542"))
         for side in ("home", "away"):
-            self.assertEqual(sorted(spec["kits"][side]["digits"]["glyph_shapes"]), list("0123456789"))
+            self.assertEqual(spec["kits"][side]["digits"]["structure"], "retail")
+            self.assertNotIn("glyph_shapes", spec["kits"][side]["digits"])
 
-    def test_chiefs_digit_and_nameplate_rows(self):
+    def test_chiefs_digits_are_the_retail_digits_retinted(self):
         rows = [r for r in self.glyph_doc["textures"] if r["selector"] in ("13H0", "13A0")]
-        digits = [r for r in rows if r["kind"] == "digit_png"]
+        digits = [r for r in rows if r["kind"] == "digit_retint"]
         self.assertEqual(len(digits), 40)
+        self.assertFalse([r for r in rows if r["kind"] == "digit_png"])          # no hand-drawn Chiefs font ships
+        self.assertFalse(list(glyphs.ART.glob("KC_*")))
         for row in digits:
-            self.assertEqual(sha((glyphs.ART / row["png"]).read_bytes()), row["png_sha256"])
+            self.assertEqual(row["retail_selector"], row["selector"])
+            self.assertEqual(row["texture"], ("an" if row["chunk"] >= 33 else "") + str(48 + (row["chunk"] - 13) % 10))
+            self.assertEqual(row["retail_outline"], "#FEAF16")
+            jersey = row["chunk"] < 33
+            home = row["selector"] == "13H0"
+            fill = "#FFFFFF" if home else ("#E4282E" if jersey else "#A01C20")
+            self.assertEqual((row["fill"], row["outline"]), (fill, "#F7C542" if jersey else "#AD8A2E"))
         names = {r["selector"]: (r["fill"], r["outline"]) for r in rows if r["kind"] == "names_retint"}
         self.assertEqual(names, {"13H0": ("#FFFFFF", "#F7C542"), "13A0": ("#E4282E", "#F7C542")})
-
-    def test_font_shapes_fit_their_boxes(self):
-        import ku1_font
-        for digit, shape in ku1_font.shapes().items():
-            for contour in shape["contours"] + shape["holes"]:
-                for x, y in contour:
-                    self.assertTrue(0 <= x <= shape["width"] + 1e-6 and 0 <= y <= shape["height"] + 1e-6, digit)
 
     def test_packaging_and_build_order(self):
         allow = (ROOT / "packaging/release-allowlist.txt").read_text().split("\n")
         for path in ("mod_editor/core/nfl2k5_menu_chiefs_2026.py", "data/nfl2k5_kit_fixes_2026_ku1.json",
-                     "data/nfl2k5_menu_chiefs_2026.json",
-                     *("data/nfl2k5_glyph_fixes_2026/" + r["png"] for r in self.glyph_doc["textures"]
-                       if r.get("png", "").startswith("KC_"))):
+                     "data/nfl2k5_menu_chiefs_2026.json"):
             self.assertIn(path, allow)
         text = (ROOT / "mod_editor/core/mod_build.py").read_text()
         hem = text.index('_core_module("nfl2k5_pants_hem_2026")')
