@@ -709,10 +709,11 @@ for _preset_values in PRESETS.values():
     # nl1 (Noah, 2026-10-17: "let's go back to the old player name indicator"): every preset keeps the
     # retail label. The nm1 label stays available as indicator_names_style "scorebug" (add, don't replace).
     _preset_values["indicator_names_style"] = "retail"
-# b775-int1 (coordinator decision, 2026-10-17): the SOFTDRINK presets (advanced and experimental) use the old retail font
-# that stays on screen while the player is controlled; basic stays retail. "scorebug" remains a selectable style.
-PRESETS["softdrink_advanced"]["indicator_names_style"] = "retail_persistent"
-PRESETS["softdrink_experimental"]["indicator_names_style"] = "retail_persistent"
+# b776-sm1 (Noah, 2026-10-18, after the b775 video: "R1 last names: go back to retail"): every preset, advanced and
+# experimental included, keeps the retail label. b775-int1 had put the SOFTDRINK presets on "retail_persistent", whose
+# CONTROL edit at 0x7604A labels only human-controlled players, so R1's show-names stopped drawing everyone else.
+# "retail_persistent" and "scorebug" stay selectable styles (add, don't replace).
+# (The loop above already sets "retail" for every preset; nothing below overrides it.)
 PRESETS["softdrink_experimental"]["indicator_names_folder"] = str(ROOT / "data/nfl2k5_indicator_names")
 # The private FONT occupies the appended sprite scene, which the runtime pass creates.
 PRESETS["softdrink_experimental"]["scorebug_runtime"] = True

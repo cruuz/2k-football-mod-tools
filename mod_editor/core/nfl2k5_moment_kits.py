@@ -259,6 +259,14 @@ def card_sources(kit):
         for kind, aggregate in (("unif", "logos"), ("helm", "logos"), ("mini", "mini")):
             l, s, c = src(f"{kind}_{letter}", letter.upper())
             require(c == code, kit["id"] + ": card from another franchise")
+            if kind != "unif":
+                # sm1 (Noah, b775 video: helmets on three Anniversary menu rows face away from each other): the helmet
+                # cards are drawn facing one way per slot letter (retail mini_h / helm_h face left, mini_a / helm_a face
+                # right; the menu draws the away team with mini_a on the left and the home team with mini_h on the
+                # right). A kit whose jersey look comes from the donor's other letter (a swapped H/A kit, or one built
+                # from one letter alone) keeps the donor STYLE's helmet but must take it from this slot's own letter, or
+                # the helmet turns the wrong way. The jersey cards (unif) do not face a side and keep the selector.
+                l = letter
             out[f"{kind}_{letter}{code}_{style}"] = (aggregate, f"{kind}_{l}{code}_{s}")
     _l, s, _c = src("logo", "H")
     out[f"logo_{code}_{style}"] = ("logos", f"logo_{code}_{s}")
