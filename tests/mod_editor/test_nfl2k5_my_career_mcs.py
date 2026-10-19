@@ -258,7 +258,7 @@ class ScheduleNativeTests(unittest.TestCase):
             others = [t for t in range(32) if t != team]
             # Wild Card (row 17 at 17 weeks) has a game without the club; the Divisional round has the club at home.
             for row, cell in ((17, bytes((0, others[0], others[1], 1, 15, 5, 1, 0))),
-                              (18, bytes((0, team, others[2], 1, 22, 5, 4, 30)))):
+                              (18, bytes((0, team, others[2], 1, 22, 0, 4, 30)))):
                 self.assertEqual(m.uc.mem_read(GRID + 8 * 17 * row, 1), b'\x07')
                 m.uc.mem_write(GRID + 8 * 17 * row, cell)
             self.open_schedule(m)
@@ -268,6 +268,7 @@ class ScheduleNativeTests(unittest.TestCase):
             nick = m.string(m.get(m.get(0xE5786C + 4 * others[2]) + 0x104))
             self.assertIn('NO GAME', texts)
             self.assertIn(f'vs {nick}', texts)
+            # A postseason record has no year byte: it takes the year of the club's last dated game (1/2/2005).
             self.assertIn('1/22/2005 at 4:30', texts)
             self.assertEqual(texts.count('TBD'), 2)
 

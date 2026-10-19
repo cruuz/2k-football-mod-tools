@@ -275,7 +275,7 @@ void FC home_schedule_row(u32 manager) { (void)manager; }
 
 static NI void schedule_draw(void) {
     u16 line[64],*o; u32 args[5],row,slot,k,club=S(56),rows=schedule_rows(),now=schedule_now();
-    u32 first=G(0xC8E1CC),won=0,lost=0,tied=0,c1=0xff0065e6,c2=0xff00a0ff; u8 *t=(u8 *)S(2588);
+    u32 first=G(0xC8E1CC),won=0,lost=0,tied=0,c1=0xff0065e6,c2=0xff00a0ff,year=2000,month=0; u8 *t=(u8 *)S(2588);
     if(t) { c1=CALL1(0x68d70,t); c2=CALL1(0x68dc0,t); }
     if(first+VISIBLE>rows) first=rows>VISIBLE?rows-VISIBLE:0;
     for(row=0;row<rows;row++) {
@@ -291,6 +291,12 @@ static NI void schedule_draw(void) {
                     if(row<WEEKS) { if(mine>theirs) won++; else if(mine<theirs) lost++; else tied++; }
                 }
             }
+        }
+        /* Postseason records carry no year byte (the season owner's [..][day][0][hour]..): they take the year of
+         * the club's previous dated game, one more if the month wrapped. */
+        if(f) {
+            if(f[5]) { year=2000+(u32)f[5]; month=f[3]; }
+            else if(f[3]<month) { year++; month=f[3]; }
         }
         if(row<first || row>=first+VISIBLE) continue;
         /* This week's card: the club's primary colour, darkening to the right so the white, grey and yellow
@@ -312,7 +318,7 @@ static NI void schedule_draw(void) {
             o=number(o,(int)mine); *o++='-'; number(o,(int)theirs);
             text_right(line,R-20,y+16,0,accent);
         } else if(row==now) text_right(home_text_now,R-20,y+16,3,0xffffff00);
-        args[0]=f[3]; args[1]=f[4]; args[2]=2000+(u32)f[5]; args[3]=f[6]; args[4]=f[7];
+        args[0]=f[3]; args[1]=f[4]; args[2]=year; args[3]=f[6]; args[4]=f[7];
         format(line,sizeof line,home_fmt_date,args);
         text_left(line,L+12,y+30,3,0xffc8c8c8);
         /* A preseason grid (stage 7) holds the preseason games in the first rows. */
