@@ -25,6 +25,14 @@ the two player scenes, and ADDS seven meshes and nine textures:
   shows anything. Model instances are refilled from the hidden templates before every build (0x8F8EC -> 0x2E120), so
   a style never carries over to the next player.
 
+b776 hr2 (Noah's b775 test, 10/18: Lawrence's hair looked painted on with the jersey showing through it, Cam Ward's
+twists went under the collar): ``long_flow`` and ``short_twists`` are rebuilt so they ride the body. Each vertex now
+uses the palette entry of the body under it (the neck skin's own thorax/neck/head blends between the rim and the
+collar; the thorax on the jersey close up, the jersey's own thorax/shoulder-pad blends at distance), through extra
+palette slots of the added submesh (geometry ``palette``: slot, entry and the blend it must be; a scene whose blend
+differs is refused). The geometry is fitted offline against the jersey, nameplate and numbers in game poses
+(``tools/nfl2k5_hair_styles_generate.py --poses``). The other five meshes, every texture and the cave are unchanged.
+
 Composition: Modern helmets writes the same two scenes in place, before this step; its classifier strips the hair
 growth first (``strip_scene``), so the two commute. The Guardian overlay pins absolute spans of outer 3 and is refused
 together with hair styles (both grow the player models).
@@ -309,18 +317,53 @@ def _template(lay: Layout, decoded: bytes) -> tuple[bytes, bytes]:
     return mat, sub
 
 
-def _remap(key: str, template: bytes) -> bytes:
-    """The dreads submesh record's palette fields with the thorax slot added."""
+def _remap(key: str, template: bytes, extra: Sequence[tuple[int, int]] = ()) -> bytes:
+    """The dreads submesh record's palette fields with the thorax slot added, plus a mesh's extra (slot, palette
+    entry) pairs (b776 hr2: the blends of the neck skin and the jersey the hair rides on)."""
     rec = bytearray(template)
-    slots = PALETTE[key]
+    slots = [(slot, joint) for _name, (slot, joint) in PALETTE[key].items()] + [(int(s), int(g)) for s, g in extra]
     first, last = struct.unpack_from("<HH", rec, 4)
-    for _name, (slot, joint) in slots.items():
+    for slot, joint in slots:
+        require(0 <= slot < models.PALETTE_SLOTS, f"{key}: palette slot {slot} out of range")
         current = struct.unpack_from("<H", rec, 8 + 2 * slot)[0]
         require(current in (0x7F7F, joint), f"{key}: palette slot {slot} is taken")
         struct.pack_into("<H", rec, 8 + 2 * slot, joint)
         first, last = min(first, slot), max(last, slot)
     struct.pack_into("<HH", rec, 4, first, last)
     return bytes(rec)
+
+
+def palette_entries(lay: Layout, decoded: bytes) -> dict[int, list[tuple[int, float]]]:
+    """{palette entry: [(joint, weight)]}: the shape's transforms (weight 1) and its CPU blend records."""
+    d = bytes(decoded)
+    transforms = struct.unpack_from("<H", d, lay.shape + 0x50)[0]
+    blends = struct.unpack_from("<H", d, lay.shape + 0x52)[0]
+    table: dict[int, list[tuple[int, float]]] = {j: [(j, 1.0)] for j in range(transforms)}
+    start = _rel(d, lay.shape + 0x60) if blends else None
+    for i in range(blends):
+        at = start + 0x1C * i
+        kind = struct.unpack_from("<I", d, at)[0]
+        require(kind in (2, 3), f"{lay.key}: blend {i} has {kind} sources")
+        table[transforms + i] = [struct.unpack_from("<If", d, at + 4 + 8 * k) for k in range(kind)]
+    return table
+
+
+def _extra_palette(key: str, lay: Layout, decoded: bytes, item: Mapping[str, Any]) -> list[tuple[int, int]]:
+    """A part's extra palette slots, each checked against the scene's own transform or blend record (so a disc whose
+    blends differ is refused instead of bending the hair to the wrong joints)."""
+    extra = item.get("palette") or []
+    if not extra:
+        return []
+    table = palette_entries(lay, decoded)
+    out = []
+    for slot, entry, parts in extra:
+        have = table.get(int(entry))
+        require(have is not None and len(have) == len(parts)
+                and all(int(j) == int(hj) and abs(float(w) - float(hw)) < 1e-6
+                        for (j, w), (hj, hw) in zip(parts, have)),
+                f"{key}: palette entry {entry} is not the blend the hair was authored on")
+        out.append((int(slot), int(entry)))
+    return out
 
 
 def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[Plan, dict[str, Any]]:
@@ -336,8 +379,8 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     require(expect["vertex_count"] == lay.vertex_count and expect["strides"] == [s for _o, s in lay.streams],
             f"{key}: the geometry was authored for another vertex layout")
     record_size = sum(s for _o, s in lay.streams)
-    mat_t, sub_t = _template(lay, decoded)
-    sub_t = _remap(key, sub_t)
+    mat_t, sub_raw = _template(lay, decoded)
+    sub_t = _remap(key, sub_raw)
     # vertices and push words
     per_stream = [bytearray() for _ in lay.streams]
     words: list[int] = []
@@ -354,8 +397,9 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
                 per_stream[s] += records[at:at + stride]
                 at += stride
         mesh_words = encode_strip([first + i for i in strip])
+        submesh = _remap(key, sub_raw, _extra_palette(key, lay, decoded, expect["parts"][mesh]))
         part_rows.append(dict(mesh=mesh, first_vertex=first, vertices=count, word_offset=len(words),
-                              words=len(mesh_words), strip=len(strip)))
+                              words=len(mesh_words), strip=len(strip), submesh=submesh))
         words += mesh_words
         first += count
     added = first - lay.vertex_count
@@ -419,7 +463,7 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
         struct.pack_into("<i", rec, 0, names_at + info["name_at"][k] - at + 1)
         out[at:at + 0x80] = rec
         part = info["parts"][k]
-        rec = bytearray(info["submesh_template"])
+        rec = bytearray(part["submesh"])
         at = submesh_at + 0x80 * k
         struct.pack_into("<H", rec, 0, lay.material_count + k)
         word_at = command_at + 4 * part["word_offset"]
@@ -435,7 +479,7 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
     require(scene_state(key, grown) == "grown", f"{key}: the grown scene does not read back")
     receipt = {"key": key, "size_before": len(d), "size_after": len(grown), "growth": len(grown) - len(d),
                "added_vertices": info["added_vertices"], "push_words": info["words"],
-               "parts": [{k: v for k, v in p.items()} for p in info["parts"]],
+               "parts": [{k: v for k, v in p.items() if k != "submesh"} for p in info["parts"]],
                "inserts": [{"at": at, "bytes": len(data)} for at, data in plan.inserts]}
     return grown, receipt
 

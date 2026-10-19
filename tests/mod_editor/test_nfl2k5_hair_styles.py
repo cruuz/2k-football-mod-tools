@@ -526,5 +526,165 @@ class DiscTests(unittest.TestCase):
             self.assertEqual(hs.apply_to_image(path)["status"], "already_applied")
 
 
+# ------------------------------------------------------------------------------------------------ b776 hr2: riding hair
+#: the five meshes hr2 leaves alone, byte for byte as b775 shipped them (records | strip, base64)
+B775_PARTS = {
+    "o3c113": {"long_locs": "aad13afaac2cd953a2548cf825a40a8747d79448c9b6f1b98123ca77dc08382e",
+               "afro_puff": "58c0c3ce42b45ce142ad08c570a88a2a337a8d7666b1a0882e3f9d953c421906",
+               "braids": "6b8020dc93109b1ff3e611230f7269716e8a8a7b91d01cf9664a0a16bae063b0",
+               "bun": "f5becfc08637842c99702f806dd75d1bf67ac5e8983a0be32955a05d1f8e3529",
+               "mullet": "ede16e2d7bfbd92c61cc8a8c39471d36e2648cea4c50ae7c89d1e1bce5eeb726"},
+    "o3c115": {"long_locs": "4c7432b64d6a6e2ee66a79d31cda54cfb35f4af6565e329037ea0ec0b40e1a9a",
+               "afro_puff": "eddb6de13e632fcb532ef97a7a165b0518ba586fb224b00d0141560a0f864874",
+               "braids": "fd2d2bebb6e5760c80ab4fd083704bd646b4fead84c909b2db69ab902cb27241",
+               "bun": "923d93d2004b152432673a13746383fc31e393229975f5b5b6f7d3ba187d525e",
+               "mullet": "a4d5980f6615ec8081b583899dfe3793becadc08e2c7dabdb46a7ba26c31d5db"}}
+RIDING = ("long_flow", "short_twists")
+#: joints a riding entry may use: hi_head thorax/neck/head; lo_body thorax/neck/head and the two shoulder pads
+RIDING_JOINTS = {hs.HI: {0, 1, 2}, hs.LO: {10, 11, 12, 23, 24}}
+THORAX = {hs.HI: 0, hs.LO: 10}
+HEAD = {hs.HI: 2, hs.LO: 12}
+JERSEY = ("UNIF_jersey", "UNIF_sleeve", "PLAYERNAME", "PLAYERNAME_long", "NUMBER_L", "NUMBER_M", "NUMBER_R",
+          "NUMBER_shoulder_A_L", "NUMBER_shoulder_A_M", "NUMBER_shoulder_A_R", "NUMBER_shoulder_B_L",
+          "NUMBER_shoulder_B_M", "NUMBER_shoulder_B_R")
+BODY_FROM_HEAD = (0.0, 33.9, -4.6)
+
+
+def part_entries(document, key, mesh):
+    """Per vertex of a part: its palette entry's [(joint, weight)] (base slots or the part's riding slots)."""
+    records, _strip = hs._part(document, key, mesh)
+    stride = sum(document["scenes"][key]["strides"])
+    base = {slot: [(joint, 1.0)] for _name, (slot, joint) in hs.PALETTE[key].items()}
+    extra = {int(slot): [(int(j), float(w)) for j, w in parts] for slot, _entry, parts in
+             document["scenes"][key]["parts"][mesh].get("palette", [])}
+    out = []
+    for v in range(len(records) // stride):
+        selector = struct.unpack_from("<h", records, v * stride + document["scenes"][key]["strides"][0] + 4)[0]
+        slot = selector // 3
+        out.append((selector % 3, base.get(slot) or extra.get(slot)))
+    return out
+
+
+class RidingCatalogueTests(unittest.TestCase):
+    """b776 hr2. Runs everywhere."""
+
+    def test_the_other_meshes_keep_their_b775_bytes(self):
+        document = hs.load_geometry()
+        for key, parts in B775_PARTS.items():
+            for mesh, digest in parts.items():
+                item = document["scenes"][key]["parts"][mesh]
+                self.assertEqual(sha((item["records"] + "|" + item["strip"]).encode()), digest, (key, mesh))
+                self.assertNotIn("palette", item)
+
+    def test_riding_palettes_are_well_formed(self):
+        document = hs.load_geometry()
+        self.assertTrue(all(document["scenes"][key]["parts"][mesh].get("palette") for key, mesh in
+                            ((hs.HI, "long_flow"), (hs.LO, "long_flow"), (hs.LO, "short_twists"))))
+        for key in hs.KEYS:
+            base_slots = {slot for slot, _joint in hs.PALETTE[key].values()}
+            for mesh in RIDING:
+                with self.subTest(key=key, mesh=mesh):
+                    palette = document["scenes"][key]["parts"][mesh].get("palette", [])
+                    slots = [int(s) for s, _e, _p in palette]
+                    self.assertEqual(len(slots), len(set(slots)))
+                    self.assertFalse(set(slots) & base_slots)
+                    self.assertTrue(all(0 <= s < models.PALETTE_SLOTS - 1 for s in slots))
+                    for _slot, _entry, parts in palette:
+                        self.assertTrue({int(j) for j, _w in parts} <= RIDING_JOINTS[key])
+                        self.assertAlmostEqual(sum(float(w) for _j, w in parts), 1.0, places=5)
+                    for remainder, parts in part_entries(document, key, mesh):
+                        self.assertEqual(remainder, 0)
+                        self.assertIsNotNone(parts)
+
+    def test_hair_below_the_rim_rides_with_the_thorax(self):
+        """Every vertex rides the head (the roots under the helmet) or carries at least a fifth of the thorax, the
+        way the lower neck skin and the jersey do; before hr2 the rows on the collar followed the neck alone."""
+        document = hs.load_geometry()
+        for key in hs.KEYS:
+            for mesh in RIDING:
+                entries = part_entries(document, key, mesh)
+                head = sum(1 for _r, parts in entries if parts == [(HEAD[key], 1.0)])
+                thorax = [sum(w for j, w in parts if j == THORAX[key]) for _r, parts in entries]
+                self.assertTrue(all(t >= 0.19 or parts == [(HEAD[key], 1.0)]
+                                    for t, (_r, parts) in zip(thorax, entries)), (key, mesh))
+                self.assertGreater(head, 0)
+                self.assertGreater(sum(1 for t in thorax if t >= 0.19), len(entries) // 4, (key, mesh))
+
+
+@unittest.skipUnless(PACK0.is_file(), "private USA pack 0 required")
+class RidingSceneTests(unittest.TestCase):
+    """b776 hr2, on the retail scenes."""
+
+    def test_a_scene_whose_blend_differs_is_refused(self):
+        original = bytearray(scene(hs.HI))
+        lay = hs.layout(hs.HI, original)
+        entry = int(hs.load_geometry()["scenes"][hs.HI]["parts"]["long_flow"]["palette"][0][1])
+        transforms = struct.unpack_from("<H", original, lay.shape + 0x50)[0]
+        at = hs._rel(bytes(original), lay.shape + 0x60) + 0x1C * (entry - transforms)
+        struct.pack_into("<f", original, at + 8, 0.75)            # first source weight of that blend
+        with self.assertRaises(hs.HairStylesError):
+            hs.grow_scene(hs.HI, bytes(original))
+
+    def test_grown_riding_submeshes_carry_their_slots(self):
+        document = hs.load_geometry()
+        for key in hs.KEYS:
+            grown, _receipt = hs.grow_scene(key, scene(key))
+            lay = hs.layout(key, grown)
+            table = hs.palette_entries(lay, grown)
+            for row in lay.submesh_rows:
+                mesh = row["name"][len("HAIR_"):]
+                if mesh not in RIDING:
+                    continue
+                mapping = struct.unpack_from("<56H", grown, row["record"] + 8)
+                first, last = struct.unpack_from("<HH", grown, row["record"] + 4)
+                for slot, entry, parts in document["scenes"][key]["parts"][mesh].get("palette", []):
+                    self.assertEqual(mapping[slot], entry)
+                    self.assertTrue(first <= slot <= last)
+                    self.assertEqual([(int(j), round(w, 5)) for j, w in table[entry]],
+                                     [(int(j), round(float(w), 5)) for j, w in parts])
+
+    def test_riding_hair_clears_the_jersey_nameplate_and_numbers_in_the_bind_pose(self):
+        """No sample of the two rebuilt meshes lies behind the jersey surface (nameplate and numbers included) in the
+        bind pose; b775's long hair passed under the nameplate and dipped into the collar."""
+        import numpy as np
+        gen = __import__("nfl2k5_hair_styles_generate")
+        outer3 = retail_outer3()
+        rig = gen.Rig(outer3)
+        bodies = {hs.HI: rig.body, hs.LO: rig.lo}
+        for key in hs.KEYS:
+            grown, receipt = hs.grow_scene(key, scene(key))
+            sc = gen.Scene(key, grown)
+            body = bodies[key]
+            tris = body.tris(list(JERSEY))
+            tris = tris[body.pos[tris].mean(axis=1)[:, 1] > 38.0]
+            raw = models.read_lane_u32(body.d, body.shape, body.lanes.normal, body.n)
+            normals = np.array([models.decode_normpacked3(w) for w in raw])
+            corners = body.pos[tris]
+            bary = [(1 - i / 6 - j / 6, i / 6, j / 6) for i in range(7) for j in range(7 - i)]
+            js = np.concatenate([corners[:, 0] * a + corners[:, 1] * b + corners[:, 2] * c for a, b, c in bary])
+            ns = np.concatenate([normals[tris[:, 0]] * a + normals[tris[:, 1]] * b + normals[tris[:, 2]] * c
+                                 for a, b, c in bary])
+            ns /= np.linalg.norm(ns, axis=1, keepdims=True)
+            shift = np.array(BODY_FROM_HEAD) if key == hs.HI else np.zeros(3)     # hi_head is in the thorax frame
+            for part in receipt["parts"]:
+                if part["mesh"] not in RIDING:
+                    continue
+                hair_tris = sc.tris([hs.material_name(part["mesh"])])
+                hp = sc.pos + shift
+                pts = np.concatenate([hp[hair_tris[:, 0]] * a + hp[hair_tris[:, 1]] * b + hp[hair_tris[:, 2]] * c
+                                      for a, b, c in bary[::4]])
+                worst = 0.0
+                for chunk in range(0, len(pts), 512):
+                    p = pts[chunk:chunk + 512]
+                    d2 = ((p[:, None, :] - js[None, :, :]) ** 2).sum(-1)
+                    i = d2.argmin(1)
+                    d = np.sqrt(d2[np.arange(len(p)), i])
+                    sd = ((p - js[i]) * ns[i]).sum(1)
+                    inside = (d < 5.0) & (sd < -0.1) & (np.abs(sd) >= 0.5 * d)
+                    if inside.any():
+                        worst = max(worst, float(-sd[inside].min()))
+                self.assertEqual(worst, 0.0, (key, part["mesh"]))
+
+
 if __name__ == "__main__":
     unittest.main()
