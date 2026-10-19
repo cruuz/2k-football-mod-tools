@@ -129,7 +129,7 @@ SYNTHETIC_WEAR = 0x9A2A3324
 #: day = Lumen/Nissan/Paycor, afternoon = Lumen 5:20 PM PT, night = MetLife SNF, dome = Lucas Oil/Reliant/U.S. Bank/
 #: SoFi; grass day = Acrisure/EverBank, afternoon = Lincoln Financial, night = Arrowhead MNF, dome = Allegiant.
 #: Rain and snow are extrapolated (DESIGN). Each look nudges the family's targets (DESIGN, Noah picks).
-#: tf-v4 (gr3, Noah 2026-10-16): natural grass is DEEPER. Noah judged the measured grass bright, pale and yellow next to
+#: tf-v4 (gr3, Noah 2026-10-16; the grass part is SUPERSEDED by gr4 below): natural grass was DEEPER. Noah judged the measured grass bright, pale and yellow next to
 #: retail and picked gr2's in-between sheet whose grass sits at tonight's turf level (gr1's MetLife turf, (59, 99, 58)
 #: on screen) a touch warmer: (63, 98, 45) by day ON SCREEN, after Broadcast greens multiplies grass by GR1_GRASS_GAIN.
 #: So the grass targets here are authored before gr1: Bermuda's day is (63, 98, 45) / GR1_GRASS_GAIN, every grass look
@@ -138,6 +138,26 @@ SYNTHETIC_WEAR = 0x9A2A3324
 #: measured medians stay in ``broadcast`` (a venue's own broadcast row is read against them, venue_target). Turf is
 #: unchanged: its targets are the measured medians and gr1 lands them on tonight's turf.
 LIGHT_CLASSES = ("day", "afternoon", "night", "dome", "rain", "snow")
+#: Broadcast greens (nfl2k5_broadcast_greens, gr1, frozen) multiplies every grass green after this option
+GR1_GRASS_GAIN = 102 / 111
+#: gr4 (Noah 2026-10-18, after the b775 playtest video): natural grass takes the SUPER BOWL XLII shade, which Noah called
+#: "how outdoor grass should look": the retail grass the game always had, a little more vibrant. Measured from his video
+#: with the same green-pixel mean as his frames: the XLII moment field (retail s25 colour map x gr1, under the night
+#: indoor rig) draws (45, 59, 27) (hue 86, S 0.54, V 0.23); the retail RFK field of the 10/14 video (42, 59, 23). The
+#: tf-v4 grass (63, 98, 45) drew (57, 98, 38) at Lambeau: hue 100, S 0.60, V 0.40, which is the "too green, too
+#: saturated, artificially dark" look. The new targets keep XLII's hue (88 to 89 degrees) and saturation (0.56 to 0.58)
+#: and lift V by about a sixth (0.27 by day; XLII's own shot is 0.23): ON SCREEN, measured units, per light class. Every
+#: grass venue lands on the same shade (no venue broadcast character), by day, afternoon (a touch warmer), night
+#: (a touch darker) and dome; rain and snow follow the day as before.
+GRASS_SCREEN = dict(day=(50, 69, 29), afternoon=(51, 69, 28), night=(46, 63, 28), dome=(50, 69, 30))
+
+
+def _authored(screen):
+    """A grass colour as authored here: BEFORE Broadcast greens, which multiplies grass by GR1_GRASS_GAIN."""
+    return tuple(round(v / GR1_GRASS_GAIN, 1) for v in screen)
+
+
+GRASS_TARGETS = {cls: _authored(rgb) for cls, rgb in GRASS_SCREEN.items()}
 LOOKS = {
     "synthetic_fieldturf": dict(family="synthetic", detail="fibre", targets=dict(
         day=(88, 108, 64), afternoon=(86, 106, 68), night=(74, 94, 62), dome=(100, 122, 72))),
@@ -145,20 +165,13 @@ LOOKS = {
         day=(86, 107, 58), afternoon=(84, 105, 62), night=(72, 93, 58), dome=(98, 124, 66))),
     "synthetic_vivid": dict(family="synthetic", detail="fibre", targets=dict(
         day=(84, 114, 56), afternoon=(84, 112, 60), night=(70, 100, 54), dome=(94, 130, 62))),
-    "grass_bluegrass": dict(family="grass", detail="blade_bluegrass", targets=dict(
-        day=(65.8, 107.9, 49.8), afternoon=(70.3, 115.7, 52.9), night=(67.3, 107.9, 43.6), dome=(61.3, 104.0, 45.1)),
+    "grass_bluegrass": dict(family="grass", detail="blade_bluegrass", uniform=True, targets=dict(GRASS_TARGETS),
         broadcast=dict(day=(88, 110, 64), afternoon=(94, 118, 68), night=(90, 110, 56), dome=(82, 106, 58))),
-    "grass_bermuda": dict(family="grass", detail="blade_bermuda", targets=dict(
-        day=(68.6, 106.6, 49.0), afternoon=(73.9, 116.3, 53.2), night=(71.2, 106.6, 39.2), dome=(59.1, 100.5, 40.6)),
+    "grass_bermuda": dict(family="grass", detail="blade_bermuda", uniform=True, targets=dict(GRASS_TARGETS),
         broadcast=dict(day=(102, 121, 70), afternoon=(110, 132, 76), night=(106, 121, 56), dome=(88, 114, 58))),
-    "grass_checker": dict(family="grass", detail="blade_bermuda", targets=dict(
-        day=(68.0, 107.1, 48.2), afternoon=(73.5, 116.0, 52.4), night=(70.8, 107.1, 39.7), dome=(58.5, 99.9, 41.1)),
+    "grass_checker": dict(family="grass", detail="blade_bermuda", uniform=True, targets=dict(GRASS_TARGETS),
         broadcast=dict(day=(100, 120, 68), afternoon=(108, 130, 74), night=(104, 120, 56), dome=(86, 112, 58))),
 }
-#: Broadcast greens (nfl2k5_broadcast_greens.GRASS_GAIN, gr1, frozen) multiplies every grass green after this option
-GR1_GRASS_GAIN = 102 / 111
-#: Noah's grass by day, on screen after gr1 (gr2's pick sheet)
-GRASS_DAY_ON_SCREEN = (63, 98, 45)
 #: how far a grass venue's own broadcast may turn the look's hue (degrees), tf-v4
 VENUE_HUE_CAP = 6.0
 #: rain darkens and cools (wet), snow lays a light cover over the surface (DESIGN; the retail snow fields whiten too)
@@ -176,11 +189,22 @@ OUTSIDE_SHADE = 0.93
 #: (quads, fibre) day 1.35, night 1.25; SoFi (quad, helix, dome) 1.34. The table holds the grid values. INFERRED: the
 #: afternoon is the mean of day and night, rain and snow follow the day, fibre and blade domes follow the helix dome's
 #: ratio to the night (1.035), helix day and night follow fibre scaled by the helix dome.
+#: gr4: the blade (natural grass) response, PER CHANNEL, re-measured on Noah's b775 video (2026-10-18, green-pixel means,
+#: 1080p frames, gameplay camera): the table above (scalar 1.085 by day) over-drew red by about 8 percent and blue by
+#: about 17 percent. In game / model (model = map x rig gain x screen factor x Fldd tint x vertex tint, Modern colour at
+#: its defaults, the colour map read from the b775 disc after Broadcast greens): Lambeau s10dd by day (56, 98, 38) vs
+#: (60.6, 99.5, 46.0) = (0.92, 0.985, 0.83); EverBank s12dd by day (55, 92, 37) vs (62.3, 98.4, 45.8) = (0.88, 0.94,
+#: 0.81); the XLII moment field a26nd under the night indoor rig (45.5, 59, 27) vs (47.6, 61.8, 31.5) = (0.96, 0.955,
+#: 0.86). Day is the mean of the two day shots (0.90, 0.96, 0.82) times the old 1.085; the night value is XLII's own;
+#: the afternoon is the mean of day and night and the dome is the night times 1.035, as in the table above (INFERRED, not
+#: measured).
+BLADE_RESPONSE = dict(day=(0.99, 1.04, 0.89), afternoon=(0.98, 1.01, 0.88), night=(0.975, 0.975, 0.875),
+                      dome=(1.01, 1.01, 0.905))
 FIELD_RESPONSE = {
     "fibre": dict(day=1.26, afternoon=1.215, night=1.17, dome=1.21),
     "helix": dict(day=1.30, afternoon=1.255, night=1.21, dome=1.25),
-    "blade_bermuda": dict(day=1.085, afternoon=1.05, night=1.02, dome=1.055),
-    "blade_bluegrass": dict(day=1.085, afternoon=1.05, night=1.02, dome=1.055),
+    "blade_bermuda": BLADE_RESPONSE,
+    "blade_bluegrass": BLADE_RESPONSE,
 }
 QUAD_RESPONSE = 1.07
 #: PROVED IN GAME (the same runs): the outside grass is not under the detail layer and draws about twice the field
@@ -465,13 +489,35 @@ def pattern_art(look):
 PATTERN_DETAILS = (2, 1, 0)
 
 
+#: gr4 (Noah 2026-10-18: "the end zones and five-yard line ... those sections are lighter than the rest", "end zones and
+#: 5-yard strips must always match the field"): the light and dark mowing bands (grass) and factory bands (turf) keep
+#: only this share of their tone difference. The shipped art has the light band 11 percent over the dark one (151 and 136
+#: on the map; in game (58..61, 98..105, 38..43) against (53, 96, 35) at Lambeau); at 0.4 the light band is about 4 percent
+#: over the dark one and the field mean is unchanged. The mottle inside each band is kept.
+STRIPE_CONTRAST = 0.4
+
+
+def soften_bands(pat, k=None):
+    """A pattern with its two band tones (the left and the right half of the 128 texel period) pulled toward their mean:
+    each tone moves to mean + (tone - mean) x k, the mottle inside each half is untouched. k None: STRIPE_CONTRAST."""
+    import numpy as np
+    k = STRIPE_CONTRAST if k is None else k
+    h, w = pat.shape
+    light, dark = float(pat[:, :w // 2].mean()), float(pat[:, w // 2:].mean())
+    mid = (light + dark) / 2
+    out = np.array(pat, dtype=np.float64)
+    out[:, :w // 2] += mid + (light - mid) * k - light
+    out[:, w // 2:] += mid + (dark - mid) * k - dark
+    return out
+
+
 def pattern_level(look, key, detail):
     import numpy as np
     pat = pattern_art(look)[key]
     if detail >= 2:
-        return pat
+        return pat if key == "outside" else soften_bands(pat)
     if detail == 1 and key != "outside":
-        amp = float(np.mean(np.abs(pat - 1.0)))
+        amp = float(np.mean(np.abs(pat - 1.0))) * STRIPE_CONTRAST
         return np.where(pat >= 1.0, 1.0 + amp, 1.0 - amp)
     return np.ones_like(pat)
 
@@ -536,6 +582,9 @@ def venue_target(prefix, look, cls):
     its broadcast over the look's measured median at that light, at unit luminance (the venue lands at the deep level,
     not at its bright broadcast) and with its hue turn capped at VENUE_HUE_CAP."""
     target = target_rgb(look, cls)
+    if LOOKS[look].get("uniform"):
+        # gr4: every natural grass venue lands on the XLII shade, whatever its own 2026 broadcast or design row says
+        return target
     row = venues()[prefix]
     seen = row.get("design") or row.get("broadcast")
     if not seen:
@@ -550,10 +599,12 @@ def venue_target(prefix, look, cls):
 
 
 def field_response(look, cls, layout="grid"):
-    """The measured in-game factor over the offline model for this look's detail normal, light and field layout."""
+    """The measured in-game factor over the offline model for this look's detail normal, light and field layout (one
+    number for turf; per channel (r, g, b) for the blade grass since gr4)."""
     table = FIELD_RESPONSE[LOOKS[look]["detail"]]
     base = table.get(cls, table["day"])
-    return base * (QUAD_RESPONSE if layout == "quad" else 1.0)
+    k = QUAD_RESPONSE if layout == "quad" else 1.0
+    return tuple(v * k for v in base) if isinstance(base, tuple) else base * k
 
 
 def venue_response(prefix, cls):

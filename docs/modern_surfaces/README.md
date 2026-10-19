@@ -111,6 +111,32 @@ candidate A, with grass a touch warmer than tonight's turf.
   The measured medians stay in each grass look's `broadcast`. A grass venue with its own broadcast row keeps only its
   character (its broadcast over the look's median, at unit luminance, hue turn capped at 6 degrees); Allegiant's
   `design` row is still met exactly. Turf colours and gr1 are unchanged.
+- **gr4 (Noah, 2026-10-18, after the b775 playtest video; supersedes the natural-grass colour above).** Noah called the
+  tf-v4 grass "way too green", "too saturated", "artificial", and the end zones and 5-yard strips "lighter than the
+  rest", and said the Super Bowl XLII moment field is "how outdoor grass should look". Findings, measured from his video
+  (green-pixel means) and the b775 disc: that field is not a modern surface at all (an Anniversary alias takes the RETAIL
+  s25 colour map, times gr1's 0.919, under the night indoor rig) and draws (45, 59, 27), hue 86, S 0.54, V 0.23, like the
+  retail RFK of the 10/14 video (42, 59, 23); the tf-v4 grass drew (56, 98, 38) at Lambeau, hue 100, S 0.60, V 0.38.
+  Changes:
+  * natural grass targets are `GRASS_SCREEN` (on screen, measured units: day (50, 69, 29) hue 88 S 0.58 V 0.27, afternoon
+    (51, 69, 28), night (46, 63, 28), dome (50, 69, 30)), authored before gr1 by dividing by its grass gain; every grass
+    venue lands on that one shade (`uniform` looks; a venue's own broadcast or design row no longer moves it);
+  * the blade `FIELD_RESPONSE` is per channel (`BLADE_RESPONSE`), re-measured on the video: the old scalar over-drew
+    red by about 8 percent and blue by about 17 (Lambeau and EverBank by day, XLII by night);
+  * the mowing and factory bands keep 0.4 of their tone difference (`STRIPE_CONTRAST`, `soften_bands`; the light band
+    was 11 percent over the dark one on grass and 15 on turf, now about 4), the field mean unchanged;
+  * turf is the 10/13 turf (the LOOKS targets) with `SYNTHETIC_GAIN` (74/88, 102/108, 102/108) in Broadcast greens
+    instead of gr1's (58/87, 102/111, 56/62): 7 percent deeper in luma, about 10 degrees toward forest green, no more
+    saturated (MetLife by day (88, 108, 64) lands on (74, 102, 60), hue 100, S 0.41; gr1 drew (61, 103, 60), hue 120);
+  * end zones: the turf-coloured end-zone entries now take the field's Broadcast greens gain too (they were left at the
+    pre-gain colour: 9 percent lighter than the field on grass, 50 percent lighter in red on turf) and `END_ZONE_MATCH`
+    (1/1.11, 1/1.07, 1/1.15) on top, the factor by which an end-zone texel draws brighter than a field texel in game
+    (measured at Lambeau: the end zone drew (1.21, 1.16, 1.32) times the field while its texture was only
+    (1.091, 1.086, 1.084) times it). The pass also covers the Anniversary aliases' end zones;
+  * Anniversary aliases take the grass gain whatever surface their venue has today (their field is the retail s25 grass
+    map), except rows 24 and 25, which keep their venue's own retail field.
+  Limits: the end-zone factor and the turf end zones are measured on grass only; the blade response at afternoon and
+  dome is inferred; unwitnessed in game.
 - Loan venues (`LOAN_NORMAL_VENUES`: DET s09 and CLE s30 end-zone loan, PIT s22 late midfield, WAS s29 field normal
   loan): the premipped full art no longer compresses into their loans (gr2: 174,029 to 191,864 bytes against 146,880
   to 174,192), so they take the TILED art, compressed with the fixed-distance repeat encoder into exactly the loan the
@@ -279,7 +305,7 @@ the target.
 | `grass_bermuda` | grass | blade_bermuda | +-6 % stripes | (68.6, 106.6, 49.0) (measured (102, 121, 70)) |
 | `grass_checker` | grass | blade_bermuda | +-5 % checkerboard | (68.0, 107.1, 48.2) (measured (100, 120, 68)) |
 
-Since tf-v4 the grass day targets are authored before Broadcast greens, so Bermuda draws (63, 98, 45) on screen.
+Since tf-v4 the grass targets are authored before Broadcast greens; since gr4 they are the XLII shade (`GRASS_SCREEN`, day (50, 69, 29) on screen), the same for every grass look, and the table below shows the pre-gr1 tf-v4 values for history.
 
 The table assigns FieldTurf, Act Global and Turf Nation venues `synthetic_fieldturf`, Hellas venues
 `synthetic_helix`, bluegrass and hybrid venues `grass_bluegrass` and Bermuda venues `grass_bermuda`.

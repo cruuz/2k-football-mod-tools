@@ -4,6 +4,15 @@ The transform is applied once to the completed field set. It preserves P8
 indices, every mip, alpha, paint textures, geometry, light rigs and shadows.
 Only named, exclusively owned grass materials are eligible. A receipt makes
 image replay idempotent; the pure bundle operation intentionally has no marker.
+
+gr4 (Noah, 2026-10-18, after the b775 playtest video): the turf gain gives the
+10/13 turf look a little more forest green (not more saturated); the end-zone
+turf takes the field's gain too (it stayed at the pre-gain colour, so end zones
+drew 9 percent lighter than the field on grass and 50 percent lighter in red on
+turf, and about 10 percent more per texture on top because the field's detail
+layer darkens it and the end zones have none); and the Anniversary aliases, whose
+fields are the retail s25 grass colour map, take the grass gain whatever surface
+their venue has today.
 """
 from __future__ import annotations
 
@@ -15,16 +24,34 @@ import struct
 from . import nfl2k5_modern_metlife as ml
 from . import nfl2k5_modern_surfaces as ms
 
-REVISION = "gr1-v2"
+REVISION = "gr4-v1"
 SCHEMA = "nfl2k5_broadcast_greens/v1"
-# Median of the three neutral MetLife photo medians / median of three
-# playtest MetLife still medians. The fireworks photograph is excluded.
-SYNTHETIC_GAIN = (58 / 87, 102 / 111, 56 / 62)
+# gr1 (frozen): median of the three neutral MetLife photo medians / median of three playtest MetLife still medians.
+# gr4 replaces it. The modern turf targets (nfl2k5_modern_surfaces LOOKS, the 10/13 disc's measured turf, MetLife by day
+# (88, 108, 64)) go to (74, 102, 60): the 10/13 turf with red pulled down by 16 percent and green and blue by 6, so it
+# is 7 percent deeper in luma, turns about 10 degrees toward forest green (hue 89 to 100) and is NOT more saturated
+# (the blue-over-green ratio is kept, S 0.41 against 0.44). gr1's (58/87, 102/111, 56/62) drew (61, 103, 60) at MetLife
+# in Noah's video (hue 120, "artificial", "way too green"). The turf model needs no extra correction: gr1's own
+# prediction (58.7, 99.2, 57.8) drew (61, 103, 60) there, within 5 percent.
+SYNTHETIC_GAIN = (74 / 88, 102 / 108, 102 / 108)
 # Noah also requested darker natural grass. Preserve its measured warmer hue
 # with the common green-channel reduction. This is an extrapolation, not a
 # claim that grass broadcasts were too bright in the playtest.
 GRASS_GAIN = (102 / 111,) * 3
 FIELD_MATERIALS = frozenset(("color_premipped", "grass_outside_premipped"))
+#: gr4: the six end-zone textures of a home field and of an Anniversary alias (protect_period_field renames them)
+END_ZONE_MATERIALS = frozenset([f"endzone_{e}_{p}" for e in "NS" for p in "LMR"]
+                               + [f"era_end_{e}_{p}" for e in "NS" for p in "LMR"])
+#: gr4: how much the end-zone turf is multiplied by BESIDES the family gain, per channel, so it draws like the field. Per
+#: texture value the end zone draws (1.11, 1.07, 1.15) times the field in game (Lambeau day, Noah's b775 video: end zone
+#: (68, 111, 49) against field (56, 96, 37) in one frame at 10:10 while the textures differ by 1.091, 1.086, 1.084 only;
+#: (67, 115, 46) against (53..58, 96..101, 35..40) at 9:50): the field's detail layer darkens the field by that much and
+#: the end zones carry no detail layer. MEASURED on grass only; turf end zones take the same factor (UNPROVED, see the
+#: gr4 report for the shot Noah should check).
+END_ZONE_MATCH = (1 / 1.11, 1 / 1.07, 1 / 1.15)
+#: the Anniversary fields that keep their venue's own retail field instead of the retail s25 colour map
+#: (nfl2k5_espn25_fields._row_job: rows 24 and 25)
+RETAIL_FIELD_ROWS = (24, 25)
 STADIUM_MATERIALS = {
     "pf_ground": "grass", "pf_field_strip": "grass",
     "pf_turf_strip": "synthetic", "env_grass": "grass",
@@ -66,7 +93,7 @@ def palette_transform(palette, family):
     return bytes(out), selected
 
 
-def paint_scene(decoded, rec, family):
+def paint_scene(decoded, rec, family, end_zones_too=True):
     """Return exact decoded edits and scope, refusing shared paint palettes."""
     out = bytearray(decoded)
     allowed = ({name: family for name in FIELD_MATERIALS} if rec["name"] == "field"
@@ -117,12 +144,88 @@ def paint_scene(decoded, rec, family):
             ranges.append((at + i * 4, at + i * 4 + 3))
         palettes.append(dict(materials=owners[index], family=allowed[name], offset=at,
                              entries=selected, before=sha(before), after=sha(after)))
+    end_zones = []
+    if end_zones_too and rec["name"] == "field":
+        end_zones = _paint_end_zones(decoded, out, rec, family, ranges)
     restored = bytearray(out)
     for lo, hi in ranges:
         restored[lo:hi] = decoded[lo:hi]
     require(restored == decoded, "decoded bytes outside grass RGB changed")
-    return bytes(out), dict(palettes=palettes, materials=words, decoded_ranges=ranges,
+    return bytes(out), dict(palettes=palettes, materials=words, decoded_ranges=ranges, end_zone_palettes=end_zones,
                            non_grass_bytes_changed=0, indices_mips_alpha_identical=True)
+
+
+def _field_samples(decoded, rec):
+    """RGB samples of the field's own colour (the colour map's pixels, or the colour material's word) before this pass."""
+    import numpy as np
+    rows = ml.texture_rows(rec)
+    row = rows.get("color_premipped")
+    if row is not None:
+        rgba, _raw = ml.read_p8(decoded, rec["system_bytes"], row)
+        px = rgba.reshape(-1, 4)[:, :3].astype(np.float64)
+        step = max(1, len(px) // 2048)
+        return [tuple(p) for p in px[::step]]
+    material = next((m for m in rec["materials"] if m["name"] == "color_premipped"), None)
+    if material is None or material.get("texture_index") is not None:
+        return None
+    word = struct.unpack_from("<I", decoded, material["record_offset"] + 0x18)[0]
+    return [((word >> 16) & 255, (word >> 8) & 255, word & 255)]
+
+
+def end_zone_palette(palette, envelope, family):
+    """(new BGRA palette, entries changed): the turf-coloured entries of an end-zone palette (inside the field turf's
+    own hue, saturation and value envelope, the rule Modern surfaces recoloured them by) take the family gain and
+    END_ZONE_MATCH; paint entries are untouched."""
+    import colorsys
+    h_lo, h_hi, s_lo, s_hi, v_lo, v_hi = envelope
+    gains = GRASS_GAIN if family == "grass" else SYNTHETIC_GAIN
+    out = bytearray(palette)
+    selected = []
+    for i in range(256):
+        b, g, r, a = palette[i * 4:i * 4 + 4]
+        h, sat, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        h *= 360
+        if not (h_lo - ms.ENV_HUE <= h <= h_hi + ms.ENV_HUE and s_lo - ms.ENV_SAT <= sat <= s_hi + ms.ENV_SAT
+                and v_lo - ms.ENV_VAL <= v <= v_hi + ms.ENV_VAL):
+            continue
+        nr, ng, nb = (int(min(255, max(0, round(c * k * m)))) for c, k, m in zip((r, g, b), gains, END_ZONE_MATCH))
+        if (nb, ng, nr) != (b, g, r):
+            out[i * 4:i * 4 + 3] = bytes((nb, ng, nr))
+            selected.append(i)
+    return bytes(out), selected
+
+
+def _paint_end_zones(decoded, out, rec, family, ranges):
+    """End-zone turf follows the field (see END_ZONE_MATCH). Refuses nothing: a palette shared with anything but end
+    zones is left alone, and a field without a readable colour reference changes nothing."""
+    samples = _field_samples(decoded, rec)
+    if not samples:
+        return []
+    envelope = ms.turf_envelope(samples)
+    rows = ml.texture_rows(rec)
+    by_palette = {}
+    for material in rec["materials"]:
+        index = material.get("texture_index")
+        if index is None:
+            continue
+        row = next((t for t in rec["embedded_textures"] if int(t["index"]) == int(index)), None)
+        if row is not None:
+            by_palette.setdefault(row["palette_offset"], set()).add(material["name"])
+    done, receipts = set(), []
+    for name in sorted(END_ZONE_MATERIALS & rows.keys()):
+        row = rows[name]
+        if row["palette_offset"] in done or not by_palette.get(row["palette_offset"], {name}) <= END_ZONE_MATERIALS:
+            continue
+        done.add(row["palette_offset"])
+        at = rec["system_bytes"] + row["palette_offset"]
+        before = bytes(decoded[at:at + 1024])
+        after, selected = end_zone_palette(before, envelope, family)
+        out[at:at + 1024] = after
+        for i in selected:
+            ranges.append((at + i * 4, at + i * 4 + 3))
+        receipts.append(dict(materials=sorted(by_palette[row["palette_offset"]]), family=family, offset=at,
+                             entries=selected, before=sha(before), after=sha(after)))
+    return receipts
 
 
 def safe_fills(encoded, decoded, stored, scratch_allocation):
@@ -264,13 +367,16 @@ def families(archive):
         family = "grass" if word else "synthetic"
         require(prefix not in result or result[prefix] == family, "conflicting ROST surface words")
         result[prefix] = family
+    retail = dict(result)
     result.update({p: v["surface"] for p, v in ms.venues().items()})
     from . import nfl2k5_espn25_fields as fields
     for row in fields.catalog():
-        # Period aliases copy their source field, regardless of the moment's
-        # displayed venue. Built sources carry modern surfaces.
-        prefix = row["source_prefix"]
-        result[f"a{row['row'] - 1:02}"] = result[prefix]
+        # gr4: an Anniversary alias draws the RETAIL s25 grass colour map (nfl2k5_espn25_fields._field, whatever venue
+        # it sits in), so it takes the grass gain: the XLII moment field Noah called "how outdoor grass should look" is
+        # exactly that. Until gr1 an alias took its source venue's surface, which gave the retail grass map of a turf
+        # venue the turf gain (MetLife, U.S. Bank, SoFi, Unc Bowl: the minty (47, 93, 49) look). Rows 24 and 25 keep the
+        # venue's own retail field, so they follow that field's ROST surface word.
+        result[f"a{row['row'] - 1:02}"] = retail[row["source_prefix"]] if row["row"] in RETAIL_FIELD_ROWS else "grass"
     return result
 
 
