@@ -2207,7 +2207,7 @@
    "id": "n267",
    "custom_name": "Mug Sim 3",
    "play_type": "defense",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "donor": {
     "index": 9,
     "name": "4 Cloud",
@@ -2221,7 +2221,7 @@
    "link_group": null,
    "assignments": [
     [[27, [0, 0, 0, 0, 0, 0]], [13, [1280.1599999999999, 548.64, 8, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.1599999999999, 548.64, 8, 7, 6, 0, 0]]],
+    null,
     null,
     null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],

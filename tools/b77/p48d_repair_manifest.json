@@ -108,7 +108,7 @@
     "input_sha256": "fbd79cf78197165dbf299551816bff9a365890bfe19d6c17f0ac1adad72c0318",
     "output_sha256": "27cf97e5561825b6f0413c96c8f96dab03631cae12ba3a0323bb7535e306231e",
     "offense_pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
-    "defense_pack_sha256": "df2f55ae97423e07991c5684acdd4db4f00707482267cdde757bb53c65a01f29"
+    "defense_pack_sha256": "73ea52e940b9d3a554b337c3ba946bed2dc78c3771f898edc9b9f4056e0f457a"
    }
   ],
   "317": [
@@ -174,7 +174,7 @@
     "input_sha256": "3b094a3eef7a1a3f3c6fa164a4fbca3285cb9c044dfb1c2be72590653b033666",
     "output_sha256": "1af24c521062068c84220091eeecdedb057785f3f407b42c32e105358a1aaa84",
     "offense_pack_sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827",
-    "defense_pack_sha256": "5fd57abaee2dd936151f7474225c71260624ed3af22d24de90a3c1fbaced5784"
+    "defense_pack_sha256": "ec1636cabc7b70d02bf2219457e4fffceae0447bbf07b27531ad3f7c83559fbf"
    }
   ],
   "325": [
@@ -196,7 +196,7 @@
     "input_sha256": "e46738590b8c22fcce2273daf8fdca372b5a32d40a2410c91012caa2aa58c27d",
     "output_sha256": "9443ae9a248267470a9e450592a14a81ea19334888d954f0b8cdacc52f368828",
     "offense_pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
-    "defense_pack_sha256": "ebfee1eb2071a761e923fbcd3d19e92fc7141ad2de050ec82575d3d410b2597a"
+    "defense_pack_sha256": "d47c2ea9c88d3f30f892c44f5e7fd44268c6300d297deda5835b5ed2c8779524"
    }
   ],
   "327": [
@@ -328,7 +328,7 @@
     "input_sha256": "baf44ca8e2f5f470e92a985c934004b8283d9619748652fc401369f5cca87c61",
     "output_sha256": "b790924770e9916849e1b61b52ed22804275049ad9f011ac698be1038a956a85",
     "offense_pack_sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1",
-    "defense_pack_sha256": "87d0e4154e017ac25fcf2676fee2b781646cd74495b23289d01b62a08fc4020e"
+    "defense_pack_sha256": "a8afd1c2308c09bf15b52e2325104094ee380e51d9900bcb3cd1d9beb0db3cee"
    }
   ],
   "341": [
@@ -350,7 +350,7 @@
     "input_sha256": "a3621e2b04dcdac273888e7e78ce5712bb53103312e823b9eff421a64488d3ca",
     "output_sha256": "0478c2e74d4c64ac395edb2d75037c77cd86300db35b360166a3e3ea03bbfcbe",
     "offense_pack_sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733",
-    "defense_pack_sha256": "00fd1d2b6fd68e36ef1e9ab52a306c1f9246b37caae46eeece739465a14a1410"
+    "defense_pack_sha256": "c7148f5e4667430c1e7a5c833d65e834b71ed7a28f4fefacc4bd716dbef67ab0"
    }
   ]
  }

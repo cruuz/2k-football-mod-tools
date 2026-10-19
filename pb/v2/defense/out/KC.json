@@ -551,7 +551,7 @@
     "C4": 0.028,
     "C6": 0.013
    },
-   "blitz_model": 0.439,
+   "blitz_model": 0.581,
    "blitz_target": 0.676,
    "calls": 22
   }
@@ -2007,7 +2007,7 @@
    "appended": true,
    "name": "Mug Sim 3",
    "component": "coverage",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "band": 0,
    "pressure": false,
    "roles": [
@@ -2021,9 +2021,9 @@
    "source": {
     "authored": "mug:sim from KC 3 Dog T"
    },
-   "rushers": 4,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 18
+   "authored_nodes": 16
   },
   {
    "play": 268,
@@ -2054,11 +2054,11 @@
   "offense_pack": "data/playbooks/softdrink_kc_modern.2k5book",
   "offense_pack_sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827",
   "source_fingerprint": "71057dc40cca553275f106f3661ab02a54cb04d0da90e7a55709c90e073debb0",
-  "replacement_sha256": "650ed2d12d4c33320f2b95145c9b06afd9df7ae427d8ef484e9a3a8ef6a5812e",
-  "semantic_sha256": "3ef5169560d6bb1ece81955008ef696d79eae52476be84160227f77b80075b11",
+  "replacement_sha256": "36d2b1c2be074d2f6a559638f90cb5852b2a8bf0a4dcbec23ff498bae80b34ff",
+  "semantic_sha256": "8d8a0df19b6856970b1b0b603a2fba5ffb23d9bcb86484bf269dc6adb60e4eed",
   "plays": 64,
   "formations": 5,
-  "nodes": 2263,
+  "nodes": 2261,
   "node_capacity": 3500,
   "formation_count": 43,
   "play_count": 269,
@@ -2067,6 +2067,6 @@
   "spy_play": 21,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_kc_defense.2k5book",
-  "pack_sha256": "5fd57abaee2dd936151f7474225c71260624ed3af22d24de90a3c1fbaced5784"
+  "pack_sha256": "ec1636cabc7b70d02bf2219457e4fffceae0447bbf07b27531ad3f7c83559fbf"
  }
 }

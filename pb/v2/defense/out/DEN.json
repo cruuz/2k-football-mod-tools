@@ -552,7 +552,7 @@
     "C4": 0.023,
     "C6": 0.016
    },
-   "blitz_model": 0.441,
+   "blitz_model": 0.616,
    "blitz_target": 0.645,
    "calls": 22
   }
@@ -2030,7 +2030,7 @@
    "appended": true,
    "name": "Mug Sim 3",
    "component": "coverage",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "band": 0,
    "pressure": false,
    "roles": [
@@ -2044,9 +2044,9 @@
    "source": {
     "authored": "mug:sim from CAR Cover 3"
    },
-   "rushers": 4,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 12
   }
  ],
  "receipt": {
@@ -2054,11 +2054,11 @@
   "offense_pack": "data/playbooks/softdrink_den_modern.2k5book",
   "offense_pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
   "source_fingerprint": "a5d0bbf4818573a5ff427b8ca9ddaa2594eeb1eef7125067a55c8531bd618622",
-  "replacement_sha256": "d28a48c7fa06823cea5462b879292df3e3aeaa8ffdff2faaed802544657d34fc",
-  "semantic_sha256": "a6e0ecd040d7b718bd313c99c6327e31bfb24f8e8345dbd8f56956240063a91e",
+  "replacement_sha256": "dbb6b42e45d94d8e0d9360cff7bb34611aa9212b01f03d62f74a3331f8cd0ac4",
+  "semantic_sha256": "850ce531968f98f839ee59cc80f9c91ccacd93f0484c72d02e4ace2320ec0038",
   "plays": 64,
   "formations": 5,
-  "nodes": 2222,
+  "nodes": 2220,
   "node_capacity": 3500,
   "formation_count": 42,
   "play_count": 270,
@@ -2067,6 +2067,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_den_defense.2k5book",
-  "pack_sha256": "df2f55ae97423e07991c5684acdd4db4f00707482267cdde757bb53c65a01f29"
+  "pack_sha256": "73ea52e940b9d3a554b337c3ba946bed2dc78c3771f898edc9b9f4056e0f457a"
  }
 }
