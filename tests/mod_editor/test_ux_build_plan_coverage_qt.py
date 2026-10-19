@@ -99,6 +99,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "indicator_names_folder",  # b773-nm1: the private indicator atlas folder comes from the Studio preset or the project file, with no Build tab control
             "my_career_home",  # b775-ui1: Career Home rides with MyCareer (default on); preset/project/recipe key, no Build tab control
             "indicator_names_style",  # b775-nl1: the player name label style (retail default) comes from the Studio preset or the project file, like the atlas folder
+            "team_number_scale",  # b776-ns1: per-kit jersey number sizes are a recipe/project key only (coordinator: no Build tab control yet)
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
