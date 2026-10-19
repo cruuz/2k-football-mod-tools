@@ -791,7 +791,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "64b2b1b584d5e7be65ce91e72ed120434c78a2eb656f0a0ffeb1c8cef7ad199c",
-        "mod_editor/core/nfl2k5_my_career_mode_code.py": "3b264815d650396da3dd32daf3cac7a5a1d48285f5be385ecd5dfa4fbf00f376",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "3a043e72c98ce3dc1d7f152faaa0fac52365e45ecce998fb89b9df48d3ec7889",
         "mod_editor/core/nfl2k5_my_career_home.py": "1cd14c72b0f223a2785a5984d59b9186369c55a243ab3c5c264ec969d6d69581",
         "mod_editor/core/nfl2k5_my_career_home_code.py": "488b8a847b45d74a4f046fc4d436145a9f4f73af56ed936f3ecaf44741ed4f75",
         "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",

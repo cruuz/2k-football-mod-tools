@@ -232,10 +232,12 @@ class HostBudgetTests(unittest.TestCase):
             # mc2 reviewed native changes: menu-port ownership, B quit on the
             # entry/Apartment, backup prompt, first clean free record (D01).
             # nl1: the "You were drafted by the <city> <nickname>." notice.
+            # mc4: the progress menu draws what the prior-season sim frames draw (handler in runtime.S), and
+            # the progress note drawn on the native menu (runtime.c mode_draw) is gone.
             'tools/mycareer_mode/runtime.c':
-                '02fd3dc404c0417ab4dee60492f48de113e7119a79b8eb165e2517264d1f0b53',
+                '97af870c1bf4ea97a8317090b280ea19a14a05e1b3778c7acf529631269784fc',
             'tools/mycareer_mode/runtime.S':
-                '9993d7d2331cb5d49ede81323ceae37fd71a07cfbfd28e343b307989de599e65',
+                '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C

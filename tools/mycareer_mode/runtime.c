@@ -667,7 +667,6 @@ void FC mode_draw(u32 manager) {
      * This pass supplies only the two extra pieces of career information. */
     if(d==apartment) text(footer(),0,320,432,0);
     if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,380,1);
-    if(d==m3_progress_menu) text(m3_progress_note,0,320,404,0);
     if(d==m3_prep_menu) text(m3_prep_note,0,320,404,0);
     if(d==m3_settings_menu) text(m3_settings_note,0,320,404,0);
     if(d==m3_draft_menu) {
@@ -986,7 +985,15 @@ void mode_load_error(void) {
  * stack of the context they are given. LEAGUE_MENU was empty, so the prior
  * season was about 100 s of black with only the native sim ticker (Noah,
  * 2026-09-23). This draw-only entry has no rows and no hook table; the
- * native dispatcher calls +8 with ECX context and EDX event. */
+ * native dispatcher calls +8 with ECX context and EDX event.
+ * mc4 (Noah, 2026-10-18: "it goes black and then it pops up with the screen
+ * behind it each week"): every week is one update frame of the real progress
+ * menu, and the manager drew that menu natively between the league's own
+ * (black) frames. While M(0)==1 the progress menu's handler (mode_handler in
+ * runtime.S) now answers draw event 7 with this same function and draws no
+ * native menu (event 8, the native caption, draws nothing). The progress note
+ * the real menu used to carry at y=404 is gone with it: the native menu only
+ * shows again after a failed prior season, where that line was misleading. */
 extern const u16 m3_progress_text[];
 void FC m3_sim_draw(u32 context,u32 event) {
     (void)context;
