@@ -37,8 +37,9 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(raw[0], 0xE8)
         self.assertEqual(0x2E978C + 5 + struct.unpack_from("<i", raw, 1)[0], code + assembly.LABELS["point"])
         self.assertEqual(raw[5:], b"\x90" * 4)
-        self.assertEqual(struct.unpack("<f", image.read(0x2E7463, 4))[0], 1.0)
-        self.assertEqual(image.read(0x2E7462, 1), b"\x68")
+        push = image.read(0x2E7462, 5)                      # "push 0.84" becomes a call that pushes 0.84 or 1.0
+        self.assertEqual(push[0], 0xE8)
+        self.assertEqual(0x2E7462 + 5 + struct.unpack_from("<i", push, 1)[0], code + assembly.LABELS["throttle"])
         self.assertEqual(self.receipt["runtime_witnessed"], False)
         self.assertEqual({e["label"] for e in self.receipt["edits"]}, {"catch_point", "reaction_throttle"})
         self.assertEqual(space.status(self.final), "applied")
@@ -49,8 +50,8 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(receipt["status"], "already_applied")
         code = ball.allocation(self.final)["va"]
         for label, (va, content) in {"hook": (0x2E978C, b"\xe8\x00\x00\x00\x00"),
-                                     "throttle": (0x2E7463, struct.pack("<f", 0.9)),
-                                     "half": (0x2E7463, struct.pack("<f", 0.84)),
+                                     "throttle": (0x2E7463, struct.pack("<i", 0)),
+                                     "half": (0x2E7462, bytes.fromhex("683d0a573f")),
                                      "code": (code + 2, b"\x90"),
                                      "behavior 37": (0x2E9620, b"\x90"),
                                      "reaction task": (0x2E7300, b"\x90"),
@@ -59,7 +60,7 @@ class WriterTests(unittest.TestCase):
             self.assertEqual(ball.status(bad), "foreign", label)
             with self.assertRaises(ValueError):
                 ball.apply(bad)
-        retail_bad = repin_edit(self.retail, 0x2E7463, struct.pack("<f", 0.9))
+        retail_bad = repin_edit(self.retail, 0x2E7463, struct.pack("<f", 1.0))
         self.assertEqual(ball.status(retail_bad), "foreign")
 
     def test_composes_after_cpu_qb_reads_in_late_order(self):

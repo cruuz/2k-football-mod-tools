@@ -101,13 +101,36 @@ class CatchPointTests(unittest.TestCase):
             self.assertEqual(new.readf(new.task + 0x60), old.readf(old.task + 0x60))
             self.assertEqual(new.get(new.task + 0x40), old.get(old.task + 0x40))
 
-    def test_first_reaction_frame_runs_at_full_throttle(self):
+    def first_throttle(self, m):
+        m.put(0xE602C0, 4)
+        m.put(0x2010000, 0)
+        m.component(0x214FB0, ecx=m.p)
+        return m.readf(m.steer + 0x10)
+
+    def test_full_throttle_only_while_running_to_the_catch_point(self):
+        ahead = lambda m: (m.readf(m.target + 0xB30), m.readf(m.target + 0xB38) + 15 * YD)
         for payload, expected in ((self.retail, 0.84), (self.patched, 1.0)):
-            m = self.react(payload, 1, lambda m: (m.readf(m.target + 0xB30), m.readf(m.target + 0xB38) + 15 * YD))
-            m.put(0xE602C0, 4)
-            m.put(0x2010000, 0)
-            m.component(0x214FB0, ecx=m.p)
-            self.assertAlmostEqual(m.readf(m.steer + 0x10), expected, places=6)
+            self.assertAlmostEqual(self.first_throttle(self.react(payload, 1, ahead)), expected, places=6)
+        # a catch point behind the line keeps the retail point, and so the retail 0.84
+        behind = lambda m: (m.readf(m.target + 0xB30), -3 * YD)
+        m = self.react(self.patched, 1, behind)
+        self.assertAlmostEqual(self.first_throttle(m), 0.84, places=6)
+
+    def test_zone_reactor_breaks_to_the_catch_point(self):
+        node = next(n for _s, n in coverage_nodes(atl_body(), 11) if n.op == 0x0D)
+        for payload in (self.retail, self.patched):
+            m = self.Frame(payload, node, coverage=0.0)
+            catch = (m.readf(m.target + 0xB30) + 2 * YD, m.readf(m.target + 0xB38) + 10 * YD)
+            self.assertTrue(m.release(catch=catch))
+            self.assertEqual(m.get(m.task + 0x40), m.get(0xBE4F8C))         # retail: zone reactors follow the QB
+            point = m.point()
+            if payload is self.patched:
+                self.assertAlmostEqual(point[0], catch[0], places=2)
+                self.assertAlmostEqual(point[2], catch[1], places=2)
+                self.assertAlmostEqual(self.first_throttle(m), 1.0, places=6)
+            else:
+                self.assertNotAlmostEqual(point[2], catch[1], places=0)
+                self.assertLessEqual(self.first_throttle(m), 0.84 + 1e-6)   # retail cap (0 when already there)
 
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
@@ -119,6 +142,7 @@ class CaveConditionTests(unittest.TestCase):
         cls.payload, _ = ball.apply(retail_xbe())
 
     def run_point(self, *, flag=1, intended=True, catch=(300.0, 2400.0), defender=(0.0, 1800.0), direction=1):
+        """intended=False: no intended receiver at all ([0xE3C000] = 0)."""
         m = SpyMachine(self.payload, patched=False, direction=direction)
         code = ball.allocation(self.payload)["va"] + assembly.LABELS["point"]
         task, frame = m.SOURCE + 0x2000, m.STACK - 0x40
@@ -126,8 +150,8 @@ class CaveConditionTests(unittest.TestCase):
         m.uc.mem_write(frame + 0x24, struct.pack("<4f", *retail_point))  # 16-aligned at the hook
         m.u32(frame, m.STOP)
         receiver = m.RB
-        m.u32(0xE3C000, receiver)
-        m.u32(task + 0x40, receiver if intended else m.OTHER)
+        m.u32(0xE3C000, receiver if intended else 0)
+        m.u32(task + 0x40, m.OTHER)                                    # any reactor, man or zone
         m.u32(0xBF0E08, flag)
         m.uc.mem_write(0xBF0DF0, struct.pack("<4f", catch[0], 142.24, catch[1] * direction, 1.0))
         m.f32(m.P + 0x400 + 0x30, defender[0]); m.f32(m.P + 0x400 + 0x38, defender[1] * direction)
@@ -151,7 +175,7 @@ class CaveConditionTests(unittest.TestCase):
             self.assertEqual(stored, (300.0, 0.0, 2400.0 * direction, 1.0))
 
     def test_every_refusal_keeps_the_retail_point(self):
-        cases = dict(no_catch_point=dict(flag=0), other_receiver=dict(intended=False),
+        cases = dict(no_catch_point=dict(flag=0), no_intended_receiver=dict(intended=False),
                      behind_the_line=dict(catch=(300.0, 1100.0)), beyond_25_yd=dict(catch=(300.0, 1800.0 + 2300.0)),
                      not_a_number=dict(catch=(float("nan"), 2400.0)))
         for label, kwargs in cases.items():
@@ -160,6 +184,41 @@ class CaveConditionTests(unittest.TestCase):
 
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
+class ThrottleCaveTests(unittest.TestCase):
+    """The throttle cave entered as the native call: it must leave exactly one dword (0.84 or 1.0) pushed."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.payload, _ = ball.apply(retail_xbe())
+
+    def run_throttle(self, *, flag, match):
+        m = SpyMachine(self.payload, patched=False)
+        code = ball.allocation(self.payload)["va"] + assembly.LABELS["throttle"]
+        task = m.SOURCE + 0x2000
+        m.uc.mem_write(0xBF0DF0, struct.pack("<4f", 300.0, 142.0, 2400.0, 1.0))
+        m.u32(0xBF0E08, flag)
+        m.uc.mem_write(task + 0x20, struct.pack("<4f", 300.0 if match else 299.0, 0.0, 2400.0, 1.0))
+        frame = m.STACK - 0x40
+        m.u32(frame, m.STOP)
+        for name, value in (("ESP", frame), ("EDI", task), ("ESI", 0x4567), ("EBX", 0x3456), ("EBP", 0x6789),
+                            ("EAX", 0x789A), ("ECX", 0x1111), ("EDX", 0x2222), ("EFLAGS", 0x246)):
+            m.uc.reg_write(getattr(x86, "UC_X86_REG_" + name), value)
+        m.uc.emu_start(code, m.STOP, timeout=1_000_000, count=200)
+        # entered with [frame] = return address; after ret ESP is frame again and [frame] holds the pushed value,
+        # exactly what the displaced "push imm32" followed by the next instruction would see
+        self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), frame)
+        for name, value in (("EDI", task), ("ESI", 0x4567), ("EBX", 0x3456), ("EBP", 0x6789), ("EAX", 0x789A),
+                            ("ECX", 0x1111), ("EDX", 0x2222), ("EFLAGS", 0x246)):
+            self.assertEqual(m.uc.reg_read(getattr(x86, "UC_X86_REG_" + name)) & (0x8D5 if name == "EFLAGS" else -1),
+                             value & (0x8D5 if name == "EFLAGS" else -1), name)
+        return m.readf(frame)
+
+    def test_pushed_value(self):
+        self.assertAlmostEqual(self.run_throttle(flag=1, match=True), 1.0, places=6)
+        self.assertAlmostEqual(self.run_throttle(flag=1, match=False), 0.84, places=6)
+        self.assertAlmostEqual(self.run_throttle(flag=0, match=True), 0.84, places=6)
+
+
 class FrameTests(unittest.TestCase):
     """Native reaction task, steering and locomotion over the whole flight (synthetic clips and paths)."""
 

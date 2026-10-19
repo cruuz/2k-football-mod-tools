@@ -4,15 +4,17 @@ When a pass is released (0x1CFA40) the game stores the ball's catch point at 0xB
 posts event 0x27 to every defender. Every man and zone coverage initializer maps that event to
 behavior 37 (0x2E95F0); a man defender on the intended receiver always starts it, a zone
 defender with probability 1 - Coverage (proved offline, see the b776 ai2 report). Retail then
-sends him to a fixed spot, the receiver's position plus 0.25 s of his velocity at the throw, at
-0.84 throttle, and he only plays the ball (action 0x61) once it is within 3 yd.
+sends him to a fixed spot, 0.25 s ahead of the receiver (man) or of the offense's QB (zone,
+0x1AB800), with his depth held, at 0.84 throttle, and he only plays the ball (action 0x61) once
+it is within 3 yd.
 
 This owner changes two things inside behavior 37 and nothing else:
 
-* the run-to point becomes the stored catch point when it is valid (0xBF0E08 == 1), the
-  defender reacts to the intended receiver ([0xE3C000]), and the point is downfield of the
-  line of scrimmage and within 25 yd of him (otherwise the retail point);
-* the reaction task's navigation throttle immediate at 0x2E7463 becomes 1.0 (from 0.84).
+* the run-to point becomes the stored catch point when it is valid (0xBF0E08 == 1) for an
+  intended receiver ([0xE3C000]), downfield of the line of scrimmage and within 25 yd of him
+  (otherwise the retail point);
+* the reaction task's navigation throttle (the push at 0x2E7462) becomes 1.0 instead of 0.84,
+  but only while his run-to point is that catch point; every other reaction keeps 0.84.
 
 The reaction lottery, its timer, the native play-the-ball and tackle decisions, catches and
 interceptions are untouched. Settings are build-time only.
@@ -23,15 +25,15 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_db_ball_play"
-CODE_SIZE = 128
+CODE_SIZE = 256
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Defenders break on the thrown ball (experimental)"
 HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. After the throw, a defender who reacts to the pass "
              "(the man covering the target, or a zone defender who reads it) runs at full speed to where the ball "
-             "will come down instead of jogging to where the receiver was heading. Expect more pass breakups and "
-             "some more interceptions. Catching and interception chances are unchanged.")
-POINT_HOOK = ("catch_point", 0x002E978C, bytes.fromhex("0f284424200f294620"))
-THROTTLE_SITE = ("reaction_throttle", 0x002E7463, struct.pack("<f", 0.84), struct.pack("<f", 1.0))
+             "will come down instead of jogging to a spot near the receiver or the quarterback. Expect more pass "
+             "breakups and some more interceptions. Catching and interception chances are unchanged.")
+POINT_HOOK = ("catch_point", 0x002E978C, bytes.fromhex("0f284424200f294620"), "point")
+THROTTLE_HOOK = ("reaction_throttle", 0x002E7462, bytes.fromhex("683d0a573f"), "throttle")
 SYMBOLS = dict(depth=0x002E5E30)
 GUARDS = (
     (0x002E95F0, 561, "e046572f8aa824ec87facf9560cf7b63182ee1a767cdcf5e254819f184441f31"),   # behavior 37 init
@@ -77,9 +79,11 @@ def code_for(code_va):
 
 def sites(code_va=0):
     from . import nfl2k5_db_ball_play_code as assembly
-    name, va, before = POINT_HOOK
-    call = b"\xe8" + struct.pack("<i", code_va + assembly.LABELS["point"] - va - 5)
-    return [(name, va, before, call.ljust(len(before), b"\x90")), THROTTLE_SITE]
+    result = []
+    for name, va, before, label in (POINT_HOOK, THROTTLE_HOOK):
+        call = b"\xe8" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
+        result.append((name, va, before, call.ljust(len(before), b"\x90")))
+    return result
 
 
 def _recognize(payload):
@@ -159,5 +163,5 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "GUARDS", "POINT_HOOK", "THROTTLE_SITE", "apply", "status", "read_settings",
+__all__ = ["OWNER", "REQUESTS", "GUARDS", "POINT_HOOK", "THROTTLE_HOOK", "apply", "status", "read_settings",
            "allocation", "code_for", "sites"]
