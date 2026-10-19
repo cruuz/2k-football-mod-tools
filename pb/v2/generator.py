@@ -205,11 +205,21 @@ def defense_appends(team: str) -> tuple[int, int]:
             sum(1 for p in doc["plays"] if p.get("replace_index") is None))
 
 
+# b776: extra play records left free for a team's defense beyond what its current defense pack appends.  NE: job de2's
+# odd-front generator needs about 77 defensive plays (the shipped pack has 59); with less room its 3-4 Okie strong
+# edge drops on far more CPU calls than designed (coordinator, 10/19).
+DEFENSE_RESERVE = {"NE": 18}
+# ... and the UTF-16 name units those extra defensive plays need (the defense compile appends its names to the pool;
+# the shipped NE pack averages 16 units per formation or play name, 18 plays -> about 290)
+DEFENSE_NAME_RESERVE = {"NE": 300}
+
+
 def capacity(info: v2.BookInfo, team: str) -> dict:
     book = info.book
     ret_f = len(book.formations) - len(info.forms)
     ret_p = len(book.plays) - len(info.plays)
     df, dp = defense_appends(team)
+    dp += DEFENSE_RESERVE.get(team, 0)
     free = insp.PLAY_CAPACITY - ret_p - dp - len(info.plays)
     # the PAT fake field goal takes a free record, else one ordinary offensive record (a full book)
     special_mode = "append" if free >= 1 else "replace"
@@ -1204,7 +1214,7 @@ def fit_names(result: dict, team: str) -> dict:
     if dpath.exists():
         doc = json.loads(dpath.read_text(encoding="utf-8"))
         defense_units = sum(len(e["custom_name"]) + 1 for e in (*doc["formations"], *doc["plays"]))
-    budget = NAME_POOL_UNITS - NAME_MARGIN - defense_units
+    budget = NAME_POOL_UNITS - NAME_MARGIN - defense_units - DEFENSE_NAME_RESERVE.get(team, 0)
     chosen, menus, forms = result["chosen"], result["menus"], result["forms"]
     variants = {k: name_variants(c) for k, c in chosen.items()}
     current = {k: 0 for k in chosen}
