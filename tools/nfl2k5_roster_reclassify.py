@@ -18,7 +18,8 @@ order, bits 13-15 = side order):
 * players on no team (free agents, the draft/FA pool): OLB -> LB, nothing else; their rank bits
   are left alone.  The 68 secondary-pool records (the class generator's templates) stay as they
   are: they are keyed per enum and the generator never frees an enum-10 slot once none exists.
-* historic resources (75 x 53 players, no label pair, no 3-4 book): the 4-3 rule.
+* historic resources (75 x 53 players, no label pair, no 3-4 book): the 4-3 rule, except the sourced retail 3-4
+  team-seasons of ``data/nfl2k5_front_schemes.json`` (group ``retail``, b776-de2), which take the 3-4 rule.
 
 Re-rank, per team, per new pool, so the recoded categories field the retail starters: the merged
 order starts with the retail starters of each source position in the order the new codes expect,
@@ -100,8 +101,11 @@ DUAL_BOOKS = ("DAL", "MIN", "NYJ", "OAK", "GEN", "WCO", "reference")
 
 # sha256 over the record areas of all 76 retail ROST resources, in outer-entry order
 RETAIL_RECORD_SHA256 = "2ccb45c529bd7ac95b1a9b3ef99fa4c88db75e47cc35e0915de72f46a6bb164a"
-# the same after the default pass (historic included, no scheme overrides)
-APPLIED_RECORD_SHA256 = "74bc420124f9a9c7010e1b02601eb587066af8867132255476505b4b1c0f5dee"
+# the same after the default pass (historic included, no scheme overrides).  b776-de2: the 17 sourced retail 3-4
+# team-seasons (data/nfl2k5_front_schemes.json, group "retail") take the 3-4 rule; every other historic file keeps the 4-3 rule.
+APPLIED_RECORD_SHA256 = "a44457a99d3d8d5957b6183df6786d218e74aae540bed8388d2f9fcbc25a5b13"
+# the default pass before b776-de2 (the 4-3 rule on all 75 historic files): a disc built that way still reads "applied"
+LEGACY_APPLIED_RECORD_SHA256 = ("74bc420124f9a9c7010e1b02601eb587066af8867132255476505b4b1c0f5dee",)
 
 
 class ReclassifyError(ValueError):
@@ -408,13 +412,31 @@ def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int], *,
     return moves
 
 
-def plan_resource(resource: Resource, schemes: Mapping[str, str], *, three_four: Sequence[str] = (),
-                  four_three: Sequence[str] = (), historic_scheme: str = "4-3",
-                  historic_min_lb: int = 0, historic_light_end: int = 0) -> tuple[list[Move], dict[int, str]]:
-    """``historic_scheme`` (b776-de1) is the rule a one-team historic / classic / moment file takes. Every retail
-    historic file keeps the 4-3 rule; a team-season that really ran a 3-4 (``nfl2k5_front_schemes``) takes ``"3-4"`` so
-    its outside backers are EDGE and its ends are interior, with ``historic_min_lb`` keeping three LBs."""
+def retail_three_four() -> dict[int, str]:
+    """{outer entry: key} of the retail historic ROST files that really ran a 3-4 (``nfl2k5_front_schemes``, b776-de2)."""
 
+    root = str(_HERE.parent)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    from mod_editor.core import nfl2k5_front_schemes as front
+    return front.retail_three_four_entries()
+
+
+def plan_resource(resource: Resource, schemes: Mapping[str, str], *, three_four: Sequence[str] = (),
+                  four_three: Sequence[str] = (), historic_scheme: str | None = None,
+                  historic_min_lb: int = 0, historic_light_end: int = 0) -> tuple[list[Move], dict[int, str]]:
+    """``historic_scheme`` (b776-de1) is the rule a one-team historic / classic / moment file takes. A team-season that
+    really ran a 3-4 (``nfl2k5_front_schemes``) takes ``"3-4"`` so its outside backers are EDGE and its ends are
+    interior, with ``historic_min_lb`` keeping three LBs; any other keeps ``"4-3"``.  Left at ``None`` (b776-de2) a
+    retail historic file chooses by its outer entry: the sourced retail 3-4 team-seasons get the 3-4 rule with three LBs
+    kept, every other retail file the 4-3 rule, exactly as before.  The light-end move (``LIGHT_END_POUNDS``) is for
+    modern rosters whose generic labels hide edge rushers; a retail file's ends are the 3-4 ends the disc says they are
+    and its outside backers are its edge rushers, so no end is promoted."""
+
+    if historic_scheme is None:
+        historic_scheme = "4-3"
+        if resource.label != "roster" and resource.entry in retail_three_four():
+            historic_scheme, historic_min_lb, historic_light_end = "3-4", MIN_LB_FOR_EVEN_BOOKS, 0
     _require(historic_scheme in ("4-3", "3-4"), f"unknown historic scheme {historic_scheme!r}")
     claimed: set[int] = set()
     moves: list[Move] = []
@@ -482,7 +504,8 @@ def status(path: Path | str, *, historic: bool = True) -> dict[str, object]:
     digest = record_digest(resources)
     main = resources[0]
     nfl_olb = sum(1 for t in main.teams if t.kind == TEAM_KIND_NFL for off in t.roster if main.players[off].position == ENUM_OLB)
-    state = ("retail" if digest == RETAIL_RECORD_SHA256 else "applied" if digest == APPLIED_RECORD_SHA256
+    state = ("retail" if digest == RETAIL_RECORD_SHA256
+             else "applied" if digest == APPLIED_RECORD_SHA256 or digest in LEGACY_APPLIED_RECORD_SHA256
              else "applied-custom" if nfl_olb == 0 else "foreign")
     return {"status": state, "record_sha256": digest, "nfl_olb_players": nfl_olb, "resources": len(resources)}
 

@@ -20,7 +20,7 @@ import nfl2k5_playbook_position_recode as pr  # noqa: E402
 OLB, ILB, DT, DE = rc.ENUM_OLB, rc.ENUM_ILB, rc.ENUM_DT, rc.ENUM_DE
 
 
-def team_resource(rows, label="h-test"):
+def team_resource(rows, label="h-test", entry=0):
     """rows: (name, position enum, rank, weight). A one-team Resource without bytes."""
     players = {}
     for i, (name, pos, rank, weight) in enumerate(rows):
@@ -28,7 +28,7 @@ def team_resource(rows, label="h-test"):
         players[off] = rc.Player(off, pos, rank << rc.RANK_SHIFT, name, [0], weight)
     team = rc.Team(0, 0, "T", "TST", 0, None, list(players), 0)
     tables = {"secondary_players": {"offset": 0x10, "end": 0x20}}
-    return rc.Resource(0, 0, label, b"", tables, players, [team])
+    return rc.Resource(entry, 0, label, b"", tables, players, [team])
 
 
 def pools(resource, moves):
@@ -131,6 +131,50 @@ class ThreeFourRuleTests(unittest.TestCase):
     def test_unknown_scheme_is_refused(self):
         with self.assertRaises(rc.ReclassifyError):
             rc.plan_resource(team_resource(GIANTS_22), {}, historic_scheme="5-2")
+
+
+class RetailGroupTests(unittest.TestCase):
+    """b776-de2: the retail historic files (outer entries 113 to 187) choose their rule by entry."""
+
+    def test_every_retail_listing_is_complete_sourced_and_on_a_book_that_asks_for_roles(self):
+        data = fs.load()
+        keys = set(data["three_four"]["retail"])
+        self.assertEqual(keys, set(data["retail_entries"]))
+        self.assertEqual(keys, set(data["retail_books"]))
+        self.assertEqual(keys, set(data["retail_sources"]))
+        entries = list(data["retail_entries"].values())
+        self.assertEqual(len(entries), len(set(entries)))
+        self.assertTrue(all(113 <= e <= 187 for e in entries))
+        for key in keys:
+            self.assertTrue(data["retail_sources"][key], key)
+            self.assertNotIn(data["retail_books"][key], fs.STOCK_ODD_BOOKS, key)
+        self.assertEqual(set(fs.retail_three_four_entries(data)), set(entries))
+        self.assertEqual(len(entries), 17)
+
+    def test_reviewed_and_rejected_seasons_stay_four_three(self):
+        data = fs.load()
+        for key in data["retail_reviewed_left_four_three"]:
+            self.assertNotIn(key, data["three_four"]["retail"])
+
+    def test_default_plan_picks_the_rule_by_outer_entry(self):
+        three_four = fs.retail_three_four_entries()
+        listed = min(three_four)
+        unlisted = next(e for e in range(113, 188) if e not in three_four)
+        rows = GIANTS_22
+        res_listed, res_other = team_resource(rows, entry=listed), team_resource(rows, entry=unlisted)
+        got_listed = pools(res_listed, rc.plan_resource(res_listed, {})[0])
+        got_other = pools(res_other, rc.plan_resource(res_other, {})[0])
+        self.assertEqual(got_other["EDGE"][:2], ["Williams", "Ojulari"])                    # 4-3 rule, as before
+        self.assertEqual(got_listed["EDGE"][0], "Thibodeaux")                                # 3-4 rule
+        self.assertEqual(got_listed["DT"][0], "Lawrence")
+        forced = pools(res_listed, rc.plan_resource(res_listed, {}, historic_scheme="4-3")[0])
+        self.assertEqual(forced, got_other)                                                  # an explicit scheme wins
+
+    def test_the_main_roster_and_one_team_files_are_not_touched_by_the_entry_rule(self):
+        res = team_resource(GIANTS_22, label="roster", entry=min(fs.retail_three_four_entries()))
+        self.assertEqual(rc.retail_three_four().keys(), fs.retail_three_four_entries().keys())
+        moves, schemes = rc.plan_resource(res, {})
+        self.assertEqual(set(schemes.values()), {"4-3"})                                      # scheme word 0, no book
 
 
 class PreventTests(unittest.TestCase):
