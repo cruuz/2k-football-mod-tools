@@ -3029,7 +3029,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         scans_module = _core_module("nfl2k5_moment_scans")
         if scans_module is None:
             raise RuntimeError("The moment face scans module is unavailable in this build")
-        planned = scans_module.plan(source, source, photos=frozenset())
+        # b776-disc2: in a project build `source` is the project-built image (2026 faces already written), so read the
+        # user's retail game here, as the moment_scans step does.
+        scans_retail = source if _retail_source is None else _retail_source
+        planned = scans_module.plan(scans_retail, scans_retail, photos=frozenset())
         receipt["moment_scans_preflight"] = {"spans": len(planned), "pairs": len(scans_module.load())}
     if plan.team_names_2026:
         names = _core_module("nfl2k5_team_names_2026")

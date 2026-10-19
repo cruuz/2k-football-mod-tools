@@ -143,7 +143,7 @@ class BuildWiringTests(unittest.TestCase):
         self.assertGreater(step, classic)
         self.assertLess(step, source.index("loaded_weather_plan is not None", classic))
         self.assertIn('if receipt["result"]["moment_scans"] != "applied":', source)
-        self.assertIn("planned = scans_module.plan(source, source, photos=frozenset())", source)
+        self.assertIn("planned = scans_module.plan(scans_retail, scans_retail, photos=frozenset())", source)
         for option in ("plan.espn25_rosters", "plan.espn25_more_moments", "plan.classic_teams and plan.historic_teams_quick_game"):
             self.assertIn(option, source[step - 900:step])
 
