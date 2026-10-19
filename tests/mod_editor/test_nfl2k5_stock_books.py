@@ -53,6 +53,11 @@ if HAVE_UNICORN:
             team = self.run(0x61C50 if side == 1 else 0x61C60)
             key = self.text(self.r(self.r(team + 0x110) + 4))
             historical = self.r(0xE5FF80) == 8 or self.r(team + 0x128) == 4
+            if self.r(0xE5FF80) != 8 and historical:
+                # b776-int2: a classic team of 2010 on (team identity, low byte) takes its franchise's current book
+                first, last = sb.CLASSIC_MODERN_IDS
+                if first <= self.r(team + 0x118) & 0xFF <= last:
+                    historical = False
             if self.r(0xE5FF80) == 8:
                 count, base, ordinal = self.r(0xC8F0D8), self.r(0xC8F0D4), self.r(0xBF1858)
                 if base and ordinal < count <= sb.MOMENT_COUNT:

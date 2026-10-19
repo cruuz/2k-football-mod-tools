@@ -54,13 +54,18 @@ class MappingTests(unittest.TestCase):
     def test_listed_team_seasons_take_the_three_four_rule_where_the_book_asks_for_roles(self):
         self.assertEqual(fs.mapping_scheme("classic", "giants_2022", "NYG", 2022), "3-4")
         self.assertEqual(fs.mapping_scheme("classic", "packers_2010", "GB", 2010), "3-4")
-        self.assertEqual(fs.mapping_scheme("moments", "patriots_2007", "NE", 2007), "3-4")      # modern NE book
         self.assertEqual(fs.mapping_scheme("moments", "steelers_2025", "PIT", 2025), "3-4")     # modern PIT book
+        self.assertEqual(fs.mapping_scheme("moments", "cardinals_2008", "ARZ", 2008), "3-4")    # stock ARZ book (b776: 2008 = retail era)
+        # b776-int2: classic teams of 2010 on play the franchise's current book, so a pure 3-4 franchise's classic 3-4 takes the rule
+        self.assertEqual(fs.mapping_scheme("classic", "ravens_2019", "BAL", 2019), "3-4")       # modern BAL book
 
     def test_pure_three_four_stock_books_keep_the_retail_slot_meaning(self):
-        for key, abbr, season in (("steelers_2005", "PIT", 2005), ("ravens_2019", "BAL", 2019), ("chargers_2006", "SD", 2006)):
+        for key, abbr, season in (("steelers_2005", "PIT", 2005), ("chargers_2006", "SD", 2006)):
             self.assertEqual(fs.mapping_scheme("classic", key, abbr, season), "4-3", key)
         self.assertEqual(fs.mapping_scheme("moments", "patriots_2003", "NE", 2003), "4-3")      # stock NE book
+        # b776-int2 (Noah: <= 2009 = retail era): the 2007 Patriots and 2008 Steelers now play the pure 3-4 stock books
+        self.assertEqual(fs.mapping_scheme("moments", "patriots_2007", "NE", 2007), "4-3")
+        self.assertEqual(fs.mapping_scheme("moments", "steelers_2008", "PIT", 2008), "4-3")
 
     def test_unlisted_team_seasons_keep_the_historic_rule(self):
         self.assertEqual(fs.mapping_scheme("classic", "giants_2016", "NYG", 2016), "4-3")

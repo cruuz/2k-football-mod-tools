@@ -1,8 +1,9 @@
 """PROVED OFFLINE mechanism: isolated retail franchise books for historical sides.
 
 The default-book decision runs separately for each match team. Mode 8 or category
-4 bypasses saved/custom selections. Anniversary sides from 2005 onward use their
-franchise's current book; older or unavailable seasons use the preserved bank.
+4 bypasses saved/custom selections. Anniversary sides from 2010 onward (b776; 2005 before) use their
+franchise's current book; older or unavailable seasons use the preserved bank. Outside Anniversary mode the
+classic teams of 2010 on (by team identity) use their franchise's current book too (b776).
 A bounded, exact franchise lookup copies a
 NUL-terminated alias into the existing 32-wide-character buffer. No team pointer,
 shared label or cached game state is modified. DESIGN: rendered-game acceptance.
@@ -69,16 +70,27 @@ def aliases():
     return rows
 
 
-MODERN_FIRST_SEASON, MODERN_LAST_SEASON = 2005, 2030
+# b776-int2 (Noah, 10/18: "<= 2009 = retail era"): moments dated 2010 on take the franchise's current book; 2005-2009 now keep the
+# preserved retail bank. Every body before b776 was built with 2005 (LEGACY_FIRST_SEASON) and no classic-team check.
+MODERN_FIRST_SEASON, MODERN_LAST_SEASON = 2010, 2030
+LEGACY_FIRST_SEASON = 2005
 MOMENT_COUNT = 51
+# b776-int2 (Noah, 10/18: "at least give classic teams the 2020+ playbooks"): outside Anniversary mode a category 4 side whose
+# team identity (+0x118, low byte, as the game's own readers take it) is one of the classic teams of 2010 or later
+# (nfl2k5_classic_teams: identity FIRST_ID + list position, list sorted by season) takes the franchise's current book instead
+# of the preserved bank. Retail historic teams (<= 170), the Anniversary team-seasons (176..225) and the classic teams of
+# 2005-2009 (226..230) keep E2R. tests/mod_editor/test_nfl2k5_stock_books_moments.py checks the range against the data.
+CLASSIC_MODERN_IDS = (231, 249)
 
 
 def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False, single_weight=False,
-             legacy_team_pointer=False, legacy_unguarded_live_team=False, weights=None, team_weights=None):
+             legacy_team_pointer=False, legacy_unguarded_live_team=False, weights=None, team_weights=None,
+             first_season=MODERN_FIRST_SEASON, classic_ids=CLASSIC_MODERN_IDS):
     """The 1,536 owned bytes at ``va``. ``legacy`` is the body of v0.5 and earlier (40 byte alias rows, no shotgun weights);
     ``single_weight`` is the a4 body (one franchise float per franchise, ``team_weights`` = 32 floats); the default is the current
     body, whose weights are ``weights`` (51 moment floats) and ``team_weights`` (32 rows of 7 bin weights in key-row order) or the
-    era data file's."""
+    era data file's. ``first_season`` / ``classic_ids`` are the b776 era cut and classic-team range; every earlier body is
+    ``first_season=LEGACY_FIRST_SEASON, classic_ids=None``."""
     require(type(moment_limit) is int and moment_limit in (50, MOMENT_COUNT), "unsupported Anniversary moment limit")
     table, stride = (LEGACY_TABLE, LEGACY_STRIDE) if legacy else (TABLE, STRIDE)
     a = _Asm(va)
@@ -94,6 +106,13 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
     a.b("83bb2801000004")               # this side's category, never the opponent's
     a.j32("0f85", "retail")
     if modern_moments:
+        if classic_ids is not None:
+            first, last = classic_ids
+            require(0 < first <= last <= 0xFF, "classic identity range")
+            a.b("80bb18010000" + bytes([first]).hex())   # cmp byte [ebx+0x118], first (flags only)
+            a.j8("72", "stock")
+            a.b("80bb18010000" + bytes([last]).hex())    # cmp byte [ebx+0x118], last
+            a.j32("0f86", "default")                     # a classic team of 2010 on: the franchise's current book
         a.j32("e9", "stock")
         a.label("moment")
         # 2CFD00 binds the live SITU rows/count. 20CB30 stores the selected
@@ -110,8 +129,8 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
         a.b("85c0")
         a.j8("74", "stock")
         a.b("8b4d0885c90f95c10fb6c98b44881c")
-        a.b("2d" + struct.pack("<I", MODERN_FIRST_SEASON).hex())
-        a.b("83f8" + bytes([MODERN_LAST_SEASON - MODERN_FIRST_SEASON]).hex())
+        a.b("2d" + struct.pack("<I", first_season).hex())
+        a.b("83f8" + bytes([MODERN_LAST_SEASON - first_season]).hex())
         a.j8("77", "stock")
         a.j32("e9", "default")
     a.label("stock")
@@ -218,7 +237,9 @@ def hook(va):
 
 def _previous_bodies(va):
     """Every earlier body of this allocation (v0.5 and before), which apply() completes in place."""
-    return (code_for(va, modern_moments=False, legacy=True), code_for(va, moment_limit=50, legacy=True), code_for(va, legacy=True))
+    old = dict(first_season=LEGACY_FIRST_SEASON, classic_ids=None)
+    return (code_for(va, modern_moments=False, legacy=True, **old), code_for(va, moment_limit=50, legacy=True, **old),
+            code_for(va, legacy=True, **old))
 
 
 def _installed_kind(image, va):
@@ -226,6 +247,7 @@ def _installed_kind(image, va):
     "previous" (the v0.5 and earlier bodies); "single" (the a4 body, one float per franchise; the weights are its own, 32 floats);
     "unfixed_bins" (early a4pd, missing the live-to-roster dereference);
     "unguarded_bins" (FRZ4 / October 9 v0.6, before the active-team identity guard);
+    "b775_bins" (the per-bin body of v0.6.1 to b775: moments from 2005, no classic-team check);
     "current" (fixed per-bin body; the weights are its own, 32 rows of 7)."""
     installed = image.read(va, CODE_SIZE)
     if installed == b"\xcc" * CODE_SIZE:
@@ -237,15 +259,19 @@ def _installed_kind(image, va):
         bins = gun.decode_bin_table(installed[BIN_TABLE_OFFSET:BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE])
         if installed == code_for(va, weights=weights, team_weights=bins):
             return "current", (weights, bins)
-        if installed == code_for(va, weights=weights, team_weights=bins, legacy_unguarded_live_team=True):
+        old = dict(first_season=LEGACY_FIRST_SEASON, classic_ids=None)
+        if installed == code_for(va, weights=weights, team_weights=bins, **old):
+            return "b775_bins", (weights, bins)
+        if installed == code_for(va, weights=weights, team_weights=bins, legacy_unguarded_live_team=True, **old):
             return "unguarded_bins", (weights, bins)
-        if installed == code_for(va, weights=weights, team_weights=bins, legacy_team_pointer=True):
+        if installed == code_for(va, weights=weights, team_weights=bins, legacy_team_pointer=True, **old):
             return "unfixed_bins", (weights, bins)
     except ValueError:
         pass
     weights = gun.decode_table(installed[SINGLE_WEIGHT_OFFSET:SINGLE_WEIGHT_OFFSET + gun.TABLE_SIZE])
     team = gun.decode_team_table(installed[SINGLE_TEAM_OFFSET:SINGLE_TEAM_OFFSET + gun.TEAM_TABLE_SIZE])
-    require(installed == code_for(va, single_weight=True, weights=weights, team_weights=team), "foreign stock resolver body")
+    require(installed == code_for(va, single_weight=True, weights=weights, team_weights=team, first_season=LEGACY_FIRST_SEASON,
+                                  classic_ids=None), "foreign stock resolver body")
     return "single", (weights, team)
 
 
@@ -255,7 +281,7 @@ def _recognize(payload):
     state = "retail" if actual == RETAIL else "applied" if owned and actual == hook(owned["va"]) else "foreign"
     if owned:
         kind, _weights = _installed_kind(image, owned["va"])
-        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "current") else None)
+        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "current") else None)
         if state == "retail":
             require(gun_state == "retail", "shotgun weight site installed without the stock book resolver")
         else:
@@ -263,7 +289,7 @@ def _recognize(payload):
             if kind == "previous":
                 require(gun_state == "retail", "shotgun weight site installed on an earlier resolver body")
                 state = "needs_fix"
-            elif kind in ("single", "unfixed_bins", "unguarded_bins"):
+            elif kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins"):
                 require(gun_state == "applied", "shotgun weight site missing on the earlier a4 resolver body")
                 state = "needs_fix"
             elif gun_state == "retail":
@@ -342,7 +368,7 @@ def apply(payload, *, enabled=True, weights=None, team_weights=None):
         gun.check_rule(image)                     # the shotgun rule must be the retail bytes this owner replaces the constant of
         kind, installed_weights = _installed_kind(image, owned["va"])
         wanted = code_for(owned["va"], weights=values, team_weights=team_values)
-        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
+        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins", "b775_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
             # Only this owner admits these exact checked version transitions (an earlier body, or other weights).
             # The generic allocator still refuses arbitrary filled-code edits.
             payload = _write_body(payload, owned, wanted)
