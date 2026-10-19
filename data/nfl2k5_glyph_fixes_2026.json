@@ -212,9 +212,9 @@
    "offset": 444944,
    "length": 1568,
    "png": "KC_13H0_digit_jersey_0.png",
-   "png_sha256": "1fea0be164ffe647ea29e118f3a3390f7f61f7f4685a38189354bd0259f4d098",
+   "png_sha256": "4796141f7c54dba349ae71a3072aa3236315521642c68fac6b23a16f84fc99b2",
    "before_sha256": "e2dae674ac983d8758aea7e7e711df5582e41aac375ec1e0228d2ff45952814c",
-   "after_sha256": "7d9215f0893df1ec8838f3b4158e890e472c7c85aabbddf062fd03a6bfc2d2fd",
+   "after_sha256": "dd63a6175e2236e411d05d025dd71dd43fe3751ac7231479a5657110c9f7a5ac",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -228,9 +228,9 @@
    "offset": 446512,
    "length": 1072,
    "png": "KC_13H0_digit_jersey_1.png",
-   "png_sha256": "d0da8096199af2a97edcdfe1733f7590f9e8f4d4c3d7506a4518d6b4eea0f3f7",
+   "png_sha256": "19d91c0851ea82f559be87a2ba3d38313c080424a14460d6246997c34a03228a",
    "before_sha256": "ceb6a8fbe01594bb7329e017a7e7558121f44e983e39a86eb28ae742206be7b4",
-   "after_sha256": "c8e9841903ee67027fff778099e4ac4e833d4eafc96fc79baa50601ec43f1a83",
+   "after_sha256": "32bdfd2d194f80ff6023a92ba31fbc3c130e6f40e2bf802712785afae4566d4d",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -244,9 +244,9 @@
    "offset": 447584,
    "length": 2000,
    "png": "KC_13H0_digit_jersey_2.png",
-   "png_sha256": "acdd455fd99ac4e1f294a8e780a5c3e0b01b2c78dc46cd4104d24a66c8ad080f",
+   "png_sha256": "47531f5a5e35ae3f8770d9089dd4e4ffc78e05a45eb5f51973428bbdb0f6c1cc",
    "before_sha256": "706ceea3ad6501ffcf2e2bd9285a18ed56cec2231403742153bd9b066c8de08e",
-   "after_sha256": "e14cafca02a4f8ad0aa664781b5126b3ef6286dd1eca3a2f6ac841eea9f2fce2",
+   "after_sha256": "0132b16c69c075833d3426d5672b68b901c103b6db41bb510dbf628e3811db89",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -260,9 +260,9 @@
    "offset": 449584,
    "length": 2128,
    "png": "KC_13H0_digit_jersey_3.png",
-   "png_sha256": "b26640cb40fd536560480d540ae93323837becc5db25690d87dfb2c0b2591edc",
+   "png_sha256": "1a3c5e9905811823fafb493c9fe17c9598925df183a60542fcdc6c64f21a533f",
    "before_sha256": "f52ac3247baf3f76e0ae43882d927b02c6e60e1660cfb520350df764e87e75ed",
-   "after_sha256": "fd561e39996943303cafac0bc67da3c2d8ce22f834b0c72eadf380c2c73d7b0e",
+   "after_sha256": "414223cb885284203fa9ad64140ee4b3e37544a828caae8673d0b01d934cb853",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -276,9 +276,9 @@
    "offset": 451712,
    "length": 1952,
    "png": "KC_13H0_digit_jersey_4.png",
-   "png_sha256": "c6cce49efe33590629800b151fd0d75d59b4d1b1e4bc201c647c34e037205f19",
+   "png_sha256": "d613e5e650aebf28fe0c48bfa39224d3ce4c10e148d4cb79571eeea907f76a25",
    "before_sha256": "cdfe35148602280e1fb1866e2700ac53d9baae369876936020513e04ad2a8c45",
-   "after_sha256": "6249e04f406c2f09230b13b6a9b4863e6db6d1f6b216dbac2d049440cd22ef2b",
+   "after_sha256": "e625f9cf8139d06a90162248905e14f8bb441374919e5018f6d34f745daa446f",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -292,9 +292,9 @@
    "offset": 453664,
    "length": 1760,
    "png": "KC_13H0_digit_jersey_5.png",
-   "png_sha256": "1ec7c59c945a9dad105ee58f1b2c69309d9df7238b37e4bc0346601a816a72f7",
+   "png_sha256": "d45640ee912d462045b297ce79f8c1edc3d0218a8f738e77df247cbaf9bb6861",
    "before_sha256": "6b36ed318f72ad30e369850808f37c62b8e21fa19e99a77dccc6b806099d0b8f",
-   "after_sha256": "55d9ce8fd8d09cfabb611807265f7621fb153838333270f1eced7a8a1a9dca5c",
+   "after_sha256": "9770517175ebedabf3b4b56565849a2aa6f9ce3e319a22bc017c4b16d6483359",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -308,9 +308,9 @@
    "offset": 455424,
    "length": 1968,
    "png": "KC_13H0_digit_jersey_6.png",
-   "png_sha256": "dc57693bcb5ea2f69a16561b163db6e1d85436e2aa7275904f00b142d3107849",
+   "png_sha256": "50f476df6d8f24fd3441d1b636684ecb1b775ebbb990b8ddf6040efb946f4e8d",
    "before_sha256": "0aebe4644c0ac27afa5ce75236774822c371d3d59ee748aba48e955d0b07b490",
-   "after_sha256": "98d33dbf6475d9e7966d3cba40d9a25c66be21ebc8e21f80ceabde84dd03115a",
+   "after_sha256": "764d7fb77c74331482555a1e52b5825ec3b614e1f4017051aed56ee52e98fa80",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -324,9 +324,9 @@
    "offset": 457392,
    "length": 1968,
    "png": "KC_13H0_digit_jersey_7.png",
-   "png_sha256": "0b478c6c65095a07c15cd2de7713d833644ba8b70a43c94b88901d6b1ef9ffd9",
+   "png_sha256": "c324d7354d462dcfc09616a2955fd9652bd3013a5655b4a3a1b08c311d2e2809",
    "before_sha256": "e075e93803835691c91a11b277e0e5e59a12d6f8182b1249c3ad6174ed5880a5",
-   "after_sha256": "46450e270ffc8ecc73cc9367b32f4186bf81db439558d30a7d75dea338e242c6",
+   "after_sha256": "b12a7a105edccc16772e4ef2210197dcc2e7cd9e87c0ace47618b6f79478421e",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -340,9 +340,9 @@
    "offset": 459360,
    "length": 2112,
    "png": "KC_13H0_digit_jersey_8.png",
-   "png_sha256": "03892139a5814bf3d6bb3d64ac0f69adbc3a615cf6340c28de094be4022d4d02",
+   "png_sha256": "278a874ccb44f069038ed1473e12791df44aa8e161dc5316f109061468d17178",
    "before_sha256": "210e4d1329a0fa65f8d7d11f97d820b6f76d0c00dbce5faf22c2f61fe2c7b357",
-   "after_sha256": "f8b5d8248ab4a46d8774c8fe531364baac8aa143d408bf8f0f70927c64ebfae1",
+   "after_sha256": "dbc9f0d85c462e2c44f8072adde8d4751d89669b438052d620ba34562c7b4e37",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -356,9 +356,9 @@
    "offset": 461472,
    "length": 1904,
    "png": "KC_13H0_digit_jersey_9.png",
-   "png_sha256": "8285ef18862175ee8d470a2a0b818589054632a2b0d6851bd2b8b3004a84c664",
+   "png_sha256": "bb238b3ec144399ce9e55321c57ce85027c215431fdc6d561173cfa7856efc93",
    "before_sha256": "c1133e80cd9f9d91d27a9b689258f5b22293f836ceb477923df9e7aa5615c41b",
-   "after_sha256": "818e6bef3888074876facd52610b754196df84eeece9cff3755adda8c0a58c7a",
+   "after_sha256": "588def19d06b377b5fc902fad1d227e4d4bc8566eaebea5c248ea0346815c212",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -372,9 +372,9 @@
    "offset": 472672,
    "length": 1568,
    "png": "KC_13H0_digit_arm_0.png",
-   "png_sha256": "f68cf33aea6e67a4d1b015f750b366881cc9cc883d15de05b0ae00efb52101a7",
+   "png_sha256": "59e591c3da4f25dd304168a77527455f9b2bd231f3555bbc5b9fc8ad5eed7cc4",
    "before_sha256": "1f16a431d33210991196e8b15dd78d8afccc9f459ef71ad79710776fa4b370d5",
-   "after_sha256": "36dac5d00673f19ebfa29a9b7ae828e899ae22813c804ba4ea7a161abeb10ef9",
+   "after_sha256": "b88e13639c21ce6bdfa0d2edc6a065157f1ccae4455b6e0ace4549698b5e0735",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -388,9 +388,9 @@
    "offset": 474240,
    "length": 1072,
    "png": "KC_13H0_digit_arm_1.png",
-   "png_sha256": "64cd84e44bc0a5eac8976a26689a2e5a1a531cded065debc4db684c53a1cc18a",
+   "png_sha256": "4be313ca806b7432a82e30573fc6e1b08413f3d8fa18cfec8dd576fa6a0dbeb2",
    "before_sha256": "78a3013c31eac85bca18ac5788ca65e4ea0c8857dcd1bb353b07181f778cff89",
-   "after_sha256": "e9c162619e4fc54796f560970b9bf989dfcba00d2293fee544449cb2e0c47a1e",
+   "after_sha256": "b88c0ac4ccc4ef7a24448c985c36814c2a6012f7d19c97c28d1a7bb4c251b059",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -404,9 +404,9 @@
    "offset": 475312,
    "length": 2000,
    "png": "KC_13H0_digit_arm_2.png",
-   "png_sha256": "e7c6e0caba57ece45238e15329973b056df1da8e651aaaeef0f20da39dd23a64",
+   "png_sha256": "3182e606ccec00056441cfaafd6b7071edbe325222ff341f7b717d8cd0bdac46",
    "before_sha256": "5a9eda1c27e8054412546aa4b3694cdca5f332923071bb366decdc2791981914",
-   "after_sha256": "0333cc9b2bc5846ddc541b5ca2a96928bc695bc9d84c60e6cbba1d8014a465e1",
+   "after_sha256": "b0ac2900d9df28a75e2e74cc9c486495739a738ceb5be6d3b780b1b9d0448c82",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -420,9 +420,9 @@
    "offset": 477312,
    "length": 2144,
    "png": "KC_13H0_digit_arm_3.png",
-   "png_sha256": "7691a77cd3e9f69fb1bc5ff9eca28adfb8cd5277e1729aa450cab93e34a1c3de",
+   "png_sha256": "28e7981579bed11c9b93d2b8536f32e6c3b78b6100e3c0d1aef6a5fa0b926638",
    "before_sha256": "4c5790583948c65a0a242eafac4f3ed2af575505eb92d3b01228a0c4d6cff519",
-   "after_sha256": "347d204c08a2fb4b02cf0bf599c43e5c025ae1b76797c70d7a2237c649a4c393",
+   "after_sha256": "4f65dd39cd6b2a0ea0e3a4d4a3a7808edeccfe7317722b8ba6fab201f80ea0a5",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -436,9 +436,9 @@
    "offset": 479456,
    "length": 1968,
    "png": "KC_13H0_digit_arm_4.png",
-   "png_sha256": "d9033920ebf42a188a83c040d6912dde48588ae612435029628ca79d766883c4",
+   "png_sha256": "c811f37cf7fc9d5c0cab680a75afc5b9029401fabe5f0b722daee65f583fdf89",
    "before_sha256": "5d790aa22f403ce542acef477762bd11da177faa383e072edd3d927b6b68afe1",
-   "after_sha256": "479d08d5fbd08bd62b73f145ce06ca6688653edd8ee8aadafb7bb6a52ad36888",
+   "after_sha256": "2ae76f05129a4aec3b0b847b5a8dbcdf280ad910e1dcbe8a5c317b626fe3e607",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -452,9 +452,9 @@
    "offset": 481424,
    "length": 1776,
    "png": "KC_13H0_digit_arm_5.png",
-   "png_sha256": "d68c3dfdfe3abdd5d84535d9c14151569338e1bdd847fd4603079aab980d03ec",
+   "png_sha256": "d570f060305d73e1f1e8234e6601f77cdb043170f1f7e1d3a3849e97054b9041",
    "before_sha256": "dd6221f4d3ac66e955d16dabc1ab77bb440ca28af705835f3a462145c30084b2",
-   "after_sha256": "5e16e5a9b24ec76a9f15fd63ee5859cfc5174ac135e1c0babd9ce8d42a987b45",
+   "after_sha256": "f102c2b7812173b64e397c108dd985f8c0d58d215f25c50ca8560ef7ef762072",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -468,9 +468,9 @@
    "offset": 483200,
    "length": 1984,
    "png": "KC_13H0_digit_arm_6.png",
-   "png_sha256": "73e6769f896dcd4a69be884e32f72c5eeac8e1eea936c9c6c6434a086b5328b7",
+   "png_sha256": "691bd28a79f180f32054d243e6babb56ce55e59d6a915fc2d68e86f0b63cf404",
    "before_sha256": "5af2b758e2e77f0556c30ec5b3ff9712e987eb5db65de9480819d110fcec1a5e",
-   "after_sha256": "a0c11f2e7e713774ffba0dbb21f6cbe7c210553e057b7a1345d66973d38fe8e8",
+   "after_sha256": "425d19263595119e1aae01b409a0cb42d8b1fe4d986c1801da5439ad9e29ef4b",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -484,9 +484,9 @@
    "offset": 485184,
    "length": 1984,
    "png": "KC_13H0_digit_arm_7.png",
-   "png_sha256": "2f6bb0955fea990a02d8f5292bc2e7e787388a785b31550043727d70840d8510",
+   "png_sha256": "d8b9c4afa03b7f5f86a701fbbdca4de1287c09aad08717e1b92a0979a582b86a",
    "before_sha256": "ab1a60c8a5d5e02658ff02baa66391ddfaa7217e93350c8b1691c81bb8943813",
-   "after_sha256": "0928d131795724ec3984768abf7f8ff76911e1957d80a2ba53b3a01dd068279f",
+   "after_sha256": "d3d072a4d530c28f6fbcc3d322e4c5d2598de8d1080b79ae6aa869b35a762423",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -500,9 +500,9 @@
    "offset": 487168,
    "length": 2112,
    "png": "KC_13H0_digit_arm_8.png",
-   "png_sha256": "5930cb6b2ff1821931941ce1d29a3288f820e41f4ca6a5e15f61b9130c708d53",
+   "png_sha256": "922a19c96e71b3332eb8592d810ae7ff7274ac39f1702dfcc4c9f4d2150248f4",
    "before_sha256": "aac9e5ec7f48cac0ab261ceebef328cc776060400248b58f70bcd6ee6ad8c18f",
-   "after_sha256": "41784972cb5efc96f0809eae2008cffb2124992a02de685529660c5ec775092e",
+   "after_sha256": "144937b40c92abfb0802566ff39a9715eb1159789a9718d3c6e65239f48c8f88",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -516,9 +516,9 @@
    "offset": 489280,
    "length": 1920,
    "png": "KC_13H0_digit_arm_9.png",
-   "png_sha256": "94047e7bd363ca31a59898ec9763967cdab9ab2916d5f70c97930a99fdff8d3e",
+   "png_sha256": "391367d5cbdecdefae480d04e1d1efe1cec26378336d7d1122dd3de16058d93d",
    "before_sha256": "b75611a5fd1dade33811268f4ecf93f1d6e34b109d367e2a136822f9f755808b",
-   "after_sha256": "d29a34f2ed31bd3bcb6e65e04c940bd6f1f6b34dc3c15c4dd3a93da1dc6485bb",
+   "after_sha256": "baa58dbad55e1e90f391024ef06c40e62ac2b3121b44f4f543a6cf588b0d5d31",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -532,9 +532,9 @@
    "offset": 453504,
    "length": 1600,
    "png": "KC_13A0_digit_jersey_0.png",
-   "png_sha256": "c4eef80fdf2d009edf0aa064adde02ede27504854d9329fabdf5e9585f9aa9fc",
+   "png_sha256": "f7d73bcff8d33e5cc2ea1efed6f42b7dc4286a6d8c2ecb0911a8aa44f582b9fe",
    "before_sha256": "b8297181ac6fca5133f1020c696bd1fa0cb554abb27e5ce7dc9281e9d85c6683",
-   "after_sha256": "cdc183683d8f4e770e7c0cd01b8d8dc7c66a7fa87721180c667ee76ab3e1d0c9",
+   "after_sha256": "1359836cebdabebfccec493fd8e2a5362a9b6577f73824bf37003f1bdfbcb56f",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -548,9 +548,9 @@
    "offset": 455104,
    "length": 1296,
    "png": "KC_13A0_digit_jersey_1.png",
-   "png_sha256": "e0930ec5b580f23c32d78fc2521a127f09fec9c1066adf424a3316171aa30d65",
+   "png_sha256": "a3f926d3708713c319c937fca474326469ad31d0b512e0baea9836f263518a8b",
    "before_sha256": "9d64a3953c788383f40254a4f31bbadaeee3b436b04c2dcc38a370679d5495f0",
-   "after_sha256": "a0d8d962737ce74a4f701edc53f16dd0d69386b2e5c40971b0b642972723da9a",
+   "after_sha256": "5d5ea4536851d83086c2532d43a95b40dc2ae6ce606bc9c37d8e9628d8e4a0af",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -564,9 +564,9 @@
    "offset": 456400,
    "length": 1984,
    "png": "KC_13A0_digit_jersey_2.png",
-   "png_sha256": "5f1d8506d962eeac9a2ad963496a31735ac0c6911d6b722c17a84bd33938bd16",
+   "png_sha256": "b7c0255d9f1adc5ccad9fd47064b25561bbb44698657ecf7d3223fdd29046b2d",
    "before_sha256": "00a43c24a5e58234798757fcfa82cbd8b5a52241766ebb40f339e1e6d33a30be",
-   "after_sha256": "d9edbee4224562bb8b2bf2bc89980d94710beacff322ecba60c84f6f7e8537f5",
+   "after_sha256": "acac63abdd2fc8fe55ca153cd944ef5c1e9b3a6bf077c972c5453dc8f6254c06",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -580,9 +580,9 @@
    "offset": 458384,
    "length": 2096,
    "png": "KC_13A0_digit_jersey_3.png",
-   "png_sha256": "5dcb713d570b452d6a0ac8cfcf7d0938fe21ac24605b86314bf91e5863b6e4dc",
+   "png_sha256": "97d97480de68ad0f0caec0386dba42514fc0bfbb50673df9758e4ffc26e0347f",
    "before_sha256": "3854545cf0512a3cc09a15a6f7a60908c6de8e13bf29961eb4629f89978764c4",
-   "after_sha256": "47c4c7cbe4d52eb7f7ff555fdef187d0af7c4fa31970732865d4c2056c5ff281",
+   "after_sha256": "ca30b8ff13b55ada7d1017c0c5ea9a58122ca93eee230da6c8ffd3aecb12f13c",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -596,9 +596,9 @@
    "offset": 460480,
    "length": 2080,
    "png": "KC_13A0_digit_jersey_4.png",
-   "png_sha256": "d52c0c2798d6d12310ae10a2df6bd49905ed674e25ba91fa94bb4d245e398709",
+   "png_sha256": "001efdc2344893ff80d1ed4811d27db3484b80ecffb70a7ef7088c5b9277afb5",
    "before_sha256": "366cc373b80a05ca4783c865138a5d539ab6223527c8d7fdf6f8414a67de904c",
-   "after_sha256": "0e176de0ea3338515bbabea423f45281c8cb658a629e383c488197b66d4e7af3",
+   "after_sha256": "0d9990a1255a629210bd7c36a38154fb54140c90fa2b58717fc50a1be38ee56b",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -612,9 +612,9 @@
    "offset": 462560,
    "length": 1840,
    "png": "KC_13A0_digit_jersey_5.png",
-   "png_sha256": "e062333e2aaf93cef062688699d0d2523fa7f63432e4466bb9480371eaae3217",
+   "png_sha256": "29adc356b6db891829f6a0a4a70e07ec3c3342b863d041c9ea1ad61a2e71d34d",
    "before_sha256": "d1f77f9ca0ea7dc9404419eeb5d9281da12bfb74035f1f121287ec41bd7815fc",
-   "after_sha256": "ee2bdd58bfeaa24161ee1b3dddc7146c01d55e0158e46b94b81d64b5458ad611",
+   "after_sha256": "794b66d5618dfb23ad6e3a0d8e6f2d0c142e45eee908aa86d3636b3d24dbedd1",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -628,9 +628,9 @@
    "offset": 464400,
    "length": 1856,
    "png": "KC_13A0_digit_jersey_6.png",
-   "png_sha256": "5ccd5bcc2b71a9d14ee2a86d38dc27b791ff6cddb706ca4302c01d68b6960a61",
+   "png_sha256": "7766698da77370c1142d6297fb0e39cf0ba3aa9c7dba87026ca18119964e37da",
    "before_sha256": "531e179e6be76eb1e7c06db25f1c5c3a02f27cd36f92d0db193b26acb9a52c09",
-   "after_sha256": "44a48b67c6b7ca83a5b7b57a7c5e273352eb6f874a1388b07883b4bd35ac35bd",
+   "after_sha256": "7897add5053467b31fd88cf9a2682955a5e8a8a55935d9e09b8c4d838a09095f",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -644,9 +644,9 @@
    "offset": 466256,
    "length": 1936,
    "png": "KC_13A0_digit_jersey_7.png",
-   "png_sha256": "a592ce4e5d4d25ca4944de57481f9008d6374c84e9f89bf2ea57d981f9a3a32a",
+   "png_sha256": "d5f5ca1e06c0d1a8728b2b4fae62e8cdd829ffede73dd1b3e3e84172fdabc501",
    "before_sha256": "350c5801883793c5c33be4ebf4fa7ece8c78e5c7c2a9ca79772c2b864f90eded",
-   "after_sha256": "7fee5d94d7ed545a17cdef717f66741978b2806a275aa7b1beda7a9d2b34e951",
+   "after_sha256": "4ca77517087a666c6012fda71f7bd7fadab2f32ed01152582079bb3a5bbf5240",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -660,9 +660,9 @@
    "offset": 468192,
    "length": 2336,
    "png": "KC_13A0_digit_jersey_8.png",
-   "png_sha256": "12a44379e261f958d70ead95eb441d6bac5dd209392cdecb7fb543e786d20ae2",
+   "png_sha256": "1be754696da4880d5bddf243b40a0e3011fc06cfe231cf44c900920e1bf75360",
    "before_sha256": "59b10ab76e57e7490a3166968660764506b275843a784755a4ad1405c66a32a8",
-   "after_sha256": "35088dde1468a3649e52f8789f52fd61b80bd929047b58b2e7ac6fd3342ef765",
+   "after_sha256": "993302442bcff4604fff8cc78c613475f012eda300aa730e8d20882aca4c9878",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -676,9 +676,9 @@
    "offset": 470528,
    "length": 1936,
    "png": "KC_13A0_digit_jersey_9.png",
-   "png_sha256": "f8d597a6ca2d34a6711caad714ebf114713fa05e33ba34d59acac4e167c44662",
+   "png_sha256": "b0c98ffce0ac19b2ce4d4e1b9e67ec975040c113b3a944955597ebc6138b5749",
    "before_sha256": "8ddf5efd3aa10b93ed0ff209e2c77ea014bd48026bbdc87ced3d07a11c1aa2f6",
-   "after_sha256": "903e4d2b1cf65c918d079ed6694b314c40ded5d938284bfcaa7405cdfff9abe7",
+   "after_sha256": "681e730982a6f78469bab46e6d97bab7dc9b089d973a9bec20c982732f882412",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -692,9 +692,9 @@
    "offset": 481760,
    "length": 1616,
    "png": "KC_13A0_digit_arm_0.png",
-   "png_sha256": "07a0f7a2d952979c1b75ed5ef342e1242b5cd2327fc4d27789a8cc16f8de1d40",
+   "png_sha256": "b3c941e021d3618e4346c5b39b7331010e2abb97b882c3d46e8127d81e3c9c19",
    "before_sha256": "c9e9c112a91cc1bbe3cdfc7ec5a5897ce577840900a251adc0ef955ec3c9e0a0",
-   "after_sha256": "dde11b31f5546afa2712f0217a162bd37367f287a360fe8fb55f43f1c6ff414c",
+   "after_sha256": "3a743d048bc56e6d44f9d60236b38f0a22bfd37a5e769c845d403a9495aa26f5",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -708,9 +708,9 @@
    "offset": 483376,
    "length": 1296,
    "png": "KC_13A0_digit_arm_1.png",
-   "png_sha256": "e5be9ed0945f1811a850704c7035209e6b2d880feeb9bb80c483a16dcd628ddf",
+   "png_sha256": "92227e6adc302ba93108ae37bfbebbbe9065ea4754a8a2c8ed06dc74b6f976b9",
    "before_sha256": "140f4a51d64528b8c5970d90807ee8c0f05392d0b3f476e66e2ab3d132d95bef",
-   "after_sha256": "ceaaadd0daa0c2f1e18d70d45b932a522e7718f6892ae5a45f9f0bf71e3efce6",
+   "after_sha256": "4cfc4ef0a4e508c18d8487cc0c37771cdeca204e2b168fe63fbec91dd2b4a77a",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -724,9 +724,9 @@
    "offset": 484672,
    "length": 2000,
    "png": "KC_13A0_digit_arm_2.png",
-   "png_sha256": "b852e1cf6425b1131d80526f97bf57d1e41744a29da00378d064b542d4e2ebb0",
+   "png_sha256": "f9be476e0eee3fdb8613a1d210ef537e49c0de11a50f5acfdde135604e44de57",
    "before_sha256": "a75b1dbb7b8e55b00be0f5dbd29348e97141617c4f6d8f01796fe7d8ee56de0f",
-   "after_sha256": "36307e85e0f5a33a3a21d0294dced362b39bbaecb1e811563360105e18f175e5",
+   "after_sha256": "ebd92ceabaaac4af193a1390e978bbc8ed22310cd25494a3d3c0329f60220f4d",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -740,9 +740,9 @@
    "offset": 486672,
    "length": 2096,
    "png": "KC_13A0_digit_arm_3.png",
-   "png_sha256": "8869ae34c98b97e78a4923629e2feb1cb25abb93d7e602d17d6c35bd0c9614a2",
+   "png_sha256": "04307febc7481b33f3723c11454b34df1ffa7eb545dc50b4431d017f9a203b10",
    "before_sha256": "1f5ad1b9c13754afe377dc38f401871792359e0cbb2fe1201e0cc639f8fdd185",
-   "after_sha256": "3be37e1cab7504b231e6865824f86276602f172b46641a8906d8f6472434d43a",
+   "after_sha256": "53fc3040f71f7a11a7a784247769af47d7f65d94f548e353a6f7727e8539b332",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -756,9 +756,9 @@
    "offset": 488768,
    "length": 2096,
    "png": "KC_13A0_digit_arm_4.png",
-   "png_sha256": "8400a042a47718d12bb589a3091c5821018e95ef7e0943a070cf181d6c555d04",
+   "png_sha256": "be80d5d882b4992ce0a384abbe6eb2a5adabd00f00aa4e2850d1c8ef1cf61c08",
    "before_sha256": "4d0da5859c53301efb5963663b8b432be45da35e1c37e1e4d8cd2cef4e74c486",
-   "after_sha256": "830db6a41e72adcadcb480afee7d5a5fb13985dd533ff632eaee2966f30bd65c",
+   "after_sha256": "f34d744640689e4df3b923046f3ad701d56212f9701ec89ddbaa6cf8180133bd",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -772,9 +772,9 @@
    "offset": 490864,
    "length": 1840,
    "png": "KC_13A0_digit_arm_5.png",
-   "png_sha256": "0b4f3353c433ea8eccb64620cbdcea631f2f054e75abfcf7c7f22a22d9fbc5e5",
+   "png_sha256": "fd137c0c0cf4243f01a5a7fca7c3c71f98902d08267b335c47a6b838cb171e66",
    "before_sha256": "c4b1a6ca4139009f0d9dcf6f45555f63b33a51a237a8b55db702fc61105443fa",
-   "after_sha256": "980dde5144936358b0433db0f616b8804171121549e86ceea06df0f4736bcc4f",
+   "after_sha256": "d8ded0963292b372650018051646ca1ebb6be62bc3d7974a469f95072b5ce93c",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -788,9 +788,9 @@
    "offset": 492704,
    "length": 1856,
    "png": "KC_13A0_digit_arm_6.png",
-   "png_sha256": "a070a5a03f84209054016ce48858a04ee2548fe1eb11a70e91eff8ada9ab5b84",
+   "png_sha256": "6647190e50037852ccda95214fd9e2c623263d00005f2463ad507da85c1c1f2c",
    "before_sha256": "5aa9b4c71714eab8917530c61ecbaf036ea6d392afaae10b4f8e4d2e3265dfd6",
-   "after_sha256": "bc5f4ead9f23b854a7014d72113dc3f375d4cf098e2bdb9065a174b326d83848",
+   "after_sha256": "25c5777d0a2da256f09bb26ddee1efdfb40828fa05c66d976e8455bc650fc7a9",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -804,9 +804,9 @@
    "offset": 494560,
    "length": 1936,
    "png": "KC_13A0_digit_arm_7.png",
-   "png_sha256": "222a2a43b9019e012fb780bcea1d4d7457b21ce2e69d3819b949c676da32f52b",
+   "png_sha256": "8a2ad662e7bbc426a35051e1697a1f78b1ba2c755f0ae6e9ad484a6c46f8d55d",
    "before_sha256": "c2af4e57b0ea43d90b163e4d16ab902af246e2e42d550398f0fe72ee9d3d94be",
-   "after_sha256": "4fe612d89e77a950617ad4554421d12299d98b89d00311da54e975fafb01d1ea",
+   "after_sha256": "81aaf69d48cff38b6057561b1ff16c262ef5bbe3370c0164054e78ac0465ef2e",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -820,9 +820,9 @@
    "offset": 496496,
    "length": 2336,
    "png": "KC_13A0_digit_arm_8.png",
-   "png_sha256": "4f351205f9da5c482c5bd5fbb2469c5ca7ebdfe8de0f8e92c2bea97ac033ac79",
+   "png_sha256": "993a613a26e06760b24a0e9aafcc64b9d6cce937988f9e23f5c9750362358b10",
    "before_sha256": "469cef3a3229da75b431b23dfb985059aa46fb3623a3cad9418030ef498681b4",
-   "after_sha256": "fc095c6a792224a07b66625b88079613b2b449214f167006373eca07afb654b1",
+   "after_sha256": "ba3f862b99afc4c44bbd692c3b66dde12e33b581402a458c6e1cadabd49a4a1d",
    "defects": [
     "ku1-KC-2026-numbers"
    ]
@@ -836,9 +836,9 @@
    "offset": 498832,
    "length": 1952,
    "png": "KC_13A0_digit_arm_9.png",
-   "png_sha256": "ae0fdcb0d642571b51f0acaa1614c69bbb8ac6f94b72f79ac48565e245cf2955",
+   "png_sha256": "387b1e1e5be4185d6dcfa5a25e7845823675e61eba243e0b2c73a5fa7c78d021",
    "before_sha256": "da86f6909ad576c41e9c45270e76a0c05d8c17693b87ee700e103dad0a0d784c",
-   "after_sha256": "e1a8491838f2f1ce5d05a82f61d8f2befa3ce2355ed08e9a3e2fb4964205ff8d",
+   "after_sha256": "7ffcd657bba514c2dddab32d0a7bdb643f3a981118e54b2f434ea10d135a4760",
    "defects": [
     "ku1-KC-2026-numbers"
    ]

@@ -10,8 +10,10 @@ week 8 WSH Wikimedia photo; reference only, nothing of them ships):
   about 39: a raspberry red, hue 349. The club photos read (202, 27, 32), green and blue equal, hue 358. The new
   albedo is chosen so the drawn colour lands there: red #E4282E, helmet #CC242A, gold #F7C542 (the old #FFB612 drew
   orange). Every Chiefs texture moves through a palette remap that keeps each shade and blend.
-* Numbers. A heavy block face measured from the photos (``ku1_font.py``) replaces the retail 2004 shapes: white with a
-  thin gold edge at home, red with a gold edge on the road; the shoulder (TV) numbers use the same shapes.
+* Numbers. The Chiefs' block face measured from rectified club photos (``ku1_font.py`` v2: strokes 0.16 / bars 0.155
+  of the height, between the retail 2004 set and ku1's first heavier set, as Noah asked) replaces the retail shapes:
+  white with a thin gold edge (0.022) at home, red with a gold edge on the road; the shoulder (TV) numbers use the
+  same shapes.
 * Arm numbers move from the sleeves (Unif number route 4, the 2004 placement) to the shoulder tops (route 1), and are
   stored at 0.7 of the jersey colour, because the game lights the shoulder tops 1.4 to 2 times brighter (job sea1).
 * Sleeves: the Nike band (white-gold-white at home, red-gold-red on the road) sits above a cloth hem, not at the hem.
@@ -227,8 +229,8 @@ def cmd_spec(_args):
     ]
     for side, (fill, arm_fill) in (("home", ("white", "white")), ("away", ("red", "arm_red"))):
         kit = doc["kits"][side]
-        kit["digits"] = digit_block(kit["selector"], fill, "gold", 0.03)
-        kit["arm_digits"] = digit_block(kit["selector"], arm_fill, "arm_gold", 0.045)
+        kit["digits"] = digit_block(kit["selector"], fill, "gold", 0.022)
+        kit["arm_digits"] = digit_block(kit["selector"], arm_fill, "arm_gold", 0.04)
         kit["nameplate"].update(fill=fill, outline="gold")
     doc["part_intents"]["home"].update(
         digit_jersey="white Nike block numbers with a thin gold edge",
