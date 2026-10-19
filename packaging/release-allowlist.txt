@@ -3552,6 +3552,9 @@ tools/b77/ro1_contract_probe.py
 docs/mod_editor/hback_roles.md
 
 mod_editor/core/nfl2k5_team_ratings.py
+mod_editor/core/nfl2k5_play_art_routes.py
+tests/mod_editor/test_nfl2k5_play_art_routes.py
+tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md
 tools/b77/tr1_repair.py
