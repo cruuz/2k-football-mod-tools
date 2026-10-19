@@ -77,14 +77,13 @@ _r("Post Dig", lambda d: [(0, _ft(d)), (2, 6), (4, 18), (1, 9), (0, 15)], 8, "0:
    "post stem, under, then up again", "crosser")
 _r("Seam Out", lambda d: [(0, _ft(d)), (1, 9), (5, 24)], 9, "invented: 0 1 5", "seam stem, a glance inside, then out", "intermediate")
 _r("Whip In", lambda d: [(0, _ft(d)), (5, 3), (4, 30)], 4, "invented: 0 5 4", "fake the out, whip back inside", "quick")
-_r("Angle Out", lambda d: [(3, 9), (5, 30)], 0, "invented: 3 5", "back cuts inside, then breaks out", "back")
+_r("Angle Out", lambda d: [(0, 3), (3, 9), (5, 30)], 0, "invented: 0 3 5", "back gains a yard, cuts inside, then breaks out", "back")
 _r("Hook Corner", lambda d: [(0, _ft(d)), (8, 3), (6, 24)], 8, "invented: 0 8 6", "sell the hook, then break to the corner", "double")
 _r("Release Block", lambda d: [(10, _ft(d))], 3, "10:9 (12)", "release straight up, then block downfield", "screen")
 _r("Stem Block", lambda d: [(0, _ft(d)), (10, 3)], 9, "0:27 10:3 (171)", "run off the corner, then block", "screen")
-_r("Pass Pro", lambda d: [(9, 63)], 0, "9:63 (1468)", "retail pass-protection segment (stays in)", "screen")
 _r("Back Out", lambda d: [(6, 15), (5, 30)], 0, "6:15 5:30 (197, check release)", "back angles out three steps, then flat", "back")
 _r("Back In", lambda d: [(0, 15), (4, 30)], 0, "0:15 4:30 (20, check release)", "back up five, then in", "back")
-_r("Back Cross", lambda d: [(2, 15), (4, 30)], 0, "2:15 4:30 (36, check release)", "back angles inside, then across", "back")
+_r("Back Cross", lambda d: [(0, 6), (2, 15), (4, 30)], 0, "0:6 then 2:15 4:30 (retail 36, check release)", "back gains two yards, angles inside, then across", "back")
 _r("Back Hook", lambda d: [(0, 15), (8, 15)], 0, "0:15 8:15 (10, check release)", "back up five and settle", "back")
 _r("Back Corner", lambda d: [(0, 24), (6, 24)], 0, "0:24 6:24 (19, check release)", "back up eight, then to the corner", "back")
 
@@ -117,7 +116,29 @@ def _family_of(name: str) -> str:
     return "Other"
 
 
+def _wr_convention(personnel, skills):
+    """Depth roles (nfl2k5_depth_roles) expect WR1 = X on the left outside, WR2 = Z on the right outside and WR3
+    inside them: swap which receiver code stands on which spot (the geometry is unchanged)."""
+    codes = oc.PERSONNEL_CODES[personnel]
+    wr = [i for i, c in enumerate(codes) if c & 31 == WR]
+    if len(wr) < 3:
+        return skills
+    spots = [skills[i] for i in wr]
+    left = [p for p in spots if p[0] < 0]
+    right = [p for p in spots if p[0] > 0]
+    x = min(left, key=lambda p: p[0]) if left else max(spots, key=lambda p: abs(p[0]))
+    rest = [p for p in spots if p is not x]
+    z = max((p for p in rest if p[0] > 0), key=lambda p: p[0], default=None) or max(rest, key=lambda p: abs(p[0]))
+    rest = [p for p in rest if p is not z]
+    rest.sort(key=lambda p: abs(p[0]))                 # WR3 is the innermost of the rest
+    out = list(skills)
+    for i, p in zip(wr, [x, z] + rest):
+        out[i] = p
+    return out
+
+
 def _f(name, personnel, align, skills, tag, situation, backs, blurb="", eras=("2020s", "2010s")):
+    skills = _wr_convention(personnel, skills)
     oc._formation(name, personnel, align, skills, tag, situation, backs, blurb)
     FAMILY[name] = _family_of(name)
     ERA[name] = tuple(eras)
@@ -280,7 +301,7 @@ _f("I-Form Slot Flex", "20", "uc", [(-17, 0), (17, 0), (10, -1.5), (0, -4.5), (0
    "I-form with three receivers")
 
 # --- Pony (HB2 + HB, three receivers): the backup-back package ------------------------------------------
-_f("Gun Split Close", "P2", "gun", [(-8, 0), (8, 0), (11, -1.5), (-2.5, -5.27), (2.5, -5.27)], "pass", (3, 2, 1), 2,
+_f("Gun Split Close", "P2", "gun", [(-8, 0), (8, 0), (11, -1.5), (-2.5, -5.27), (2.3, -5.27)], "pass", (3, 2, 1), 2,
    "Madden 27 (12 books): two halfbacks beside the QB, receivers tight: the second back's package")
 _f("Pistol Pony", "P2", "pistol", [(-17, 0), (17, 0), (-9, -1.5), (2.0, -4.3), PISTOL_HB], "base", (3, 2, 1), 2,
    "pistol with the second halfback offset: his runs and routes")
@@ -288,8 +309,6 @@ _f("Pistol Pony", "P2", "pistol", [(-17, 0), (17, 0), (-9, -1.5), (2.0, -4.3), P
 # --- 10 / 00 personnel ---------------------------------------------------------------------------------
 _f("Pistol Spread", "10", "pistol", [(-17, 0), (17, 0), (9, -1.5), (-9, -1.5), PISTOL_HB], "spread", (3, 2, 1), 1,
    "Madden 27: pistol four wide 2x2")
-_f("Gun Empty Quads", "00", "gun", [(-17, 0), (17, 0), (12.5, -1.5), (8.5, -1.5), (5.0, -1.5)], "empty", (4, 3, 0), 0,
-   "five wide, four to the right")
 
 # family for the base engine's formations too
 for _name in oc.FORMATIONS:
@@ -1120,7 +1139,9 @@ def qb_power(ctx: oc.FormationContext, codes=None) -> PlayDesign:
     b = ctx.slot("B")
     if b is not None:
         out[b] = [start(3), legf(4, d * 9, 3, turn=2, group=1, rel=0)]
-    out[ctx.qb.slot] = [start(4), (0x03, [0]), path(2, d * 6, 0, a=2, follow=pull, c=1)]
+    # the QB cannot follow the puller (a follower's descriptor needs its leader earlier in slot order and the QB is
+    # slot 0): he runs to the guard's kick-out point instead, a retail QB Draw style absolute path
+    out[ctx.qb.slot] = [start(4), (0x03, [0]), move(0, -3), path(0, d * 9, 6, a=0)]
     return PlayDesign("QB Power", "QB Power", "keeper", "qb_draw", out, ctx.qb.slot, [], ("short", "base"), 2)
 
 

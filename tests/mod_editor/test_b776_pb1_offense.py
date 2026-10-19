@@ -50,7 +50,7 @@ class CatalogTests(unittest.TestCase):
 
     def test_every_route_kind_has_a_named_route(self):
         kinds = {int(s[1][0]) for r in oc.ROUTES.values() for s in r.build()}
-        self.assertEqual(kinds, set(range(12)))
+        self.assertEqual(kinds, set(range(12)) - {9})      # kind 9 is the pass-block / screen segment (screens use it)
 
     def test_every_run_scheme_validates_where_it_is_offered(self):
         tried = Counter()

@@ -119,6 +119,11 @@ STOCK_NAMES = {"11": "Kings", "12": "Ace", "21": "Pro", "22": "Jokers", "23": "J
 GROUP_CODES = {"Pistol": 5, "Kings Long": 9, "13": 1, "P2": 7}
 
 
+def stable_hash(text: str) -> int:
+    """Process-independent 16-bit hash (Python's str hash is salted per process)."""
+    return int.from_bytes(hashlib.sha256(text.encode()).digest()[:2], "little")
+
+
 def tree() -> dict:
     return json.loads(TREE.read_text(encoding="utf-8"))["teams"]
 
@@ -459,6 +464,9 @@ def candidates(info, prof: Profile, fname: str, checker: Checker, rng: random.Ra
     def add(design, family, weight, must=""):
         if design is None:
             return
+        oc.fill_unassigned(ctx, design)
+        if any(not ch for ch in design.chains):
+            return
         ok, why = checker.ok(info, spec, design)
         if not ok:
             return
@@ -743,7 +751,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
             if f not in forms and group_key(f) in plan.index:
                 forms.append(f)
     # candidates
-    cands = {f: candidates(info, prof, f, checker, random.Random(prof.seed ^ hash(f) & 0xFFFF)) for f in forms}
+    cands = {f: candidates(info, prof, f, checker, random.Random(prof.seed ^ stable_hash(f))) for f in forms}
     budget = cap["plays"]
     sel = Selector(prof, league_routes or Counter(), league_concepts or Counter(), book_quota(prof, budget))
     chosen: dict = OrderedDict()           # key -> Cand (record)
@@ -1256,9 +1264,10 @@ def semantic_digest(pack) -> str:
 
 
 def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = None, write: bool = False,
-                 out_dir: Path | None = None, progress=print, fit_iters: int = 1500) -> list[dict]:
+                 out_dir: Path | None = None, progress=None, fit_iters: int = 1500) -> list[dict]:
     """Build the teams in order; league-wide route and concept counters push later books away from earlier ones."""
     from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+    progress = progress or (lambda msg: print(msg, flush=True))
     checker = Checker(xbe)
     league_routes, league_concepts = Counter(), Counter()
     manifest = []
@@ -1300,10 +1309,13 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
     return manifest
 
 
-def write_manifests(manifest: list[dict], era: str) -> None:
+def write_manifests(manifest: list[dict], era: str, chains=None) -> None:
     (v2.V2 / "manifest.json").write_text(json.dumps(dict(status="DESIGN on PROVED OFFLINE grammar",
                                                          runtime_witness=False, version=VERSION, era=era,
-                                                         generator="pb/v2/generator.py (b776 pb1)", teams=manifest),
+                                                         generator="pb/v2/generator.py (b776 pb1)",
+                                                         command="python3 pb/v2/generator.py --image RETAIL.iso --xbe "
+                                                                 "default.xbe --workers 4 --write",
+                                                         chains=chains, teams=manifest),
                                                     indent=1) + "\n", encoding="utf-8", newline="\n")
     rows = [dict(team=r["team"], pack=r["pack"], plays=r["plays"], formations=r["formations"],
                  semantic_sha256=r["semantic_sha256"]) for r in manifest]
@@ -1340,11 +1352,9 @@ def main(argv=None):
         manifest = build_league(args.image, teams, era=args.era, xbe=args.xbe, write=write, out_dir=args.out,
                                 fit_iters=args.fit_iters)
     if args.write and not args.team and args.era == "2020s":
-        write_manifests(manifest, args.era)
+        chains = [teams[i::args.workers] for i in range(args.workers)] if args.workers > 1 else [teams]
+        write_manifests(manifest, args.era, chains)
 
-
-if __name__ == "__main__":
-    main()
 
 
 # ---------------------------------------------------------------------------
@@ -1458,3 +1468,7 @@ def full_compile(retail: bytes, pack, team: str):
 
 from dataclasses import replace  # noqa: E402
 from mod_editor.core import nfl2k5_complete_offense as full  # noqa: E402
+
+
+if __name__ == "__main__":
+    main()

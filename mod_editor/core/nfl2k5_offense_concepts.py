@@ -152,15 +152,16 @@ class FormationContext:
 
     def backs(self) -> list[Player]:
         """Backs in the backfield (HB first, then FB), not split out as receivers."""
-        out = [p for p in self.players if p.kind in (HB, FB) and self._in_backfield(p)]
-        return sorted(out, key=lambda p: (p.kind != HB, abs(p.x)))
+        out = [p for p in self.players if self._in_backfield(p)]
+        return sorted(out, key=lambda p: (p.kind != HB, p.kind == TE, abs(p.x)))
 
     def receivers(self) -> list[Player]:
         return [p for p in self.players if p.kind in (WR, TE, HB, FB) and not self._in_backfield(p)]
 
     @staticmethod
     def _in_backfield(p: Player) -> bool:
-        return p.kind in (HB, FB) and p.z <= -2.5 and abs(p.x) <= 4.5
+        # b776 pb1: a tight end lined up deep beside the QB (full house H, tush-push stack) is a back too
+        return p.kind in (HB, FB, TE) and p.z <= -2.5 and abs(p.x) <= 4.5
 
     def _label(self) -> None:
         recs = self.receivers()
@@ -1529,6 +1530,22 @@ def _reverse(ctx):
 _OVERRIDES: list = []
 
 
+def fill_unassigned(ctx: FormationContext, d: PlayDesign) -> PlayDesign:
+    """b776 pb1: sets with three backs (full house, the tush-push stack) or extra receivers: anyone a concept left
+    unassigned stays in to block (backs) or clears out (receivers), never an empty chain."""
+    passing = any(n[0] == 0x06 for n in d.chains[ctx.qb.slot] or ())
+    for p in ctx.players:
+        if d.chains[p.slot] is None and p.kind in (WR, TE, HB, FB):
+            if ctx._in_backfield(p):
+                d.chains[p.slot] = back_block_chain(ctx, p.slot) if passing else \
+                    [start(3), legf(4, 0, 6, turn=2, group=1, rel=0)]
+            elif passing:
+                d.chains[p.slot] = route_chain("Go", 15)
+            else:
+                d.chains[p.slot] = stalk_chain() if not p.on_los else [start(3), legf(0, 0, 3, turn=2)]
+    return d
+
+
 def active_overrides() -> dict:
     return _OVERRIDES[-1] if _OVERRIDES else {}
 
@@ -1559,6 +1576,7 @@ def design(name: str, ctx: FormationContext, overrides: Mapping | None = None) -
                 raise ConceptUnavailable(f"{name}: screen override requires an eligible receiver")
             chain = _spec_chain(ctx, slot, tuple(spec), plan)
             d.chains[slot] = ensure_forward(ctx, slot, chain, release_yd)
+    fill_unassigned(ctx, d)
     if ov.get("name"):
         d.name = str(ov["name"])[:40]
     if "preference" in ov:
