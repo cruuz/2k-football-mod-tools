@@ -2043,7 +2043,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 260,
+   "play": 262,
    "appended": true,
    "name": "Speed Rush",
    "component": "front",
@@ -2064,7 +2064,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 261,
+   "play": 263,
    "appended": true,
    "name": "Dime Twist",
    "component": "front",
@@ -2085,7 +2085,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 262,
+   "play": 264,
    "appended": true,
    "name": "Mug Wide",
    "component": "front",
@@ -2106,7 +2106,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 263,
+   "play": 265,
    "appended": true,
    "name": "Mug Contain",
    "component": "front",
@@ -2127,7 +2127,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 264,
+   "play": 266,
    "appended": true,
    "name": "Mug Zero",
    "component": "coverage",
@@ -2150,7 +2150,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 265,
+   "play": 267,
    "appended": true,
    "name": "Mug Fire 3",
    "component": "coverage",
@@ -2173,7 +2173,7 @@
    "authored_nodes": 12
   },
   {
-   "play": 266,
+   "play": 268,
    "appended": true,
    "name": "Mug Sim 3",
    "component": "coverage",
@@ -2196,7 +2196,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 267,
+   "play": 269,
    "appended": true,
    "name": "Mug Bail 3",
    "component": "coverage",
@@ -2222,21 +2222,21 @@
  "receipt": {
   "team": "WAS",
   "offense_pack": "data/playbooks/softdrink_was_modern.2k5book",
-  "offense_pack_sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733",
-  "source_fingerprint": "c1e9e5365f3233fa4f08cd10f117013bacdb05da480978b67105bfef29eb336a",
-  "replacement_sha256": "defec71f097916d20d919cbfd6d8ec8181c6118b964fa301d298b9ac87e696a1",
+  "offense_pack_sha256": "9443e3f90239be5980d2e740a2cdfd251eae5d62810b70905b4267673ff03b96",
+  "source_fingerprint": "ccf87ebd029fce950f686eb3808e0346d19be1bfbe27582408ad162d01cbdc29",
+  "replacement_sha256": "62ce8cd7fd1139327ff8cff7207cb9c319d2197b6b36bdcf1979082c1aeee0ac",
   "semantic_sha256": "964a5ead417839758da16ef17ac96407bbf46c5582a63aa8179fa8bb0b8dad4f",
   "plays": 72,
   "formations": 5,
-  "nodes": 2315,
+  "nodes": 2707,
   "node_capacity": 3500,
-  "formation_count": 43,
-  "play_count": 268,
+  "formation_count": 50,
+  "play_count": 270,
   "misses": [],
   "band_loss": 0.11794,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_was_defense.2k5book",
-  "pack_sha256": "c7148f5e4667430c1e7a5c833d65e834b71ed7a28f4fefacc4bd716dbef67ab0"
+  "pack_sha256": "1bf655f73e8060c7be53d63c257d28b0a5056733fd728fc2aa3d03b9283d64ae"
  }
 }

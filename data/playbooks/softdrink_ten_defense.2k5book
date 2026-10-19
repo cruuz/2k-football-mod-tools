@@ -1392,13 +1392,13 @@
    "concept": "Cover 1 Blitz",
    "donor": {
     "index": 35,
-    "name": "Double Hard 1",
+    "name": "Double Hard 1 ",
     "flags": 8979524,
     "signature": "defense/v1:00890444:1-1b.0b,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980036,
    "replace_index": 35,
-   "replace_name": "Double Hard 1",
+   "replace_name": "Double Hard 1 ",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -2588,7 +2588,7 @@
    }
   },
   {
-   "id": "n264",
+   "id": "n268",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2626,7 +2626,7 @@
    }
   },
   {
-   "id": "n265",
+   "id": "n269",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",

@@ -296,7 +296,7 @@
     4,
     4
    ],
-   "merged_into_category": 7,
+   "merged_into_category": 10,
    "positions": [
     [
      365,
@@ -2350,21 +2350,21 @@
  "receipt": {
   "team": "MIN",
   "offense_pack": "data/playbooks/softdrink_min_modern.2k5book",
-  "offense_pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
-  "source_fingerprint": "1f3d1ec029f99dd8dad91736fcd04b2c7143aed288a769c2868251f5896fc1fb",
-  "replacement_sha256": "dc7ce798857905725847e87681ccb679a08bbacd16ee4f66ea1cab002993a293",
+  "offense_pack_sha256": "712b04515e2ed84672a4df4eb1074168cdb4646c59f3341e255b9d21777e18fb",
+  "source_fingerprint": "ede6db35200016d938cf3bfdcdee3103630ef905b364ad9be1486ef867a04e6c",
+  "replacement_sha256": "21588b3fa0b6caa2336c387cb9769f4e669abc3caa282f82ccd71f78a3dba795",
   "semantic_sha256": "0c4c4ac7cea19200b18c24cf5d3b7c0ca1df1e7c34eb2ba677b4b4cbeec73a46",
   "plays": 74,
   "formations": 6,
-  "nodes": 2298,
+  "nodes": 2748,
   "node_capacity": 3500,
-  "formation_count": 47,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.21039,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_min_defense.2k5book",
-  "pack_sha256": "d47c2ea9c88d3f30f892c44f5e7fd44268c6300d297deda5835b5ed2c8779524"
+  "pack_sha256": "1849d4f7928453221aee3b5e8a08ed573a78dd8bbea236b0af6f4cad31e85a13"
  }
 }

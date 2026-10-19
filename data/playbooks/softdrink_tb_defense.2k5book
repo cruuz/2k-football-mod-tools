@@ -2152,7 +2152,7 @@
    }
   },
   {
-   "id": "n253",
+   "id": "n262",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2190,7 +2190,7 @@
    }
   },
   {
-   "id": "n254",
+   "id": "n263",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",
@@ -2228,7 +2228,7 @@
    }
   },
   {
-   "id": "n255",
+   "id": "n264",
    "custom_name": "Mug Wide",
    "play_type": "defense",
    "concept": "Front: Mug Wide",
@@ -2266,7 +2266,7 @@
    }
   },
   {
-   "id": "n256",
+   "id": "n265",
    "custom_name": "Mug Contain",
    "play_type": "defense",
    "concept": "Front: Mug Contain",
@@ -2304,7 +2304,7 @@
    }
   },
   {
-   "id": "n257",
+   "id": "n266",
    "custom_name": "Mug Zero",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
@@ -2342,7 +2342,7 @@
    }
   },
   {
-   "id": "n258",
+   "id": "n267",
    "custom_name": "Mug Fire 3",
    "play_type": "defense",
    "concept": "Fire Zone 3",
@@ -2380,7 +2380,7 @@
    }
   },
   {
-   "id": "n259",
+   "id": "n268",
    "custom_name": "Mug Sim 3",
    "play_type": "defense",
    "concept": "Fire Zone 3",
@@ -2418,7 +2418,7 @@
    }
   },
   {
-   "id": "n260",
+   "id": "n269",
    "custom_name": "Mug Bail 3",
    "play_type": "defense",
    "concept": "Cover 3 Sky",

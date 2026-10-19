@@ -376,11 +376,11 @@
  "modeled": {
   "base": {
    "model": {
-    "C0": 0.021,
-    "C1": 0.25,
-    "C2": 0.312,
-    "C3": 0.354,
-    "C4": 0.062
+    "C0": 0.022,
+    "C1": 0.244,
+    "C2": 0.311,
+    "C3": 0.378,
+    "C4": 0.044
    },
    "target": {
     "2M": 0.022,
@@ -391,19 +391,19 @@
     "C4": 0.062,
     "C6": 0.056
    },
-   "blitz_model": 0.271,
+   "blitz_model": 0.289,
    "blitz_target": 0.279,
-   "calls": 27
+   "calls": 24
   },
   "nickel": {
    "model": {
-    "2M": 0.113,
-    "C0": 0.028,
-    "C1": 0.239,
-    "C2": 0.169,
-    "C3": 0.31,
-    "C4": 0.028,
-    "C6": 0.113
+    "2M": 0.103,
+    "C0": 0.026,
+    "C1": 0.218,
+    "C2": 0.333,
+    "C3": 0.192,
+    "C4": 0.026,
+    "C6": 0.103
    },
    "target": {
     "2M": 0.045,
@@ -414,18 +414,17 @@
     "C4": 0.058,
     "C6": 0.066
    },
-   "blitz_model": 0.437,
+   "blitz_model": 0.295,
    "blitz_target": 0.328,
    "calls": 22
   },
   "dime": {
    "model": {
-    "2M": 0.226,
-    "C0": 0.028,
-    "C1": 0.141,
-    "C2": 0.521,
-    "C3": 0.042,
-    "C4": 0.042
+    "C0": 0.062,
+    "C1": 0.312,
+    "C2": 0.438,
+    "C3": 0.125,
+    "C4": 0.062
    },
    "target": {
     "2M": 0.078,
@@ -436,9 +435,9 @@
     "C4": 0.066,
     "C6": 0.075
    },
-   "blitz_model": 0.465,
+   "blitz_model": 1.0,
    "blitz_target": 0.36,
-   "calls": 22
+   "calls": 18
   },
   "bear": {
    "model": {
@@ -619,6 +618,49 @@
   {
    "play": 10,
    "appended": false,
+   "name": "Cover 2 Zone",
+   "component": "coverage",
+   "concept": "Cover 2",
+   "band": 1,
+   "pressure": false,
+   "roles": [
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 12,
+   "donor_name": "Sting 2 Soft",
+   "source": {
+    "authored": "fallback Cover 2 Hard -> Cover 2; odd variant of BAL 2 Corners, edges rush [0]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 16
+  },
+  {
+   "play": 11,
+   "appended": false,
+   "name": "Cover 2 Soft",
+   "component": "coverage",
+   "concept": "Cover 2",
+   "band": 3,
+   "pressure": false,
+   "roles": [
+    "base",
+    "dime"
+   ],
+   "new_links": [],
+   "donor": 12,
+   "donor_name": "Sting 2 Soft",
+   "source": {
+    "authored": "fallback Cover 2 Hard -> Cover 2; odd variant of NE 2 Soft, edges rush [0, 6]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 12
+  },
+  {
+   "play": 12,
+   "appended": false,
    "name": "Cover 6 Split",
    "component": "coverage",
    "concept": "Cover 6",
@@ -638,49 +680,6 @@
    "authored_nodes": 16
   },
   {
-   "play": 11,
-   "appended": false,
-   "name": "Cover 1 Mike Fire",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "base",
-    "dime"
-   ],
-   "new_links": [],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
-   "source": {
-    "authored": "fallback Cover 1 Robber -> Cover 1 Blitz; odd variant of DAL Force Fire 1 Odd, edges rush [0, 5], zone blitz on ['base']"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 16
-  },
-  {
-   "play": 12,
-   "appended": false,
-   "name": "Cover 3 Sky Strong",
-   "component": "coverage",
-   "concept": "Cover 3 Sky",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "nickel"
-   ],
-   "new_links": [],
-   "donor": 10,
-   "donor_name": "3 Strong",
-   "source": {
-    "authored": "odd variant of HOU 3 Dog T, edges rush [0]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 10
-  },
-  {
    "play": 13,
    "appended": false,
    "name": "Fire Zone 3 Nickel",
@@ -696,19 +695,19 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 3 Buzz -> Fire Zone 3; odd variant of BUF Cover 8, edges rush [0, 6]"
+    "authored": "fallback Cover 3 Buzz -> Fire Zone 3; odd variant of BAL 3 Robber, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 12
+   "authored_nodes": 10
   },
   {
    "play": 14,
    "appended": false,
-   "name": "Cover 3 Sky Strong Bail",
+   "name": "Cover 3 Buzz Weak",
    "component": "coverage",
-   "concept": "Cover 3 Sky",
-   "band": 3,
+   "concept": "Cover 3 Buzz",
+   "band": 2,
    "pressure": false,
    "roles": [
     "base"
@@ -717,7 +716,7 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "odd variant of BAL 3 Buzz, edges rush [0, 6]"
+    "authored": "odd variant of HOU Weak Go 3, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -747,9 +746,9 @@
   {
    "play": 16,
    "appended": false,
-   "name": "Cover 3 Buzz Weak",
+   "name": "Cover 3 Cloud Weak",
    "component": "coverage",
-   "concept": "Cover 3 Buzz",
+   "concept": "Cover 3 Cloud",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -759,32 +758,32 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "odd variant of HOU Weak Go 3, edges rush [0, 6]"
+    "authored": "odd variant of BAL 4 Cloud Odd, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 10
+   "authored_nodes": 16
   },
   {
    "play": 17,
    "appended": false,
-   "name": "Cover 1 Rat Off",
+   "name": "Cover 4 Quarters",
    "component": "coverage",
-   "concept": "Cover 1 Robber",
-   "band": 2,
+   "concept": "Cover 4 Quarters",
+   "band": 3,
    "pressure": false,
    "roles": [
     "nickel"
    ],
    "new_links": [],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
+   "donor": 10,
+   "donor_name": "3 Strong",
    "source": {
-    "authored": "odd variant of HOU Combo Weak Zone, edges rush [0]"
+    "authored": "odd variant of BAL Cover 12, edges rush [0]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 18
+   "authored_nodes": 16
   },
   {
    "play": 18,
@@ -810,42 +809,42 @@
   {
    "play": 19,
    "appended": false,
-   "name": "Cover 1 Man Off",
+   "name": "Creeper Mike",
    "component": "coverage",
-   "concept": "Cover 1",
+   "concept": "Sim Pressure 3",
    "band": 3,
-   "pressure": true,
+   "pressure": false,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
+   "donor": 10,
+   "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 1 Robber -> Cover 1; odd variant of BAL Double Hard 1, edges rush [0, 6]"
+    "authored": "odd variant of DAL Strong Fire Zone Blitz, edges rush [0, 5, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 20,
    "appended": false,
-   "name": "Cover 0 Double A Blitz",
+   "name": "2-Man Off",
    "component": "coverage",
-   "concept": "Cover 0 Blitz",
-   "band": 3,
-   "pressure": true,
+   "concept": "2-Man Under",
+   "band": 2,
+   "pressure": false,
    "roles": [
     "nickel"
    ],
    "new_links": [],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
+   "donor": 15,
+   "donor_name": "Middle Blast 2",
    "source": {
-    "authored": "odd variant of BAL Rocket Man 0, edges rush [4, 5, 6], zone blitz on ['nickel']"
+    "authored": "odd variant of BAL Weak Blast 2, edges rush [0]"
    },
-   "rushers": 6,
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 12
   },
@@ -865,7 +864,7 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 3 Cloud -> Fire Zone 3; odd variant of PIT Key Zone, edges rush [0, 6]"
+    "authored": "fallback Cover 3 Cloud -> Fire Zone 3; odd variant of BUF Cover 8, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -886,60 +885,60 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Sim Pressure 3 -> Fire Zone 3; odd variant of DAL Strong Fire Zone Blitz, edges rush [0, 5, 6], zone blitz on ['nickel']"
+    "authored": "fallback Sim Pressure 3 -> Fire Zone 3; odd variant of HOU Weak Crash Zone Blitz, edges rush [4, 5], zone blitz on ['nickel']"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 18
   },
   {
    "play": 23,
    "appended": false,
-   "name": "Fire 3 Mike Weak",
+   "name": "Cover 1 Man Off",
    "component": "coverage",
-   "concept": "Fire Zone 3",
-   "band": 3,
-   "pressure": false,
-   "roles": [
-    "base"
-   ],
-   "new_links": [],
-   "donor": 10,
-   "donor_name": "3 Strong",
-   "source": {
-    "authored": "odd variant of BAL 3 Robber, edges rush [0, 4], zone blitz on ['base']"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 10
-  },
-  {
-   "play": 24,
-   "appended": false,
-   "name": "Cover 1 Mike Blitz",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
+   "concept": "Cover 1",
    "band": 3,
    "pressure": true,
    "roles": [
-    "nickel"
+    "base"
    ],
    "new_links": [],
    "donor": 16,
    "donor_name": "Double Hard 1",
    "source": {
-    "authored": "fallback Cover 1 -> Cover 1 Blitz; odd variant of BUF Blaze Twist 1, edges rush [0, 5]"
+    "authored": "odd variant of BAL Double Hard 1, edges rush [0, 6]"
    },
-   "rushers": 5,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 0
+  },
+  {
+   "play": 24,
+   "appended": false,
+   "name": "Cover 1 Rat Off",
+   "component": "coverage",
+   "concept": "Cover 1 Robber",
+   "band": 2,
+   "pressure": false,
+   "roles": [
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 12,
+   "donor_name": "Sting 2 Soft",
+   "source": {
+    "authored": "fallback Cover 1 -> Cover 1 Robber; odd variant of HOU Combo Weak Zone, edges rush [0]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 18
   },
   {
    "play": 25,
    "appended": false,
-   "name": "Cover 2 Nickel Fire",
+   "name": "Fire Zone Nickel Seam",
    "component": "coverage",
-   "concept": "Cover 2 Fire",
+   "concept": "Fire Zone 3",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -947,10 +946,10 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
+   "donor": 10,
+   "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 2 Hard -> Cover 2 Fire; odd variant of NE 2 Soft, edges rush [0, 6]"
+    "authored": "fallback Cover 3 Sky -> Fire Zone 3; odd variant of PIT Key Zone, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1001,9 +1000,9 @@
   {
    "play": 44,
    "appended": false,
-   "name": "Cover 2 Match",
+   "name": "Cover 4 Spot",
    "component": "coverage",
-   "concept": "Cover 2",
+   "concept": "Cover 4 Quarters",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -1011,14 +1010,14 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
+   "donor": 10,
+   "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 2 Sim -> Cover 2; odd variant of BAL Zone Double Steal, edges rush [0, 6]"
+    "authored": "fallback Cover 6 -> Cover 4 Quarters; odd variant of NE Blanket 4, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 20
+   "authored_nodes": 16
   },
   {
    "play": 45,
@@ -1088,24 +1087,24 @@
   {
    "play": 48,
    "appended": false,
-   "name": "Cover 1 Mike Off Fire",
+   "name": "Cover 3 Sky Weak",
    "component": "coverage",
-   "concept": "Cover 1 Blitz",
+   "concept": "Cover 3 Sky",
    "band": 3,
-   "pressure": true,
+   "pressure": false,
    "roles": [
     "base",
     "dime"
    ],
    "new_links": [],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
+   "donor": 10,
+   "donor_name": "3 Strong",
    "source": {
-    "authored": "odd variant of DAL Weak Fire 1 Odd, edges rush [0, 4], zone blitz on ['base']"
+    "authored": "fallback Cover 4 Quarters -> Cover 3 Sky; odd variant of PIT 3 Dog T, edges rush [0, 6]"
    },
-   "rushers": 5,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 10
   },
   {
    "play": 49,
@@ -1152,9 +1151,9 @@
   {
    "play": 51,
    "appended": false,
-   "name": "Cover 4 Quarters",
+   "name": "Cover 2 Match",
    "component": "coverage",
-   "concept": "Cover 4 Quarters",
+   "concept": "Cover 2",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -1162,77 +1161,77 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 10,
-   "donor_name": "3 Strong",
+   "donor": 12,
+   "donor_name": "Sting 2 Soft",
    "source": {
-    "authored": "fallback Cover 6 -> Cover 4 Quarters; odd variant of NE Blanket 4, edges rush [0, 6]"
+    "authored": "fallback Cover 2 Sim -> Cover 2; odd variant of BAL Zone Double Steal, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 20
   },
   {
    "play": 52,
    "appended": false,
-   "name": "Cover 3 Sky Weak",
-   "component": "coverage",
-   "concept": "Cover 3 Sky",
-   "band": 3,
-   "pressure": false,
-   "roles": [
-    "base",
-    "dime"
-   ],
-   "new_links": [],
-   "donor": 10,
-   "donor_name": "3 Strong",
-   "source": {
-    "authored": "fallback Cover 4 Quarters -> Cover 3 Sky; odd variant of PIT 3 Dog T, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 10
-  },
-  {
-   "play": 53,
-   "appended": false,
-   "name": "2-Man Off",
-   "component": "coverage",
-   "concept": "2-Man Under",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "dime",
-    "nickel"
-   ],
-   "new_links": [],
-   "donor": 15,
-   "donor_name": "Middle Blast 2",
-   "source": {
-    "authored": "odd variant of BAL Weak Blast 2, edges rush [0]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 12
-  },
-  {
-   "play": 54,
-   "appended": false,
-   "name": "2 Fire Nickel",
+   "name": "Cover 2 Mike Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
-   "band": 3,
+   "band": 2,
    "pressure": true,
    "roles": [
     "base",
-    "dime",
-    "nickel"
+    "dime"
    ],
    "new_links": [],
    "donor": 24,
    "donor_name": "Bulldog 2H",
    "source": {
-    "authored": "fallback Cover 2 -> Cover 2 Fire; odd variant of BAL Double Hard 2, edges rush [0, 6]"
+    "authored": "odd variant of BAL Double Hard 2, edges rush [0, 4, 6]"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 12
+  },
+  {
+   "play": 53,
+   "appended": false,
+   "name": "Cover 0 Safety Blitz",
+   "component": "coverage",
+   "concept": "Cover 0 Blitz",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "dime",
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 16,
+   "donor_name": "Double Hard 1",
+   "source": {
+    "authored": "odd variant of BAL Double Indian 0, edges rush [0]"
+   },
+   "rushers": 6,
+   "spy_slots": [],
+   "authored_nodes": 6
+  },
+  {
+   "play": 54,
+   "appended": false,
+   "name": "Cover 2 Nickel Fire",
+   "component": "coverage",
+   "concept": "Cover 2 Fire",
+   "band": 3,
+   "pressure": false,
+   "roles": [
+    "base",
+    "dime",
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 12,
+   "donor_name": "Sting 2 Soft",
+   "source": {
+    "authored": "fallback Cover 2 -> Cover 2 Fire; odd variant of BAL 2 Soft, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1241,7 +1240,7 @@
   {
    "play": 186,
    "appended": false,
-   "name": "Cover 2 Nickel Fire 2",
+   "name": "2 Fire Nickel",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -1278,7 +1277,7 @@
    "donor": 10,
    "donor_name": "3 Strong",
    "source": {
-    "authored": "fallback Cover 6 -> Quarters Pressure; odd variant of BAL Cover 12, edges rush [0, 6]"
+    "authored": "fallback Cover 6 -> Quarters Pressure; odd variant of BUF Cover 12 Odd, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1287,50 +1286,27 @@
   {
    "play": 188,
    "appended": false,
-   "name": "Cover 2 Zone",
+   "name": "Cover 1 Mike Fire",
    "component": "coverage",
-   "concept": "Cover 2",
+   "concept": "Cover 1 Blitz",
    "band": 3,
-   "pressure": false,
+   "pressure": true,
    "roles": [
     "base",
     "dime"
    ],
    "new_links": [],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
+   "donor": 16,
+   "donor_name": "Double Hard 1",
    "source": {
-    "authored": "odd variant of BAL Sting 2 Soft, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 4
-  },
-  {
-   "play": 189,
-   "appended": false,
-   "name": "Cover 1 Zone",
-   "component": "coverage",
-   "concept": "Cover 1 Zone",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "base",
-    "dime",
-    "nickel"
-   ],
-   "new_links": [],
-   "donor": 189,
-   "donor_name": "Key Zone 2",
-   "source": {
-    "authored": "fallback Cover 1 Blitz -> Cover 1 Zone; odd variant of HOU 1 Hang, edges rush [0, 6]"
+    "authored": "fallback Cover 1 Robber -> Cover 1 Blitz; odd variant of DAL Force Fire 1 Odd, edges rush [0, 5], zone blitz on ['base']"
    },
    "rushers": 5,
    "spy_slots": [],
    "authored_nodes": 16
   },
   {
-   "play": 190,
+   "play": 189,
    "appended": false,
    "name": "Fire 3 Nickel Weak",
    "component": "coverage",
@@ -1353,29 +1329,7 @@
    "authored_nodes": 16
   },
   {
-   "play": 191,
-   "appended": false,
-   "name": "Cover 2 Soft",
-   "component": "coverage",
-   "concept": "Cover 2",
-   "band": 3,
-   "pressure": false,
-   "roles": [
-    "base",
-    "dime"
-   ],
-   "new_links": [],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
-   "source": {
-    "authored": "fallback Cover 2 Hard -> Cover 2; odd variant of BAL 2 Corners, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 16
-  },
-  {
-   "play": 192,
+   "play": 190,
    "appended": false,
    "name": "Fire 3 Double Weak",
    "component": "coverage",
@@ -1398,12 +1352,80 @@
    "authored_nodes": 8
   },
   {
+   "play": 191,
+   "appended": false,
+   "name": "Fire 3 Mike Strong",
+   "component": "coverage",
+   "concept": "Fire Zone 3",
+   "band": 3,
+   "pressure": false,
+   "roles": [
+    "base",
+    "dime"
+   ],
+   "new_links": [],
+   "donor": 10,
+   "donor_name": "3 Strong",
+   "source": {
+    "authored": "odd variant of BAL 3 Buzz, edges rush [0, 4, 6]"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 10
+  },
+  {
+   "play": 192,
+   "appended": false,
+   "name": "Cover 2 Double Fire",
+   "component": "coverage",
+   "concept": "Cover 2 Fire",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "base",
+    "dime",
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 24,
+   "donor_name": "Bulldog 2H",
+   "source": {
+    "authored": "odd variant of BAL Bulldog 2H, edges rush [0, 4, 6]"
+   },
+   "rushers": 6,
+   "spy_slots": [],
+   "authored_nodes": 4
+  },
+  {
    "play": 193,
    "appended": false,
-   "name": "Cover 4 Fire",
+   "name": "Cover 1 Nickel Fire",
    "component": "coverage",
-   "concept": "Quarters Pressure",
+   "concept": "Cover 1 Blitz",
    "band": 3,
+   "pressure": true,
+   "roles": [
+    "base",
+    "dime",
+    "nickel"
+   ],
+   "new_links": [],
+   "donor": 16,
+   "donor_name": "Double Hard 1",
+   "source": {
+    "authored": "fallback Cover 1 Robber -> Cover 1 Blitz; odd variant of BAL Strong Force Fire 1, edges rush [0, 6]"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 6
+  },
+  {
+   "play": 194,
+   "appended": false,
+   "name": "Cover 1 Zone",
+   "component": "coverage",
+   "concept": "Cover 1 Zone",
+   "band": 2,
    "pressure": false,
    "roles": [
     "base",
@@ -1411,19 +1433,19 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 10,
-   "donor_name": "3 Strong",
+   "donor": 189,
+   "donor_name": "Key Zone 2",
    "source": {
-    "authored": "fallback Cover 4 Quarters -> Quarters Pressure; odd variant of BUF Cover 12 Odd, edges rush [0, 6]"
+    "authored": "fallback Cover 1 Blitz -> Cover 1 Zone; odd variant of HOU 1 Hang, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
    "authored_nodes": 16
   },
   {
-   "play": 194,
+   "play": 195,
    "appended": false,
-   "name": "Cover 2 Nickel Fire 3",
+   "name": "Cover 2 Nickel Fire 2",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -1442,29 +1464,6 @@
    "rushers": 5,
    "spy_slots": [],
    "authored_nodes": 12
-  },
-  {
-   "play": 195,
-   "appended": false,
-   "name": "Cover 2 Double Fire",
-   "component": "coverage",
-   "concept": "Cover 2 Fire",
-   "band": 2,
-   "pressure": true,
-   "roles": [
-    "base",
-    "dime",
-    "nickel"
-   ],
-   "new_links": [],
-   "donor": 24,
-   "donor_name": "Bulldog 2H",
-   "source": {
-    "authored": "odd variant of BAL Bulldog 2H, edges rush [0, 4, 6]"
-   },
-   "rushers": 6,
-   "spy_slots": [],
-   "authored_nodes": 4
   },
   {
    "play": 201,
@@ -1653,7 +1652,7 @@
   {
    "play": 209,
    "appended": false,
-   "name": "Cover 3 Cloud Weak",
+   "name": "Cover 3 Cloud Weak Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1676,7 +1675,7 @@
   {
    "play": 210,
    "appended": false,
-   "name": "Cover 4 Spot",
+   "name": "Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1745,7 +1744,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Creeper Mike",
+   "name": "Sim 3 Mike Strong",
    "component": "coverage",
    "concept": "Sim Pressure 3",
    "band": 3,
@@ -1808,187 +1807,26 @@
    "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 14
-  },
-  {
-   "play": 263,
-   "appended": true,
-   "name": "2 Fire Double",
-   "component": "coverage",
-   "concept": "Cover 2 Fire",
-   "band": 3,
-   "pressure": false,
-   "roles": [
-    "dime"
-   ],
-   "new_links": [
-    "dime"
-   ],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
-   "source": {
-    "authored": "odd variant of BAL Blaze Zone Blitz, edges rush [4, 5, 6], zone blitz on ['dime']"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 18
-  },
-  {
-   "play": 264,
-   "appended": true,
-   "name": "Cover 3 Cloud Weak Bail",
-   "component": "coverage",
-   "concept": "Cover 3 Cloud",
-   "band": 3,
-   "pressure": false,
-   "roles": [
-    "base"
-   ],
-   "new_links": [
-    "base"
-   ],
-   "donor": 10,
-   "donor_name": "3 Strong",
-   "source": {
-    "authored": "odd variant of BAL 4 Cloud Odd, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 16
-  },
-  {
-   "play": 265,
-   "appended": true,
-   "name": "Cover 2 Sink",
-   "component": "coverage",
-   "concept": "Cover 2",
-   "band": 1,
-   "pressure": false,
-   "roles": [
-    "dime"
-   ],
-   "new_links": [
-    "dime"
-   ],
-   "donor": 12,
-   "donor_name": "Sting 2 Soft",
-   "source": {
-    "authored": "fallback Cover 2 Sim -> Cover 2; odd variant of BAL 2 Soft, edges rush [0]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 12
-  },
-  {
-   "play": 266,
-   "appended": true,
-   "name": "Sim Pressure Corner",
-   "component": "coverage",
-   "concept": "Sim Pressure 3",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "base"
-   ],
-   "new_links": [
-    "base"
-   ],
-   "donor": 10,
-   "donor_name": "3 Strong",
-   "source": {
-    "authored": "odd variant of NE Strong Crash Zone Blitz, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 18
-  },
-  {
-   "play": 267,
-   "appended": true,
-   "name": "2-Man Under",
-   "component": "coverage",
-   "concept": "2-Man Under",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "dime"
-   ],
-   "new_links": [
-    "dime"
-   ],
-   "donor": 15,
-   "donor_name": "Middle Blast 2",
-   "source": {
-    "authored": "odd variant of PIT 2 Man, edges rush [0]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 16
-  },
-  {
-   "play": 268,
-   "appended": true,
-   "name": "Cover 1 Man Lurk",
-   "component": "coverage",
-   "concept": "Cover 1",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "base"
-   ],
-   "new_links": [
-    "base"
-   ],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
-   "source": {
-    "authored": "odd variant of BAL Strong Force Fire 1, edges rush [0, 6]"
-   },
-   "rushers": 4,
-   "spy_slots": [],
-   "authored_nodes": 6
-  },
-  {
-   "play": 269,
-   "appended": true,
-   "name": "Cover 0 Nickel Off",
-   "component": "coverage",
-   "concept": "Cover 0 Blitz",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "dime"
-   ],
-   "new_links": [
-    "dime"
-   ],
-   "donor": 16,
-   "donor_name": "Double Hard 1",
-   "source": {
-    "authored": "odd variant of HOU Rocket 0, edges rush [4, 5, 6], zone blitz on ['dime']"
-   },
-   "rushers": 6,
-   "spy_slots": [],
-   "authored_nodes": 16
   }
  ],
  "receipt": {
   "team": "BAL",
   "offense_pack": "data/playbooks/softdrink_bal_modern.2k5book",
-  "offense_pack_sha256": "fbbccc7cac6540cf27a5e3f2702e3c547b1c6445f626254ab513c8fdca2cf6ce",
-  "source_fingerprint": "021930ac0ac1d2bc60d8457c85667d363a6e2e2a8fae5884120361b5607de156",
-  "replacement_sha256": "287f6dfc50c480a06020abee5f58c8f8eb567cb47130f49aee50bc35a3946f4d",
-  "semantic_sha256": "e039f5a79e935c6c1eb494faafa70364d90f986df22bcf81816f161098c81ffb",
-  "plays": 69,
+  "offense_pack_sha256": "7d554efc9c2f2ed757160af97bd961d092f34f564e57a0efa2d114d3c5389c3d",
+  "source_fingerprint": "3cb89c620893d9cf01dca191b035868eb134985bcd24ba60cdde8b5f074c4679",
+  "replacement_sha256": "68833485459cfaf81b39a2f30208e8ec067036282e5342b06cafa8a9afa666a4",
+  "semantic_sha256": "4940c99c6ff7f214c9340a303c3cdb763aab85012b73899efd5063466bd36746",
+  "plays": 62,
   "formations": 4,
-  "nodes": 2623,
+  "nodes": 2986,
   "node_capacity": 3500,
-  "formation_count": 42,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.60908,
+  "band_loss": 1.42339,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_bal_defense.2k5book",
-  "pack_sha256": "9aa61a618533a2d1d40d9cea923df51e25c9608673e68440f5f4ca939c908411"
+  "pack_sha256": "11edd7d80b327a2a31708ceb1614643c83d7269af1ab125acee4803158e64577"
  }
 }

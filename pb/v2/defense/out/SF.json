@@ -225,7 +225,7 @@
     4,
     4
    ],
-   "merged_into_category": 9,
+   "merged_into_category": 10,
    "positions": [
     [
      365,
@@ -1879,7 +1879,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 249,
+   "play": 268,
    "appended": true,
    "name": "Speed Rush",
    "component": "front",
@@ -1900,7 +1900,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 250,
+   "play": 269,
    "appended": true,
    "name": "Dime Twist",
    "component": "front",
@@ -1924,21 +1924,21 @@
  "receipt": {
   "team": "SF",
   "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
-  "offense_pack_sha256": "645a595b9c3554a4aebd4d8c5bd7a06c19b3ce658c1d08bc7263fe02e1cba650",
-  "source_fingerprint": "b6ad6658c073585a3b1bf685a9d5add9ed41c3c026d3105797cdf25e3bc615f6",
-  "replacement_sha256": "c2b384979855ea414fe21c8494458b59ec49f8d4d596baab55e07155bb8e78e3",
+  "offense_pack_sha256": "4df6f04ffe714522fc0ad11b00e594e462ccad8a6d26f34a5e1160b135032ad3",
+  "source_fingerprint": "a0203cc6795230a23e49d05660edebbeafe92ae573b695e9af93d6621021acfa",
+  "replacement_sha256": "fc7c3339529b33b3ce13823fa2b13a11a5c9e5f7ed0e55815cdf84ed6bd628b0",
   "semantic_sha256": "25ea79f3b91e9d89b19f418d6c2dfc1f577afa5c335d13f35ec2217ad3238cbe",
   "plays": 64,
   "formations": 4,
-  "nodes": 2248,
+  "nodes": 2710,
   "node_capacity": 3500,
-  "formation_count": 39,
-  "play_count": 251,
+  "formation_count": 50,
+  "play_count": 270,
   "misses": [],
   "band_loss": 0.09128,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sf_defense.2k5book",
-  "pack_sha256": "435edcd955ff767796ec278cb272d98941376a9d101370e089366a86a585199f"
+  "pack_sha256": "804f456caf92835d4dc6baa189eb8a47ada9f6c742c6c498f6e5cc900b734764"
  }
 }

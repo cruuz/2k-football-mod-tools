@@ -2028,21 +2028,21 @@
  "receipt": {
   "team": "SD",
   "offense_pack": "data/playbooks/softdrink_sd_modern.2k5book",
-  "offense_pack_sha256": "a6416f1e57f44192c91adc5f1c97bddc2f62dd097e40703dce97b232494d8cbe",
-  "source_fingerprint": "623ebb045bf0515c23fb5ea97337006619b3ae5dca48e335c2e389114ddefe37",
-  "replacement_sha256": "3206a2c64a98940980e01b3341a1909ef58010e3ad665d2c0dea5d26f0474927",
+  "offense_pack_sha256": "4a8384af531f8fefc205e7a65cf590b97be65f517a032cc821dcaacac8df7cfd",
+  "source_fingerprint": "4c9bf6dc023befea259b8e8e3142f2fa5c6d275b956c50b249ebda91d18c0ec9",
+  "replacement_sha256": "705bcea61ca397c03889354a8a5c5611b65a697670aab65cc8f23409dd751bbe",
   "semantic_sha256": "30b656cbb3151a4b73cc577a9f191e666b038c94383733de2d589dfde3a5b241",
   "plays": 72,
   "formations": 4,
-  "nodes": 2755,
+  "nodes": 3226,
   "node_capacity": 3500,
-  "formation_count": 41,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.62422,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sd_defense.2k5book",
-  "pack_sha256": "0ca137014032343e43c2c9ebe6a25906a91bbcad38e1f42226f882844b9a7a83"
+  "pack_sha256": "d006fcb835e6a06791a78abd5e2dfb94a51dd8e42bfed41eba7ba15d5497d08c"
  }
 }
