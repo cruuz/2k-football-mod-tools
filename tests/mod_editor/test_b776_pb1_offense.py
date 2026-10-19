@@ -22,7 +22,7 @@ from mod_editor.core import nfl2k5_playbook_inspector as insp  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_pack as packs  # noqa: E402
 from mod_editor.core import nfl2k5_complete_offense as full  # noqa: E402
 
-IMAGE = Path(os.environ.get("NFL2K5_RETAIL_IMAGE", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+IMAGE = Path(os.environ.get("NFL2K5_RETAIL_IMAGE") or os.environ.get("NFL2K5_RETAIL_XISO") or "/nonexistent")  # int2: no private host path ships
 
 
 def validate(design, flags):
