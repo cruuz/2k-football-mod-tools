@@ -9,10 +9,10 @@
   "notes": "DESIGN: Gus Bradley (Seattle / Saleh four-down); 2025 baseline SF. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "c4d64370e1850ad3f707aad6dd93ccd272836a93286561fca051852ee0061be0",
-  "donor_formation_count": 39,
-  "donor_play_count": 264,
-  "donor_node_count": 1884
+  "book_fingerprint": "7b7a3331da61e89124e6a39973c2affa349cd0c55655e5784f45d5e6ee4d85dd",
+  "donor_formation_count": 50,
+  "donor_play_count": 268,
+  "donor_node_count": 2328
  },
  "budget": {
   "formations": 50,
@@ -1392,13 +1392,13 @@
    "concept": "Cover 1 Blitz",
    "donor": {
     "index": 35,
-    "name": "Double Hard 1 ",
+    "name": "Double Hard 1",
     "flags": 8979524,
     "signature": "defense/v1:00890444:1-1b.0b,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980036,
    "replace_index": 35,
-   "replace_name": "Double Hard 1 ",
+   "replace_name": "Double Hard 1",
    "link_formation": null,
    "link_group": null,
    "assignments": [

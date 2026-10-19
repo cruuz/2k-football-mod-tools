@@ -9,10 +9,10 @@
   "notes": "DESIGN: Rob Leonard (Graham / Ravens multiple); 2025 baseline LV. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "1654c26c52be79c279aa4fb10595fea6bd66bb7afb1d7194eeabfbe90c19f630",
-  "donor_formation_count": 43,
+  "book_fingerprint": "67e9a8e88fc3f28d8b6229bd1c1d04f45b6b07f2c573d780b6b343c1feb7e3de",
+  "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 1909
+  "donor_node_count": 2328
  },
  "budget": {
   "formations": 50,
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [47, 44, 12, 13, 46, 14, 15, 16, 17, 50, 18],
-   "category_index": 21,
+   "category_index": 22,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 9,
+   "category_index": 10,
    "situation": [2, 1, 2]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 11,
    "situation": [1, 1, 1]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 12,
    "situation": [4, 2, 1]
   }
  ],

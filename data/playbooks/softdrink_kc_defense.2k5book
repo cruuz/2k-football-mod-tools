@@ -9,10 +9,10 @@
   "notes": "DESIGN: Steve Spagnuolo (Jim Johnson pressure); 2025 baseline KC. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "71057dc40cca553275f106f3661ab02a54cb04d0da90e7a55709c90e073debb0",
-  "donor_formation_count": 42,
-  "donor_play_count": 261,
-  "donor_node_count": 1855
+  "book_fingerprint": "e52e9ebb5b4de633b2604271a39d87e047703e0aa043cc06bfa813b8d88681c1",
+  "donor_formation_count": 49,
+  "donor_play_count": 262,
+  "donor_node_count": 2287
  },
  "budget": {
   "formations": 50,
