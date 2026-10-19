@@ -146,8 +146,15 @@ class RuleTests(unittest.TestCase):
         self.check("K0 ILB2 ILB1 OLB2 FS1 SS1 SS2 FS2 CB3 CB2 OLB3", "K0 LB2 LB1 LB3 FS1 SS1 SS2 FS2 CB3 CB2 LB4", "even", 0x15)
         self.check("P0 ILB1 DE2 C1 OLB1 OLB2 HB1 FB1 FS1 SS1 CB2", "P0 LB1 EDGE2 C1 LB2 LB3 HB1 FB1 FS1 SS1 CB2", "even", 0x11)
 
+    def test_one_outside_backer_sub_packages_get_their_second_edge_from_the_strong_end(self) -> None:
+        # b776 de2: BAL / HOU / NE nickel and dime, the 3-2, the Dime Odd: the line is the weak EDGE (the OLB), a 4i end,
+        # the nose and a 5-technique end; the outermost two slots must be EDGE, so the strong end (variant 0) is EDGE
+        self.check("OLB0 DE1 DE0 DT0 ILB1 ILB0 CB2 FS0 SS0 CB1 CB0",
+                   "EDGE0 DT1 EDGE1 DT0 LB1 LB0 CB2 FS0 SS0 CB1 CB0", "odd_one_edge", 0x0C)
+
     def test_goalline_variants(self) -> None:
-        self.check("DE1 DE2 DT2 DT0 DT1 DE0 ILB0 OLB0 FS0 CB1 CB0", "EDGE1 EDGE2 DT2 DT0 DT1 EDGE0 LB0 LB1 FS0 CB1 CB0", "even", 0x0B)
+        # b776 de2: the 3-4 teams' six-man goal line keeps its two outside ends EDGE and makes the third end an interior DT
+        self.check("DE1 DE2 DT2 DT0 DT1 DE0 ILB0 OLB0 FS0 CB1 CB0", "EDGE1 DT3 DT2 DT0 DT1 EDGE0 LB0 LB1 FS0 CB1 CB0", "six_front", 0x0B)
         self.check("DE1 DE0 DT1 DT3 DT0 OLB1 ILB1 OLB0 FS1 CB1 CB0", "EDGE1 EDGE0 DT1 DT3 DT0 LB3 LB1 LB2 FS1 CB1 CB0", "even", 0x0B)
 
     def test_prevent_keeps_the_ends_as_edge_and_the_dropper_as_a_linebacker(self) -> None:

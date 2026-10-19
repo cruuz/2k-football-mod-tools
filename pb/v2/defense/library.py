@@ -80,10 +80,17 @@ class Structure:
     label: str = ''
     pressure: bool = False
     tags: list[str] = field(default_factory=list)
+    # Odd (three-down) layouts only (b776 de2): the OLB-kind slots are the edge rushers.  Both edges rushing with the
+    # three linemen is the odd front's NORMAL four-man rush equivalent (n_rush counts the pair once), so a base Okie
+    # call is not a blitz; a fifth rusher (an inside backer or a defensive back) is.
+    edges: tuple = ()
+    edge_credit: int = 0
+    edge_drops: list[int] = field(default_factory=list)       # edge slots that cover (zone or man)
+    extra: list[int] = field(default_factory=list)            # rushers that are neither linemen nor edges
 
     @property
     def n_rush(self) -> int:
-        return len(self.rushers)
+        return len(self.rushers) - self.edge_credit
 
 
 def first_action(chain):
@@ -98,10 +105,31 @@ def has_exchange(chain) -> bool:
     return 0x0D in ops and 0x0E in ops
 
 
+EDGE_KIND = 15      # OLB kind: an odd layout's edge rushers (weak edge = slot 0)
+
+
+def edge_slots(kinds, layout: str = 'odd:') -> tuple:
+    """The edge-rusher slots of a three-down layout: its OLB-kind slots among 0..6.  Four-down layouts have none (the
+    linemen are the edges and the front call rushes them)."""
+    if not layout.startswith('odd:'):
+        return ()
+    return tuple(s for s in range(7) if (kinds[s] & 31) == EDGE_KIND)
+
+
+def front_edge_slots(kinds, layout: str = 'odd:') -> tuple:
+    """A three-down sub-package with ONE outside backer (BAL / HOU / NE nickel and dime, the 3-2, the Dime Odd) gets its
+    second edge from the line: the position recode makes the strong end (slot 2, the 5-technique) an EDGE.  The front
+    call rushes him; only a retail sim script that drops a lineman could make him cover."""
+    if not layout.startswith('odd:') or len(edge_slots(kinds, layout)) != 1:
+        return ()
+    return (2,) if [kinds[s] & 31 for s in (1, 2, 3)] == [12, 12, 13] else ()
+
+
 def structure(chains, kinds: list[int], front_slots: set[int], layout: str) -> Structure:
     """Effective front+coverage structure of a coverage component, the formation's front rushing its slots."""
     active = lib.defense_active(chains)
     st = Structure(layout, [], [], [], [], [], [], [])
+    st.edges = edge_slots(kinds, layout)
     for s in range(11):
         if s in front_slots and s not in active:
             st.rushers.append(s)
@@ -124,6 +152,12 @@ def structure(chains, kinds: list[int], front_slots: set[int], layout: str) -> S
                 st.dropped_dl.append(s)
         else:
             st.other.append(s)
+    if st.edges:
+        rushing = [e for e in st.edges if e in st.rushers]
+        st.edge_credit = max(0, len(rushing) - 1)
+        st.edge_drops = [e for e in (*st.edges, *front_edge_slots(kinds, layout))
+                         if e in active and first_action(chains[e])[0] in (0x0D, 0x0E)]
+        st.extra = [r for r in st.rushers if r not in front_slots and r not in st.edges]
     classify(st, kinds)
     return st
 

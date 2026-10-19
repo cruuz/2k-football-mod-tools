@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1157,9 +1157,7 @@
    "donor": 29,
    "donor_name": "Cover 12",
    "source": {
-    "book": "DAL",
-    "play": 221,
-    "name": "Cover 4"
+    "authored": "odd variant of DAL Cover 4, edges rush [0]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1239,7 +1237,7 @@
   {
    "play": 29,
    "appended": false,
-   "name": "Quarters Drop 8",
+   "name": "Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 3,
@@ -1251,11 +1249,9 @@
    "donor": 29,
    "donor_name": "Cover 12",
    "source": {
-    "book": "BAL",
-    "play": 53,
-    "name": "Cover 12"
+    "authored": "odd variant of BAL Cover 12, edges rush [0]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 4
   },
@@ -1311,7 +1307,7 @@
   {
    "play": 32,
    "appended": false,
-   "name": "Cover 4 Drop",
+   "name": "Quarters Drop 8",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1382,7 +1378,7 @@
    "name": "Cover 1 Double Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
-   "band": 2,
+   "band": 3,
    "pressure": true,
    "roles": [
     "dime_odd"
@@ -1391,13 +1387,11 @@
    "donor": 35,
    "donor_name": "Double Hard 1 ",
    "source": {
-    "book": "TEN",
-    "play": 35,
-    "name": "Double Hard 1 "
+    "authored": "odd variant of BAL Blaze Twist 1, edges rush [4, 5], zone blitz on ['dime_odd']"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 36,
@@ -1405,7 +1399,7 @@
    "name": "Cover 2 Zone 2",
    "component": "coverage",
    "concept": "Cover 2",
-   "band": 3,
+   "band": 2,
    "pressure": true,
    "roles": [
     "dime_odd"
@@ -1414,9 +1408,7 @@
    "donor": 25,
    "donor_name": "Double Hard 2",
    "source": {
-    "book": "BAL",
-    "play": 186,
-    "name": "2 Soft"
+    "authored": "odd variant of BAL 2 Soft, edges rush [0]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1425,10 +1417,10 @@
   {
    "play": 37,
    "appended": false,
-   "name": "Cover 3 Sky Bail",
+   "name": "Cover 3 Cloud",
    "component": "coverage",
-   "concept": "Cover 3 Sky",
-   "band": 2,
+   "concept": "Cover 3 Cloud",
+   "band": 3,
    "pressure": false,
    "roles": [
     "dime_odd"
@@ -1437,9 +1429,7 @@
    "donor": 29,
    "donor_name": "Cover 12",
    "source": {
-    "book": "BAL",
-    "play": 10,
-    "name": "3 Strong"
+    "authored": "fallback Cover 3 Sky -> Cover 3 Cloud; odd variant of HOU Weak Go 3, edges rush [0]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1471,32 +1461,9 @@
   {
    "play": 39,
    "appended": false,
-   "name": "2 Read Match",
+   "name": "Cover 2 Zone 3",
    "component": "coverage",
    "concept": "Cover 2",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "dime_odd"
-   ],
-   "new_links": [],
-   "donor": 29,
-   "donor_name": "Cover 12",
-   "source": {
-    "book": "BAL",
-    "play": 23,
-    "name": "Combo Strong Zone"
-   },
-   "rushers": 3,
-   "spy_slots": [],
-   "authored_nodes": 18
-  },
-  {
-   "play": 40,
-   "appended": false,
-   "name": "Cover 1 Rat Off",
-   "component": "coverage",
-   "concept": "Cover 1 Robber",
    "band": 3,
    "pressure": true,
    "roles": [
@@ -1506,18 +1473,37 @@
    "donor": 25,
    "donor_name": "Double Hard 2",
    "source": {
-    "book": "HOU",
-    "play": 35,
-    "name": "Combo Weak Zone"
+    "authored": "fallback Cover 2 Hard -> Cover 2; odd variant of DAL Cover 2 Hard, edges rush [0]"
    },
-   "rushers": 3,
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 12
+  },
+  {
+   "play": 40,
+   "appended": false,
+   "name": "Cover 1 Rat Off",
+   "component": "coverage",
+   "concept": "Cover 1 Robber",
+   "band": 2,
+   "pressure": true,
+   "roles": [
+    "dime_odd"
+   ],
+   "new_links": [],
+   "donor": 25,
+   "donor_name": "Double Hard 2",
+   "source": {
+    "authored": "odd variant of HOU Combo Weak Zone, edges rush [0]"
+   },
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 16
   },
   {
    "play": 57,
    "appended": false,
-   "name": "Quarters Drop 8 2",
+   "name": "Cover 4 Quarters 2",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1529,21 +1515,19 @@
    "donor": 29,
    "donor_name": "Cover 12",
    "source": {
-    "book": "NE",
-    "play": 38,
-    "name": "Blanket 4"
+    "authored": "fallback Cover 4 Match -> Cover 4 Quarters; odd variant of BUF Cover 12 Odd, edges rush [0]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 4
   },
   {
    "play": 58,
    "appended": false,
-   "name": "Fire 3 Double Weak",
+   "name": "Fire Zone 3 Corner",
    "component": "coverage",
    "concept": "Fire Zone 3",
-   "band": 3,
+   "band": 2,
    "pressure": true,
    "roles": [
     "dime_odd"
@@ -1552,9 +1536,7 @@
    "donor": 25,
    "donor_name": "Double Hard 2",
    "source": {
-    "book": "HOU",
-    "play": 21,
-    "name": "Weak Crash 3"
+    "authored": "odd variant of HOU Weak Crash 3, edges rush [0]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1780,7 +1762,7 @@
   {
    "play": 195,
    "appended": false,
-   "name": "Cover 3 Sky Strong 2",
+   "name": "Cover 3 Sky Bail",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -1849,7 +1831,7 @@
   {
    "play": 198,
    "appended": false,
-   "name": "Fire Zone Double Seam",
+   "name": "Fire 3 Double Weak",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 2,
@@ -1918,7 +1900,7 @@
   {
    "play": 201,
    "appended": false,
-   "name": "Cover 3 Sky Strong 3",
+   "name": "Cover 3 Sky Strong 2",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -1985,7 +1967,7 @@
   {
    "play": 204,
    "appended": false,
-   "name": "Fire Zone 3 Double 2",
+   "name": "Fire Zone Double Seam",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 3,
@@ -2054,7 +2036,7 @@
   {
    "play": 210,
    "appended": false,
-   "name": "Cover 3 Cloud",
+   "name": "Cover 3 Cloud Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -2100,7 +2082,7 @@
   {
    "play": 212,
    "appended": false,
-   "name": "Cover 2 Zone 3",
+   "name": "Cover 2 Zone 4",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -2191,19 +2173,19 @@
   "offense_pack": "data/playbooks/softdrink_ten_modern.2k5book",
   "offense_pack_sha256": "40d928443b74679d4ed0adc5ad3ed6068e207c9918b13046664f2c950c04d844",
   "source_fingerprint": "c4d64370e1850ad3f707aad6dd93ccd272836a93286561fca051852ee0061be0",
-  "replacement_sha256": "fa668e684684898dfa25a2b886de974f0aff95106a3a3b9b00f8da51272c2c97",
-  "semantic_sha256": "db6de2276a7ea488dbcc48edc6efb28249128245e5a264f3fa1d29d6265dad52",
+  "replacement_sha256": "af379809db08cbd0cdfa3abe60830f68f4541dd581dd9a3b82620abc5016dc3e",
+  "semantic_sha256": "a537069b741199099899b6207553ec753e1d5046ef96148bedd91442e619c59e",
   "plays": 72,
   "formations": 5,
-  "nodes": 2462,
+  "nodes": 2460,
   "node_capacity": 3500,
   "formation_count": 39,
   "play_count": 266,
   "misses": [],
-  "band_loss": 0.14024,
+  "band_loss": 0.15193,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_ten_defense.2k5book",
-  "pack_sha256": "89272b2e9a314b7f0777a49ff7f6975c020c4278221142dbb9a2c29ad022cabb"
+  "pack_sha256": "9b611b0eff2110b81e6b3c170754c9a6a7c677c3f452feab952f3d1e56c1e368"
  }
 }

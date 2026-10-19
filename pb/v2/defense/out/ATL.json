@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1920,8 +1920,8 @@
   "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
   "offense_pack_sha256": "34cc7c6c30338e65d66c61b402733bf22fd93451a1820b69d92e78e5ee831bf5",
   "source_fingerprint": "f19a1f2b6844ac54bb3d9c71851b87a13536de3c1be5f33f52ec52678296be30",
-  "replacement_sha256": "027dbf4faa9719a26013e40ff553801e653c3d7dcb38ddd84cd042a4e8e4e5fc",
-  "semantic_sha256": "700aea95e8642f3659757de60d539160b769a30e1b5e574dd95cf14cf31293a3",
+  "replacement_sha256": "34f33a6528853042231d8d6ccbbd2ef0807e801bf0c353e98152c6492cf8a5a1",
+  "semantic_sha256": "70a1120fe4d0624a480e381d864a1adafca91543bdb850cad6c402c229b4de20",
   "plays": 64,
   "formations": 4,
   "nodes": 2273,
@@ -1933,6 +1933,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_atl_defense.2k5book",
-  "pack_sha256": "418fe94e057e4c3912df64b967eaea25ab8c6fee2c4e09d32a91e4aecf07fbf3"
+  "pack_sha256": "384b072aa68a920bc6200fdb8a6a112aec0c70af0ae655d6f5834952cd5deb59"
  }
 }

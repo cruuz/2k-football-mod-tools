@@ -24,7 +24,11 @@ category asks the new pools for the players it fielded in retail, by rule, per c
   become EDGE codes with the same variant (kind 12), ILB codes are unchanged (kind 14 = the LB pool);
 * **5-2** ``(3, 2)``: DE0/DE1 stay (EDGE), DE2 becomes the next free interior variant, OLB codes
   become LB codes (below), ILB unchanged;
-* **even front and everything else** (4-3, Nickel, Dime, Bear, Goalline, special teams): DE and DT
+* **six-man goal line** ``(3, 3)`` (b776 de2, the 3-4 teams' Goalline): the two lowest-numbered ends stay EDGE (the line's
+  outside men), the third end is an interior lineman (next free DT variant), OLB codes become LB codes;
+* **three-down sub-package with one outside backer** (b776 de2): the OLB is the weak EDGE and the strong end (variant 0)
+  is the second EDGE, so the two outermost slots of the line are EDGE; the other end is an interior lineman;
+* **even front and everything else** (4-3, Nickel, Dime, Bear, special teams): DE and DT
   codes are unchanged (EDGE is the DE kind), ILB codes unchanged, OLB codes become LB codes with
   variant ``v + 1`` bumped past any variant an ILB code already uses (4-3 ``OLB1 ILB0 OLB0`` ->
   ``LB2 LB0 LB1``: MIKE = #1, WILL = #2 via the side chain, SAM = #3 via rank row 1 + skip;
@@ -164,6 +168,8 @@ def rule_for(codes: Sequence[int]) -> str:
         return "odd"
     if (n_de, n_dt) == (3, 2):
         return "five_two"
+    if (n_de, n_dt) == (3, 3):
+        return "six_front"        # b776 de2: the 3-4 teams' goal line (two ends, three tackles and a third end inside)
     return "even"
 
 
@@ -202,12 +208,28 @@ def recode_codes(codes: Sequence[int], formation_type: int, *, prevent_two_edges
         dts = sorted((i for i, k in enumerate(kinds) if k == KIND_DT), key=lambda i: (variants[i], i))
         des = sorted((i for i, k in enumerate(kinds) if k == KIND_DE), key=lambda i: (variants[i], i))
         used: set[int] = set()
+        olbs = [i for i, k in enumerate(kinds) if k == KIND_OLB]
+        if len(olbs) == 1 and len(des) == 2:
+            # b776 de2 (Noah, 10/18: the two outermost slots of the line are EDGE): a three-down sub-package with ONE
+            # outside backer (BAL / HOU / NE nickel and dime, the 3-2 and the Dime Odd) has a three-man line plus that
+            # edge.  The strong end (variant 0, the 5-technique) stands outside the nose and the other end, so he is the
+            # second EDGE; the other end is an interior lineman.
+            strong = des[0]
+            assign_interior(dts + des[1:], used)
+            taken = {variants[olbs[0]]}
+            target = next(v for v in range(MAX_VARIANT + 1) if v not in taken)
+            out[strong] = make_code(KIND_DE, target)
+            out[olbs[0]] = make_code(KIND_DE, variants[olbs[0]])
+            return out, "odd_one_edge"
         assign_interior(dts + des, used)
         for i, k in enumerate(kinds):
             if k == KIND_OLB:
                 out[i] = make_code(KIND_DE, variants[i])
         return out, rule
-    if rule == "five_two":
+    if rule in ("five_two", "six_front"):
+        # The two lowest-numbered ends are the line's edge men (EDGE); a third end is an interior lineman.  Noah (10/18):
+        # the two outermost slots of the line are EDGE, everything between them a DT.  The retail 3-3 goal line puts
+        # its three ends at slots 0, 1 and 5 with the highest-numbered one in slot 1, inside the others.
         des = sorted((i for i, k in enumerate(kinds) if k == KIND_DE), key=lambda i: (variants[i], i))
         used = {variants[i] for i, k in enumerate(kinds) if k == KIND_DT}
         for i in des[:2]:
@@ -576,27 +598,27 @@ RELOCATED_RETAIL_TABLE_SHA256: Mapping[str, str] = {
 # sha256 of the same records after the default recode (prevent_two_edges=False)
 APPLIED_TABLE_SHA256: Mapping[str, str] = {
     "ARZ": "2fdbd84a138ab5a62db01f05063b116263f66133aac25861af1b4b2ff71abe9e",
-    "ATL": "f836e2c18f93aad0125fb0c0523732fcebbf9f295577101b3cf71ff6c924c733",
-    "BAL": "0a2b45b6adddb5475bd8231a4a6effb379442ec825a6d1c700018b619923746e",
-    "BUF": "2890147578dd41e3159acd86e945fb98c77128905f8f036a6f21730527ff5d03",
+    "ATL": "036158ce64bb53ceac012a1ab4c580e13b4f77d83309ef9e95053b7ce575c84b",
+    "BAL": "7155a502821401b84926126a052369b13990f1b4bb8d405206b8e3a93efffffb",
+    "BUF": "2c7f95783d95466941825aa1ede6bf15916d20dcb2c5e6d026a0802710e8eea4",
     "CAR": "d42e4d904815971cb7ed77d9966067e806f222e4dbd5a8588014a163ea7962b8",
     "CHI": "79235548a260684518a5c1fbe35e7f067e4d6f6ebc36844aff9271f8ae3d0430",
     "CIN": "a6daff7385fb3e148873a7c8083195cc6eb851fb232d808e87c13d32bbb0ac50",
     "CLE": "2457ba6d46996d90fd27987dbc257658535b2038416a6ce3b14e02e5986f3c2c",
     "DAL": "0e9dd579236e408c22dc83cff14fbe46aa56e83bd5edf0f83cd4219a59bf14e0",
-    "DEN": "00a8d445d4bc5e9133bbf1f7d67cafb2a4b490908a56785c0bcc28fe11f11ce0",
+    "DEN": "e941f33b9018c92b2886dceb33db4a55803f2179f09753913e0e5f4a36ab381b",
     "DET": "7d535e938488ae0264d9b8d6039e0bdc0552ca7402468bb21f07840d6e347190",
-    "Editor": "4891411459a523bf30e6f2aafbfabac1dc2bff0876641fea464f83ea7d2b3ef7",
-    "GB": "c64deb4f7c533c90817fcfea215afd08b490812404ee3e6da58418b20ff677cc",
+    "Editor": "a13b6896845d116ec2d197e5e5ffbc56954692b8c85b143f073c76fa673afe0b",
+    "GB": "9cf7860d81fb6a870499a7435a39f79a0c37cbf3a2edf52fb4048d2b527b4307",
     "GEN": "57f2703c4cb396e3d280ccecedd97183e1dd5be40919cdfc05e697de1a868ebb",
-    "HOU": "f7bce49706bdb5e57271d68b6e77cb909f763ebe71149b395ac208d0f77a589f",
+    "HOU": "67a6332c3135882b19a863abac3e2fc3a555b3d90e9ed85794bc309704150091",
     "IND": "e9df6ebe470379b5da4b42a4335167c5ca63848c27dce796a28559b223bfe3a8",
-    "JAX": "cbfa6768ac82b520f969844ad954a928c4d9376ef8ce770275c751f80b567f87",
+    "JAX": "90d204c2cbd3a69c16253dea9303f37ba42072d56264895b8c158ffe6be13893",
     "KC": "f9f3e04a1b3492320a104949bb582b76f065fddb897f53aa32e9494770b8296f",
     "MIA": "e9df7f132003e728ca5cb77ca17e0aba05be621489e80c1d44f9cd7e6f897ae7",
-    "MIN": "0522ed0c9707230abffd41beaf66e46e22fa531fcb01cffd6a6951c068699387",
-    "NE": "2036475d18aa3f03681e4e21d5afef9e4ffbe404eb398f3ad32574e39afd361e",
-    "NO": "c62c05ecd01af5b5d905c44f38c90dc8e0f20d4ace1e96a08a3cfa4fa35e07e8",
+    "MIN": "2ea9a8df9c43324ff34add8a4b09dd79617c81ba0c25edccd685702941bf3462",
+    "NE": "5f9e8a22b16461ff24c6e590411ed677e1379eba0bc71e108687156ab2606908",
+    "NO": "61f8a56d6097bcd66ff7baa97bd1766005e077d8582b7cec1189a4ea58400a15",
     "NYG": "8881ead98c7c9d3dbb55510b1f1872cd64186a5f43742dd98d1d52148e5903ad",
     "NYJ": "78b082733ff12575577bd72c63a628d594df6af45054b66b33187c4b1d75d92e",
     "OAK": "ef3857bfe52e8c02687001dac4aaeb9d8e9cbf985b772b98cc1f143acfa25e7a",
@@ -606,10 +628,10 @@ APPLIED_TABLE_SHA256: Mapping[str, str] = {
     "reference": "e9db23c1078783c0b444946d707c59b484d15ae1b70890cdc2cd4d85f9be41e1",
     "SD": "3db228f0f9eebb465f78344a47c74b8a45a8167346d4fa48854c5e271c0fdc79",
     "SEA": "70675cb2b6b45383d6f0c1be89a60741d0ea3f3fa2da7054019adb61f3ecb77d",
-    "SF": "9cce52cb66ef2572310a17e9f91e78fde5add5e7cbd9f9e50f1af996ed73cdba",
+    "SF": "5247756afb52912c77eddd989b00efa435c3d484a0b2fffd06f51dfbbee5b352",
     "STL": "b3b948a74a106245d675f8c1b31a3eab634d357470fb9e0be6836f92a0d859d1",
     "TB": "a6552636842b0b91a736e72a01dce5b606bbe246c91f6970483d669bb6232e14",
-    "TEN": "26f6676e19f62f4ad27386a7eada443802f50bd61457e1fd5fe5b4a9154d918a",
+    "TEN": "376ac06214962510bb75c594143fe358a71da9d3dfda5854a23ae4b3f546d0ca",
     "WAS": "0d23527c4d0d814a2836331aa7e4d1afc9bdabed9e95ea20ad9293ecbc900896",
     "WCO": "e9abc42c566c5c37fa99e1ffd333b8160da9befccc718c8976c71b26024f056f",
 }
