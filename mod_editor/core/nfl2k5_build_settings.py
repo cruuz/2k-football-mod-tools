@@ -60,6 +60,7 @@ FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline 
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
+FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off
@@ -93,6 +94,8 @@ def build_settings(value):
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])
+    from . import nfl2k5_team_number_scale as number_scale
+    choices["team_number_scale"] = number_scale.normalize(choices["team_number_scale"])
     tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
     expected = defaults()
     for key in FEATURE_KEYS:

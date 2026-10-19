@@ -480,6 +480,11 @@ class BuildPlan:
     # (go, drag, flat, out, post/corner break) to 10 ft; it is drawn at its authored length, kept inside the play-call
     # panel. Only how the art is drawn changes. A late executable owner. EXPERIMENTAL / UNWITNESSED in game
     play_art_routes: bool = False
+    # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
+    # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
+    # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
+    # EXPERIMENTAL / UNWITNESSED; set per recipe (Noah 10/19: the Chiefs only)
+    team_number_scale: dict = field(default_factory=dict)
     # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
     # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
     # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
@@ -937,6 +942,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
                                ("db_ball_play", "nfl2k5_db_ball_play"))},
+        "team_number_scale": _core_module("nfl2k5_team_number_scale") is not None
+                             and _core_module("nfl2k5_xbe_space") is not None,  # b776-ns1
         "modern_fans": _modern_fans_available(),  # b77-fr1
         "modern_officials": _modern_officials_available(),  # b77-rf1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1654,6 +1661,15 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                               ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
                               ("db_ball_play", ball, lambda m, x: m.status(x))):
         out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
+    # b776-ns1: the per-kit jersey number size (the executable's table)
+    number_scale = _core_module("nfl2k5_team_number_scale")
+    if number_scale is None:
+        out["team_number_scale"] = "unavailable"
+    else:
+        try:
+            out["team_number_scale"] = number_scale.status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["team_number_scale"] = "unknown"
     # b77-co1: the 2026 head coaches (32 coach models, two portrait slots, two coach-record photo ids)
     coaches = _core_module("nfl2k5_modern_coaches")
     if coaches is None:
@@ -2752,6 +2768,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"{label} must be Off or On.")
     if type(plan.modern_fans) is not bool:  # b77-fr1
         raise ValueError("2026 fans must be Off or On.")
+    if plan.team_number_scale:  # b776-ns1
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        if number_scale is None:
+            raise ValueError("The per-kit jersey number size needs nfl2k5_team_number_scale.")
+        plan.team_number_scale = number_scale.normalize(plan.team_number_scale)
+    elif not isinstance(plan.team_number_scale, dict):
+        raise ValueError("Jersey number sizes must be an object of kit: scale.")
     if type(plan.modern_officials) is not bool:  # b77-rf1
         raise ValueError("2025-26 officials must be Off or On.")
     if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
@@ -3415,6 +3438,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"Modern goalposts cannot read the goalpost scenes: {exc}") from exc
         if goal_state not in ("retail", "applied"):
             raise ValueError("The goalpost, its shadow and the executable's goalpost sites are not the supported retail or already-modern set. Turn Modern goalposts off or rebuild from a supported USA source.")
+    if plan.team_number_scale:  # b776-ns1: the source executable's jersey-number block must be retail
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        try:
+            number_state = number_scale.status(_xbe_bytes(source))
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"The per-kit jersey number size cannot read the executable: {exc}") from exc
+        if number_state != "retail":
+            raise ValueError("The executable's jersey-number block is not the supported retail code (or already carries "
+                             "a number-size table). Clear the jersey number sizes or rebuild from a supported USA source.")
     if plan.hair_styles:  # b775-hs1
         hair = _core_module("nfl2k5_hair_styles")
         if hair is None or not is_image:
@@ -4867,6 +4899,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             progress(line, 0, 0)
         receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
         receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+    if plan.team_number_scale:
+        # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
+        # allocator owner and its hook after the jersey-number selector call (0x8F580).
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        progress("Jersey numbers: per-kit size", 0, 0)
+        scaled_xbe, number_receipt = number_scale.apply(_xbe_bytes(target), plan.team_number_scale)
+        _write_xbe_bytes(target, scaled_xbe)
+        if number_scale.read_settings(_xbe_bytes(target)) != {"status": "applied", "scales": plan.team_number_scale}:
+            raise RuntimeError("Jersey number sizes: the output executable does not read back as applied")
+        receipt["steps"].append({"step": "team_number_scale", **{k: v for k, v in number_receipt.items()
+                                                                 if k not in ("edits", "code_install")},
+                                 "edits": number_receipt.get("edits", [])})
+        receipt["result"]["team_number_scale"] = number_receipt["scales"]
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -4896,6 +4941,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["historic_stock_books"] = _core_module("nfl2k5_stock_books").image_status(target, stock_bank)
         if receipt["result"]["historic_stock_books"] != "applied":
             raise ValueError("stock books did not survive the final resource passes")
+    if plan.team_number_scale and _core_module("nfl2k5_team_number_scale").read_settings(_xbe_bytes(target)) != {
+            "status": "applied", "scales": plan.team_number_scale}:  # b776-ns1
+        raise ValueError("the jersey number sizes did not survive the final passes")
     if plan.espn25_named_previews:
         receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)

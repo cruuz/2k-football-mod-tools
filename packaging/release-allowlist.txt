@@ -1298,6 +1298,7 @@ mod_editor/core/nfl2k5_modern_goalposts.py
 data/nfl2k5_modern_goalposts_pins.json
 tests/mod_editor/test_nfl2k5_modern_goalposts.py
 mod_editor/core/nfl2k5_hair_styles.py
+mod_editor/core/nfl2k5_team_number_scale.py
 data/nfl2k5_hair_styles/geometry.json
 data/nfl2k5_hair_styles/pins.json
 data/nfl2k5_hair_styles/pointer_fields.json

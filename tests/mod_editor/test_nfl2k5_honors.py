@@ -111,11 +111,10 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(late[late.index("nfl2k5_honors"):][:2], ("nfl2k5_honors", "nfl2k5_coach_ai"))
         self.assertLess(late.index("nfl2k5_coach_ai"), late.index("nfl2k5_moment_coaches"))
         # b775-ct1 appends the classic teams' read-only helpers after the team ratings owners; b775-hs1's hair styles code
-        # owner is the last late owner (b775-int1: both merged)
-        # b776-ai2 appends the two CPU AI owners after hair styles; b776-pa2 (int2) the play art routes owner after them
-        self.assertEqual(late[-7:], ("nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams",
-                                     "nfl2k5_hair_styles", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play",
-                                     "nfl2k5_play_art_routes"))
+        # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
+        # b776-ns1's jersey number sizes (int2 order)
+        self.assertEqual(late[-8:], ("nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams",
+                                     "nfl2k5_hair_styles", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale"))
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
