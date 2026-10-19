@@ -523,7 +523,9 @@ def _default_spec(ctx: FormationContext, label: str, player: Player) -> tuple:
     if player.kind in (HB, FB) and label in ("B", "B2"):
         return ("check", "Back Flat") if label == "B" else ("block",)
     number = int(label[1:]) if label[1:].isdigit() else 1
-    return ("route", "Go" if number == 1 else "Seam")
+    # b776 pb1 (Noah 10/18: "the default shouldn't just be a go route"): an unassigned receiver runs a breaking
+    # complement, a comeback outside and a curl inside, not a vertical
+    return ("route", "Comeback", 13) if number == 1 else ("route", "Curl", 10)
 
 
 _DEPTH_FAMILIES = ("intermediate", "deep", "double", "crosser")
@@ -1540,7 +1542,7 @@ def fill_unassigned(ctx: FormationContext, d: PlayDesign) -> PlayDesign:
                 d.chains[p.slot] = back_block_chain(ctx, p.slot) if passing else \
                     [start(3), legf(4, 0, 6, turn=2, group=1, rel=0)]
             elif passing:
-                d.chains[p.slot] = route_chain("Go", 15)
+                d.chains[p.slot] = route_chain("Curl", 10)
             else:
                 d.chains[p.slot] = stalk_chain() if not p.on_los else [start(3), legf(0, 0, 3, turn=2)]
     return d

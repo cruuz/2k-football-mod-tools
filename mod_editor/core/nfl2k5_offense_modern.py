@@ -436,7 +436,7 @@ STRONG_COMBOS[1] = []          # a lone call-side receiver uses the backside lis
 #: backside combos: one receiver (an isolation route) or two
 WEAK_COMBOS: dict[int, list[SideCombo]] = {
     1: [_sc(n, [r], 0, family=f) for n, r, f in (
-        ("Dig", ("Dig", 12), "dropback"), ("Post", ("Post", 12), "deep"), ("Go", ("Go", 15), "deep"),
+        ("Dig", ("Dig", 12), "dropback"), ("Post", ("Post", 12), "deep"), ("Flag", ("Flag", 12), "dropback"),
         ("Curl", ("Curl", 10), "dropback"), ("Comeback", ("Comeback", 13), "dropback"), ("Out", ("Out", 10), "dropback"),
         ("Slant", ("Slant", 3), "quick"), ("Hitch", ("Hitch", 6), "quick"), ("Fade", ("Fade", 12), "deep"),
         ("Skinny Post", ("Skinny Post", 10), "deep"), ("Corner", ("Corner", 10), "dropback"),
@@ -451,11 +451,11 @@ WEAK_COMBOS: dict[int, list[SideCombo]] = {
     )],
     2: [_sc(n, rs, k, family=f) for n, rs, k, f in (
         ("Slants", [("Slant", 3), ("Slant", 2)], 1, "quick"), ("Smash", [("Hitch", 5), ("Corner", 10)], 1, "dropback"),
-        ("Stick", [("Go", 15), ("Stick", 6)], 1, "quick"), ("Curls", [("Curl", 10), ("Flat",)], 0, "dropback"),
-        ("Seams", [("Hitch", 6), ("Seam", 15)], 1, "quick"), ("Verts", [("Go", 15), ("Seam", 15)], 1, "deep"),
+        ("Stick", [("Comeback", 13), ("Stick", 6)], 1, "quick"), ("Curls", [("Curl", 10), ("Flat",)], 0, "dropback"),
+        ("Seams", [("Hitch", 6), ("Seam", 15)], 1, "quick"), ("Corner Smash", [("Corner", 12), ("Hitch", 5)], 0, "dropback"),
         ("Outs", [("Quick Out", 5), ("Stick", 6)], 0, "quick"), ("Dagger", [("Dig", 15), ("Seam", 15)], 0, "dropback"),
         ("Levels", [("Dig", 12), ("In", 5)], 1, "dropback"), ("Slant Flat", [("Slant", 3), ("Arrow",)], 0, "quick"),
-        ("Comebacks", [("Comeback", 14), ("Seam", 14)], 0, "dropback"), ("Whip", [("Go", 15), ("Whip", 4)], 1, "quick"),
+        ("Comebacks", [("Comeback", 14), ("Seam", 14)], 0, "dropback"), ("Whip", [("Curl", 12), ("Whip", 4)], 1, "quick"),
         ("Post Dig", [("Post", 12), ("Dig", 10)], 0, "deep"), ("Hitches", [("Hitch", 6), ("Hitch", 5)], 0, "quick"),
         ("Bench", [("Out", 12), ("Arrow",)], 0, "dropback"), ("Out Drag", [("Seam Out", 9), ("Drag", 3)], 0, "dropback"),
     )],
@@ -496,9 +496,10 @@ class ComboCall:
     focus: str = "strong"          # strong | weak | back
     b2: tuple = ("block",)         # second back's job
     flip: bool = False             # read the backside combo as the call side (iso concepts)
+    variant: int = 0               # b776 pb1: which breaking route replaces each plain vertical filler (0 = as drawn)
 
     def key(self) -> tuple:
-        return (self.strong, self.weak, self.back, self.drop, self.focus, self.b2)
+        return (self.strong, self.weak, self.back, self.drop, self.focus, self.b2, self.variant)
 
 
 def _find(table, n, name):
@@ -529,6 +530,10 @@ def combo_design(ctx: oc.FormationContext, call: ComboCall, codes=None) -> PlayD
         for i, spec in enumerate(weak.routes):
             routes[w_labels[i]] = spec
         reads_w = [w_labels[i] for i in weak.order]
+    subs = []
+    if call.variant and strong.name not in VERTS_FAMILY:
+        routes, subs = vary_verticals(routes, call.variant, keep={s_labels[strong.key]} |
+                                      ({w_labels[weak.key]} if weak is not None and weak.routes else set()))
     b, b2 = ctx.slot("B"), ctx.slot("B2")
     if b is not None:
         routes["B"] = call.back
@@ -555,16 +560,47 @@ def combo_design(ctx: oc.FormationContext, call: ComboCall, codes=None) -> PlayD
             routes["B"] = ("fake", oc._fake_hole(ctx), call.back)
         reads = [r for r in reads if r != "B"] + (["B"] if call.back[0] == "route" else [])
     plan = PassPlan(routes, reads, drop, protection, header, tuple(strong.tags), boot_side=(-1 if call.drop == "boot" else 1 if call.drop == "rollout" else 0), fake_to=fake)
-    name = call_name(ctx, call, plan, codes)
+    name = call_name(ctx, call, plan, codes, subs)
     d = oc.build_pass(ctx, name, name, plan)
-    short = call_name(ctx, ComboCall(call.strong, "", call.back, call.drop, call.focus, call.b2), plan, codes)
+    short = call_name(ctx, ComboCall(call.strong, "", call.back, call.drop, call.focus, call.b2), plan, codes, subs)
     d.alt_names = [name] + ([short] if short != name else [])      # shorter fallbacks for the name pool budget
+    if subs:
+        bare = call_name(ctx, ComboCall(call.strong, "", call.back, call.drop, call.focus, call.b2), plan, codes)
+        if bare not in d.alt_names:
+            d.alt_names.append(bare)                                   # the variant tag goes last
     d.preference = 2 if "shot" in strong.tags else 1
     d.tags = tuple(set(d.tags) | {"combo", strong.family})
     return d
 
 
-def call_name(ctx, call: ComboCall, plan, codes=None) -> str:
+#: concepts whose verticals are the point (four verticals, seam / go shots): never varied, capped per book
+VERTS_FAMILY = {"Verticals", "Quads Verts", "Seam Shot", "Go Shot", "Sluggo Seam", "Switch", "Four Verticals"}
+PLAIN_VERTICALS = {"Go", "Seam", "Fade", "Bender"}
+#: breaking replacements for a plain vertical filler: outside (#1) and inside receivers, high-low depths mixed
+OUTSIDE_BREAKS = (("Comeback", 14), ("Flag", 12), ("Curl", 12), ("Out", 14), ("Post Corner", 10), ("Dig", 12),
+                  ("Out and Up", 7), ("Corner Curl", 10), ("Fade Stop", 4), ("Skinny Post", 12), ("Zig", 12),
+                  ("Deep Hook", 10), ("Return", 8), ("Hitch", 6), ("Stop and Go", 10))
+INSIDE_BREAKS = (("Corner", 10), ("Curl", 10), ("Whip", 4), ("Stick", 6), ("Dig", 10), ("Pivot", 3),
+                 ("Crossing Dig", 8), ("Steep In", 10), ("Spot Out", 5), ("Hook Corner", 8), ("Bend In", 6),
+                 ("Seam Out", 9), ("Snag", 4), ("Corner Post", 10), ("Angle Cross", 6))
+
+
+def vary_verticals(routes: dict, variant: int, keep: set) -> tuple[dict, list]:
+    """Replace plain-vertical fillers (go / seam / fade / bender) with breaking routes from the variant's slice of the
+    outside and inside pools; the call side's featured route is kept."""
+    out, subs = dict(routes), []
+    for n, (label, spec) in enumerate(sorted(routes.items())):
+        if label in keep or not spec or spec[0] != "route" or spec[1] not in PLAIN_VERTICALS:
+            continue
+        outside = label.endswith("1")
+        pool = OUTSIDE_BREAKS if outside else INSIDE_BREAKS
+        name, depth = pool[(variant * 3 + n * 5) % len(pool)]
+        out[label] = ("route", name, depth)
+        subs.append(name)
+    return out, subs
+
+
+def call_name(ctx, call: ComboCall, plan, codes=None, subs=()) -> str:
     """Madden-style call name: the featured receiver's letter, the call-side concept, the backside tag."""
     first = oc._resolve(ctx, plan.reads[0]) if plan.reads else None
     lead = ""
@@ -573,7 +609,7 @@ def call_name(ctx, call: ComboCall, plan, codes=None) -> str:
     pre = {"pa": "PA ", "boot": "PA Boot ", "rollout": "Sprint "}.get(call.drop, "")
     if call.drop == "max" and ctx.slot("B") is not None:
         pre = "Max "                    # max protection only when a back stays in
-    parts = [p for p in (pre.strip(), lead, call.strong, call.weak) if p]
+    parts = [p for p in (pre.strip(), lead, call.strong, subs[0] if subs else "", call.weak) if p]
     name = " ".join(parts)
     return name[:40]
 
@@ -596,12 +632,15 @@ def combo_calls(ctx: oc.FormationContext) -> list[ComboCall]:
                 if drop == "max":
                     jobs = [("block",)]          # max protection: the backs stay in
                 for job in jobs:
+                    has_vert = sc.name not in VERTS_FAMILY and any(
+                        r[0] == "route" and r[1] in PLAIN_VERTICALS for r in (*sc.routes, *wc.routes))
                     for focus in ("strong", "weak", "back"):
                         if focus == "weak" and not wc.name:
                             continue
                         if focus == "back" and (not has_b or job[0] == "block" or drop in ("pa",)):
                             continue
-                        out.append(ComboCall(sc.name, wc.name, job, drop, focus))
+                        for variant in ((1, 2, 3, 4) if has_vert else (0,)):
+                            out.append(ComboCall(sc.name, wc.name, job, drop, focus, variant=variant))
     return out
 
 

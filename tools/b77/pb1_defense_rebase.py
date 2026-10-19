@@ -68,13 +68,14 @@ def remap_categories(pack: pk.PlaybookPack, team: str, book) -> tuple[pk.Playboo
 def rebase(pack: pk.PlaybookPack, book, body: bytes) -> pk.PlaybookPack:
     for f in pack.formations:
         if f.replace_index is not None and (not 0 <= f.replace_index < len(book.formations)
-                                            or book.formations[f.replace_index].name != f.replace_name):
+                                            or book.formations[f.replace_index].name.strip() != f.replace_name.strip()):
             raise ValueError(f"formation {f.id} no longer replaces a formation named {f.replace_name!r}")
-        if not 0 <= f.donor.index < len(book.formations) or book.formations[f.donor.index].name != f.donor.name:
+        if not 0 <= f.donor.index < len(book.formations) or \
+                book.formations[f.donor.index].name.strip() != f.donor.name.strip():
             raise ValueError(f"formation {f.id} donor {f.donor.name!r} moved")
     for p in pack.plays:
         if p.replace_index is not None and (not 0 <= p.replace_index < len(book.plays)
-                                            or book.plays[p.replace_index].name != p.replace_name):
+                                            or book.plays[p.replace_index].name.strip() != p.replace_name.strip()):
             raise ValueError(f"play {p.id} no longer replaces a play named {p.replace_name!r}")
         try:
             pk.validate_defense_pack_play(p, book, body)

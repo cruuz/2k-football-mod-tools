@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
-ALIAS = {"ARZ": "ARI", "STL": "LA", "SD": "LAC", "OAK": "LV"}
+ALIAS = {"ARZ": "ARI", "STL": "LAR", "SD": "LAC", "OAK": "LV"}
 
 
 def sha(raw: bytes) -> str:

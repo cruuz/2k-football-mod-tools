@@ -202,6 +202,49 @@ def route_shape(chain) -> tuple | None:
     return (pre[:1],) + kinds + (band,)
 
 
+PLAIN_VERTICAL = {(0,), (6, 0), (1, 0)}           # Go / Seam, Fade, Bender (inside release, then straight up)
+POST_LIKE = {(0, 2), (0, 1), (2,), (1,)}
+
+
+def receiver_routes(view: lint.PlayView):
+    """(x cm, z cm, kinds tuple, depth band) per receiver that runs a route (blockers and screen blocks left out)."""
+    out = []
+    for s, k in enumerate(view.kinds):
+        if k not in lint.RECEIVER_KINDS:
+            continue
+        sh = route_shape(view.chains[s])
+        if not sh or all(x in (9, 10) for x in sh[1:-1]):
+            continue
+        out.append((view.positions[s][0], view.positions[s][1], tuple(sh[1:-1]), sh[-1], sh[0]))
+    return out
+
+
+def combo_signature(view: lint.PlayView) -> tuple:
+    """Route combination left to right, mirrored to a canonical side: what the play draws, minus the alignment."""
+    rows = sorted(receiver_routes(view), key=lambda r: r[0])
+    seq = tuple((r[4], r[2], r[3]) for r in rows)
+    return min(seq, tuple(reversed(seq)))
+
+
+def alignment_signature(view: lint.PlayView) -> tuple:
+    """Route by alignment (x and depth buckets per receiver), mirrored: two records with this equal look the same."""
+    def bucket(x, z):
+        ax = abs(x) / YD
+        return ("wide" if ax >= 14 else "slot" if ax >= 7 else "tight" if ax >= 2.5 else "back",
+                "deep" if z <= -2.5 * YD else "off" if z < -0.3 * YD else "los")
+    rows = sorted(receiver_routes(view), key=lambda r: r[0])
+    seq = tuple((bucket(r[0], r[1]), r[4], r[2], r[3]) for r in rows)
+    return min(seq, tuple(reversed(seq)))
+
+
+def vertical_profile(view: lint.PlayView) -> tuple[int, int, bool]:
+    """(routes, plain verticals, 'one post-type route and every other receiver vertical')."""
+    rows = [r for r in receiver_routes(view) if r[1] > -2.5 * YD or abs(r[0]) > 4.5 * YD]   # backs aside
+    verts = sum(1 for r in rows if r[2] in PLAIN_VERTICAL)
+    posts = sum(1 for r in rows if r[2] in POST_LIKE)
+    return len(rows), verts, (posts == 1 and verts == len(rows) - 1 and len(rows) >= 3)
+
+
 def position_label(code: int) -> str:
     kind = code & 31
     base = KIND_LABEL.get(kind, f"k{kind}")
@@ -300,6 +343,24 @@ def team_report(raw: bytes) -> dict:
             if r is not None:
                 end = lint.route_end_depth(v.chains[r], v.positions[r][1])
                 deep += end is not None and end >= 20 * YD
+    passes = [v for v in by_play.values() if lint.is_pass(v) and play_family(v) not in ("screen", "trick")]
+    sigs = Counter(combo_signature(v) for v in passes)
+    asigs = Counter(alignment_signature(v) for v in passes)
+    routes_n = verts_n = three_vert = post_vert = 0
+    for v in passes:
+        n, vv, pv = vertical_profile(v)
+        routes_n += n
+        verts_n += vv
+        three_vert += vv >= 3
+        post_vert += pv
+    route_combo = dict(pass_plays=len(passes), distinct_combo_signatures=len(sigs),
+                       max_signature_share=round(max(sigs.values()) / len(passes), 3) if passes else 0,
+                       plain_vertical_route_share=round(verts_n / routes_n, 3) if routes_n else 0,
+                       three_plus_vertical_plays_pct=round(100 * three_vert / len(passes), 1) if passes else 0,
+                       post_plus_verticals_plays=post_vert,
+                       duplicate_alignment_signatures=sum(c - 1 for c in asigs.values() if c > 1),
+                       top10=[[" | ".join("+".join(map(str, k)) + b for _p, k, b in sig), c]
+                              for sig, c in sigs.most_common(10)])
     keys = Counter(play_key(v) for v in by_play.values())
     dup = sum(c - 1 for c in keys.values() if c > 1)
     return dict(
@@ -314,6 +375,7 @@ def team_report(raw: bytes) -> dict:
         screens_per_menu_max=max(screens_per_menu), same_screen_in_menu_max=max(same_screen_max),
         duplicate_play_records=dup, play_keys=sorted(keys), short_menu_formations=short_menus,
         run_schemes_per_lane={str(k): len(v) for k, v in sorted(lanes.items())}, deep_shot_plays=deep,
+        route_combos=route_combo,
         formation_names=sorted(n for n, _ in forms.values()))
 
 
@@ -329,6 +391,12 @@ def summarize(label: str, rows: dict) -> dict:
         fam.update(r["formation_families"]); pf.update(r["play_families"]); rs.update(r["run_schemes"])
         rk.update({int(k): v for k, v in r["route_kinds"].items()}); prim.update(r["primary_by_position"])
         role.update(r["primary_by_alignment"])
+    rc = [r["route_combos"] for r in rows.values()]
+    for key in ("distinct_combo_signatures", "max_signature_share", "plain_vertical_route_share",
+                "three_plus_vertical_plays_pct", "post_plus_verticals_plays", "duplicate_alignment_signatures"):
+        vals = [x[key] for x in rc]
+        league["combo_" + key + "_mean"] = round(sum(vals) / len(vals), 3)
+        league["combo_" + key + "_max"] = max(vals)
     league["formation_families_total"] = dict(fam.most_common())
     league["formation_family_kinds"] = len(fam)
     league["play_families_total"] = dict(pf.most_common())

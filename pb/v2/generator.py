@@ -320,6 +320,8 @@ class Cand:
     must: str = ""
     deep: bool = False    # featured route finishes 20+ yards downfield (coach profile deep class)
     lane: int | None = None   # native run lane of the handoff hole (nfl2k5_vip.HOLE_LANES)
+    verts: bool = False   # a four-verticals-family play (3+ plain verticals by design)
+    asig: tuple = ()      # route-by-alignment signature, mirrored (two records may not share one)
 
 
 def _views(spec: oc.FormationSpec, design: oc.PlayDesign, flags: int) -> lint.PlayView:
@@ -432,6 +434,60 @@ HB_, FB_ = lib.HB, lib.FB
 
 
 HOLE_LANES = (2, 4, 3, 3, 2, 2, 1, 1, 0)        # nfl2k5_vip.HOLE_LANES
+PLAIN_VERTICAL = {(0,), (6, 0), (1, 0)}           # go / seam, fade, bender (pb/v2/variety.py classes)
+POST_LIKE = {(0, 2), (0, 1), (2,), (1,)}
+VERTS_CONCEPTS = ("Verticals", "Four Verticals", "Seam Shot", "Go Shot", "Sluggo Seam", "Switch", "Quads Verts",
+                  "Flea Flicker")
+
+
+def route_rows(spec: oc.FormationSpec, design: oc.PlayDesign):
+    """(x yd, z yd, segment kinds, stem band, pre) for every receiver running a route (not blocks / screen blocks)."""
+    ctx = spec.context()
+    out = []
+    for p in ctx.players:
+        if p.kind not in (oc.WR, oc.TE, oc.HB, oc.FB):
+            continue
+        ch = design.chains[p.slot] or []
+        segs = [n for n in ch if n[0] == 0x12]
+        kinds = tuple(int(n[1][0]) for n in segs)
+        if not kinds or all(k in (9, 10) for k in kinds):
+            continue
+        stem = segs[0][1][2] / YD if kinds[0] in (0, 10) else 0.0
+        band = "s" if stem <= 4.5 else "m" if stem <= 9.5 else "d"
+        pre = tuple("blk" if n[0] == 0x11 else "fake" for n in ch if n[0] in (0x11, 0x17))[:1]
+        out.append((p.x, p.z, kinds, band, pre))
+    return out
+
+
+def vertical_profile(spec, design) -> tuple[int, bool]:
+    rows = [r for r in route_rows(spec, design) if not (r[1] <= -2.5 and abs(r[0]) <= 4.5)]
+    verts = sum(1 for r in rows if r[2] in PLAIN_VERTICAL)
+    posts = sum(1 for r in rows if r[2] in POST_LIKE)
+    return verts, (posts == 1 and verts == len(rows) - 1 and len(rows) >= 3)
+
+
+def alignment_signature(spec, design) -> tuple:
+    def bucket(x, z):
+        ax = abs(x)
+        return ("wide" if ax >= 14 else "slot" if ax >= 7 else "tight" if ax >= 2.5 else "back",
+                "deep" if z <= -2.5 else "off" if z < -0.3 else "los")
+    rows = sorted(route_rows(spec, design), key=lambda r: r[0])
+    seq = tuple((bucket(r[0], r[1]), r[4], r[2], r[3]) for r in rows)
+    return min(seq, tuple(reversed(seq)))
+
+
+def screen_blockers(ctx, design) -> None:
+    """Receivers who are not the screen target block downfield (release, then block: retail kind 10) instead of
+    running clear-out verticals."""
+    if "screen" not in design.tags:
+        return
+    for p in ctx.players:
+        if p.slot == design.primary or p.kind not in (oc.WR, oc.TE):
+            continue
+        ch = design.chains[p.slot] or []
+        kinds = tuple(int(n[1][0]) for n in ch if n[0] == 0x12)
+        if kinds in PLAIN_VERTICAL or kinds in POST_LIKE:
+            design.chains[p.slot] = oc.route_chain("Stem Block", 6 if abs(p.x) < 10 else 9)
 
 
 def make_cand(spec, design, family, weight, must="") -> Cand:
@@ -448,10 +504,13 @@ def make_cand(spec, design, family, weight, must="") -> Cand:
             for n in ch:
                 if n[0] == 0x16:
                     lane = HOLE_LANES[int(n[1][2])]
+    verts = passing and any(design.concept.startswith(v) or design.name.endswith(v) or f" {v}" in design.name
+                            for v in VERTS_CONCEPTS)
     return Cand(design, spec.name, family, _concept_base(design.name), design.concept,
                 codes[design.primary] if design.primary is not None and passing else None,
                 screen_type(design, spec), frozenset(_route_names(design)), frozenset(_kinds(design)), weight,
-                (spec.personnel, v2.chain_key(design.chains)), must, deep, lane)
+                (spec.personnel, v2.chain_key(design.chains)), must, deep, lane, verts,
+                alignment_signature(spec, design) if passing else ())
 
 
 def candidates(info, prof: Profile, fname: str, checker: Checker, rng: random.Random, sample: int = 220) -> list[Cand]:
@@ -467,6 +526,14 @@ def candidates(info, prof: Profile, fname: str, checker: Checker, rng: random.Ra
         oc.fill_unassigned(ctx, design)
         if any(not ch for ch in design.chains):
             return
+        screen_blockers(ctx, design)
+        if design.play_type in ("pass", "pa_pass") and "screen" not in design.tags:
+            # b776 pb1 (Noah: "a tight end or slot post, everyone else going vertical"): no post-plus-verticals
+            # shape, and three or more plain verticals only in the four-verticals family
+            verts, post_vert = vertical_profile(spec, design)
+            fam_verts = any(v in design.name or design.concept.startswith(v) for v in VERTS_CONCEPTS)
+            if post_vert or (verts >= 3 and not fam_verts):
+                return
         ok, why = checker.ok(info, spec, design)
         if not ok:
             return
@@ -619,6 +686,10 @@ class Selector:
         self.quota = quota or {}
         self.taken = Counter()
         self.lanes = defaultdict(set)
+        self.asigs = set()
+        self.verts = 0
+        passes = sum(v for k, v in (quota or {}).items() if k not in ("run",))
+        self.verts_cap = max(2, int(0.08 * passes))
         self.routes = Counter()
         self.kinds = Counter()
         self.concepts = Counter()
@@ -662,10 +733,17 @@ class Selector:
                 s = 0.0
             if sum(1 for m in menu if m.screen_type) >= 2:
                 s = 0.0
+        if record and c.asig and c.asig in self.asigs:
+            s = 0.0                           # no two records with the same route-by-alignment picture
+        if record and c.verts and self.verts >= self.verts_cap:
+            s = 0.0                           # four-verticals family: about 8% of the book's passes at most
         return s
 
     def take(self, c: Cand):
         self.taken[BOOK_FAMILY[c.family]] += 1
+        if c.asig:
+            self.asigs.add(c.asig)
+        self.verts += c.verts
         self.routes.update(c.routes)
         self.kinds.update(c.kinds)
         self.concepts[c.concept] += 1
@@ -821,6 +899,12 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
             d = oc.design(row["concept"], spec.context(), dict(row["overrides"], name=row["name"]))
         except (oc.ConceptUnavailable, KeyError, ValueError, TypeError):
             continue
+        oc.fill_unassigned(spec.context(), d)
+        screen_blockers(spec.context(), d)
+        if d.play_type in ("pass", "pa_pass") and "screen" not in d.tags:
+            verts, post_vert = vertical_profile(spec, d)
+            if post_vert or (verts >= 3 and not any(v in d.name or d.concept.startswith(v) for v in VERTS_CONCEPTS)):
+                continue
         if not checker.ok(info, spec, d)[0]:
             continue
         fam = {"quick": "quick", "dropback": "dropback", "pa": "pa", "shot": "deep", "screen": "screen", "run": "run",
@@ -830,8 +914,14 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
             musts.append((row["formation"], c))
             team_plays += 1
     for f, c in musts:
-        if c is not None and len(chosen) < budget and not any(m.key == c.key for m in menus[f]):
-            pick(f, c)
+        if c is None or len(chosen) >= budget or any(m.key == c.key for m in menus[f]):
+            continue
+        if c.key not in chosen and c.asig and c.asig in sel.asigs:
+            continue                          # the same route-by-alignment picture is already a record
+        if c.screen_type and (sum(1 for m in menus[f] if m.screen_type) >= 2
+                              or any(m.screen_type == c.screen_type for m in menus[f])):
+            continue                          # the menu screen rule holds for team plays too
+        pick(f, c)
     # greedy fill: each step serves the formation furthest below its own-record target; a set with no sister
     # formation (same personnel) cannot borrow plays, so it needs more of its own
     sisters = Counter(oc.FORMATIONS[f].personnel for f in forms)
@@ -918,7 +1008,9 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
                 continue
             if any(m.design.name == c.design.name for m in menus[f]):
                 continue
-            out.append((sel.score(c, menus[f], mix, record=False) / (1 + links[key]), c))
+            score = sel.score(c, menus[f], mix, record=False)
+            if score > 0:                     # zero = refused (third screen, repeated screen type)
+                out.append((score / (1 + links[key]), c))
         out.sort(key=lambda t: -t[0])
         return [c for _s, c in out if checker.ok(info, spec, c.design)[0]][:5]
 
@@ -1081,7 +1173,14 @@ def name_variants(c: Cand) -> list[str]:
         alts.insert(0, c.design.name)
     base = alts[-1]
     if base.startswith("PA Boot "):
-        alts.append(base.replace("PA Boot ", "Boot ", 1))
+        base = base.replace("PA Boot ", "Boot ", 1)
+        alts.append(base)
+    # last resort: drop the featured receiver's letter ("PA Z Flood" -> "PA Flood"); identical names share the pool
+    words = base.split(" ")
+    for i, w in enumerate(words[:2]):
+        if w in ("X", "Z", "Slot", "Y", "U", "HB", "RB2", "FB") and len(words) > i + 1:
+            alts.append(" ".join(words[:i] + words[i + 1:]))
+            break
     return alts
 
 
@@ -1123,17 +1222,18 @@ def fit_names(result: dict, team: str) -> dict:
         return True
     before = units()
     while units() > budget:
-        opts = sorted((k for k in chosen if current[k] + 1 < len(variants[k])),
-                      key=lambda k: -len(variants[k][current[k]]))
         moved = False
-        for k in opts:
-            nxt = variants[k][current[k] + 1]
-            if menu_ok(k, nxt):
-                current[k] += 1
-                moved = True
+        for k in sorted((k for k in chosen if current[k] + 1 < len(variants[k])),
+                        key=lambda k: -len(variants[k][current[k]])):
+            # the next variant of this record that keeps every menu listing it free of duplicate names
+            for step in range(current[k] + 1, len(variants[k])):
+                if menu_ok(k, variants[k][step][:40]):
+                    current[k] = step
+                    moved = True
+                    break
+            if moved:
                 break
-            current[k] += 1          # skip a variant that would duplicate a menu name
-        if not moved and not opts:
+        if not moved:
             raise ValueError(f"{team}: play names need {units()} UTF-16 units, the pool before 0x13000 has {budget}")
     for k, c in chosen.items():
         c.design.name = variants[k][current[k]][:40]
@@ -1294,7 +1394,7 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
                        plays=len(pack.plays), links=sum(len(m) for _, m in pack.menus),
                        appended_formations=sum(1 for f in pack.formations if f.replace_index is None),
                        appended_plays=sum(1 for p in pack.plays if p.replace_index is None),
-                       semantic_sha256=semantic_digest(pack))
+                       semantic_sha256=semantic_digest(packs.loads_pack(pack.dumps())))   # as saved and loaded
             manifest.append(row)
             if write:
                 packs.save_pack(pack, v2.pack_path(team))
