@@ -167,8 +167,9 @@ _R = None
 
 def use_head(gltf_path) -> None:
     """Load the retail hi_head (a Models export) and rasterise its face surface into texture space."""
-    global _R
+    global _R, _OPENINGS, _SYNTH_EYE
     _R = raster(HeadMesh(gltf_path), S)
+    _OPENINGS = _SYNTH_EYE = None
 
 
 def uvr():
@@ -279,6 +280,10 @@ def bake(photo_rgba, pts, opts):
     """The headshot projected into texture space: colour (S,S,3) uint8 and weight (S,S)."""
     pos, nrm, cov = uvr()
     params, resid = fit_camera(pts)
+    if opts.get('eye_shift') is not None:
+        # fc1: each eye's residual moved by the photo-space shift eye_shift() measured, so the photo's own eye (not
+        # the detector's eye point, which sits on the upper lid) lands in the mesh's eye opening
+        resid = resid + np.vstack([np.asarray(opts['eye_shift'], np.float64), np.zeros((3, 2))])
     uv_l = np.array([UV_EYES[0], UV_EYES[1], UV_NOSE, UV_MOUTH[0], UV_MOUTH[1]]) * K
     field = rbf_field(uv_l, resid.astype(np.float32), sigma=opts.get('rbf_sigma', 28) * K)
     q, Y = project(params, pos)
@@ -308,6 +313,289 @@ def bake(photo_rgba, pts, opts):
     w = w * top * bottom
     w = cv2.GaussianBlur(w.astype(np.float32), (0, 0), 1.5 * K)
     return np.clip(col, 0, 255).astype(np.uint8), w, dict(params=params.tolist(), resid=resid.tolist())
+
+
+# --------------------------------------------------------------------------------------------- eyes (fc1, 2026-10-18)
+# Noah (b775 test, 10/18): the custom faces "put an eye over an eye". Cause (PROVED OFFLINE): YuNet's eye points on
+# the league's headshots sit on the upper eyelid, above the pupil, and the fit pinned them onto the centre of the
+# mesh's eye opening, so the photo's eye was drawn about 1.5 game texels low (p95 5.6, some photos 2.5 high) against
+# an opening about 11 texels tall: the photo's lower lid, lash line and the bottom of its sclera landed on the lid
+# skin under the 3D eyeball (SKIN_eyegloss, textured from the atlas), and the 70% template ring left a 30% ghost.
+# The fix: measure where the photo's eye really is (the photo projected into texture space, both eyes registered
+# against a reference eye that sits on the openings), shift the eyes' residuals by it, fill the openings with the
+# template's eye (hidden at full size, seen through the mip levels), keep the template's lid only on a thin rim,
+# hand any photo sclera left on the lids back to the template, and give the eyeball the iris colour of the
+# player's eyes.
+_OPENINGS = None
+_SYNTH_EYE = None
+_EYE_REF = None
+EYE_DY_MEDIAN = 1.5          # the league's median photo-eye offset (game texels, positive = drawn low), the fallback
+EYE_DY_MAX = 12.0            # a larger registered offset is a failed match
+EYE_NCC_MIN = 0.2            # and so is a weaker correlation
+# the eyeball's texture square in the atlas (SKIN_eyegloss uv: u 0.005-0.128, v 0.774-0.867), as fractions of S
+EYE_PATCH = (0.770, 0.871, 0.0, 0.132)
+
+
+def eye_openings():
+    """The two eye openings of the face surface in texture space: per eye the texels (at S) the SKIN_face mesh does
+    not cover around UV_EYES, its box, and its centre (between the rims' medians over the middle 60%)."""
+    global _OPENINGS
+    if _OPENINGS is None:
+        _pos, _nrm, cov = uvr()
+        out = []
+        for cx, cy in UV_EYES:
+            box = np.zeros((S, S), bool)
+            box[int((cy - 14) * K):int((cy + 14) * K), int((cx - 26) * K):int((cx + 26) * K)] = True
+            sub = box & ~cov
+            lab_, n = ndimage.label(sub)
+            sizes = ndimage.sum(sub, lab_, range(1, n + 1))
+            m = lab_ == (1 + int(np.argmax(sizes)))
+            yy, xx = np.nonzero(m)
+            x0, x1 = int(xx.min()), int(xx.max())
+            mid = (xx > x0 + 0.2 * (x1 - x0)) & (xx < x1 - 0.2 * (x1 - x0))
+            tops = [yy[mid & (xx == x)].min() for x in np.unique(xx[mid])]
+            bots = [yy[mid & (xx == x)].max() for x in np.unique(xx[mid])]
+            out.append({"mask": m, "x0": x0, "x1": x1, "y0": int(yy.min()), "y1": int(yy.max()),
+                        "cx": (x0 + x1) / 2.0, "cy": (float(np.median(tops)) + float(np.median(bots))) / 2.0})
+        _OPENINGS = out
+    return _OPENINGS
+
+
+def _eye_region():
+    m = np.zeros((S, S), bool)
+    m[int(28 * K):int(84 * K), int(52 * K):int(206 * K)] = True
+    return m
+
+
+def fill_openings(q):
+    """q (S,S,2): the texels of the eye region the mesh does not cover (the openings and the lid seam) get a linear
+    interpolation of the covered texels around them, so the photo can be looked at inside the openings."""
+    from scipy.interpolate import griddata
+    _pos, _nrm, cov = uvr()
+    q = q.copy()
+    tgt = _eye_region() & ~cov
+    ring = ndimage.binary_dilation(tgt, iterations=int(3 * K)) & ~tgt & cov
+    ys, xs = np.nonzero(ring)
+    yh, xh = np.nonzero(tgt)
+    for c in range(q.shape[2]):
+        vals = griddata((xs, ys), q[ys, xs, c], (xh, yh), method="linear")
+        bad = np.isnan(vals)
+        if bad.any():
+            vals[bad] = griddata((xs, ys), q[ys, xs, c], (xh[bad], yh[bad]), method="nearest")
+        q[yh, xh, c] = vals
+    return q
+
+
+def _norm_band(L):
+    band = L[int(37.5 * K):int(75 * K), int(50 * K):int(205 * K)]
+    return (L - np.median(band)) / (band.std() + 1e-3)
+
+
+def eye_reference_from(retail_faces: Path, ids=None) -> np.ndarray:
+    """The reference eye: the mean of retail's alternate faces (h), each normalised over the eye band. Retail paints
+    its eyes on the openings, so the mean is sharp and sits on them. Computed from the user's own retail textures."""
+    paths = sorted(Path(retail_faces).glob("h*.png")) if ids is None else [Path(retail_faces) / f"h{i}.png" for i in ids]
+    acc, n = np.zeros((S, S), np.float64), 0
+    for p in paths:
+        if not p.is_file():
+            continue
+        a = np.asarray(Image.open(p).convert("RGB").resize((S, S), Image.BICUBIC))
+        acc += _norm_band(cv2.cvtColor(a, cv2.COLOR_RGB2LAB)[..., 0].astype(np.float32))
+        n += 1
+    if n == 0:
+        raise ValueError(f"no retail h textures in {retail_faces}")
+    return (acc / n).astype(np.float32)
+
+
+def synthetic_eye() -> np.ndarray:
+    """A drawn reference eye on the mesh openings (sclera, iris, lash lines), for when no retail faces are at hand;
+    over the league its offsets agree with the retail mean's (r 0.91, median difference 0.5 texel)."""
+    global _SYNTH_EYE
+    if _SYNTH_EYE is None:
+        T = np.zeros((S, S), np.float32)
+        for o in eye_openings():
+            m = o["mask"]
+            din = ndimage.distance_transform_edt(m) / K
+            dout = ndimage.distance_transform_edt(~m) / K
+            hh = (o["y1"] - o["y0"]) / K
+            r = np.hypot(XX - o["cx"], YY - o["cy"]) / K
+            above = YY < o["cy"]
+            t = np.where(m, 1.0, 0.0)
+            t = np.where(m & (r < 0.62 * hh), -1.6, t)
+            t = t - np.where(~m & above, 2.2 * np.exp(-(dout / 1.3) ** 2), 0) - np.where(~m & ~above, 0.9 * np.exp(-(dout / 1.0) ** 2), 0)
+            t = t - np.where(m, 0.6 * np.exp(-(din / 0.8) ** 2), 0)
+            T += t.astype(np.float32)
+        _SYNTH_EYE = cv2.GaussianBlur(T, (0, 0), 0.8 * K)
+    return _SYNTH_EYE
+
+
+def use_eye_reference(ref) -> None:
+    """Set the reference eye (an (S,S) array or an .npy path); None goes back to the synthetic one."""
+    global _EYE_REF
+    _EYE_REF = None if ref is None else (np.load(ref) if isinstance(ref, (str, Path)) else np.asarray(ref, np.float32))
+
+
+def _ncc_map(L, ref, o, kx, ky):
+    hw, hh = o["x1"] - o["x0"], o["y1"] - o["y0"]
+    tx0, tx1 = int(o["x0"] - 0.22 * hw), int(o["x1"] + 0.22 * hw)
+    ty0, ty1 = int(o["y0"] - 0.55 * hh), int(o["y1"] + 0.55 * hh)
+    T = ref[ty0:ty1, tx0:tx1]
+    DX, DYU, DYD = int(0.2 * hw), int(1.2 * hh), int(1.6 * hh)
+    ys = o["cy"] + (np.arange(ty0 - DYU, ty1 + DYD) - o["cy"]) * ky
+    xs = o["cx"] + (np.arange(tx0 - DX, tx1 + DX) - o["cx"]) * kx
+    reg = cv2.remap(L, np.tile(xs[None, :], (len(ys), 1)).astype(np.float32),
+                    np.tile(ys[:, None], (1, len(xs))).astype(np.float32), cv2.INTER_LINEAR)
+    return cv2.matchTemplate(reg, T, cv2.TM_CCOEFF_NORMED), DYU
+
+
+def register_eyes(col):
+    """Where the photo's eyes sit against the mesh openings: col is the photo in texture space (openings filled).
+    Each eye is matched against the reference eye by normalised cross-correlation over vertical offsets and x/y
+    scales (the horizontal peak is flat, so x stays the detector's; the two eyes are measured on their own, since the
+    detector misplaces each eye on its own). Returns per eye (dy in game texels, positive = the photo eye is low; the
+    correlation; whether the best match is on the edge of the search, i.e. failed)."""
+    ref = _EYE_REF if _EYE_REF is not None else synthetic_eye()
+    L = cv2.GaussianBlur(cv2.cvtColor(col, cv2.COLOR_RGB2LAB)[..., 0].astype(np.float32), (0, 0), 1.0)
+    out = []
+    for o in eye_openings():
+        best = None
+        for kx in (0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25):
+            for ky in (0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4):
+                r, DYU = _ncc_map(L, ref, o, kx, ky)
+                rows = r.max(axis=1)
+                j = int(np.argmax(rows))
+                val = float(rows[j]) - 0.15 * abs(math.log(kx)) - 0.15 * abs(math.log(ky))
+                if best is None or val > best[0]:
+                    edge = j < 1.5 * K or j > len(rows) - 1 - 1.5 * K
+                    best = (val, (j - DYU) * ky / K, float(rows[j]), bool(edge))
+        out.append(best[1:])
+    return out
+
+
+def opening_view(photo_rgba, pts, opts=None):
+    """The photo in texture space with the eye openings filled (bake's mapping, eye_shift included when opts has
+    one): (S,S,3) uint8 and the photo coordinates q (S,S,2)."""
+    opts = opts or {}
+    pos, nrm, cov = uvr()
+    params, resid = fit_camera(pts)
+    if opts.get('eye_shift') is not None:
+        resid = resid + np.vstack([np.asarray(opts['eye_shift'], np.float64), np.zeros((3, 2))])
+    uv_l = np.array([UV_EYES[0], UV_EYES[1], UV_NOSE, UV_MOUTH[0], UV_MOUTH[1]]) * K
+    field = rbf_field(uv_l, resid.astype(np.float32), sigma=opts.get('rbf_sigma', 28) * K)
+    q, _Y = project(params, pos)
+    q = fill_openings((q + field).astype(np.float32))
+    ph = photo_rgba[..., :3].astype(np.float32)
+    col = np.clip(cv2.remap(ph, q[..., 0], q[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT), 0, 255).astype(np.uint8)
+    return col, q
+
+
+def eye_shift(photo_rgba, pts, opts=None):
+    """The photo-space shift of each eye's residual that puts the photo's eye in the mesh's opening, and the
+    measurement. Each eye takes its own registered offset; one that failed (the best match on the edge of the
+    search, beyond EYE_DY_MAX or under EYE_NCC_MIN) takes its partner's, or the league median when both failed."""
+    opts = dict(opts or {})
+    opts.pop("eye_shift", None)
+    col, q = opening_view(photo_rgba, pts, opts)
+    reg = register_eyes(col)
+    ok = [not edge and abs(dy) <= EYE_DY_MAX and c >= EYE_NCC_MIN for dy, c, edge in reg]
+    shift = np.zeros((2, 2), np.float64)
+    info = []
+    for k, (dy, c, edge) in enumerate(reg):
+        use = dy if ok[k] else (reg[1 - k][0] if ok[1 - k] else EYE_DY_MEDIAN)
+        p0 = np.array(UV_EYES[k], np.float32) * K
+        p1 = p0 + np.array([0.0, use * K], np.float32)
+        a = cv2.remap(q, np.array([[p0[0], p1[0]]], np.float32), np.array([[p0[1], p1[1]]], np.float32), cv2.INTER_LINEAR)[0]
+        shift[k] = a[1] - a[0]
+        info.append({"dy": round(float(dy), 2), "ncc": round(c, 3), "edge": bool(edge), "used": round(float(use), 2)})
+    return shift, info
+
+
+def brow_shift(q0, q1, brow_y=37.0):
+    """How far (game texels, positive = up) the photo's brows move in the texture with the eye shift: for each eye's
+    column, the texel of the new mapping that samples the photo row the old mapping sampled at the brows."""
+    out = []
+    for cx, _cy in UV_EYES:
+        x = int(round(cx * K))
+        yb = int(round(brow_y * K))
+        target = float(q0[yb, x, 1])
+        col = q1[:, x, 1].astype(np.float64)
+        lo, hi = yb - int(10 * K), yb + int(10 * K)
+        ys = np.arange(lo, hi)
+        v = np.maximum.accumulate(col[lo:hi])          # the column runs down the photo (tiny reversals ironed out)
+        if not (v[0] <= target <= v[-1]) or v[-1] - v[0] < 1e-6:
+            out.append(0.0)
+            continue
+        out.append(float(np.clip((yb - np.interp(target, v, ys)) / K, -10.0, 10.0)))
+    return out
+
+
+def photo_iris(col):
+    """The photo's iris colour (Lab, uint8 scale) from the photo in texture space after the eye shift: inside both
+    openings, the sclera and catchlights (the brightest 30%) and the pupil and lashes (the darkest 30%) left out."""
+    vals = []
+    P = lab(col)
+    for o in eye_openings():
+        m = ndimage.binary_erosion(o["mask"], iterations=int(1 * K))
+        r = np.hypot((XX - o["cx"]) / K, (YY - o["cy"]) / K)
+        m &= r < 0.5 * (o["y1"] - o["y0"]) / K
+        if m.sum() < 20:
+            continue
+        v = P[m]
+        lo, hi = np.percentile(v[:, 0], [30, 70])
+        vals.append(v[(v[:, 0] >= lo) & (v[:, 0] <= hi)])
+    if not vals:
+        return None
+    return np.median(np.concatenate(vals), axis=0)
+
+
+def patch_iris(rgb_tex):
+    """The iris colour (Lab) of a texture's eyeball square: an annulus around the square's centre (the iris ring
+    between the pupil and the limbus; retail centres its irises), its darkest 30% (pupil, limbal ring) and brightest
+    15% (catchlights) left out. rgb_tex at any size."""
+    Hh = rgb_tex.shape[0]
+    y0, y1, x0, x1 = (int(EYE_PATCH[0] * Hh), int(EYE_PATCH[1] * Hh), int(EYE_PATCH[2] * Hh), int(EYE_PATCH[3] * Hh))
+    p = np.ascontiguousarray(rgb_tex[y0:y1, x0:x1, :3]).astype(np.uint8)
+    P = lab(p)
+    hh, ww = p.shape[:2]
+    yy, xx = np.mgrid[0:hh, 0:ww]
+    r = np.hypot(yy - (hh - 1) / 2, xx - (ww - 1) / 2) / hh
+    v = P[(r >= 0.13) & (r <= 0.27)]
+    if len(v) < 10:
+        return None
+    lo, hi = np.percentile(v[:, 0], [30, 85])
+    return np.median(v[(v[:, 0] >= lo) & (v[:, 0] <= hi)], axis=0)
+
+
+def iris_target(iris_photo):
+    """The photo's iris in texture terms: the skin's exposure calibration applied to it (studio light)."""
+    cal = calibration()
+    Lp = float(iris_photo[0]) * 100 / 255
+    Lt = float(y_to_lstar(cal['k'] * lstar_to_y(Lp)))
+    f = Lt / max(Lp, 1.0)
+    return np.array([Lt * 255 / 100, 128 + (iris_photo[1] - 128) * f * cal['s_a'], 128 + (iris_photo[2] - 128) * f * cal['s_b']], np.float32)
+
+
+def iris_distance(a, b):
+    """Iris colour distance: hue and chroma count fully; lightness only beyond 25 (of 255) and by 0.3 (the photo's
+    iris reads darker than retail paints one: pupil and lid shadow), so a brown iris stays a brown iris and a light
+    blue or green one finds a light retail iris."""
+    a = np.asarray(a, np.float64); b = np.asarray(b, np.float64)
+    dl = max(0.0, abs(a[0] - b[0]) - 25.0)
+    return float(math.sqrt((0.3 * dl) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2))
+
+
+def iris_light(lab_v) -> bool:
+    """Light eyes (blue, grey, green-grey): not yellow-brown (b* under 3) and not dark (L over 55 of 255)."""
+    return bool(lab_v[2] - 128 < 3 and lab_v[0] > 55)
+
+
+def copy_eye_patch(dst_rgb, src_rgb):
+    """The eyeball square of src_rgb copied into dst_rgb (same size)."""
+    out = dst_rgb.copy()
+    Hh = out.shape[0]
+    y0, y1, x0, x1 = (int(EYE_PATCH[0] * Hh), int(EYE_PATCH[1] * Hh), int(EYE_PATCH[2] * Hh), int(EYE_PATCH[3] * Hh))
+    out[y0:y1, x0:x1] = src_rgb[y0:y1, x0:x1]
+    return out
 
 
 def skin_lab_of(photo_lab, w):
@@ -467,6 +755,32 @@ def target_skin(skin_p, tone, cal=None):
     return np.array([Lt * 255 / 100, a + 128, b + 128], np.float32)
 
 
+def eye_blend(P, skin_p, w, rim=0.5, rim_width=2.5):
+    """The template's share around the eyes (fc1): 1 inside the openings, ``rim`` at their rims falling to 0
+    ``rim_width`` game texels out, and 1 over photo sclera (bright, near neutral) left within 5 texels of them or a
+    light iris (near neutral, between the skin and a lash line in lightness) within 4."""
+    _pos, _nrm, cov = uvr()
+    m = np.zeros((S, S), np.float32)
+    lids = np.zeros((S, S), bool)
+    for o in eye_openings():
+        dout = ndimage.distance_transform_edt(~o["mask"]) / K
+        m = np.maximum(m, np.where(o["mask"], 1.0, rim * np.clip(1 - dout / rim_width, 0, 1)).astype(np.float32))
+        lids |= cov & (dout <= 5)
+    Cs = float(np.hypot(skin_p[1] - 128, skin_p[2] - 128))
+    C = np.hypot(P[..., 1] - 128, P[..., 2] - 128)
+    scl = lids & (P[..., 0] > skin_p[0] + 6 * 2.55) & (C < 0.55 * Cs + 2) & (w > 0.3)
+    # a light iris left on the lids (blue, grey: near neutral, darker than the skin but not as dark as a lash line)
+    near = np.zeros((S, S), bool)
+    for o in eye_openings():
+        near |= cov & (ndimage.distance_transform_edt(~o["mask"]) / K <= 4)
+    dL = (P[..., 0] - skin_p[0]) / 2.55
+    iris = near & (dL > -28) & (dL < -5) & (C < 0.45 * Cs + 1) & (w > 0.3)
+    iris = ndimage.binary_opening(iris, iterations=1)
+    scl = ndimage.binary_dilation(scl | iris, iterations=int(K))
+    m = np.maximum(m, cv2.GaussianBlur(scl.astype(np.float32), (0, 0), 0.7 * K))
+    return cv2.GaussianBlur(m, (0, 0), 0.35 * K)
+
+
 def compose(photo_rgba, pts, tpl_rgb, opts, hair_p=None, hair_t=None, skin_t=None, tone=None):
     """One face texture (f or h) at 1024. method 'A': the photo baked over the template, relit to the template's
     shading, open mouths closed with the template's lips. method 'B': the retail template re-skinned, with only the
@@ -486,10 +800,12 @@ def compose(photo_rgba, pts, tpl_rgb, opts, hair_p=None, hair_t=None, skin_t=Non
     # the photo's own hair beside the face (twists, long hair, curls on the temples) is not face: drop dark non-skin
     # pixels outside the beard and brow zones
     beard_zone = ellipse(128, 168, 62, 46, 8)
-    brow_zone = np.maximum(ellipse(UV_EYES[0][0], 36, 26, 10, 4), ellipse(UV_EYES[1][0], 36, 26, 10, 4))
+    # fc1: with the eye shift the photo's brows sit higher in the texture by brow_dy texels; the brow zones follow
+    bdy = opts.get('brow_dy') or (0.0, 0.0)
+    brow_zone = np.maximum(ellipse(UV_EYES[0][0], 36 - bdy[0], 26, 10, 4), ellipse(UV_EYES[1][0], 36 - bdy[1], 26, 10, 4))
     # dark hair-coloured pixels anywhere on the upper face outside the brows, the eyes and the nostrils are hair
     # falling over the face (twists, dreads, curls): beside it, over the forehead, down the nose bridge
-    brow_band = np.maximum(ellipse(UV_EYES[0][0], 38, 21, 6.5, 2), ellipse(UV_EYES[1][0], 37, 21, 6.5, 2))
+    brow_band = np.maximum(ellipse(UV_EYES[0][0], 38 - bdy[0], 21, 6.5, 2), ellipse(UV_EYES[1][0], 37 - bdy[1], 21, 6.5, 2))
     nostrils = ellipse(128, 105, 21, 9, 3)
     upper = YY / K < 124
     # (hair is near neutral; the face's own creases and shadows keep the skin's hue). Beside the face and above the
@@ -498,7 +814,7 @@ def compose(photo_rgba, pts, tpl_rgb, opts, hair_p=None, hair_t=None, skin_t=Non
     skin_c = float(np.hypot(skin_p[1] - 128, skin_p[2] - 128))
     hairlike = ((P[..., 0] < skin_p[0] - 28) & (dP > de) & upper & (beard_zone < 0.3)
                 & (np.hypot(P[..., 1] - 128, P[..., 2] - 128) < 0.65 * skin_c + 3))
-    fore = (YY / K > 12) & (YY / K < 30) & (np.abs(XX / K - 128) < 40) & (w > 0.5)
+    fore = (YY / K > 12) & (YY / K < 30 - max(0.0, max(bdy))) & (np.abs(XX / K - 128) < 40) & (w > 0.5)
     covered = bool(fore.any() and hairlike[fore].mean() > opts.get('forehead_hair', 0.12))
     sides = (np.abs(XX / K - 128) > 50) | (YY / K < 30)
     darkhair = hairlike & (sides | covered) & (np.maximum.reduce([brow_band, nostrils, eyes_z]) < 0.3)
@@ -611,8 +927,13 @@ def compose(photo_rgba, pts, tpl_rgb, opts, hair_p=None, hair_t=None, skin_t=Non
         out[..., 0] = out[..., 0] + add
         f = (np.maximum(out[..., 0], 0) / Lold)[..., None]
         out[..., 1:] = 128 + (out[..., 1:] - 128) * f
-    if opts.get('eye_rings', True):
-        rings = np.maximum(ellipse(UV_EYES[0][0], UV_EYES[0][1], 19, 8.5, 3), ellipse(UV_EYES[1][0], UV_EYES[1][1], 19, 8.5, 3))
+    if opts.get('eye_fix'):
+        # fc1: the opening holds the template's eye (the mesh hides it at full size, the mip levels show it), the
+        # template's lid only on a thin rim, and photo sclera left on the lids goes back to the template's lid
+        m = eye_blend(P, skin_p, w, opts.get('eye_rim', 0.5), opts.get('eye_rim_width', 2.5))[..., None]
+        out = out * (1 - m) + T * m
+    elif opts.get('eye_rings', True):
+        rings =np.maximum(ellipse(UV_EYES[0][0], UV_EYES[0][1], 19, 8.5, 3), ellipse(UV_EYES[1][0], UV_EYES[1][1], 19, 8.5, 3))
         m = (rings * opts.get('ring', 0.7))[..., None]
         out = out * (1 - m) + T * m
     out_rgb = rgb(out)
@@ -687,9 +1008,12 @@ def photo_checks(score, params, resid, eye_d, w) -> tuple[dict, bool]:
     return checks, ok
 
 
-def build_player(photo_rgba, found, retail_faces: Path, template: str, tone, hair_override=None):
+def build_player(photo_rgba, found, retail_faces: Path, template: str, tone, hair_override=None, eyes=True,
+                 irises=None):
     """f, h and n at 1024 (RGB uint8) for one player, the method used and the checks. ``found`` is YuNet's
-    (points, score, box) or None."""
+    (points, score, box) or None. ``eyes`` (fc1): the photo's eyes moved into the mesh's openings (eye_shift) and
+    the eye blend of eye_blend(); False keeps face fit v2's 9/24 eyes byte for byte. ``irises``: {retail face id:
+    iris Lab} (iris_table), to give the eyeball a retail iris close to the player's."""
     checks, method = {}, "A"
     if found is None:
         method = "C"
@@ -706,6 +1030,14 @@ def build_player(photo_rgba, found, retail_faces: Path, template: str, tone, hai
     if method == "C":
         return {fam: load_rgb(retail_faces / f"{fam}{template}.png") for fam in "fhn"}, method, checks
     opts = {"method": method}
+    if eyes and method == "A":
+        shift, einfo = eye_shift(photo_rgba, pts, opts)
+        _c0, q0 = opening_view(photo_rgba, pts, opts)
+        _c1, q1 = opening_view(photo_rgba, pts, {**opts, "eye_shift": shift})
+        opts.update(eye_shift=shift, eye_fix=True, brow_dy=brow_shift(q0, q1))
+        checks["brow_dy"] = [round(v, 2) for v in opts["brow_dy"]]
+        checks["eyes"] = einfo
+        checks["eye_shift_px"] = np.round(shift, 3).tolist()
     hair = hair_lab(photo_rgba, pts)
     if hair_override is not None:
         hair = np.asarray(hair_override, np.float32)
@@ -721,9 +1053,39 @@ def build_player(photo_rgba, found, retail_faces: Path, template: str, tone, hai
         if fam == "h":
             info_h = info
     out["n"] = skull(T0n_rgb, np.array(info_h["skin_target"], np.float32), skin_t, hair, hair_t)
+    if eyes and method == "A" and irises:
+        col, _q = opening_view(photo_rgba, pts, opts)
+        ip = photo_iris(col)
+        if ip is not None:
+            want = iris_target(ip)
+            # only a clear mismatch is changed: light eyes on a brown iris or brown eyes on a light one; the iris
+            # then comes from the nearest retail eye of the photo's kind
+            own = irises.get(template)
+            pool = [k for k in sorted(irises) if iris_light(irises[k]) == iris_light(want)] or sorted(irises)
+            best = min(pool, key=lambda k: iris_distance(irises[k], want))
+            d_own = iris_distance(own, want) if own is not None else 1e9
+            d_best = iris_distance(irises[best], want)
+            swap = own is None or iris_light(own) != iris_light(want)
+            checks["iris"] = {"photo": np.round(want, 1).tolist(), "light": iris_light(want), "template": None if own is None else np.round(own, 1).tolist(),
+                              "patch_from": best if swap else template, "d_template": round(d_own, 1), "d_best": round(d_best, 1)}
+            if swap:
+                for fam in ("f", "h"):
+                    out[fam] = copy_eye_patch(out[fam], load_rgb(retail_faces / f"{fam}{best}.png"))
     checks.update(teeth_photo=info_h.get("teeth_photo"), skin_photo=info_h["skin_lab"],
                   skin_target=info_h["skin_target"], hair_lab=None if hair is None else np.round(hair, 1).tolist())
     return out, method, checks
+
+
+def iris_table(retail_faces: Path, ids) -> dict:
+    """{retail face id: iris Lab of its eyeball square} for the retail faces ``ids`` (their h textures)."""
+    out = {}
+    for fid in ids:
+        p = Path(retail_faces) / f"h{fid}.png"
+        if p.is_file():
+            v = patch_iris(np.asarray(Image.open(p).convert("RGB")))
+            if v is not None:
+                out[fid] = [float(x) for x in v]
+    return out
 
 
 # --------------------------------------------------------------------------------------------- template choice

@@ -752,12 +752,18 @@ def cmd_coach(args) -> int:
 
 
 # --------------------------------------------------------------------------------------------- face fit v2 (fx)
-def _v2_worker_init(head_gltf, calibration):
+_V2_IRISES = None
+
+
+def _v2_worker_init(head_gltf, calibration, eye_reference=None, irises=None):
+    global _V2_IRISES
     root = _studio_imports()
     import nfl2k5_face_fit_v2 as v2
     v2.use_head(head_gltf)
     if calibration:
         v2.set_calibration(calibration)
+    v2.use_eye_reference(eye_reference)
+    _V2_IRISES = irises
 
 
 def _v2_features(job):
@@ -774,14 +780,15 @@ def _v2_features(job):
 
 
 def _v2_one(job):
-    gsis, slot, template, tone, name, hair_override, headshot, retail_faces, yunet = job
+    gsis, slot, template, tone, name, hair_override, headshot, retail_faces, yunet, eyes = job
     import nfl2k5_face_fit_v2 as v2
     found = None
     rgba = None
     if headshot and Path(headshot).is_file():
         bgr, rgba = headshot_bgr(Path(headshot))
         found = Landmarks(yunet).find(bgr)
-    imgs, method, checks = v2.build_player(rgba, found, Path(retail_faces), template, tone, hair_override)
+    imgs, method, checks = v2.build_player(rgba, found, Path(retail_faces), template, tone, hair_override,
+                                           eyes=eyes, irises=_V2_IRISES if eyes else None)
     return gsis, slot, template, name, method, checks, imgs
 
 
@@ -811,11 +818,28 @@ def cmd_rebuild(args) -> int:
             continue
         jobs.append((gsis, f"{int(p['photo_id']):04d}", p["template"], p.get("skin_tone"), p["player"],
                      hair_by_eye.get(p["player"]), str(Path(args.headshots) / f"{gsis}.png"), args.retail_faces,
-                     args.yunet))
+                     args.yunet, not args.eyes_v1))
     for d in ("master4x", "retail"):
         (out / d).mkdir(parents=True, exist_ok=True)
     items, checks_all = [], {}
-    with ProcessPoolExecutor(args.jobs, initializer=_v2_worker_init, initargs=(args.head_gltf, args.calibration)) as pool:
+    eye_ref = irises = None
+    if not args.eyes_v1:
+        # fc1: the reference eye (retail's mean h eye, from the user's retail faces) and the retail iris table
+        import nfl2k5_face_fit_v2 as v2
+        v2.use_head(args.head_gltf)
+        cache = Path(args.eye_reference) if args.eye_reference else None
+        if cache is not None and cache.is_file():
+            eye_ref = np.load(cache)
+        else:
+            eye_ref = v2.eye_reference_from(Path(args.retail_faces))
+            if cache is not None:
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                np.save(cache, eye_ref)
+        ids = sorted(json.loads(Path(args.templates).read_text(encoding="utf-8"))["templates"]) if args.templates else \
+            sorted(p.stem[1:] for p in Path(args.retail_faces).glob("h*.png"))
+        irises = v2.iris_table(Path(args.retail_faces), ids)
+    with ProcessPoolExecutor(args.jobs, initializer=_v2_worker_init,
+                             initargs=(args.head_gltf, args.calibration, eye_ref, irises)) as pool:
         if args.templates:
             # the template is chosen again: same roster skin tone, nearest skull hair and beard, brown irises for
             # tones 2 and darker, each once a team (build's choice went by colour samples alone)
@@ -935,6 +959,9 @@ def main(argv=None) -> int:
     rb.add_argument("--spec", help="team spec (faces.hair_by_eye)")
     rb.add_argument("--calibration", help="photo-to-texture skin calibration JSON (default: the built-in one)")
     rb.add_argument("--templates", help="choose each template again from this table (templates subcommand)")
+    rb.add_argument("--eye-reference", help="cache (.npy) for the reference eye (computed from --retail-faces when missing)")
+    rb.add_argument("--eyes-v1", action="store_true",
+                    help="face fit v2's 9/24 eyes (the detector's eye point on the opening centre, 70%% template ring)")
     rb.add_argument("--jobs", type=int, default=6)
     rb.add_argument("--out", required=True)
     b = sub.add_parser("build")
