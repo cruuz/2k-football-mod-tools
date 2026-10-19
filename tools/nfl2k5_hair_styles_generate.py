@@ -836,6 +836,413 @@ def push_out(m, F, clear=0.15, rounds=60):
     return len(moved) if moved else 0
 
 
+# ------------------------------------------------------------------------------------------------ b776 hr2: ride the body
+# Noah's b775 test (10/18): Lawrence's long hair looked painted on and the jersey showed through it; Cam Ward's twists
+# disappeared under the collar at some angles. Causes measured offline (job hr2): (1) every hair vertex followed ONE
+# bone (head, neck or thorax) while the neck skin under it blends thorax/neck/head and the jersey follows the thorax
+# and the shoulder pads, so in motion the collar and pads passed through the hair; (2) the drape avoided only
+# UNIF_jersey, so the hair lay under the nameplate and the back numbers; (3) 0.15 to 1.0 cm of clearance, measured in
+# the bind pose only. v3 (long_flow, short_twists):
+# * each vertex is weighted like the body under it: rows inside the helmet ride the head; rows between the helmet rim
+#   and the collar copy the nearest neck-skin vertex's palette entry (the game's own thorax/neck/head blends); rows on
+#   the jersey ride the thorax (close up; hi_head has no shoulder bones) or copy the nearest jersey vertex's entry
+#   (distant: the jersey's own thorax/shoulder-pad blends), so the hair rides on the pads;
+# * the jersey is measured with its nameplate and numbers;
+# * a pose fit pushes every vertex out until no hair sample is within the clearance of the jersey surface in any of
+#   the game poses given (--poses: world matrices of game clips run through the game's high-body pass).
+
+PALETTE_FREE = {"hi": (15, 16, 17, 18, 19, 20, 23, 24, 25, 26), "lo": (25, 26, 27, 28, 29, 30, 31, 32, 33, 34)}
+JERSEY_SURFACES = ('UNIF_jersey', 'UNIF_sleeve', 'PLAYERNAME', 'PLAYERNAME_long', 'NUMBER_L', 'NUMBER_M', 'NUMBER_R',
+                   'NUMBER_shoulder_A_L', 'NUMBER_shoulder_A_M', 'NUMBER_shoulder_A_R', 'NUMBER_shoulder_B_L',
+                   'NUMBER_shoulder_B_M', 'NUMBER_shoulder_B_R')
+JOINT_OF = {"hi": {"head": 2, "neck": 1, "thorax": 0}, "lo": {"head": 12, "neck": 11, "thorax": 10}}
+
+
+def resolved_globals(sc):
+    """Per vertex: the palette entry (transform index, or transform count + blend index) its selector resolves to."""
+    out = np.full(sc.n, -1, int)
+    for s in sc.subs:
+        rec = int(s['record_offset'])
+        mapping = struct.unpack_from('<56H', sc.d, rec + 8)
+        for _mode, batch in sc.gltf.decode_batches(sc.d, s['command_offset'], s['word_count']):
+            for v in batch:
+                out[v] = mapping[sc.sel[v] // 3]
+    return out
+
+
+def blend_table(sc):
+    """{palette entry: [(joint, weight), ...]} for every transform and blend of the scene's shape."""
+    rec = sc.lanes.record_offset
+    tc = sc.lanes.transform_count
+    count = struct.unpack_from('<H', sc.d, rec + 0x52)[0]
+    table = {j: [(j, 1.0)] for j in range(tc)}
+    if count:
+        inv = models._tools_module('nfl_scne_inventory')
+        start = inv.resolve_relative(sc.d, rec + 0x60, len(sc.d), 'blends')
+        for i in range(count):
+            at = start + 0x1C * i
+            kind = struct.unpack_from('<I', sc.d, at)[0]
+            table[tc + i] = [tuple(struct.unpack_from('<If', sc.d, at + 4 + 8 * k)) for k in range(kind)]
+    return table
+
+
+class Riding:
+    """Which palette entry a hair vertex takes from the body under it (per LOD)."""
+
+    def __init__(self, rig, lod):
+        self.lod = lod
+        head_scene = rig.hi if lod == 'hi' else rig.lo
+        self.table = blend_table(head_scene)
+        names = [t['name'] for t in models.decode_skin(head_scene.d, head_scene.shape, head_scene.lanes,
+                                                       head_scene.subs).transforms]
+        self.joint_names = names
+        allowed = {names.index(n) for n in ('thorax', 'neck', 'head')}
+        if lod == 'lo':
+            allowed |= {names.index(n) for n in ('lshoulderpad', 'rshoulderpad')}
+        self.ok = {g for g, parts in self.table.items() if all(int(j) in allowed for j, _w in parts)}
+        g = resolved_globals(head_scene)
+        off = np.zeros(3) if lod == 'hi' else BODY_FROM_HEAD
+        neck = np.unique(head_scene.tris(['SKIN_neck']))
+        thorax = names.index('thorax')
+        # the hair below the rim copies the LOWER neck: entries that carry at least a fifth of the thorax, so it stays
+        # with the collar when the head tips back (crouched stance, looking up) instead of being pressed into it
+        neck = neck[[g[v] in self.ok and sum(w for j, w in self.table[g[v]] if int(j) == thorax) >= 0.19
+                     for v in neck]]
+        self.neck_pos, self.neck_g = head_scene.pos[neck] - off, g[neck]
+        if lod == 'lo':
+            jt = np.unique(head_scene.tris(['UNIF_jersey']))
+            jt = jt[[g[v] in self.ok for v in jt]]
+            self.jersey_pos, self.jersey_g = head_scene.pos[jt] - off, g[jt]
+
+    def entry(self, tag, p):
+        """'head' | 'gap' (between the rim and the collar: like the neck skin) | 'body' (on the jersey)."""
+        if tag == 'head':
+            return 'head'
+        if tag == 'gap':
+            a = math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z)))
+            az = np.degrees(np.arctan2(self.neck_pos[:, 0], -(self.neck_pos[:, 2] - AXIS_Z)))
+            cost = 0.08 * angdiff(az, a) + np.abs(self.neck_pos[:, 1] - p[1])
+            g = int(self.neck_g[int(np.argmin(cost))])
+            return self.name_or_global(g)
+        if self.lod == 'hi':
+            return 'thorax'
+        d = np.linalg.norm(self.jersey_pos - p, axis=1)
+        return self.name_or_global(int(self.jersey_g[int(np.argmin(d))]))
+
+    def name_or_global(self, g):
+        for name, j in JOINT_OF[self.lod].items():
+            if g == j:
+                return name
+        return g
+
+    def parts(self, entry):
+        if isinstance(entry, str):
+            return [(JOINT_OF[self.lod][entry], 1.0)]
+        return [(int(j), float(w)) for j, w in self.table[entry]]
+
+
+def ride_tag(S, p, above=0.8):
+    """'gap' above the collar/pad top round the neck at this azimuth, else 'body'."""
+    a = math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z))); r = math.hypot(p[0], p[2] - AXIS_Z)
+    top = S.jersey_env(a, min(r, 13.0))
+    return 'gap' if (not math.isfinite(top) or p[1] > top + above) else 'body'
+
+
+def tag_rows(m, tags):
+    """Remember the riding tag of the vertices just added (one tag per vertex, in order)."""
+    m.__dict__.setdefault('tags', [])
+    m.tags += list(tags)
+
+
+def curtain3(m, S, F, azimuths, lengths, steps, *, crown=None, flare=(2.2, 1.4), back=1.1, centre=0.1, clear=1.0,
+             crown_taper=0.3, v_top=0.0):
+    """Long hair v3: a sheet whose columns run crown (inside the shell) -> root -> rim (filling the gap under the
+    shell's edge) -> flare (bunched just under the rim, standing off the neck) -> a gravity fall of each column's own
+    length over the collar, pads and back (with the nameplate and numbers in the jersey fields)."""
+    cols, tags = [], []
+    for a, length in zip(azimuths, lengths):
+        (yr, rr), (ym, rm) = root_and_rim(S, a)
+        rim_r = S.rim_radius(a)
+        rows, tg = [], []
+        if crown:
+            top = max(crown)
+            for yc in crown:
+                ac = a * (1.0 - crown_taper * (yc - yr) / max(top - yr, 1e-6))
+                sc = S.body_radius(ac, yc); sh = S.shell_inner(ac, yc) - SHELL_CLEAR
+                r = min((sc if sc > 0 else rr) + SCALP_CLEAR + 0.3, sh if math.isfinite(sh) else 99)
+                rows.append(point(ac, r, yc)); tg.append('head')
+        rows.append(point(a, rr, yr)); tg.append('head')
+        rows.append(point(a, max(rm, min(rim_r - 0.4, rm + 1.2)), ym)); tg.append('head')
+        dy, dr = flare
+        r0 = max(rm, rim_r) + dr
+        f0 = point(a, r0, max(ym - dy, S.jersey_env(a, r0) + clear + 0.4))
+        path = fall(F, f0, length, back=back, centre=centre, clear=clear)
+        fallen = clear_chords(F, simplify(path, steps + 1))
+        for k, p in enumerate(fallen):
+            rows.append(p)
+            tg.append('gap' if k == 0 else ride_tag(S, p))
+        cols.append(rows); tags.append(tg)
+    R, C = len(cols[0]), len(cols)
+    ids = np.zeros((R, C), int)
+    for j in range(C):
+        for i in range(R):
+            p = np.asarray(cols[j][i], float)
+            ids[i, j] = m.add(p, radial(p), (j / (C - 1), v_top + (1 - v_top) * i / (R - 1)), 'head')
+            tag_rows(m, [tags[j][i]])
+    P = np.array(m.P)
+    for i in range(R):
+        for j in range(C):
+            du = P[ids[i, min(j + 1, C - 1)]] - P[ids[i, max(j - 1, 0)]]
+            dv = P[ids[min(i + 1, R - 1), j]] - P[ids[max(i - 1, 0), j]]
+            n = np.cross(du, dv)
+            if n @ radial(P[ids[i, j]]) < 0: n = -n
+            if np.linalg.norm(n) > 1e-9: m.N[ids[i, j]] = n / np.linalg.norm(n)
+    for j in range(C - 1):
+        run = []
+        for i in range(R):
+            run += [ids[i, j], ids[i, j + 1]]
+        a_, b_, c_ = (np.array(m.P[k]) for k in run[:3])
+        if np.cross(b_ - a_, c_ - a_) @ radial((a_ + b_ + c_) / 3) < 0:
+            run = [run[k ^ 1] for k in range(len(run))]
+        m.strip_append(run)
+    return ids
+
+
+def strand3(m, S, F, a, length, width, column, columns, *, crown=None, fractions=(0, 0.5, 1.0), back=1.6,
+            centre=0.06, clear=1.0, taper=0.8, twist=0.0, rim_out=0.6):
+    """Short twist v3: root and rim ride the head; the lock leaves the rim outward over the collar (never down into the
+    neck opening) and its tip rests on the collar/upper back."""
+    (yr, rr), (ym, rm) = root_and_rim(S, a)
+    rim_r = S.rim_radius(a)
+    r0 = max(rm, rim_r - 0.2) + rim_out
+    start = point(a, r0, max(ym, S.jersey_env(a, r0) + clear + 0.4))
+    path = fall(F, start, length, back=back, centre=centre, clear=clear)
+    rows = clear_chords(F, simplify(path, len(fractions)))
+    pts = [point(a, rr, yr)] + rows
+    tags = ['head', 'head'] + [ride_tag(S, p) for p in rows[1:]]
+    if crown is not None:
+        ac = a * 0.75
+        sc = S.body_radius(ac, crown); sh = S.shell_inner(ac, crown) - SHELL_CLEAR
+        rc = min((sc if sc > 0 else rr) + SCALP_CLEAR, sh if math.isfinite(sh) else 99)
+        pts = [point(ac, rc, crown)] + pts; tags = ['head'] + tags
+    n = len(pts)
+    a_list = [math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z))) for p in pts]
+    widths = [width * (1 - (1 - taper) * k / (n - 1)) for k in range(n)]
+    if crown is not None: widths[0] *= 0.8
+    vs = list(np.linspace(0.0, 1.0, n)) if crown is None else [0.0] + list(np.linspace(0.12, 1.0, n - 1))
+    before = len(m.P)
+    pad = 0.06 / columns
+    card2(m, pts, widths, column / columns + pad, (column + 1) / columns - pad, vs, ['head'] * n, a_list, twist=twist)
+    tag_rows(m, [t for t in tags for _side in (0, 1)])
+    assert len(m.P) - before == 2 * n
+
+
+def build_v3(name, S, lod):
+    m = Mesh()
+    hi = lod == 'hi'
+    F = Fields(S)
+    if name == 'long_flow':
+        cols = 13 if hi else 7
+        az = np.linspace(-72, 72, cols)
+        ragged = np.array([0.0, 1.6, -0.8, 1.1, -1.3, 0.7, 0.0, -0.9, 1.4, -0.6, 1.0, -1.2, 0.5])[:cols] if hi else \
+            np.array([0.0, 1.2, -0.8, 0.6, -0.8, 1.2, 0.0])
+        lengths = [27.0 - 10.0 * (abs(a) / 72) ** 1.6 + r for a, r in zip(az, ragged)]
+        curtain3(m, S, F, az, lengths, 4 if hi else 2, crown=[50.5, 46.5] if hi else [46.0], clear=1.0, centre=0.07)
+    elif name == 'short_twists':
+        n = 17 if hi else 9
+        for i, a in enumerate(np.linspace(-86, 86, n)):
+            side = abs(a) / 86
+            length = 9.0 - 3.6 * side ** 2 + (0.5 if i % 2 else 0.0)
+            strand3(m, S, F, a, length, (2.6 if hi else 3.6), i % 4, 4, crown=(44.0 if hi else None),
+                    fractions=(0, 0.5, 1.0) if hi else (0, 1.0), twist=(0.4 if i % 2 else -0.4), rim_out=0.9)
+    else:
+        raise ValueError(name)
+    return m
+
+
+def ride(m, riding):
+    """Replace every vertex's joint by the palette entry of the body under it."""
+    m.J = [riding.entry(t, p) for t, p in zip(m.tags, m.P)]
+    return m
+
+
+# --------------------------------------------------------------------------------- pose fit
+
+def _palettes(worlds, absolute):
+    out = np.empty_like(worlds, dtype=np.float64)
+    for j, a in enumerate(absolute):
+        T = np.eye(4); T[3, :3] = -np.asarray(a)
+        out[:, j] = T @ worlds[:, j]
+    return out
+
+
+class PoseFit:
+    """The hair and the jersey surface skinned together in every given pose (body bind frame, cm)."""
+
+    def __init__(self, rig, lod, poses):
+        body = rig.body if lod == 'hi' else rig.lo
+        self.lod = lod
+        skin = models.decode_skin(body.d, body.shape, body.lanes, body.subs)
+        names = [t['name'] for t in skin.transforms]
+        absolute = np.array([t['absolute'] for t in skin.transforms])
+        worlds = np.asarray(poses['hi_body' if lod == 'hi' else 'lo_body'], np.float64)
+        pose_names = [str(n) for n in poses['hi_names' if lod == 'hi' else 'lo_names']]
+        require_names = [n for n in names if n not in pose_names]
+        if require_names:
+            raise ValueError(f'poses lack joints {require_names}')
+        worlds = worlds[:, [pose_names.index(n) for n in names]]
+        self.pal = _palettes(worlds, absolute)                         # (P, J, 4, 4)
+        self.names = names
+        tris = body.tris(list(JERSEY_SURFACES))
+        tris = tris[body.pos[tris].mean(axis=1)[:, 1] > 38.0]      # the upper body (the hair never reaches lower)
+        verts = np.unique(tris)
+        remap = {v: i for i, v in enumerate(verts)}
+        self.jt = np.vectorize(remap.get)(tris)
+        self.jpos = np.c_[body.pos[verts], np.ones(len(verts))]
+        raw = models.read_lane_u32(body.d, body.shape, body.lanes.normal, body.n)
+        self.jnrm = np.array([models.decode_normpacked3(raw[v]) for v in verts])
+        J = np.zeros((len(verts), 3), int); W = np.zeros((len(verts), 3))
+        for i, v in enumerate(verts):
+            for k, (j, w) in enumerate(skin.influences[v][:3]):
+                J[i, k] = j; W[i, k] = w
+        self.jJ, self.jW = J, W
+        # hair joints are named in the hair's own scene; for close-ups those are the body joints of the same name
+        head_scene = rig.hi if lod == 'hi' else rig.lo
+        hn = [t['name'] for t in models.decode_skin(head_scene.d, head_scene.shape, head_scene.lanes,
+                                                    head_scene.subs).transforms]
+        self.hair_to_body = {j: names.index(n) for j, n in enumerate(hn) if n in names}
+
+    def jersey(self, p):
+        M = self.pal[p]
+        pos = sum(self.jW[:, k:k + 1] * np.einsum('ni,nij->nj', self.jpos, M[self.jJ[:, k]])[:, :3] for k in range(3))
+        nrm = sum(self.jW[:, k:k + 1] * np.einsum('ni,nij->nj', self.jnrm, M[self.jJ[:, k], :3, :3]) for k in range(3))
+        nrm /= np.maximum(np.linalg.norm(nrm, axis=1, keepdims=True), 1e-9)
+        return pos, nrm
+
+    def matrices(self, p, parts_list):
+        M = self.pal[p]
+        out = np.zeros((len(parts_list), 4, 4))
+        for i, parts in enumerate(parts_list):
+            for j, w in parts:
+                out[i] += w * M[self.hair_to_body[j]]
+        return out
+
+
+def _bary(steps):
+    out = []
+    for i in range(steps + 1):
+        for j in range(steps + 1 - i):
+            a, b = i / steps, j / steps
+            out.append((1 - a - b, a, b))
+    return np.array(out)
+
+
+def keep_under_rim(S, P, J, below=0.8):
+    """Hair that does not ride the head stays below the helmet's rim: it is never pushed up into the shell (where it
+    would show through it)."""
+    P = np.array(P, float)
+    for i, p in enumerate(P):
+        if J[i] == 'head':
+            continue
+        a = math.degrees(math.atan2(p[0], -(p[2] - AXIS_Z)))
+        P[i, 1] = min(p[1], S.rim(a) - below)
+    return P
+
+
+def fit_to_poses(m, riding, fit, clear=0.5, rounds=24, steps=3, smooth=0.35, log=None, S=None, max_move=2.5):
+    """Push the hair (bind, head frame) out of the jersey until no sample is within `clear` cm of it (inside or
+    outside) in any pose. Pushes are made in each vertex's own bind frame (its blended palette matrix inverted).
+    Triangles with a corner riding the head (the root band under and just below the rim) are not fitted."""
+    from scipy.spatial import cKDTree
+    P = np.array(m.P, float)
+    P0 = P.copy()
+    parts = [riding.parts(e) for e in m.J]
+    tris = m.tris()
+    # the root band (any corner riding the head) leaves the helmet with the head; when the helmet itself is pressed
+    # into the collar it goes under the collar with it (hair tucked in), so only the rest is fitted strictly
+    tris = tris[[not any(m.J[int(v)] == 'head' for v in t) for t in tris]]
+    B = _bary(steps)
+    jtri_b = _bary(6)
+    stats = []
+    for rnd in range(rounds + 1):
+        push = np.zeros_like(P); need_max = np.zeros(len(P)); bad = 0; worst = 0.0
+        hb = np.c_[P + BODY_FROM_HEAD, np.ones(len(P))]
+        for p in range(fit.pal.shape[0]):
+            jp, jn = fit.jersey(p)
+            js = np.einsum('sk,tkd->tsd', jtri_b, jp[fit.jt]).reshape(-1, 3)
+            jns = np.einsum('sk,tkd->tsd', jtri_b, jn[fit.jt]).reshape(-1, 3)
+            Mv = fit.matrices(p, parts)
+            hw = np.einsum('ni,nij->nj', hb, Mv)[:, :3]
+            hs = np.einsum('sk,tkd->tsd', B, hw[tris]).reshape(-1, 3)
+            d, i = cKDTree(js).query(hs)
+            n = jns[i] / np.maximum(np.linalg.norm(jns[i], axis=1, keepdims=True), 1e-9)
+            sd = np.einsum('ij,ij->i', hs - js[i], n)
+            # behind or within `clear` of the surface ACROSS it (past an open edge such as the collar rim the offset
+            # runs along the surface: that is free space)
+            hit = (d < 5.0) & (sd < clear) & (np.abs(sd) >= 0.5 * d)
+            if not hit.any():
+                continue
+            bad += int(((d < 5.0) & (sd < 0.1)).sum()); worst = max(worst, float(clear - sd[hit].min()))
+            idx = np.nonzero(hit)[0]
+            t_of = idx // len(B); b_of = B[idx % len(B)]
+            need = (clear - sd[idx])[:, None] * n[idx]                  # world push
+            for k in range(3):
+                v = tris[t_of, k]
+                inv = np.linalg.inv(Mv[v, :3, :3])
+                local = np.einsum('ni,nij->nj', need * b_of[:, k:k + 1], inv) / np.maximum(b_of[:, k:k + 1], 1e-6)
+                mag = np.linalg.norm(local, axis=1) * b_of[:, k]
+                for vv, mg, vec in zip(v, mag, local):
+                    if mg > need_max[vv]:
+                        need_max[vv] = mg; push[vv] = vec * min(1.0, 0.5 + b_of[:, k].max())
+        stats.append(dict(round=rnd, inside_samples=bad, worst_cm=round(worst, 3), moved=int((need_max > 0).sum())))
+        if log: log(stats[-1])
+        if not need_max.any() or rnd == rounds:
+            break
+        # smooth the pushes along the strip neighbourhood so the hair keeps its shape
+        nb = {i: set() for i in range(len(P))}
+        for t in tris:
+            for a_ in t:
+                nb[int(a_)].update(int(b_) for b_ in t if b_ != a_)
+        sm = push.copy()
+        for i_ in range(len(P)):
+            if nb[i_]:
+                sm[i_] = (1 - smooth) * push[i_] + smooth * np.mean([push[j] for j in nb[i_]], axis=0)
+            if np.linalg.norm(sm[i_]) < np.linalg.norm(push[i_]):
+                sm[i_] = push[i_]
+        P = P + sm * 1.15
+        move = P - P0
+        length = np.linalg.norm(move, axis=1, keepdims=True)
+        P = P0 + move * np.minimum(1.0, max_move / np.maximum(length, 1e-9))   # the authored shape is kept
+        if S is not None:
+            P = keep_under_rim(S, P, m.J)
+    m.P = [p for p in P]
+    m.fit_stats = stats
+    return m
+
+
+def build_v3_fitted(name, rig, lod, poses, log=None):
+    S = surfaces_v3(rig, lod)
+    m = build_v3(name, S, lod)
+    riding = Riding(rig, lod)
+    ride(m, riding)
+    if poses is not None:
+        m.P = list(keep_under_rim(S, m.P, m.J))
+        fit_to_poses(m, riding, PoseFit(rig, lod, poses), clear=0.5 if lod == 'hi' else 0.8, log=log, S=S,
+                     max_move=2.5 if lod == 'hi' else 3.0)
+    m.riding = riding
+    return m
+
+
+def surfaces_v3(rig, lod):
+    """surfaces() with the nameplate and the numbers counted as jersey."""
+    S = surfaces(rig, lod)
+    body = [rig.body] if lod == 'hi' else [rig.lo]
+    jer = np.concatenate([tri_samples(b, list(JERSEY_SURFACES), offset=-BODY_FROM_HEAD) for b in body])
+    S.jersey = polar(jer)
+    S.jersey_pts = jer
+    return S
+
+
 # ------------------------------------------------------------------------------------------------ art
 
 M = 4          # textures are drawn at 4x and area-downscaled
@@ -1001,12 +1408,19 @@ SELECTORS = {"hi": {j: 3 * slot for j, (slot, _joint) in hair.PALETTE[hair.HI].i
              "lo": {j: 3 * slot for j, (slot, _joint) in hair.PALETTE[hair.LO].items()}}
 
 
-def records_for(mesh: Mesh, lod: str, scene: Scene) -> tuple[bytes, list[int]]:
-    """Raw vertex records in the scene's stream order (position + normal | uv + selector | tangent frame)."""
+def records_for(mesh: Mesh, lod: str, scene: Scene, riding: "Riding | None" = None) -> tuple[bytes, list[int], list]:
+    """Raw vertex records in the scene's stream order (position + normal | uv + selector | tangent frame), and the
+    extra palette slots (b776 hr2) the mesh's riding entries need: [[slot, entry, [[joint, weight], ...]], ...]."""
     lanes = scene.lanes
     P, N, UV, J, strip = mesh.arrays()
     if lod == "lo":
         P = P + BODY_FROM_HEAD
+    extra = sorted({j for j in J if not isinstance(j, str)})
+    free = PALETTE_FREE[lod]
+    if len(extra) > len(free):
+        raise ValueError(f"{len(extra)} riding entries need palette slots; {len(free)} are free")
+    slot_of = {g: free[k] for k, g in enumerate(extra)}
+    palette = [[slot_of[g], int(g), [[int(j), float(w)] for j, w in riding.table[g]]] for g in extra]
     out = bytearray()
     for i in range(len(P)):
         q = tuple(models.encode_normshort(max(-1.0, min(1.0, (float(P[i][k]) - lanes.offset[k]) / lanes.scale)))
@@ -1014,30 +1428,57 @@ def records_for(mesh: Mesh, lod: str, scene: Scene) -> tuple[bytes, list[int]]:
         n = N[i] / np.linalg.norm(N[i])
         out += struct.pack("<3h", *q) + struct.pack("<I", models.encode_normpacked3(*n))
         uu, vv = models.uv_from_gltf(float(UV[i][0]), float(UV[i][1]), lanes.uv_scale, lanes.uv_offset)
-        out += struct.pack("<hhh", uu, vv, SELECTORS[lod][J[i]])
+        selector = SELECTORS[lod][J[i]] if isinstance(J[i], str) else 3 * slot_of[J[i]]
+        out += struct.pack("<hhh", uu, vv, selector)
         if len(scene.streams) > 2:
             t = np.cross(np.array([0.0, 1.0, 0.0]), n)
             t = t / np.linalg.norm(t) if np.linalg.norm(t) > 1e-6 else np.array([1.0, 0.0, 0.0])
             b = np.cross(n, t)
             out += struct.pack("<II", models.encode_normpacked3(*t), models.encode_normpacked3(*b))
-    return bytes(out), strip
+    return bytes(out), strip, palette
 
 
-def generate(outer3: bytes) -> tuple[dict, dict[str, Image.Image]]:
+V3_MESHES = ("long_flow", "short_twists")
+
+
+def generate(outer3: bytes, *, only: tuple[str, ...] | None = None, poses=None, base: dict | None = None,
+             log=None) -> tuple[dict, dict[str, Image.Image]]:
+    """The geometry document (and the art). With ``only``, every other mesh is copied unchanged from ``base`` (the
+    shipped geometry) and no art is drawn; the v3 meshes (long_flow, short_twists) are built riding the body and,
+    with ``poses``, fitted to the game poses."""
     rig = Rig(outer3)
-    meshes = all_meshes(rig)
+    for sc in (rig.hi, rig.lo):
+        if hair.scene_state(sc.key, sc.d) != "retail":
+            raise ValueError(f"{sc.key}: generate from a retail-shaped outer 3 (no hair growth)")
+    names = tuple(hair.MESHES) if only is None else tuple(only)
+    meshes = {}
+    for lod in ("hi", "lo"):
+        S = surfaces(rig, lod)
+        for name in names:
+            if name in V3_MESHES:
+                meshes[(name, lod)] = build_v3_fitted(name, rig, lod, poses, log=log)
+            else:
+                meshes[(name, lod)] = build(name, S, lod)
     document = {"schema": hair.GEOMETRY_SCHEMA, "meshes": list(hair.MESHES), "scenes": {}}
     for key, lod, scene in ((hair.HI, "hi", rig.hi), (hair.LO, "lo", rig.lo)):
         parts = {}
         for name in hair.MESHES:
-            records, strip = records_for(meshes[(name, lod)], lod, scene)
+            if name not in names:
+                parts[name] = dict(base["scenes"][key]["parts"][name])
+                continue
+            mesh = meshes[(name, lod)]
+            records, strip, palette = records_for(mesh, lod, scene, getattr(mesh, "riding", None))
             parts[name] = {"records": base64.b64encode(records).decode("ascii"),
                            "strip": base64.b64encode(struct.pack(f"<{len(strip)}H", *strip)).decode("ascii"),
-                           "vertices": len(meshes[(name, lod)].P), "strip_length": len(strip)}
+                           "vertices": len(mesh.P), "strip_length": len(strip)}
+            if palette:
+                parts[name]["palette"] = palette
+            if getattr(mesh, "fit_stats", None):
+                parts[name]["fit"] = mesh.fit_stats[-1]
         document["scenes"][key] = {"vertex_count": scene.n,
                                    "strides": [scene.streams[s][1] for s in sorted(scene.streams)],
                                    "parts": parts}
-    art = {name: ART[name]() for name in hair.TEXTURES}
+    art = {} if only is not None else {name: ART[name]() for name in hair.TEXTURES}
     return document, art
 
 
@@ -1046,6 +1487,10 @@ def main(argv=None) -> int:
     parser.add_argument("--disc", help="a retail or SOFTDRINK XISO (read only)")
     parser.add_argument("--outer3", help="or outer 3 already extracted from one")
     parser.add_argument("--out", default=str(hair.DATA_DIR))
+    parser.add_argument("--only", help="comma-separated meshes to rebuild; every other mesh is copied from the shipped "
+                        "geometry and the art is left alone")
+    parser.add_argument("--poses", help="npz of game-pose world matrices (hi_body, lo_body, hi_names, lo_names) for "
+                        "the v3 pose fit; see the module notes (b776 hr2)")
     args = parser.parse_args(argv)
     if args.outer3:
         outer3 = Path(args.outer3).read_bytes()
@@ -1055,7 +1500,11 @@ def main(argv=None) -> int:
         with recode.OuterImage(args.disc) as archive:
             entry = archive.entries[hair.OUTER]
             outer3 = archive.read(entry.virtual_offset, entry.size)
-    document, art = generate(outer3)
+    only = tuple(args.only.split(",")) if args.only else None
+    poses = dict(np.load(args.poses)) if args.poses else None
+    base = hair.load_geometry() if only else None
+    document, art = generate(outer3, only=only, poses=poses, base=base,
+                             log=lambda row: print("  fit", row, flush=True))
     out = Path(args.out)
     (out / "art").mkdir(parents=True, exist_ok=True)
     for name, image in art.items():
