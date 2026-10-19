@@ -28,7 +28,8 @@ SCHEMA = "nfl2k5_modern_art_pngs/v1"
 FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2k5_modern_officials/",
            "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/",
            "data/nfl2k5_super_bowl_fields/",
-           "data/nfl2k5_hair_styles/art/")  # b775-hs1
+           "data/nfl2k5_hair_styles/art/",  # b775-hs1
+           "data/nfl2k5_glyph_fixes_2026/")  # b776-fn2 (int2)
 CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
@@ -55,7 +56,9 @@ CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co
                   "tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design "
                   "system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise "
                   "seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 "
-                  "team logos at mark size or a plain club roundel.")
+                  "team logos at mark size or a plain club roundel."
+                  " b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from "
+                  "measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.

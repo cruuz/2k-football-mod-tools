@@ -22,7 +22,8 @@ TOOL_SPEC.loader.exec_module(tool)
 FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5_modern_officials",
            "data/nfl2k5_super_bowl_walls", "data/nfl2k5_era_ball", "data/nfl2k5_modern_venues_2026/numbers",
            "data/nfl2k5_super_bowl_fields",
-           "data/nfl2k5_hair_styles/art")  # b775-hs1
+           "data/nfl2k5_hair_styles/art",  # b775-hs1
+           "data/nfl2k5_glyph_fixes_2026")  # b776-fn2 (int2)
 
 
 class ModernArtReleaseTests(unittest.TestCase):
@@ -67,7 +68,7 @@ class ModernArtReleaseTests(unittest.TestCase):
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 871)   # b775-int1: sb1 862 + hs1 nine hair textures
+        self.assertEqual(len(document["files"]), 875)   # b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 862 + hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):
