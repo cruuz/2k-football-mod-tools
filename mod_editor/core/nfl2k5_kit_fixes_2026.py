@@ -28,6 +28,10 @@ Job uf2 (b772) added the 2026 alternate, throwback and Rivalries kits in a secon
 outside halos (outlines measured from the art itself), stamps of art that already sits in another texture of the
 same kit (a helmet logo placed on a sleeve), palette-only recolours for the linear name plate and the digit
 textures, cleared shoulder (TV) digits for kits that have none, and the Unif facemask colour.
+
+Job ku1 (b776) redid the 2026 Chiefs kits in ``data/nfl2k5_kit_fixes_2026_ku1.json`` (``apply_chiefs``, after the
+pants hem). It adds ``palette_remap`` rows: the whole colour scheme moves in the palette (every shade and blend kept,
+indices unchanged) before the row's art operations paint the new bands and patch.
 """
 from __future__ import annotations
 
@@ -49,6 +53,7 @@ DATA_ALTS = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_al
 DATA_UF3 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_uf3.json"
 DATA_SEA1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sea1.json"
 DATA_OV1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ov1.json"
+DATA_KU1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ku1.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
@@ -598,6 +603,46 @@ def art_colours(ops):
     return sorted({hex_rgb(op["color"]) for op in ops})
 
 
+def remap_colours(rgb, pairs, tolerance):
+    """ku1 (b776): move a whole colour scheme, keeping every blend and shade. ``pairs`` lists (old, new) colours; a
+    colour on the segment between two old colours (within ``tolerance`` RGB levels, nearest segment first, ties to the
+    first pair) takes the same point between their new colours, in exact integers. A shade of a cloth colour is a
+    blend with black, a highlight one with white, an anti-aliased edge one between its two art colours, so listing
+    black, white and the old art colours carries all of them. ``rgb`` is (N, 3); returns (new rgb, hit mask)."""
+    old = np.array([hex_rgb(a) for a, _ in pairs], np.int64)
+    new = np.array([hex_rgb(b) for _, b in pairs], np.int64)
+    require(len(old) >= 2, "a remap needs at least two colours")
+    c = np.asarray(rgb, np.int64)
+    best = np.full(len(c), np.iinfo(np.int64).max, np.int64)
+    out = c.copy()
+    for i in range(len(old)):
+        for j in range(i + 1, len(old)):
+            d = old[j] - old[i]
+            den = int((d * d).sum())
+            require(den > 0, "remap colours must differ")
+            num = np.clip(((c - old[i]) * d).sum(axis=1), 0, den)
+            off = c * den - old[i][None, :] * den - d[None, :] * num[:, None]
+            dist = (off * off).sum(axis=1) // (den * den)
+            take = dist < best
+            best = np.where(take, dist, best)
+            moved = (new[i][None, :] * (den - num)[:, None] + new[j][None, :] * num[:, None] + den // 2) // den
+            out = np.where(take[:, None], moved, out)
+    hit = best <= int(tolerance) ** 2
+    return np.where(hit[:, None], np.clip(out, 0, 255), c), hit
+
+
+def remap_palette(palette, row):
+    """``palette_remap`` of a row: the palette entries ``remap_colours`` moves (clear entries stay). Returns the new
+    palette and the moved entry indices."""
+    spec = row["palette_remap"]
+    out = palette.copy()
+    moved, hit = remap_colours(palette[:, :3], spec["pairs"], spec.get("tolerance", 12))
+    hit &= palette[:, 3] > 0
+    hit &= (moved != palette[:, :3]).any(axis=1)
+    out[hit, :3] = moved[hit]
+    return out, [int(i) for i in np.flatnonzero(hit)]
+
+
 # -- native textures -------------------------------------------------------------------------------------------------
 
 def _tset_textures(decoded):
@@ -819,19 +864,25 @@ def compile_texture(span, row, donors=None, *, fixed=True):
     planes = read_planes(decoded, chunk, clean)
     original_planes = [p.copy() for p in planes]
     palette = read_palette(decoded, chunk, clean)
-    original_palette = palette.copy()
     rule = mud = None
     if row["kind"] == "tset":
         mud = read_palette(decoded, chunk, textures[1])
         rule = mud_rule(palette, mud, np.unique(np.concatenate([p.ravel() for p in planes])))
+    remapped = []
+    if "palette_remap" in row:
+        # ku1 (b776): the whole scheme moves in the palette first (indices kept, so every protected texel takes its
+        # entry's new colour); the art operations then paint on the remapped texture
+        palette, remapped = remap_palette(palette, row)
+        require(remapped, "the palette remap moved no entry")
+    original_palette = palette.copy()
     h, w = planes[0].shape
     base = palette[planes[0]].astype(np.uint8)
-    painted, scope = paint(base, row["ops"], donors)
-    require(scope.any(), "the art changed no texel")
+    painted, scope = paint(base, row.get("ops", []), donors)
+    require(scope.any() or remapped, "the art changed no texel")
     alphas = painted[..., 3].astype(np.int64)
     alpha_changed = painted[..., 3] != base[..., 3]
     # exact art colours first, then the most frequent edge blends far from the palette, per alpha class in the art
-    wanted = art_colours([op for op in row["ops"] if "color" in op])
+    wanted = art_colours([op for op in row.get("ops", []) if "color" in op])
     added, free = [], free_slots(planes, scope_chain(scope, planes))
     merged_moved = merged_slots = 0
     classes, sizes = np.unique(alphas[scope], return_counts=True)
@@ -911,6 +962,7 @@ def compile_texture(span, row, donors=None, *, fixed=True):
         # existing twin entries stay byte-exact; only the slots this fix filled get the rule's value
         twin = mud.copy()
         slots = [a["slot"] for a in added]
+        slots += [i for i in remapped if i not in slots]
         if rule == "pair":
             used = np.unique(np.concatenate([p.ravel() for p in original_planes]))
             twin = pair_mud(palette, mud, slots, used)
@@ -929,9 +981,12 @@ def compile_texture(span, row, donors=None, *, fixed=True):
     require(len(fixed_span) == len(span) and fixed_span[:32] == span[:32], "wrapper or allocation changed")
     check, _ = decode_chunk(fixed_span, parse_chunks(fixed_span)[0])
     require(check == new, "native round trip differs")
-    return fixed_span, dict(texture=clean["name"], mips=rows, palette_slots_added=added, mud_rule=rule,
-                            merged_twin_slots=merged_slots, protected_texels_moved_one_level=merged_moved,
-                            fit=asdict(fit), level0_scope_texels=int(scope.sum()))
+    detail = dict(texture=clean["name"], mips=rows, palette_slots_added=added, mud_rule=rule,
+                  merged_twin_slots=merged_slots, protected_texels_moved_one_level=merged_moved,
+                  fit=asdict(fit), level0_scope_texels=int(scope.sum()))
+    if remapped:
+        detail["palette_remapped"] = len(remapped)
+    return fixed_span, detail
 
 
 def _txtr(span, kinds=("P8",)):
@@ -1313,3 +1368,13 @@ def overlaps():
 
 def apply_overlaps(path, *, strict=False):
     return apply_to_image(path, strict=strict, document=overlaps())
+
+
+def chiefs():
+    """ku1 (b776): the 2026 Kansas City Chiefs home and road kits (13H0, 13A0) redone to the current look."""
+    return spec(DATA_KU1)
+
+
+def apply_chiefs(path, *, strict=False):
+    """Studio uniform finish pass for ku1, after the pants hem (the last writer of these kits): pinned spans only."""
+    return apply_to_image(path, strict=strict, document=chiefs())

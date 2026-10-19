@@ -51,7 +51,9 @@ class Contract(unittest.TestCase):
         owned = {(r["selector"], r["chunk"], r["kind"]) for r in self.doc["textures"]}
         names = {(s, 43, "names_retint") for s in ("05A0", "05H0", "05A4", "05H4", "13A0", "13H0")}
         sevens = {(s, c, "digit_png") for s in ("28H0", "28A0") for c in (20, 40)}
-        self.assertEqual(owned, names | sevens)
+        # b776-ku1: the 2026 Chiefs numbers (jersey 13..22 and shoulder 33..42 on both kits) share this pass
+        chiefs = {(s, c, "digit_png") for s in ("13H0", "13A0") for c in (*range(13, 23), *range(33, 43))}
+        self.assertEqual(owned, names | sevens | chiefs)
         for row in self.doc["textures"]:
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             if row["kind"] == "names_retint":
@@ -71,7 +73,7 @@ class Contract(unittest.TestCase):
             with Image.open(path) as im:
                 self.assertEqual(im.mode, "RGBA")
                 self.assertEqual(im.info.get("nfl2k5_digit_registration"), "as_authored")
-                self.assertEqual(im.size, (64, 64) if row["chunk"] == 20 else (32, 32))
+                self.assertEqual(im.size, (32, 32) if row["selector"][:2] == "28" and row["chunk"] == 40 else (64, 64))
 
     def test_team_spec_holds_the_redrawn_seven(self):
         spec = json.loads((ROOT / "data/nfl2k5_teams_2026/TEN.json").read_text())

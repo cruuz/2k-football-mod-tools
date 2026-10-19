@@ -9,6 +9,11 @@
   "TEN": [
    "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-2-vs-philadelphia-eagles (#37, #79)",
    "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-1-vs-new-york-jets (#7)"
+  ],
+  "KC": [
+   "https://www.chiefs.com/photos/photos-game-action-from-regular-season-week-1-broncos-vs-chiefs (home numbers)",
+   "https://www.chiefs.com/photos (2026 week 4 at LV: road numbers and nameplates)",
+   "https://commons.wikimedia.org/wiki/File:Washington_Commanders_at_Kansas_City_Chiefs_(55091352530).jpg (#77)"
   ]
  },
  "textures": [
@@ -104,12 +109,13 @@
    "retail_sha256": "93b52b535aa4975e33808a14c55d2f8d6069af2d511bfaad932c11f814013da7",
    "retail_fill": "#BC001C",
    "retail_outline": "#FEAF16",
-   "fill": "#E31837",
-   "outline": "#FFB612",
+   "fill": "#E4282E",
+   "outline": "#F7C542",
    "before_sha256": "f36bb52fb87eaf051345778d827d23e28ce6fa994488244e2f5ffd52a2f2ff65",
-   "after_sha256": "8150f33805110a17d7f37f567645e83239ca3fac8af617715d7b5b26bf8f6c50",
+   "after_sha256": "eccd1953af31749d045e13b240b55aab9695f9b07cb2afc7fd3a4df11567d43d",
    "defects": [
-    "fn2-KC-away-nameplate-cut-in-outline"
+    "fn2-KC-away-nameplate-cut-in-outline",
+    "ku1-KC-2026-colours"
    ]
   },
   {
@@ -125,11 +131,12 @@
    "retail_fill": "#FFFFFF",
    "retail_outline": "#FEAF16",
    "fill": "#FFFFFF",
-   "outline": "#FFB612",
+   "outline": "#F7C542",
    "before_sha256": "ff4141392a8c6707220b7f797564983e8bd136dc59d7b18b1a2b785166af9933",
-   "after_sha256": "6f1255e118dbd682260c913e58e1e99bf73047ca1ffa490b43b3b57856658325",
+   "after_sha256": "85f9828a492c3c966e2bbdd0c600117734714714efa0cbf4c2147b56497b4c21",
    "defects": [
-    "fn2-KC-home-nameplate-cut-in-outline"
+    "fn2-KC-home-nameplate-cut-in-outline",
+    "ku1-KC-2026-colours"
    ]
   },
   {
@@ -194,6 +201,646 @@
    "after_sha256": "bafbb28fd11ecbc68b3444f63b93c2cba06931aeb6af9ed349e159d1dcdaf7d2",
    "defects": [
     "nt18-35m31-TEN-seven-skinny-stem-and-jut"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 13,
+   "kind": "digit_png",
+   "texture": "48",
+   "resource_size": 1528096,
+   "offset": 444944,
+   "length": 1568,
+   "png": "KC_13H0_digit_jersey_0.png",
+   "png_sha256": "1fea0be164ffe647ea29e118f3a3390f7f61f7f4685a38189354bd0259f4d098",
+   "before_sha256": "e2dae674ac983d8758aea7e7e711df5582e41aac375ec1e0228d2ff45952814c",
+   "after_sha256": "7d9215f0893df1ec8838f3b4158e890e472c7c85aabbddf062fd03a6bfc2d2fd",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 14,
+   "kind": "digit_png",
+   "texture": "49",
+   "resource_size": 1528096,
+   "offset": 446512,
+   "length": 1072,
+   "png": "KC_13H0_digit_jersey_1.png",
+   "png_sha256": "d0da8096199af2a97edcdfe1733f7590f9e8f4d4c3d7506a4518d6b4eea0f3f7",
+   "before_sha256": "ceb6a8fbe01594bb7329e017a7e7558121f44e983e39a86eb28ae742206be7b4",
+   "after_sha256": "c8e9841903ee67027fff778099e4ac4e833d4eafc96fc79baa50601ec43f1a83",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 15,
+   "kind": "digit_png",
+   "texture": "50",
+   "resource_size": 1528096,
+   "offset": 447584,
+   "length": 2000,
+   "png": "KC_13H0_digit_jersey_2.png",
+   "png_sha256": "acdd455fd99ac4e1f294a8e780a5c3e0b01b2c78dc46cd4104d24a66c8ad080f",
+   "before_sha256": "706ceea3ad6501ffcf2e2bd9285a18ed56cec2231403742153bd9b066c8de08e",
+   "after_sha256": "e14cafca02a4f8ad0aa664781b5126b3ef6286dd1eca3a2f6ac841eea9f2fce2",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 16,
+   "kind": "digit_png",
+   "texture": "51",
+   "resource_size": 1528096,
+   "offset": 449584,
+   "length": 2128,
+   "png": "KC_13H0_digit_jersey_3.png",
+   "png_sha256": "b26640cb40fd536560480d540ae93323837becc5db25690d87dfb2c0b2591edc",
+   "before_sha256": "f52ac3247baf3f76e0ae43882d927b02c6e60e1660cfb520350df764e87e75ed",
+   "after_sha256": "fd561e39996943303cafac0bc67da3c2d8ce22f834b0c72eadf380c2c73d7b0e",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 17,
+   "kind": "digit_png",
+   "texture": "52",
+   "resource_size": 1528096,
+   "offset": 451712,
+   "length": 1952,
+   "png": "KC_13H0_digit_jersey_4.png",
+   "png_sha256": "c6cce49efe33590629800b151fd0d75d59b4d1b1e4bc201c647c34e037205f19",
+   "before_sha256": "cdfe35148602280e1fb1866e2700ac53d9baae369876936020513e04ad2a8c45",
+   "after_sha256": "6249e04f406c2f09230b13b6a9b4863e6db6d1f6b216dbac2d049440cd22ef2b",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 18,
+   "kind": "digit_png",
+   "texture": "53",
+   "resource_size": 1528096,
+   "offset": 453664,
+   "length": 1760,
+   "png": "KC_13H0_digit_jersey_5.png",
+   "png_sha256": "1ec7c59c945a9dad105ee58f1b2c69309d9df7238b37e4bc0346601a816a72f7",
+   "before_sha256": "6b36ed318f72ad30e369850808f37c62b8e21fa19e99a77dccc6b806099d0b8f",
+   "after_sha256": "55d9ce8fd8d09cfabb611807265f7621fb153838333270f1eced7a8a1a9dca5c",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 19,
+   "kind": "digit_png",
+   "texture": "54",
+   "resource_size": 1528096,
+   "offset": 455424,
+   "length": 1968,
+   "png": "KC_13H0_digit_jersey_6.png",
+   "png_sha256": "dc57693bcb5ea2f69a16561b163db6e1d85436e2aa7275904f00b142d3107849",
+   "before_sha256": "0aebe4644c0ac27afa5ce75236774822c371d3d59ee748aba48e955d0b07b490",
+   "after_sha256": "98d33dbf6475d9e7966d3cba40d9a25c66be21ebc8e21f80ceabde84dd03115a",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 20,
+   "kind": "digit_png",
+   "texture": "55",
+   "resource_size": 1528096,
+   "offset": 457392,
+   "length": 1968,
+   "png": "KC_13H0_digit_jersey_7.png",
+   "png_sha256": "0b478c6c65095a07c15cd2de7713d833644ba8b70a43c94b88901d6b1ef9ffd9",
+   "before_sha256": "e075e93803835691c91a11b277e0e5e59a12d6f8182b1249c3ad6174ed5880a5",
+   "after_sha256": "46450e270ffc8ecc73cc9367b32f4186bf81db439558d30a7d75dea338e242c6",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 21,
+   "kind": "digit_png",
+   "texture": "56",
+   "resource_size": 1528096,
+   "offset": 459360,
+   "length": 2112,
+   "png": "KC_13H0_digit_jersey_8.png",
+   "png_sha256": "03892139a5814bf3d6bb3d64ac0f69adbc3a615cf6340c28de094be4022d4d02",
+   "before_sha256": "210e4d1329a0fa65f8d7d11f97d820b6f76d0c00dbce5faf22c2f61fe2c7b357",
+   "after_sha256": "f8b5d8248ab4a46d8774c8fe531364baac8aa143d408bf8f0f70927c64ebfae1",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 22,
+   "kind": "digit_png",
+   "texture": "57",
+   "resource_size": 1528096,
+   "offset": 461472,
+   "length": 1904,
+   "png": "KC_13H0_digit_jersey_9.png",
+   "png_sha256": "8285ef18862175ee8d470a2a0b818589054632a2b0d6851bd2b8b3004a84c664",
+   "before_sha256": "c1133e80cd9f9d91d27a9b689258f5b22293f836ceb477923df9e7aa5615c41b",
+   "after_sha256": "818e6bef3888074876facd52610b754196df84eeece9cff3755adda8c0a58c7a",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 33,
+   "kind": "digit_png",
+   "texture": "an48",
+   "resource_size": 1528096,
+   "offset": 472672,
+   "length": 1568,
+   "png": "KC_13H0_digit_arm_0.png",
+   "png_sha256": "f68cf33aea6e67a4d1b015f750b366881cc9cc883d15de05b0ae00efb52101a7",
+   "before_sha256": "1f16a431d33210991196e8b15dd78d8afccc9f459ef71ad79710776fa4b370d5",
+   "after_sha256": "36dac5d00673f19ebfa29a9b7ae828e899ae22813c804ba4ea7a161abeb10ef9",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 34,
+   "kind": "digit_png",
+   "texture": "an49",
+   "resource_size": 1528096,
+   "offset": 474240,
+   "length": 1072,
+   "png": "KC_13H0_digit_arm_1.png",
+   "png_sha256": "64cd84e44bc0a5eac8976a26689a2e5a1a531cded065debc4db684c53a1cc18a",
+   "before_sha256": "78a3013c31eac85bca18ac5788ca65e4ea0c8857dcd1bb353b07181f778cff89",
+   "after_sha256": "e9c162619e4fc54796f560970b9bf989dfcba00d2293fee544449cb2e0c47a1e",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 35,
+   "kind": "digit_png",
+   "texture": "an50",
+   "resource_size": 1528096,
+   "offset": 475312,
+   "length": 2000,
+   "png": "KC_13H0_digit_arm_2.png",
+   "png_sha256": "e7c6e0caba57ece45238e15329973b056df1da8e651aaaeef0f20da39dd23a64",
+   "before_sha256": "5a9eda1c27e8054412546aa4b3694cdca5f332923071bb366decdc2791981914",
+   "after_sha256": "0333cc9b2bc5846ddc541b5ca2a96928bc695bc9d84c60e6cbba1d8014a465e1",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 36,
+   "kind": "digit_png",
+   "texture": "an51",
+   "resource_size": 1528096,
+   "offset": 477312,
+   "length": 2144,
+   "png": "KC_13H0_digit_arm_3.png",
+   "png_sha256": "7691a77cd3e9f69fb1bc5ff9eca28adfb8cd5277e1729aa450cab93e34a1c3de",
+   "before_sha256": "4c5790583948c65a0a242eafac4f3ed2af575505eb92d3b01228a0c4d6cff519",
+   "after_sha256": "347d204c08a2fb4b02cf0bf599c43e5c025ae1b76797c70d7a2237c649a4c393",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 37,
+   "kind": "digit_png",
+   "texture": "an52",
+   "resource_size": 1528096,
+   "offset": 479456,
+   "length": 1968,
+   "png": "KC_13H0_digit_arm_4.png",
+   "png_sha256": "d9033920ebf42a188a83c040d6912dde48588ae612435029628ca79d766883c4",
+   "before_sha256": "5d790aa22f403ce542acef477762bd11da177faa383e072edd3d927b6b68afe1",
+   "after_sha256": "479d08d5fbd08bd62b73f145ce06ca6688653edd8ee8aadafb7bb6a52ad36888",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 38,
+   "kind": "digit_png",
+   "texture": "an53",
+   "resource_size": 1528096,
+   "offset": 481424,
+   "length": 1776,
+   "png": "KC_13H0_digit_arm_5.png",
+   "png_sha256": "d68c3dfdfe3abdd5d84535d9c14151569338e1bdd847fd4603079aab980d03ec",
+   "before_sha256": "dd6221f4d3ac66e955d16dabc1ab77bb440ca28af705835f3a462145c30084b2",
+   "after_sha256": "5e16e5a9b24ec76a9f15fd63ee5859cfc5174ac135e1c0babd9ce8d42a987b45",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 39,
+   "kind": "digit_png",
+   "texture": "an54",
+   "resource_size": 1528096,
+   "offset": 483200,
+   "length": 1984,
+   "png": "KC_13H0_digit_arm_6.png",
+   "png_sha256": "73e6769f896dcd4a69be884e32f72c5eeac8e1eea936c9c6c6434a086b5328b7",
+   "before_sha256": "5af2b758e2e77f0556c30ec5b3ff9712e987eb5db65de9480819d110fcec1a5e",
+   "after_sha256": "a0c11f2e7e713774ffba0dbb21f6cbe7c210553e057b7a1345d66973d38fe8e8",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 40,
+   "kind": "digit_png",
+   "texture": "an55",
+   "resource_size": 1528096,
+   "offset": 485184,
+   "length": 1984,
+   "png": "KC_13H0_digit_arm_7.png",
+   "png_sha256": "2f6bb0955fea990a02d8f5292bc2e7e787388a785b31550043727d70840d8510",
+   "before_sha256": "ab1a60c8a5d5e02658ff02baa66391ddfaa7217e93350c8b1691c81bb8943813",
+   "after_sha256": "0928d131795724ec3984768abf7f8ff76911e1957d80a2ba53b3a01dd068279f",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 41,
+   "kind": "digit_png",
+   "texture": "an56",
+   "resource_size": 1528096,
+   "offset": 487168,
+   "length": 2112,
+   "png": "KC_13H0_digit_arm_8.png",
+   "png_sha256": "5930cb6b2ff1821931941ce1d29a3288f820e41f4ca6a5e15f61b9130c708d53",
+   "before_sha256": "aac9e5ec7f48cac0ab261ceebef328cc776060400248b58f70bcd6ee6ad8c18f",
+   "after_sha256": "41784972cb5efc96f0809eae2008cffb2124992a02de685529660c5ec775092e",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 42,
+   "kind": "digit_png",
+   "texture": "an57",
+   "resource_size": 1528096,
+   "offset": 489280,
+   "length": 1920,
+   "png": "KC_13H0_digit_arm_9.png",
+   "png_sha256": "94047e7bd363ca31a59898ec9763967cdab9ab2916d5f70c97930a99fdff8d3e",
+   "before_sha256": "b75611a5fd1dade33811268f4ecf93f1d6e34b109d367e2a136822f9f755808b",
+   "after_sha256": "d29a34f2ed31bd3bcb6e65e04c940bd6f1f6b34dc3c15c4dd3a93da1dc6485bb",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 13,
+   "kind": "digit_png",
+   "texture": "48",
+   "resource_size": 1539552,
+   "offset": 453504,
+   "length": 1600,
+   "png": "KC_13A0_digit_jersey_0.png",
+   "png_sha256": "c4eef80fdf2d009edf0aa064adde02ede27504854d9329fabdf5e9585f9aa9fc",
+   "before_sha256": "b8297181ac6fca5133f1020c696bd1fa0cb554abb27e5ce7dc9281e9d85c6683",
+   "after_sha256": "cdc183683d8f4e770e7c0cd01b8d8dc7c66a7fa87721180c667ee76ab3e1d0c9",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 14,
+   "kind": "digit_png",
+   "texture": "49",
+   "resource_size": 1539552,
+   "offset": 455104,
+   "length": 1296,
+   "png": "KC_13A0_digit_jersey_1.png",
+   "png_sha256": "e0930ec5b580f23c32d78fc2521a127f09fec9c1066adf424a3316171aa30d65",
+   "before_sha256": "9d64a3953c788383f40254a4f31bbadaeee3b436b04c2dcc38a370679d5495f0",
+   "after_sha256": "a0d8d962737ce74a4f701edc53f16dd0d69386b2e5c40971b0b642972723da9a",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 15,
+   "kind": "digit_png",
+   "texture": "50",
+   "resource_size": 1539552,
+   "offset": 456400,
+   "length": 1984,
+   "png": "KC_13A0_digit_jersey_2.png",
+   "png_sha256": "5f1d8506d962eeac9a2ad963496a31735ac0c6911d6b722c17a84bd33938bd16",
+   "before_sha256": "00a43c24a5e58234798757fcfa82cbd8b5a52241766ebb40f339e1e6d33a30be",
+   "after_sha256": "d9edbee4224562bb8b2bf2bc89980d94710beacff322ecba60c84f6f7e8537f5",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 16,
+   "kind": "digit_png",
+   "texture": "51",
+   "resource_size": 1539552,
+   "offset": 458384,
+   "length": 2096,
+   "png": "KC_13A0_digit_jersey_3.png",
+   "png_sha256": "5dcb713d570b452d6a0ac8cfcf7d0938fe21ac24605b86314bf91e5863b6e4dc",
+   "before_sha256": "3854545cf0512a3cc09a15a6f7a60908c6de8e13bf29961eb4629f89978764c4",
+   "after_sha256": "47c4c7cbe4d52eb7f7ff555fdef187d0af7c4fa31970732865d4c2056c5ff281",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 17,
+   "kind": "digit_png",
+   "texture": "52",
+   "resource_size": 1539552,
+   "offset": 460480,
+   "length": 2080,
+   "png": "KC_13A0_digit_jersey_4.png",
+   "png_sha256": "d52c0c2798d6d12310ae10a2df6bd49905ed674e25ba91fa94bb4d245e398709",
+   "before_sha256": "366cc373b80a05ca4783c865138a5d539ab6223527c8d7fdf6f8414a67de904c",
+   "after_sha256": "0e176de0ea3338515bbabea423f45281c8cb658a629e383c488197b66d4e7af3",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 18,
+   "kind": "digit_png",
+   "texture": "53",
+   "resource_size": 1539552,
+   "offset": 462560,
+   "length": 1840,
+   "png": "KC_13A0_digit_jersey_5.png",
+   "png_sha256": "e062333e2aaf93cef062688699d0d2523fa7f63432e4466bb9480371eaae3217",
+   "before_sha256": "d1f77f9ca0ea7dc9404419eeb5d9281da12bfb74035f1f121287ec41bd7815fc",
+   "after_sha256": "ee2bdd58bfeaa24161ee1b3dddc7146c01d55e0158e46b94b81d64b5458ad611",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 19,
+   "kind": "digit_png",
+   "texture": "54",
+   "resource_size": 1539552,
+   "offset": 464400,
+   "length": 1856,
+   "png": "KC_13A0_digit_jersey_6.png",
+   "png_sha256": "5ccd5bcc2b71a9d14ee2a86d38dc27b791ff6cddb706ca4302c01d68b6960a61",
+   "before_sha256": "531e179e6be76eb1e7c06db25f1c5c3a02f27cd36f92d0db193b26acb9a52c09",
+   "after_sha256": "44a48b67c6b7ca83a5b7b57a7c5e273352eb6f874a1388b07883b4bd35ac35bd",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 20,
+   "kind": "digit_png",
+   "texture": "55",
+   "resource_size": 1539552,
+   "offset": 466256,
+   "length": 1936,
+   "png": "KC_13A0_digit_jersey_7.png",
+   "png_sha256": "a592ce4e5d4d25ca4944de57481f9008d6374c84e9f89bf2ea57d981f9a3a32a",
+   "before_sha256": "350c5801883793c5c33be4ebf4fa7ece8c78e5c7c2a9ca79772c2b864f90eded",
+   "after_sha256": "7fee5d94d7ed545a17cdef717f66741978b2806a275aa7b1beda7a9d2b34e951",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 21,
+   "kind": "digit_png",
+   "texture": "56",
+   "resource_size": 1539552,
+   "offset": 468192,
+   "length": 2336,
+   "png": "KC_13A0_digit_jersey_8.png",
+   "png_sha256": "12a44379e261f958d70ead95eb441d6bac5dd209392cdecb7fb543e786d20ae2",
+   "before_sha256": "59b10ab76e57e7490a3166968660764506b275843a784755a4ad1405c66a32a8",
+   "after_sha256": "35088dde1468a3649e52f8789f52fd61b80bd929047b58b2e7ac6fd3342ef765",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 22,
+   "kind": "digit_png",
+   "texture": "57",
+   "resource_size": 1539552,
+   "offset": 470528,
+   "length": 1936,
+   "png": "KC_13A0_digit_jersey_9.png",
+   "png_sha256": "f8d597a6ca2d34a6711caad714ebf114713fa05e33ba34d59acac4e167c44662",
+   "before_sha256": "8ddf5efd3aa10b93ed0ff209e2c77ea014bd48026bbdc87ced3d07a11c1aa2f6",
+   "after_sha256": "903e4d2b1cf65c918d079ed6694b314c40ded5d938284bfcaa7405cdfff9abe7",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 33,
+   "kind": "digit_png",
+   "texture": "an48",
+   "resource_size": 1539552,
+   "offset": 481760,
+   "length": 1616,
+   "png": "KC_13A0_digit_arm_0.png",
+   "png_sha256": "07a0f7a2d952979c1b75ed5ef342e1242b5cd2327fc4d27789a8cc16f8de1d40",
+   "before_sha256": "c9e9c112a91cc1bbe3cdfc7ec5a5897ce577840900a251adc0ef955ec3c9e0a0",
+   "after_sha256": "dde11b31f5546afa2712f0217a162bd37367f287a360fe8fb55f43f1c6ff414c",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 34,
+   "kind": "digit_png",
+   "texture": "an49",
+   "resource_size": 1539552,
+   "offset": 483376,
+   "length": 1296,
+   "png": "KC_13A0_digit_arm_1.png",
+   "png_sha256": "e5be9ed0945f1811a850704c7035209e6b2d880feeb9bb80c483a16dcd628ddf",
+   "before_sha256": "140f4a51d64528b8c5970d90807ee8c0f05392d0b3f476e66e2ab3d132d95bef",
+   "after_sha256": "ceaaadd0daa0c2f1e18d70d45b932a522e7718f6892ae5a45f9f0bf71e3efce6",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 35,
+   "kind": "digit_png",
+   "texture": "an50",
+   "resource_size": 1539552,
+   "offset": 484672,
+   "length": 2000,
+   "png": "KC_13A0_digit_arm_2.png",
+   "png_sha256": "b852e1cf6425b1131d80526f97bf57d1e41744a29da00378d064b542d4e2ebb0",
+   "before_sha256": "a75b1dbb7b8e55b00be0f5dbd29348e97141617c4f6d8f01796fe7d8ee56de0f",
+   "after_sha256": "36307e85e0f5a33a3a21d0294dced362b39bbaecb1e811563360105e18f175e5",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 36,
+   "kind": "digit_png",
+   "texture": "an51",
+   "resource_size": 1539552,
+   "offset": 486672,
+   "length": 2096,
+   "png": "KC_13A0_digit_arm_3.png",
+   "png_sha256": "8869ae34c98b97e78a4923629e2feb1cb25abb93d7e602d17d6c35bd0c9614a2",
+   "before_sha256": "1f5ad1b9c13754afe377dc38f401871792359e0cbb2fe1201e0cc639f8fdd185",
+   "after_sha256": "3be37e1cab7504b231e6865824f86276602f172b46641a8906d8f6472434d43a",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 37,
+   "kind": "digit_png",
+   "texture": "an52",
+   "resource_size": 1539552,
+   "offset": 488768,
+   "length": 2096,
+   "png": "KC_13A0_digit_arm_4.png",
+   "png_sha256": "8400a042a47718d12bb589a3091c5821018e95ef7e0943a070cf181d6c555d04",
+   "before_sha256": "4d0da5859c53301efb5963663b8b432be45da35e1c37e1e4d8cd2cef4e74c486",
+   "after_sha256": "830db6a41e72adcadcb480afee7d5a5fb13985dd533ff632eaee2966f30bd65c",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 38,
+   "kind": "digit_png",
+   "texture": "an53",
+   "resource_size": 1539552,
+   "offset": 490864,
+   "length": 1840,
+   "png": "KC_13A0_digit_arm_5.png",
+   "png_sha256": "0b4f3353c433ea8eccb64620cbdcea631f2f054e75abfcf7c7f22a22d9fbc5e5",
+   "before_sha256": "c4b1a6ca4139009f0d9dcf6f45555f63b33a51a237a8b55db702fc61105443fa",
+   "after_sha256": "980dde5144936358b0433db0f616b8804171121549e86ceea06df0f4736bcc4f",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 39,
+   "kind": "digit_png",
+   "texture": "an54",
+   "resource_size": 1539552,
+   "offset": 492704,
+   "length": 1856,
+   "png": "KC_13A0_digit_arm_6.png",
+   "png_sha256": "a070a5a03f84209054016ce48858a04ee2548fe1eb11a70e91eff8ada9ab5b84",
+   "before_sha256": "5aa9b4c71714eab8917530c61ecbaf036ea6d392afaae10b4f8e4d2e3265dfd6",
+   "after_sha256": "bc5f4ead9f23b854a7014d72113dc3f375d4cf098e2bdb9065a174b326d83848",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 40,
+   "kind": "digit_png",
+   "texture": "an55",
+   "resource_size": 1539552,
+   "offset": 494560,
+   "length": 1936,
+   "png": "KC_13A0_digit_arm_7.png",
+   "png_sha256": "222a2a43b9019e012fb780bcea1d4d7457b21ce2e69d3819b949c676da32f52b",
+   "before_sha256": "c2af4e57b0ea43d90b163e4d16ab902af246e2e42d550398f0fe72ee9d3d94be",
+   "after_sha256": "4fe612d89e77a950617ad4554421d12299d98b89d00311da54e975fafb01d1ea",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 41,
+   "kind": "digit_png",
+   "texture": "an56",
+   "resource_size": 1539552,
+   "offset": 496496,
+   "length": 2336,
+   "png": "KC_13A0_digit_arm_8.png",
+   "png_sha256": "4f351205f9da5c482c5bd5fbb2469c5ca7ebdfe8de0f8e92c2bea97ac033ac79",
+   "before_sha256": "469cef3a3229da75b431b23dfb985059aa46fb3623a3cad9418030ef498681b4",
+   "after_sha256": "fc095c6a792224a07b66625b88079613b2b449214f167006373eca07afb654b1",
+   "defects": [
+    "ku1-KC-2026-numbers"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 42,
+   "kind": "digit_png",
+   "texture": "an57",
+   "resource_size": 1539552,
+   "offset": 498832,
+   "length": 1952,
+   "png": "KC_13A0_digit_arm_9.png",
+   "png_sha256": "ae0fdcb0d642571b51f0acaa1614c69bbb8ac6f94b72f79ac48565e245cf2955",
+   "before_sha256": "da86f6909ad576c41e9c45270e76a0c05d8c17693b87ee700e103dad0a0d784c",
+   "after_sha256": "e1a8491838f2f1ce5d05a82f61d8f2befa3ce2355ed08e9a3e2fb4964205ff8d",
+   "defects": [
+    "ku1-KC-2026-numbers"
    ]
   }
  ]

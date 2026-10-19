@@ -4155,6 +4155,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             helmet_receipt = helmet_w.apply_to_image(target)
             if helmet_receipt["written"] or helmet_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "menu_helmet_w2026", **helmet_receipt})
+        # b776-ku1: the Chiefs Team Select cards and schedule miniatures in the 2026 red (palette only, pinned slots).
+        chiefs_menu = _core_module("nfl2k5_menu_chiefs_2026")
+        if chiefs_menu is not None:
+            menu_receipt = chiefs_menu.apply_to_image(target)
+            if menu_receipt["written"] or menu_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_chiefs_2026", **menu_receipt})
         # b773-pa1: the modern above-the-knee pants hem on every current-season kit (texture only: the pants, their
         # bump map and the sideline player), compiled after the uf3 finish; throwbacks keep their era hem.
         pants_hem = _core_module("nfl2k5_pants_hem_2026")
@@ -4165,6 +4171,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                          **{k: v for k, v in hem_receipt.items() if k != "kits"},
                                          "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                                   for kit in hem_receipt["kits"]]})
+        # b776-ku1 (Noah 10/18): the 2026 Chiefs home and road kits redone to the current look (red that reads as
+        # Chiefs red through the in-game colour pipeline, Nike-era sleeve bands, socks, pants stripes, AFL patch,
+        # arm numbers on the shoulder tops); after the pants hem, the last writer of 13H0/13A0. Pinned spans only.
+        chiefs_receipt = kit_fixes.apply_chiefs(target)
+        if chiefs_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_ku1",
+                                     **{k: v for k, v in chiefs_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in chiefs_receipt["kits"]]})
         if plan.espn25_more_moments:
             # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
             # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
