@@ -1042,7 +1042,9 @@ def mug_variant(base_chains, kinds, role_kind: str, book, body, fi) -> list:
         chains[weak] = hook(weak, 5)
         chains[strong] = hook(strong, -5)
     if role_kind == 'sim':
-        for s, x in ((0, 14), (1, -14)):          # both ends drop to the flats (four rush: two backers + tackles)
+        # b776-int2 (Noah: an edge drops only on a designed call, never both): one end (slot 0) drops to its flat, the
+        # other keeps its rush from the base script (five rush: two backers, two tackles and one end).
+        for s, x in ((0, 14),):
             _, ch = lib.defense_slot_donor(book, body, fi, s, 0x0D) if _has_dl_drop(book, body, fi, s) else (None, None)
             if ch is None:
                 _, z = lib.defense_slot_donor(book, body, fi, 5, 0x0D)
