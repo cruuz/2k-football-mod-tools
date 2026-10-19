@@ -1,0 +1,200 @@
+{
+ "schema": "nfl2k5_glyph_fixes_2026/v1",
+ "purpose": "b776 fn2: the 2026 Bears and Chiefs nameplate letters on their retail structure in the kit colours, and the 2026 Titans 7 redrawn from club photographs. Pinned to the SOFTDRINK v0.6.1 kit spans (b775 disc, identical on v0.6 and 10/13).",
+ "references": {
+  "CHI": [
+   "https://www.chicagobears.com/photos/gameday-gallery-bears-at-lions-2025-week-2 (road: navy letters, orange outline)",
+   "https://www.chicagobears.com/photos/gameday-gallery-lions-vs-bears-2025-week-18 (home: white letters, orange outline)"
+  ],
+  "TEN": [
+   "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-2-vs-philadelphia-eagles (#37, #79)",
+   "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-1-vs-new-york-jets (#7)"
+  ]
+ },
+ "textures": [
+  {
+   "selector": "05A0",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1530672,
+   "offset": 493968,
+   "length": 7808,
+   "retail_selector": "05A0",
+   "retail_sha256": "88f06a734dba50f3f68c5f38f5cf01c37914d1bab972fbdb437ebf127b0e38c7",
+   "retail_fill": "#001933",
+   "retail_outline": "#C03800",
+   "fill": "#0D1A32",
+   "outline": "#C83803",
+   "before_sha256": "085083df2b6bdac4e483491c38943c3ec34da3ad35f6fd71e8105118f2bebf2f",
+   "after_sha256": "cda90921e01d7ff30c76a88a154113555653b2fe58852054d46cb030da7af93d",
+   "defects": [
+    "nt18-10m52-CHI-away-nameplate-W-R-GHT"
+   ]
+  },
+  {
+   "selector": "05H0",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1498832,
+   "offset": 470176,
+   "length": 7856,
+   "retail_selector": "05H0",
+   "retail_sha256": "17e9e3a79c6bf12cd30e7ff6e917c75a12d54c65115f2656573ffa85f5ac51f5",
+   "retail_fill": "#FFFFFF",
+   "retail_outline": "#FF6723",
+   "fill": "#FFFFFF",
+   "outline": "#C83803",
+   "before_sha256": "23700591a1cc0ce2d1d7da0fd42d37c1f89a74f5025bc052176274b2edb5da5d",
+   "after_sha256": "9f0ee844045b3ff1515117b0ece86527cced6fa6d1d00070af87dee43233bc63",
+   "defects": [
+    "fn2-CHI-home-nameplate-cut-in-outline"
+   ]
+  },
+  {
+   "selector": "05A4",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1485632,
+   "offset": 457920,
+   "length": 7856,
+   "retail_selector": "05A4",
+   "retail_sha256": "17e9e3a79c6bf12cd30e7ff6e917c75a12d54c65115f2656573ffa85f5ac51f5",
+   "retail_fill": "#FFFFFF",
+   "retail_outline": "#FF6723",
+   "fill": "#E2551A",
+   "outline": "#FFFFFF",
+   "before_sha256": "54da36e605cf4a4b4ab5705324466ee55acbbe66ec04aa3e840d3178363303eb",
+   "after_sha256": "8d3bdb988603633dca376e2b5b340e2947196c0df528a00dcf9e9c337158181b",
+   "defects": [
+    "fn2-CHI-alt-nameplate-cut-in-outline"
+   ]
+  },
+  {
+   "selector": "05H4",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1485632,
+   "offset": 457920,
+   "length": 7856,
+   "retail_selector": "05H4",
+   "retail_sha256": "17e9e3a79c6bf12cd30e7ff6e917c75a12d54c65115f2656573ffa85f5ac51f5",
+   "retail_fill": "#FFFFFF",
+   "retail_outline": "#FF6723",
+   "fill": "#E2551A",
+   "outline": "#FFFFFF",
+   "before_sha256": "54da36e605cf4a4b4ab5705324466ee55acbbe66ec04aa3e840d3178363303eb",
+   "after_sha256": "8d3bdb988603633dca376e2b5b340e2947196c0df528a00dcf9e9c337158181b",
+   "defects": [
+    "fn2-CHI-alt-nameplate-cut-in-outline"
+   ]
+  },
+  {
+   "selector": "13A0",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1539552,
+   "offset": 500784,
+   "length": 8112,
+   "retail_selector": "13A0",
+   "retail_sha256": "93b52b535aa4975e33808a14c55d2f8d6069af2d511bfaad932c11f814013da7",
+   "retail_fill": "#BC001C",
+   "retail_outline": "#FEAF16",
+   "fill": "#E31837",
+   "outline": "#FFB612",
+   "before_sha256": "f36bb52fb87eaf051345778d827d23e28ce6fa994488244e2f5ffd52a2f2ff65",
+   "after_sha256": "8150f33805110a17d7f37f567645e83239ca3fac8af617715d7b5b26bf8f6c50",
+   "defects": [
+    "fn2-KC-away-nameplate-cut-in-outline"
+   ]
+  },
+  {
+   "selector": "13H0",
+   "chunk": 43,
+   "kind": "names_retint",
+   "texture": "names",
+   "resource_size": 1528096,
+   "offset": 491200,
+   "length": 8080,
+   "retail_selector": "13H0",
+   "retail_sha256": "5db0d107434b308e787e13e4f3a2c1385b7fb46546c0d7a0cd85d3746b8f5aaa",
+   "retail_fill": "#FFFFFF",
+   "retail_outline": "#FEAF16",
+   "fill": "#FFFFFF",
+   "outline": "#FFB612",
+   "before_sha256": "ff4141392a8c6707220b7f797564983e8bd136dc59d7b18b1a2b785166af9933",
+   "after_sha256": "6f1255e118dbd682260c913e58e1e99bf73047ca1ffa490b43b3b57856658325",
+   "defects": [
+    "fn2-KC-home-nameplate-cut-in-outline"
+   ]
+  },
+  {
+   "selector": "28H0",
+   "chunk": 20,
+   "kind": "digit_png",
+   "texture": "55",
+   "resource_size": 1518112,
+   "offset": 450016,
+   "length": 2176,
+   "png": "TEN_28H0_digit_jersey_7.png",
+   "png_sha256": "25727ec3a92a703131e11766c4da6a781a63855be44d10a0a961e451cad02de6",
+   "before_sha256": "c21044f689ff879ee627c75ea3cfc569a2c7a9f565427c17efb00d8d07a1b85d",
+   "after_sha256": "329f12746d2a66b5396dbb54168f467a6ea1093ae1302642432c7dd8c6e1c6f8",
+   "defects": [
+    "nt18-35m31-TEN-seven-skinny-stem-and-jut"
+   ]
+  },
+  {
+   "selector": "28H0",
+   "chunk": 40,
+   "kind": "digit_png",
+   "texture": "an55",
+   "resource_size": 1518112,
+   "offset": 473568,
+   "length": 1360,
+   "png": "TEN_28H0_digit_arm_7.png",
+   "png_sha256": "078b28a7a0ae54e18d08b4580155ba6fa49fe566932305c7decd795a96f6d17b",
+   "before_sha256": "fa6491761fd169731aeb3ca715cb5aa8311b21ce2967e55a339fb123cdc839de",
+   "after_sha256": "1b884c737018a54ebebc42d2bc5c5ba420205bb067525e42fe139012faf8ab34",
+   "defects": [
+    "nt18-35m31-TEN-seven-skinny-stem-and-jut"
+   ]
+  },
+  {
+   "selector": "28A0",
+   "chunk": 20,
+   "kind": "digit_png",
+   "texture": "55",
+   "resource_size": 1518544,
+   "offset": 449744,
+   "length": 2032,
+   "png": "TEN_28A0_digit_jersey_7.png",
+   "png_sha256": "5da1a357b81632f469e23f506155ff43af10b2fad036a3de285145e7b694c713",
+   "before_sha256": "49de6428f95084847f1d8733101105c8fad48950d26fc6164d23a7f4a74497b2",
+   "after_sha256": "7b71b86af21cf0110da3ab321dc33f417986bfa04076f864dd9e6785fb40bd1b",
+   "defects": [
+    "nt18-35m31-TEN-seven-skinny-stem-and-jut"
+   ]
+  },
+  {
+   "selector": "28A0",
+   "chunk": 40,
+   "kind": "digit_png",
+   "texture": "an55",
+   "resource_size": 1518544,
+   "offset": 472928,
+   "length": 1360,
+   "png": "TEN_28A0_digit_arm_7.png",
+   "png_sha256": "01252bae05b33caa13780327eafd8add37303d54bc27d46429cef61230a292d5",
+   "before_sha256": "922412d030313130c90a8ba7eb720b3fbce9a558e0e4508fea3a1648298aef08",
+   "after_sha256": "bafbb28fd11ecbc68b3444f63b93c2cba06931aeb6af9ed349e159d1dcdaf7d2",
+   "defects": [
+    "nt18-35m31-TEN-seven-skinny-stem-and-jut"
+   ]
+  }
+ ]
+}
