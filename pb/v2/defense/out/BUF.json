@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -315,11 +315,11 @@
      0
     ],
     [
-     183,
-     457
+     -580,
+     91
     ],
     [
-     -183,
+     0,
      457
     ],
     [
@@ -608,10 +608,10 @@
    "model": {
     "2M": 0.1,
     "C0": 0.1,
-    "C1": 0.4,
+    "C1": 0.387,
     "C2": 0.2,
     "C3": 0.1,
-    "C4": 0.1
+    "C4": 0.113
    },
    "target": {
     "2M": 0.116,
@@ -622,7 +622,7 @@
     "C4": 0.1,
     "C6": 0.071
    },
-   "blitz_model": 0.387,
+   "blitz_model": 0.375,
    "blitz_target": 0.355,
    "calls": 10
   },
@@ -647,13 +647,11 @@
   },
   "nickel_odd": {
    "model": {
-    "2M": 0.08,
-    "C0": 0.08,
-    "C1": 0.3,
-    "C2": 0.16,
-    "C3": 0.22,
-    "C4": 0.08,
-    "C6": 0.08
+    "C0": 0.043,
+    "C1": 0.435,
+    "C2": 0.087,
+    "C3": 0.391,
+    "C6": 0.043
    },
    "target": {
     "2M": 0.068,
@@ -664,19 +662,17 @@
     "C4": 0.085,
     "C6": 0.06
    },
-   "blitz_model": 0.3,
+   "blitz_model": 0.391,
    "blitz_target": 0.322,
    "calls": 9
   },
   "dime_odd": {
    "model": {
-    "2M": 0.08,
-    "C0": 0.08,
-    "C1": 0.3,
-    "C2": 0.16,
-    "C3": 0.22,
-    "C4": 0.08,
-    "C6": 0.08
+    "C0": 0.043,
+    "C1": 0.435,
+    "C2": 0.087,
+    "C3": 0.391,
+    "C6": 0.043
    },
    "target": {
     "2M": 0.116,
@@ -687,7 +683,7 @@
     "C4": 0.1,
     "C6": 0.071
    },
-   "blitz_model": 0.3,
+   "blitz_model": 0.652,
    "blitz_target": 0.355,
    "calls": 9
   }
@@ -1339,7 +1335,7 @@
   {
    "play": 28,
    "appended": false,
-   "name": "Cover 4 Spot",
+   "name": "Quarters Drop 8",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1351,11 +1347,13 @@
    "donor": 8,
    "donor_name": "Cover 3",
    "source": {
-    "authored": "authored preset Cover 4 Quarters (spot) on Nickel"
+    "book": "DEN",
+    "play": 35,
+    "name": "Cover 12"
    },
-   "rushers": 4,
+   "rushers": 3,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 16
   },
   {
    "play": 29,
@@ -1556,25 +1554,23 @@
   {
    "play": 52,
    "appended": false,
-   "name": "Cover 1 Dime Fire",
+   "name": "Cover 4 Spot",
    "component": "coverage",
-   "concept": "Cover 1 Blitz",
+   "concept": "Cover 4 Quarters",
    "band": 3,
-   "pressure": true,
+   "pressure": false,
    "roles": [
     "dime"
    ],
    "new_links": [],
-   "donor": 200,
-   "donor_name": "Bear Man 1",
+   "donor": 8,
+   "donor_name": "Cover 3",
    "source": {
-    "book": "BUF",
-    "play": 200,
-    "name": "Bear Man 1"
+    "authored": "fallback Cover 6 -> Cover 4 Quarters; authored preset Cover 4 Quarters (spot) on Dime"
    },
-   "rushers": 5,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 14
   },
   {
    "play": 53,
@@ -1745,57 +1741,9 @@
   {
    "play": 61,
    "appended": false,
-   "name": "Cover 1 Double Blitz",
+   "name": "Cover 1 Mike Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
-   "band": 1,
-   "pressure": true,
-   "roles": [
-    "dime_odd",
-    "nickel_odd"
-   ],
-   "new_links": [],
-   "donor": 61,
-   "donor_name": "Double Hard 1 ",
-   "source": {
-    "book": "BUF",
-    "play": 61,
-    "name": "Double Hard 1 "
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 0
-  },
-  {
-   "play": 62,
-   "appended": false,
-   "name": "Cover 0 Safety Blitz",
-   "component": "coverage",
-   "concept": "Cover 0 Blitz",
-   "band": 2,
-   "pressure": true,
-   "roles": [
-    "dime_odd",
-    "nickel_odd"
-   ],
-   "new_links": [],
-   "donor": 61,
-   "donor_name": "Double Hard 1 ",
-   "source": {
-    "book": "BAL",
-    "play": 19,
-    "name": "Double Indian 0"
-   },
-   "rushers": 6,
-   "spy_slots": [],
-   "authored_nodes": 6
-  },
-  {
-   "play": 63,
-   "appended": false,
-   "name": "Cover 1 Rat Off",
-   "component": "coverage",
-   "concept": "Cover 1 Robber",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -1806,45 +1754,19 @@
    "donor": 222,
    "donor_name": "2 Robber",
    "source": {
-    "book": "HOU",
-    "play": 35,
-    "name": "Combo Weak Zone"
+    "authored": "odd variant of HOU Combo Weak Zone, edges rush [0, 4, 5]"
    },
-   "rushers": 3,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 18
+   "authored_nodes": 17
   },
   {
-   "play": 64,
+   "play": 62,
    "appended": false,
-   "name": "Cover 2 Zone 2",
+   "name": "Cover 0 Mike Blitz",
    "component": "coverage",
-   "concept": "Cover 2",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "dime_odd",
-    "nickel_odd"
-   ],
-   "new_links": [],
-   "donor": 221,
-   "donor_name": "2 Six Under",
-   "source": {
-    "book": "BUF",
-    "play": 221,
-    "name": "2 Six Under"
-   },
-   "rushers": 3,
-   "spy_slots": [],
-   "authored_nodes": 0
-  },
-  {
-   "play": 65,
-   "appended": false,
-   "name": "2-Man Trail",
-   "component": "coverage",
-   "concept": "2-Man Under",
-   "band": 2,
+   "concept": "Cover 0 Pressure",
+   "band": 3,
    "pressure": true,
    "roles": [
     "dime_odd",
@@ -1854,20 +1776,84 @@
    "donor": 61,
    "donor_name": "Double Hard 1 ",
    "source": {
-    "book": "DAL",
-    "play": 220,
-    "name": "Man Cover 2"
+    "authored": "fallback Cover 0 Blitz -> Cover 0 Pressure; odd variant of HOU Rocket Weak 0, edges rush [0, 4, 5]"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 16
+  },
+  {
+   "play": 63,
+   "appended": false,
+   "name": "Cover 1 Man Off",
+   "component": "coverage",
+   "concept": "Cover 1",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "dime_odd",
+    "nickel_odd"
+   ],
+   "new_links": [],
+   "donor": 61,
+   "donor_name": "Double Hard 1 ",
+   "source": {
+    "authored": "fallback Cover 1 Robber -> Cover 1; odd variant of DAL Weak Fire 1 Odd, edges rush [0, 4]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 12
+   "authored_nodes": 16
+  },
+  {
+   "play": 64,
+   "appended": false,
+   "name": "Cover 2 Zone 2",
+   "component": "coverage",
+   "concept": "Cover 2",
+   "band": 3,
+   "pressure": false,
+   "roles": [
+    "dime_odd",
+    "nickel_odd"
+   ],
+   "new_links": [],
+   "donor": 222,
+   "donor_name": "2 Robber",
+   "source": {
+    "authored": "odd variant of BAL 2 Soft, edges rush [0, 4]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 14
+  },
+  {
+   "play": 65,
+   "appended": false,
+   "name": "Cover 1 Man Lurk",
+   "component": "coverage",
+   "concept": "Cover 1",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "dime_odd",
+    "nickel_odd"
+   ],
+   "new_links": [],
+   "donor": 61,
+   "donor_name": "Double Hard 1 ",
+   "source": {
+    "authored": "fallback 2-Man Under -> Cover 1; odd variant of BAL Open Fire 1, edges rush [0, 4]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 14
   },
   {
    "play": 67,
    "appended": false,
-   "name": "Quarters Drop 8",
+   "name": "Cover 3 Cloud Bail",
    "component": "coverage",
-   "concept": "Cover 4 Quarters",
+   "concept": "Cover 3 Cloud",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -1875,16 +1861,14 @@
     "nickel_odd"
    ],
    "new_links": [],
-   "donor": 220,
-   "donor_name": "Cover 12 Odd",
+   "donor": 67,
+   "donor_name": "Cover 8",
    "source": {
-    "book": "BUF",
-    "play": 220,
-    "name": "Cover 12 Odd"
+    "authored": "fallback Cover 4 Quarters -> Cover 3 Cloud; odd variant of HOU Weak Fire Zone Blitz, edges rush [0, 4]"
    },
    "rushers": 3,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 193,
@@ -1971,6 +1955,29 @@
   {
    "play": 201,
    "appended": false,
+   "name": "Cover 1 Will Off Fire",
+   "component": "coverage",
+   "concept": "Cover 1 Blitz",
+   "band": 1,
+   "pressure": true,
+   "roles": [
+    "bear"
+   ],
+   "new_links": [],
+   "donor": 200,
+   "donor_name": "Bear Man 1",
+   "source": {
+    "book": "BUF",
+    "play": 200,
+    "name": "Bear Man 1"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 0
+  },
+  {
+   "play": 202,
+   "appended": false,
    "name": "Cover 1 Sam Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
@@ -1988,29 +1995,6 @@
     "name": "Strong Blast 1"
    },
    "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 0
-  },
-  {
-   "play": 202,
-   "appended": false,
-   "name": "Cover 1 Double Off Fire",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
-   "band": 1,
-   "pressure": true,
-   "roles": [
-    "bear"
-   ],
-   "new_links": [],
-   "donor": 34,
-   "donor_name": "Blaze 1 Robber",
-   "source": {
-    "book": "BUF",
-    "play": 34,
-    "name": "Blaze 1 Robber"
-   },
-   "rushers": 6,
    "spy_slots": [],
    "authored_nodes": 0
   },
@@ -2061,7 +2045,7 @@
   {
    "play": 205,
    "appended": false,
-   "name": "Cover 1 Sam Blitz",
+   "name": "Cover 1 Double Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -2070,16 +2054,16 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 15,
-   "donor_name": "Double Outside Fire 0",
+   "donor": 34,
+   "donor_name": "Blaze 1 Robber",
    "source": {
-    "book": "CAR",
-    "play": 29,
-    "name": "Sting Blitz 1"
+    "book": "BUF",
+    "play": 34,
+    "name": "Blaze 1 Robber"
    },
-   "rushers": 5,
+   "rushers": 6,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 0
   },
   {
    "play": 206,
@@ -2107,6 +2091,29 @@
   {
    "play": 207,
    "appended": false,
+   "name": "Cover 1 Sam Blitz",
+   "component": "coverage",
+   "concept": "Cover 1 Blitz",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "bear"
+   ],
+   "new_links": [],
+   "donor": 15,
+   "donor_name": "Double Outside Fire 0",
+   "source": {
+    "book": "CAR",
+    "play": 29,
+    "name": "Sting Blitz 1"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 14
+  },
+  {
+   "play": 208,
+   "appended": false,
    "name": "Cover 1 Safety Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
@@ -2122,29 +2129,6 @@
     "book": "ARZ",
     "play": 22,
     "name": "Spear 1"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 14
-  },
-  {
-   "play": 208,
-   "appended": false,
-   "name": "Cover 1 Safety Blitz",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "bear"
-   ],
-   "new_links": [],
-   "donor": 15,
-   "donor_name": "Double Outside Fire 0",
-   "source": {
-    "book": "ARZ",
-    "play": 32,
-    "name": "Weak Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -2222,7 +2206,7 @@
   {
    "play": 212,
    "appended": false,
-   "name": "Cover 3 Cloud Bail",
+   "name": "Cover 3 Cloud Strong 2",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -2248,7 +2232,7 @@
    "name": "Cover 6 Split 2",
    "component": "coverage",
    "concept": "Cover 6",
-   "band": 2,
+   "band": 3,
    "pressure": false,
    "roles": [
     "dime_odd",
@@ -2258,9 +2242,7 @@
    "donor": 67,
    "donor_name": "Cover 8",
    "source": {
-    "book": "DAL",
-    "play": 221,
-    "name": "Cover 4"
+    "authored": "odd variant of DAL Cover 4, edges rush [0, 4]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2269,34 +2251,32 @@
   {
    "play": 221,
    "appended": false,
-   "name": "2 Read Match",
+   "name": "Cover 2 Zone 3",
    "component": "coverage",
    "concept": "Cover 2",
-   "band": 2,
+   "band": 3,
    "pressure": false,
    "roles": [
     "dime_odd",
     "nickel_odd"
    ],
    "new_links": [],
-   "donor": 67,
-   "donor_name": "Cover 8",
+   "donor": 222,
+   "donor_name": "2 Robber",
    "source": {
-    "book": "BAL",
-    "play": 23,
-    "name": "Combo Strong Zone"
+    "authored": "fallback Cover 2 Hard -> Cover 2; odd variant of DAL Cover 2 Hard, edges rush [0, 4]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 18
+   "authored_nodes": 16
   },
   {
    "play": 222,
    "appended": false,
-   "name": "Cover 3 Sky Strong Bail",
+   "name": "Cover 3 Cloud Strong 3",
    "component": "coverage",
-   "concept": "Cover 3 Sky",
-   "band": 1,
+   "concept": "Cover 3 Cloud",
+   "band": 3,
    "pressure": false,
    "roles": [
     "dime_odd",
@@ -2306,9 +2286,7 @@
    "donor": 67,
    "donor_name": "Cover 8",
    "source": {
-    "book": "BAL",
-    "play": 10,
-    "name": "3 Strong"
+    "authored": "fallback Cover 3 Sky -> Cover 3 Cloud; odd variant of HOU Weak Go 3, edges rush [0, 4]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2320,19 +2298,19 @@
   "offense_pack": "data/playbooks/softdrink_buf_modern.2k5book",
   "offense_pack_sha256": "8df5b45705a0d41ad6ba0a5fd1b91211fbda8cf8e43274de606470213daa2c50",
   "source_fingerprint": "f4c724c448e5124b82e27df7873739281fee4571960d258c321645e25c203d45",
-  "replacement_sha256": "8580d27ea1353f9253945731f87059156b66b552c61ec5004946eec1fe1292a1",
-  "semantic_sha256": "ed46331b21b9fadd87591a691112aea87a659ca1d55bd6aabd02a8d75ed712f4",
+  "replacement_sha256": "8a3cb68a0ff5d599b7467f79de4c5bc3ce6a718c66ec03710f7b4b2faa2c2a87",
+  "semantic_sha256": "5164093c0569247ae290523c90dcf88d96608108288988087a3f279a3a5493bc",
   "plays": 72,
   "formations": 6,
-  "nodes": 2359,
+  "nodes": 2416,
   "node_capacity": 3500,
   "formation_count": 46,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.17088,
+  "band_loss": 0.54242,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_buf_defense.2k5book",
-  "pack_sha256": "36d0f0863811d892492f457d323c4cf0376cbc2eb94e89772f2fef3b40163afc"
+  "pack_sha256": "3c124cde56ca6de556e33e1e74a05b98cbd446b08b0ef6477a394dd1b780a952"
  }
 }

@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1913,8 +1913,8 @@
   "offense_pack": "data/playbooks/softdrink_sea_modern.2k5book",
   "offense_pack_sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157",
   "source_fingerprint": "4db6e188be96f6548aaa1d12885dd4797e54686193d3e0fd92c6d926c5e73154",
-  "replacement_sha256": "40bd0be5dbe960c9190dffa7a7768547b529d54acc08c3ab6f3758966084d507",
-  "semantic_sha256": "f4bf143331257167c73599d1d20f12d7fd4d8c821b4794cfc650d9d1d77e6055",
+  "replacement_sha256": "794f83d12ad285ce1c49402900854572804fcc911dedcb433886d8c19f42f4b3",
+  "semantic_sha256": "a3e3be83fa872cb3f4ee30399d95b1f0949ca6ed762249ad91b3e4863e60fca0",
   "plays": 63,
   "formations": 4,
   "nodes": 2290,
@@ -1926,6 +1926,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sea_defense.2k5book",
-  "pack_sha256": "db3ca6bac691dff11435700761d6cd9d7ab497b592e4fbde76a08d32a2f3b4d8"
+  "pack_sha256": "992a1c5918994b64080401c1c871957a435bf408f1359ec87711ee0d3a099b4a"
  }
 }

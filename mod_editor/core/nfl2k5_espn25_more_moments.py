@@ -51,6 +51,7 @@ import struct
 import zlib
 
 from . import nfl2k5_espn25_more_moments_code as assembly
+from . import nfl2k5_front_schemes as front
 from . import nfl2k5_roster_records as rr
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -1240,7 +1241,8 @@ def compile_files(main, templates, data, *, one_pool=False):
         raw = compile_team(templates[key], data.teams[key], data.rosters[key], colleges, identity, people,
                            appearance=looks.get(key), main_photos=main_photos)
         if one_pool:
-            raw = _one_pool(raw)
+            t = data.teams[key]
+            raw = _one_pool(raw, front.mapping_scheme("moments", key, t["abbreviation"], t["season"]))
         if n == len(entries) - 1:
             raw = pad_to_sector(raw)
         out[filename] = raw
@@ -1256,11 +1258,19 @@ def pad_to_sector(raw):
     return bytes(out)
 
 
-def _one_pool(raw):
-    """The One-pool positions build's historic 4-3 rule, as the pools option applies it to the retail 75."""
+def _one_pool(raw, scheme="4-3"):
+    """The One-pool positions build's historic 4-3 rule, as the pools option applies it to the retail 75.
+
+    ``scheme="3-4"`` (b776-de1, ``nfl2k5_front_schemes.mapping_scheme``) is for a team-season that really ran a 3-4
+    and is played by a book that asks the pools for roles: its outside backers are EDGE and its ends are interior
+    (an end of 265 lb or less is an edge rusher the data labelled DE and joins the EDGE pool), with three LBs kept.
+    """
     from tools import nfl2k5_roster_reclassify as rc
     resource = rc.parse_resource(0, 0, raw)
-    moves, _ = rc.plan_resource(resource, {})
+    three_four = scheme == "3-4"
+    moves, _ = rc.plan_resource(resource, {}, historic_scheme=scheme,
+                                historic_min_lb=rc.MIN_LB_FOR_EVEN_BOOKS if three_four else 0,
+                                historic_light_end=rc.LIGHT_END_POUNDS if three_four else 0)
     body = bytearray(resource.body)
     rc.apply_moves(body, moves)
     return raw[:32] + bytes(body)

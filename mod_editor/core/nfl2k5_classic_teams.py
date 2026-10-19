@@ -50,6 +50,7 @@ import json
 from pathlib import Path
 import struct
 
+from . import nfl2k5_front_schemes as front
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
@@ -377,7 +378,7 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
         raw = more.compile_team(templates[key], team, data.rosters[key], colleges, identity, people,
                                 appearance=data.appearance[key], main_photos=main_photos, missing_colleges=missing)
         if one_pool:
-            raw = more._one_pool(raw)
+            raw = more._one_pool(raw, front.mapping_scheme("classic", key, team["abbreviation"], team["season"]))
         code = team["asset_code"]
         style, how = resolve_kit(data.presentation[key]["kit"], code, spares, has_kit)
         raw = finish_file(raw, team, identity=identity, stadium_id=homes[code], style=style)

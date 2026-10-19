@@ -171,6 +171,17 @@ if HAVE_UNICORN:
 
 @unittest.skipUnless(HAVE_UNICORN, 'Unicorn required for native stock-book execution')
 @unittest.skipUnless(SOURCE.is_file(), 'private USA source required')
+def retail_one_pool(outer, raw):
+    """The One-pool positions pass on one retail historic resource, exactly as the build applies it (b776-de2: the sourced
+    retail 3-4 team-seasons take the 3-4 rule, chosen by outer entry)."""
+    from tools import nfl2k5_roster_reclassify as rc
+    resource = rc.parse_resource(outer, 0, raw)
+    moves, _ = rc.plan_resource(resource, {})
+    body = bytearray(resource.body)
+    rc.apply_moves(body, moves)
+    return raw[:32] + bytes(body)
+
+
 class NativeStockBooks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -198,7 +209,7 @@ class NativeStockBooks(unittest.TestCase):
                              for key in cls.data.team_order()}
                 cls.collection = mm.compile_situ(cls.resources[22], cls.data, main, named=True)
                 cls.files = mm.compile_files(main, templates, cls.data, one_pool=True)
-                cls.resources.update({o: mm._one_pool(raw) for o, raw in cls.resources.items() if o not in (5, 22)})
+                cls.resources.update({o: retail_one_pool(o, raw) for o, raw in cls.resources.items() if o not in (5, 22)})
                 manifest, _ = er.dataset()
                 applied, _ = er.apply({t['outer']: cls.resources[t['outer']] for t in manifest['resources']})
                 cls.resources.update(applied)
