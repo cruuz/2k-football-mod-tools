@@ -35,7 +35,12 @@ class OfflineTests(unittest.TestCase):
     def test_all_assignments_and_formations_pass(self):
         check = packs.check_pack(self.pack)
         self.assertTrue(check.ok, check.text())
-        self.assertEqual((len(self.pack.formations), len(self.pack.plays)), (26,148))
+        # b776 pb1: the v3 NYG book replaces its 26 ordinary formations and 148 ordinary plays and appends formations
+        # into the free records; one ordinary play record carries the PAT fake field goal (a full book)
+        replaced=[f for f in self.pack.formations if f.replace_index is not None]
+        self.assertEqual(len(replaced),26)
+        self.assertLessEqual(len(self.pack.formations),50-17)
+        self.assertEqual(sum(1 for p in self.pack.plays if p.replace_index is not None),148)
         self.assertEqual(packs.loads_pack(self.pack.dumps()).dumps(), self.pack.dumps())
 
     def test_duplicate_unknown_missing_and_overfull_menus_refuse(self):
@@ -163,14 +168,20 @@ class RetailTests(unittest.TestCase):
         cls.new=cls.compiled.replacement
 
     def test_generator_reproduces_shipped_recipe(self):
-        pack,_=v2build.build_team(self.raw,'NYG')
-        self.assertEqual(pack.dumps(),self.pack.dumps())
+        # b776 pb1: the shipped NYG pack is the v3 generator's (pb/v2/generator.py); its semantic digest is the one the
+        # league manifest records (a full regeneration is test_nfl2k5_modern_league's slow test)
+        import json
+        from pb.v2 import generator
+        row=next(r for r in json.loads((ROOT/'pb/league_manifest.json').read_text())['teams'] if r['team']=='NYG')
+        self.assertEqual(generator.semantic_digest(self.pack),row['semantic_sha256'])
 
     def test_retained_semantics_counts_and_audibles(self):
         before=insp.parse_playbook_resource(self.raw)
         after=insp.parse_playbook_resource(self.new)
         fs,ps=full.ordinary_indices(before,self.raw[32:])
-        self.assertEqual((len(before.formations),len(before.plays)),(len(after.formations),len(after.plays)))
+        appended_f=sum(1 for f in self.pack.formations if f.replace_index is None)
+        appended_p=sum(1 for p in self.pack.plays if p.replace_index is None)
+        self.assertEqual((len(before.formations)+appended_f,len(before.plays)+appended_p),(len(after.formations),len(after.plays)))
         self.assertLessEqual(after.node_count,3500)
         self.assertEqual(insp.menu_link_problems(self.new),[])
         for p in before.plays:
@@ -180,7 +191,12 @@ class RetailTests(unittest.TestCase):
         for fi in set(range(len(before.formations)))-fs:
             off=32+insp.FORMATION_BASE+fi*insp.FORMATION_SIZE
             self.assertEqual(self.raw[off+4:off+insp.FORMATION_SIZE],self.new[off+4:off+insp.FORMATION_SIZE])
-            self.assertEqual(before.formations[fi].play_links,after.formations[fi].play_links)
+            # b776 pb1: a retained special-teams formation may gain the pack's special addition (the PAT fake field
+            # goal) after its retail links, which stay as they were
+            n=len(before.formations[fi].play_links)
+            self.assertEqual(before.formations[fi].play_links,after.formations[fi].play_links[:n])
+            for link in after.formations[fi].play_links[n:]:
+                self.assertEqual(after.plays[link.play_index].name,'Fake FG End Zone')
         for n in range(10):
             fi,slot=self.new[32+0x4C+2*n:32+0x4E+2*n]
             self.assertLess(slot,len(after.formations[fi].play_links))
@@ -192,7 +208,8 @@ class RetailTests(unittest.TestCase):
             packs.apply_pack_to_resource(self.new,self.pack)
         with self.assertRaisesRegex(packs.PlaybookPackError,'regenerate'):
             packs.retarget_pack(self.pack,'ATL',insp.parse_playbook_resource(self.raw),self.raw[32:])
-        bad=replace(self.pack,formations=self.pack.formations[:-1],menus=self.pack.menus[:-1])
+        first=self.pack.formations[0]     # an ordinary record: every one must be replaced exactly once
+        bad=replace(self.pack,formations=self.pack.formations[1:],menus=tuple(m for m in self.pack.menus if m[0]!=first.id))
         with self.assertRaises(packs.PlaybookPackError):packs.apply_pack_to_resource(self.raw,bad)
 
     def test_archive_install_and_real_build_menu_gate(self):

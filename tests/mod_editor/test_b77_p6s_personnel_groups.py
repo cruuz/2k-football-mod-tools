@@ -100,7 +100,7 @@ class PersonnelGroupTests(unittest.TestCase):
         retail = insp.parse_playbook_resource(self.retail)
         five_wide = next(c.index for c in retail.categories if c.name.strip() == '5 Wide')
         ace = next(c.index for c in retail.categories if c.name.strip() == 'Ace')
-        i = next(n for n, f in enumerate(doc['formations']) if f['position_codes'][6:] == [8, 9, 41, 73, 10]
+        i = next(n for n, f in enumerate(doc['formations']) if sorted(f['position_codes']) == sorted([0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10])
                  and f.get('category_name') is None)
         bad = copy.deepcopy(doc)
         bad['formations'][i]['category_index'] = five_wide     # the retained Hail Mary formation's group

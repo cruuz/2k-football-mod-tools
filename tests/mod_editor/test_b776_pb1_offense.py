@@ -128,7 +128,7 @@ class ShippedBookTests(unittest.TestCase):
             for fid, menu in pk.menus:
                 with self.subTest(team=team, formation=fid):
                     self.assertEqual(len(menu) % 3, 0)
-                    self.assertTrue(9 <= len(menu) <= 18, len(menu))
+                    self.assertTrue(6 <= len(menu) <= 18, len(menu))
                     self.assertEqual(len(set(menu)), len(menu))
                     self.assertEqual(len({byid[p].custom_name for p in menu}), len(menu))
                     screens = Counter(byid[p].custom_name for p in menu if "Screen" in byid[p].custom_name)

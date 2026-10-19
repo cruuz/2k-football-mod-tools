@@ -60,7 +60,10 @@ class Native(unittest.TestCase):
             for slot in range(11):
                 desc = ip.PLAY_BASE+(play-1)*96+12+slot*8
                 chain = desc+struct.unpack_from('<i',body,desc)[0]-1
-                found = next((chain+i*8 for i in range(body[desc-4]&15) if body[chain+i*8]==0x16), None)
+                ops = [body[chain+i*8] for i in range(body[desc-4]&15)]
+                # a ball carrier's take (b776: a flea flicker's QB takes the pitch back and then passes; the native
+                # scorer does not range-check that node, so the fixture skips chains that also throw)
+                found = next((chain+i*8 for i, op in enumerate(ops) if op==0x16), None) if 0x06 not in ops else None
                 if found is not None:
                     break
             if found is not None:

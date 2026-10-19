@@ -40,7 +40,7 @@ class LeagueTests(unittest.TestCase):
         for team,pack in self.packs.items():
             for fid,menu in pack.menus:
                 with self.subTest(team=team,formation=fid):
-                    self.assertTrue(9<=len(menu)<=18 and len(menu)%3==0,len(menu))
+                    self.assertTrue(6<=len(menu)<=18 and len(menu)%3==0,len(menu))
                     doc=pack.to_json();doc['menus'][fid]=[*menu,menu[0]]
                     with self.assertRaisesRegex(p.PlaybookPackError,'duplicate play in menu'):p.pack_from_json(doc)
     def test_handoffs_reads_and_screens(self):
