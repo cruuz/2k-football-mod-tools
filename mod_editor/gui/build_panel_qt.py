@@ -216,10 +216,18 @@ ANNIVERSARY_OPTIONS = (
      "Use season-specific rules in Anniversary moments. Requires historic Anniversary moments, dynamic kickoff, "
      "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
 )
+# b776-ai2: the CPU AI options, each its own toggle, off in every preset.
+from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
+CPU_AI_OPTIONS = (
+    ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
+    ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
+    ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
+)
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
-                  "Requires modern position pools. Not yet tested in-game."))
+                  "Requires modern position pools. Not yet tested in-game."),
+                 *CPU_AI_OPTIONS)
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",

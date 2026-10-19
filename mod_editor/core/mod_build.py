@@ -467,6 +467,15 @@ class BuildPlan:
     # that shows the one a player's roster hair style (record +0x0D, Studio field hair_style) asks for. Style 0 keeps
     # every player exactly as retail. EXPERIMENTAL / UNWITNESSED: on only in the experimental preset
     hair_styles: bool = False
+    # b776-ai2: CPU AI, two late executable owners installed after every other executable writer.
+    # nfl2k5_cpu_qb_reads: cpu_qb_zone_windows (the covered-window curve 0x50C51C: a defender who reaches the catch
+    # point with or before the ball now closes the window) and cpu_qb_recheck (the CPU QB only weighs receivers he read
+    # recently, stays on the one he picked and pulls the throw, at most twice a play, when that window closed).
+    # nfl2k5_db_ball_play: db_ball_play (a defender reacting to the throw runs at full speed to the stored catch point).
+    # EXPERIMENTAL / UNWITNESSED: off in every preset; a test recipe turns them on.
+    cpu_qb_zone_windows: bool = False
+    cpu_qb_recheck: bool = False
+    db_ball_play: bool = False
     # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
     # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
     # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
@@ -635,6 +644,12 @@ for _preset in PRESETS.values():
     _preset["hair_styles"] = False
 PRESETS["softdrink_experimental"]["hair_styles"] = True
 del _preset
+# b776-ai2: the CPU AI options are off in every preset (retail bytes); only a test recipe turns them on.
+for _preset in PRESETS.values():
+    _preset["cpu_qb_zone_windows"] = False
+    _preset["cpu_qb_recheck"] = False
+    _preset["db_ball_play"] = False
+del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
 for _preset in PRESETS.values():
@@ -792,6 +807,56 @@ def _kick_meter_available() -> bool:  # b76-km
     return module is not None and module.available()  # the pins, the art and the geometry must agree
 
 
+def _cpu_ai_preflight(plan: "BuildPlan", source: Path, progress) -> None:
+    """b776-ai2: refuse a source whose CPU AI sites are foreign or carry a different selection, before any write."""
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    if (plan.cpu_qb_zone_windows or plan.cpu_qb_recheck) and reads is None or plan.db_ball_play and ball is None:
+        raise ValueError("The CPU AI options are not available in this installation.")
+    progress("Checking the CPU passing and coverage code for the CPU AI options", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The CPU AI options cannot read default.xbe: {exc}") from exc
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        settings = reads.read_settings(payload)
+        wanted = (plan.cpu_qb_zone_windows, plan.cpu_qb_recheck)
+        if settings["status"] == "foreign" or (settings["status"] == "applied"
+                                               and (settings["zone_windows"], settings["recheck"]) != wanted):
+            raise ValueError("The CPU quarterback code in this source is not retail or this selection of the CPU QB "
+                             "options. Turn them off or rebuild from a supported USA source.")
+    if plan.db_ball_play and ball.status(payload) == "foreign":
+        raise ValueError("The pass-reaction code in this source is not retail or Defenders break on the thrown ball. "
+                         "Turn it off or rebuild from a supported USA source.")
+
+
+def _apply_cpu_ai(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b776-ai2: install the selected CPU AI owners on the built default.xbe and read them back."""
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    progress("CPU AI: quarterback reads and defenders playing the ball", 0, 0)
+    payload = _xbe_bytes(target)
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        payload, qb_receipt = reads.apply(payload, zone_windows=plan.cpu_qb_zone_windows, recheck=plan.cpu_qb_recheck)
+        receipt["steps"].append({"step": "cpu_qb_reads", **{k: v for k, v in qb_receipt.items() if k != "reservations"}})
+    if plan.db_ball_play:
+        payload, ball_receipt = ball.apply(payload)
+        receipt["steps"].append({"step": "db_ball_play", **{k: v for k, v in ball_receipt.items() if k != "reservations"}})
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload:
+        raise RuntimeError("CPU AI: the written default.xbe does not read back")
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        settings = reads.read_settings(final)
+        if (settings["status"], settings.get("zone_windows"), settings.get("recheck")) != (
+                "applied", plan.cpu_qb_zone_windows, plan.cpu_qb_recheck):
+            raise RuntimeError("CPU QB reads: the output does not read back as the selected options")
+        receipt["result"]["cpu_qb_zone_windows"] = "applied" if plan.cpu_qb_zone_windows else "retail"
+        receipt["result"]["cpu_qb_recheck"] = "applied" if plan.cpu_qb_recheck else "retail"
+    if plan.db_ball_play:
+        if ball.status(final) != "applied":
+            raise RuntimeError("Defenders break on the thrown ball: the output does not read back as applied")
+        receipt["result"]["db_ball_play"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -857,6 +922,10 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
         "hair_styles": _hair_styles_available(),  # b775-hs1
+        # b776-ai2: the CPU AI owners need only their modules and the allocator
+        **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
+           for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
+                               ("db_ball_play", "nfl2k5_db_ball_play"))},
         "modern_fans": _modern_fans_available(),  # b77-fr1
         "modern_officials": _modern_officials_available(),  # b77-rf1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1561,6 +1630,16 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["hair_styles"] = hair.image_status(source)
         except (OSError, ValueError):
             out["hair_styles"] = "unknown"
+    # b776-ai2: the CPU AI owners (executable only, so a bare default.xbe reads too)
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    try:
+        xbe = _xbe_bytes(source) if reads is not None or ball is not None else b""
+    except (OSError, ValueError):
+        xbe = None
+    for key, module, read in (("cpu_qb_zone_windows", reads, lambda m, x: m.component_status(x, "zone_windows")),
+                              ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
+                              ("db_ball_play", ball, lambda m, x: m.status(x))):
+        out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
     # b77-co1: the 2026 head coaches (32 coach models, two portrait slots, two coach-record photo ids)
     coaches = _core_module("nfl2k5_modern_coaches")
     if coaches is None:
@@ -2634,6 +2713,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
+    for key, label in (("cpu_qb_zone_windows", "CPU QB respects zone defenders"),  # b776-ai2
+                       ("cpu_qb_recheck", "CPU QB re-checks his read before throwing"),
+                       ("db_ball_play", "Defenders break on the thrown ball")):
+        if type(getattr(plan, key)) is not bool:
+            raise ValueError(f"{label} must be Off or On.")
     if type(plan.modern_fans) is not bool:  # b77-fr1
         raise ValueError("2026 fans must be Off or On.")
     if type(plan.modern_officials) is not bool:  # b77-rf1
@@ -3304,6 +3388,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if hair_state not in ("retail", "applied"):
             raise ValueError("The player models, hair textures or the executable's hair hook are not the supported "
                              "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:  # b776-ai2
+        _cpu_ai_preflight(plan, source, progress)
     if plan.modern_coaches:  # b77-co1
         coaches = _core_module("nfl2k5_modern_coaches")
         if coaches is None or not is_image:
@@ -4578,6 +4664,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                  "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"},
                                  "roster": hair_roster})
         receipt["result"]["hair_styles"] = "applied"
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:
+        # b776-ai2: the CPU AI owners are the last executable writers. Their allocations are late owners placed after
+        # hair_styles (nfl2k5_xbe_space.LATE_OWNERS), so this step must follow it and nothing else moves.
+        _apply_cpu_ai(plan, target, receipt, progress)
     if _commentary_final_wanted(plan, loaded_espn25_plan):
         # b77-c2: the last roster writer has run (main roster, historic and Anniversary files, the user's Anniversary
         # edits, the historic helmets). The final commentary pass gives every other ROST resource the play-by-play
