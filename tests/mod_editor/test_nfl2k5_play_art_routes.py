@@ -39,7 +39,7 @@ class Wiring(unittest.TestCase):
         self.assertTrue(mod_build.PRESETS["softdrink_advanced"]["play_art_routes"])
         self.assertTrue(mod_build.PRESETS["softdrink_experimental"]["play_art_routes"])
         self.assertTrue(mod_build.BuildPlan("a", "b", play_art_routes=True).wants_xbe_patch())
-        self.assertEqual(space.LATE_OWNERS[-1], pa.OWNER)
+        self.assertEqual(space.LATE_OWNERS[-2:], (pa.OWNER, "nfl2k5_team_number_scale"))  # int2: ns1 follows
         self.assertIn("play_art_routes", mod_build.availability())
 
     def test_owned_code_layout(self):
