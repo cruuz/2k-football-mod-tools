@@ -45,6 +45,15 @@ class DirectoryGrowth(unittest.TestCase):
 
 
 @unittest.skipUnless(SOURCE.is_file(), 'private USA disc required')
+def _reclassified(outer, raw):
+    from tools import nfl2k5_roster_reclassify as rc
+    resource = rc.parse_resource(outer, 0, raw)
+    moves, _ = rc.plan_resource(resource, {})
+    body = bytearray(resource.body)
+    rc.apply_moves(body, moves)
+    return raw[:32] + bytes(body)
+
+
 class NamedProfile(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -107,7 +116,9 @@ class NamedProfile(unittest.TestCase):
         for target in manifest['resources']:
             raw = applied[target['outer']]
             for one_pool in (False, True):
-                before = mm._one_pool(raw) if one_pool else raw
+                # b776-int2: the One-pool reclassify by outer entry (de2: the 17 sourced retail 3-4 team-seasons take the
+                # 3-4 rule there), exactly as the ONE_POOL_PINS are derived.
+                before = _reclassified(target['outer'], raw) if one_pool else raw
                 after = hs.with_spare(before, er.HISTORIC_SPARES[target['code']])
                 self.assertEqual(er.resource_status(after, target),
                                  'one_pool_applied' if one_pool else 'applied')
