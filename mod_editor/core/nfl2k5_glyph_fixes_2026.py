@@ -10,7 +10,11 @@
    (exact integers), so the retail anti-aliasing survives. The structure is read from the user's own retail disc at
    build time; no retail pixels ship with the Studio. The glyph metrics (NAME chunk) already equal retail.
 
-2. Jersey and shoulder digits from authored PNG art (``digit_png``): the 2026 Titans 7 (``data/nfl2k5_teams_2026/
+2. ku1 (b776): the 2026 Chiefs jersey and shoulder digits (``digit_retint``) are the retail 2K5 Chiefs digits, read
+   from the user's own disc like the letters and re-tinted to the 2026 colours (Noah: the 2K5 font is the Chiefs'
+   font). No retail pixels ship.
+
+3. Jersey and shoulder digits from authored PNG art (``digit_png``): the 2026 Titans 7 (``data/nfl2k5_teams_2026/
    TEN.json`` glyph_shapes, redrawn from club photographs). The PNG is the team-art pipeline's output for the new
    shape; it goes through the Studio's own digit preparation and fixed-span fit (As authored registration), the
    same route a project edit takes, onto the pinned kit span.
@@ -36,7 +40,7 @@ SCHEMA = "nfl2k5_glyph_fixes_2026/v1"
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/nfl2k5_glyph_fixes_2026.json"
 ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
-KINDS = ("names_retint", "digit_png")
+KINDS = ("names_retint", "digit_png", "digit_retint")
 NAMES_CHUNK = 43
 
 
@@ -105,12 +109,13 @@ def retint_palette(palette, retail_outline, retail_fill, outline, fill):
     return out
 
 
-def compile_names(span, retail_span, row):
-    """The kit's nameplate letters on the retail letter structure (see the module notes)."""
+def compile_names(span, retail_span, row, *, name="names", storage="VC_P8_LINEAR"):
+    """The kit's nameplate letters on the retail letter structure (see the module notes). ku1 (b776): the same
+    retint carries the retail jersey and shoulder digits (``digit_retint``: P8 textures 48..57 and an48..an57)."""
     chunk, decoded, _, texture = _one_txtr(span)
     rchunk, rdecoded, _, rtexture = _one_txtr(retail_span)
-    require(texture.name == rtexture.name == "names", "not a nameplate atlas")
-    require(texture.format_name == rtexture.format_name == "VC_P8_LINEAR", "unexpected nameplate storage")
+    require(texture.name == rtexture.name == name, "not the expected retail texture: " + texture.name)
+    require(texture.format_name == rtexture.format_name == storage, "unexpected retail texture storage")
     layout = lambda c, t: (c.system_bytes, c.video_bytes, t.width, t.height, t.mip_levels, t.pixel_offset,
                            t.palette_offset, t.packed_format, t.packed_size)
     require(layout(chunk, texture) == layout(rchunk, rtexture), "kit and retail nameplate layouts differ")
@@ -124,7 +129,7 @@ def compile_names(span, retail_span, row):
     new[at:at + 1024] = np.ascontiguousarray(new_palette[:, [2, 1, 0, 3]], np.uint8).tobytes()
     new = bytes(new)
     fixed_span, fit = _rebuild(span, new)
-    return fixed_span, dict(texture="names", retail_structure_sha256=sha(rdecoded[:at]), fit=asdict(fit),
+    return fixed_span, dict(texture=name, retail_structure_sha256=sha(rdecoded[:at]), fit=asdict(fit),
                             fill=row["fill"], outline=row["outline"])
 
 
@@ -209,19 +214,24 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
             if state == "other":
                 skipped.append(row["chunk"])
             continue
-        if row["kind"] == "names_retint":
+        if row["kind"] in ("names_retint", "digit_retint"):
             donor_raw = (retail_kits or {}).get(row["retail_selector"])
             if donor_raw is None:
-                require(not strict, selector + ": the retail nameplate donor is absent")
+                require(not strict, selector + (": the retail nameplate donor is absent" if row["kind"] == "names_retint"
+                                                 else ": the retail digit donor is absent"))
                 skipped.append(row["chunk"])
                 continue
             donor = _chunk_for(donor_raw, row["chunk"])
             donor_span = donor_raw[donor.offset:donor.end_offset]
             if sha(donor_span) != row["retail_sha256"]:
-                require(not strict, selector + ": the retail nameplate differs from its pin")
+                require(not strict, selector + (": the retail nameplate differs from its pin" if row["kind"] == "names_retint"
+                                                 else ": the retail digit differs from its pin"))
                 skipped.append(row["chunk"])
                 continue
-            new, detail = compile_names(span, donor_span, row)
+            if row["kind"] == "names_retint":
+                new, detail = compile_names(span, donor_span, row)
+            else:
+                new, detail = compile_names(span, donor_span, row, name=row["texture"], storage="P8")
         else:
             payload = (ART / row["png"]).read_bytes()
             require(sha(payload) == row["png_sha256"], selector + ": authored digit PNG differs from its pin")
@@ -270,7 +280,7 @@ def apply_to_image(path, retail=None, *, strict=False, document=None):
     wanted = selectors(document)
     if not strict and not all(s + ".IFF" in names for s in wanted):
         return dict(state="other_uniform", written_spans=0, written_bytes=0, changed_bytes=0, kits=[])
-    donors = sorted({r["retail_selector"] for r in document["textures"] if r["kind"] == "names_retint"})
+    donors = sorted({r["retail_selector"] for r in document["textures"] if r["kind"] in ("names_retint", "digit_retint")})
     retail_kits = None
     if donors and retail is not None:
         retail_path = retail() if callable(retail) else retail

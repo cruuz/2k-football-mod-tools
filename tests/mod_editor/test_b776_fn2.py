@@ -51,10 +51,12 @@ class Contract(unittest.TestCase):
         owned = {(r["selector"], r["chunk"], r["kind"]) for r in self.doc["textures"]}
         names = {(s, 43, "names_retint") for s in ("05A0", "05H0", "05A4", "05H4", "13A0", "13H0")}
         sevens = {(s, c, "digit_png") for s in ("28H0", "28A0") for c in (20, 40)}
-        self.assertEqual(owned, names | sevens)
+        # b776-ku1: the 2026 Chiefs numbers (jersey 13..22 and shoulder 33..42 on both kits): the retail digits re-tinted
+        chiefs = {(s, c, "digit_retint") for s in ("13H0", "13A0") for c in (*range(13, 23), *range(33, 43))}
+        self.assertEqual(owned, names | sevens | chiefs)
         for row in self.doc["textures"]:
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
-            if row["kind"] == "names_retint":
+            if row["kind"] in ("names_retint", "digit_retint"):
                 self.assertEqual(row["retail_selector"], row["selector"])   # NAME metrics equal the same retail kit
         bears = {r["selector"]: r for r in self.doc["textures"] if r["selector"] in ("05A0", "05H0")}
         # 2025/26 Bears: road navy letters, home white letters, both with the orange the numbers use

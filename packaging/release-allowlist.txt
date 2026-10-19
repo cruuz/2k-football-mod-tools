@@ -611,6 +611,7 @@ data/nfl2k5_kit_fixes_2026_alts.json
 data/nfl2k5_kit_fixes_2026_uf3.json
 data/nfl2k5_kit_fixes_2026_sea1.json
 data/nfl2k5_kit_fixes_2026_ov1.json
+data/nfl2k5_kit_fixes_2026_ku1.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_pants_hem_2026.py
 data/nfl2k5_pants_hem_2026.json
@@ -620,6 +621,8 @@ data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_jersey_7.png
+mod_editor/core/nfl2k5_menu_chiefs_2026.py
+data/nfl2k5_menu_chiefs_2026.json
 mod_editor/core/nfl2k5_menu_helmet_w2026.py
 data/nfl2k5_menu_helmet_w2026.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
