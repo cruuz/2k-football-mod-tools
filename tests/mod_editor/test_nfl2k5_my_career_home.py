@@ -21,7 +21,7 @@ from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC
 from tests.nfl2k5_supersim_draft_fixture import retail_bytes
 
 MAIN_MENU, TEAM_SELECT, SAVE_LOAD = 0x515660, 0x51B908, 0x507EC8
-HOME_ROWS = ['Play next game', 'Practice', 'MyPlayer', 'Upgrades', 'Settings + Save', 'Quit to Menu']
+HOME_ROWS = ['Play next game', 'Schedule', 'Practice', 'MyPlayer', 'Upgrades', 'Settings + Save', 'Quit to Menu']
 OPTION_ROWS = ['Settings', 'Save', 'Sim to next appearance', 'Start MyPlayer', 'Classic Apartment', 'Back']
 CLASSIC_ROWS = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Upgrades', 'Settings', 'Save']
 PANEL = (290, 84, 620, 310)  # x0, y0, x1, y1 in HUD text space
@@ -79,7 +79,10 @@ class CareerHomeStaticTests(unittest.TestCase):
     def test_static_checker_covers_every_descriptor_row_and_pointer(self):
         receipt = home.check_static(self.payload)
         self.assertEqual(receipt['descriptors'], {'apartment': 'Career Home', 'home_classic': 'Apartment',
-                                                  'home_options': 'Settings + Save'})
+                                                  'home_options': 'Settings + Save', 'home_schedule': 'Season Schedule'})
+        # mcs: the Schedule list is the image's regular weeks (17 on this retail-length image), then the playoffs.
+        self.assertEqual(receipt['rows']['home_schedule'],
+                         [f'Week {i}' for i in range(1, 18)] + ['Wild Card', 'Divisional', 'Conference', 'Super Bowl'])
         self.assertEqual(receipt['rows']['apartment'], HOME_ROWS)
         self.assertEqual(receipt['rows']['home_options'], OPTION_ROWS)
         self.assertEqual(receipt['rows']['home_classic'][:7], CLASSIC_ROWS)
@@ -127,7 +130,13 @@ class CareerHomeStaticTests(unittest.TestCase):
             return [k for v, k in starts if v <= offset][-1]
         other = {owner(int(f['instruction'], 16)) for f in findings
                  if 'esp' not in f['detail'] and 'ebp' not in f['detail']}
-        self.assertLessEqual(other, {'home_handler', 'put', 'ascii', 'number', 'stat_line', 'home_panel'})
+        self.assertLessEqual(other, {'home_handler', 'put', 'ascii', 'number', 'stat_line', 'home_panel',
+                                     'schedule_draw', 'home_schedule_open'})
+        # mcs: the Schedule opener's one store is the native cursor word of the screen it just pushed
+        # (manager + 8 * depth + 4, the word the native list and the test harness's select() use).
+        opener = [f['detail'] for f in findings if owner(int(f['instruction'], 16)) == 'home_schedule_open']
+        self.assertEqual(len(opener), 1)
+        self.assertRegex(opener[0], r'^mov dword ptr \[e[a-d]x\], e[a-d]x$')
         handler = [f['detail'] for f in findings if owner(int(f['instruction'], 16)) == 'home_handler']
         labels = home.code_for(home.career_labels(self.payload))[1]
         self.assertEqual(handler, [f'mov dword ptr [eax + 8], {home.career_labels(self.payload)["mode_handler"]:#x}',
@@ -190,7 +199,7 @@ class CareerHomeNativeTests(unittest.TestCase):
             m.season_stats({4: 187, 35: 289, 76: 2214, 64: 17, 22: 6})
             m.put(m.manager + 8 * m.depth() + 4, 0)
             shot = m.screen()
-            # Five sections and Quit, all inside the native seven-row window, the cursor tinted by MyCareer's hook.
+            # Six sections and Quit, all inside the native seven-row window, the cursor tinted by MyCareer's hook.
             self.assertEqual(shot['rows'], HOME_ROWS)
             self.assertEqual(shot['selected'], ['Play next game'])
             self.assertEqual(m.get(m.labels['apartment'] + 8), self.labels['home_handler'])
@@ -230,35 +239,39 @@ class CareerHomeNativeTests(unittest.TestCase):
             self.assertEqual(m.top(), TEAM_SELECT)
         m, player = self.machine()
         with m:
+            m.select(1)  # mcs: Schedule, then B back
+            self.assertEqual(m.top(), self.labels['home_schedule'])
+            m.frame(0x200)
+            self.assertEqual(m.top(), m.labels['apartment'])
             m.replace_stub(0x6E390, lambda: (pushed.append(m.reg('EDX')), m.ret()))
-            m.select(1)
+            m.select(2)
             self.assertEqual(pushed, [m.labels['practice_menu']])
             m.replace_stub(0x6E390, None)
             m.replace_stub(0x320E90, lambda: (cards.append(m.reg('EDX')), m.ret(pop=4)))
-            m.select(2)
-            self.assertEqual(cards, [player])
             m.select(3)
+            self.assertEqual(cards, [player])
+            m.select(4)
             self.assertEqual(m.top(), m.labels['m3_upgrade_menu'])
             m.frame(0x200)  # B: native back (with Career Home, Upgrades has the back flag)
             self.assertEqual(m.top(), m.labels['apartment'])
-            m.select(4)
+            m.select(5)
             self.assertEqual(m.top(), self.labels['home_options'])
             self.assertEqual(m.screen()['rows'], OPTION_ROWS)
             m.frame(0x200)
             self.assertEqual(m.top(), m.labels['apartment'])
             texts = self.dialogs(m)
             m.dialog_answer = 3  # No
-            m.select(5)
+            m.select(6)
             self.assertEqual((m.top(), len(texts)), (m.labels['apartment'], 1))
             m.dialog_answer = 2  # Yes
-            m.select(5)
+            m.select(6)
             self.assertEqual((m.depth(), m.top()), (0, MAIN_MENU))
             self.assertEqual(m.get(m.state + 2672), 0)
 
     def test_settings_save_sub_list_and_classic_apartment(self):
         m, player = self.machine()
         with m:
-            m.select(4)
+            m.select(5)
             m.select(0)
             self.assertEqual(m.top(), m.labels['m3_settings_menu'])
             m.frame(0x200)
@@ -286,10 +299,10 @@ class CareerHomeNativeTests(unittest.TestCase):
             self.assertEqual(m.top(), self.labels['home_options'])
             m.select(5)  # Back
             self.assertEqual(m.top(), m.labels['apartment'])
-            m.select(4)
+            m.select(5)
             m.frame(0x200)  # B from the sub-list returns to Career Home
             self.assertEqual(m.top(), m.labels['apartment'])
-            m.select(4)
+            m.select(5)
             m.select(2)  # Sim to next appearance
             self.assertEqual(m.top(), TEAM_SELECT)
             self.assertEqual((m.get(m.state + 2696), m.get(m.state + 2708)), (2, 1))
@@ -317,7 +330,7 @@ class CareerHomeNativeTests(unittest.TestCase):
                 m.replace_stub(va, lambda: m.ret(m.inputs if m.reg('EDX') == port else 0, pop=4))
             for va in (0x70A10, 0x70A30, 0x709F0):
                 m.replace_stub(va, lambda: m.ret(m.inputs if m.reg('ECX') == port else 0))
-            m.select(4)
+            m.select(5)
             self.assertEqual(m.top(), self.labels['home_options'])
             m.frame(0x200)
             self.assertEqual(m.top(), m.labels['apartment'])
