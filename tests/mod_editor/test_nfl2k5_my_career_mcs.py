@@ -298,6 +298,23 @@ class ScheduleNativeTests(unittest.TestCase):
             record = {'W': '1-0', 'L': '0-1', 'T': '0-0-1'}[mark]
             self.assertEqual(texts[-2], f'New York Giants  {record}')
 
+    def test_preseason_stage_cards_say_preseason(self):
+        """With the franchise Preseason setting on, the grid holds the preseason games (stage 7) in its first rows; the
+        cards say so and the rows the preseason does not use are TBD."""
+        from tests.nfl2k5_my_career_home_fixture import Machine
+        m = Machine(self.payload)
+        m.create(self.roster, club=15, position=0, preseason=True)
+        m.capture(self.fonts, self.evidence)
+        m.put(m.manager + 8 * m.depth() + 4, 0)
+        with m:
+            self.assertEqual(m.get(0xE576A4), 7)
+            self.open_schedule(m)
+            texts = self.cards(m.screen())
+            games = sum(self.own(m, row) is not None for row in range(7))
+            self.assertGreater(games, 0)
+            self.assertEqual(texts.count('PRESEASON'), games)
+            self.assertIn('TBD', texts)
+
     def test_missing_font_skips_without_faulting(self):
         m = self.machine()
         with m:
