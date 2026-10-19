@@ -59,6 +59,7 @@ FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the cr
 FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
+FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off

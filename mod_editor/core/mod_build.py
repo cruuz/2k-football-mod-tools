@@ -476,6 +476,10 @@ class BuildPlan:
     cpu_qb_zone_windows: bool = False
     cpu_qb_recheck: bool = False
     db_ball_play: bool = False
+    # b776-pa2: play art routes at their real length: the play-art filter no longer cuts a chain's last route segment
+    # (go, drag, flat, out, post/corner break) to 10 ft; it is drawn at its authored length, kept inside the play-call
+    # panel. Only how the art is drawn changes. A late executable owner. EXPERIMENTAL / UNWITNESSED in game
+    play_art_routes: bool = False
     # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
     # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
     # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
@@ -534,7 +538,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.letter_grades or self.honors_page
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -649,6 +653,12 @@ for _preset in PRESETS.values():
     _preset["cpu_qb_zone_windows"] = False
     _preset["cpu_qb_recheck"] = False
     _preset["db_ball_play"] = False
+# b776-pa2: full-length play art routes: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
+# from Experimental; Noah 10/18: "drags ... all the way across the screen ... go routes ... 20 plus yards").
+for _preset in PRESETS.values():
+    _preset["play_art_routes"] = False
+PRESETS["softdrink_advanced"]["play_art_routes"] = True
+PRESETS["softdrink_experimental"]["play_art_routes"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -952,6 +962,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("espn25_era_rules", "nfl2k5_era_rules"),
                                ("k128_memory", "nfl2k5_k128"), ("k128_roster_heap", "nfl2k5_k128"), ("k128_early", "nfl2k5_k128"),
                                ("team_ratings", "nfl2k5_team_ratings"),
+                               ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1150,6 +1161,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     }
     ratings = _core_module("nfl2k5_team_ratings")
     out["team_ratings"] = ratings.status(_xbe_bytes(source)) if ratings is not None else "unavailable"
+    play_art = _core_module("nfl2k5_play_art_routes")  # b776-pa2
+    out["play_art_routes"] = play_art.status(_xbe_bytes(source)) if play_art is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -2537,6 +2550,22 @@ def _apply_team_ratings(plan, target, receipt, progress):
     receipt["steps"].append({"step": "team_ratings", **result})
 
 
+def _apply_play_art_routes(plan, target, receipt, progress):
+    """b776-pa2: the late play-art owner, after every other allocator owner (hair styles included)."""
+    if not plan.play_art_routes:
+        return
+    module = _core_module("nfl2k5_play_art_routes")
+    if module is None:
+        raise RuntimeError("The play art routes module is not available in this build")
+    progress("Drawing play art routes at their real length", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Play art routes: the executable does not read back as applied")
+    receipt["steps"].append({"step": "play_art_routes", **{k: v for k, v in result.items() if k != "edits"}})
+    receipt["result"]["play_art_routes"] = "applied"
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -2711,6 +2740,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("2026 head coaches must be Off or On.")
     if type(plan.hair_styles) is not bool:  # b775-hs1
         raise ValueError("Hair styles must be Off or On.")
+    if type(plan.play_art_routes) is not bool:  # b776-pa2
+        raise ValueError("Full-length play art routes must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -4716,6 +4747,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # b776-ai2: the CPU AI owners are the last executable writers. Their allocations are late owners placed after
         # hair_styles (nfl2k5_xbe_space.LATE_OWNERS), so this step must follow it and nothing else moves.
         _apply_cpu_ai(plan, target, receipt, progress)
+    _apply_play_art_routes(plan, target, receipt, progress)  # b776-pa2: the last allocator owner
     if _commentary_final_wanted(plan, loaded_espn25_plan):
         # b77-c2: the last roster writer has run (main roster, historic and Anniversary files, the user's Anniversary
         # edits, the historic helmets). The final commentary pass gives every other ROST resource the play-by-play

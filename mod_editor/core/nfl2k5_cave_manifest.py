@@ -476,7 +476,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     cpu_money_downs="retail",
                                     # b775-int1: hs1's hair styles owner is a late allocator owner its image step installs;
                                     # the probe image must stay allocator-free (the preset build above observed it).
-                                    hair_styles=False),
+                                    hair_styles=False,
+                                    # b776-pa2: the play art owner is a late allocator owner too; the union below installs it.
+                                    play_art_routes=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
@@ -596,6 +598,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = space.apply(allocation_base, cpu_qb_reads.REQUESTS + db_ball_play.REQUESTS, scaleout=True)
             cpu_ai_probe, _ = cpu_qb_reads.apply(cpu_ai_probe, zone_windows=True, recheck=True)
             db_ball_play.apply(cpu_ai_probe)
+            # b776-pa2: the play art routes owner (late allocator owner, last): its code and the 5-byte call at 0x181676.
+            from . import nfl2k5_play_art_routes as play_art
+            final, _ = play_art.apply(final)
             # The early form (k128_early) writes only inside these spans: the owned allocation (its entry at +0x1A0)
             # and the XBE entry field; it leaves 0x327D1 retail.
             # Flatter flight and the old relocated high-arc band are mutually
@@ -684,7 +689,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_my_career_home", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, coach_ai.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
+                "extra_owners": ["nfl2k5_my_career_home", "nfl2k5_play_art_routes", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, coach_ai.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
                                  music_policy.__name__.rsplit(".", 1)[-1]],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,

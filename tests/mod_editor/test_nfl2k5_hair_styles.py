@@ -130,8 +130,8 @@ class CatalogueTests(unittest.TestCase):
             name = code[at:code.index(b"\0\0", at) + 1].decode("utf-16le").rstrip("\0")
             self.assertEqual(name, hs.texture_name(style.texture))
         self.assertEqual(hs.REQUESTS, (("nfl2k5_hair_styles", "code", 768, 16),))
-        # b776-ai2: the two CPU AI owners are appended after hair styles; nothing else follows it
-        self.assertEqual(space.LATE_OWNERS[-3:], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play"))
+        # b776-ai2: the two CPU AI owners are appended after hair styles; b776-pa2 (int2): then the play art routes owner
+        self.assertEqual(space.LATE_OWNERS[-4:], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes"))
 
     def test_assignments_only_set_hair_style_and_carry_sources(self):
         document = json.loads(EDITS.read_text(encoding="utf-8"))
