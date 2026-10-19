@@ -3547,6 +3547,7 @@ mod_editor/core/nfl2k5_menu_icon_orientation.py
 tests/mod_editor/test_nfl2k5_menu_icon_orientation.py
 mod_editor/core/nfl2k5_moment_coaches.py
 data/nfl2k5_moment_coaches.json
+mod_editor/core/nfl2k5_moment_booth.py
 mod_editor/core/nfl2k5_moment_context.py
 data/nfl2k5_moment_stats.json
 docs/mod_editor/nfl2k5_moment_coaches.md

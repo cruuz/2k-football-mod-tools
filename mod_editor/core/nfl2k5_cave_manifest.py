@@ -351,6 +351,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_coach_ai as coach_ai
     from . import nfl2k5_moment_coaches as moment_coaches
     from . import nfl2k5_moment_context as moment_context  # b775 mo2
+    from . import nfl2k5_moment_booth as moment_booth  # b776 sbc
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_indicator_names as indicator_names
@@ -415,7 +416,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     # b775-int1: the image steps' own executable writers (classic teams' Quick Game helpers, the franchise Super Bowl hosts'
     # season codes) are observed when the preset build runs them, like every other recorded writer.
     from . import nfl2k5_super_bowl_hosts as super_bowl_hosts
-    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, career_home, classic_teams, super_bowl_hosts)})
+    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, moment_booth, career_home, classic_teams, super_bowl_hosts)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -560,6 +561,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             final, _ = hback.apply(final, hback_plan)
             final, _ = team_ratings.apply(final)
             final, _ = moment_context.apply(final)  # b775 mo2: Super Bowl flag and moment stats
+            final, _ = moment_booth.apply(final)  # b776 sbc: Super Bowl booth welcome (hook 0x67EE6, cave 0x201D50)
             final, _ = indicator_names.apply_xbe(final)
             # b76-vb3: the 25th Anniversary kickoff gate, last over the relocated kickoff and the kick rules it gates
             # (its 20 + 8 re-pointed sites, the two formation readers, the play store, owned code and RW state).
@@ -626,7 +628,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                    (screen_hooks, {}),
                                    (arena_growth, dict(created_teams_extra=2)),
                                    (historic_quick_game, {}), (more_moments.Probe, {}), (moment_coaches, {}),
-                                   (draft_picks, dict(plan=picks_plan)), (hback, dict(plan=hback_plan)), (team_ratings, {}), (moment_context, {}),
+                                   (draft_picks, dict(plan=picks_plan)), (hback, dict(plan=hback_plan)), (team_ratings, {}), (moment_context, {}), (moment_booth, {}),
                                    (anniversary_kickoff, dict(tables=anniversary_tables)),
                                    (widescreen_menus, {}),
                                    (team_logo_swap, {}),
