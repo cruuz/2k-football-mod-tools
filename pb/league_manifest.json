@@ -132,9 +132,9 @@
     {
       "team": "NE",
       "pack": "data/playbooks/softdrink_ne_modern.2k5book",
-      "plays": 154,
+      "plays": 136,
       "formations": 33,
-      "semantic_sha256": "3e524bfe8d8f487ac91866fb5502f65908208a9c398ff0de6a66e675d97d281f"
+      "semantic_sha256": "c8c21c2ea0e92d5add69a2751e6dd9cabc44cbf55bad7ef446f88d957bffa05a"
     },
     {
       "team": "NO",

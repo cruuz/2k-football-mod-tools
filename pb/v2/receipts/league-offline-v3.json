@@ -1345,55 +1345,55 @@
   "NE": {
    "team": "NE",
    "ok": true,
-   "offense_pack_sha256": "776f3124de4105169888ce44c57322be73320b124898d5d7c0d31a785582990c",
+   "offense_pack_sha256": "dc091802eac27288122656a58d412e9f7f402f3f5030877999759faf2c4b3e6d",
    "compose": {
     "team": "NE",
     "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "197e159b95076db369f337ce2f9cffe85644ddbd38d371cc62ccfea1f353ffcd",
-      "nodes": 2320,
-      "names": 8176,
+      "sha256": "135eb57c1234dbd9daa54d2fbaa4049dc1eb04ae43741e9577eb10c78725acf7",
+      "nodes": 2281,
+      "names": 7602,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "9f30aa2c0b601d1d41cd76e65b0c466acd1570039e55edf395012380fcda62cf",
-      "nodes": 2842,
+      "sha256": "269e1a71963000bb0deaeadbc825dc5e84922b655737a65a17030785328392ed",
+      "nodes": 2803,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "bd80f569cc75651c10c15e822457fa6765ebe2facc96911990c6f24735808a32"
+      "sha256": "0c5d128d7a4dad608d64dca33eb4efd81813f191a87affc44cff184b7d84d623"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "305aa7b20f125f00724c8ecc83fbabdc23a2e7d628f8b01d9cf4bc4e5e1b3617"
+      "sha256": "0dd08e5c62c1cb25aa540ee95db2ac0b4fed92c04797fd01a44e31f6683bf3f6"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "ca01b5d4f578e55eae0642969f1b8929d42173166240ea29323c670b6d5afd02",
+      "sha256": "1d3130410a2c44473bf81b03bfff955dc9981143617d666538d0e6f6cb2e165d",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "867a3ee984469d27430d2fd508c2afc2405c76335e48469c0d31ff98572bf462",
+      "sha256": "2c030c95ee78ca80506db6ffb708f2b074092bf9cfd24e127fbc853439c9dbec",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "867a3ee984469d27430d2fd508c2afc2405c76335e48469c0d31ff98572bf462",
+      "sha256": "2c030c95ee78ca80506db6ffb708f2b074092bf9cfd24e127fbc853439c9dbec",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "867a3ee984469d27430d2fd508c2afc2405c76335e48469c0d31ff98572bf462"
+    "final_sha256": "2c030c95ee78ca80506db6ffb708f2b074092bf9cfd24e127fbc853439c9dbec"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 570,
+   "menu_entries": 504,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1402,19 +1402,20 @@
    "coach_ai": {
     "ok": true,
     "pools": 20,
-    "max_play_index": 253
+    "max_play_index": 250
    },
    "short_page_formations": [],
    "duplicate_link_formations": [],
    "counts": {
     "formations": 50,
-    "plays": 270,
+    "plays": 252,
     "categories": 25,
-    "nodes": 2920,
-    "name_pool_units": 5046,
-    "strings_end": "0x12fac"
+    "nodes": 2881,
+    "name_pool_units": 4759,
+    "strings_end": "0x12d6e"
    },
-   "final_sha256": "867a3ee984469d27430d2fd508c2afc2405c76335e48469c0d31ff98572bf462"
+   "final_sha256": "2c030c95ee78ca80506db6ffb708f2b074092bf9cfd24e127fbc853439c9dbec",
+   "note": "b776 pb1 NE trim: composed with the NE defense pack re-seated in scratch (content unchanged); int2 regenerates the NE defense"
   },
   "NO": {
    "team": "NO",
