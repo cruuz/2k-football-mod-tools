@@ -570,7 +570,9 @@ def call_name(ctx, call: ComboCall, plan, codes=None) -> str:
     lead = ""
     if codes is not None and first is not None:
         lead = letter(codes[first])
-    pre = {"pa": "PA ", "boot": "PA Boot ", "rollout": "Sprint ", "max": "Max "}.get(call.drop, "")
+    pre = {"pa": "PA ", "boot": "PA Boot ", "rollout": "Sprint "}.get(call.drop, "")
+    if call.drop == "max" and ctx.slot("B") is not None:
+        pre = "Max "                    # max protection only when a back stays in
     parts = [p for p in (pre.strip(), lead, call.strong, call.weak) if p]
     name = " ".join(parts)
     return name[:40]

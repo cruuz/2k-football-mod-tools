@@ -882,8 +882,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
                 cap_links = SHARE_CAP.get(BOOK_FAMILY[c.family], 3)
                 if links[key] >= cap_links:
                     continue
-                home = oc.FORMATIONS[c.fname]
-                if c.family == "qb" and (home.align == "uc") != (spec.align == "uc"):
+                if not same_alignment_ok(c, spec):
                     continue
                 if any(m.design.name == c.design.name or m.concept == c.concept for m in menus[f]):
                     continue
@@ -915,7 +914,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
                 continue
             if links[key] >= SHARE_CAP.get(BOOK_FAMILY[c.family], 3) + cap_extra:
                 continue
-            if c.family == "qb" and (oc.FORMATIONS[c.fname].align == "uc") != (spec.align == "uc"):
+            if not same_alignment_ok(c, spec):
                 continue
             if any(m.design.name == c.design.name for m in menus[f]):
                 continue
@@ -1043,6 +1042,17 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
 # Pack assembly
 # ---------------------------------------------------------------------------
 
+ALIGNMENT_BOUND = ("direct_snap", "sneak", "keeper", "flea", "reverse")
+
+
+def same_alignment_ok(c: Cand, spec: oc.FormationSpec) -> bool:
+    """QB runs, direct snaps, the flea flicker and reverses are shared only into sets with the same QB alignment
+    (a direct snap belongs in the gun, a sneak under centre)."""
+    if c.design.play_type in ALIGNMENT_BOUND or c.family == "qb" or "gadget" in c.design.tags:
+        return oc.FORMATIONS[c.fname].align == spec.align
+    return True
+
+
 def order_menu(fname: str, menu: list[Cand]) -> list[Cand]:
     """Base call first; the first three (default audibles) are a run, a quick throw and a shot / play action."""
     spec = oc.FORMATIONS[fname]
@@ -1070,10 +1080,8 @@ def name_variants(c: Cand) -> list[str]:
     if c.design.name not in alts:
         alts.insert(0, c.design.name)
     base = alts[-1]
-    for a, b in (("PA Boot ", "Boot "), ("Sprint ", "Spr "), (" Screen", " Scrn"), ("Max ", "Mx ")):
-        if a in base:
-            alts.append(base.replace(a, b))
-            base = alts[-1]
+    if base.startswith("PA Boot "):
+        alts.append(base.replace("PA Boot ", "Boot ", 1))
     return alts
 
 
@@ -1224,13 +1232,6 @@ def assemble(result: dict, team: str):
         form_rows.append(dict(formation=f, index=fi, family=om.formation_family(f), personnel=spec.personnel,
                               group=edit[2] if edit else info.cat_names.get(ci), align=spec.align, tag=spec.tag,
                               menu=[c.design.name for c in menu]))
-    # Kings Long twin needs at least one formation naming its edit values
-    if "Kings Long" in plan.index:
-        kl = plan.index["Kings Long"]
-        edit = plan.edits.get(kl)
-        if edit and not any(f.category_index == kl for f in forms_out):
-            # values ride on the first 11-personnel formation that lists it in its mask
-            pass
     notes = (f"DESIGN (b776 pb1 v3, era {result['prof'].era}): {result['prof'].family} tree; Madden 27 family and "
              "personnel shares (Civil.GG playbook database) x the team's 2025 tendencies; retail-template runs, "
              "combo pass concepts, every retail route kind. No pre-snap motion, no RPO, no read option. "
@@ -1398,18 +1399,9 @@ def fit_cpu(result: dict, pack, retail: bytes, team: str, *, iters: int = 2500, 
         state[fi] = (own, sorted(set(mask) | {own}),
                      fc.clamp(design.tags[fi], tuple((bf["flags"] >> s) & 7 for s in (21, 24, 27))))
 
-    class Groups(dict):
-        def __getitem__(self, key):
-            return dict.__getitem__(self, key)
-    opts = Groups()
-    for exact, cis in groups.items():
-        opts[exact] = cis
     # pistol sets: only the Pistol group; everything else: never the Pistol group
     pistol_fi = {fi for fi, (own, _m, _r) in state.items() if own in pistol}
-    original_search_groups = {k: [c for c in v if c not in pistol] or v for k, v in opts.items()}
-
-    def search_groups_for(fi):
-        return [next(iter(pistol))] if fi in pistol_fi else original_search_groups
+    original_search_groups = {k: [c for c in v if c not in pistol] or v for k, v in groups.items()}
 
     cells, gun_bins = fc.targets(team)
     before = fc.objective(design, state, cells, gun_bins)
@@ -1449,11 +1441,10 @@ def fit_cpu(result: dict, pack, retail: bytes, team: str, *, iters: int = 2500, 
         own_o = to_old(own)
         mask_o = tuple(sorted(to_old(c) for c in mask))
         edit = plan.edits.get(own_o)
-        stock_codes = f.position_codes
         forms.append(replace(f, situation=tuple(int(x) for x in ratings), category_index=own_o, category_mask=mask_o,
                              category_positions=tuple(edit[0]) if edit else None,
                              category_code=edit[1] if edit else None, category_name=edit[2] if edit else None,
-                             position_codes=tuple(edit[0]) if edit else stock_codes))
+                             position_codes=tuple(edit[0]) if edit else f.position_codes))
     new_pack = replace(pack, formations=tuple(forms))
     receipt = dict(objective_before=round(before[0], 1), objective_after=round(best[0], 1), shotgun_weight=best[1],
                    cells=rows, iterations=iters)
