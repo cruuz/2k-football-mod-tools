@@ -596,6 +596,8 @@ mod_editor/core/nfl2k5_uniform_slots.py
 mod_editor/core/nfl2k5_era_kits.py
 data/nfl2k5_era_kits_pins.json
 mod_editor/core/nfl2k5_moment_kits.py
+mod_editor/core/nfl2k5_moment_scans.py
+data/nfl2k5_moment_scans.json
 data/nfl2k5_moment_kits.json
 data/nfl2k5_moment_kits_pins.json
 data/nfl2k5_moment_era_kits.json
@@ -702,6 +704,7 @@ data/nfl2k5_espn25_moment_rosters/h-28-1999-titans-0.csv
 data/nfl2k5_espn25_moment_rosters/h-29-1982-redskins-2.csv
 data/nfl2k5_espn25_moment_rosters/h-30-1986-browns-1.csv
 data/nfl2k5_espn25_moment_rosters/manifest.json
+data/nfl2k5_espn25_moment_rosters/appearance.json
 data/nfl2k5_espn25_more_moments.json
 data/nfl2k5_moment_venues.json
 data/nfl2k5_moment_goalposts.json
@@ -3557,6 +3560,8 @@ docs/mod_editor/draft_pick_ownership.md
 mod_editor/core/nfl2k5_hback.py
 tests/mod_editor/test_nfl2k5_hback.py
 tools/b77/ro1_hback_probe.py
+tools/b77/fs1_scans_plan.py
+tools/b77/fs1_repin_rosters.py
 tools/b77/ro1_hback_paths.py
 tools/b77/ro1_native_fixture.py
 tools/b77/ro1_contract_probe.py

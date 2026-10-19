@@ -269,7 +269,8 @@ class SyntheticWriterTests(unittest.TestCase):
                     "retail_sha256": e.sha(raw), "applied_sha256": e.sha(applied)} for i in range(35)]
         data = {"resources": targets, "colleges": ["Example College"]}, {i: rows for i in range(35)}
         resources = {i: raw for i in range(35)}
-        with patch.object(e, "dataset", return_value=data):
+        keep = {f"synthetic-{i}.iff": [{"name": f"{r['first']} {r['last']}", "mode": "keep"} for r in rows] for i in range(35)}
+        with patch.object(e, "dataset", return_value=data), patch.object(e, "appearance", return_value=keep):
             after, receipt = e._compile_resources(resources)
             self.assertEqual(e.status(after), "applied")
             replay, again = e._compile_resources(after)
@@ -325,7 +326,8 @@ class RetailTests(unittest.TestCase):
                                     raw[32 + p.offset:32 + p.offset + 84] for p in doc.players))
         for t in self.manifest["resources"]:
             raw, after = self.resources[t["outer"]], self.output[t["outer"]]
-            self.assertEqual(after, e.compile_resource(raw, self.sheets[t["outer"]], self.manifest["colleges"]))
+            self.assertEqual(after, e.compile_resource(raw, self.sheets[t["outer"]], self.manifest["colleges"],
+                                                       looks=e.appearance()[t["filename"]]))
             self.assertEqual(raw[:32], after[:32])
             before_doc, doc = rr.RosterDocument(raw[32:]), rr.RosterDocument(after[32:])
             for a, b, row in zip(before_doc.players, doc.players, self.sheets[t["outer"]]):

@@ -24,6 +24,7 @@ from typing import Mapping
 import zlib
 
 from . import nfl2k5_front_schemes as front
+from . import nfl2k5_moment_scans as moment_scans
 from . import nfl2k5_roster_records as rr
 
 OWNER = "nfl2k5_espn25_rosters"
@@ -46,8 +47,10 @@ DEFAULT_ENABLED = False
 # for callers that read it; an empty reason means "buildable".
 BUILD_BLOCK_REASON = ""
 DATA_DIR = Path(__file__).resolve().parents[2] / "data/nfl2k5_espn25_moment_rosters"
+APPEARANCE_JSON = DATA_DIR / "appearance.json"       # fs1 (Noah 10/18): which head each slot wears; digest in the manifest
+LOOK_MODES = ("keep", "retail", "relocate", "generic")
 # Updated deliberately after deterministic offline regeneration; no runtime fetch.
-DATASET_SHA256 = "9bccb798f5bf28d5800dcc6f1b84f328cc902297c2a827157a0694ffcff493f7"
+DATASET_SHA256 = "09f8438d8ef2a26708d7a796a046835a4dde2dc7903d615cbc8b956be7a4f92b"
 MAX_RESOURCE = 1024 * 1024
 MAX_MANIFEST = 8 * 1024 * 1024
 SITU_OUTER = 22
@@ -89,31 +92,31 @@ ONE_POOL_PINS = {
     129: ("86e8fd46fc5b9324806e9ec4a205eefb0e1629ce638423255a4578515b8f5ee9",
           "ddf1d1237a1bcdb5ef7ce1ff164784183c92ffd14bbe41ab753de4f52518d1a6"),
     130: ("e7e36fe2e536b27f5f75e915f3bbaa11ce8f17d9e8ef61362057f9a5a6a54fa7",
-          "ed333718aec7212551e53728ee26d4350a2c177201e4187d65af701478b77279"),
+          "2abea07d0b684ac4774b91f4e144d63087532c5949c92058562f48fe84ed05e5"),
     133: ("dd02b15ca2532b4eb4cdf62b26163274da96b0a33488ed2eaff0627b26002f24",
           "3c850864c4d91cac960c2463def31459d9fc925db92a6b7853025e298c7523ae"),
     134: ("962e11c4f0cc70cf14726f2e60307fbd54e3cca46f7da98a66b92fbe5181207e",
-          "5e09ed46b7a6194159fc30bf95fa9637bd14d5123f137dd5cd2c420a6e50e6b6"),
+          "23c574840ac22fa115d34277c62cde7955c54daf0df61fc0c903c19bd7b6f06e"),
     135: ("f4e9c30871ad6a45e69b156df96997d854970d065d52b89e4d8489139da8d348",
-          "9140adaf99ed66fdedfc6345b2a24121d594b5504fa5fe82bd5c2676ac2b4524"),
+          "c8b6c2b77246262f15faa2d2766102a2b596a5a36629b5a7fbc87b88676cb878"),
     136: ("41d02289544dc100ed9e06ae508ddece7ee553bb554fd785993ca593d527ff45",
-          "bdb9475c946240eabc2917603b0661ff805cfb1559036ce8ec6c0b9e0997ec73"),
+          "595f537b85717408f81b76837a994328041a904967a1cdf7710bda96d4d06a75"),
     139: ("3969766a78e86b4b7f4b5b61fe643784ea3a05c43a9c7c403387d41900b2478f",
           "073082e7476122c26c403a22d30c7a12682fa1f8ad3aa6526fd818f9434e9ad6"),
     140: ("99a48364028e04824024fa4382337e1efcf333b9aca7d52932f6300adeb30c33",
-          "f464aab72469da6787db58bdde89136a8ddb3bb8af7709ad7557c43ffc0347f7"),
+          "16f3604a33d11fdc112ed9a27e90fd98b5cb3b48abf3a47bfb52a72bfd29490a"),
     141: ("5a5e8aaa64ce34fb320b790de6451ccfa81719c7a4c9bd2be2eac94ebb78ec0d",
           "0d07214d112cd27f950135362aff8265db5d82b444ed51a0f79f6150028a7844"),
     142: ("3cf21a769cf122e1463473d7bd589ba569075ca965e09d35a406718f946adf99",
           "1e236d06908cc94a8a47e880f6bcb7bada99b7cd10e83a2212d7167e7402dfe5"),
     147: ("8ce79ba8d36d3f523aa002d47b36c9b6f07a11610f9054783c8711103f73dd36",
-          "8b520daa4153740e5df94fa39bcecbd2b3252d93648555bb74cb47c75252e27a"),
+          "ff9a45699b171be14dfad032083adab4db6e3c57c3192d41085af6b1116bf3af"),
     149: ("e23c86cd644fb5af8c6c688dea1c247e60a954f5f53c2e959494f85f595a4e18",
           "40af48907dab02b9aa93014337d23e463d9d6939f03207cb2a29257e6d3d6eb6"),
     153: ("8c27935439a1e6f32ba8a6d3af9284553b381c3d431bc3ba9b7d40420b7a6028",
           "6193a9f96a310871e9bcd1423ac9c5553e7fe942de9d54330a01f4e264aeb8b8"),
     154: ("8c90a93aac5a7e7116c61683cc21b6ba31ee198a00d6c27dd7adb538432f4ed5",
-          "1c3053b61c31b4cb81188a6818d4fd0fadda22ab769f8fb2cc9b57f7a95446fe"),
+          "dd8fa898b14824daff5046886a052dce6db75d9e398ff139ba2291b9b6944898"),
     155: ("6e31f8822ba5f5db1fa8d74b6d0d845076b3742b953adc7cfa77932178890a4d",
           "2b66ea362e85bf921f804c56c4a7b882f644e4b9ed569fc96e714e1e05ad141c"),
     157: ("59e3475033ea5b9e2e2f47e2b98278eef74d9155b8863548de4a50f599b4132a",
@@ -123,25 +126,25 @@ ONE_POOL_PINS = {
     159: ("053300e11650913df09c2ed1ca64af4731202cbadea57df717c1087296ef4efd",
           "f7d4bc1f799c26c403fd267a9457068da7c61f86098387d631ea950b831d2f4b"),
     162: ("8aa16fe442e7a016aa451414cd76889305255639af205f4efabd7a97e7e5eeba",
-          "27be14bd8f104dd7886d8068524781ece85fdba552d8e275cc6bc76723026cc8"),
+          "5a36043ad594085ae49331048ef1cf746ce192780aa14c0cd755b30159be8765"),
     163: ("ef8e80e295c9ef37887523661155b8c90aea0388737db03e1fb25a442b1420aa",
           "82b80f9e6503d0682b361552a4ff6ab22701f14b74c61e99bfc13094f2d04d73"),
     167: ("14e6aa67aed7c0d66b593ea8ad9196238536bace89642d68d65e217c37f378ad",
-          "213849b33ef3f314b0fc369b7feadd5e53d19b2c34b3b3ef5282af2581b8aabe"),
+          "a8b1fa2ac49aa732f75a3cf5c81fb7a3966c9132506cac737fbe73e5bda66140"),
     169: ("ef8399e2d93d51621f8786e240a1a57bec03d34d920e41dce7d9468315a84deb",
           "e53bd57ba4106d858f9ff2102f060d615f66f107dd4c44a0523c431795a714c8"),
     171: ("6e2e76c91883690386ad81270dbdea08817fc72b5a52d94c34783863e11680d0",
           "a87d227edfd70362ca26359b235c4e4a51351088f8219502d7c3b4bf266b470e"),
     172: ("c1ad7c07da0b857b4c2ea236ab193295edaae95c5357713f2b361e36c3ecebe5",
-          "f01df59224912fbecd66670a6af74d9edbe1b1108228d9c381fdd306a3b05efd"),
+          "815c49d0b44ec1d8248a23eac91e011a0ccd091f1e40ccf30b23196c7a85e021"),
     174: ("81563cf7596735f989a2e08c9c12199e3f6c0006ee3a6c384f7e0cd4f63593d9",
-          "40b6d8028c6e4812bf5bb2c93b5f48bfe5e5d5e44706db7e08c1eff33f0bebc7"),
+          "6dc7c0273d8eb51f295552fdcbc7c089bac547c1755eb9dfc54408521fc769b8"),
     177: ("308e893277e48c6896eb163656e0eb3fb3cf5e5d8c53442c4750034ed540cda3",
-          "2691c60447c5c78c751e1adf039bc718a035c9123116c674c666f08ba8c089dc"),
+          "83b6b5ba373c77af96e68fecec60688237dc5259ec3b8ae556f391cbfabb2c5c"),
     181: ("32e3b515d0e76abaa1a15f01705cf68dce98c6be30b3b7344d7e92e58e7b242f",
           "0b510bbf6b574260aa1b705aa67b331f8f04e4c5049e15479ca9d50637cce411"),
     182: ("9eb71baea6deaf1edaa8771781b287ba6bb4b6a18192b0b8fe6a4b4035f8ca1b",
-          "a9eb46910f41dd375c9724c1c17440ff9f23bd13df7999ca2b5924c15a7b4ef7"),
+          "b5e0b7ced4992913aa96475e8dcbb357a4a6963925e423c04bacf02d61b78a5f"),
     183: ("18d4baa452f8ba6bf405f9f013b9b16e24d4ba00ab9e836af84fdfc8e52f6581",
           "b72ca0f24b3bb459b096bdde5e6cc9d0c6d2c2daa07e96ffb6618b3c2dc96320"),
     187: ("6d04c12add4b613a295ac064813b6d19ebf51bd158a622d1e2800f3ce5a7afdc",
@@ -362,6 +365,54 @@ def dataset():
     return manifest, sheets
 
 
+def appearance():
+    """{retail file name: [look x 53]} (fs1): the head each slot wears. Digest-pinned by the manifest."""
+    manifest, sheets = dataset()
+    raw = read_bounded(APPEARANCE_JSON, 2 * 1024 * 1024)
+    require(sha(raw) == manifest.get("appearance_sha256"), "historic roster appearance differs from the shipped dataset")
+    doc = json.loads(raw)
+    require(isinstance(doc, dict) and doc.get("schema") == 1 and isinstance(doc.get("files"), dict), "appearance schema")
+    out = {}
+    for target in manifest["resources"]:
+        looks = doc["files"].get(target["filename"])
+        rows = sheets[target["outer"]]
+        require(isinstance(looks, list) and len(looks) == 53, f"{target['filename']}: appearance needs 53 looks")
+        for row, look in zip(rows, looks):
+            require(isinstance(look, dict) and look.get("name") == f"{row['first']} {row['last']}",
+                    f"{target['filename']}: appearance names {look.get('name')!r}")
+            require(look.get("mode") in LOOK_MODES, f"{target['filename']}: look mode")
+            retail = look.get("retail")
+            if look["mode"] in ("retail", "relocate"):
+                require(isinstance(retail, dict) and set(retail) == {"photo", "skin", "face", "dreads"}
+                        and all(type(v) is int for v in retail.values()) and 0 < retail["photo"] < 10000
+                        and 0 <= retail["skin"] <= 31 and 0 <= retail["face"] <= 15 and retail["dreads"] in (0, 1),
+                        f"{target['filename']}: retail record of {look['name']}")
+            else:
+                require(retail is None, f"{target['filename']}: {look['mode']} look carries a retail record")
+        out[target["filename"]] = looks
+    return out
+
+
+def apply_look(player, look, slot_scans):
+    """Set a slot's head fields from its look; returns the field names written."""
+    mode = look["mode"]
+    if mode == "keep":
+        return ()
+    if mode == "generic":
+        player.record.set("photo_id", moment_scans.NOPHOTO_BASE + player.index)
+        return ("photo_id",)
+    retail = look["retail"]
+    photo = retail["photo"]
+    if mode == "relocate":
+        require(photo in slot_scans, f"{look['name']}: retail head {photo} has no moment scan id")
+        photo = slot_scans[photo]
+    player.record.set("photo_id", photo)
+    player.record.skin = retail["skin"]
+    player.record.set("face", retail["face"])
+    player.record.set("dreads", retail["dreads"])
+    return ("photo_id", "skin_low", "skin_high", "face", "dreads")
+
+
 def without_edge_placeholders(payload):
     """A copy with the EDGE rename's exact 16-byte "Edge" placeholder surnames put back to "Def End".
 
@@ -487,7 +538,8 @@ def changed_spans(before, after):
     return out
 
 
-def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=None, three_four=False):
+def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=None, three_four=False, looks=None,
+                     slot_scans=None):
     """Existing name allocator + player encoder, inside the discovered retail pool.
 
     All names move to an existing first allocation before assigning final names;
@@ -507,6 +559,8 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
     original_values = [dict(p.record.values) for p in document.players]
     original_slots = tuple(document.teams[0].slots)
     require(len(rows) == 53, "expected 53 roster rows")
+    require(looks is None or len(looks) == 53, "expected 53 appearance looks")
+    touched = {}
     seed = document.names.blocks[bounds[0]].text
     for p in document.players:
         document.set_name(p, "first", seed)
@@ -544,11 +598,13 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
         if name:
             require(colleges.count(name) == 1, f"college must resolve exactly once in the main table: {name!r}")
             p.record.set("college_pointer", colleges.index(name))
+        if looks is not None:        # fs1: the slot's own head, or none (the retail slot's art belonged to someone else)
+            touched[p.index] = apply_look(p, looks[p.index], moment_scans.slots() if slot_scans is None else slot_scans)
     result = raw[:32] + document.to_body(normalise_commentary=False)
     require(len(result) == len(raw) and result[:32] == raw[:32], "resource wrapper/size changed")
     allowed = set(range(32 + bounds[0], 32 + bounds[1]))
     for p in document.players:
-        for field in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer"):
+        for field in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer", *touched.get(p.index, ())):
             spec = rr.FIELD_BY_NAME[field]
             allowed.update(range(32 + p.offset + spec.offset, 32 + p.offset + spec.offset + spec.size))
         if rows[p.index].get("hand"):
@@ -560,7 +616,8 @@ def compile_resource(raw, rows, colleges, *, layout="retail", source_colleges=No
     require(tuple(after.teams[0].slots) == original_slots, "team pointer/depth order changed")
     for p, old, row in zip(after.players, original_values, rows):
         require(all(p.record.values[k] == v for k, v in old.items()
-                    if k not in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer")
+                    if k not in ("first_name_pointer", "last_name_pointer", "jersey", "college_pointer",
+                                 *touched.get(p.index, ()))
                     and not (k == "hand" and row.get("hand"))),
                 "rating, appearance or other record bits changed")
     return result
@@ -574,6 +631,7 @@ def _compile_resources(resources: Mapping[int, bytes], *, colleges=None):
     """
     manifest, sheets = dataset()
     colleges = manifest["colleges"] if colleges is None else colleges
+    heads, slot_scans = appearance(), moment_scans.slots()
     state = status(resources, colleges=colleges)
     require(state in ("retail", "applied", "one_pool", "one_pool_applied"),
             "historic rosters refuse missing, mixed or foreign resources")
@@ -584,7 +642,8 @@ def _compile_resources(resources: Mapping[int, bytes], *, colleges=None):
         before = bytes(resources[t["outer"]])
         after = before if state == goal else compile_resource(without_edge_placeholders(before), sheets[t["outer"]],
                                                               colleges, layout=layout, source_colleges=manifest["colleges"],
-                                                              three_four=t["outer"] in front.retail_three_four_entries())
+                                                              three_four=t["outer"] in front.retail_three_four_entries(),
+                                                              looks=heads[t["filename"]], slot_scans=slot_scans)
         require(resource_status(after, t, colleges=colleges, source_colleges=manifest["colleges"]) == goal, "compiled roster differs from the pinned profile")
         changes = changed_spans(before, after)
         output[t["outer"]] = after
@@ -706,6 +765,19 @@ def image_status(source):
         return "foreign"
 
 
+def scan_ids_in_use(archive):
+    """Head ids of the four relocated retail-moment players that the main roster already uses (empty on the SOFTDRINK
+    2026 roster, which has them free; a stock retail roster gives them to retired players, whose heads those four then
+    wear: the moment scans module copies nothing over a head a roster record holds)."""
+    entry = archive.entries[MAIN_OUTER]
+    main = archive.read(entry.virtual_offset, entry.size)
+    used = {p.record.values["photo_id"] for p in rr.RosterDocument(main[32:]).players}
+    slot_scans = moment_scans.slots()
+    need = {slot_scans[look["retail"]["photo"]] for looks in appearance().values() for look in looks
+            if look["mode"] == "relocate"}
+    return sorted(need & used)
+
+
 def apply_to_image(path):
     """Final resource pass on a private build copy, with preflight and readback.
 
@@ -722,6 +794,7 @@ def apply_to_image(path):
         xbe_after, native = apply_xbe(xbe_before)
         original, entries, colleges = _read_archive(archive, with_colleges=True)
         output, receipt = apply(original, colleges=colleges)
+        clash = scan_ids_in_use(archive)
         require(archive._read_table() == archive.entries, "archive table changed during roster preflight")
         current, rechecked, current_colleges = _read_archive(archive, with_colleges=True)
         require(path.stat().st_size == size and entries == rechecked and original == current and colleges == current_colleges,
@@ -744,6 +817,8 @@ def apply_to_image(path):
                    already_applied=receipt["already_applied"] and not xbe_spans,
                    changed_bytes=receipt["changed_bytes"] + sum(len(s["after"]) // 2 for s in xbe_spans))
     receipt.update(image_size_before=size, image_size_after=size, image_spans=spans)
+    if clash:
+        receipt["moment_scan_ids_in_use"] = clash
     return receipt
 
 

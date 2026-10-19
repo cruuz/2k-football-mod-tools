@@ -367,7 +367,7 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
     from . import nfl2k5_roster_records as rr
     main_doc = rr.RosterDocument(main[32:])
     colleges = main_doc.colleges
-    main_photos = frozenset(p.record.values["photo_id"] for p in main_doc.players)
+    main_photos = more.named_photos(main_doc)
     people = more.main_people(main)
     homes = franchise_stadium_ids(main)
     files, receipts = [], {}

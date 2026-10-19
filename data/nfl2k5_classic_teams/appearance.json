@@ -271,7 +271,14 @@
     "name": "Tommie Harris",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)"
+    "source": "headshot_review (ESPN headshot by nflverse espn_id, by eye against 18 reference players of known tone; ct1 2026-10-17)",
+    "retail": {
+     "photo": 6434,
+     "skin": 5,
+     "face": 8,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Tank Johnson",
@@ -1835,7 +1842,13 @@
     "name": "Lorenzo Neal",
     "tone": 1,
     "dreads": 0,
-    "source": "retail_historic_same_season (same person, Anniversary team titans_1999)"
+    "source": "retail_historic_same_season (same person, Anniversary team titans_1999)",
+    "retail": {
+     "photo": 1661,
+     "skin": 1,
+     "face": 6,
+     "dreads": 0
+    }
    },
    {
     "name": "Andrew Pinnock",
@@ -4031,7 +4044,14 @@
     "name": "Eli Manning",
     "tone": 0,
     "dreads": 0,
-    "source": "headshot_review (same person, Anniversary team giants_2007)"
+    "source": "headshot_review (same person, Anniversary team giants_2007)",
+    "retail": {
+     "photo": 6504,
+     "skin": 0,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Josh Johnson",
@@ -7761,7 +7781,14 @@
     "name": "Ben Roethlisberger",
     "tone": 0,
     "dreads": 0,
-    "source": "headshot_review (same person, Anniversary team steelers_2008)"
+    "source": "headshot_review (same person, Anniversary team steelers_2008)",
+    "retail": {
+     "photo": 6568,
+     "skin": 16,
+     "face": 6,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Charlie Batch",

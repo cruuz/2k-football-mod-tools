@@ -2886,6 +2886,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module.require_build_ready()
         _, roster_preview = module.apply(module.read_resources(source))
         receipt["espn25_rosters_preflight"] = roster_preview
+    if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
+        # b776-fs1: every moment face scan must read from this retail source and fit its unused head id.
+        scans_module = _core_module("nfl2k5_moment_scans")
+        if scans_module is None:
+            raise RuntimeError("The moment face scans module is unavailable in this build")
+        planned = scans_module.plan(source, source, photos=frozenset())
+        receipt["moment_scans_preflight"] = {"spans": len(planned), "pairs": len(scans_module.load())}
     if plan.team_names_2026:
         names = _core_module("nfl2k5_team_names_2026")
         if names is None:
@@ -4207,6 +4214,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")
+    if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
+        # b776-fs1 (Noah 10/18): after every roster writer, the retail face scans the 2026 league overwrote are copied
+        # into unused head ids; the Anniversary and classic rosters above already point at them.
+        scans = _core_module("nfl2k5_moment_scans")
+        if scans is None:
+            raise RuntimeError("the moment face scans module is not available in this build")
+        progress("Copying retail face scans for the Anniversary and classic teams", 0, 0)
+        scans_source = require_step_source(source if _retail_source is None else _retail_source, "Moment face scans")
+        scans_receipt = scans.apply_to_image(target, scans_source)
+        receipt["steps"].append({"step": "moment_scans", **scans_receipt})
+        receipt["result"]["moment_scans"] = scans.image_status(target, scans_source)
+        if receipt["result"]["moment_scans"] != "applied":
+            raise ValueError("the moment face scans failed their read-back on the copy")
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)
