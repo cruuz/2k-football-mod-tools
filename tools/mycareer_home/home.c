@@ -293,8 +293,9 @@ static NI void schedule_draw(void) {
             }
         }
         if(row<first || row>=first+VISIBLE) continue;
-        /* This week's card in the club gradient (the native cursor marks the selected week). */
-        if(row==now) quad(L,y,R-10,y+34,alpha(c1,0xf0),alpha(c2,0xf0),alpha(c1,0xf0),alpha(c2,0xf0),0);
+        /* This week's card: the club's primary colour, darkening to the right so the white, grey and yellow
+         * text reads on every club (the native cursor marks the selected week). */
+        if(row==now) quad(L,y,R-10,y+34,alpha(c1,0xf0),alpha(c1>>1&0x7f7f7f,0xf0),alpha(c1,0xf0),alpha(c1>>1&0x7f7f7f,0xf0),0);
         else box(L,y,R-10,y+34,0xc0101820);
         accent=!played?alpha(c2,0xff):mine>theirs?0xff30c050:mine<theirs?0xffe03838:0xffc8c8c8;
         box(L,y,L+3,y+34,accent);

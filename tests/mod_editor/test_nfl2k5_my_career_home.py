@@ -121,12 +121,12 @@ class CareerHomeStaticTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_my_career_home_code as assembly
         from mod_editor.core.nfl2k5_cave_oracle import absolute_writes
         end = assembly.LABELS['home_rodata']
-        findings = absolute_writes(self.payload, [(home.CONTENT_VA, home.CONTENT_VA + end)])
+        findings = absolute_writes(self.payload, [(home.CODE_VA, home.CODE_VA + end)])
         self.assertFalse([f for f in findings if f['detail'] == 'undecoded trailing bytes'])
         self.assertEqual([f for f in findings if f['target'] is not None], [])
         starts = sorted((v, k) for k, v in assembly.LABELS.items() if v < end)
         def owner(va):
-            offset = va - home.CONTENT_VA
+            offset = va - home.CODE_VA
             return [k for v, k in starts if v <= offset][-1]
         other = {owner(int(f['instruction'], 16)) for f in findings
                  if 'esp' not in f['detail'] and 'ebp' not in f['detail']}

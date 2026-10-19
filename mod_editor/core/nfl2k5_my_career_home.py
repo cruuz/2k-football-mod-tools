@@ -40,8 +40,9 @@ optional extra section slot: the music section's descriptor slot, name and alrea
 are mutually exclusive. An image without Career Home keeps exactly its bytes and 28 sections. The MyCareer code
 is not changed; only its Apartment descriptor (template data) names this owner's title, rows and handler.
 
-Section block: 128-byte header (magic, content length, content SHA-256, zeros), then the content (machine code,
-UTF-16 strings, three descriptors and three row tables, the schedule's week labels last), then zero padding to ``SIZE``. Resident cost: ``SIZE`` bytes
+Section block: 128-byte header (magic, content length, content SHA-256, zeros), then the content (the title and
+the Career Home row table at fixed offsets, machine code, UTF-16 strings, three descriptors and two more row tables,
+the schedule's rows and week labels last), then zero padding to ``SIZE``. Resident cost: ``SIZE`` bytes
 of preloaded executable memory; no disc resource, no heap allocation.
 """
 from __future__ import annotations
@@ -80,8 +81,8 @@ HELP_TEXT = (
 LAYOUT, BINDINGS, FRAME = 0xE7F928, 0xAA281C, (0x02400044, 0x018D0052)
 PRACTICE_LABEL = 0xE9C3BC  # the retail "Practice" literal MyCareer's Apartment already uses
 
+HOME_TITLE = "Career Home"
 STRINGS = (
-    ("home_title", "Career Home"),
     # Native rows draw the first word heavy and the rest light, with no space
     # (retail ESPN style: PLAY|NEXTGAME), so labels are chosen to read that way.
     ("home_text_more", "Settings + Save"),
@@ -132,7 +133,14 @@ MAX_VISIBLE_ROWS = 7
 SEASON_WEEKS_VA = 0x005151C4
 PLAYOFF_ROUNDS = ("Wild Card", "Divisional", "Conference", "Super Bowl")
 GRID_ROWS = 22
-LAYOUT_PAD = 16
+# Front block (job mcs). MyCareer's LZ-compressed RW template stores three of this section's addresses: the
+# Apartment's title, its row table and its handler. They sit at fixed offsets ahead of the code (the title in
+# TITLE_ROOM bytes, then the Career Home row table with room for the native window's seven rows and the end marker,
+# then the code, whose first byte is the handler), so no change to this section's code or tables moves them and
+# MyCareer's code block keeps its size (11 spare bytes at the b775 VAs, 7 on the retail test image, as with ui1).
+TITLE_ROOM = 32
+FRONT = TITLE_ROOM + 52 * (MAX_VISIBLE_ROWS + 1)
+CODE_VA = CONTENT_VA + FRONT
 
 
 def season_weeks(payload):
@@ -167,8 +175,12 @@ def code_for(career):
     are the last bytes of the content, so every label address (the Apartment fields MyCareer's template names
     included) is the same for either season length."""
     weeks = career.get("season_weeks", 18)
-    out = bytearray(assembly.CODE)
-    labels = {name: CONTENT_VA + offset for name, offset in assembly.LABELS.items()}
+    out = bytearray(FRONT) + assembly.CODE
+    labels = {name: CODE_VA + offset for name, offset in assembly.LABELS.items()}
+    title = (HOME_TITLE + "\0").encode("utf-16le")
+    _require(len(title) <= TITLE_ROOM, "Career Home title does not fit its fixed room")
+    out[:len(title)] = title
+    labels["home_title"], labels["home_rows"] = CONTENT_VA, CONTENT_VA + TITLE_ROOM
 
     def reserve(name, size):
         out.extend(bytes((-len(out)) % 4))
@@ -176,11 +188,6 @@ def code_for(career):
         out.extend(bytes(size))
         return labels[name] - CONTENT_VA
 
-    # mcs: 16 zero bytes before the strings. MyCareer's RW template is LZ-compressed and carries three of this
-    # section's addresses (the Apartment's title, handler and rows); at this offset they compress as small as with
-    # ui1's layout, so the Schedule costs MyCareer's 20 KB code block no byte (11 spare at the b775 VAs, 7 on the
-    # retail test image). Re-measure (tests/mod_editor/test_nfl2k5_my_career_mcs.py) whenever the code size changes.
-    reserve("home_layout_pad", LAYOUT_PAD)
     for name, value in STRINGS:
         content = (value + "\0").encode("utf-16le")
         at = reserve(name, len(content))
@@ -191,7 +198,7 @@ def code_for(career):
 
     def rows(name, content, limit=MAX_VISIBLE_ROWS):
         _require(len(content) <= limit, f"{name}: more rows than the native window shows")
-        at = reserve(name, 52 * (len(content) + 1))
+        at = labels[name] - CONTENT_VA if name == "home_rows" else reserve(name, 52 * (len(content) + 1))
         for i, (label, action) in enumerate(content):
             struct.pack_into("<13I", out, at + 52 * i, 9, names[label] if isinstance(label, str) else label,
                              *([0] * 8), names[action], 0, 0)
@@ -220,12 +227,12 @@ def code_for(career):
     for name, title, table in DESCRIPTORS:
         struct.pack_into("<11I", out, labels[name] - CONTENT_VA, names[title], 0, labels["home_handler"], 0,
                          names[table], 0, LAYOUT, BINDINGS, *FRAME, 0x13)
-    symbols = {"code": CONTENT_VA, "": 0, **career, **labels}
+    symbols = {"code": CODE_VA, "": 0, **career, **labels}
     for off, kind, symbol, value in assembly.RELOCATIONS:
-        target = symbols[symbol] + value + struct.unpack_from("<I", out, off)[0]
+        target = symbols[symbol] + value + struct.unpack_from("<I", out, FRONT + off)[0]
         if kind == 2:
-            target -= CONTENT_VA + off
-        struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
+            target -= CODE_VA + off
+        struct.pack_into("<I", out, FRONT + off, target & 0xFFFFFFFF)
     _require(HEADER + len(out) <= SIZE, f"Career Home needs {HEADER + len(out)} bytes; its section has {SIZE}")
     labels["content_end"] = CONTENT_VA + len(out)
     return bytes(out), labels
