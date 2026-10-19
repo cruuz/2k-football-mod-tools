@@ -1,4551 +1,5006 @@
 {
  "team": "KC",
+ "version": "3.0.0",
+ "era": "2020s",
+ "family": "west_coast",
+ "capacity": {
+  "formations": 32,
+  "plays": 150,
+  "retained_formations": 17,
+  "retained_plays": 111,
+  "defense_append_formations": 1,
+  "defense_append_plays": 8,
+  "special_additions": 1,
+  "special_mode": "append",
+  "free_play_records": 1,
+  "categories": 23
+ },
  "formations": [
   {
-   "formation_index": 0,
-   "name": "Singleback Doubles",
-   "personnel": "11",
-   "align": "uc",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings",
-    "Kings Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Doubles",
-   "donor_index": 2,
-   "donor_situation": [
-    3,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    0,
-    0,
-    4
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "Slant Flat",
-    "PA Boot",
-    "Smash",
-    "Outside Zone",
-    "Post Wheel",
-    "Dagger",
-    "End Around",
-    "Counter",
-    "Curl Flat",
-    "Scissors"
-   ]
-  },
-  {
-   "formation_index": 1,
-   "name": "Gun Doubles",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Quads Left",
-   "donor_index": 20,
-   "donor_situation": [
-    4,
-    3,
-    1
-   ],
-   "cpu_situation": [
-    2,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "Swing Screen",
-    "KC Slant Flat",
-    "KC Bubble Screen",
-    "Slant Flat",
-    "Smash",
-    "Draw",
-    "RB Screen",
-    "Dagger",
-    "Scissors",
-    "Curl Flat"
-   ]
-  },
-  {
-   "formation_index": 2,
-   "name": "I-Form Pro",
-   "personnel": "21",
-   "align": "uc",
-   "group": "Pro",
-   "group_code": 4,
-   "group_mask": [
-    "Pro"
-   ],
-   "tag": "base",
-   "situation_target": [
-    2,
-    0,
-    3
-   ],
-   "donor": "I Pro",
-   "donor_index": 12,
-   "donor_situation": [
-    2,
-    0,
-    3
-   ],
-   "cpu_situation": [
-    4,
-    2,
-    4
-   ],
-   "donor_type": 2,
-   "menu": [
-    "Inside Zone",
-    "PA Boot",
-    "Power",
-    "Iso",
-    "Outside Zone",
-    "Counter",
-    "Toss",
-    "Draw",
-    "Flea Flicker",
-    "Post Wheel"
-   ]
-  },
-  {
-   "formation_index": 3,
-   "name": "Singleback Ace",
-   "personnel": "12",
-   "align": "uc",
-   "group": "Ace",
-   "group_code": 3,
-   "group_mask": [
-    "Ace"
-   ],
-   "tag": "base",
-   "situation_target": [
-    2,
-    1,
-    3
-   ],
-   "donor": "Tight Triple",
-   "donor_index": 1,
-   "donor_situation": [
-    2,
-    1,
-    3
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    4
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Y Cross",
-    "PA Boot",
-    "Outside Zone",
-    "Duo",
-    "Counter",
-    "Y Pivot",
-    "Dagger",
-    "Levels",
-    "Curl Flat"
-   ]
-  },
-  {
-   "formation_index": 4,
-   "name": "Gun Trey",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Quads Left",
-   "donor_index": 20,
-   "donor_situation": [
-    4,
-    3,
-    1
-   ],
-   "cpu_situation": [
-    1,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Stick Nod",
-    "KC Texas",
-    "Y Cross",
-    "Flood",
-    "Draw",
-    "Drive",
-    "Levels",
-    "Snag",
-    "Counter",
-    "Stick Nod"
-   ]
-  },
-  {
-   "formation_index": 5,
-   "name": "Goal Line",
+   "formation": "Goal Line Sneak",
+   "index": 0,
+   "family": "Goal Line",
    "personnel": "23",
-   "align": "uc",
    "group": "Jacks",
-   "group_code": 0,
-   "group_mask": [
-    "Jacks"
-   ],
+   "align": "uc",
    "tag": "goal",
-   "situation_target": [
-    0,
-    3,
-    4
-   ],
-   "donor": "Triple Load",
-   "donor_index": 18,
-   "donor_situation": [
-    0,
-    3,
-    4
+   "menu": [
+    "Tush Push",
+    "QB Sneak",
+    "Y Quick Outs",
+    "Flea Flicker",
+    "HB Counter Wk",
+    "Y Pivot",
+    "HB Slam",
+    "HB Toss",
+    "Inside Trap",
+    "PA Boot Leak",
+    "PA Crossers",
+    "U Slant Flat"
    ],
    "cpu_situation": [
     4,
     4,
     5
-   ],
-   "donor_type": 1,
+   ]
+  },
+  {
+   "formation": "Goal Line",
+   "index": 1,
+   "family": "Goal Line",
+   "personnel": "23",
+   "group": "Jacks",
+   "align": "uc",
+   "tag": "goal",
    "menu": [
     "QB Sneak",
-    "Inside Zone",
-    "Power",
-    "PA Boot Leak",
-    "Iso",
-    "Duo",
-    "Toss",
-    "Fade Out",
-    "PA Boot"
-   ]
-  },
-  {
-   "formation_index": 6,
-   "name": "I-Form Tight",
-   "personnel": "22",
-   "align": "uc",
-   "group": "Jokers",
-   "group_code": 2,
-   "group_mask": [
-    "Jokers"
-   ],
-   "tag": "short",
-   "situation_target": [
-    0,
-    2,
-    4
-   ],
-   "donor": "I Jokers",
-   "donor_index": 14,
-   "donor_situation": [
-    0,
-    2,
-    4
-   ],
-   "cpu_situation": [
-    3,
-    3,
-    4
-   ],
-   "donor_type": 2,
-   "menu": [
-    "Inside Zone",
-    "Power",
-    "PA Boot",
-    "Iso",
-    "Duo",
-    "Counter",
-    "QB Sneak",
-    "PA Boot Leak",
-    "Toss"
-   ]
-  },
-  {
-   "formation_index": 7,
-   "name": "Singleback Trey",
-   "personnel": "11",
-   "align": "uc",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings",
-    "Kings Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Triple",
-   "donor_index": 3,
-   "donor_situation": [
-    3,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    0,
-    0,
-    4
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Cross",
-    "Flood",
-    "Counter",
-    "Drive",
-    "Levels",
-    "Snag",
-    "Toss"
-   ]
-  },
-  {
-   "formation_index": 8,
-   "name": "Gun Trips",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings Long",
-   "group_code": 9,
-   "group_mask": [
-    "Kings",
-    "Kings Long"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    3,
-    0
-   ],
-   "donor": "Gun: Quads Left",
-   "donor_index": 20,
-   "donor_situation": [
-    4,
-    3,
-    1
-   ],
-   "cpu_situation": [
-    2,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Cross",
-    "Flood",
-    "Snag",
-    "Draw",
-    "Drive",
-    "Levels",
-    "Stick Nod",
-    "Bubble Screen"
-   ]
-  },
-  {
-   "formation_index": 9,
-   "name": "Ace Wing",
-   "personnel": "12",
-   "align": "uc",
-   "group": "Ace",
-   "group_code": 3,
-   "group_mask": [
-    "Ace",
-    "Ace Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    2,
-    1,
-    2
-   ],
-   "donor": "Flip Tight Triple",
-   "donor_index": 11,
-   "donor_situation": [
-    2,
-    1,
-    2
-   ],
-   "cpu_situation": [
-    4,
-    0,
-    4
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Outside Zone",
-    "Stick",
-    "PA Boot Leak",
-    "Y Cross",
-    "Drive",
-    "Counter",
-    "Flood",
-    "Y Pivot",
-    "Power",
-    "Levels"
-   ]
-  },
-  {
-   "formation_index": 10,
-   "name": "Gun Empty Trey",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings"
-   ],
-   "tag": "empty",
-   "situation_target": [
-    4,
-    3,
-    0
-   ],
-   "donor": "Gun: Quads Left",
-   "donor_index": 20,
-   "donor_situation": [
-    4,
-    3,
-    1
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Stick",
-    "Mesh",
-    "Spacing",
-    "Snag",
-    "QB Draw",
-    "Slant Flat",
-    "Four Verticals",
-    "Comebacks",
-    "Hank"
-   ]
-  },
-  {
-   "formation_index": 11,
-   "name": "Gun Wing",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Doubles Right",
-   "donor_index": 23,
-   "donor_situation": [
-    3,
-    1,
-    1
-   ],
-   "cpu_situation": [
-    1,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "KC Stick",
-    "Slant Flat",
-    "Smash",
-    "Stick",
-    "Counter",
-    "Y Pivot",
-    "Draw",
-    "Dagger",
-    "Curl Flat"
-   ]
-  },
-  {
-   "formation_index": 12,
-   "name": "Gun Bunch",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Doubles Right",
-   "donor_index": 23,
-   "donor_situation": [
-    3,
-    1,
-    1
-   ],
-   "cpu_situation": [
-    2,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "Bunch Mesh Wheel",
-    "KC Double Slants",
-    "Snag",
-    "Spacing",
-    "Flood",
-    "Double Slants",
-    "Bench",
-    "Draw",
-    "Bubble Screen"
-   ]
-  },
-  {
-   "formation_index": 13,
-   "name": "Strong I",
-   "personnel": "21",
-   "align": "uc",
-   "group": "Pro",
-   "group_code": 4,
-   "group_mask": [
-    "Pro"
-   ],
-   "tag": "base",
-   "situation_target": [
-    2,
-    0,
-    3
-   ],
-   "donor": "Strong I Pro",
-   "donor_index": 15,
-   "donor_situation": [
-    2,
-    0,
-    3
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    4
-   ],
-   "donor_type": 2,
-   "menu": [
-    "Power",
-    "PA Boot",
-    "Iso",
-    "Toss",
-    "RB Screen",
-    "Inside Zone",
-    "Counter",
+    "HB Toss",
+    "U Slant Flat",
     "PA Crossers",
-    "Flood"
-   ]
-  },
-  {
-   "formation_index": 14,
-   "name": "Heavy Wing",
-   "personnel": "22",
-   "align": "uc",
-   "group": "Jokers",
-   "group_code": 2,
-   "group_mask": [
-    "Jokers"
-   ],
-   "tag": "short",
-   "situation_target": [
-    0,
-    3,
-    4
-   ],
-   "donor": "Split Jokers",
-   "donor_index": 17,
-   "donor_situation": [
-    0,
-    2,
-    4
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    4
-   ],
-   "donor_type": 2,
-   "menu": [
-    "Outside Zone",
-    "PA Boot Leak",
-    "Power",
-    "Counter",
-    "Duo",
-    "Toss",
-    "PA Boot",
-    "Yankee",
-    "QB Sneak",
-    "Trap"
-   ]
-  },
-  {
-   "formation_index": 15,
-   "name": "Singleback Y Trips",
-   "personnel": "12",
-   "align": "uc",
-   "group": "Ace",
-   "group_code": 3,
-   "group_mask": [
-    "Ace",
-    "Ace Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Ace Trips",
-   "donor_index": 6,
-   "donor_situation": [
-    3,
-    1,
-    1
-   ],
-   "cpu_situation": [
-    0,
-    3,
-    2
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Cross",
-    "Counter",
-    "Drive",
-    "Flood",
-    "Snag",
+    "Y China Return",
+    "Inside Trap",
+    "PA U Bench Hitch",
+    "Flea Flicker",
+    "HB Counter Wk",
+    "HB Slam",
     "Y Pivot",
-    "Levels"
-   ]
-  },
-  {
-   "formation_index": 16,
-   "name": "Gun Split Backs",
-   "personnel": "20",
-   "align": "gun",
-   "group": "Queens",
-   "group_code": 7,
-   "group_mask": [
-    "Queens"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Split Spread",
-   "donor_index": 22,
-   "donor_situation": [
-    4,
-    3,
-    1
+    "Y Quick Outs"
    ],
    "cpu_situation": [
     3,
-    1,
-    1
-   ],
-   "donor_type": 2,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "Texas",
-    "RB Screen",
-    "Spacing",
-    "Draw",
-    "Counter",
-    "Smash",
-    "Flood"
+    4,
+    4
    ]
   },
   {
-   "formation_index": 17,
-   "name": "Singleback Bunch",
+   "formation": "Gun Wildcat",
+   "index": 2,
+   "family": "Wildcat",
    "personnel": "11",
-   "align": "uc",
    "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings",
-    "Kings Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Quads",
-   "donor_index": 8,
-   "donor_situation": [
-    3,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    0,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Outside Zone",
-    "Mesh",
-    "Snag",
-    "Spacing",
-    "Flood",
-    "Inside Zone",
-    "Double Slants",
-    "Bench",
-    "Bubble Screen"
-   ]
-  },
-  {
-   "formation_index": 18,
-   "name": "Singleback Doubles Tight",
-   "personnel": "11",
-   "align": "uc",
-   "group": "Kings",
-   "group_code": 6,
-   "group_mask": [
-    "Kings",
-    "Kings Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Doubles",
-   "donor_index": 2,
-   "donor_situation": [
-    3,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    0,
-    0,
-    3
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "Drive",
-    "Slant Flat",
-    "PA Boot",
-    "Smash",
-    "Outside Zone",
-    "Counter",
-    "Reverse",
-    "Dagger",
-    "Curl Flat",
-    "Draw"
-   ]
-  },
-  {
-   "formation_index": 19,
-   "name": "Gun Y Trips",
-   "personnel": "12",
    "align": "gun",
-   "group": "Ace Long",
-   "group_code": 8,
-   "group_mask": [
-    "Ace",
-    "Ace Long"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Ace Trips",
-   "donor_index": 24,
-   "donor_situation": [
-    4,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    4,
-    0,
-    1
-   ],
-   "donor_type": 1,
+   "tag": "base",
    "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Cross",
-    "Draw",
-    "Snag",
-    "Flood",
-    "Drive",
-    "Y Pivot",
-    "Spacing",
-    "Levels"
-   ]
-  },
-  {
-   "formation_index": 20,
-   "name": "Gun Doubles Tight",
-   "personnel": "11",
-   "align": "gun",
-   "group": "Kings Long",
-   "group_code": 9,
-   "group_mask": [
-    "Kings Long"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Doubles Right",
-   "donor_index": 23,
-   "donor_situation": [
-    3,
-    1,
-    1
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    0
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
+    "HB Dive Wk",
+    "QB Power",
+    "HB Hitch Seam",
+    "Direct Snap Power",
     "KC Mesh Wheel",
-    "Slant Flat",
-    "Drive",
-    "Mesh Wheel",
-    "RB Screen",
-    "Smash",
-    "Draw",
-    "Dagger",
-    "Counter",
-    "Curl Flat"
+    "KC Stick",
+    "Z Out Seam Spot Out",
+    "HB Deep Flood Seam Out",
+    "Inside Zone Wk",
+    "Inside Zone",
+    "PA Y Switch Hitches",
+    "PA X Bench Steep In"
+   ],
+   "cpu_situation": [
+    3,
+    4,
+    1
    ]
   },
   {
-   "formation_index": 21,
-   "name": "Pistol Doubles",
+   "formation": "Empty Trey",
+   "index": 3,
+   "family": "Empty",
    "personnel": "11",
-   "align": "pistol",
-   "group": "Kings Long",
-   "group_code": 9,
-   "group_mask": [
-    "Kings Long"
-   ],
-   "tag": "base",
-   "situation_target": [
-    3,
-    2,
-    1
-   ],
-   "donor": "Gun: Doubles Right",
-   "donor_index": 23,
-   "donor_situation": [
-    3,
-    1,
-    1
-   ],
-   "cpu_situation": [
-    4,
-    4,
-    1
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Mesh",
-    "KC Slant Flat",
-    "Slant Flat",
-    "PA Boot",
-    "Smash",
-    "Counter",
-    "Post Wheel",
-    "Dagger",
-    "Draw",
-    "Curl Flat"
-   ]
-  },
-  {
-   "formation_index": 22,
-   "name": "Gun Ace Wing",
-   "personnel": "12",
-   "align": "gun",
-   "group": "Ace",
-   "group_code": 3,
-   "group_mask": [
-    "Ace"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Ace Trips",
-   "donor_index": 24,
-   "donor_situation": [
-    4,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    2,
-    0,
-    1
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Y Cross",
-    "Counter",
-    "Drive",
-    "Y Pivot",
-    "Draw",
-    "Snag",
-    "Flood",
-    "Texas",
-    "Levels"
-   ]
-  },
-  {
-   "formation_index": 23,
-   "name": "Gun Ace",
-   "personnel": "12",
-   "align": "gun",
-   "group": "Ace",
-   "group_code": 3,
-   "group_mask": [
-    "Ace"
-   ],
-   "tag": "pass",
-   "situation_target": [
-    4,
-    2,
-    1
-   ],
-   "donor": "Gun: Ace Trips",
-   "donor_index": 24,
-   "donor_situation": [
-    4,
-    2,
-    1
-   ],
-   "cpu_situation": [
-    1,
-    0,
-    1
-   ],
-   "donor_type": 1,
-   "menu": [
-    "Inside Zone",
-    "Stick",
-    "Duo",
-    "Y Pivot",
-    "Counter",
-    "Drive",
-    "Levels",
-    "Y Cross",
-    "Draw"
-   ]
-  },
-  {
-   "formation_index": 24,
-   "name": "Ace Jumbo",
-   "personnel": "22",
+   "group": "Kings",
    "align": "uc",
-   "group": "Jokers",
-   "group_code": 2,
-   "group_mask": [
-    "Jokers"
+   "tag": "empty",
+   "menu": [
+    "Slot Bubble Screen",
+    "HB Verticals Seams",
+    "QB Keep",
+    "End Around",
+    "KC Slant Flat",
+    "X Cluster Wheel",
+    "Z Deep Hooks Corner",
+    "X Hitch Seam Whip",
+    "X Stick Out and Up",
+    "Z Dagger Seam Out",
+    "Slot Y Trail Out",
+    "X Sail Out Dagger"
    ],
-   "tag": "short",
-   "situation_target": [
+   "cpu_situation": [
+    4,
     0,
-    2,
-    4
+    0
+   ]
+  },
+  {
+   "formation": "Singleback Doubles",
+   "index": 4,
+   "family": "Singleback",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "Outside Zone Wk",
+    "QB Keep",
+    "Y Stick Out and Up",
+    "Slot Stick Out and Up",
+    "X Slip Screen",
+    "KC Mesh Wheel",
+    "Slot Cross Dig",
+    "End Around",
+    "PA X Bench Dig",
+    "HB Dive Wk",
+    "Counter GT",
+    "HB Draw Wk"
    ],
-   "donor": "I Jokers",
-   "donor_index": 14,
-   "donor_situation": [
+   "cpu_situation": [
+    1,
     0,
+    0
+   ]
+  },
+  {
+   "formation": "Gun Doubles",
+   "index": 5,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Swing Screen",
+    "Y Mills",
+    "QB Power",
+    "KC Slant Flat",
+    "KC Bubble Screen",
+    "KC Stick",
+    "Y Y Trail Return",
+    "01 Trap",
+    "Slot Cross Dig",
+    "X Whip Skinny Post",
+    "Pin Pull Sweep",
+    "HB Dive Wk"
+   ],
+   "cpu_situation": [
     2,
-    4
+    4,
+    1
+   ]
+  },
+  {
+   "formation": "Gun Trips TE",
+   "index": 6,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings Long",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Swing Screen",
+    "HB Texas",
+    "QB Draw",
+    "Slot Y Trail",
+    "PA X Bench Dig",
+    "Slot Choice Return",
+    "Y Stick Return",
+    "HB Draw Wk",
+    "Y Y Trail Return",
+    "X Hitch Seam Whip",
+    "Power G",
+    "01 Trap"
+   ],
+   "cpu_situation": [
+    2,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Gun Bunch X Nasty",
+   "index": 7,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Slot Stick Out",
+    "Slot Stick Nod",
+    "Crack Toss",
+    "Inside Zone Split",
+    "KC Bubble Screen",
+    "Slot Seam Levels",
+    "Z Dagger Seam Out",
+    "Slot Stick Out and Up",
+    "X Bench Corner Post",
+    "QB Draw",
+    "HB Sweep",
+    "PA X Sail Skinny Post"
+   ],
+   "cpu_situation": [
+    4,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Pistol Doubles",
+   "index": 8,
+   "family": "Pistol",
+   "personnel": "11",
+   "group": "Pistol",
+   "align": "pistol",
+   "tag": "base",
+   "menu": [
+    "HB Draw Wk",
+    "Outside Zone Wk",
+    "Z Snag",
+    "Y Mills",
+    "Z Double Move",
+    "Z Dagger Seam Out",
+    "Slot Choice Return",
+    "HB Slip Screen Wk",
+    "PA Slot Sail Out Zig",
+    "Inside Zone Wk",
+    "HB Counter",
+    "Crack Toss"
+   ],
+   "cpu_situation": [
+    1,
+    4,
+    1
+   ]
+  },
+  {
+   "formation": "I-Form Pro",
+   "index": 9,
+   "family": "I-Form",
+   "personnel": "21",
+   "group": "Pro",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "HB Toss Wk",
+    "Guard Iso Wk",
+    "Y China Skinny Post",
+    "Y Mills",
+    "Y China Out and Up",
+    "FB Screen",
+    "Max Y Verticals",
+    "PA Z Steep In Seam",
+    "HB Off Tackle",
+    "HB Dive",
+    "Z Quick Outs Fade",
+    "HB Lead Draw Wk"
    ],
    "cpu_situation": [
     4,
     4,
     4
-   ],
-   "donor_type": 2,
+   ]
+  },
+  {
+   "formation": "I-Form Tight",
+   "index": 10,
+   "family": "Heavy",
+   "personnel": "22",
+   "group": "Jokers",
+   "align": "uc",
+   "tag": "short",
    "menu": [
-    "Inside Zone",
-    "PA Boot Leak",
-    "Duo",
-    "Outside Zone",
-    "Counter",
-    "Power",
+    "HB Draw",
+    "HB Iso Wk",
+    "X Slant Flat",
+    "U Mills",
     "PA Boot",
-    "Yankee",
+    "HB Iso",
+    "Outside Zone",
     "QB Sneak",
-    "Toss"
+    "01 Trap",
+    "PA Boot Leak",
+    "Y Comebacks",
+    "HB Counter"
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "formation": "Full House",
+   "index": 11,
+   "family": "Full House",
+   "personnel": "22",
+   "group": "Jokers",
+   "align": "uc",
+   "tag": "short",
+   "menu": [
+    "Outside Zone",
+    "01 Trap",
+    "X Slant Flat",
+    "HB Counter",
+    "FB Dive",
+    "Y Comebacks",
+    "QB Sneak",
+    "PA Boot Leak",
+    "HB Iso",
+    "PA Boot",
+    "HB Draw",
+    "HB Iso Wk"
+   ],
+   "cpu_situation": [
+    3,
+    3,
+    4
+   ]
+  },
+  {
+   "formation": "Wing T",
+   "index": 12,
+   "family": "Wing T",
+   "personnel": "21",
+   "group": "Pro",
+   "align": "uc",
+   "tag": "short",
+   "menu": [
+    "HB Off Tackle",
+    "HB Toss Wk",
+    "X Double Slants",
+    "Max Y Verticals",
+    "HB Dive",
+    "X Dagger Whip",
+    "HB Lead Draw Wk",
+    "PA Z Steep In Seam",
+    "Guard Iso Wk",
+    "Z Snag Skinny Post",
+    "Y Mills",
+    "FB Screen"
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "formation": "Gun Empty Trey",
+   "index": 13,
+   "family": "Empty",
+   "personnel": "11",
+   "group": "Kings Long",
+   "align": "gun",
+   "tag": "empty",
+   "menu": [
+    "X Stick Out and Up",
+    "HB Mills Seams",
+    "QB Power",
+    "Y Stick Return",
+    "HB Deep Flood Seam Out",
+    "X Snag Crossing Dig",
+    "X Bench Corner Post",
+    "Slot Y Trail Out",
+    "X Cluster Wheel",
+    "Slot Seam Levels",
+    "Slot Stick Out and Up",
+    "Z Deep Hooks Corner"
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    0
+   ]
+  },
+  {
+   "formation": "Singleback Ace",
+   "index": 14,
+   "family": "Singleback",
+   "personnel": "12",
+   "group": "Ace",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "Lead Stretch",
+    "HB Draw",
+    "HB Slip Screen",
+    "X Stick Skinny Post",
+    "PA Y Mills Slant Flat",
+    "Z Quick Outs",
+    "X Bang Hitch Curls",
+    "X Comeback Seam",
+    "PA X Skinny Shot",
+    "Z Snag Smash",
+    "HB Texas",
+    "PA U Smash Levels"
+   ],
+   "cpu_situation": [
+    4,
+    2,
+    0
+   ]
+  },
+  {
+   "formation": "Gun Spread",
+   "index": 15,
+   "family": "Gun",
+   "personnel": "10",
+   "group": "Flush",
+   "align": "gun",
+   "tag": "spread",
+   "menu": [
+    "Z Hitch Seam Whip",
+    "Z Steep In Seam",
+    "Inside Zone",
+    "Slot China Out and Up",
+    "Z Snag Snag Dagger",
+    "Z Fade Curl",
+    "X Dagger Spot Out",
+    "Z Double Move",
+    "Slot Bubble Screen",
+    "01 Trap Wk",
+    "Steep In Seam",
+    "Z Post Go Snag"
+   ],
+   "cpu_situation": [
+    2,
+    2,
+    0
+   ]
+  },
+  {
+   "formation": "Gun Y Off Trio Close",
+   "index": 16,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Slot Stick",
+    "Slot Cross Dig",
+    "Power G",
+    "Slot Post Wheel Dig",
+    "Z Deep Hooks Corner",
+    "Slot Stick Out",
+    "QB Draw",
+    "Direct Snap Power",
+    "Z Cross Dig",
+    "X Stick Out and Up",
+    "Zone Toss",
+    "X Slip Screen"
+   ],
+   "cpu_situation": [
+    2,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Gun Doubles Clamp Stack",
+   "index": 17,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "X Hitch Seam Whip",
+    "X Out Seam Seam Out",
+    "Counter GT",
+    "Inside Zone",
+    "Y Stick Out and Up",
+    "Z Cross Dig",
+    "Slot Post Wheel Dig",
+    "PA Y Switch Hitches",
+    "Slot Y Trail",
+    "HB Draw Wk",
+    "QB Draw",
+    "HB Hitch Seam"
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    1
+   ]
+  },
+  {
+   "formation": "Pistol Wing",
+   "index": 18,
+   "family": "Pistol",
+   "personnel": "11",
+   "group": "Pistol",
+   "align": "pistol",
+   "tag": "base",
+   "menu": [
+    "HB Dive Wk",
+    "Crack Toss",
+    "X Whip Skinny Post",
+    "HB Comeback Seam",
+    "PA Y Switch Hitches",
+    "PA Y Sail Out and Up",
+    "Slot Stick Out",
+    "Slot Y Trail",
+    "HB Stretch",
+    "HB Slip Screen Wk",
+    "Inside Zone Split",
+    "Outside Zone Wk"
+   ],
+   "cpu_situation": [
+    2,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Pistol Bunch TE",
+   "index": 19,
+   "family": "Pistol",
+   "personnel": "11",
+   "group": "Pistol",
+   "align": "pistol",
+   "tag": "base",
+   "menu": [
+    "HB Stretch",
+    "01 Trap",
+    "X Snag Crossing Dig",
+    "Z Cross Dig",
+    "Slot Stick Out",
+    "Inside Zone Wk",
+    "Slot Levels Steep In",
+    "HB Mills Seams",
+    "Zone Toss",
+    "PA Z Curl Flat Outs",
+    "PA Slot Zig Flat",
+    "PA Y Sail Out and Up"
+   ],
+   "cpu_situation": [
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Gun Trips",
+   "index": 20,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings Long",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Slot Stick Out",
+    "HB Zig Flat",
+    "HB Draw Wk",
+    "Slot Levels Steep In",
+    "PA Slot Zig Flat",
+    "Y Stick Out and Up",
+    "Inside Zone",
+    "QB Power",
+    "Z Deep Hooks",
+    "HB Hitch Seam",
+    "HB Stretch",
+    "Slot Bubble Screen"
+   ],
+   "cpu_situation": [
+    2,
+    4,
+    0
+   ]
+  },
+  {
+   "formation": "Gun Doubles Tight",
+   "index": 21,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Y Stick Return",
+    "KC Mesh Wheel",
+    "Inside Zone Wk",
+    "Z Out Seam Spot Out",
+    "PA Z Curl Flat Outs",
+    "X Snag Crossing Dig",
+    "Z Double Move",
+    "Counter GT",
+    "Slot Sail Out Hitch",
+    "01 Trap",
+    "Slot Bubble Screen",
+    "X Slip Screen"
+   ],
+   "cpu_situation": [
+    3,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Gun Trey Open",
+   "index": 22,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings Long",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Swing Screen",
+    "Y Y Trail Return",
+    "Zone Toss",
+    "Slot Seam Levels",
+    "PA Slot Sail Out Zig",
+    "Slot Stick",
+    "Z Snag",
+    "Pin Pull Sweep",
+    "Z Out Seam Spot Out",
+    "Outside Zone Wk",
+    "QB Power",
+    "X Out Seam Seam Out"
+   ],
+   "cpu_situation": [
+    2,
+    4,
+    1
+   ]
+  },
+  {
+   "formation": "Pistol Bunch",
+   "index": 23,
+   "family": "Pistol",
+   "personnel": "11",
+   "group": "Pistol",
+   "align": "pistol",
+   "tag": "base",
+   "menu": [
+    "HB Sweep",
+    "Power G",
+    "Slot Stick",
+    "HB Slip Screen Wk",
+    "Slot Y Trail Out",
+    "KC Slant Flat",
+    "Z Deep Hooks",
+    "Slot Stick Nod",
+    "PA Slot Zig Flat",
+    "Inside Zone",
+    "PA X Bench Dig",
+    "Counter GT"
+   ],
+   "cpu_situation": [
+    3,
+    3,
+    1
+   ]
+  },
+  {
+   "formation": "Singleback Trips",
+   "index": 24,
+   "family": "Singleback",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "Pin Pull Sweep",
+    "Inside Zone",
+    "HB Slip Screen",
+    "X Cluster Wheel",
+    "X Bench Corner Post",
+    "PA X Bench Steep In",
+    "Slot Stick Out",
+    "QB Keep",
+    "Inside Zone Split",
+    "PA Y Sail Out and Up",
+    "End Around",
+    "PA Z Curl Flat Outs"
+   ],
+   "cpu_situation": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "formation": "Singleback Ace Slot",
+   "index": null,
+   "family": "Singleback",
+   "personnel": "12",
+   "group": "Ace",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "HB Draw",
+    "Lead Stretch",
+    "Z Quick Outs",
+    "Z Flood Out and Up",
+    "U Deep Over Return",
+    "HB Texas",
+    "PA X Skinny Shot",
+    "X Stick Skinny Post",
+    "PA Y Mills Slant Flat",
+    "U Bubble Screen",
+    "X Comeback Seam",
+    "HB Slip Screen"
+   ],
+   "cpu_situation": [
+    4,
+    0,
+    2
+   ]
+  },
+  {
+   "formation": "Gun Deuce Close",
+   "index": null,
+   "family": "Gun",
+   "personnel": "12",
+   "group": "Ace",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "X Hitch Seam Spot Out",
+    "X Bang Hitch Curls",
+    "HB Draw",
+    "PA U Smash Levels",
+    "Z Snag Smash",
+    "Z Flood Out and Up",
+    "Lead Stretch",
+    "U Deep Over Return",
+    "X Stick Skinny Post",
+    "HB Texas",
+    "HB Slip Screen",
+    "U Bubble Screen"
+   ],
+   "cpu_situation": [
+    2,
+    0,
+    1
+   ]
+  },
+  {
+   "formation": "Singleback H Back",
+   "index": null,
+   "family": "Singleback",
+   "personnel": "12",
+   "group": "Ace",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "Lead Stretch",
+    "HB Draw",
+    "Z Snag Smash",
+    "Z Quick Outs",
+    "X Comeback Seam",
+    "U Bubble Screen",
+    "Z Flood Out and Up",
+    "PA X Skinny Shot",
+    "PA Y Mills Slant Flat",
+    "X Bang Hitch Curls",
+    "PA U Smash Levels",
+    "U Deep Over Return"
+   ],
+   "cpu_situation": [
+    0,
+    3,
+    3
+   ]
+  },
+  {
+   "formation": "Gun Wing",
+   "index": null,
+   "family": "Gun",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "KC Stick",
+    "X Sail Out Dagger",
+    "HB Counter",
+    "PA X Sail Skinny Post",
+    "KC Bubble Screen",
+    "Slot Sail Out Hitch",
+    "X Whip Skinny Post",
+    "HB Sweep",
+    "Slot Levels Steep In",
+    "Direct Snap Power",
+    "QB Draw",
+    "HB Texas"
+   ],
+   "cpu_situation": [
+    3,
+    4,
+    1
+   ]
+  },
+  {
+   "formation": "Singleback Trey",
+   "index": null,
+   "family": "Singleback",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "QB Keep",
+    "Inside Zone Wk",
+    "Slot Choice Return",
+    "Z Deep Hooks",
+    "Slot Sail Out Hitch",
+    "Z Snag",
+    "HB Verticals Seams",
+    "HB Counter",
+    "PA X Bench Steep In",
+    "Crack Toss",
+    "PA Slot Sail Out Zig",
+    "Pin Pull Sweep"
+   ],
+   "cpu_situation": [
+    0,
+    4,
+    4
+   ]
+  },
+  {
+   "formation": "Gun Split Pro",
+   "index": null,
+   "family": "Gun",
+   "personnel": "21",
+   "group": "Pro",
+   "align": "gun",
+   "tag": "pass",
+   "menu": [
+    "Z Quick Outs Fade",
+    "Y Mills",
+    "HB Lead Draw Wk",
+    "PA Z Steep In Seam",
+    "Guard Iso Wk",
+    "Z Snag Skinny Post",
+    "X Dagger Whip",
+    "Y China Skinny Post",
+    "HB Dive",
+    "Y China Out and Up",
+    "X Double Slants",
+    "HB Toss Wk"
+   ],
+   "cpu_situation": [
+    2,
+    2,
+    1
+   ]
+  },
+  {
+   "formation": "I-Form Close",
+   "index": null,
+   "family": "I-Form",
+   "personnel": "21",
+   "group": "Pro",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "HB Dive",
+    "HB Off Tackle",
+    "Z Snag Skinny Post",
+    "FB Screen",
+    "X Dagger Whip",
+    "Z Quick Outs Fade",
+    "HB Toss Wk",
+    "Y Mills",
+    "HB Lead Draw Wk",
+    "Y China Skinny Post",
+    "Y China Out and Up",
+    "Guard Iso Wk"
+   ],
+   "cpu_situation": [
+    3,
+    1,
+    4
    ]
   }
  ],
  "plays": [
   {
-   "status": "DESIGN",
-   "team": "KC",
+   "play": "p000",
    "play_index": 49,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Trey",
-    "Singleback Trey",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 50,
-   "name": "Mesh",
-   "concept": "Mesh",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Wing",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 51,
-   "name": "Slant Flat",
-   "concept": "Slant Flat",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Wing",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 52,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Singleback Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 53,
-   "name": "Smash",
-   "concept": "Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Wing",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 54,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Singleback Doubles Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 55,
-   "name": "Post Wheel",
-   "concept": "Post Wheel",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [
-    "shot"
-   ],
-   "formations": [
-    "Singleback Doubles",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 56,
-   "name": "Dagger",
-   "concept": "Dagger",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Wing",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 57,
-   "name": "End Around",
-   "concept": "End Around",
-   "family": "trick",
-   "header": "reverse",
-   "play_type": "reverse",
-   "personnel": "11",
-   "preference": 4,
-   "flags": "0x0000980e",
-   "primary_slot": 8,
-   "reads": [],
-   "tags": [
-    "gadget"
-   ],
-   "formations": [
-    "Singleback Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 58,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Trey",
-    "Singleback Trey",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 59,
-   "name": "Curl Flat",
-   "concept": "Curl Flat",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Wing",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 60,
-   "name": "Scissors",
-   "concept": "Scissors",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 61,
    "name": "Swing Screen",
    "concept": "RB Screen",
    "family": "screen",
    "header": "screen",
    "play_type": "pass",
    "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000640e",
-   "primary_slot": 10,
-   "reads": [
-    10
+   "home": "Gun Doubles",
+   "primary": "HB",
+   "screen": "back",
+   "must": "team",
+   "routes": [
+    "Stem Block"
    ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Gun Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 62,
-   "name": "KC Slant Flat",
-   "concept": "Slant Flat",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 63,
-   "name": "KC Bubble Screen",
-   "concept": "Bubble Screen",
-   "family": "screen",
-   "header": "quick_screen",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0400240e",
-   "primary_slot": 8,
-   "reads": [
-    8
-   ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Gun Doubles"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 64,
-   "name": "Draw",
-   "concept": "Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trey",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight",
-    "Pistol Doubles"
+    "Gun Trips TE",
+    "Gun Trey Open"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 65,
-   "name": "RB Screen",
-   "concept": "RB Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000640e",
-   "primary_slot": 10,
-   "reads": [
-    10
-   ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Gun Doubles",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 66,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro",
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 67,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 68,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro",
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 69,
-   "name": "Iso",
-   "concept": "Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro",
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 70,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 71,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro",
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 72,
-   "name": "Toss",
-   "concept": "Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro",
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 73,
-   "name": "Draw",
-   "concept": "Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 74,
-   "name": "Flea Flicker",
-   "concept": "Flea Flicker",
-   "family": "trick",
-   "header": "flea",
-   "play_type": "flea",
-   "personnel": "21",
-   "preference": 4,
-   "flags": "0x0600380e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8
-   ],
-   "tags": [
-    "shot",
-    "gadget"
-   ],
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 75,
-   "name": "Post Wheel",
-   "concept": "Post Wheel",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7
-   ],
-   "tags": [
-    "shot"
-   ],
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 76,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Ace",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 77,
-   "name": "Y Cross",
-   "concept": "Y Cross",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 78,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "12",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 79,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 80,
-   "name": "Duo",
-   "concept": "Duo",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Ace",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 81,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Ace",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 82,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 83,
-   "name": "Dagger",
-   "concept": "Dagger",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 84,
-   "name": "Levels",
-   "concept": "Levels",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 85,
-   "name": "Curl Flat",
-   "concept": "Curl Flat",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 86,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 87,
-   "name": "Y Stick Nod",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 88,
-   "name": "KC Texas",
-   "concept": "Texas",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 89,
-   "name": "Y Cross",
-   "concept": "Y Cross",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Singleback Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 90,
-   "name": "Flood",
-   "concept": "Flood",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 9,
-   "reads": [
-    9,
-    6,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Singleback Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 91,
-   "name": "Drive",
-   "concept": "Drive",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    10,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Singleback Trey",
-    "Gun Trips",
-    "Singleback Doubles Tight",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 92,
-   "name": "Levels",
-   "concept": "Levels",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    7,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Singleback Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 93,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    8,
-    6,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 94,
-   "name": "Stick Nod",
-   "concept": "Stick Nod",
-   "family": "shot",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    10
-   ],
-   "tags": [
-    "shot"
-   ],
-   "formations": [
-    "Gun Trey",
-    "Gun Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 95,
-   "name": "QB Sneak",
-   "concept": "QB Sneak",
-   "family": "run",
-   "header": "qb_sneak",
-   "play_type": "sneak",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0400820e",
-   "primary_slot": 0,
-   "reads": [],
-   "tags": [
-    "short",
-    "goal"
-   ],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 96,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 97,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 98,
-   "name": "PA Boot Leak",
-   "concept": "PA Boot Leak",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    8,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 99,
-   "name": "Iso",
-   "concept": "Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 100,
-   "name": "Duo",
-   "concept": "Duo",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 101,
-   "name": "Toss",
-   "concept": "Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
-   "personnel": "23",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 102,
-   "name": "Fade Out",
-   "concept": "Fade Out",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "23",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 103,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "23",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    8,
-    6,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 104,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 105,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 106,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 107,
-   "name": "Iso",
-   "concept": "Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 108,
-   "name": "Duo",
-   "concept": "Duo",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 109,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 110,
-   "name": "QB Sneak",
-   "concept": "QB Sneak",
-   "family": "run",
-   "header": "qb_sneak",
-   "play_type": "sneak",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0400820e",
-   "primary_slot": 0,
-   "reads": [],
-   "tags": [
-    "short",
-    "goal"
-   ],
-   "formations": [
-    "I-Form Tight",
-    "Heavy Wing",
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 111,
-   "name": "PA Boot Leak",
-   "concept": "PA Boot Leak",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 112,
-   "name": "Toss",
-   "concept": "Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 113,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 114,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    8,
-    6,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 115,
-   "name": "Toss",
-   "concept": "Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 116,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Trips",
-    "Gun Wing",
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 117,
-   "name": "Draw",
-   "concept": "Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Trips",
-    "Gun Wing",
-    "Gun Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 118,
-   "name": "Bubble Screen",
-   "concept": "Bubble Screen",
-   "family": "screen",
-   "header": "quick_screen",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0400240e",
-   "primary_slot": 8,
-   "reads": [
-    8
-   ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Gun Trips",
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 119,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 120,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 121,
-   "name": "PA Boot Leak",
-   "concept": "PA Boot Leak",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 122,
-   "name": "Y Cross",
-   "concept": "Y Cross",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips",
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 123,
-   "name": "Drive",
-   "concept": "Drive",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips",
-    "Gun Y Trips",
-    "Gun Ace Wing",
-    "Gun Ace"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 124,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 125,
-   "name": "Flood",
-   "concept": "Flood",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    6,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips",
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 126,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 127,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 128,
-   "name": "Levels",
-   "concept": "Levels",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 9,
-   "reads": [
-    9,
-    7,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Ace Wing",
-    "Singleback Y Trips",
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 129,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 130,
-   "name": "Mesh",
-   "concept": "Mesh",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    8,
-    7,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 131,
-   "name": "Spacing",
-   "concept": "Spacing",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 132,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    10,
-    6,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 133,
-   "name": "QB Draw",
-   "concept": "QB Draw",
-   "family": "run",
-   "header": "qb_draw",
-   "play_type": "keeper",
-   "personnel": "11",
-   "preference": 3,
-   "flags": "0x0000860e",
-   "primary_slot": 0,
-   "reads": [],
-   "tags": [
-    "long"
-   ],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 134,
-   "name": "Slant Flat",
-   "concept": "Slant Flat",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    10,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 135,
-   "name": "Four Verticals",
-   "concept": "Four Verticals",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    10,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 136,
-   "name": "Comebacks",
-   "concept": "Comebacks",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    10,
-    9,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 137,
-   "name": "Hank",
-   "concept": "Hank",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    7,
-    8,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 138,
-   "name": "KC Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    9,
-    6,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 139,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 140,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 141,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    9,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 142,
-   "name": "Mesh",
-   "concept": "Mesh",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 143,
-   "name": "Bunch Mesh Wheel",
-   "concept": "Mesh",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 144,
-   "name": "KC Double Slants",
-   "concept": "Double Slants",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 145,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 146,
-   "name": "Spacing",
-   "concept": "Spacing",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 147,
-   "name": "Flood",
-   "concept": "Flood",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 148,
-   "name": "Double Slants",
-   "concept": "Double Slants",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 149,
-   "name": "Bench",
-   "concept": "Bench",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Bunch",
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 150,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 151,
-   "name": "RB Screen",
-   "concept": "RB Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0000640e",
-   "primary_slot": 10,
-   "reads": [
-    10
-   ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 152,
-   "name": "PA Crossers",
-   "concept": "PA Crossers",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 153,
-   "name": "Flood",
-   "concept": "Flood",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "21",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Strong I"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 154,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 155,
-   "name": "PA Boot Leak",
-   "concept": "PA Boot Leak",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 156,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 157,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 158,
-   "name": "Duo",
-   "concept": "Duo",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 159,
-   "name": "Toss",
-   "concept": "Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 160,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    7,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 161,
-   "name": "Yankee",
-   "concept": "Yankee",
-   "family": "shot",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    7
-   ],
-   "tags": [
-    "shot"
-   ],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 162,
-   "name": "Trap",
-   "concept": "Trap",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Heavy Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 163,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Y Trips",
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 164,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    9,
-    6,
-    10,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Y Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 165,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 166,
-   "name": "Mesh",
-   "concept": "Mesh",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    7,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 167,
-   "name": "Texas",
-   "concept": "Texas",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    8,
-    7,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 168,
-   "name": "RB Screen",
-   "concept": "RB Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 2,
-   "flags": "0x0000640e",
-   "primary_slot": 10,
-   "reads": [
-    10
-   ],
-   "tags": [
-    "screen"
-   ],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 169,
-   "name": "Spacing",
-   "concept": "Spacing",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 170,
-   "name": "Draw",
-   "concept": "Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "20",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 171,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "20",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 172,
-   "name": "Smash",
-   "concept": "Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 173,
-   "name": "Flood",
-   "concept": "Flood",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "20",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 8,
-   "reads": [
-    8,
-    10,
-    7,
-    6
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Split Backs"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 174,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 175,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    6,
-    8,
-    10,
-    9
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 176,
-   "name": "Spacing",
-   "concept": "Spacing",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Singleback Bunch"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 177,
-   "name": "Reverse",
-   "concept": "Reverse",
-   "family": "trick",
-   "header": "reverse",
-   "play_type": "reverse",
-   "personnel": "11",
-   "preference": 4,
-   "flags": "0x0000980e",
-   "primary_slot": 8,
-   "reads": [],
-   "tags": [
-    "gadget"
-   ],
-   "formations": [
-    "Singleback Doubles Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 178,
-   "name": "Stick",
-   "concept": "Stick",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    9,
-    10
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 179,
-   "name": "Draw",
-   "concept": "Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "12",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 180,
-   "name": "Snag",
-   "concept": "Snag",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 7,
-   "reads": [
-    7,
-    9,
-    6,
-    10,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 181,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Y Trips",
-    "Gun Ace Wing"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 185,
-   "name": "Spacing",
-   "concept": "Spacing",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 9,
-   "reads": [
-    9,
-    6,
-    7,
-    8
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Y Trips"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 201,
+   "play": "p001",
+   "play_index": 50,
    "name": "KC Mesh Wheel",
    "concept": "Mesh Wheel",
    "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    7,
-    6,
-    8
+   "home": "Gun Doubles Tight",
+   "primary": "HB",
+   "screen": null,
+   "must": "team",
+   "routes": [
+    "Back Wheel",
+    "Corner",
+    "Dig",
+    "Go"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
+    "Gun Wildcat",
+    "Singleback Doubles",
     "Gun Doubles Tight"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 202,
-   "name": "Mesh Wheel",
-   "concept": "Mesh Wheel",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    8,
-    10,
-    7
-   ],
-   "tags": [],
-   "formations": [
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 203,
+   "play": "p002",
+   "play_index": 51,
    "name": "KC Slant Flat",
    "concept": "Slant Flat",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
    "personnel": "11",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    7,
-    9,
-    8
+   "home": "Gun Doubles",
+   "primary": "Slot",
+   "screen": null,
+   "must": "team",
+   "routes": [
+    "Arrow",
+    "Slant"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Pistol Doubles"
+    "Empty Trey",
+    "Gun Doubles",
+    "Pistol Bunch"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 204,
-   "name": "Texas",
-   "concept": "Texas",
-   "family": "dropback",
-   "header": "dropback",
+   "play": "p003",
+   "play_index": 52,
+   "name": "KC Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
    "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0000620e",
-   "primary_slot": 10,
-   "reads": [
-    10,
-    7,
-    8,
-    9
+   "personnel": "11",
+   "home": "Gun Doubles",
+   "primary": "Slot",
+   "screen": "wr:Bubble Screen",
+   "must": "team",
+   "routes": [
+    "Comeback",
+    "Flat",
+    "Stem Block"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Gun Ace Wing"
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Wing"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 205,
-   "name": "Stick",
+   "play": "p004",
+   "play_index": 53,
+   "name": "KC Stick",
    "concept": "Stick",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    9
+   "personnel": "11",
+   "home": "Gun Wing",
+   "primary": "Slot",
+   "screen": null,
+   "must": "team",
+   "routes": [
+    "Arrow",
+    "Go",
+    "Slant",
+    "Stick"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Gun Ace"
+    "Gun Wildcat",
+    "Gun Doubles",
+    "Gun Wing"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 212,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
+   "play": "p005",
+   "play_index": 54,
+   "name": "QB Sneak",
+   "concept": "QB Sneak",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "sneak",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "sneak",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p006",
+   "play_index": 55,
+   "name": "QB Keep",
+   "concept": "QB Keep",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "keeper",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": null,
+   "screen": null,
+   "must": "keep",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Singleback Doubles"
+   ]
+  },
+  {
+   "play": "p007",
+   "play_index": 56,
+   "name": "QB Sneak",
+   "concept": "QB Sneak",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "sneak",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "sneak",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p008",
+   "play_index": 57,
+   "name": "QB Keep",
+   "concept": "QB Keep",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "keeper",
+   "personnel": "11",
+   "home": "Singleback Trey",
+   "primary": null,
+   "screen": null,
+   "must": "keep",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Trips",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p009",
+   "play_index": 58,
+   "name": "Tush Push",
+   "concept": "Tush Push",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "sneak",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "tush",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak"
+   ]
+  },
+  {
+   "play": "p010",
+   "play_index": 59,
+   "name": "X Cluster Wheel",
+   "concept": "X Cluster Wheel Deep Fade",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trips",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow Corner",
+    "Back In",
+    "Quick Angle",
+    "Slant Wheel"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Empty Trey",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p011",
+   "play_index": 60,
+   "name": "X Dagger Whip",
+   "concept": "X Dagger Whip Bomb Post",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Close",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Post",
+    "Whip"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p012",
+   "play_index": 61,
+   "name": "PA X Skinny Shot",
+   "concept": "PA X Skinny Shot Crossing Dig",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "home": "Singleback Ace Slot",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Crossing Dig",
+    "Out",
+    "Skinny Post",
+    "Stem Block"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p013",
+   "play_index": 62,
+   "name": "Y Mills",
+   "concept": "Mills",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Gun Split Pro",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Dig",
+    "Post"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p014",
+   "play_index": 63,
+   "name": "Y Mills",
+   "concept": "Mills",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Doubles",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Dig",
+    "Hitch",
+    "Post"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Pistol Doubles"
+   ]
+  },
+  {
+   "play": "p015",
+   "play_index": 64,
+   "name": "Y Mills",
+   "concept": "Mills",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Dig",
+    "Post"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Wing T"
+   ]
+  },
+  {
+   "play": "p016",
+   "play_index": 65,
+   "name": "X Double Slants",
+   "concept": "X Double Slants Deep Go",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
-   "personnel": "12",
-   "preference": 1,
-   "flags": "0x0400220e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    10,
-    8,
-    7
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go",
+    "Slant"
    ],
-   "tags": [],
+   "deep": true,
+   "lane": null,
    "formations": [
-    "Gun Ace"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 213,
-   "name": "Draw",
-   "concept": "Draw",
+   "play": "p017",
+   "play_index": 66,
+   "name": "U Mills",
+   "concept": "Mills",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Dig",
+    "Post"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "play": "p018",
+   "play_index": 67,
+   "name": "Z Post Go Snag",
+   "concept": "Z Post Go Snag Comebacks",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Comeback",
+    "Quick Angle",
+    "Slant and Go",
+    "Snag"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p019",
+   "play_index": 68,
+   "name": "Inside Zone Wk",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Doubles Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Wildcat",
+    "Pistol Doubles",
+    "Pistol Bunch TE",
+    "Gun Doubles Tight",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p020",
+   "play_index": 69,
+   "name": "HB Draw Wk",
+   "concept": "HB Draw",
    "family": "run",
    "header": "draw",
    "play_type": "run",
-   "personnel": "12",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "personnel": "11",
+   "home": "Gun Trips",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
    "formations": [
-    "Gun Ace"
+    "Singleback Doubles",
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Gun Doubles Clamp Stack",
+    "Gun Trips"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 214,
+   "play": "p021",
+   "play_index": 70,
    "name": "Inside Zone",
    "concept": "Inside Zone",
    "family": "run",
    "header": "run",
    "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "personnel": "11",
+   "home": "Gun Doubles Clamp Stack",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
    "formations": [
-    "Ace Jumbo"
+    "Gun Wildcat",
+    "Gun Doubles Clamp Stack",
+    "Gun Trips",
+    "Pistol Bunch",
+    "Singleback Trips"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 215,
-   "name": "PA Boot Leak",
-   "concept": "PA Boot Leak",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    7,
-    8
+   "play": "p022",
+   "play_index": 71,
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "11",
+   "home": "Gun Wildcat",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Doubles",
+    "Gun Empty Trey",
+    "Gun Trips",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p023",
+   "play_index": 72,
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Ace Jumbo"
+    "Gun Trips TE",
+    "Gun Bunch X Nasty",
+    "Gun Y Off Trio Close",
+    "Gun Doubles Clamp Stack",
+    "Gun Wing"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 216,
-   "name": "Duo",
-   "concept": "Duo",
+   "play": "p024",
+   "play_index": 73,
+   "name": "Crack Toss",
+   "concept": "Crack Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Pistol Wing",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p025",
+   "play_index": 74,
+   "name": "Counter GT",
+   "concept": "Counter GT",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Doubles Clamp Stack",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles Clamp Stack",
+    "Gun Doubles Tight",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p026",
+   "play_index": 75,
+   "name": "Lead Stretch",
+   "concept": "Lead Stretch",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p027",
+   "play_index": 76,
+   "name": "HB Dive Wk",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Wildcat",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Wildcat",
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Pistol Wing"
+   ]
+  },
+  {
+   "play": "p028",
+   "play_index": 77,
+   "name": "Pin Pull Sweep",
+   "concept": "Pin Pull Sweep",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Singleback Trips",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trey Open",
+    "Singleback Trips",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p029",
+   "play_index": 78,
+   "name": "Outside Zone Wk",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "Singleback Doubles",
+    "Pistol Doubles",
+    "Pistol Wing",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p030",
+   "play_index": 79,
+   "name": "HB Toss Wk",
+   "concept": "HB Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p031",
+   "play_index": 80,
+   "name": "HB Draw",
+   "concept": "HB Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "12",
+   "home": "Gun Deuce Close",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p032",
+   "play_index": 81,
+   "name": "HB Lead Draw Wk",
+   "concept": "HB Lead Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Gun Split Pro",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p033",
+   "play_index": 82,
+   "name": "HB Dive",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "I-Form Close",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p034",
+   "play_index": 83,
+   "name": "Guard Iso Wk",
+   "concept": "Guard Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Gun Split Pro",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 1,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p035",
+   "play_index": 84,
+   "name": "01 Trap",
+   "concept": "01 Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Bunch TE",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trips TE",
+    "Pistol Bunch TE",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p036",
+   "play_index": 85,
+   "name": "Direct Snap Power",
+   "concept": "Direct Snap Power",
+   "family": "trick",
+   "header": "run",
+   "play_type": "direct_snap",
+   "personnel": "11",
+   "home": "Gun Wildcat",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Y Off Trio Close",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p037",
+   "play_index": 86,
+   "name": "End Around",
+   "concept": "End Around",
+   "family": "trick",
+   "header": "reverse",
+   "play_type": "reverse",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Empty Trey",
+    "Singleback Doubles",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p038",
+   "play_index": 87,
+   "name": "X Whip Skinny Post",
+   "concept": "X Whip Skinny Post Comebacks",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Wing",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Hook Corner",
+    "Skinny Post",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Pistol Wing",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p039",
+   "play_index": 88,
+   "name": "Slot Choice Return",
+   "concept": "Slot Choice Return Stop and Go",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trey",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Return",
+    "Steep In",
+    "Stop and Go",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p040",
+   "play_index": 89,
+   "name": "X Hitch Seam Whip",
+   "concept": "X Hitch Seam Whip Out Drag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Doubles Clamp Stack",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Hitch",
+    "Out",
+    "Seam Out",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Trips TE",
+    "Gun Doubles Clamp Stack"
+   ]
+  },
+  {
+   "play": "p041",
+   "play_index": 90,
+   "name": "Z Snag Smash",
+   "concept": "Z Snag Smash",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback H Back",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow Corner",
+    "Corner",
+    "Hitch",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p042",
+   "play_index": 91,
+   "name": "Slot Cross Dig",
+   "concept": "Slot Cross Dig Out and Up Bang",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Y Off Trio Close",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Cross",
+    "Bang",
+    "Crossing Dig",
+    "Flat",
+    "Out and Up"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Y Off Trio Close"
+   ]
+  },
+  {
+   "play": "p043",
+   "play_index": 92,
+   "name": "Y Stick Out and Up",
+   "concept": "Y Stick Out and Up Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Out and Up",
+    "Slant",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles Clamp Stack",
+    "Gun Trips"
+   ]
+  },
+  {
+   "play": "p044",
+   "play_index": 93,
+   "name": "HB Slip Screen",
+   "concept": "HB Slip Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Gun Deuce Close"
+   ]
+  },
+  {
+   "play": "p045",
+   "play_index": 94,
+   "name": "Z Snag Skinny Post",
+   "concept": "Z Snag Skinny Post",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Close",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow Corner",
+    "Skinny Post",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Wing T",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p046",
+   "play_index": 95,
+   "name": "X Stick Out and Up",
+   "concept": "X Stick Out and Up Hitches",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Hitch",
+    "Out and Up",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Empty Trey",
+    "Gun Y Off Trio Close"
+   ]
+  },
+  {
+   "play": "p047",
+   "play_index": 96,
+   "name": "Y Y Trail Return",
+   "concept": "Y Y Trail Return Deep Fade",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trey Open",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Over",
+    "Return"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trips TE",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p048",
+   "play_index": 97,
+   "name": "Z Flood Out and Up",
+   "concept": "Z Flood Out and Up Deep Hook",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace Slot",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Deep Hook",
+    "Flat",
+    "Out and Up",
+    "Sail"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace Slot",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p049",
+   "play_index": 98,
+   "name": "X Snag Crossing Dig",
+   "concept": "X Snag Crossing Dig",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch TE",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Crossing Dig",
+    "Flag",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Empty Trey",
+    "Pistol Bunch TE",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p050",
+   "play_index": 99,
+   "name": "HB Off Tackle",
+   "concept": "HB Off Tackle",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p051",
+   "play_index": 100,
+   "name": "Slot Stick",
+   "concept": "Slot Stick Skinny Post Deep Hook",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Deep Hook",
+    "Out",
+    "Skinny Post",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Y Off Trio Close",
+    "Gun Trey Open",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p052",
+   "play_index": 101,
+   "name": "Z Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Flag",
+    "Hitch",
+    "Slant",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Doubles",
+    "Gun Trey Open",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p053",
+   "play_index": 102,
+   "name": "X Bang Hitch Curls",
+   "concept": "X Bang Hitch Curls",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Gun Deuce Close",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Cross",
+    "Bang Post",
+    "Curl",
+    "Flat",
+    "Hitch"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p054",
+   "play_index": 103,
+   "name": "U Deep Over Return",
+   "concept": "U Deep Over Return Dig",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace Slot",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Hook",
+    "Dig",
+    "Over",
+    "Post",
+    "Return"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace Slot",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p055",
+   "play_index": 104,
+   "name": "Slot Stick Out and Up",
+   "concept": "Slot Stick Out and Up Smash",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Corner",
+    "Hitch",
+    "Out and Up",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "play": "p056",
+   "play_index": 105,
+   "name": "Z Quick Outs Fade",
+   "concept": "Z Quick Outs Fade",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Gun Split Pro",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p057",
+   "play_index": 106,
+   "name": "Slot Seam Levels",
+   "concept": "Slot Seam Levels Fade Stop",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trey Open",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back In",
+    "Comeback",
+    "Dig",
+    "Fade Stop",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Gun Empty Trey",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p058",
+   "play_index": 107,
+   "name": "X Bench Corner Post",
+   "concept": "X Bench Corner Post Post",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trips",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back Cross",
+    "Corner Post",
+    "Out",
+    "Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Gun Empty Trey",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p059",
+   "play_index": 108,
+   "name": "HB Hitch Seam",
+   "concept": "HB Hitch Seam Angle Cross Curls",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Wildcat",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Angle Cross",
+    "Curl",
+    "Flat",
+    "Hitch"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Doubles Clamp Stack",
+    "Gun Trips"
+   ]
+  },
+  {
+   "play": "p060",
+   "play_index": 109,
+   "name": "Y China Skinny Post",
+   "concept": "Y China Skinny Post Corner Curl",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Corner Curl",
+    "Skinny Post",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p061",
+   "play_index": 110,
+   "name": "Slot Stick Out",
+   "concept": "Slot Stick Out Whip In",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Out",
+    "Stick",
+    "Whip In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Gun Y Off Trio Close",
+    "Gun Trips"
+   ]
+  },
+  {
+   "play": "p062",
+   "play_index": 111,
+   "name": "Z Quick Outs",
+   "concept": "Z Quick Outs Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback H Back",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Out",
+    "Slant",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p063",
+   "play_index": 112,
+   "name": "Z Cross Dig",
+   "concept": "Z Cross Dig Out and Up Bomb Post",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch TE",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Crossing Dig",
+    "Flat",
+    "Out and Up",
+    "Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Y Off Trio Close",
+    "Gun Doubles Clamp Stack",
+    "Pistol Bunch TE"
+   ]
+  },
+  {
+   "play": "p064",
+   "play_index": 113,
+   "name": "HB Slip Screen Wk",
+   "concept": "HB Slip Screen Wk",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Doubles",
+    "Pistol Wing",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p065",
+   "play_index": 114,
+   "name": "Slot Y Trail",
+   "concept": "Slot Y Trail Skinny Post Steep In",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Over",
+    "Skinny Post",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips TE",
+    "Gun Doubles Clamp Stack",
+    "Pistol Wing"
+   ]
+  },
+  {
+   "play": "p066",
+   "play_index": 115,
+   "name": "Z Deep Hooks",
+   "concept": "Z Deep Hooks Comeback Go",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trey",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback Go",
+    "Deep Hook",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips",
+    "Pistol Bunch",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p067",
+   "play_index": 116,
+   "name": "Y Stick Return",
+   "concept": "Y Stick Return Corner Smash",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Corner",
+    "Hitch",
+    "Return",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips TE",
+    "Gun Empty Trey",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p068",
+   "play_index": 117,
+   "name": "X Stick Skinny Post",
+   "concept": "X Stick Skinny Post Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Out",
+    "Skinny Post",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Gun Deuce Close"
+   ]
+  },
+  {
+   "play": "p069",
+   "play_index": 118,
+   "name": "PA U Smash Levels",
+   "concept": "PA U Smash Levels",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "home": "Gun Deuce Close",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Corner",
+    "Dig",
+    "Hitch",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p070",
+   "play_index": 119,
+   "name": "Y China Out and Up",
+   "concept": "Y China Out and Up Steep Slant",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Out and Up",
+    "Steep Slant",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Gun Split Pro",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p071",
+   "play_index": 120,
+   "name": "HB Texas",
+   "concept": "Texas",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace Slot",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Curl",
+    "Go",
+    "Hook"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Gun Deuce Close"
+   ]
+  },
+  {
+   "play": "p072",
+   "play_index": 121,
+   "name": "Power G",
+   "concept": "Power G",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Y Off Trio Close",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Trips TE",
+    "Gun Y Off Trio Close",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p073",
+   "play_index": 122,
+   "name": "Zone Toss",
+   "concept": "Zone Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Trey Open",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Y Off Trio Close",
+    "Pistol Bunch TE",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p074",
+   "play_index": 123,
+   "name": "Slot Sail Out Hitch",
+   "concept": "Slot Sail Out Hitch",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trey",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Hitch",
+    "Out",
+    "Sail",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles Tight",
+    "Gun Wing",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p075",
+   "play_index": 124,
+   "name": "PA Z Steep In Seam",
+   "concept": "PA Z Steep In Seam Spot Out Comeback",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "Gun Split Pro",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Spot Out",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Wing T",
+    "Gun Split Pro"
+   ]
+  },
+  {
+   "play": "p076",
+   "play_index": 125,
+   "name": "X Comeback Seam",
+   "concept": "X Comeback Seam Seam Out Bench",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback H Back",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Comeback",
+    "Out",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p077",
+   "play_index": 126,
+   "name": "PA Y Switch Hitches",
+   "concept": "PA Y Switch Hitches",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Pistol Wing",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Bender",
+    "Hitch",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Doubles Clamp Stack",
+    "Pistol Wing"
+   ]
+  },
+  {
+   "play": "p078",
+   "play_index": 127,
+   "name": "Z Out Seam Spot Out",
+   "concept": "Z Out Seam Spot Out Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Doubles Tight",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Hook",
+    "Dig",
+    "Out",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Doubles Tight",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p079",
+   "play_index": 128,
+   "name": "Slot Stick Out",
+   "concept": "Slot Stick Out Fade Stop",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch TE",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Fade Stop",
+    "Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Wing",
+    "Pistol Bunch TE",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p080",
+   "play_index": 129,
+   "name": "PA X Bench Dig",
+   "concept": "PA X Bench Dig Stop and Go",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Out",
+    "Stem Block",
+    "Stop and Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Trips TE",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p081",
+   "play_index": 130,
+   "name": "Slot Levels Steep In",
+   "concept": "Slot Levels Steep In Sluggo",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Slant and Go",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Bunch TE",
+    "Gun Trips",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p082",
+   "play_index": 131,
+   "name": "HB Sweep",
+   "concept": "HB Sweep",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Bunch",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p083",
+   "play_index": 132,
+   "name": "Z Deep Hooks Corner",
+   "concept": "Z Deep Hooks Corner",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Y Off Trio Close",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back In",
+    "Corner",
+    "Deep Hook",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Empty Trey",
+    "Gun Y Off Trio Close"
+   ]
+  },
+  {
+   "play": "p084",
+   "play_index": 133,
+   "name": "PA Y Mills Slant Flat",
+   "concept": "PA Y Mills Slant Flat",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Dig",
+    "Post",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Slot",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p085",
+   "play_index": 134,
+   "name": "PA Slot Zig Flat",
+   "concept": "PA Slot Zig Flat Return Stop and Go",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Trips",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Flat",
+    "Return",
+    "Stem Block",
+    "Stop and Go",
+    "Zig"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Bunch TE",
+    "Gun Trips",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p086",
+   "play_index": 135,
+   "name": "Z Dagger Seam Out",
+   "concept": "Z Dagger Seam Out Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Hook",
+    "Dig",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Bunch X Nasty",
+    "Pistol Doubles"
+   ]
+  },
+  {
+   "play": "p087",
+   "play_index": 136,
+   "name": "U Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback H Back",
+   "primary": "U",
+   "screen": "te",
+   "must": "",
+   "routes": [
+    "Flat",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace Slot",
+    "Gun Deuce Close",
+    "Singleback H Back"
+   ]
+  },
+  {
+   "play": "p088",
+   "play_index": 137,
+   "name": "Slot Y Trail Out",
+   "concept": "Slot Y Trail Out Corner Curl",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Corner Curl",
+    "Dig",
+    "Out",
+    "Over"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Empty Trey",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p089",
+   "play_index": 138,
+   "name": "PA Slot Sail Out Zig",
+   "concept": "PA Slot Sail Out Zig",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Trey Open",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Out",
+    "Sail",
+    "Stem Block",
+    "Whip",
+    "Zig"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Doubles",
+    "Gun Trey Open",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p090",
+   "play_index": 139,
+   "name": "PA X Bench Steep In",
+   "concept": "PA X Bench Steep In Comeback",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Singleback Trips",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back Wheel",
+    "Comeback",
+    "Out",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Singleback Trips",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p091",
+   "play_index": 140,
+   "name": "HB Stretch",
+   "concept": "HB Stretch",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Bunch TE",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "Pistol Wing",
+    "Pistol Bunch TE",
+    "Gun Trips"
+   ]
+  },
+  {
+   "play": "p092",
+   "play_index": 141,
+   "name": "Slot Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "Slot",
+   "screen": "wr:Bubble Screen",
+   "must": "",
+   "routes": [
+    "Flat",
+    "Go",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Trips",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p093",
+   "play_index": 142,
+   "name": "Inside Zone Split",
+   "concept": "Inside Zone Split",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Wing",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p094",
+   "play_index": 143,
+   "name": "HB Counter",
+   "concept": "HB Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Wing",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "Pistol Doubles",
+    "Gun Wing",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p095",
+   "play_index": 144,
+   "name": "PA Z Curl Flat Outs",
+   "concept": "PA Z Curl Flat Outs",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Doubles Tight",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Flat",
+    "Out",
+    "Stem Block",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Bunch TE",
+    "Gun Doubles Tight",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p096",
+   "play_index": 145,
+   "name": "PA Y Sail Out and Up",
+   "concept": "PA Y Sail Out and Up Whip",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Pistol Wing",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Out and Up",
+    "Sail",
+    "Stem Block",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Wing",
+    "Pistol Bunch TE",
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p097",
+   "play_index": 146,
+   "name": "X Slip Screen",
+   "concept": "WR Slip Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "X",
+   "screen": "wr:WR Slip Screen",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Y Off Trio Close",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p098",
+   "play_index": 147,
+   "name": "Flea Flicker",
+   "concept": "Flea Flicker",
+   "family": "trick",
+   "header": "flea",
+   "play_type": "flea",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go",
+    "Post Corner"
+   ],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p099",
+   "play_index": 148,
+   "name": "Y Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p100",
+   "play_index": 149,
+   "name": "PA Crossers",
+   "concept": "PA Crossers",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Go",
+    "Over"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p101",
+   "play_index": 150,
+   "name": "U Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p102",
+   "play_index": 151,
+   "name": "X Slant Flat",
+   "concept": "X Slant Flat Post Corner",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Out",
+    "Post Corner",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p103",
+   "play_index": 152,
+   "name": "01 Trap",
+   "concept": "01 Trap",
    "family": "run",
    "header": "run",
    "play_type": "run",
    "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
    "formations": [
-    "Ace Jumbo"
+    "I-Form Tight",
+    "Full House"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 217,
+   "play": "p104",
+   "play_index": 153,
+   "name": "HB Draw",
+   "concept": "HB Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p105",
+   "play_index": 154,
+   "name": "HB Counter",
+   "concept": "HB Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p106",
+   "play_index": 155,
+   "name": "HB Toss",
+   "concept": "HB Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p107",
+   "play_index": 156,
+   "name": "HB Iso Wk",
+   "concept": "HB Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p108",
+   "play_index": 157,
+   "name": "HB Texas",
+   "concept": "Texas",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Curl",
+    "Go",
+    "Hook"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips TE",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p109",
+   "play_index": 158,
+   "name": "PA Boot",
+   "concept": "PA Boot",
+   "family": "boot",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Go",
+    "Over"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p110",
+   "play_index": 159,
+   "name": "Y Comebacks",
+   "concept": "Comebacks",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p111",
+   "play_index": 160,
+   "name": "FB Screen",
+   "concept": "FB Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Close",
+   "primary": "FB",
+   "screen": "fullback",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Wing T",
+    "I-Form Close"
+   ]
+  },
+  {
+   "play": "p112",
+   "play_index": 161,
+   "name": "HB Counter Wk",
+   "concept": "HB Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p113",
+   "play_index": 162,
+   "name": "Slot Post Wheel Dig",
+   "concept": "Slot Post Wheel Dig Sluggo",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Y Off Trio Close",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Dig",
+    "Post",
+    "Slant and Go",
+    "Wheel"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Y Off Trio Close",
+    "Gun Doubles Clamp Stack"
+   ]
+  },
+  {
+   "play": "p114",
+   "play_index": 163,
+   "name": "X Sail Out Dagger",
+   "concept": "X Sail Out Dagger",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Wing",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Out",
+    "Sail",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p115",
+   "play_index": 164,
+   "name": "Z Double Move",
+   "concept": "Z Double Move Seam Out Hitches",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Flag",
+    "Hitch",
+    "Out and Up",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Doubles",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p116",
+   "play_index": 165,
+   "name": "Slot Stick Nod",
+   "concept": "Slot Stick Nod Skinny Post Flag",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Flag",
+    "Hitch and Go",
+    "Skinny Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p117",
+   "play_index": 166,
+   "name": "Inside Trap",
+   "concept": "Inside Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p118",
+   "play_index": 167,
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Go",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p119",
+   "play_index": 168,
+   "name": "HB Verticals Seams",
+   "concept": "HB Verticals Seams",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Bender",
+    "Go",
+    "Hitch"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey",
+    "Singleback Trey"
+   ]
+  },
+  {
+   "play": "p120",
+   "play_index": 169,
+   "name": "HB Iso",
+   "concept": "HB Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 1,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p121",
+   "play_index": 170,
+   "name": "PA X Sail Skinny Post",
+   "concept": "PA X Sail Skinny Post Out Drag",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Wing",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Dig",
+    "Sail",
+    "Seam Out",
+    "Skinny Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Gun Wing"
+   ]
+  },
+  {
+   "play": "p122",
+   "play_index": 171,
+   "name": "HB Mills Seams",
+   "concept": "HB Mills Seams",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Flat",
+    "Go",
+    "Hitch",
+    "Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Empty Trey",
+    "Pistol Bunch TE"
+   ]
+  },
+  {
+   "play": "p123",
+   "play_index": 172,
+   "name": "Max Y Verticals",
+   "concept": "Max Y Verticals Crossing Dig",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Crossing Dig",
+    "Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro",
+    "Wing T"
+   ]
+  },
+  {
+   "play": "p124",
+   "play_index": 173,
+   "name": "HB Slam",
+   "concept": "HB Slam",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 1,
+   "formations": [
+    "Goal Line Sneak",
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p125",
+   "play_index": 174,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "boot",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Corner",
+    "Dig"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight",
+    "Full House"
+   ]
+  },
+  {
+   "play": "p126",
+   "play_index": 175,
+   "name": "X Out Seam Seam Out",
+   "concept": "X Out Seam Seam Out Bench",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Doubles Clamp Stack",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back Wheel",
+    "Out",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles Clamp Stack",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p127",
+   "play_index": 176,
+   "name": "HB Deep Flood Seam Out",
+   "concept": "HB Deep Flood Seam Out Dagger",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Flat",
+    "Post",
+    "Sail",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wildcat",
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "play": "p128",
+   "play_index": 177,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p129",
+   "play_index": 178,
+   "name": "Z Hitch Seam Whip",
+   "concept": "Z Hitch Seam Whip Dagger",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Hitch",
+    "Snag",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p130",
+   "play_index": 179,
+   "name": "Z Steep In Seam",
+   "concept": "Z Steep In Seam Angle Cross Curls",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle Cross",
+    "Back Wheel",
+    "Curl",
+    "Flat",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p131",
+   "play_index": 180,
+   "name": "Slot China Out and Up",
+   "concept": "Slot China Out and Up Out Drag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Out and Up",
+    "Seam Out",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p132",
+   "play_index": 181,
+   "name": "Z Snag Snag Dagger",
+   "concept": "Z Snag Snag Dagger",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow Corner",
+    "Dig",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p133",
+   "play_index": 185,
+   "name": "Z Fade Curl",
+   "concept": "Z Fade Curl Corner Smash",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Corner",
+    "Fade Curl",
+    "Hitch",
+    "Release Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p134",
+   "play_index": 201,
    "name": "Outside Zone",
    "concept": "Outside Zone",
    "family": "run",
    "header": "run",
    "play_type": "run",
    "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
    "formations": [
-    "Ace Jumbo"
+    "Full House"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 218,
-   "name": "Counter",
-   "concept": "Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0000840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 219,
-   "name": "Power",
-   "concept": "Power",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0000820e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
-   "formations": [
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 220,
-   "name": "PA Boot",
-   "concept": "PA Boot",
-   "family": "pa",
-   "header": "pa_rollout",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 2,
-   "flags": "0x0020640e",
-   "primary_slot": 6,
-   "reads": [
-    6,
-    9,
-    7,
-    8
+   "play": "p135",
+   "play_index": 202,
+   "name": "X Dagger Spot Out",
+   "concept": "X Dagger Spot Out Post Dig",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Post",
+    "Spot Out"
    ],
-   "tags": [],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Ace Jumbo"
+    "Gun Spread"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 221,
-   "name": "Yankee",
-   "concept": "Yankee",
-   "family": "shot",
+   "play": "p136",
+   "play_index": 203,
+   "name": "Z Double Move",
+   "concept": "Z Double Move Spot Out Post Dig",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Flag",
+    "Out and Up",
+    "Post",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p137",
+   "play_index": 204,
+   "name": "HB Zig Flat",
+   "concept": "HB Zig Flat Skinny Post Bang",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Bang",
+    "Flat",
+    "Skinny Post",
+    "Zig"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips"
+   ]
+  },
+  {
+   "play": "p138",
+   "play_index": 205,
+   "name": "X Hitch Seam Spot Out",
+   "concept": "X Hitch Seam Spot Out Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Gun Deuce Close",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Hitch",
+    "Slant",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Deuce Close"
+   ]
+  },
+  {
+   "play": "p139",
+   "play_index": 212,
+   "name": "FB Dive",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Full House"
+   ]
+  },
+  {
+   "play": "p140",
+   "play_index": 213,
+   "name": "Slot Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Slot",
+   "screen": "wr:Bubble Screen",
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Flat",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p141",
+   "play_index": 214,
+   "name": "HB Comeback Seam",
+   "concept": "HB Comeback Seam Seam Out Outs",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Wing",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Out",
+    "Seam Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Wing"
+   ]
+  },
+  {
+   "play": "p142",
+   "play_index": 215,
+   "name": "Y China Return",
+   "concept": "Y China Return Corner Curl",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Corner Curl",
+    "Return",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p143",
+   "play_index": 216,
+   "name": "01 Trap Wk",
+   "concept": "01 Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p144",
+   "play_index": 217,
+   "name": "Steep In Seam",
+   "concept": "Z Steep In Seam Angle Cross Post Dig",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Angle Cross",
+    "Dig",
+    "Post",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p145",
+   "play_index": 218,
+   "name": "FB Screen",
+   "concept": "FB Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "FB",
+   "screen": "fullback",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "play": "p146",
+   "play_index": 219,
+   "name": "PA U Bench Hitch",
+   "concept": "PA U Bench Hitch",
+   "family": "pa",
    "header": "pa",
    "play_type": "pa_pass",
-   "personnel": "22",
-   "preference": 1,
-   "flags": "0x0020620e",
-   "primary_slot": 9,
-   "reads": [
-    9,
-    7
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Hitch",
+    "Out"
    ],
-   "tags": [
-    "shot"
-   ],
+   "deep": false,
+   "lane": null,
    "formations": [
-    "Ace Jumbo"
+    "Goal Line"
    ]
   },
   {
-   "status": "DESIGN",
-   "team": "KC",
-   "play_index": 222,
-   "name": "Toss",
-   "concept": "Toss",
+   "play": "p147",
+   "play_index": 220,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
    "personnel": "22",
-   "preference": 2,
-   "flags": "0x0200840e",
-   "primary_slot": 10,
-   "reads": [],
-   "tags": [],
+   "home": "I-Form Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
    "formations": [
-    "Ace Jumbo"
+    "I-Form Tight"
+   ]
+  },
+  {
+   "play": "p148",
+   "play_index": 221,
+   "name": "HB Slip Screen",
+   "concept": "HB Slip Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Trips",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Trips"
+   ]
+  },
+  {
+   "play": "p149",
+   "play_index": 222,
+   "name": "PA Boot Leak",
+   "concept": "PA Boot Leak",
+   "family": "boot",
+   "header": "pa_rollout",
+   "play_type": "pa_pass",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Corner",
+    "Dig"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak"
    ]
   }
  ],
- "menu_sizes": [
-  12,
-  12,
-  10,
-  10,
-  12,
-  9,
-  9,
-  9,
-  10,
-  10,
-  9,
-  11,
-  11,
-  9,
-  10,
-  9,
-  9,
-  9,
-  12,
-  10,
-  12,
-  11,
-  11,
-  9,
-  10
- ],
- "node_budget": {
-  "cap": 2300,
-  "before": 1855,
-  "after": 1855,
-  "retained": 1183,
-  "swaps": [],
-  "released": []
+ "shared_links": 232,
+ "groups": {
+  "23": {
+   "index": 0,
+   "name": "Jacks",
+   "appended": false
+  },
+  "11": {
+   "index": 4,
+   "name": "Kings",
+   "appended": false
+  },
+  "21": {
+   "index": 3,
+   "name": "Pro",
+   "appended": false
+  },
+  "22": {
+   "index": 1,
+   "name": "Jokers",
+   "appended": false
+  },
+  "12": {
+   "index": 2,
+   "name": "Ace",
+   "appended": false
+  },
+  "10": {
+   "index": 7,
+   "name": "Flush",
+   "appended": false
+  },
+  "Pistol": {
+   "index": 5,
+   "name": "Pistol",
+   "appended": false
+  },
+  "Kings Long": {
+   "index": 6,
+   "name": "Kings Long",
+   "appended": false
+  }
  },
- "target_policy": {
-  "data": "pb/research/targets_2026.json",
-  "sha256": "627233ad349d76e683e504c66fdb2698185b090842a4be5874618d073dcc273c",
-  "weeks": [
-   1,
-   2,
-   3,
-   4
-  ],
-  "rule": "Direct reads descend by observed share within authored depth bands; ties, screens, gadgets, moving pockets and delayed releases retain authored order."
+ "missing_groups": [],
+ "name_pool": {
+  "budget": 4037,
+  "before": 4742,
+  "after": 4036,
+  "defense_units": 1027
+ },
+ "cpu_fit": {
+  "objective_before": 415.8,
+  "objective_after": 95.6,
+  "shotgun_weight": 1.3,
+  "cells": {
+   "1st&10 own25": {
+    "personnel": {
+     "11": 67,
+     "12": 22,
+     "10": 5,
+     "21": 5,
+     "heavy": 1
+    },
+    "gun": 78,
+    "formations": 21,
+    "busiest": 9,
+    "target": {
+     "personnel": {
+      "11": 52,
+      "12": 32,
+      "heavy": 10,
+      "21": 7
+     },
+     "gun": 71.5
+    }
+   },
+   "1st&10 opp40": {
+    "personnel": {
+     "11": 67,
+     "12": 22,
+     "10": 5,
+     "21": 5,
+     "heavy": 1
+    },
+    "gun": 78,
+    "formations": 21,
+    "busiest": 9,
+    "target": {
+     "personnel": {
+      "11": 52,
+      "12": 32,
+      "heavy": 10,
+      "21": 7
+     },
+     "gun": 71.5
+    }
+   },
+   "2nd&2 own40": {
+    "personnel": {
+     "11": 49,
+     "12": 42,
+     "heavy": 6,
+     "21": 3
+    },
+    "gun": 73,
+    "formations": 17,
+    "busiest": 27,
+    "target": {
+     "personnel": {
+      "11": 62,
+      "12": 26,
+      "heavy": 8,
+      "21": 4
+     },
+     "gun": 66.0
+    }
+   },
+   "2nd&5 own35": {
+    "personnel": {
+     "11": 72,
+     "12": 21,
+     "heavy": 3,
+     "10": 3,
+     "21": 2
+    },
+    "gun": 79,
+    "formations": 15,
+    "busiest": 14,
+    "target": {
+     "personnel": {
+      "11": 57,
+      "12": 32,
+      "heavy": 7,
+      "21": 3
+     },
+     "gun": 87.5
+    }
+   },
+   "2nd&8 mid": {
+    "personnel": {
+     "11": 69,
+     "12": 20,
+     "10": 6,
+     "21": 3,
+     "heavy": 1
+    },
+    "gun": 80,
+    "formations": 21,
+    "busiest": 9,
+    "target": {
+     "personnel": {
+      "11": 64,
+      "12": 29,
+      "heavy": 4,
+      "21": 2,
+      "10": 1
+     },
+     "gun": 92.3
+    }
+   },
+   "2nd&12 own20": {
+    "personnel": {
+     "11": 71,
+     "12": 18,
+     "10": 8,
+     "21": 2,
+     "heavy": 1
+    },
+    "gun": 83,
+    "formations": 20,
+    "busiest": 8,
+    "target": {
+     "personnel": {
+      "11": 64,
+      "12": 29,
+      "heavy": 4,
+      "21": 2,
+      "10": 1
+     },
+     "gun": 92.3
+    }
+   },
+   "3rd&1 opp40": {
+    "personnel": {
+     "12": 73,
+     "heavy": 23,
+     "11": 3,
+     "21": 1
+    },
+    "gun": 51,
+    "formations": 7,
+    "busiest": 48,
+    "target": {
+     "personnel": {
+      "11": 56,
+      "12": 30,
+      "21": 6,
+      "heavy": 7
+     },
+     "gun": 77.5
+    }
+   },
+   "3rd&2 own45": {
+    "personnel": {
+     "11": 62,
+     "12": 32,
+     "heavy": 3,
+     "21": 3
+    },
+    "gun": 78,
+    "formations": 15,
+    "busiest": 21,
+    "target": {
+     "personnel": {
+      "11": 56,
+      "12": 30,
+      "21": 6,
+      "heavy": 7
+     },
+     "gun": 77.5
+    }
+   },
+   "3rd&4 own45": {
+    "personnel": {
+     "11": 79,
+     "12": 16,
+     "21": 4,
+     "10": 1
+    },
+    "gun": 79,
+    "formations": 16,
+    "busiest": 8,
+    "target": {
+     "personnel": {
+      "11": 73,
+      "12": 20,
+      "heavy": 7
+     },
+     "gun": 97.8
+    }
+   },
+   "3rd&6 mid": {
+    "personnel": {
+     "11": 84,
+     "10": 16
+    },
+    "gun": 97,
+    "formations": 12,
+    "busiest": 16,
+    "target": {
+     "personnel": {
+      "11": 73,
+      "12": 20,
+      "heavy": 7
+     },
+     "gun": 97.8
+    }
+   },
+   "3rd&8 mid": {
+    "personnel": {
+     "11": 79,
+     "10": 21
+    },
+    "gun": 100,
+    "formations": 5,
+    "busiest": 21,
+    "target": {
+     "personnel": {
+      "11": 72,
+      "12": 25,
+      "21": 1,
+      "heavy": 1
+     },
+     "gun": 98.9
+    }
+   },
+   "3rd&12 own30": {
+    "personnel": {
+     "11": 79,
+     "10": 21
+    },
+    "gun": 100,
+    "formations": 5,
+    "busiest": 21,
+    "target": {
+     "personnel": {
+      "11": 72,
+      "12": 25,
+      "21": 1,
+      "heavy": 1
+     },
+     "gun": 98.9
+    }
+   },
+   "2nd&6 opp8": {
+    "personnel": {
+     "11": 57,
+     "12": 34,
+     "10": 4,
+     "heavy": 3,
+     "21": 2
+    },
+    "gun": 70,
+    "formations": 16,
+    "busiest": 16,
+    "target": {
+     "personnel": {
+      "11": 53,
+      "12": 39,
+      "heavy": 6,
+      "21": 2
+     },
+     "gun": 81.6
+    }
+   },
+   "1st&G opp3": {
+    "personnel": {
+     "11": 49,
+     "12": 41,
+     "heavy": 8,
+     "21": 2
+    },
+    "gun": 71,
+    "formations": 10,
+    "busiest": 24,
+    "target": {
+     "personnel": {
+      "11": 53,
+      "12": 39,
+      "heavy": 6,
+      "21": 2
+     },
+     "gun": 81.6
+    }
+   }
+  },
+  "iterations": 1500
  }
 }

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Vance Joseph (Phillips / Joseph pressure); 2025 baseline DEN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "a5d0bbf4818573a5ff427b8ca9ddaa2594eeb1eef7125067a55c8531bd618622",
-  "donor_formation_count": 41,
+  "book_fingerprint": "4ec10f2bfd9bc66ba84614a265c3034dca9be9419cca740b8f2ef2e2cdaf6f05",
+  "donor_formation_count": 49,
   "donor_play_count": 263,
-  "donor_node_count": 1814
+  "donor_node_count": 2244
  },
  "budget": {
   "formations": 50,

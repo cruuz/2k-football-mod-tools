@@ -9,10 +9,10 @@
   "notes": "DESIGN: Patrick Graham (Belichick multiple disguise); 2025 baseline LV. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "d7f4fa20104477c23fa3623602139c3e79618326caba497fd9f78fdd718d3b4d",
-  "donor_formation_count": 41,
-  "donor_play_count": 263,
-  "donor_node_count": 1939
+  "book_fingerprint": "77dded7d870f8ab4836776bec16afe3f29c5c5b624051f9a894969e570c48fb0",
+  "donor_formation_count": 50,
+  "donor_play_count": 270,
+  "donor_node_count": 2397
  },
  "budget": {
   "formations": 50,

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Lou Anarumo (Anarumo multiple disguise); 2025 baseline IND. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "d6a442e1ffa4d79048bebf9dd5526a66c63721c2b512d8d001e89b6edacb0a48",
-  "donor_formation_count": 45,
-  "donor_play_count": 265,
-  "donor_node_count": 1871
+  "book_fingerprint": "8663a5812e54be73d336431ccaf64a8017eac293b145f49d973686606147a539",
+  "donor_formation_count": 50,
+  "donor_play_count": 268,
+  "donor_node_count": 2322
  },
  "budget": {
   "formations": 50,

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Jim Leonhard (Pettine / Ryan and Joseph pressure); 2025 baseline DEN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "f4c724c448e5124b82e27df7873739281fee4571960d258c321645e25c203d45",
-  "donor_formation_count": 46,
+  "book_fingerprint": "392f5096177892dffe32d3a7789a13132dcb6523038c8359830713ed0ddd5726",
+  "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 1907
+  "donor_node_count": 2309
  },
  "budget": {
   "formations": 50,
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 9,
+   "category_index": 10,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 9,
+   "category_index": 10,
    "situation": [1, 4, 4]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 11,
    "situation": [1, 1, 1]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 12,
    "situation": [4, 2, 1]
   },
   {
@@ -150,7 +150,7 @@
     [-1371, 365]
    ],
    "position_codes": [47, 44, 12, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 22,
+   "category_index": 23,
    "situation": [4, 4, 1]
   },
   {
@@ -176,7 +176,7 @@
     [-1371, 365]
    ],
    "position_codes": [15, 44, 12, 13, 114, 14, 82, 16, 17, 50, 18],
-   "category_index": 21,
+   "category_index": 22,
    "situation": [4, 2, 1]
   }
  ],
@@ -1762,13 +1762,13 @@
    "concept": "Cover 1 Blitz",
    "donor": {
     "index": 61,
-    "name": "Double Hard 1 ",
+    "name": "Double Hard 1",
     "flags": 8979012,
     "signature": "defense/v1:00890244:1-1b.0b,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979012,
    "replace_index": 61,
-   "replace_name": "Double Hard 1 ",
+   "replace_name": "Double Hard 1",
    "link_formation": null,
    "link_group": null,
    "assignments": [null, null, null, null, null, null, null, null, null, null, null],
@@ -1788,7 +1788,7 @@
    "concept": "Cover 0 Blitz",
    "donor": {
     "index": 61,
-    "name": "Double Hard 1 ",
+    "name": "Double Hard 1",
     "flags": 8979012,
     "signature": "defense/v1:00890244:1-1b.0b,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
@@ -1894,7 +1894,7 @@
    "concept": "2-Man Under",
    "donor": {
     "index": 61,
-    "name": "Double Hard 1 ",
+    "name": "Double Hard 1",
     "flags": 8979012,
     "signature": "defense/v1:00890244:1-1b.0b,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
