@@ -352,6 +352,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_moment_coaches as moment_coaches
     from . import nfl2k5_moment_context as moment_context  # b775 mo2
     from . import nfl2k5_moment_booth as moment_booth  # b776 sbc
+    from . import nfl2k5_cpu_qb_reads as cpu_qb_reads, nfl2k5_db_ball_play as db_ball_play  # b776-ai2: late CPU AI owners
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_indicator_names as indicator_names
@@ -416,7 +417,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     # b775-int1: the image steps' own executable writers (classic teams' Quick Game helpers, the franchise Super Bowl hosts'
     # season codes) are observed when the preset build runs them, like every other recorded writer.
     from . import nfl2k5_super_bowl_hosts as super_bowl_hosts
-    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, moment_booth, career_home, classic_teams, super_bowl_hosts)})
+    modules.update({m.__name__: m for m in (camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, cpu_qb_reads, db_ball_play, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, moment_booth, career_home, classic_teams, super_bowl_hosts)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -587,6 +588,14 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # b76-fc3: the 2026 franchise economy (off in the presets) over the practice squad: its guarded windows and
             # the shared roster-fill chain at 0x322BB0 (nfl2k5_roster_fill_composition), observed through apply.
             final, _ = economy.apply(final)
+            # b776-ai2: the CPU AI late owners (off in every preset). This complete union already holds the
+            # allocator's 95-request ceiling, so they are observed on a disposable copy of the allocation base with
+            # only their own three requests (like Career Home below): both options of the CPU QB reads owner (its
+            # curve, three hooks, owned code and RW state) and the defender ball-play owner (its hook, the throttle
+            # immediate and owned code). Their retail-VA sites are the same in every layout.
+            cpu_ai_probe, _ = space.apply(allocation_base, cpu_qb_reads.REQUESTS + db_ball_play.REQUESTS, scaleout=True)
+            cpu_ai_probe, _ = cpu_qb_reads.apply(cpu_ai_probe, zone_windows=True, recheck=True)
+            db_ball_play.apply(cpu_ai_probe)
             # The early form (k128_early) writes only inside these spans: the owned allocation (its entry at +0x1A0)
             # and the XBE entry field; it leaves 0x327D1 retail.
             # Flatter flight and the old relocated high-arc band are mutually
