@@ -248,6 +248,12 @@ class Recorder:
             for reservation in number_kerning.reservations(final):
                 self.reserve(int(reservation["start"], 0), reservation["size"],
                              reservation["owner"], reservation["basis"])
+        from . import nfl2k5_team_number_scale as number_scale  # b776-ns1: late allocator owner + its hook
+        if number_scale.status(final) == "applied":
+            for reservation in number_scale.reservations(final):
+                if reservation["basis"].startswith("pinned live"):   # the allocation itself comes from the space rows
+                    self.reserve(int(reservation["start"], 0), reservation["size"],
+                                 reservation["owner"], reservation["basis"])
         from . import nfl2k5_modern_color as modern_color
         if modern_color.status(final) == "applied":
             for reservation in modern_color.reservations(final):

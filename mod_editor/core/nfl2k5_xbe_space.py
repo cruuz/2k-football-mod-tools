@@ -676,7 +676,8 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_draft_picks", "nfl2k5_hback",
                "nfl2k5_moment_coaches", "nfl2k5_moment_context", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display",
                "nfl2k5_classic_teams",  # b775-ct1: the classic teams' helpers, the last read-only bytes
-               "nfl2k5_hair_styles")  # b775-hs1: last, so it never moves another owner
+               "nfl2k5_hair_styles",  # b775-hs1: last, so it never moves another owner
+               "nfl2k5_team_number_scale")  # b776-ns1: after the hair styles, so it never moves another owner
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.

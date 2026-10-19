@@ -1742,6 +1742,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_weather",
         "mod_editor.core.nfl2k5_weather_haze",
         "mod_editor.core.nfl2k5_number_kerning",        # b76-k2
+        "mod_editor.core.nfl2k5_team_number_scale",     # b776-ns1
         "mod_editor.core.exact_math",                   # b76.3: the stadium models' platform-independent math
         "mod_editor.core.nfl2k5_modern_color",
         "mod_editor.core.nfl2k5_presentation_standalone",
