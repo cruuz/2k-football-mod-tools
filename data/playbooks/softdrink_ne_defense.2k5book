@@ -9,10 +9,10 @@
   "notes": "DESIGN: Zak Kuhr (Vrabel / Bowen multiple); 2025 baseline NE. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "ddd286fda27633e91e87a8fb6d7053f5753f85b8ef1c145ca64da50e54d3891f",
+  "book_fingerprint": "54f41daaf2951d8bec558285a101b81356336e02da1f0e87add32f19cac3be74",
   "donor_formation_count": 50,
-  "donor_play_count": 270,
-  "donor_node_count": 2320
+  "donor_play_count": 252,
+  "donor_node_count": 2281
  },
  "budget": {
   "formations": 50,
@@ -713,9 +713,9 @@
   },
   {
    "id": "d16",
-   "custom_name": "Cover 1 Man Off",
+   "custom_name": "Cover 0 Mike Blitz",
    "play_type": "defense",
-   "concept": "Cover 1",
+   "concept": "Cover 0 Pressure",
    "donor": {
     "index": 18,
     "name": "Strong Stab 1",
@@ -732,11 +732,11 @@
     null,
     null,
     null,
+    [[27, [3, 3, 0, 91.44, 11, 1]], [11, [2, 10, 0]]],
+    [[27, [3, 3, 0, 152.4, 4, 1]], [11, [2, 5, 0]]],
     [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    [[27, [3, 3, 0, 60.96, 6, 1]], [11, [2, 6, 0]]],
     [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
     null,
-    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
     [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
     [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
    ],
@@ -766,17 +766,17 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [3, 2, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[27, [3, 0, 0, 0, 16, 1]], [11, [2, 15, 0]]],
     null,
     null,
     [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [365.76, 731.52, 9, 10, 1, 0, 0]]],
+    [[27, [0, 0, 91.44, 0, 16, 0]], [13, [457.2, 640.0799999999999, 9, 10, 4, 0, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [3, 3, 0, 0, 0, 1]], [13, [-731.52, 731.52, 7, 6, 2, 0, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-914.4, 548.64, 7, 6, 4, 0, 0]]],
     [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
     [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
-    null,
-    null
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 0, 6, 7, 6, 0, 0]]]
    ],
    "defense_formation": "Nickel",
    "front_index": 13,
@@ -789,7 +789,53 @@
   },
   {
    "id": "d18",
-   "custom_name": "Cover 1 Man",
+   "custom_name": "Cover 2 Match",
+   "play_type": "defense",
+   "concept": "Cover 2",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": 18,
+   "replace_name": "Strong Stab 1",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 16, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [3, 3, 0, 60.96, 0, 1]], [13, [640.08, 731.52, 0, 0, 13, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [3, 0, 0, 0, 0, 1]], [13, [-411.48, 731.52, 0, 0, 14, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 1371.6, 10, 0, 9, 1, 2]], [14, [0, 182.88, 0, 10, 10, 9, 1, 1]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 1371.6, 6, 0, 10, 1, 2]], [14, [0, 182.88, 0, 6, 9, 10, 1, 1]]],
+    [
+     [27, [2, 0, 0, 91.44, 0, 0]],
+     [14, [1, -91.44, 2, 10, 7, 7, 2, 0]],
+     [13, [1371.6, 1097.28, 10, 0, 5, 1, 1]]
+    ],
+    [
+     [27, [2, 0, 0, 91.44, 0, 0]],
+     [14, [1, -91.44, 1, 6, 7, 8, 2, 0]],
+     [13, [-1371.6, 1097.28, 6, 0, 6, 1, 1]]
+    ]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d35",
+   "custom_name": "Cover 1 Man Off",
    "play_type": "defense",
    "concept": "Cover 1",
    "donor": {
@@ -799,8 +845,8 @@
     "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980036,
-   "replace_index": 18,
-   "replace_name": "Strong Stab 1",
+   "replace_index": 35,
+   "replace_name": "Double Shoot 1",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -826,7 +872,7 @@
    }
   },
   {
-   "id": "d35",
+   "id": "d36",
    "custom_name": "Sim Pressure Nickel",
    "play_type": "defense",
    "concept": "Sim Pressure 3",
@@ -837,8 +883,8 @@
     "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
    "play_flags": 9455172,
-   "replace_index": 35,
-   "replace_name": "Double Shoot 1",
+   "replace_index": 36,
+   "replace_name": "Strong Fire Zone Blitz",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -864,46 +910,8 @@
    }
   },
   {
-   "id": "d36",
-   "custom_name": "Cover 3 Sky Strong",
-   "play_type": "defense",
-   "concept": "Cover 3 Sky",
-   "donor": {
-    "index": 14,
-    "name": "Weak Fire Zone Blitz",
-    "flags": 9454660,
-    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9455172,
-   "replace_index": 36,
-   "replace_name": "Strong Fire Zone Blitz",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 640.08, 9, 10, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 6, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-365.76, 640.08, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, -182.88, 365.76, 0, 0]], [13, [-1097.28, 640.08, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
    "id": "d37",
-   "custom_name": "Cover 3 Cloud Strong",
+   "custom_name": "Cover 3 Cloud Weak",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -918,83 +926,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [822.96, 640.08, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [3, 3, 0, 0, 0, 0]], [13, [-1005.84, 365.76, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, -182.88, -365.76, 0, 1]], [13, [-274.32, 548.64, 7, 6, 6, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d38",
-   "custom_name": "Fire Zone 3 Double",
-   "play_type": "defense",
-   "concept": "Fire Zone 3",
-   "donor": {
-    "index": 14,
-    "name": "Weak Fire Zone Blitz",
-    "flags": 9454660,
-    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9455172,
-   "replace_index": 38,
-   "replace_name": "Blanket 4",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
-    null,
-    [[27, [0, 0, 0, -365.76, 0, 1]], [13, [-800.0999999999999, 502.91999999999996, 7, 6, 4, 0, 0]]],
-    null,
-    null
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d156",
-   "custom_name": "Cover 3 Cloud Weak",
-   "play_type": "defense",
-   "concept": "Cover 3 Cloud",
-   "donor": {
-    "index": 14,
-    "name": "Weak Fire Zone Blitz",
-    "flags": 9454660,
-    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9455172,
-   "replace_index": 156,
-   "replace_name": "Double Fire Zone Blitz 2",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[27, [0, 0, 0, 0, 16, 0]], [11, [2, 15, 0]]],
     [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
     null,
     null,
@@ -1016,45 +948,7 @@
    }
   },
   {
-   "id": "d157",
-   "custom_name": "Cover 2 Soft",
-   "play_type": "defense",
-   "concept": "Cover 2",
-   "donor": {
-    "index": 157,
-    "name": "Blaze Zone Blitz",
-    "flags": 9438276,
-    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9438788,
-   "replace_index": 157,
-   "replace_name": "Blaze Zone Blitz",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 0, 0, 0, 16, 1]], [11, [2, 15, 0]]],
-    null,
-    null,
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    [[27, [0, 0, 91.44, 0, 16, 0]], [13, [457.2, 640.0799999999999, 9, 10, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-914.4, 548.64, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 0, 6, 7, 6, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d158",
+   "id": "d38",
    "custom_name": "Cover 2 Sim Mike",
    "play_type": "defense",
    "concept": "Cover 2 Sim",
@@ -1065,8 +959,8 @@
     "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
    "play_flags": 9438788,
-   "replace_index": 158,
-   "replace_name": "Combo Inside Zone",
+   "replace_index": 38,
+   "replace_name": "Blanket 4",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -1092,107 +986,31 @@
    }
   },
   {
-   "id": "d159",
-   "custom_name": "Cover 2 Nickel Fire",
+   "id": "d156",
+   "custom_name": "Fire Zone 3 Double",
    "play_type": "defense",
-   "concept": "Cover 2 Fire",
+   "concept": "Fire Zone 3",
    "donor": {
-    "index": 157,
-    "name": "Blaze Zone Blitz",
-    "flags": 9438276,
-    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
-   "play_flags": 9438276,
-   "replace_index": 159,
-   "replace_name": "2 Man",
+   "play_flags": 9455172,
+   "replace_index": 156,
+   "replace_name": "Double Fire Zone Blitz 2",
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
     null,
     null,
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    [[27, [0, 0, 91.44, 0, 16, 0]], [13, [457.2, 640.0799999999999, 9, 10, 4, 0, 0]]],
+    null,
+    null,
+    null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1143, 274.32, 6, 7, 6, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d160",
-   "custom_name": "Cover 0 Mike Blitz",
-   "play_type": "defense",
-   "concept": "Cover 0 Pressure",
-   "donor": {
-    "index": 18,
-    "name": "Strong Stab 1",
-    "flags": 8979524,
-    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
-   },
-   "play_flags": 8980036,
-   "replace_index": 160,
-   "replace_name": "Safety and Slot Blitz",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 2, 0, 0, 16, 1]], [11, [2, 15, 0]]],
     null,
-    null,
-    null,
-    [[27, [3, 3, 0, 91.44, 11, 1]], [11, [2, 10, 0]]],
-    [[27, [3, 3, 0, 152.4, 4, 1]], [11, [2, 5, 0]]],
-    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    null,
-    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d161",
-   "custom_name": "Cover 2 Sink",
-   "play_type": "defense",
-   "concept": "Cover 2",
-   "donor": {
-    "index": 157,
-    "name": "Blaze Zone Blitz",
-    "flags": 9438276,
-    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9438788,
-   "replace_index": 161,
-   "replace_name": "Double Crash Zone Blitz 2",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 2, 91.44, 0, 16, 1]], [11, [2, 15, 0]]],
-    null,
-    null,
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [365.76, 731.52, 9, 10, 1, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-731.52, 731.52, 7, 6, 2, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
+    [[27, [0, 0, 0, -365.76, 0, 1]], [13, [-800.0999999999999, 502.91999999999996, 7, 6, 4, 0, 0]]],
     null,
     null
    ],
@@ -1206,8 +1024,8 @@
    }
   },
   {
-   "id": "d162",
-   "custom_name": "Cover 1 Man Lurk",
+   "id": "d157",
+   "custom_name": "Cover 1 Man",
    "play_type": "defense",
    "concept": "Cover 1",
    "donor": {
@@ -1217,8 +1035,8 @@
     "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980036,
-   "replace_index": 162,
-   "replace_name": "Mid Crash Zone Blitz 2",
+   "replace_index": 157,
+   "replace_name": "Blaze Zone Blitz",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -1244,10 +1062,10 @@
    }
   },
   {
-   "id": "d163",
-   "custom_name": "Cover 6 Split",
+   "id": "d158",
+   "custom_name": "Cover 3 Sky Strong",
    "play_type": "defense",
-   "concept": "Cover 6",
+   "concept": "Cover 3 Sky",
    "donor": {
     "index": 14,
     "name": "Weak Fire Zone Blitz",
@@ -1255,22 +1073,212 @@
     "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
    "play_flags": 9455172,
+   "replace_index": 158,
+   "replace_name": "Combo Inside Zone",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 640.08, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 6, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-365.76, 640.08, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, -182.88, 365.76, 0, 0]], [13, [-1097.28, 640.08, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d159",
+   "custom_name": "Cover 3 Cloud Strong",
+   "play_type": "defense",
+   "concept": "Cover 3 Cloud",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9455172,
+   "replace_index": 159,
+   "replace_name": "2 Man",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 8, 0]], [13, [868.6800000000001, 731.52, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 6, 0.1]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 731.52, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-457.2, 731.52, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d160",
+   "custom_name": "Cover 2 Nickel Fire",
+   "play_type": "defense",
+   "concept": "Cover 2 Fire",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438276,
+   "replace_index": 160,
+   "replace_name": "Safety and Slot Blitz",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 91.44, 0, 16, 0]], [13, [457.2, 640.0799999999999, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1143, 274.32, 6, 7, 6, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d161",
+   "custom_name": "Cover 1 Man Lurk",
+   "play_type": "defense",
+   "concept": "Cover 1",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8980036,
+   "replace_index": 161,
+   "replace_name": "Double Crash Zone Blitz 2",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 60.96, 9, 1]], [11, [2, 9, 0]]],
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [3, 3, 0, 91.44, 7, 1]], [11, [2, 7, 0]]],
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    [[27, [2, 0, 0, 487.68, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d162",
+   "custom_name": "Cover 2 Soft",
+   "play_type": "defense",
+   "concept": "Cover 2",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": 162,
+   "replace_name": "Mid Crash Zone Blitz 2",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 2, 91.44, 0, 16, 1]], [11, [2, 16, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [457.2, 731.52, 9, 10, 1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 731.52, 7, 6, 2, 0, 0]]],
+    null,
+    null,
+    [[27, [2, 0, 0, 0, 0, 0]], [14, [1, -91.44, 2, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 0, 0, 0]], [14, [1, -91.44, 2, 13, 0, 0, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d163",
+   "custom_name": "Cover 2 Sink",
+   "play_type": "defense",
+   "concept": "Cover 2",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
    "replace_index": 163,
    "replace_name": "Combo Zone Blitz 2",
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [3, 3, 91.44, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
     [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 731.52, 9, 10, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-685.8, 731.52, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-274.32, 1645.92, 8, 7, 9, 0, 0]]],
-    [[27, [0, 0, -60.96, 91.44, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 60.96, 365.76, 0, 0]], [13, [-1097.28, 1645.92, 6, 7, 10, 0, 0]]]
+    [[27, [0, 3, 91.44, 0, 16, 0]], [13, [457.2, 640.0799999999999, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-914.4, 548.64, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 0, 6, 7, 6, 0, 0]]]
    ],
    "defense_formation": "Nickel",
    "front_index": 13,
@@ -1689,7 +1697,7 @@
   },
   {
    "id": "d179",
-   "custom_name": "Cover 2 Match",
+   "custom_name": "2 Read Match",
    "play_type": "defense",
    "concept": "Cover 2 Hard",
    "donor": {
@@ -2053,6 +2061,82 @@
   },
   {
    "id": "d194",
+   "custom_name": "Cover 1 Mike Fire",
+   "play_type": "defense",
+   "concept": "Cover 1 Blitz",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8980036,
+   "replace_index": 194,
+   "replace_name": "Cover 12 Odd",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 121.92, 14, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
+    null,
+    [[27, [3, 3, 0, 152.4, 13, 1]], [11, [2, 12, 0]]],
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 487.68, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [0, 0, 640.08, 0, 0, 1]], [13, [0, 1645.92, 9, 7, 11, 0, 0]]],
+    [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 13, 0, 0, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d206",
+   "custom_name": "Cover 3 Cloud Strong Bail",
+   "play_type": "defense",
+   "concept": "Cover 3 Cloud",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9455172,
+   "replace_index": 206,
+   "replace_name": "2 Hard",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [777.24, 548.64, 6, 7, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    null,
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 182.88, -365.76, 0, 1]], [13, [-411.48, 640.08, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 518.16, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d207",
    "custom_name": "Cover 0 Nickel Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Pressure",
@@ -2063,8 +2147,8 @@
     "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980036,
-   "replace_index": 194,
-   "replace_name": "Cover 12 Odd",
+   "replace_index": 207,
+   "replace_name": "2 Soft",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -2090,86 +2174,10 @@
    }
   },
   {
-   "id": "d206",
-   "custom_name": "Cover 1 Man Off 2",
-   "play_type": "defense",
-   "concept": "Cover 1",
-   "donor": {
-    "index": 18,
-    "name": "Strong Stab 1",
-    "flags": 8979524,
-    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
-   },
-   "play_flags": 8980036,
-   "replace_index": 206,
-   "replace_name": "2 Hard",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 3, 0, 60.96, 9, 1]], [11, [2, 9, 0]]],
-    null,
-    null,
-    null,
-    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    [[27, [3, 3, 0, 91.44, 7, 1]], [11, [2, 7, 0]]],
-    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    null,
-    [[27, [2, 0, 0, 487.68, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d207",
-   "custom_name": "Cover 3 Cloud Strong Bail",
-   "play_type": "defense",
-   "concept": "Cover 3 Cloud",
-   "donor": {
-    "index": 14,
-    "name": "Weak Fire Zone Blitz",
-    "flags": 9454660,
-    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9455172,
-   "replace_index": 207,
-   "replace_name": "2 Soft",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1463.04, 640.08, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1463.04, 457.2, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 182.88, -365.76, 0, 1]], [13, [-274.32, 731.52, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
    "id": "d208",
-   "custom_name": "Cover 3 Cloud",
+   "custom_name": "Cover 4 Spot",
    "play_type": "defense",
-   "concept": "Cover 3 Cloud",
+   "concept": "Cover 4 Quarters",
    "donor": {
     "index": 14,
     "name": "Weak Fire Zone Blitz",
@@ -2182,17 +2190,17 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 16, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
     [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
     null,
     null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [868.6800000000001, 731.52, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 731.52, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-457.2, 731.52, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [685.8, 914.4, 8, 9, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-685.8, 914.4, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [548.64, 1645.92, 9, 10, 8, 0, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-640.08, 1645.92, 7, 6, 8, 0, 0]]],
+    [[27, [0, 0, 0, 640.08, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 640.08, 0, 0]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
    ],
    "defense_formation": "Nickel",
    "front_index": 13,
@@ -2205,6 +2213,44 @@
   },
   {
    "id": "d209",
+   "custom_name": "Sim 2-Deep Mike 3",
+   "play_type": "defense",
+   "concept": "Cover 2 Sim",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": 209,
+   "replace_name": "3 Strong",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 640.08, 8, 7, 4, 0, 0]]],
+    [[27, [0, 3, 0, 30.48, 9, 0]], [11, [2, 9, 0]]],
+    [[27, [3, 3, 0, 60.96, 7, 0]], [11, [2, 7, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-1097.28, 731.52, 7, 6, 4, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [1234.44, 365.76, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-1371.6, 0, 6, 7, 6, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d210",
    "custom_name": "Fire Zone 3 Nickel",
    "play_type": "defense",
    "concept": "Fire Zone 3",
@@ -2215,8 +2261,8 @@
     "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
    "play_flags": 9455172,
-   "replace_index": 209,
-   "replace_name": "3 Strong",
+   "replace_index": 210,
+   "replace_name": "3 Man",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -2242,46 +2288,8 @@
    }
   },
   {
-   "id": "d210",
-   "custom_name": "Cover 3 Cloud Bail",
-   "play_type": "defense",
-   "concept": "Cover 3 Cloud",
-   "donor": {
-    "index": 14,
-    "name": "Weak Fire Zone Blitz",
-    "flags": 9454660,
-    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
-   },
-   "play_flags": 9455172,
-   "replace_index": 210,
-   "replace_name": "3 Man",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [0, 0, 0, 0, 16, 0]], [11, [2, 15, 0]]],
-    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 731.52, 9, 10, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-777.24, 640.0799999999999, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 1645.92, 9, 10, 9, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-182.88, 1645.92, 8, 7, 8, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1188.72, -91.44, 10, 9, 7, 0, 0]]],
-    [[27, [0, 0, 0, 640.08, 0, 1]], [13, [-1097.28, 1645.92, 6, 7, 10, 0, 0]]]
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 13,
-   "component": "coverage",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
    "id": "d211",
-   "custom_name": "Cover 4 Spot",
+   "custom_name": "Quarters",
    "play_type": "defense",
    "concept": "Cover 4 Quarters",
    "donor": {
@@ -2300,13 +2308,701 @@
     [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
     null,
     null,
-    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [685.8, 914.4, 8, 9, 4, 0, 0]]],
+    [[27, [0, 0, 0, 91.44, 0, 0]], [13, [685.8, 914.4, 9, 10, 5, 0, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-685.8, 914.4, 6, 7, 6, 0, 0]]],
     [[27, [0, 0, 0, 91.44, 0, 0]], [13, [548.64, 1645.92, 9, 10, 8, 0, 0]]],
     [[27, [0, 0, 0, 91.44, 0, 0]], [13, [-640.08, 1645.92, 7, 6, 8, 0, 0]]],
     [[27, [0, 0, 0, 640.08, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
     [[27, [0, 0, 0, 640.08, 0, 0]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n252",
+   "custom_name": "Sim Pressure Corner",
+   "play_type": "defense",
+   "concept": "Sim Pressure 3",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454148,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1097.28, 457.2, 6, 7, 6, 0, 0]]],
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 548.64, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-365.76, 640.08, 7, 6, 4, 0, 0]]],
+    [[27, [3, 3, 0, 0, 1, 0]], [11, [2, 3, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 1645.92, 6, 7, 10, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 0]], [13, [1280.16, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 0, 0]]]
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n253",
+   "custom_name": "Cover 1 Double Fire",
+   "play_type": "defense",
+   "concept": "Cover 1 Blitz",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 8, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [914.4, 1645.92, 9, 10, 11, 0, 0]]],
+    [[27, [2, 0, 0, 487.68, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [160.01999999999998, 548.64, 10, 9, 5, 0, 0]]],
+    [
+     [27, [2, 0, 0, 304.8, 0, 0]],
+     [14, [0, 457.2, 2, 6, 14, 5, 2, 0]],
+     [13, [-1371.6, 1371.6, 6, 0, 10, 1, 1]]
+    ]
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n254",
+   "custom_name": "Cover 1 Nickel Fire",
+   "play_type": "defense",
+   "concept": "Cover 1 Blitz",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8980036,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    null,
+    null,
+    null,
+    [[27, [3, 3, 0, 121.92, 5, 1]], [11, [2, 5, 0]]],
+    [[27, [0, 3, 0, 0, 0, 1]], [11, [2, 1, 0.5]]],
+    null,
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    null
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n255",
+   "custom_name": "Cover 1 Man Off 2",
+   "play_type": "defense",
+   "concept": "Cover 1",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8979012,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 16, 0]]],
+    null,
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 0, 0]]],
+    [[27, [0, 0, 0, 365.76, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    null
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n256",
+   "custom_name": "Cover 2 Zone 3",
+   "play_type": "defense",
+   "concept": "Cover 2",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9437764,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 2, 91.44, 0, 16, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 731.52, 9, 10, 1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 8, 0]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-731.52, 731.52, 7, 6, 2, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
+    null,
+    null
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n257",
+   "custom_name": "Cover 3 Sky",
+   "play_type": "defense",
+   "concept": "Cover 3 Sky",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454660,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [1, 16, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [3, 3, 0, 91.44, 16, 1]], [13, [457.2, 731.52, 9, 10, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 457.2, 0, 12, 0, 0, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, -182.88, -365.76, 0, 1]], [13, [-914.4, 731.52, 7, 6, 6, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n258",
+   "custom_name": "Cover 3 Sky Bail",
+   "play_type": "defense",
+   "concept": "Cover 3 Sky",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454660,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1463.04, 640.08, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [182.88, 731.52, 8, 9, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 182.88, -365.76, 0, 1]], [13, [-1097.28, 594.36, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n259",
+   "custom_name": "Cover 2 Zone 4",
+   "play_type": "defense",
+   "concept": "Cover 2",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438276,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 2, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 731.52, 9, 10, 1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 8, 0]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
+    [[27, [3, 3, 0, 0, 0, 1]], [13, [-731.52, 731.52, 7, 6, 2, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
+    null,
+    null
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n260",
+   "custom_name": "Cover 3 Cloud",
+   "play_type": "defense",
+   "concept": "Cover 3 Cloud",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454660,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [822.96, 640.08, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [3, 3, 0, 0, 0, 0]], [13, [-1005.84, 365.76, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, -182.88, -365.76, 0, 1]], [13, [-274.32, 548.64, 7, 6, 6, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n261",
+   "custom_name": "Cover 3 Sky Strong 2",
+   "play_type": "defense",
+   "concept": "Cover 3 Sky",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454660,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 16, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1280.16, 731.52, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 8, 0]], [13, [457.2, 731.52, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
+    [[27, [0, 0, -640.08, 0, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-868.6800000000001, 731.52, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
+    [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n262",
+   "custom_name": "Cover 2 Double Fire",
+   "play_type": "defense",
+   "concept": "Cover 2 Fire",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 548.64, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 548.64, 9, 10, 4, 0, 0]]],
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-365.76, 640.0799999999999, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 548.64, 6, 7, 6, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, -182.88, 0, 0, 0]], [11, [2, 16, 0]]],
+    [[27, [0, 0, 182.88, 0, 0, 0]], [11, [2, 0, 0]]]
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n263",
+   "custom_name": "2 Fire Double",
+   "play_type": "defense",
+   "concept": "Cover 2 Fire",
+   "donor": {
+    "index": 157,
+    "name": "Blaze Zone Blitz",
+    "flags": 9438276,
+    "signature": "defense/v1:00900444:1-1b.0d,0-01.01,0-01.01,1-1b.0d,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9438788,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 213.36, 0, 0, 0]], [13, [1371.6, 548.64, 10, 9, 5, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 1, 0, 0, 0, 1]], [13, [0, 731.52, 8, 7, 12, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [3, 3, 0, 60.96, 6, 0]], [11, [2, 6, 0.1]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 548.64, 7, 6, 4, 0, 0]]],
+    null,
+    null,
+    [[27, [3, 3, 243.84, 0, 16, 1]], [11, [2, 16, 0]]],
+    [[27, [0, 0, 0, 182.88, 0, 0]], [13, [-1371.6, 548.64, 6, 7, 6, 0, 0]]]
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n264",
+   "custom_name": "Cover 3 Cloud Bail",
+   "play_type": "defense",
+   "concept": "Cover 3 Cloud",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454148,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 731.52, 9, 10, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-777.24, 640.0799999999999, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 1645.92, 9, 10, 9, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-182.88, 1645.92, 8, 7, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1188.72, -91.44, 10, 9, 7, 0, 0]]],
+    [[27, [0, 0, 0, 640.08, 0, 1]], [13, [-1097.28, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n265",
+   "custom_name": "Cover 0 Nickel Off",
+   "play_type": "defense",
+   "concept": "Cover 0 Blitz",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8980036,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    null,
+    null,
+    [[27, [3, 3, 0, 91.44, 11, 1]], [11, [2, 10, 0]]],
+    [[27, [3, 3, 0, 152.4, 4, 1]], [11, [2, 5, 0]]],
+    [[27, [3, 2, 0, 0, 0, 1]], [11, [2, 2, 0]]],
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n266",
+   "custom_name": "Cover 0 Safety Blitz",
+   "play_type": "defense",
+   "concept": "Cover 0 Blitz",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8980036,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 16, 0]]],
+    null,
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 274.32, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [1, 0, 548.64, 548.64, 0, 1]], [11, [2, 10, 0]]],
+    [[27, [1, 0, -548.64, 548.64, 0, 1]], [11, [2, 6, 0]]],
+    null,
+    null
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n267",
+   "custom_name": "Cover 1 Man Off 3",
+   "play_type": "defense",
+   "concept": "Cover 1",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8979012,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 25,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 0, 121.92, 9, 1]], [11, [2, 9, 0]]],
+    null,
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 0, 0]]],
+    null,
+    null,
+    null,
+    null
+   ],
+   "defense_formation": "3-4",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n268",
+   "custom_name": "Cover 6 Split",
+   "play_type": "defense",
+   "concept": "Cover 6",
+   "donor": {
+    "index": 14,
+    "name": "Weak Fire Zone Blitz",
+    "flags": 9454660,
+    "signature": "defense/v1:00904444:1-1b.0b,1-1b.0d,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+   },
+   "play_flags": 9454148,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 27,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 3, 91.44, 0, 16, 1]], [11, [2, 15, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [1, [0, 0, 0, 0.1, 0, 0]]],
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 731.52, 9, 10, 4, 0, 0]]],
+    [[27, [3, 3, 0, 152.4, 0, 1]], [13, [-365.76, 731.52, 7, 8, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1005.84, 731.52, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-274.32, 1645.92, 8, 7, 9, 0, 0]]],
+    [[27, [0, 0, -60.96, 91.44, 0, 0]], [13, [1371.6, 0, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 60.96, 365.76, 0, 0]], [13, [-1097.28, 1645.92, 6, 7, 10, 0, 0]]]
+   ],
+   "defense_formation": "Dime",
+   "front_index": 13,
+   "component": "coverage",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "n269",
+   "custom_name": "Cover 1 Man Off 4",
+   "play_type": "defense",
+   "concept": "Cover 1",
+   "donor": {
+    "index": 18,
+    "name": "Strong Stab 1",
+    "flags": 8979524,
+    "signature": "defense/v1:00890444:1-1b.0e,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+   },
+   "play_flags": 8979524,
+   "replace_index": null,
+   "replace_name": "",
+   "link_formation": 26,
+   "link_group": null,
+   "assignments": [
+    [[27, [3, 2, 0, 0, 16, 1]], [11, [2, 15, 0]]],
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [3, 3, 0, 60.96, 6, 1]], [11, [2, 6, 0]]],
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    null,
+    [[27, [2, 0, 0, 426.72, 0, 0]], [14, [0, 274.32, 0, 0, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 335.28000000000003, 0, 0]], [14, [0, 182.88, 2, 13, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Nickel",
    "front_index": 13,
