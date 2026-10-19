@@ -30,8 +30,10 @@ def sha(data):
 class Data(unittest.TestCase):
     def test_document_validates_and_every_selection_is_wired(self):
         doc = mk.document()
-        self.assertEqual(len(doc["kits"]), 12)  # b775-ct1: + the classic Titans 2018-2023 and Browns 2015-2019 kits
-        self.assertEqual(len(doc["selections"]), 15)
+        # b775-ct1: + the classic Titans 2018-2023 and Browns 2015-2019 kits; b776-rk1: the Super Bowl LVI Rams kit
+        # RK1-LAR takes K11's index and the Bengals get RK1-CIN (row 48 home becomes a selection)
+        self.assertEqual(len(doc["kits"]), 13)
+        self.assertEqual(len(doc["selections"]), 16)
         by_id = {k["id"]: k for k in doc["kits"]}
         for kit in doc["kits"]:
             users = [(s["row"], s["side"]) for s in doc["selections"] if s.get("kit") == kit["id"]]
