@@ -21,6 +21,17 @@ MAX_ENTRY_BYTES = 64 * 1024 * 1024
 MAX_CACHE_BYTES = 1024 * 1024 * 1024
 
 
+def max_cache_bytes() -> int:
+    """The size cap: NFL2K5_COMPILE_CACHE_MAX_MB, else MAX_CACHE_BYTES."""
+    configured = os.environ.get("NFL2K5_COMPILE_CACHE_MAX_MB", "").strip()
+    if configured:
+        try:
+            return max(1, int(configured)) * 1024 * 1024
+        except ValueError:
+            pass
+    return MAX_CACHE_BYTES
+
+
 def _encode(value):
     if isinstance(value, bytes):
         return {"$bytes": base64.b64encode(value).decode("ascii")}
@@ -158,7 +169,8 @@ class CompileCache:
             self._bytes -= self._entries.pop(destination, 0)
             self._entries[destination] = len(raw)
             self._bytes += len(raw)
-            while self._bytes > MAX_CACHE_BYTES and self._entries:
+            limit = max_cache_bytes()
+            while self._bytes > limit and self._entries:
                 path, size = self._entries.popitem(last=False)
                 path.unlink(missing_ok=True)
                 self._bytes -= size

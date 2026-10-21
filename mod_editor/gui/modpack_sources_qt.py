@@ -7,7 +7,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QLabel, QLineEdit, QTreeWidget, QTreeWidgetItem, QVBoxLayout
 
-from mod_editor.core import modpack as m, modpack_files as f
+from mod_editor.core import modpack as m, modpack_files as f, modpack_sources as sources
 
 
 class SourceSelection(QDialog):
@@ -18,6 +18,7 @@ class SourceSelection(QDialog):
         m._require(isinstance(self.document, dict) and isinstance(self.document.get("edits"), list), "League project has no edits")
         m._require(len(self.document["edits"]) <= 20000 and all(isinstance(edit, dict) for edit in self.document["edits"]),
                    "League project has invalid or too many edits")
+        self.document = sources.compose_project(self.document)
         self.setWindowTitle("Choose SOFTDRINK league artwork")
         self.resize(760, 600)
         layout = QVBoxLayout(self)

@@ -7,10 +7,17 @@ studio_name="APF 2K8 Mod Studio"
 
 show_studio_error() {
     local message=$1
+    # zenity and kdialog read their text as markup. A traceback line such as
+    # `in <module>` otherwise stops the dialog from rendering at all, so the
+    # user sees an empty box (or nothing) instead of the reason the Studio
+    # could not start. Escape for the dialogs only; stderr keeps the raw text.
+    local markup=${message//&/\&amp;}
+    markup=${markup//</\&lt;}
+    markup=${markup//>/\&gt;}
     if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v zenity >/dev/null 2>&1; then
-        zenity --error --title="$studio_name" --width=540 --text="$message"
+        zenity --error --title="$studio_name" --width=540 --text="$markup"
     elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog >/dev/null 2>&1; then
-        kdialog --title "$studio_name" --error "$message"
+        kdialog --title "$studio_name" --error "$markup"
     else
         printf '%s: %s\n' "$studio_name" "$message" >&2
     fi

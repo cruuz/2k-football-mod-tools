@@ -5,10 +5,17 @@ studio_name="2K5 Mod Studio"
 
 show_studio_error() {
     local message=$1
+    # zenity and kdialog read their text as markup. A traceback line such as
+    # `in <module>` otherwise stops the dialog from rendering at all, so the
+    # user sees an empty box (or nothing) instead of the reason the Studio
+    # could not start. Escape for the dialogs only; stderr keeps the raw text.
+    local markup=${message//&/\&amp;}
+    markup=${markup//</\&lt;}
+    markup=${markup//>/\&gt;}
     if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v zenity >/dev/null 2>&1; then
-        zenity --error --title="$studio_name" --width=520 --text="$message"
+        zenity --error --title="$studio_name" --width=520 --text="$markup"
     elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog >/dev/null 2>&1; then
-        kdialog --title "$studio_name" --error "$message"
+        kdialog --title "$studio_name" --error "$markup"
     else
         printf '%s: %s\n' "$studio_name" "$message" >&2
     fi
@@ -80,7 +87,7 @@ if [[ "${1:-}" == "--update-check" ]]; then
 fi
 
 if ! "$studio_python" -c 'from PyQt5 import QtWidgets; import PIL; import numpy; import capstone; import unicorn; import mod_editor' >"$studio_log" 2>&1; then
-    show_studio_error "A required application component is missing. Install the Studio packages in this Python runtime, then reopen 2K5 Mod Studio. Run: \"$studio_python\" -m pip install -r \"$portable_root/packaging/requirements-studio.txt\".\n\nDetails were saved to: $studio_log"
+    show_studio_error "A required application component is missing. Easiest fix for the downloaded archive: open a terminal in the extracted folder and run ./2K5-Mod-Studio.sh --setup, then reopen 2K5 Mod Studio. Or install the Studio packages in this Python runtime yourself: \"$studio_python\" -m pip install -r \"$portable_root/packaging/requirements-studio.txt\".\n\nDetails were saved to: $studio_log"
     exit 1
 fi
 
