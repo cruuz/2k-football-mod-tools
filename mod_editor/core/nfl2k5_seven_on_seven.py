@@ -274,6 +274,37 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      "practice_type_value": NEW_VALUE, "practice_type_name": PRACTICE_TYPE_NAME}
 
 
+def remove(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+    """Retire the menu option, restoring its seven exact XBE spans and digest.
+
+    The playbook is deliberately retained. The four retail practice types and
+    Basic Training use their original routing; no unrelated executable bytes move.
+    Unknown or partially installed versions must be investigated, never guessed.
+    """
+    state = status(payload)
+    _require(state in ("retail", "applied"), f"7-on-7 removal sites are {state}")
+    if state == "retail":
+        return payload, {"already_removed": True, "edits": [], "changed_bytes": 0}
+    buf = bytearray(payload)
+    sections = _sections(payload)
+    touched = set()
+    edits = []
+    for label, off, before, _after in _located(payload):
+        buf[off:off + len(before)] = before
+        touched.add(_section_for_offset(sections, off).index)
+        edits.append({"label": label, "file_offset": f"0x{off:x}", "bytes": len(before)})
+    for section in sections:
+        if section.index in touched:
+            off = section.header_offset + 36
+            buf[off:off + 20] = section_digest(buf, section)
+            edits.append({"label": f"section_{section.index}_digest", "file_offset": f"0x{off:x}", "bytes": 20})
+    result = bytes(buf)
+    _require(status(result) == "retail", "7-on-7 removal verification failed")
+    return result, {"already_removed": False, "edits": edits,
+                    "changed_bytes": sum(a != b for a, b in zip(payload, result)),
+                    "sections_repinned": sorted(touched)}
+
+
 def code_report() -> dict[str, object]:
     code, labels = _code()
     return {"code_bytes": len(code), "code_capacity": CAVE_SIZE - CODE_OFFSET, "labels": {k: f"0x{v:x}" for k, v in labels.items()},
@@ -283,4 +314,4 @@ def code_report() -> dict[str, object]:
 __all__ = ["OWNER", "REQUESTS", "VERSION", "SevenOnSevenError", "CAVE_VA", "CAVE_SIZE", "RETAIL_CAVE", "FLAG_VA", "STRING_TABLE_VA", "JUMP_TABLE_VA",
            "NAME_VA", "MODE_VA", "PRACTICE_TYPE_VA", "KICK_WORD_VA", "NEW_VALUE", "PRACTICE_TYPE_NAME",
            "LOADER_SITE_VA", "LOADER_PRACTICE_VA", "LOADER_TEAMS_VA", "SWITCH_SITE_VA", "apply", "cave_bytes", "cave_labels",
-           "code_report", "sites", "status"]
+           "code_report", "sites", "status", "remove"]
