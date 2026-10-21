@@ -69,8 +69,11 @@ def validate_resource(name: str, raw: bytes, patches: list, base: Path) -> None:
                              "helmet00" if i == 11 else "helmet02") for i in (11, 12)
                             if ("helmet00" if i == 11 else "helmet02") in families}
             if sel in owned["digit_selectors"]:
-                allowed |= {(chunks[i].offset, chunks[i].end_offset-chunks[i].offset, f"digit_{i}")
-                            for i in range(13, 33)}
+                # hnNN is the rear helmet number. The shoulder family is anNN,
+                # which occupies chunks 33..42 in the retail NYG package.
+                from mod_editor.core.nfl2k5_nyg_numbers import digit_chunks
+                allowed |= {(c.offset, c.end_offset-c.offset, f"digit_{c.index}")
+                            for name, c in digit_chunks(raw).items() if not name.startswith("hn")}
             require((at, n, p["label"]) in allowed, "UNI kit patch is outside owned texture chunks")
         else:
             old_chunk = parse_chunks(current)

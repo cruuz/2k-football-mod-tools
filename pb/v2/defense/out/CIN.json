@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1826,21 +1826,21 @@
  "receipt": {
   "team": "CIN",
   "offense_pack": "data/playbooks/softdrink_cin_modern.2k5book",
-  "offense_pack_sha256": "d577f4e11e19f64f0d26dc472df5fe4e3d702694eb5c4e02ef0e239742d60df5",
-  "source_fingerprint": "ba43c1e49553e50f19d492b039ec7e96a1dbb6d47450ef9e282d795b61fc6f19",
-  "replacement_sha256": "e354931c6abad1c63db3123f418166d3db81b0d3c6c3809516f204f9b11dc8d3",
-  "semantic_sha256": "26a151069f45c4467c5502b29a1b0a0bd8e5e15d02c0b1b492e6d13de459f624",
+  "offense_pack_sha256": "7f5d4d12bde8b425a0fabaf1d9947a7063a1b8e9a9154ba81c7be142b8695884",
+  "source_fingerprint": "e8d212832303e902d3d55633a62aba75aba996e36d69312d6fc0429097238dff",
+  "replacement_sha256": "dd581ad3b8e6042905ef3d235eff6f049f3a85ceceeafa79334120164ffa4127",
+  "semantic_sha256": "5336312d393094146c48d427bd58677881844495f4f300c4c05457a230bfd41b",
   "plays": 59,
   "formations": 4,
-  "nodes": 2319,
+  "nodes": 2760,
   "node_capacity": 3500,
-  "formation_count": 44,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.09877,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_cin_defense.2k5book",
-  "pack_sha256": "8876d62ab96af8e0542e9b85082146810aabfacc151b9c96339d38213a4fb528"
+  "pack_sha256": "4f6933f53038391920c430d6a08cd6162400221866e187adea32a79d59c1a44e"
  }
 }

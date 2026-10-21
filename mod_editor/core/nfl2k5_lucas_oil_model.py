@@ -859,7 +859,7 @@ def build_all(source, *, workers=None, progress=None, names=None):
 #: that option's own painter (main, 2026-09-27: the field's colours on tf's palette, never tuned here).
 GRASS_MATERIAL, OUTSIDE_MATERIAL = "color_premipped", "grass_outside_premipped"
 ENDZONE_TEXTURES = ag.ENDZONE_TEXTURES
-TEAM_FIELD = ENDZONE_TEXTURES + ("center_logo",)
+TEAM_FIELD = ENDZONE_TEXTURES + ("center_logo", "numbers")
 FIELD_LADDER = ag.FIELD_LADDER
 FIELD_SKIP_FIRST = ag.FIELD_SKIP_FIRST
 
@@ -900,7 +900,7 @@ def paint_field(decoded, rec, system, weather, *, team=None, cap=256, half=False
         a = art if art.shape[:2] == (row["height"], row["width"]) else sm._resample(art, row["width"], row["height"])
         if mat in ENDZONE_TEXTURES:
             a = over_turf(a)
-        ml.write_p8(out, system, row, detail(a), maximum=cap)
+        ml.write_p8(out, system, row, a if mat == "numbers" else detail(a), maximum=cap)
     return bytes(out)
 
 

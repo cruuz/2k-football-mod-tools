@@ -44,6 +44,9 @@ including NumPy. An external interpreter remains your responsibility.
 2. In **Getting Started**, choose **Start SOFTDRINK Basic →**. This opens **★ Build & Share**
    and selects **Basic — 2004 fixes** after the disc check. **Modern** is the ADVANCED pack;
    **Experimental** adds further experiments. Read the selected changes and their help before building.
+   These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28
+   pack (its edited rosters, uniforms, stadium art and moments); for that disc use **Share → Install
+   SOFTDRINK 2K28** ([steps](install_softdrink_2k28.md)).
 3. In **Build**, check **Save disc copy as**, then click **Make my disc** and review the confirmation.
    If that button is unavailable, the sentence beside it explains what is missing.
 4. After **Disc ready**, use **Play latest disc in xemu**. Configure xemu first if prompted,

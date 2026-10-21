@@ -4,15 +4,15 @@
   "team": "CHI",
   "name": "NFL 2K28 CHI Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Dennis Allen (Saints multiple man pressure); 2025 baseline CHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "840215281147f7743a92b47729fb2fe3ae1b3ca922fd9a2240417854c494b5e9",
-  "donor_formation_count": 41,
-  "donor_play_count": 266,
-  "donor_node_count": 1924
+  "book_fingerprint": "9c838f4c031696048f79c1952899327e4b695a32e6836fd3c513eac5dab83d40",
+  "donor_formation_count": 50,
+  "donor_play_count": 268,
+  "donor_node_count": 2373
  },
  "budget": {
   "formations": 50,
@@ -59,13 +59,13 @@
    "replace_index": 27,
    "replace_name": "Bear",
    "slot_positions": [
-    [200, 0],
+    [365, 0],
     [-365, 0],
     [0, 0],
     [-200, 0],
-    [460, 91],
+    [330, 274],
     [0, 411],
-    [-600, 91],
+    [-430, 274],
     [0, 1097],
     [-300, 411],
     [1371, 152],
@@ -1350,7 +1350,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [0, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
@@ -1388,7 +1388,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
@@ -1426,7 +1426,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
@@ -2190,7 +2190,7 @@
    }
   },
   {
-   "id": "n266",
+   "id": "n268",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2228,7 +2228,7 @@
    }
   },
   {
-   "id": "n267",
+   "id": "n269",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",

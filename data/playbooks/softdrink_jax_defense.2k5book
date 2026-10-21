@@ -4,15 +4,15 @@
   "team": "JAX",
   "name": "NFL 2K28 JAX Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Anthony Campanile (Hafley / Flores multiple); 2025 baseline JAX. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "0b5dd07cb00ed7f378db6843f15285a24d5bfac64d94a9f09253cb0e82730570",
-  "donor_formation_count": 41,
+  "book_fingerprint": "ac1997801b3b5e058c76fd873a0549419678f9be6680c046f87f241794163f45",
+  "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 1932
+  "donor_node_count": 2343
  },
  "budget": {
   "formations": 50,
@@ -59,13 +59,13 @@
    "replace_index": 27,
    "replace_name": "Bear",
    "slot_positions": [
-    [200, 0],
+    [365, 0],
     [-365, 0],
     [0, 0],
     [-200, 0],
-    [460, 91],
+    [330, 274],
     [0, 411],
-    [-600, 91],
+    [-430, 274],
     [0, 1097],
     [-300, 411],
     [1371, 152],
@@ -1528,7 +1528,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [0, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
@@ -1566,7 +1566,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
@@ -1604,7 +1604,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],

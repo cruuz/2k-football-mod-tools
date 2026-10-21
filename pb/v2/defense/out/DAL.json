@@ -110,8 +110,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -299,7 +299,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -315,16 +315,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -467,7 +467,7 @@
    "model": {
     "C1": 0.333,
     "C2": 0.111,
-    "C3": 0.333,
+    "C3": 0.334,
     "C4": 0.111,
     "C6": 0.111
    },
@@ -480,7 +480,7 @@
     "C4": 0.095,
     "C6": 0.096
    },
-   "blitz_model": 0.111,
+   "blitz_model": 0.014,
    "blitz_target": 0.161,
    "calls": 9
   },
@@ -2002,21 +2002,19 @@
   {
    "play": 219,
    "appended": false,
-   "name": "Cover 1 Hole",
+   "name": "Cover 1 Man",
    "component": "coverage",
-   "concept": "Cover 1 Robber",
-   "band": 2,
-   "pressure": false,
+   "concept": "Cover 1",
+   "band": 1,
+   "pressure": true,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 220,
-   "donor_name": "Man Cover 2",
+   "donor": 227,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "BAL",
-    "play": 25,
-    "name": "Blast 1 Dog the Dig"
+    "authored": "fallback Cover 1 Robber -> Cover 1; odd variant of BAL Double Hard 1, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2025,25 +2023,23 @@
   {
    "play": 220,
    "appended": false,
-   "name": "Cover 1 Double Fire",
+   "name": "Cover 1 Mike Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
-   "band": 2,
+   "band": 3,
    "pressure": true,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 229,
-   "donor_name": "Double Hard 1 Odd",
+   "donor": 227,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "DAL",
-    "play": 229,
-    "name": "Double Hard 1 Odd"
+    "authored": "odd variant of DAL Force Fire 1 Odd, edges rush [0, 5], zone blitz on ['base']"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 14
   },
   {
    "play": 221,
@@ -2060,13 +2056,11 @@
    "donor": 221,
    "donor_name": "Cover 4",
    "source": {
-    "book": "DAL",
-    "play": 221,
-    "name": "Cover 4"
+    "authored": "odd variant of DAL Cover 4, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 4
   },
   {
    "play": 222,
@@ -2140,9 +2134,7 @@
    "donor": 221,
    "donor_name": "Cover 4",
    "source": {
-    "book": "NE",
-    "play": 209,
-    "name": "3 Strong"
+    "authored": "odd variant of BAL 3 Buzz, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2163,18 +2155,16 @@
    "donor": 219,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "DAL",
-    "play": 219,
-    "name": "Cover 2 Soft"
+    "authored": "odd variant of BAL 2 Soft, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 4
   },
   {
    "play": 227,
    "appended": false,
-   "name": "Cover 4 Drop",
+   "name": "Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -2183,16 +2173,14 @@
     "base"
    ],
    "new_links": [],
-   "donor": 226,
-   "donor_name": "Cover 12 Odd",
+   "donor": 221,
+   "donor_name": "Cover 4",
    "source": {
-    "book": "DAL",
-    "play": 226,
-    "name": "Cover 12 Odd"
+    "authored": "odd variant of NE Blanket 4, edges rush [0, 6]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 228,
@@ -2209,34 +2197,30 @@
    "donor": 221,
    "donor_name": "Cover 4",
    "source": {
-    "book": "BAL",
-    "play": 195,
-    "name": "Blue Cover 8"
+    "authored": "odd variant of HOU Weak Go 3, edges rush [0, 6]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 16
   },
   {
    "play": 229,
    "appended": false,
-   "name": "Cover 1 Man",
+   "name": "Cover 1 Man Lurk",
    "component": "coverage",
    "concept": "Cover 1",
-   "band": 2,
-   "pressure": false,
+   "band": 3,
+   "pressure": true,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 221,
-   "donor_name": "Cover 4",
+   "donor": 227,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "BAL",
-    "play": 13,
-    "name": "Man Under 3 Deep"
+    "authored": "odd variant of BAL Strong Force Fire 1, edges rush [0, 6]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 16
   },
@@ -2255,9 +2239,7 @@
    "donor": 221,
    "donor_name": "Cover 4",
    "source": {
-    "book": "HOU",
-    "play": 10,
-    "name": "4 Cloud"
+    "authored": "odd variant of HOU 4 Cloud, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2288,21 +2270,21 @@
  "receipt": {
   "team": "DAL",
   "offense_pack": "data/playbooks/softdrink_dal_modern.2k5book",
-  "offense_pack_sha256": "d213cbff6b52a14d3ce6a584f767fc9a40184c02b4375bf03d9e28f69c93faf6",
-  "source_fingerprint": "da52124ae798e7834fb9f9272bfadbda2c8ce0d0bb53bf67c440691960f6d06a",
-  "replacement_sha256": "307bc548213ea0469b964dba233e70b86adc41c28182ef2a843cad69df600a74",
-  "semantic_sha256": "680f49c23e99526c1dbabd69591ca222cd122d674ebbfca743f0e67cbf32ddaf",
+  "offense_pack_sha256": "eb05f3691422124e032e56605f3cf24959f0e788a9b9a9c71d432e2addf53ff6",
+  "source_fingerprint": "d83e41cf315517e99ee80e506263fa9b49a5153bb7b0fd67ce7ebf80c1110b2d",
+  "replacement_sha256": "afe3a0103d5c42b3f6969df3ec3c95e125ad283450898a7afdb2be9f186819f5",
+  "semantic_sha256": "479323acb9de71caeb6b465b4c58b5490fe1a2d54810b834333dcd69a64870a3",
   "plays": 76,
   "formations": 5,
-  "nodes": 2453,
+  "nodes": 2895,
   "node_capacity": 3500,
-  "formation_count": 41,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.20415,
+  "band_loss": 0.32123,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_dal_defense.2k5book",
-  "pack_sha256": "c2a1822a6046eabb1fd03680d6e4baf13cc9cccc8dead7fb8a4215e5a26afb77"
+  "pack_sha256": "1ccf4d4e817ef39ea0acf96015015ab9838070dd1a1ad4ac6273f3ac234b3feb"
  }
 }

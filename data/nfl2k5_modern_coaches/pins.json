@@ -1,0 +1,4799 @@
+{
+ "schema": "nfl2k5_modern_coaches_pins/v1",
+ "label": "EXPERIMENTAL / UNWITNESSED",
+ "teams": [
+  {
+   "team": "ARI",
+   "team_code": "00",
+   "body_code": "12",
+   "code": "12",
+   "archive": "c12.iff",
+   "outer_index": 360,
+   "outer_size": 227920,
+   "span_offset": 0,
+   "span_size": 217600,
+   "retail_sha256": "5930ffcc4338c4ed6b72b3c97d30d27c755f3532898736cc85c621c8826ceaff",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "b4fd440b428dbd35bc596b57fe80279df5db83a28340b584cdce6172d22e193e",
+    "jacket": "b1acf03afde0c91e2f11d0fc9734b6ffde39cb03b0ed1e133f7d94418d3e710e",
+    "logo": "b7e00d28b5b1b7ba75c82e6b6a3f0e9c18c35dff8a11ee913eadc0b8a1c85282",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "c15244ea768bdda49c96c1c6b3da91fe45b0f0a3f0f54bb685d5f37bf0e20cc0",
+    "sideline_dry": "2a3af4f4cbcea3dc9c1296bc50f7e6c5221407fe276bb530a920685b4d8d75fc",
+    "sideline_rain": "4c5bfe2c48f53cc53343d8e011e437947b2934d9f3aa4090581b926adba5011f"
+   },
+   "palette_max": 256,
+   "applied_sha256": "fb3768583760863913b9265c31cabfdf73c02ab4d3b6f0ea7a7ddb45c6010852",
+   "superseded_sha256": [
+    "4d66daf543c5cac4f2bc69958f4192acf69cb70e85d4443279f72d54766ea862",
+    "f2d103ed58b795beea2cb83cd839b1a773fd401a82c27c8ca12e74638016f1c1"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 217568,
+    "stored_size": 217568,
+    "padding_bytes": 0,
+    "scratch_needed": 76,
+    "scratch_retail": 80,
+    "matches_expanded": 730
+   },
+   "sideline": [
+    {
+     "package": "00hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 832896,
+     "span_size": 29712,
+     "retail_sha256": "9794404db3dbef71223be619f1ac7c25b83f9ebd5d18e314bed602da57150719",
+     "applied_sha256": "eb12dae09c487066dc0598e30bd0482af58bd75c2ca7a4485940d601739bcbfb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "00hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 405680,
+     "span_size": 29712,
+     "retail_sha256": "9794404db3dbef71223be619f1ac7c25b83f9ebd5d18e314bed602da57150719",
+     "applied_sha256": "eb12dae09c487066dc0598e30bd0482af58bd75c2ca7a4485940d601739bcbfb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "00hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 820448,
+     "span_size": 44448,
+     "retail_sha256": "2891b7cd14f700cdaef9b5d8676aac7d074fd37e099668d481dd25127327e143",
+     "applied_sha256": "9050ecd897d2b8533a48e1bef0bb4030376ec88f51c65f3a5ad8523f31b38828",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "00hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409392,
+     "span_size": 44448,
+     "retail_sha256": "2891b7cd14f700cdaef9b5d8676aac7d074fd37e099668d481dd25127327e143",
+     "applied_sha256": "9050ecd897d2b8533a48e1bef0bb4030376ec88f51c65f3a5ad8523f31b38828",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "00adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4672,
+     "span_size": 29712,
+     "retail_sha256": "9794404db3dbef71223be619f1ac7c25b83f9ebd5d18e314bed602da57150719",
+     "applied_sha256": "eb12dae09c487066dc0598e30bd0482af58bd75c2ca7a4485940d601739bcbfb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "00ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 431888,
+     "span_size": 29712,
+     "retail_sha256": "9794404db3dbef71223be619f1ac7c25b83f9ebd5d18e314bed602da57150719",
+     "applied_sha256": "eb12dae09c487066dc0598e30bd0482af58bd75c2ca7a4485940d601739bcbfb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "00arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4672,
+     "span_size": 44448,
+     "retail_sha256": "2891b7cd14f700cdaef9b5d8676aac7d074fd37e099668d481dd25127327e143",
+     "applied_sha256": "9050ecd897d2b8533a48e1bef0bb4030376ec88f51c65f3a5ad8523f31b38828",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "00ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 415728,
+     "span_size": 44448,
+     "retail_sha256": "2891b7cd14f700cdaef9b5d8676aac7d074fd37e099668d481dd25127327e143",
+     "applied_sha256": "9050ecd897d2b8533a48e1bef0bb4030376ec88f51c65f3a5ad8523f31b38828",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "ATL",
+   "team_code": "01",
+   "body_code": "01",
+   "code": "01",
+   "archive": "c01.iff",
+   "outer_index": 349,
+   "outer_size": 234848,
+   "span_offset": 0,
+   "span_size": 224528,
+   "retail_sha256": "7b171c27b6b0b4a6578c139ecd720119391c05a254b09953858fd2701a4ef1aa",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "e943ef4153f3fd19e61ee1b4576a211cdeda312ae5a19a1a53f8bd74c6ab8044",
+    "jacket": "08a5b9d718387a4e9bf95fd11066757091841c2704c5b55098cfb855f430762f",
+    "logo": "7c225a7be105eadf680ebf7d720f35ef736c164732bc289ccf69be7452994a13",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "889d90c7198c5700d9be6fdac02032f7e35f3957dfb4b82c3868ec6232c5c069",
+    "sideline_dry": "a3f70fcba9e20becae0ba817d03e460fd587d1b0c04b2cd439a0990afda8a5cc",
+    "sideline_rain": "6442f97535289482f339e507f4552f14f57942de9cd675e07c04423abca5157e"
+   },
+   "palette_max": 256,
+   "applied_sha256": "70382237e43d11b667efab79d5ab85f7e0cf18bc581d756b1119bd3b8d8729be",
+   "superseded_sha256": [
+    "496cf66000e51e00d17e744fb19515ff43c06877005a36c195e3fdeb2141fef4",
+    "4e22fc1623bd2a1913335d504fcdc2cde7166d3691ffaa9fa48581f1c4362a38",
+    "50fd67c205784ec5ae5ab7fa767623eea8a946c12fca65e725069648bcc08f02",
+    "ec320f62af42d3d7d631b0ca5a5efc5cc936cd93bc68221a6b7dbed3a8c13408"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 224496,
+    "stored_size": 224496,
+    "padding_bytes": 0,
+    "scratch_needed": 73,
+    "scratch_retail": 96,
+    "matches_expanded": 1087
+   },
+   "sideline": [
+    {
+     "package": "01hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 811904,
+     "span_size": 33216,
+     "retail_sha256": "b4bc3b52a4da118190f8652943f91c08dc5fad894637167ea7f9f65a8ce48a4e",
+     "applied_sha256": "d0172740c22fd68d94daf9fa10a902d9caa18133179b1071f166471af992066f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "01hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 398768,
+     "span_size": 33216,
+     "retail_sha256": "b4bc3b52a4da118190f8652943f91c08dc5fad894637167ea7f9f65a8ce48a4e",
+     "applied_sha256": "d0172740c22fd68d94daf9fa10a902d9caa18133179b1071f166471af992066f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "01hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 794176,
+     "span_size": 46944,
+     "retail_sha256": "9eba70204b007b024018e5c64e7d06061237bc56c5077a213aebf980cbf5324d",
+     "applied_sha256": "466b05439ed8efd75e0c06493ac87a1afdd9b0a2ddbeb76b037ca6677dcd87ee",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "01hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 397776,
+     "span_size": 46944,
+     "retail_sha256": "9eba70204b007b024018e5c64e7d06061237bc56c5077a213aebf980cbf5324d",
+     "applied_sha256": "466b05439ed8efd75e0c06493ac87a1afdd9b0a2ddbeb76b037ca6677dcd87ee",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "01adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4736,
+     "span_size": 33216,
+     "retail_sha256": "b4bc3b52a4da118190f8652943f91c08dc5fad894637167ea7f9f65a8ce48a4e",
+     "applied_sha256": "d0172740c22fd68d94daf9fa10a902d9caa18133179b1071f166471af992066f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "01ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 417872,
+     "span_size": 33216,
+     "retail_sha256": "b4bc3b52a4da118190f8652943f91c08dc5fad894637167ea7f9f65a8ce48a4e",
+     "applied_sha256": "d0172740c22fd68d94daf9fa10a902d9caa18133179b1071f166471af992066f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "01arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4736,
+     "span_size": 46944,
+     "retail_sha256": "9eba70204b007b024018e5c64e7d06061237bc56c5077a213aebf980cbf5324d",
+     "applied_sha256": "466b05439ed8efd75e0c06493ac87a1afdd9b0a2ddbeb76b037ca6677dcd87ee",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "01ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 401136,
+     "span_size": 46944,
+     "retail_sha256": "9eba70204b007b024018e5c64e7d06061237bc56c5077a213aebf980cbf5324d",
+     "applied_sha256": "466b05439ed8efd75e0c06493ac87a1afdd9b0a2ddbeb76b037ca6677dcd87ee",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    }
+   ]
+  },
+  {
+   "team": "BAL",
+   "team_code": "02",
+   "body_code": "02",
+   "code": "02",
+   "archive": "c02.iff",
+   "outer_index": 350,
+   "outer_size": 236672,
+   "span_offset": 0,
+   "span_size": 226352,
+   "retail_sha256": "d3c93c18457029cec1df6b7db284dae5e3f2d3b24b57fbf3e38171d4efdb9206",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "641a1fbb8564b07c8f1f709c2367f9882d173987ce6c0638ed87595ecb16cc3c",
+    "jacket": "6215de23c9dab6689a23fdd1c48254f8f6f27de17f3ccfdc8764f6710edc8707",
+    "logo": "a189cbbf63d1137c7938951699471cd35c750c18b1d0d4e1f2e756e289d75b32",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "23cf1a0ea421b22eda68c3c08370261eaa5ccef48483c4bccd506855b74228fa",
+    "sideline_dry": "66d0dcada8cc458ad20e80d921fbf8971331100b69b11a041414fe76a986132b",
+    "sideline_rain": "0f96efab2e46047a2e53cb959dd83e1e06abb19ace5331391b04327e03d2e0fa"
+   },
+   "geometry": "3e1bab935a1e13569b8a59561405419e98ea1512360e44d412aa00a0d0df5697",
+   "palette_max": 192,
+   "applied_sha256": "77d2bb31689ea752b66bea071ab066416b1d314873b823100431845f2e81d8f8",
+   "superseded_sha256": [
+    "f703797dee6ca5091cdf889c8798cc34e621cf3c9d4d67444ef594a26bc99dca",
+    "9051cd5012e946010ba53e0867a58fc4f89544353409101fb54eeb0e747cb8a6",
+    "424b52c3961a47328f7c71d129cdf358c12aa9dd14f31be76ae76eec9ad5d315"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 226320,
+    "stored_size": 226320,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 80,
+    "matches_expanded": 180
+   },
+   "sideline": [
+    {
+     "package": "02hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 818928,
+     "span_size": 34384,
+     "retail_sha256": "73c997009dbb1b18490cfc6b9964c249cb61a88f6ede34c6f568f7f1a98d3af4",
+     "applied_sha256": "4e59efe6b4c047f8c7f2b340202727edb76c452645da7ef79a69a9b03a9bc984",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "02hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 401632,
+     "span_size": 34384,
+     "retail_sha256": "73c997009dbb1b18490cfc6b9964c249cb61a88f6ede34c6f568f7f1a98d3af4",
+     "applied_sha256": "4e59efe6b4c047f8c7f2b340202727edb76c452645da7ef79a69a9b03a9bc984",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "02hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 800848,
+     "span_size": 52144,
+     "retail_sha256": "f54ef0762198a7affd13e682cb0dedb8e91a289c8e72e69b262b817dad1f461e",
+     "applied_sha256": "78cb6b0b421fe8504fe9b4f3ed6752eb71c26505e87f000c0e36b5ffd6742f91",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "02hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 403520,
+     "span_size": 52144,
+     "retail_sha256": "f54ef0762198a7affd13e682cb0dedb8e91a289c8e72e69b262b817dad1f461e",
+     "applied_sha256": "78cb6b0b421fe8504fe9b4f3ed6752eb71c26505e87f000c0e36b5ffd6742f91",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "02adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 34384,
+     "retail_sha256": "73c997009dbb1b18490cfc6b9964c249cb61a88f6ede34c6f568f7f1a98d3af4",
+     "applied_sha256": "4e59efe6b4c047f8c7f2b340202727edb76c452645da7ef79a69a9b03a9bc984",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "02ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 422208,
+     "span_size": 34384,
+     "retail_sha256": "73c997009dbb1b18490cfc6b9964c249cb61a88f6ede34c6f568f7f1a98d3af4",
+     "applied_sha256": "4e59efe6b4c047f8c7f2b340202727edb76c452645da7ef79a69a9b03a9bc984",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "02arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 52144,
+     "retail_sha256": "f54ef0762198a7affd13e682cb0dedb8e91a289c8e72e69b262b817dad1f461e",
+     "applied_sha256": "78cb6b0b421fe8504fe9b4f3ed6752eb71c26505e87f000c0e36b5ffd6742f91",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "02ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 402240,
+     "span_size": 52144,
+     "retail_sha256": "f54ef0762198a7affd13e682cb0dedb8e91a289c8e72e69b262b817dad1f461e",
+     "applied_sha256": "78cb6b0b421fe8504fe9b4f3ed6752eb71c26505e87f000c0e36b5ffd6742f91",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "BUF",
+   "team_code": "03",
+   "body_code": "03",
+   "code": "03",
+   "archive": "c03.iff",
+   "outer_index": 351,
+   "outer_size": 231888,
+   "span_offset": 0,
+   "span_size": 221568,
+   "retail_sha256": "ecc91fca20316683ec6921953897bacb83f6d8a6bdc63c36adf1cc2a31755870",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "66aa7a06245c53801da44978bea4b506396aeb16cb6abe4bfa4d70ef1234df79",
+    "jacket": "2a20504ef0b1b5976ea2ceb87f097f41c264c0a3de03a58c5e4f8b5a4a0ff6f6",
+    "logo": "97b294578ea0399f05d63d646a2a23faed1f91f097da27b3ba760c525fdc3c9c",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "ddc34814ee1111e015366c7b3d72b77bc79553db8ce71d95c54c14677ec157d1",
+    "sideline_dry": "87ee56f7987b41644573e07cccc727f985727302a6d30827ddc703a4503be99d",
+    "sideline_rain": "904c7584e70b0546668c3c12f28ec294046faac1ef8be7a8d8fa9598effd5e19"
+   },
+   "palette_max": 192,
+   "applied_sha256": "582e623f4b65664074cb2bf27643e8b7abe228c4aece42292539615f7a57b7a9",
+   "superseded_sha256": [
+    "a46f9d024149d770a94215a078a6207eba86713b6bc1d20480d7e97a383d7b0d",
+    "dd3d12727fe0b86bee53ab617e47a1143f11a02f03592ec0550d2877b6cd9a3e"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 221536,
+    "stored_size": 221536,
+    "padding_bytes": 0,
+    "scratch_needed": 74,
+    "scratch_retail": 96,
+    "matches_expanded": 179
+   },
+   "sideline": [
+    {
+     "package": "03hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 830784,
+     "span_size": 28128,
+     "retail_sha256": "14457a1a9086a26a56cb5a215f8ef9aec7ac17646c7e07ff3113613415e425ff",
+     "applied_sha256": "2abba43a8012a1f4888ce800595ec7e7cd5e6c28559b02f05e7cb8bbaa78e46d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "03hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 407600,
+     "span_size": 28128,
+     "retail_sha256": "14457a1a9086a26a56cb5a215f8ef9aec7ac17646c7e07ff3113613415e425ff",
+     "applied_sha256": "2abba43a8012a1f4888ce800595ec7e7cd5e6c28559b02f05e7cb8bbaa78e46d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "03hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 820032,
+     "span_size": 37584,
+     "retail_sha256": "809d03933184be6e6ff3dff783efc479366d2b75c69a0735cda011bcf23d0352",
+     "applied_sha256": "804248cab7c8379d1dabee6decacf59c165b3ca1838133d84a289e70a110afad",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "03hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 410608,
+     "span_size": 37584,
+     "retail_sha256": "809d03933184be6e6ff3dff783efc479366d2b75c69a0735cda011bcf23d0352",
+     "applied_sha256": "804248cab7c8379d1dabee6decacf59c165b3ca1838133d84a289e70a110afad",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "03adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5248,
+     "span_size": 28128,
+     "retail_sha256": "14457a1a9086a26a56cb5a215f8ef9aec7ac17646c7e07ff3113613415e425ff",
+     "applied_sha256": "2abba43a8012a1f4888ce800595ec7e7cd5e6c28559b02f05e7cb8bbaa78e46d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "03ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 428432,
+     "span_size": 28128,
+     "retail_sha256": "14457a1a9086a26a56cb5a215f8ef9aec7ac17646c7e07ff3113613415e425ff",
+     "applied_sha256": "2abba43a8012a1f4888ce800595ec7e7cd5e6c28559b02f05e7cb8bbaa78e46d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "03arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5248,
+     "span_size": 37584,
+     "retail_sha256": "809d03933184be6e6ff3dff783efc479366d2b75c69a0735cda011bcf23d0352",
+     "applied_sha256": "804248cab7c8379d1dabee6decacf59c165b3ca1838133d84a289e70a110afad",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "03ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414672,
+     "span_size": 37584,
+     "retail_sha256": "809d03933184be6e6ff3dff783efc479366d2b75c69a0735cda011bcf23d0352",
+     "applied_sha256": "804248cab7c8379d1dabee6decacf59c165b3ca1838133d84a289e70a110afad",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "CAR",
+   "team_code": "04",
+   "body_code": "09",
+   "code": "09",
+   "archive": "c09.iff",
+   "outer_index": 357,
+   "outer_size": 234064,
+   "span_offset": 0,
+   "span_size": 223744,
+   "retail_sha256": "7df010bfb91847bb4a7ab1eb528b1ca00cf70b5d28be9804ab7d9197f3a8a20b",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "ac96a013d52e1e9a2aaaca3dd80556f376b690e482598de8bbc9c059616e897e",
+    "jacket": "a73bd58f0b0e022457aba512a63aeff86dbb583ff78a95d4da9a05199046f486",
+    "logo": "149a555873308b8e6e9f23e5b8b74fb65af14673af9f0c4117d5b5af29cb77b7",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "f659ec170365c4c0255e83a8cd2197373ab4c8a130d1efcbb252bfd0db2714ee",
+    "sideline_dry": "e97130cdaa7db30c94802db3da66e12ee717606aba8c4464e2180a91978ef118",
+    "sideline_rain": "c7be9ce42b24db0f3d38cd2739aa14579c82434683cdba875eb3bd2c5a6ec630"
+   },
+   "geometry": "5c0d8622768a2d17a2641dd6a3266a4a4db15b2d5f2263a9d0a39d579ccfaddc",
+   "palette_max": 256,
+   "applied_sha256": "a3f381a329c8c0f65e3abc1de948b336625d1dc08d159e82ba306e0c938c7add",
+   "superseded_sha256": [
+    "48e49e14971dd2bb372801d167b53a5e7b9f86f484c3d21f4e93e5ce29d3cff2",
+    "10a68b83b6802cf2b1172b66a2d5ab5d37d1a4f9328be70782ebe1e0dce567d6",
+    "788f62c609c8f30973e130a5639d198b1814cf40d553f2ec41778069338872f7",
+    "30d70a6911f54035af73b78521fe4dee9f2d129b83980d6807eafc0f6e19188d"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 223712,
+    "stored_size": 223712,
+    "padding_bytes": 0,
+    "scratch_needed": 77,
+    "scratch_retail": 96,
+    "matches_expanded": 1958
+   },
+   "sideline": [
+    {
+     "package": "04hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 822752,
+     "span_size": 27120,
+     "retail_sha256": "0f91208f88133d4df25735b24b7ddabf2cee787fab0bbe0ff9dd4c28d6f1a515",
+     "applied_sha256": "9a9c7f13cd6dc866fa3849e91b0654903a8a7efbd3547bcaa3230b87b4107583",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "04hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 402384,
+     "span_size": 27120,
+     "retail_sha256": "0f91208f88133d4df25735b24b7ddabf2cee787fab0bbe0ff9dd4c28d6f1a515",
+     "applied_sha256": "9a9c7f13cd6dc866fa3849e91b0654903a8a7efbd3547bcaa3230b87b4107583",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "04hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 811776,
+     "span_size": 45968,
+     "retail_sha256": "e7ddc9f6a68a1f518ab0dc1f4c9f735c69bb5ebc2dd79e4c381deca12d828ea0",
+     "applied_sha256": "e7e0158b331554bb7e2cd2d925648b994086f301f999bc87b6eea28785e77d6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "04hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 405584,
+     "span_size": 45968,
+     "retail_sha256": "e7ddc9f6a68a1f518ab0dc1f4c9f735c69bb5ebc2dd79e4c381deca12d828ea0",
+     "applied_sha256": "e7e0158b331554bb7e2cd2d925648b994086f301f999bc87b6eea28785e77d6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "04adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4768,
+     "span_size": 27120,
+     "retail_sha256": "0f91208f88133d4df25735b24b7ddabf2cee787fab0bbe0ff9dd4c28d6f1a515",
+     "applied_sha256": "9a9c7f13cd6dc866fa3849e91b0654903a8a7efbd3547bcaa3230b87b4107583",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "04ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 425136,
+     "span_size": 27120,
+     "retail_sha256": "0f91208f88133d4df25735b24b7ddabf2cee787fab0bbe0ff9dd4c28d6f1a515",
+     "applied_sha256": "9a9c7f13cd6dc866fa3849e91b0654903a8a7efbd3547bcaa3230b87b4107583",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "04arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4768,
+     "span_size": 45968,
+     "retail_sha256": "e7ddc9f6a68a1f518ab0dc1f4c9f735c69bb5ebc2dd79e4c381deca12d828ea0",
+     "applied_sha256": "e7e0158b331554bb7e2cd2d925648b994086f301f999bc87b6eea28785e77d6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "04ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 410960,
+     "span_size": 45968,
+     "retail_sha256": "e7ddc9f6a68a1f518ab0dc1f4c9f735c69bb5ebc2dd79e4c381deca12d828ea0",
+     "applied_sha256": "e7e0158b331554bb7e2cd2d925648b994086f301f999bc87b6eea28785e77d6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "CHI",
+   "team_code": "05",
+   "body_code": "37",
+   "code": "37",
+   "archive": "c37.iff",
+   "outer_index": 381,
+   "outer_size": 233440,
+   "span_offset": 0,
+   "span_size": 223024,
+   "retail_sha256": "3711141eaf6ffa2acc5cd53a92fcb426f95f88d560bada6b20c30dffe93eb6ed",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "4c4a36ef6332ad93c8c1256b70b5a766d1622aede6d7d84fb519223616912bed",
+    "jacket": "e2a09defdafbb5607eb60dccbbcb6f892b6483be2035a2101f4775efd5c91eaf",
+    "logo": "3412ccf751eeb8a62a881cd13dcc938596f919678be664e2eb2e9fe6332d4658",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "5f0c40cbca7ac876631b35d7955eb4867b35a9b4b7f46f168158b628e17d9922",
+    "sideline_dry": "85e9b2b94273f0c9efc02cc97c52cb0c56fdb08d89fe0e61e093f5baadaff14e",
+    "sideline_rain": "852ab257aeae82d13fd2af2167fe3fe67d5c8fa0aa07a5d16a13d08a05e01628"
+   },
+   "palette_max": 128,
+   "applied_sha256": "4aeeb6d346df78097264738f33bc51558605f31bf00cb05051828e74bc1c033b",
+   "superseded_sha256": [
+    "f4d455d8769d9398fae63dc5f4fbd88faedfbb6c18fa3fb6c7aeb837eaa26bfa",
+    "9918f755c5eaa933fe23f91ea3528d93d65f54725469b7dec18d812fb702d375"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 222992,
+    "stored_size": 222992,
+    "padding_bytes": 0,
+    "scratch_needed": 79,
+    "scratch_retail": 96,
+    "matches_expanded": 433
+   },
+   "sideline": [
+    {
+     "package": "05hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 830768,
+     "span_size": 23696,
+     "retail_sha256": "0dcd749045a917d8a7c3f22173a414abbe5ab3fb31ee93a96ead70f7e40e2c4c",
+     "applied_sha256": "5944cfb10b378e6bef6dc6f39341de7ea5dab898f6b81ee898a3c01e7fbc1d81",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "05hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 404928,
+     "span_size": 23696,
+     "retail_sha256": "0dcd749045a917d8a7c3f22173a414abbe5ab3fb31ee93a96ead70f7e40e2c4c",
+     "applied_sha256": "5944cfb10b378e6bef6dc6f39341de7ea5dab898f6b81ee898a3c01e7fbc1d81",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "05hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 815552,
+     "span_size": 35120,
+     "retail_sha256": "e920c6bb17bf3feefa97aba9a55a93e33614c32c1b77d4c270e3c765ead3d03c",
+     "applied_sha256": "2d20bb9e11f80f26787e23314255669089071e5d643581b403866c33a913c401",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "05hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 407056,
+     "span_size": 35120,
+     "retail_sha256": "e920c6bb17bf3feefa97aba9a55a93e33614c32c1b77d4c270e3c765ead3d03c",
+     "applied_sha256": "2d20bb9e11f80f26787e23314255669089071e5d643581b403866c33a913c401",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "05adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4624,
+     "span_size": 23696,
+     "retail_sha256": "0dcd749045a917d8a7c3f22173a414abbe5ab3fb31ee93a96ead70f7e40e2c4c",
+     "applied_sha256": "5944cfb10b378e6bef6dc6f39341de7ea5dab898f6b81ee898a3c01e7fbc1d81",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "05ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 430464,
+     "span_size": 23696,
+     "retail_sha256": "0dcd749045a917d8a7c3f22173a414abbe5ab3fb31ee93a96ead70f7e40e2c4c",
+     "applied_sha256": "5944cfb10b378e6bef6dc6f39341de7ea5dab898f6b81ee898a3c01e7fbc1d81",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "05arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4624,
+     "span_size": 35120,
+     "retail_sha256": "e920c6bb17bf3feefa97aba9a55a93e33614c32c1b77d4c270e3c765ead3d03c",
+     "applied_sha256": "2d20bb9e11f80f26787e23314255669089071e5d643581b403866c33a913c401",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "05ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413120,
+     "span_size": 35120,
+     "retail_sha256": "e920c6bb17bf3feefa97aba9a55a93e33614c32c1b77d4c270e3c765ead3d03c",
+     "applied_sha256": "2d20bb9e11f80f26787e23314255669089071e5d643581b403866c33a913c401",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "CIN",
+   "team_code": "06",
+   "body_code": "06",
+   "code": "06",
+   "archive": "c06.iff",
+   "outer_index": 354,
+   "outer_size": 232096,
+   "span_offset": 0,
+   "span_size": 221776,
+   "retail_sha256": "65445e851f409368a7b926ce60ea19ca0c2c7ad25530091d3e3994229f5f87a6",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "56cf119c909f5c37d41d5a885201fba523fb12c548e1e4b49b5f0f938c1d2259",
+    "jacket": "8ddb61ed51b6f35095e2be81e3cde0fbc1fcffa725985ccf66e731d20fa9629f",
+    "logo": "2683be7019300baa10978a119df5c668927d369f3e9714435fea0422ede91f7d",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "e60ec2506ecfc8dadb2ccc8484f1c2f7bc23839a17c86f6808f341c0c8917dfe",
+    "sideline_dry": "5231885ca556944c90bd41889534bc0643707b70fb69979ca0fd209de56fcc34",
+    "sideline_rain": "b8ef00ee64748d0901fe649643435595cafa5263eb1c2a8e207fa4ceda208021"
+   },
+   "geometry": "65c68aa3ca0c10d3ef29097ef85b89d3ddeb047f8be93686aa79c82e725d6881",
+   "palette_max": 256,
+   "applied_sha256": "a5b13ff516640462711c41d58ccd6584118004e2702b58e8ac476ddac79f8b77",
+   "superseded_sha256": [
+    "39526b89d168a0dd6ea4e075e5557c9caf4ea08e7e24c8aba6737895c7bd82de",
+    "e2cdc72eba5599c6ff754b00457a473dde59e229f48e123e01b0f18ece570919",
+    "68884b7e13a52da24d14b026b1a27f1466225c23f7e9351f882ff95df2cc408b",
+    "8898d6a11557f4a4329f6bb55c47daab2ff3bd2ffe98e750db2af6b4b81995d2"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 221744,
+    "stored_size": 221744,
+    "padding_bytes": 0,
+    "scratch_needed": 77,
+    "scratch_retail": 96,
+    "matches_expanded": 1065
+   },
+   "sideline": [
+    {
+     "package": "06hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 814672,
+     "span_size": 28640,
+     "retail_sha256": "ca7fb843b2016eea8567a4e32852162694ea459e09323ae1ec95adcd9c0e6e12",
+     "applied_sha256": "1840141a21dc4f2839befe8f17ea037ce90322275cfbcefc68c221b2ba08b0f8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "06hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 399808,
+     "span_size": 28640,
+     "retail_sha256": "ca7fb843b2016eea8567a4e32852162694ea459e09323ae1ec95adcd9c0e6e12",
+     "applied_sha256": "1840141a21dc4f2839befe8f17ea037ce90322275cfbcefc68c221b2ba08b0f8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "06hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 797536,
+     "span_size": 49216,
+     "retail_sha256": "1458e1c1500f5969bc26af49861083c3574187c5faf3bf4bd7770cc340dd96f0",
+     "applied_sha256": "82b18e39b46e828321e7be7222d2ba5d5cf88732d32643bf0533f4d2b7bb9202",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "06hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 399616,
+     "span_size": 49216,
+     "retail_sha256": "1458e1c1500f5969bc26af49861083c3574187c5faf3bf4bd7770cc340dd96f0",
+     "applied_sha256": "82b18e39b46e828321e7be7222d2ba5d5cf88732d32643bf0533f4d2b7bb9202",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "06adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5024,
+     "span_size": 28640,
+     "retail_sha256": "ca7fb843b2016eea8567a4e32852162694ea459e09323ae1ec95adcd9c0e6e12",
+     "applied_sha256": "1840141a21dc4f2839befe8f17ea037ce90322275cfbcefc68c221b2ba08b0f8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "06ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 419888,
+     "span_size": 28640,
+     "retail_sha256": "ca7fb843b2016eea8567a4e32852162694ea459e09323ae1ec95adcd9c0e6e12",
+     "applied_sha256": "1840141a21dc4f2839befe8f17ea037ce90322275cfbcefc68c221b2ba08b0f8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "06arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5024,
+     "span_size": 49216,
+     "retail_sha256": "1458e1c1500f5969bc26af49861083c3574187c5faf3bf4bd7770cc340dd96f0",
+     "applied_sha256": "82b18e39b46e828321e7be7222d2ba5d5cf88732d32643bf0533f4d2b7bb9202",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "06ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 402944,
+     "span_size": 49216,
+     "retail_sha256": "1458e1c1500f5969bc26af49861083c3574187c5faf3bf4bd7770cc340dd96f0",
+     "applied_sha256": "82b18e39b46e828321e7be7222d2ba5d5cf88732d32643bf0533f4d2b7bb9202",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "DAL",
+   "team_code": "07",
+   "body_code": "07",
+   "code": "07",
+   "archive": "c07.iff",
+   "outer_index": 355,
+   "outer_size": 232848,
+   "span_offset": 0,
+   "span_size": 222528,
+   "retail_sha256": "cc0d623304f7d4a5e339a88a53b7b0a1622d964e6f0d7cd5b6ef4cee15aed72f",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "d069d2115fca5e6cea3632a4a209f788beb9339d6c8299339b5760e6c7686f41",
+    "jacket": "d7478d91f4d29a78821c7c779734e58e227f96f280bce65e803accc131b8c433",
+    "logo": "6f65e6194520d07ee05199bfccc90c208f6714d86ebc746c68e829ed335c7b3a",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "422546746f0d40c4ea0dad33e537215d75ffc0e86ad77e2fab23b5a2979777b6",
+    "sideline_dry": "3e57322c1b27e5a870a8925864311deeda084493409d24860433fc0799ab5505",
+    "sideline_rain": "90ebcff64db0ac7c26bbba8f9a15e531f6681ed1a95a9f76ecc8eff1dfdb4382"
+   },
+   "palette_max": 128,
+   "applied_sha256": "d82170c83f3c0b82136d86d41ef75536bf103ff7a9f69148c3ebd1e7a36d6189",
+   "superseded_sha256": [
+    "ec531e94ebb6a6a6276d29db195915699a94cf8a4252db6b10ece170829520f8",
+    "5a461b9e9fd94feea8e900a8de43e10864feaedc653cb1c65406ea2bd9cc1ea7",
+    "bcde68c655ae4d0efd10cf60cfed000a826414186fc8239f36b16fb523bc1efe",
+    "260dbfdf9b7438cba7b6f14910c138665e33bff1d526d199d207226aa794d4f0"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 222496,
+    "stored_size": 222496,
+    "padding_bytes": 0,
+    "scratch_needed": 63,
+    "scratch_retail": 80,
+    "matches_expanded": 90
+   },
+   "sideline": [
+    {
+     "package": "07hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 836496,
+     "span_size": 25648,
+     "retail_sha256": "0401ea070f09e00b17dc467713a42ae5b44af6a3f6685ae6536a84cba71e7925",
+     "applied_sha256": "8e4bbdc7df2c92826b61f8e0931b4cdbe6e6379682790d5fb6088ad15c8bb3e9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "07hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 409008,
+     "span_size": 25648,
+     "retail_sha256": "0401ea070f09e00b17dc467713a42ae5b44af6a3f6685ae6536a84cba71e7925",
+     "applied_sha256": "8e4bbdc7df2c92826b61f8e0931b4cdbe6e6379682790d5fb6088ad15c8bb3e9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "07hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 821312,
+     "span_size": 38592,
+     "retail_sha256": "cc105e90cbf774a1ad9356821557c611928546764b5cd05512f42ec0e3e2a367",
+     "applied_sha256": "5407c64511e3142990511733d87aea74e7b3c232618a2588196a4bf8b422ccc3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "07hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 410976,
+     "span_size": 38592,
+     "retail_sha256": "cc105e90cbf774a1ad9356821557c611928546764b5cd05512f42ec0e3e2a367",
+     "applied_sha256": "5407c64511e3142990511733d87aea74e7b3c232618a2588196a4bf8b422ccc3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "07adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5424,
+     "span_size": 25648,
+     "retail_sha256": "0401ea070f09e00b17dc467713a42ae5b44af6a3f6685ae6536a84cba71e7925",
+     "applied_sha256": "8e4bbdc7df2c92826b61f8e0931b4cdbe6e6379682790d5fb6088ad15c8bb3e9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "07ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 432912,
+     "span_size": 25648,
+     "retail_sha256": "0401ea070f09e00b17dc467713a42ae5b44af6a3f6685ae6536a84cba71e7925",
+     "applied_sha256": "8e4bbdc7df2c92826b61f8e0931b4cdbe6e6379682790d5fb6088ad15c8bb3e9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "07arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5424,
+     "span_size": 38592,
+     "retail_sha256": "cc105e90cbf774a1ad9356821557c611928546764b5cd05512f42ec0e3e2a367",
+     "applied_sha256": "5407c64511e3142990511733d87aea74e7b3c232618a2588196a4bf8b422ccc3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "07ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 415760,
+     "span_size": 38592,
+     "retail_sha256": "cc105e90cbf774a1ad9356821557c611928546764b5cd05512f42ec0e3e2a367",
+     "applied_sha256": "5407c64511e3142990511733d87aea74e7b3c232618a2588196a4bf8b422ccc3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "DEN",
+   "team_code": "08",
+   "body_code": "08",
+   "code": "08",
+   "archive": "c08.iff",
+   "outer_index": 356,
+   "outer_size": 228752,
+   "span_offset": 0,
+   "span_size": 218432,
+   "retail_sha256": "5a7125bfdf7d65780ca81770b3fbccc179aad649be04847575680bbb6b5337a8",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "341a2565c83ad49103329c1447090aa3c01e19b3040f50ab0abf8036d9c7c95e",
+    "jacket": "dba171675f1f27b14dc03399f224bb33a79ea9874547b1aff5cd3b536dca19b3",
+    "logo": "a9978cb82072f5213129b68cdb9fd693e911e5f79e2ca6c471b5e3a3f49aef62",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "cb35c37b2a03c6ab04c5dceeac57c4c8f241a59d117cad2bb40cf4f9f902f91f",
+    "sideline_dry": "0f07158d4d445a06d43561f6b0ad012cb64fb62b6a0f64cdf64f698bfefe48c9",
+    "sideline_rain": "fd54fac1e71dcce60d6c34d3f10f95e9d3b5b09c5a9ce17ac50e35d5178983ab"
+   },
+   "palette_max": 192,
+   "applied_sha256": "553d0bb5ee5d231f317d58a1c52ed6b1f3b2acd8a7fdc2777a6ef38591352291",
+   "superseded_sha256": [
+    "bd49fa7927a8cfd169d2356dea3dade2377f922c53968a57009d8e795ef38ab3",
+    "d60dac5c749c0f018b8dde1cc2bdc04193d9431ad702c9bacd9c5f2c3f875aad"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 218400,
+    "stored_size": 218400,
+    "padding_bytes": 0,
+    "scratch_needed": 69,
+    "scratch_retail": 80,
+    "matches_expanded": 262
+   },
+   "sideline": [
+    {
+     "package": "08hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 831328,
+     "span_size": 23888,
+     "retail_sha256": "14d01df470b50bfae95270f0475d5f03eddac5cf12e3489b964d425ca7264919",
+     "applied_sha256": "da817cdb728ecba2ec407c23ba2f19d0de617d48a34f84637ad3c7509ebe4bfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "08hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406688,
+     "span_size": 23888,
+     "retail_sha256": "14d01df470b50bfae95270f0475d5f03eddac5cf12e3489b964d425ca7264919",
+     "applied_sha256": "da817cdb728ecba2ec407c23ba2f19d0de617d48a34f84637ad3c7509ebe4bfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "08hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 818192,
+     "span_size": 38800,
+     "retail_sha256": "f181d134e7f4967d78b2d13c645cb223f639b323df1bb687cdd9af1378a06620",
+     "applied_sha256": "8b71686173556b8134bb0d6689b7d08c5ee754045b9ea19236dfceb9feb3b7ff",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 128
+    },
+    {
+     "package": "08hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 410416,
+     "span_size": 38800,
+     "retail_sha256": "f181d134e7f4967d78b2d13c645cb223f639b323df1bb687cdd9af1378a06620",
+     "applied_sha256": "8b71686173556b8134bb0d6689b7d08c5ee754045b9ea19236dfceb9feb3b7ff",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 128
+    },
+    {
+     "package": "08adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5600,
+     "span_size": 23888,
+     "retail_sha256": "14d01df470b50bfae95270f0475d5f03eddac5cf12e3489b964d425ca7264919",
+     "applied_sha256": "da817cdb728ecba2ec407c23ba2f19d0de617d48a34f84637ad3c7509ebe4bfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "08ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 430240,
+     "span_size": 23888,
+     "retail_sha256": "14d01df470b50bfae95270f0475d5f03eddac5cf12e3489b964d425ca7264919",
+     "applied_sha256": "da817cdb728ecba2ec407c23ba2f19d0de617d48a34f84637ad3c7509ebe4bfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "08arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5600,
+     "span_size": 38800,
+     "retail_sha256": "f181d134e7f4967d78b2d13c645cb223f639b323df1bb687cdd9af1378a06620",
+     "applied_sha256": "8b71686173556b8134bb0d6689b7d08c5ee754045b9ea19236dfceb9feb3b7ff",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 128
+    },
+    {
+     "package": "08ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413376,
+     "span_size": 38800,
+     "retail_sha256": "f181d134e7f4967d78b2d13c645cb223f639b323df1bb687cdd9af1378a06620",
+     "applied_sha256": "8b71686173556b8134bb0d6689b7d08c5ee754045b9ea19236dfceb9feb3b7ff",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "team_code": "09",
+   "body_code": "04",
+   "code": "04",
+   "archive": "c04.iff",
+   "outer_index": 352,
+   "outer_size": 230304,
+   "span_offset": 0,
+   "span_size": 219984,
+   "retail_sha256": "8f9f1b2f89684a3b4e705ebd74f15aad0560dd60dba15846dab1c8dc6887a37f",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "42bb1ef5b80d88cb70ccec44f8a2a50213c4fe8c2d2b235d6ba1d8efd0c812fa",
+    "jacket": "236fa3b0dafd990039f783ba6f67e9c6de18f994ab19793a63b4e95cbf7790df",
+    "logo": "13aaea477866ccbb063b5059714676f13c0cddab6dfe7599f7fec2abec23e68e",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "6b82196193722b96806d91dd41dbaac5ea1e95ee98b45f7fb2fe62963e222967",
+    "sideline_dry": "9feca714a7b490848c16ed7e5750d2420484812c16586442485a42c9badb73dd",
+    "sideline_rain": "bb2c3766208d3317621c1c3b6bc419360d76df5ebeb618c26485c18a0fa327aa"
+   },
+   "palette_max": 128,
+   "applied_sha256": "964c5f178ef3b8b038200bc3da1d6f2c2f2e963367beca9236eae2dfe4ac18b7",
+   "superseded_sha256": [
+    "c8a54b81864ccb1047e007834856f1b6e2aedb50d5878abc365fb8369f919f10",
+    "9e3200e5e48945a05e798b8173647e42b2f5ba5cbf740ba8edb0ddf188c43a6b",
+    "c21ad01158ce0213ef18761d1d4ffd8d78e45a92b907ac3dd9e0d8aa34c79b5c",
+    "1c7b0c3e19f8c8c6f0212c14af5839f2eb85e0d8a01b033fa4dec4967aa1bca2"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 219951,
+    "stored_size": 219952,
+    "padding_bytes": 1,
+    "scratch_needed": 66,
+    "scratch_retail": 80,
+    "matches_expanded": 585
+   },
+   "sideline": [
+    {
+     "package": "09hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 829984,
+     "span_size": 33136,
+     "retail_sha256": "b5cf15be4c6fae7833de13f5d541480caa655fbea238d25a04d4783221e257c4",
+     "applied_sha256": "39b327283eac0043098c712172b97562a913effef69f359e7f571b289983ebb2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "09hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406336,
+     "span_size": 33136,
+     "retail_sha256": "b5cf15be4c6fae7833de13f5d541480caa655fbea238d25a04d4783221e257c4",
+     "applied_sha256": "39b327283eac0043098c712172b97562a913effef69f359e7f571b289983ebb2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "09hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 819376,
+     "span_size": 48432,
+     "retail_sha256": "190af440661726144e0e168bec3a892ee584c77ee680b0a8babff447c968748a",
+     "applied_sha256": "a352e3928d3ebc6a535a827a6bcdfb1a85af0ffc5c970d49754b9d8b3434818d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 128
+    },
+    {
+     "package": "09hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409632,
+     "span_size": 48432,
+     "retail_sha256": "190af440661726144e0e168bec3a892ee584c77ee680b0a8babff447c968748a",
+     "applied_sha256": "a352e3928d3ebc6a535a827a6bcdfb1a85af0ffc5c970d49754b9d8b3434818d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 128
+    },
+    {
+     "package": "09adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 33136,
+     "retail_sha256": "b5cf15be4c6fae7833de13f5d541480caa655fbea238d25a04d4783221e257c4",
+     "applied_sha256": "39b327283eac0043098c712172b97562a913effef69f359e7f571b289983ebb2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "09ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 428560,
+     "span_size": 33136,
+     "retail_sha256": "b5cf15be4c6fae7833de13f5d541480caa655fbea238d25a04d4783221e257c4",
+     "applied_sha256": "39b327283eac0043098c712172b97562a913effef69f359e7f571b289983ebb2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "09arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 48432,
+     "retail_sha256": "190af440661726144e0e168bec3a892ee584c77ee680b0a8babff447c968748a",
+     "applied_sha256": "a352e3928d3ebc6a535a827a6bcdfb1a85af0ffc5c970d49754b9d8b3434818d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 128
+    },
+    {
+     "package": "09ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414656,
+     "span_size": 48432,
+     "retail_sha256": "190af440661726144e0e168bec3a892ee584c77ee680b0a8babff447c968748a",
+     "applied_sha256": "a352e3928d3ebc6a535a827a6bcdfb1a85af0ffc5c970d49754b9d8b3434818d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "GB",
+   "team_code": "10",
+   "body_code": "10",
+   "code": "10",
+   "archive": "c10.iff",
+   "outer_index": 358,
+   "outer_size": 233424,
+   "span_offset": 0,
+   "span_size": 223104,
+   "retail_sha256": "be35e0502e756df01da9b952619cba03041adf4fe1caa6503d167017ed698442",
+   "hide_glasses": true,
+   "art": {
+    "shirt": "cc645e473270999ecb498150e51bc03013496f8f74bb244bf791da69e4bab03d",
+    "jacket": "c17c768435270cfbdc971d02a39d4ec9994620383e7cee30c703680fb7c439fa",
+    "logo": "a76efa6eb3ea0da12be904e210bcc03b522bb429c122a2f0d813701ca42fb535",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "48a0d006c4a7f7b31668ea0043e3ffabef1368839ddb8107414e68552b09fe2d",
+    "sideline_dry": "6181e08a4a9e7a74541e34a612698edf7825ac6ffa1871bc2cf1ce97b46c3aa4",
+    "sideline_rain": "d2281030d9837839c745afb01f7295998b7b7708462e16d7b7fe630854f730ea"
+   },
+   "geometry": "2a82bb182ce1719aa9985d41f8fa1ee54eb62e39c7c744952ea628cbe3d5b0bb",
+   "palette_max": 256,
+   "applied_sha256": "ca54402eaf65a0d4785ab5db52bcb63112614fe4ca0ee220c6c00c33ef85a1a2",
+   "superseded_sha256": [
+    "6f43f8ed64915da8b48911b1d1ebfc3cc40502d8bf7ebf9b897ac629c2dd6c1b",
+    "7985085308fe140ed393c52620eb7a4d9223b74a9d461e87b96a98ed4ad63357",
+    "e5a09a69bd20b25547dca8e03833a18eb0634c952515dee1839a018acffa33fb",
+    "d733d5efb838d1206924150223740a17ad2beec72946263ba97aa008d8472582"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 223072,
+    "stored_size": 223072,
+    "padding_bytes": 0,
+    "scratch_needed": 54,
+    "scratch_retail": 128,
+    "matches_expanded": 70
+   },
+   "sideline": [
+    {
+     "package": "10hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 829440,
+     "span_size": 33568,
+     "retail_sha256": "aa8de643d3583ec3ed2b05d3d1741fcbb9d3ff4d402a3a749e185b31f2d64506",
+     "applied_sha256": "1c9c67f839589edda5e265eb0e9b4c8af0bb88adf9e225e09e56db164c1df3a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 404672,
+     "span_size": 33568,
+     "retail_sha256": "aa8de643d3583ec3ed2b05d3d1741fcbb9d3ff4d402a3a749e185b31f2d64506",
+     "applied_sha256": "1c9c67f839589edda5e265eb0e9b4c8af0bb88adf9e225e09e56db164c1df3a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 819120,
+     "span_size": 39952,
+     "retail_sha256": "3cdd85047aaaae0bfca6fcecde79761cc169738621cb825c1730640f59dbe252",
+     "applied_sha256": "6ded2ac9e0a6956957315b038928467e6b274413871a51c7e5a9bc8de847f718",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 407728,
+     "span_size": 39952,
+     "retail_sha256": "3cdd85047aaaae0bfca6fcecde79761cc169738621cb825c1730640f59dbe252",
+     "applied_sha256": "6ded2ac9e0a6956957315b038928467e6b274413871a51c7e5a9bc8de847f718",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4048,
+     "span_size": 33568,
+     "retail_sha256": "aa8de643d3583ec3ed2b05d3d1741fcbb9d3ff4d402a3a749e185b31f2d64506",
+     "applied_sha256": "1c9c67f839589edda5e265eb0e9b4c8af0bb88adf9e225e09e56db164c1df3a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 428816,
+     "span_size": 33568,
+     "retail_sha256": "aa8de643d3583ec3ed2b05d3d1741fcbb9d3ff4d402a3a749e185b31f2d64506",
+     "applied_sha256": "1c9c67f839589edda5e265eb0e9b4c8af0bb88adf9e225e09e56db164c1df3a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4048,
+     "span_size": 39952,
+     "retail_sha256": "3cdd85047aaaae0bfca6fcecde79761cc169738621cb825c1730640f59dbe252",
+     "applied_sha256": "6ded2ac9e0a6956957315b038928467e6b274413871a51c7e5a9bc8de847f718",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "10ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 415440,
+     "span_size": 39952,
+     "retail_sha256": "3cdd85047aaaae0bfca6fcecde79761cc169738621cb825c1730640f59dbe252",
+     "applied_sha256": "6ded2ac9e0a6956957315b038928467e6b274413871a51c7e5a9bc8de847f718",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "IND",
+   "team_code": "11",
+   "body_code": "11",
+   "code": "11",
+   "archive": "c11.iff",
+   "outer_index": 359,
+   "outer_size": 240384,
+   "span_offset": 0,
+   "span_size": 229968,
+   "retail_sha256": "b740b605cc1c5b6a0d56327e2ddbb0808bc73e81d2dbccfa00c87d4cf4641b04",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "11b15f4e1e5a14a32243264f53495388f75a9ef6affb1c4b5fbaf5efba5d78f8",
+    "jacket": "58fa95aab3fbf33695fa544bb2a11b5f94f113754b48e52f5831a56a3bcef38a",
+    "logo": "c86962385acb52ae3dad28225bc20598edd2f17be53f694478a4337628dc9822",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "0968ac1f6399ba751ae79a54eba754e41a7d67ba815c6f956f04e3f06fa507cf",
+    "sideline_dry": "352ca5d988051a94e9774df0b3be8b3e19f63132920a64a537362b9028e02e6b",
+    "sideline_rain": "43485f235ae0ec34be628c3535a91aa3c8d4abddc951ed81d4c477680e262373"
+   },
+   "palette_max": 192,
+   "applied_sha256": "31412261a62aa6c55cb8c83360e094f6a37d8201be1160030bba2c7ae9093faa",
+   "superseded_sha256": [
+    "6136bbbcabd52cd020646d0d5bbac155bd263751629a5471f6e8c953667d1858",
+    "154f9e36fd317f3db15bc9697cb531e088f1f3d730ce721f1e04130d0af527c4"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 229936,
+    "stored_size": 229936,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 80,
+    "matches_expanded": 271
+   },
+   "sideline": [
+    {
+     "package": "11hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 829536,
+     "span_size": 33152,
+     "retail_sha256": "3164ecd28ba2b4d5107ff9334a40cfc6d843ea94f74217689bfe56ea3e3433a2",
+     "applied_sha256": "2a178f008503e3e52c23abfc4b81c30dc6fc1e2a894c554d2a6fbad681eadbfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 9,
+     "scratch_retail": 112
+    },
+    {
+     "package": "11hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 405792,
+     "span_size": 33152,
+     "retail_sha256": "3164ecd28ba2b4d5107ff9334a40cfc6d843ea94f74217689bfe56ea3e3433a2",
+     "applied_sha256": "2a178f008503e3e52c23abfc4b81c30dc6fc1e2a894c554d2a6fbad681eadbfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 9,
+     "scratch_retail": 112
+    },
+    {
+     "package": "11hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 818928,
+     "span_size": 46912,
+     "retail_sha256": "2c6f31c8b7647d94843f162bbb7e6940abcf189f47d4b2202d04886b17146001",
+     "applied_sha256": "5ec0bfc6073b12fe29bc9bb5b0171db456ab6cc8383b3faf9fbc04ba4fee10a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "11hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409280,
+     "span_size": 46912,
+     "retail_sha256": "2c6f31c8b7647d94843f162bbb7e6940abcf189f47d4b2202d04886b17146001",
+     "applied_sha256": "5ec0bfc6073b12fe29bc9bb5b0171db456ab6cc8383b3faf9fbc04ba4fee10a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "11adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4816,
+     "span_size": 33152,
+     "retail_sha256": "3164ecd28ba2b4d5107ff9334a40cfc6d843ea94f74217689bfe56ea3e3433a2",
+     "applied_sha256": "2a178f008503e3e52c23abfc4b81c30dc6fc1e2a894c554d2a6fbad681eadbfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 9,
+     "scratch_retail": 112
+    },
+    {
+     "package": "11ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 428560,
+     "span_size": 33152,
+     "retail_sha256": "3164ecd28ba2b4d5107ff9334a40cfc6d843ea94f74217689bfe56ea3e3433a2",
+     "applied_sha256": "2a178f008503e3e52c23abfc4b81c30dc6fc1e2a894c554d2a6fbad681eadbfd",
+     "sideline_palette_max": 256,
+     "scratch_needed": 9,
+     "scratch_retail": 112
+    },
+    {
+     "package": "11arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4816,
+     "span_size": 46912,
+     "retail_sha256": "2c6f31c8b7647d94843f162bbb7e6940abcf189f47d4b2202d04886b17146001",
+     "applied_sha256": "5ec0bfc6073b12fe29bc9bb5b0171db456ab6cc8383b3faf9fbc04ba4fee10a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "11ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414464,
+     "span_size": 46912,
+     "retail_sha256": "2c6f31c8b7647d94843f162bbb7e6940abcf189f47d4b2202d04886b17146001",
+     "applied_sha256": "5ec0bfc6073b12fe29bc9bb5b0171db456ab6cc8383b3faf9fbc04ba4fee10a5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "JAX",
+   "team_code": "12",
+   "body_code": "30",
+   "code": "30",
+   "archive": "c30.iff",
+   "outer_index": 378,
+   "outer_size": 227184,
+   "span_offset": 0,
+   "span_size": 216864,
+   "retail_sha256": "6eef93b94c1de3600fd189d1834e790c45b653522079991d9ba2aec872744bde",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "1770e661682b18f2683d3fbc5f73cbc8c127850a7b765527323fdbd00a1f930f",
+    "jacket": "42e0c1ccd216401ee23d915d187a2a6754e0da467f396e6473c7b389753d2f9b",
+    "logo": "e3dc0056d8d80c87f60b811234727feca6059309c2debb0c6682863509ebf265",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "c51bdee87aaebb069ddd305b84374068732fa6efa19490701d595c2c71f96dc0",
+    "sideline_dry": "6a3dd3c68a37dd9614169d61a5eb1171413862313b57d5d76e4964e7a43c365c",
+    "sideline_rain": "52591df1a5de87ed37f5399ca584ab1f342eda0ace80b1d7453648735da7a79f"
+   },
+   "geometry": "f7964c065fc751b792005a4c462cb69525a55ae72542f6aeae9d7498a414a573",
+   "palette_max": 256,
+   "applied_sha256": "f1dd689f7771d47da7ee49f86060511775bd4f9151b2c0c763cdc415a6b7a480",
+   "superseded_sha256": [
+    "2a763b9cfb5b82f71375645af205f8883eddf108ba5edf8815a271fd87e58d97",
+    "5496ad94359b862cd688fbf33ad480f0615b96f2ac354ed773c5d303d34553d3",
+    "7b688635bbfd1666dd4af233994d01fa67d7f172c13c6415681000252a73119f",
+    "881a710a5d4a3469cbaf2fc3d5c6af1ff5c147b1a222563c71beeb12dbd9f530"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 216832,
+    "stored_size": 216832,
+    "padding_bytes": 0,
+    "scratch_needed": 76,
+    "scratch_retail": 80,
+    "matches_expanded": 611
+   },
+   "sideline": [
+    {
+     "package": "12hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 827824,
+     "span_size": 28752,
+     "retail_sha256": "9b23c8550edeb06e1fbdb695065d22549c9fd2dec0521e71d75c7a0fa0fc6eee",
+     "applied_sha256": "8226a055a920fba1fab1ae086850e1c7be4ea877eb8be51e3690196a9902cf6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "12hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406592,
+     "span_size": 28752,
+     "retail_sha256": "9b23c8550edeb06e1fbdb695065d22549c9fd2dec0521e71d75c7a0fa0fc6eee",
+     "applied_sha256": "8226a055a920fba1fab1ae086850e1c7be4ea877eb8be51e3690196a9902cf6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "12hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 815120,
+     "span_size": 49904,
+     "retail_sha256": "4c1a815b4bc0dda7fbc1e4cfc2c80de888c4f501c610a969a224a0a42d516cd4",
+     "applied_sha256": "6140ddef7d645d827320bc02a2db96ffb5d7bf2a18ec5fff2c971d1e63e9b4f5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "12hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 408128,
+     "span_size": 49904,
+     "retail_sha256": "4c1a815b4bc0dda7fbc1e4cfc2c80de888c4f501c610a969a224a0a42d516cd4",
+     "applied_sha256": "6140ddef7d645d827320bc02a2db96ffb5d7bf2a18ec5fff2c971d1e63e9b4f5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "12adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5600,
+     "span_size": 28752,
+     "retail_sha256": "9b23c8550edeb06e1fbdb695065d22549c9fd2dec0521e71d75c7a0fa0fc6eee",
+     "applied_sha256": "8226a055a920fba1fab1ae086850e1c7be4ea877eb8be51e3690196a9902cf6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "12ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 426832,
+     "span_size": 28752,
+     "retail_sha256": "9b23c8550edeb06e1fbdb695065d22549c9fd2dec0521e71d75c7a0fa0fc6eee",
+     "applied_sha256": "8226a055a920fba1fab1ae086850e1c7be4ea877eb8be51e3690196a9902cf6d",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "12arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5600,
+     "span_size": 49904,
+     "retail_sha256": "4c1a815b4bc0dda7fbc1e4cfc2c80de888c4f501c610a969a224a0a42d516cd4",
+     "applied_sha256": "6140ddef7d645d827320bc02a2db96ffb5d7bf2a18ec5fff2c971d1e63e9b4f5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "12ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 412592,
+     "span_size": 49904,
+     "retail_sha256": "4c1a815b4bc0dda7fbc1e4cfc2c80de888c4f501c610a969a224a0a42d516cd4",
+     "applied_sha256": "6140ddef7d645d827320bc02a2db96ffb5d7bf2a18ec5fff2c971d1e63e9b4f5",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    }
+   ]
+  },
+  {
+   "team": "KC",
+   "team_code": "13",
+   "body_code": "21",
+   "code": "21",
+   "archive": "c21.iff",
+   "outer_index": 369,
+   "outer_size": 238784,
+   "span_offset": 0,
+   "span_size": 228368,
+   "retail_sha256": "150e244886de92e075b82c391b13f053d5ec05b028f65f1aa8ea01908bae8c44",
+   "hide_glasses": false,
+   "head_recipe": {
+    "kind": "retail_recolour",
+    "classes": {
+     "1": [
+      170,
+      80,
+      14,
+      [
+       0,
+       0,
+       3
+      ]
+     ],
+     "2": [
+      122,
+      110,
+      12,
+      [
+       6,
+       2,
+       -2
+      ]
+     ],
+     "3": [
+      158,
+      84,
+      16,
+      [
+       22,
+       12,
+       0
+      ]
+     ]
+    }
+   },
+   "art": {
+    "shirt": "3e02b6a8cdf700432975ef852d935adcf7382b2f5e6fc637221db74a0166d54e",
+    "jacket": "2118799aab1f16c77ef582e363ef39f4024e49d7ca67932d2e6a8dc5ad4ec15a",
+    "logo": "2e1c3d80c47d3240102c37f924f6bcb010fd282be6e7cfa2fa746fd363996e96",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "sideline_dry": "8fc999909f0c7bf398a443943e839dc8ca2cba2fb4bf50a5782b172f0ffed0ae",
+    "sideline_rain": "19ecba678d63144443cf9bb61ac634e2efd8b8c9a71788a2c0ae2ca4d9a72e79",
+    "head_mask": "e12d4ebcda375d579e9226dab862fa11a866ddba6763630984c02320ce99c950",
+    "head_overlay": "995ea2f2b43f7c6308664572f9de199f2a9ba12a975299bc7097f1b02dea0bb0"
+   },
+   "palette_max": 192,
+   "applied_sha256": "5cf50f7a65e33f127a1c0c2556a0e8d713cb9a0a6a52df5b0f000f8dd906ce1d",
+   "superseded_sha256": [
+    "a7085b308108783d20e536b32b82a2cfcd88c990f1876949dd026de52a76446b"
+   ],
+   "fit": {
+    "encoder": "optimal",
+    "slack": 0,
+    "stream_bytes": 228336,
+    "stored_size": 228336,
+    "padding_bytes": 0,
+    "scratch_needed": 70,
+    "scratch_retail": 80,
+    "matches_expanded": 246
+   },
+   "sideline": [
+    {
+     "package": "13hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 830592,
+     "span_size": 24096,
+     "retail_sha256": "a9676b38ecb11fcbcdbce835796508e93273a0bcec8f3a7b186e826644b7b751",
+     "applied_sha256": "55dac0650b5a5c68dee7d70d5c88c3461a5772ee9560d30eddd72e1253751ca8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 405184,
+     "span_size": 24096,
+     "retail_sha256": "a9676b38ecb11fcbcdbce835796508e93273a0bcec8f3a7b186e826644b7b751",
+     "applied_sha256": "55dac0650b5a5c68dee7d70d5c88c3461a5772ee9560d30eddd72e1253751ca8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 821264,
+     "span_size": 43856,
+     "retail_sha256": "21e8a10adf5d04c7bbd38baa5650c83800abf360991e218c2dff34f6c537b226",
+     "applied_sha256": "ff683eb006d4917281de744bffd71398e0f778cf06756dd5cc2edf935d95f17a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409216,
+     "span_size": 43856,
+     "retail_sha256": "21e8a10adf5d04c7bbd38baa5650c83800abf360991e218c2dff34f6c537b226",
+     "applied_sha256": "ff683eb006d4917281de744bffd71398e0f778cf06756dd5cc2edf935d95f17a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4160,
+     "span_size": 24096,
+     "retail_sha256": "a9676b38ecb11fcbcdbce835796508e93273a0bcec8f3a7b186e826644b7b751",
+     "applied_sha256": "55dac0650b5a5c68dee7d70d5c88c3461a5772ee9560d30eddd72e1253751ca8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429568,
+     "span_size": 24096,
+     "retail_sha256": "a9676b38ecb11fcbcdbce835796508e93273a0bcec8f3a7b186e826644b7b751",
+     "applied_sha256": "55dac0650b5a5c68dee7d70d5c88c3461a5772ee9560d30eddd72e1253751ca8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4160,
+     "span_size": 43856,
+     "retail_sha256": "21e8a10adf5d04c7bbd38baa5650c83800abf360991e218c2dff34f6c537b226",
+     "applied_sha256": "ff683eb006d4917281de744bffd71398e0f778cf06756dd5cc2edf935d95f17a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    },
+    {
+     "package": "13ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 416208,
+     "span_size": 43856,
+     "retail_sha256": "21e8a10adf5d04c7bbd38baa5650c83800abf360991e218c2dff34f6c537b226",
+     "applied_sha256": "ff683eb006d4917281de744bffd71398e0f778cf06756dd5cc2edf935d95f17a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 32
+    }
+   ]
+  },
+  {
+   "team": "MIA",
+   "team_code": "14",
+   "body_code": "14",
+   "code": "14",
+   "archive": "c14.iff",
+   "outer_index": 362,
+   "outer_size": 239040,
+   "span_offset": 0,
+   "span_size": 228720,
+   "retail_sha256": "3593a35ba6392da6fcd5e55f3a95cb0b78d535cb0826005054beed5c788491b6",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "172dc267c3a64f59523873ffc7d2eee0a88de2dbaba5c3a28e8439df79e476e2",
+    "jacket": "07485c8bf2141994e5af6d6c5bcd51257989f41b740a41d7e00b938ea8357ca9",
+    "logo": "81e17f2aa052e23383335c41e045fe99cf8202b729a0002fc9038fa0f7f6a38c",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "754640e1cce5b911bb5933056d5f4a08930ea57823ec6699f9828bdf72f22464",
+    "sideline_dry": "bddb68b6718e7eb734ed4794e6a8ad291ed7d38a0ac6eb83f1eef879fa7488a2",
+    "sideline_rain": "7d3b1e99071c19cf8933c4db1044890f23f2fdbc6f80c4647fc694450e651559"
+   },
+   "palette_max": 256,
+   "applied_sha256": "aadc7e125d01c4d277a98fdf0278b79a4ec8ea60be269f6815fad52ab62559f2",
+   "superseded_sha256": [
+    "6217f0a508b4db7cacab0cfa81c79bce3fc98fd453d16fedc13737e6969cb648",
+    "eb47a7a7e4b93e2eed5354dcbfc8abe771bea66e10308ce7b6264823b3cced93",
+    "756d61ea79a37d734694f5d27feb34671b29e401a4b82586e94ec93ae844297c",
+    "20d40f928adca850a98b55772f284476d636089fa085bde40a81f395b848566d"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 228688,
+    "stored_size": 228688,
+    "padding_bytes": 0,
+    "scratch_needed": 77,
+    "scratch_retail": 80,
+    "matches_expanded": 145
+   },
+   "sideline": [
+    {
+     "package": "14hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 831920,
+     "span_size": 39808,
+     "retail_sha256": "c68fb45fc03eba89e93077eef85f1e7fc4a54bf2326c887d2d73fc3375e397fe",
+     "applied_sha256": "219fb4df48091567c1e847b0502e4d56141b0afec1206dfd0ced63c80c52def1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "14hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406608,
+     "span_size": 39808,
+     "retail_sha256": "c68fb45fc03eba89e93077eef85f1e7fc4a54bf2326c887d2d73fc3375e397fe",
+     "applied_sha256": "219fb4df48091567c1e847b0502e4d56141b0afec1206dfd0ced63c80c52def1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "14hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 819440,
+     "span_size": 47024,
+     "retail_sha256": "d9b66146b006e3033a976662709a4d53e15824895ab49d9142d28a76fc51a0a1",
+     "applied_sha256": "3e7708944ce2484b85d6d75575fb014ffb74725d0c5e553e2e36e05f5a31a146",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 96
+    },
+    {
+     "package": "14hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409424,
+     "span_size": 47024,
+     "retail_sha256": "d9b66146b006e3033a976662709a4d53e15824895ab49d9142d28a76fc51a0a1",
+     "applied_sha256": "3e7708944ce2484b85d6d75575fb014ffb74725d0c5e553e2e36e05f5a31a146",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 96
+    },
+    {
+     "package": "14adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4528,
+     "span_size": 39808,
+     "retail_sha256": "c68fb45fc03eba89e93077eef85f1e7fc4a54bf2326c887d2d73fc3375e397fe",
+     "applied_sha256": "219fb4df48091567c1e847b0502e4d56141b0afec1206dfd0ced63c80c52def1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "14ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429840,
+     "span_size": 39808,
+     "retail_sha256": "c68fb45fc03eba89e93077eef85f1e7fc4a54bf2326c887d2d73fc3375e397fe",
+     "applied_sha256": "219fb4df48091567c1e847b0502e4d56141b0afec1206dfd0ced63c80c52def1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "14arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4528,
+     "span_size": 47024,
+     "retail_sha256": "d9b66146b006e3033a976662709a4d53e15824895ab49d9142d28a76fc51a0a1",
+     "applied_sha256": "3e7708944ce2484b85d6d75575fb014ffb74725d0c5e553e2e36e05f5a31a146",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 96
+    },
+    {
+     "package": "14ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414544,
+     "span_size": 47024,
+     "retail_sha256": "d9b66146b006e3033a976662709a4d53e15824895ab49d9142d28a76fc51a0a1",
+     "applied_sha256": "3e7708944ce2484b85d6d75575fb014ffb74725d0c5e553e2e36e05f5a31a146",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "MIN",
+   "team_code": "15",
+   "body_code": "28",
+   "code": "28",
+   "archive": "c28.iff",
+   "outer_index": 376,
+   "outer_size": 236096,
+   "span_offset": 0,
+   "span_size": 225776,
+   "retail_sha256": "e98e9fdebad796edf7045f6a17d77e8d6de40dd3fbef5c85fbb786f42bea7aba",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "bd26dc44bbc61968f6b3a7b402d974c0f312be3439fa3d9501bace968bf4bcce",
+    "jacket": "af38e3be5277d3c6c7b2e9b69309b7a899a1d9921f26fabf781d8f9f49b0c1e1",
+    "logo": "9ec50bb45e21c2cbb196d2b5293ab54f9cbbbeae90855962233609e45adecb95",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "f18d5b509c34f7a6f6d2d703f143db1334adf6856fb04db08819470c8faaa979",
+    "sideline_dry": "cd9ef2fc2c7216ef2ca2955f5f0b6282bf6cb63bc83eec34e0915abac15671b6",
+    "sideline_rain": "41eeda880e9aa52000a3ec44db2a23ef8298997a55fb39d45c38951bffca524d"
+   },
+   "geometry": "428baa0b46e72ec27f32cf0584d5c0a5f99258810afa154a1be0963c7cc47597",
+   "palette_max": 256,
+   "applied_sha256": "a042688df493436fc199e7e4c8e4cd03d1693a50a1215ace817aa9639ea75f0b",
+   "superseded_sha256": [
+    "1c4c3dcfe8572f892dcff52d8b6b04ed99b9de535a4e70b2b0f3afa22a278534",
+    "8c8f4a7f15929266be77a4d81e9781d6f87a336ff8fa412e926bd3de3403c80b",
+    "37d5340a6cf21fcce9408cc18bf78229bc8493c8037a81f23543649f551a9499",
+    "2bbfc2d0abf52553dcbdb004718bc623f147682b0559b255ebbaabad28d08278"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 225744,
+    "stored_size": 225744,
+    "padding_bytes": 0,
+    "scratch_needed": 76,
+    "scratch_retail": 96,
+    "matches_expanded": 268
+   },
+   "sideline": [
+    {
+     "package": "15hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 827568,
+     "span_size": 57440,
+     "retail_sha256": "539a75c16d1902efc35f3c6890a758c5eaa921f90c4e15189816c7cce9b9db20",
+     "applied_sha256": "6cdb0a76292ff4632949d068ab23debbe15c089fad41dfe2e7d58d92d9432365",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "15hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 404400,
+     "span_size": 57440,
+     "retail_sha256": "539a75c16d1902efc35f3c6890a758c5eaa921f90c4e15189816c7cce9b9db20",
+     "applied_sha256": "6cdb0a76292ff4632949d068ab23debbe15c089fad41dfe2e7d58d92d9432365",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "15hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 816448,
+     "span_size": 42240,
+     "retail_sha256": "020a96b17d6fc213b204ef2505bee3875b833135df944e5da547cd7aa002712a",
+     "applied_sha256": "7c1817a778f34dd171233c5bb33eb96584de1cdc5c9307b30a5e7d209d50f6b8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "15hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 406976,
+     "span_size": 42240,
+     "retail_sha256": "020a96b17d6fc213b204ef2505bee3875b833135df944e5da547cd7aa002712a",
+     "applied_sha256": "7c1817a778f34dd171233c5bb33eb96584de1cdc5c9307b30a5e7d209d50f6b8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "15adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4624,
+     "span_size": 57440,
+     "retail_sha256": "539a75c16d1902efc35f3c6890a758c5eaa921f90c4e15189816c7cce9b9db20",
+     "applied_sha256": "6cdb0a76292ff4632949d068ab23debbe15c089fad41dfe2e7d58d92d9432365",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "15ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 427792,
+     "span_size": 57440,
+     "retail_sha256": "539a75c16d1902efc35f3c6890a758c5eaa921f90c4e15189816c7cce9b9db20",
+     "applied_sha256": "6cdb0a76292ff4632949d068ab23debbe15c089fad41dfe2e7d58d92d9432365",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "15arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4624,
+     "span_size": 42240,
+     "retail_sha256": "020a96b17d6fc213b204ef2505bee3875b833135df944e5da547cd7aa002712a",
+     "applied_sha256": "7c1817a778f34dd171233c5bb33eb96584de1cdc5c9307b30a5e7d209d50f6b8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "15ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414096,
+     "span_size": 42240,
+     "retail_sha256": "020a96b17d6fc213b204ef2505bee3875b833135df944e5da547cd7aa002712a",
+     "applied_sha256": "7c1817a778f34dd171233c5bb33eb96584de1cdc5c9307b30a5e7d209d50f6b8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "NE",
+   "team_code": "16",
+   "body_code": "16",
+   "code": "16",
+   "archive": "c16.iff",
+   "outer_index": 364,
+   "outer_size": 234320,
+   "span_offset": 0,
+   "span_size": 224000,
+   "retail_sha256": "4fb2ec5b0232aaae7d271236c2aad397b624d3072e2308b05ce8593b9d950dfe",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "d718d76d96bc8dd594346c34df88b113e992fb6ea21c29a80745641e9c150069",
+    "jacket": "dfb2a76b4c88a306fa9ca53b14dd1cc0e1b3a5c93f6c9b85d345ebcb7b46d993",
+    "logo": "c3a87e46e4bfe483f3b61b2bec3861498b6d8c0c520f3b537298a4233b585c86",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "f01d80595851f857841a5cdf4e5be45c32cc2616c321703ee29cca913f845dce",
+    "sideline_dry": "5b0e01e71a2ad59fb9f5cf8484a7166588d261c956ce96d8deec241723c7e308",
+    "sideline_rain": "ab28f3d013a38ea8364566f278fd11e962deee1e9307281b689a6015aa6d32ee"
+   },
+   "palette_max": 192,
+   "applied_sha256": "770249fc7342c2d2fc9f88730989237c8d56dd36d64efa7a78e4eba19478b3f6",
+   "superseded_sha256": [
+    "9c884d1e9471df39809cf9248a9080eb1c995c4a256cb5bc9782f0890125f24e",
+    "b399de966341d7802e55811b37c4b187317b57b6e0cee965c5931f6d6c4fc2d9",
+    "42dac8b42947c1da9722ddba1554f1efc409a2dc3591a628f7bfa28aa5223866",
+    "e68601c37ec879d0a69682b19c3230a37e235a24b8b98228a85ef935fce892c7"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 223968,
+    "stored_size": 223968,
+    "padding_bytes": 0,
+    "scratch_needed": 70,
+    "scratch_retail": 96,
+    "matches_expanded": 288
+   },
+   "sideline": [
+    {
+     "package": "16hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 830432,
+     "span_size": 29872,
+     "retail_sha256": "4a1bb0a53a99a20789c9357144a14dd0d848e6622958b1c5fd1ab5f371ca2920",
+     "applied_sha256": "8b0106ad0cde9dcd280e601736b47c2df109a97b8763aac5748881ce51a8f9b0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 22,
+     "scratch_retail": 128
+    },
+    {
+     "package": "16hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406208,
+     "span_size": 29872,
+     "retail_sha256": "4a1bb0a53a99a20789c9357144a14dd0d848e6622958b1c5fd1ab5f371ca2920",
+     "applied_sha256": "8b0106ad0cde9dcd280e601736b47c2df109a97b8763aac5748881ce51a8f9b0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 22,
+     "scratch_retail": 128
+    },
+    {
+     "package": "16hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 818048,
+     "span_size": 47872,
+     "retail_sha256": "fe19cdf96f2d0ba98c57c8069867284ebf67fe3bbfc4f875ecf8f49f460e4997",
+     "applied_sha256": "f227c8be8fb065530162fc3fb4b9a924dec6d056e5d3ab4f737ce296772785f2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 112
+    },
+    {
+     "package": "16hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409600,
+     "span_size": 47872,
+     "retail_sha256": "fe19cdf96f2d0ba98c57c8069867284ebf67fe3bbfc4f875ecf8f49f460e4997",
+     "applied_sha256": "f227c8be8fb065530162fc3fb4b9a924dec6d056e5d3ab4f737ce296772785f2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 112
+    },
+    {
+     "package": "16adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4880,
+     "span_size": 29872,
+     "retail_sha256": "4a1bb0a53a99a20789c9357144a14dd0d848e6622958b1c5fd1ab5f371ca2920",
+     "applied_sha256": "8b0106ad0cde9dcd280e601736b47c2df109a97b8763aac5748881ce51a8f9b0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 22,
+     "scratch_retail": 128
+    },
+    {
+     "package": "16ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429104,
+     "span_size": 29872,
+     "retail_sha256": "4a1bb0a53a99a20789c9357144a14dd0d848e6622958b1c5fd1ab5f371ca2920",
+     "applied_sha256": "8b0106ad0cde9dcd280e601736b47c2df109a97b8763aac5748881ce51a8f9b0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 22,
+     "scratch_retail": 128
+    },
+    {
+     "package": "16arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4880,
+     "span_size": 47872,
+     "retail_sha256": "fe19cdf96f2d0ba98c57c8069867284ebf67fe3bbfc4f875ecf8f49f460e4997",
+     "applied_sha256": "f227c8be8fb065530162fc3fb4b9a924dec6d056e5d3ab4f737ce296772785f2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 112
+    },
+    {
+     "package": "16ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413328,
+     "span_size": 47872,
+     "retail_sha256": "fe19cdf96f2d0ba98c57c8069867284ebf67fe3bbfc4f875ecf8f49f460e4997",
+     "applied_sha256": "f227c8be8fb065530162fc3fb4b9a924dec6d056e5d3ab4f737ce296772785f2",
+     "sideline_palette_max": 256,
+     "scratch_needed": 3,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "NO",
+   "team_code": "17",
+   "body_code": "17",
+   "code": "17",
+   "archive": "c17.iff",
+   "outer_index": 365,
+   "outer_size": 230352,
+   "span_offset": 0,
+   "span_size": 220032,
+   "retail_sha256": "ef0e349a801779d3028fa148974dd62b129cd733f628fa4be3521d4c76a78fef",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "941e978c63c9f5d53aa6e1d10b328a6f16f3044349326eb74c74065e6d80dd10",
+    "jacket": "020687dd245fc9b12cceec3047e73db684d23b0a2881cb8e2329f43e7f883121",
+    "logo": "1c1795f167c1eca7df7938fcd289d8eeb3c33b8306dd69ce7c6e5d555e80eabd",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "9fc0592a48701740ea81b6097c28461e7875fed92a6d2f62da52cdbcf921b9f0",
+    "sideline_dry": "990345cd53c4b62c87b4c5ffc873dbfdee399f727a281776aaaefba0a6376811",
+    "sideline_rain": "71957840c85dab4bbbb5b9807ac9c76835ca104bf880af21621b2349d6b94f93"
+   },
+   "palette_max": 256,
+   "applied_sha256": "cdba0020a2515d3a58947b66157fb3a90de88cf7462c7baa8d15975aff873b1b",
+   "superseded_sha256": [
+    "a8fa70b2bbf5302e7d9bd00f5d350c132372966392ea7e859a66ae01c7f4de72",
+    "dd0edc55cf99c4645882e998435c0b62c1b9a1dd1c0037cb6b0fe00933716618"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 219999,
+    "stored_size": 220000,
+    "padding_bytes": 1,
+    "scratch_needed": 74,
+    "scratch_retail": 96,
+    "matches_expanded": 942
+   },
+   "sideline": [
+    {
+     "package": "17hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 820640,
+     "span_size": 27792,
+     "retail_sha256": "604881bb12b59c128c95bd4c705f55e3e45fc6fa4fd1bb025187d9c4348de4a9",
+     "applied_sha256": "71a58d64de456042b49c901513bbe8e9e1bf0c149b1ede2d9ce08be7ffa8ae4a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "17hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 405376,
+     "span_size": 27792,
+     "retail_sha256": "604881bb12b59c128c95bd4c705f55e3e45fc6fa4fd1bb025187d9c4348de4a9",
+     "applied_sha256": "71a58d64de456042b49c901513bbe8e9e1bf0c149b1ede2d9ce08be7ffa8ae4a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "17hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 806032,
+     "span_size": 46800,
+     "retail_sha256": "1df54dd869f141082cf14c669a9aec535426b2ace251b72164ac280f91f66cc8",
+     "applied_sha256": "b65faf98ad92255d1839d6aad7c54f1fc70d4679afe6dd8deb776bb474aec1d0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "17hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 405360,
+     "span_size": 46800,
+     "retail_sha256": "1df54dd869f141082cf14c669a9aec535426b2ace251b72164ac280f91f66cc8",
+     "applied_sha256": "b65faf98ad92255d1839d6aad7c54f1fc70d4679afe6dd8deb776bb474aec1d0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "17adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4384,
+     "span_size": 27792,
+     "retail_sha256": "604881bb12b59c128c95bd4c705f55e3e45fc6fa4fd1bb025187d9c4348de4a9",
+     "applied_sha256": "71a58d64de456042b49c901513bbe8e9e1bf0c149b1ede2d9ce08be7ffa8ae4a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "17ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 419648,
+     "span_size": 27792,
+     "retail_sha256": "604881bb12b59c128c95bd4c705f55e3e45fc6fa4fd1bb025187d9c4348de4a9",
+     "applied_sha256": "71a58d64de456042b49c901513bbe8e9e1bf0c149b1ede2d9ce08be7ffa8ae4a",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "17arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4384,
+     "span_size": 46800,
+     "retail_sha256": "1df54dd869f141082cf14c669a9aec535426b2ace251b72164ac280f91f66cc8",
+     "applied_sha256": "b65faf98ad92255d1839d6aad7c54f1fc70d4679afe6dd8deb776bb474aec1d0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "17ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 405056,
+     "span_size": 46800,
+     "retail_sha256": "1df54dd869f141082cf14c669a9aec535426b2ace251b72164ac280f91f66cc8",
+     "applied_sha256": "b65faf98ad92255d1839d6aad7c54f1fc70d4679afe6dd8deb776bb474aec1d0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "NYG",
+   "team_code": "18",
+   "body_code": "22",
+   "code": "22",
+   "archive": "c22.iff",
+   "outer_index": 370,
+   "outer_size": 242928,
+   "span_offset": 0,
+   "span_size": 232512,
+   "retail_sha256": "92e85817902a729ec44fbd74fc33332e639017520bb819446a9ebb8345b29c02",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "7f3e544e2e5b2435c93182370e28561285105ef5fa2538ff93bd44c953bf1b68",
+    "jacket": "2e678d28154e649ed0bf06c21402fd041e8dc952c5197f9c0e06780696ff0d46",
+    "logo": "3f2fcc7322fe4484e8c8bd02464a48e7afa5e81bfe09f58a427d5441aea735df",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "61975d46c9193dc3c182061cdb3c1ffe566401e4c2fc81bcfc5aa1a8dd7bc10d",
+    "sideline_dry": "1a11b834ad060253eba2b044718303f225749633574dd2c15e1a5177796ded29",
+    "sideline_rain": "72cdd337db4607be50b996cf886169c074646e9dbf04b4b42f43837ceb5a2ef3"
+   },
+   "palette_max": 256,
+   "applied_sha256": "92cd4a82fa66b0cb023c5e77b3b93729512abca5b60f8cbe42bea8d80c68a6f1",
+   "superseded_sha256": [
+    "9f7b8df64ef193d9632b0584df3335e0b3a6edabd794b7b7d8b8d57d3b19bf50",
+    "ffc8fd1ecaf322e4e4111e2be0be16cb2214dc742eabe869e0405a9606ef1801",
+    "07b3868d6f2d129930fd8860ba33ce1a426273c31b22e73c1cf75c40f05416c5",
+    "a029d34a334a899ca3b41454f5c2a185f385e1357d8b1c3b9374ab58442d30c6"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 232480,
+    "stored_size": 232480,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 96,
+    "matches_expanded": 158
+   },
+   "sideline": [
+    {
+     "package": "18hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 836720,
+     "span_size": 37488,
+     "retail_sha256": "fd12891c633742956f2fb309afba4fd9e026758e48396c13665d60f5812db0ae",
+     "applied_sha256": "a82027759e6b11a597cc2b40eee0327e42faaea49ed8dd67bb63d6ca85b22c93",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "18hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 409056,
+     "span_size": 37488,
+     "retail_sha256": "fd12891c633742956f2fb309afba4fd9e026758e48396c13665d60f5812db0ae",
+     "applied_sha256": "a82027759e6b11a597cc2b40eee0327e42faaea49ed8dd67bb63d6ca85b22c93",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "18hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 821632,
+     "span_size": 44688,
+     "retail_sha256": "41ce6ea5fdb0df91811daddeaa927effdb6d166524d73c831fcb4489c9ac7dde",
+     "applied_sha256": "3bc546fe04254fb1ffc6c4d3639360d9884e607018b8e75f121ddb28caf99247",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "18hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 411888,
+     "span_size": 44688,
+     "retail_sha256": "41ce6ea5fdb0df91811daddeaa927effdb6d166524d73c831fcb4489c9ac7dde",
+     "applied_sha256": "3bc546fe04254fb1ffc6c4d3639360d9884e607018b8e75f121ddb28caf99247",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "18adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 37488,
+     "retail_sha256": "fd12891c633742956f2fb309afba4fd9e026758e48396c13665d60f5812db0ae",
+     "applied_sha256": "a82027759e6b11a597cc2b40eee0327e42faaea49ed8dd67bb63d6ca85b22c93",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "18ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 432576,
+     "span_size": 37488,
+     "retail_sha256": "fd12891c633742956f2fb309afba4fd9e026758e48396c13665d60f5812db0ae",
+     "applied_sha256": "a82027759e6b11a597cc2b40eee0327e42faaea49ed8dd67bb63d6ca85b22c93",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "18arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 44688,
+     "retail_sha256": "41ce6ea5fdb0df91811daddeaa927effdb6d166524d73c831fcb4489c9ac7dde",
+     "applied_sha256": "3bc546fe04254fb1ffc6c4d3639360d9884e607018b8e75f121ddb28caf99247",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "18ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 414656,
+     "span_size": 44688,
+     "retail_sha256": "41ce6ea5fdb0df91811daddeaa927effdb6d166524d73c831fcb4489c9ac7dde",
+     "applied_sha256": "3bc546fe04254fb1ffc6c4d3639360d9884e607018b8e75f121ddb28caf99247",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    }
+   ]
+  },
+  {
+   "team": "NYJ",
+   "team_code": "19",
+   "body_code": "19",
+   "code": "19",
+   "archive": "c19.iff",
+   "outer_index": 367,
+   "outer_size": 240704,
+   "span_offset": 0,
+   "span_size": 230288,
+   "retail_sha256": "761334ecc9fcbea6a26db1f60d38d11d3edd25e43265458a8f136adecd5ab250",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "959dddf734debae72a3f10a3e033635422f817a29495a40de9afce95091db01f",
+    "jacket": "9efb70d9bc0ca14dc4dd4491f9021b31a09a297ba1dbc4f159c58cbd9324d643",
+    "logo": "aad0d73a065ac925e1700b62d3746b6a6333192677f381e5cc183d7dc5e8b352",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "e4adc427ebbda01b56c0eed2facc4bd425af35a251b006c846877b6e23726add",
+    "sideline_dry": "1e8999cb4b522505fa2350ac7da7d3526fa79a0b5c99536842f76e18a6549b24",
+    "sideline_rain": "81149252f4dbd523a26643f7c28ce99174e944a4fbc1129d39a39f061c9ea155"
+   },
+   "palette_max": 256,
+   "applied_sha256": "06fb086098a3e182812f86048fee4b285fbe9a79b4ec9e7af38d0dea164082aa",
+   "superseded_sha256": [
+    "9929240404e5e3e56eceec5a9ff73d464dfb3ae99fbfec7c874c7a5f644257a8",
+    "1af0d01d2ae29047b0ca554fe19211f07c646872982903edec9b1e40da0776db",
+    "74f876d54427037223a7bf13760b8e3ed2abb50a99a3833a9033618ebefbec72",
+    "07608f06b727d46987d91d21371412da71ce005c014187c0fd54118e8b24390a"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 230256,
+    "stored_size": 230256,
+    "padding_bytes": 0,
+    "scratch_needed": 72,
+    "scratch_retail": 80,
+    "matches_expanded": 235
+   },
+   "sideline": [
+    {
+     "package": "19hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 832304,
+     "span_size": 32912,
+     "retail_sha256": "b5a3afbb8c610f8c1434c83a440e1271655cb44ba1e1bb55719446d9a02e5a8c",
+     "applied_sha256": "e5f666facb24f3909222db520a9a4b61179b3026107048fac413e3a98d6d7ad8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "19hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 407056,
+     "span_size": 32912,
+     "retail_sha256": "b5a3afbb8c610f8c1434c83a440e1271655cb44ba1e1bb55719446d9a02e5a8c",
+     "applied_sha256": "e5f666facb24f3909222db520a9a4b61179b3026107048fac413e3a98d6d7ad8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "19hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 816256,
+     "span_size": 44176,
+     "retail_sha256": "e8c4e513e95506f6b76ed15833f9241615065534d1765024451c3a1ef241de28",
+     "applied_sha256": "913d504323fb93944ce3cc7ddcdf47db081b54e14087adce10923895c50245b1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "19hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 408304,
+     "span_size": 44176,
+     "retail_sha256": "e8c4e513e95506f6b76ed15833f9241615065534d1765024451c3a1ef241de28",
+     "applied_sha256": "913d504323fb93944ce3cc7ddcdf47db081b54e14087adce10923895c50245b1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "19adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4736,
+     "span_size": 32912,
+     "retail_sha256": "b5a3afbb8c610f8c1434c83a440e1271655cb44ba1e1bb55719446d9a02e5a8c",
+     "applied_sha256": "e5f666facb24f3909222db520a9a4b61179b3026107048fac413e3a98d6d7ad8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "19ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429984,
+     "span_size": 32912,
+     "retail_sha256": "b5a3afbb8c610f8c1434c83a440e1271655cb44ba1e1bb55719446d9a02e5a8c",
+     "applied_sha256": "e5f666facb24f3909222db520a9a4b61179b3026107048fac413e3a98d6d7ad8",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "19arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4736,
+     "span_size": 44176,
+     "retail_sha256": "e8c4e513e95506f6b76ed15833f9241615065534d1765024451c3a1ef241de28",
+     "applied_sha256": "913d504323fb93944ce3cc7ddcdf47db081b54e14087adce10923895c50245b1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "19ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 412688,
+     "span_size": 44176,
+     "retail_sha256": "e8c4e513e95506f6b76ed15833f9241615065534d1765024451c3a1ef241de28",
+     "applied_sha256": "913d504323fb93944ce3cc7ddcdf47db081b54e14087adce10923895c50245b1",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "LV",
+   "team_code": "20",
+   "body_code": "20",
+   "code": "20",
+   "archive": "c20.iff",
+   "outer_index": 368,
+   "outer_size": 233392,
+   "span_offset": 0,
+   "span_size": 223072,
+   "retail_sha256": "2050910d93f0a38562ac0015de4229a84322b30fe6a75bdcb4c855e55c3d1842",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "f5494f3ea14592532533d4a49bd381ec0fc7743d2283789f49f8eb8b5e418f69",
+    "jacket": "161e9e682d44801cb923c870ee76f996ecf720b340d4232b3dc0d70c5f95f632",
+    "logo": "58f82c8d3d1b8c78d4f90f368816e5615a480be87233b521cefef8aedab3b0c6",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "c69feec872878b4098d97c9b9f7cc1f499800fa2b56340bbf385aef1c3f22e18",
+    "sideline_dry": "60d991b94e1846b0fd257d60d5ae6c4f42e0c8bbe59c203813ad9d8d3326b7bc",
+    "sideline_rain": "dd803fbae988056d1d6c608a5eaea4a9527b396e761830f3ee321fd1fba84288"
+   },
+   "palette_max": 256,
+   "applied_sha256": "2e72027f098c0d4cc6477d134002954c4d8c8c666cdc7337c351ee62a55d560c",
+   "superseded_sha256": [
+    "b91e77a659dd38088cda4cbd36141a104d5dfd0732825b1b274b879122151862",
+    "4dc8fac2834a9f53dc9f40f24ec9eecbc1be6d72b90e96af47bd8cb25118f8d7"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 223039,
+    "stored_size": 223040,
+    "padding_bytes": 1,
+    "scratch_needed": 76,
+    "scratch_retail": 80,
+    "matches_expanded": 1694
+   },
+   "sideline": [
+    {
+     "package": "20hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 811152,
+     "span_size": 28176,
+     "retail_sha256": "9da4ae5ae5e76afc34f86645eaf1b7346568f25de18b3e4703b052a19e2232c2",
+     "applied_sha256": "43148e23ee4074fee74c9a662c97fc5033d8e3459c0278e9f5bc08b84d9d4bf9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 16
+    },
+    {
+     "package": "20hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 401152,
+     "span_size": 28176,
+     "retail_sha256": "9da4ae5ae5e76afc34f86645eaf1b7346568f25de18b3e4703b052a19e2232c2",
+     "applied_sha256": "43148e23ee4074fee74c9a662c97fc5033d8e3459c0278e9f5bc08b84d9d4bf9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 16
+    },
+    {
+     "package": "20hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 798496,
+     "span_size": 56832,
+     "retail_sha256": "6cf061f1b62809e549cc1962cf3d0a80fe5a9c48757a40875e0ea249310a9f61",
+     "applied_sha256": "bf14a5b8719867ea0ad933296eaab368494fa1af95d2b3401f05e5de9300658c",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "20hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 401808,
+     "span_size": 56832,
+     "retail_sha256": "6cf061f1b62809e549cc1962cf3d0a80fe5a9c48757a40875e0ea249310a9f61",
+     "applied_sha256": "bf14a5b8719867ea0ad933296eaab368494fa1af95d2b3401f05e5de9300658c",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "20adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5488,
+     "span_size": 28176,
+     "retail_sha256": "9da4ae5ae5e76afc34f86645eaf1b7346568f25de18b3e4703b052a19e2232c2",
+     "applied_sha256": "43148e23ee4074fee74c9a662c97fc5033d8e3459c0278e9f5bc08b84d9d4bf9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 16
+    },
+    {
+     "package": "20ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 415488,
+     "span_size": 28176,
+     "retail_sha256": "9da4ae5ae5e76afc34f86645eaf1b7346568f25de18b3e4703b052a19e2232c2",
+     "applied_sha256": "43148e23ee4074fee74c9a662c97fc5033d8e3459c0278e9f5bc08b84d9d4bf9",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 16
+    },
+    {
+     "package": "20arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5488,
+     "span_size": 56832,
+     "retail_sha256": "6cf061f1b62809e549cc1962cf3d0a80fe5a9c48757a40875e0ea249310a9f61",
+     "applied_sha256": "bf14a5b8719867ea0ad933296eaab368494fa1af95d2b3401f05e5de9300658c",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    },
+    {
+     "package": "20ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 402176,
+     "span_size": 56832,
+     "retail_sha256": "6cf061f1b62809e549cc1962cf3d0a80fe5a9c48757a40875e0ea249310a9f61",
+     "applied_sha256": "bf14a5b8719867ea0ad933296eaab368494fa1af95d2b3401f05e5de9300658c",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 64
+    }
+   ]
+  },
+  {
+   "team": "PHI",
+   "team_code": "21",
+   "body_code": "18",
+   "code": "18",
+   "archive": "c18.iff",
+   "outer_index": 366,
+   "outer_size": 242064,
+   "span_offset": 0,
+   "span_size": 231648,
+   "retail_sha256": "e1655b43cbe694f30d353526b30d4d9d144135fbfa6a93fcbcdc80fc1c5a24a8",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "88e317e3151f28ba3634dc92e276402629672f04e4147d33cfc58157cf3fe972",
+    "jacket": "d455a1ea63e982787fd8c07c7cb9964990a33c5014f8859bdaf7b97c7e2d5380",
+    "logo": "b115d43c1fb7da0d2eed2b8fe9d858cc678768e730d3378b7605c90f316dc3bf",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "6dc75057e290409cc2dd81297e82871d8c4992b6282442ed7eaa3690371dde33",
+    "sideline_dry": "e4485a6117c692c456b36166af9958ce2eb37b1c41c96a127840460bb97b9930",
+    "sideline_rain": "58721ef879caf768365657dee7c27d50a50d0d4d80658f259322590b887bda8c"
+   },
+   "palette_max": 192,
+   "applied_sha256": "9fe2b6c35894aa545df8731d83199ed1e21f43fb7294a87abe5de90167325c4c",
+   "superseded_sha256": [
+    "e9ad2c81e12b3ce17b3a81b5b926e22a9fefcd27fde7d006e70e36cf2ff019ca",
+    "765de4f85ad74e72d7bc346bac5928ef3c0adf9223e4abd58f99ff647013b826"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 231615,
+    "stored_size": 231616,
+    "padding_bytes": 1,
+    "scratch_needed": 76,
+    "scratch_retail": 80,
+    "matches_expanded": 310
+   },
+   "sideline": [
+    {
+     "package": "21hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 826416,
+     "span_size": 29312,
+     "retail_sha256": "64b3f85127d9f713d03a05879d2041cfa311032fa0dfc427c8e2932319ab37db",
+     "applied_sha256": "55601b0db3185e256dfbbd1378bd93d03c3042e1f27e1b0496196c281e081ea6",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 80
+    },
+    {
+     "package": "21hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 404544,
+     "span_size": 29312,
+     "retail_sha256": "64b3f85127d9f713d03a05879d2041cfa311032fa0dfc427c8e2932319ab37db",
+     "applied_sha256": "55601b0db3185e256dfbbd1378bd93d03c3042e1f27e1b0496196c281e081ea6",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 80
+    },
+    {
+     "package": "21hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 809120,
+     "span_size": 43632,
+     "retail_sha256": "b5fab9f2e7819bb62c6a132dcdaa6ee2a8974a01b7602525248e2f3f6ca2624c",
+     "applied_sha256": "001f6a714c44b82d5d0c3820c011c4e4d7c95f39f5357bddf33b7116062878a7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "21hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 406592,
+     "span_size": 43632,
+     "retail_sha256": "b5fab9f2e7819bb62c6a132dcdaa6ee2a8974a01b7602525248e2f3f6ca2624c",
+     "applied_sha256": "001f6a714c44b82d5d0c3820c011c4e4d7c95f39f5357bddf33b7116062878a7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "21adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4416,
+     "span_size": 29312,
+     "retail_sha256": "64b3f85127d9f713d03a05879d2041cfa311032fa0dfc427c8e2932319ab37db",
+     "applied_sha256": "55601b0db3185e256dfbbd1378bd93d03c3042e1f27e1b0496196c281e081ea6",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 80
+    },
+    {
+     "package": "21ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 426288,
+     "span_size": 29312,
+     "retail_sha256": "64b3f85127d9f713d03a05879d2041cfa311032fa0dfc427c8e2932319ab37db",
+     "applied_sha256": "55601b0db3185e256dfbbd1378bd93d03c3042e1f27e1b0496196c281e081ea6",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 80
+    },
+    {
+     "package": "21arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4416,
+     "span_size": 43632,
+     "retail_sha256": "b5fab9f2e7819bb62c6a132dcdaa6ee2a8974a01b7602525248e2f3f6ca2624c",
+     "applied_sha256": "001f6a714c44b82d5d0c3820c011c4e4d7c95f39f5357bddf33b7116062878a7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "21ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 406944,
+     "span_size": 43632,
+     "retail_sha256": "b5fab9f2e7819bb62c6a132dcdaa6ee2a8974a01b7602525248e2f3f6ca2624c",
+     "applied_sha256": "001f6a714c44b82d5d0c3820c011c4e4d7c95f39f5357bddf33b7116062878a7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "PIT",
+   "team_code": "22",
+   "body_code": "26",
+   "code": "26",
+   "archive": "c26.iff",
+   "outer_index": 374,
+   "outer_size": 240736,
+   "span_offset": 0,
+   "span_size": 230416,
+   "retail_sha256": "84bdcf0afaf9001e5b6de39af8b6a1709f0cd02247fe0acc851401e1f7b30726",
+   "hide_glasses": true,
+   "art": {
+    "shirt": "6a283db0ccd90f37cf1196ec59fda976b45ece09b5ae519a54196033110754da",
+    "jacket": "d3d8a91f45774ed97d0cad8c53f28221ade25b7142be283f435422c381d9260f",
+    "logo": "041a01a7b483b572eaab2a1ce285a60eeb9edde8a520575cc1ac5f30ade8c23e",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "f0fef3da8ed379f070bd981ea02b97dc7a6102d09a5bd7b90ceb87517e1344f1",
+    "sideline_dry": "9461c39915248b23f7f50b9e6b42c391fb15b72b523c7b8fdbd7e78f1f2875aa",
+    "sideline_rain": "bd9f8f9a1d68aacc757e5cb14e47f1f06cf85f3e5b18bb6b235b5b1e5fb2fd2f"
+   },
+   "palette_max": 256,
+   "applied_sha256": "c6cd30b0f49c57031f16484bedbe7b31e79ff0289455c292585e3b71d1d6d2d0",
+   "superseded_sha256": [
+    "7ab6357ff090dccca290a06926648ed44ca4e84a9605c200d2c4d09dbc86ba77",
+    "f55a6344dbc33a2418b12635cf85dc0e9444e581442786c999f0884133a5e6b3"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 230384,
+    "stored_size": 230384,
+    "padding_bytes": 0,
+    "scratch_needed": 110,
+    "scratch_retail": 128,
+    "matches_expanded": 4930
+   },
+   "sideline": [
+    {
+     "package": "22hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 819712,
+     "span_size": 36944,
+     "retail_sha256": "fd2e3fd617ed5f7dd720d6f1eef0f3c471024d22e15239eec1f6e20459e7b712",
+     "applied_sha256": "7f5a4ee7635899ff238bf3c4f5f64d6a750ded3db709420ee14a727d05792cf3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 402848,
+     "span_size": 36944,
+     "retail_sha256": "fd2e3fd617ed5f7dd720d6f1eef0f3c471024d22e15239eec1f6e20459e7b712",
+     "applied_sha256": "7f5a4ee7635899ff238bf3c4f5f64d6a750ded3db709420ee14a727d05792cf3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 802368,
+     "span_size": 49648,
+     "retail_sha256": "b31d27c3ae921b7830c1d0235f1cc672e41d45979178b7f2547afea2b2f423b6",
+     "applied_sha256": "6735f907b6e8234b8e9dc17d1cfbb0f80a7df059f86279061482f1037b7f16e0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 402240,
+     "span_size": 49648,
+     "retail_sha256": "b31d27c3ae921b7830c1d0235f1cc672e41d45979178b7f2547afea2b2f423b6",
+     "applied_sha256": "6735f907b6e8234b8e9dc17d1cfbb0f80a7df059f86279061482f1037b7f16e0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 36944,
+     "retail_sha256": "fd2e3fd617ed5f7dd720d6f1eef0f3c471024d22e15239eec1f6e20459e7b712",
+     "applied_sha256": "7f5a4ee7635899ff238bf3c4f5f64d6a750ded3db709420ee14a727d05792cf3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 421776,
+     "span_size": 36944,
+     "retail_sha256": "fd2e3fd617ed5f7dd720d6f1eef0f3c471024d22e15239eec1f6e20459e7b712",
+     "applied_sha256": "7f5a4ee7635899ff238bf3c4f5f64d6a750ded3db709420ee14a727d05792cf3",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4912,
+     "span_size": 49648,
+     "retail_sha256": "b31d27c3ae921b7830c1d0235f1cc672e41d45979178b7f2547afea2b2f423b6",
+     "applied_sha256": "6735f907b6e8234b8e9dc17d1cfbb0f80a7df059f86279061482f1037b7f16e0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "22ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 405040,
+     "span_size": 49648,
+     "retail_sha256": "b31d27c3ae921b7830c1d0235f1cc672e41d45979178b7f2547afea2b2f423b6",
+     "applied_sha256": "6735f907b6e8234b8e9dc17d1cfbb0f80a7df059f86279061482f1037b7f16e0",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "LAR",
+   "team_code": "23",
+   "body_code": "23",
+   "code": "23",
+   "archive": "c23.iff",
+   "outer_index": 371,
+   "outer_size": 235232,
+   "span_offset": 0,
+   "span_size": 224912,
+   "retail_sha256": "d4a74ef8833ca721764232376d4d2949ff526a48ff7026b9248f102f21bbb179",
+   "hide_glasses": true,
+   "art": {
+    "shirt": "d5506e83e6ed6789fa60fd8b4414c94fbe6b7f141e8e206e2728279455dc5c54",
+    "jacket": "03e70259b6710a9234b0ee4fdeec1ba642bd20bf59b086a5a6b01c07122d1416",
+    "logo": "dc05cfb727c6e5d9e652177263f0b34225370f3a870eed2aeef48bdd814ad20f",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "2c4f1d4fe1399ff329e36a8f32a9d5ea8c056d1a46e318763abd82cf0fc6d8c5",
+    "sideline_dry": "0f350f63b0ed9cdaaeb3949f6c0b20714d134a869b5b952321aaf2254e6a53e8",
+    "sideline_rain": "d99d102177ff105319eebfea8276062ad50484a7c82e641e4b2f303c59045c78"
+   },
+   "geometry": "23c7906068d3b18a3cf5fcdc681c098ea45dbaa2362b3539c8960f1c1b897d3e",
+   "palette_max": 256,
+   "applied_sha256": "b63f3d930ce2f97b739e8d443f8de1beb247ebadb151a2850e80a8fe179a0326",
+   "superseded_sha256": [
+    "72dd51a00f3eeb309a575d7d5fdc8c2364d5f82056dc59d0f2941eead597b5b3",
+    "d243f2b268169a27a9c43fc2bfe0f5a3dbc64386b0b1a3f42ffdef22ccff978b",
+    "632703caa0db5f09b6100b0e74f10157e7cfde3ec0041acf337025d9cb51298d",
+    "04414aeb195d556eca3c3170f03e91578dc6ab6109cbde731319f0cd06b52c2f"
+   ],
+   "fit": {
+    "encoder": "optimal",
+    "slack": 0,
+    "stream_bytes": 224880,
+    "stored_size": 224880,
+    "padding_bytes": 0,
+    "scratch_needed": 54,
+    "scratch_retail": 144,
+    "matches_expanded": 231
+   },
+   "sideline": [
+    {
+     "package": "23hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 835344,
+     "span_size": 30624,
+     "retail_sha256": "1fe84dfc3c3e35a8f3681b7b75aad77f46412d21e5b31a0f362859f383134595",
+     "applied_sha256": "57721af3701916d9dafba6114ee889bc3d8ef72cf5759e7bb6e249155a2d59aa",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "23hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 409952,
+     "span_size": 30624,
+     "retail_sha256": "1fe84dfc3c3e35a8f3681b7b75aad77f46412d21e5b31a0f362859f383134595",
+     "applied_sha256": "57721af3701916d9dafba6114ee889bc3d8ef72cf5759e7bb6e249155a2d59aa",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "23hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 819936,
+     "span_size": 45136,
+     "retail_sha256": "5015370d4ec633d8e6b1238b03cb18b41acacd00a72e080180ba04477bc67686",
+     "applied_sha256": "3f121c0b29cffd8ebd46cea61c53b475efdbb30c7160500f6bcfba62bb1f3f3f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 16,
+     "scratch_retail": 128
+    },
+    {
+     "package": "23hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 412064,
+     "span_size": 45136,
+     "retail_sha256": "5015370d4ec633d8e6b1238b03cb18b41acacd00a72e080180ba04477bc67686",
+     "applied_sha256": "3f121c0b29cffd8ebd46cea61c53b475efdbb30c7160500f6bcfba62bb1f3f3f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 16,
+     "scratch_retail": 128
+    },
+    {
+     "package": "23adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5312,
+     "span_size": 30624,
+     "retail_sha256": "1fe84dfc3c3e35a8f3681b7b75aad77f46412d21e5b31a0f362859f383134595",
+     "applied_sha256": "57721af3701916d9dafba6114ee889bc3d8ef72cf5759e7bb6e249155a2d59aa",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "23ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 430704,
+     "span_size": 30624,
+     "retail_sha256": "1fe84dfc3c3e35a8f3681b7b75aad77f46412d21e5b31a0f362859f383134595",
+     "applied_sha256": "57721af3701916d9dafba6114ee889bc3d8ef72cf5759e7bb6e249155a2d59aa",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "23arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5312,
+     "span_size": 45136,
+     "retail_sha256": "5015370d4ec633d8e6b1238b03cb18b41acacd00a72e080180ba04477bc67686",
+     "applied_sha256": "3f121c0b29cffd8ebd46cea61c53b475efdbb30c7160500f6bcfba62bb1f3f3f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 16,
+     "scratch_retail": 128
+    },
+    {
+     "package": "23ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413184,
+     "span_size": 45136,
+     "retail_sha256": "5015370d4ec633d8e6b1238b03cb18b41acacd00a72e080180ba04477bc67686",
+     "applied_sha256": "3f121c0b29cffd8ebd46cea61c53b475efdbb30c7160500f6bcfba62bb1f3f3f",
+     "sideline_palette_max": 256,
+     "scratch_needed": 16,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "LAC",
+   "team_code": "24",
+   "body_code": "24",
+   "code": "24",
+   "archive": "c24.iff",
+   "outer_index": 372,
+   "outer_size": 236304,
+   "span_offset": 0,
+   "span_size": 225888,
+   "retail_sha256": "33ed45edefb11fcc8122662d70b68c370bbd5403ee0d03ec3082fe3548ecbc13",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "ddab2f335b71da0c80c82b1771052252e13783647e998bb351519efebe99c221",
+    "jacket": "b045d57c1b28d40c924841f76ede12b96ef91512dc0ddbf1992811ac0542a7a3",
+    "logo": "2f57dc36a02c683b31b3d5ee75629b41bef6b7426e88b922a2df0ffc3f5ac18b",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "b6cc364c8cbb8f82d641e719aaad5c343142254701d6d06c5befc7345cf507dc",
+    "sideline_dry": "d367d0e1093e0784f337549152089dddc97c68c457f4f8d9d8dc9e64ab47cecb",
+    "sideline_rain": "1bfee5d1a292da7bc2a455dff358e0280156f6b14e420d85257b7471af429a6b"
+   },
+   "palette_max": 192,
+   "applied_sha256": "101458900609631a5f1b126e5262e2722cc5ebb851624ea27b18b00f0f80c68d",
+   "superseded_sha256": [
+    "6c1ba8f0186b160910081c7bc8a9b5a8c136e983943f1112783b673947abf14e",
+    "40e55ecbddcaa92fd6a5fb65c89207d12c62495fc8c15cfe07e8ff5cc2ef1b01"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 225856,
+    "stored_size": 225856,
+    "padding_bytes": 0,
+    "scratch_needed": 0,
+    "scratch_retail": 128,
+    "matches_expanded": 50
+   },
+   "sideline": [
+    {
+     "package": "24hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 835552,
+     "span_size": 24240,
+     "retail_sha256": "239a5c70d4e6bd265cfb5d0d0fca7a13226e35eaaf0db995940c8bd4599f73df",
+     "applied_sha256": "56ba0e95df48821a2a74908b467fff66127afa058b8ad6127fac9948b49bd582",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "24hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 408208,
+     "span_size": 24240,
+     "retail_sha256": "239a5c70d4e6bd265cfb5d0d0fca7a13226e35eaaf0db995940c8bd4599f73df",
+     "applied_sha256": "56ba0e95df48821a2a74908b467fff66127afa058b8ad6127fac9948b49bd582",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "24hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 820960,
+     "span_size": 38544,
+     "retail_sha256": "2e7049a9329e349ee24f758b4d960fc80ea6174ab23599bb9b1abc8801337e78",
+     "applied_sha256": "699f17eaece1d5994ef4ad4249373dfb2412dc7e9c6363b01d0002a0a3379abb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 20,
+     "scratch_retail": 128
+    },
+    {
+     "package": "24hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 410784,
+     "span_size": 38544,
+     "retail_sha256": "2e7049a9329e349ee24f758b4d960fc80ea6174ab23599bb9b1abc8801337e78",
+     "applied_sha256": "699f17eaece1d5994ef4ad4249373dfb2412dc7e9c6363b01d0002a0a3379abb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 20,
+     "scratch_retail": 128
+    },
+    {
+     "package": "24adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5824,
+     "span_size": 24240,
+     "retail_sha256": "239a5c70d4e6bd265cfb5d0d0fca7a13226e35eaaf0db995940c8bd4599f73df",
+     "applied_sha256": "56ba0e95df48821a2a74908b467fff66127afa058b8ad6127fac9948b49bd582",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "24ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 433168,
+     "span_size": 24240,
+     "retail_sha256": "239a5c70d4e6bd265cfb5d0d0fca7a13226e35eaaf0db995940c8bd4599f73df",
+     "applied_sha256": "56ba0e95df48821a2a74908b467fff66127afa058b8ad6127fac9948b49bd582",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "24arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5824,
+     "span_size": 38544,
+     "retail_sha256": "2e7049a9329e349ee24f758b4d960fc80ea6174ab23599bb9b1abc8801337e78",
+     "applied_sha256": "699f17eaece1d5994ef4ad4249373dfb2412dc7e9c6363b01d0002a0a3379abb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 20,
+     "scratch_retail": 128
+    },
+    {
+     "package": "24ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 416000,
+     "span_size": 38544,
+     "retail_sha256": "2e7049a9329e349ee24f758b4d960fc80ea6174ab23599bb9b1abc8801337e78",
+     "applied_sha256": "699f17eaece1d5994ef4ad4249373dfb2412dc7e9c6363b01d0002a0a3379abb",
+     "sideline_palette_max": 256,
+     "scratch_needed": 20,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "SF",
+   "team_code": "25",
+   "body_code": "25",
+   "code": "25",
+   "archive": "c25.iff",
+   "outer_index": 373,
+   "outer_size": 237504,
+   "span_offset": 0,
+   "span_size": 227184,
+   "retail_sha256": "e60a6a031c26fe41281f587830a04596ee93201b88c65569438e23ed8d4b7364",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "b0a8afbcaadc756cc2b0f12053817b4a85a8cdf44397781d08f3d6aef665d594",
+    "jacket": "52da3cc18ed29060941bf3cada22bdedb81eeb56a2133d9a0be7133ca3600388",
+    "logo": "8b61ea98a10153ac7a3c8ab4179e6f6a0a991b9eb69fc2a2470c328a93adac2a",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "cb0e1689ec7e43dcd53c09031f410ff29a09faaa59445bddfaa3bb38579a5b2e",
+    "sideline_dry": "958feb6aaf851c5c83f73b9a3dbae20f916844806d5fed9f5cea51b108667b4f",
+    "sideline_rain": "9fd3b95c155e1edd8901a41bb1e125b5b7f135d17cd311065a971e25545b5b97"
+   },
+   "geometry": "f7412a450a724abbd7aca88673561ff877c827829414fc41beadaacd3dbc6dba",
+   "palette_max": 256,
+   "applied_sha256": "276802c4f5e8d266565cd2433cb48b502f1cdaac4c58b975aefa34d72f840eb1",
+   "superseded_sha256": [
+    "fcfc06d0be0a01dda5c1481df72d62eb1d1dae84e53c35b7714b2d3d1c4a37a7",
+    "94ac7de87641624dfddccc1ce344edf695f269c847f9bf031f38da2c010be9f7",
+    "663233b69b9adde38c5dc45640c5c3b4db97874a19b8156a8c4d9421d7a71fde",
+    "e256bc0829db247bdfa5f2b971989761113a18eeca0e0425f5ce246a2ad0aca2"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 227152,
+    "stored_size": 227152,
+    "padding_bytes": 0,
+    "scratch_needed": 74,
+    "scratch_retail": 80,
+    "matches_expanded": 719
+   },
+   "sideline": [
+    {
+     "package": "25hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 831424,
+     "span_size": 29376,
+     "retail_sha256": "20ebe045c94a1f976068470e8553d844791664c1cc14a00ad36a4b7e0e039d19",
+     "applied_sha256": "4c241f78df32ca5b885c6f91346e3bdbf2f640f080204a9d5c47bf9e7a6b5356",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "25hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 407520,
+     "span_size": 29376,
+     "retail_sha256": "20ebe045c94a1f976068470e8553d844791664c1cc14a00ad36a4b7e0e039d19",
+     "applied_sha256": "4c241f78df32ca5b885c6f91346e3bdbf2f640f080204a9d5c47bf9e7a6b5356",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "25hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 821760,
+     "span_size": 48960,
+     "retail_sha256": "31ca544c4b33724572564ab7b9e6574fccc34ee42d9b162803826fa0805c5af6",
+     "applied_sha256": "2eb08f1729cba1f9888a701f7575b3dac355f831a4fb39e436cd7a5f258ed80e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "25hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 411120,
+     "span_size": 48960,
+     "retail_sha256": "31ca544c4b33724572564ab7b9e6574fccc34ee42d9b162803826fa0805c5af6",
+     "applied_sha256": "2eb08f1729cba1f9888a701f7575b3dac355f831a4fb39e436cd7a5f258ed80e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "25adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5104,
+     "span_size": 29376,
+     "retail_sha256": "20ebe045c94a1f976068470e8553d844791664c1cc14a00ad36a4b7e0e039d19",
+     "applied_sha256": "4c241f78df32ca5b885c6f91346e3bdbf2f640f080204a9d5c47bf9e7a6b5356",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "25ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429008,
+     "span_size": 29376,
+     "retail_sha256": "20ebe045c94a1f976068470e8553d844791664c1cc14a00ad36a4b7e0e039d19",
+     "applied_sha256": "4c241f78df32ca5b885c6f91346e3bdbf2f640f080204a9d5c47bf9e7a6b5356",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "25arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5104,
+     "span_size": 48960,
+     "retail_sha256": "31ca544c4b33724572564ab7b9e6574fccc34ee42d9b162803826fa0805c5af6",
+     "applied_sha256": "2eb08f1729cba1f9888a701f7575b3dac355f831a4fb39e436cd7a5f258ed80e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "25ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 415744,
+     "span_size": 48960,
+     "retail_sha256": "31ca544c4b33724572564ab7b9e6574fccc34ee42d9b162803826fa0805c5af6",
+     "applied_sha256": "2eb08f1729cba1f9888a701f7575b3dac355f831a4fb39e436cd7a5f258ed80e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "SEA",
+   "team_code": "26",
+   "body_code": "13",
+   "code": "13",
+   "archive": "c13.iff",
+   "outer_index": 361,
+   "outer_size": 234592,
+   "span_offset": 0,
+   "span_size": 224272,
+   "retail_sha256": "81cfa4c156d94066ac77726c14ce689725396ad697e33ee7ba9a027174afe976",
+   "hide_glasses": true,
+   "art": {
+    "shirt": "d19ad57b1e8940b060806d1e7555bcc5a788e6d17965bce3fe4192a2520b8cf8",
+    "jacket": "1802cf52dc860354031830dce3b30ff823919b5b1b103e362d02a1eb68ee2a19",
+    "logo": "1e752d0d9835e9478762f32b0477c1447490e94204fec39f7d58de74de31052d",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "c906ee0bc8ed2d2011d591f3e76102c063ed1b205bc8db33c32f82ea9a5facc8",
+    "sideline_dry": "f98571a86583374f798eadfb18c9252e11e617e1939b7a8560f2656c2d3d4ca2",
+    "sideline_rain": "c80570def30e93773f3a2cd1cc6ea8a9a4d7034f330b5e219810e681eb4d09bb"
+   },
+   "palette_max": 256,
+   "applied_sha256": "5822368da3b9af0e966ff6c3ec451e8367fac209c2cfd40f16c91654202a0553",
+   "superseded_sha256": [
+    "28d3a2dbc125b6e9e69596445f9e827c4b78c1797e6b48b5e4bab474fb627be7",
+    "d1c62b97c95d30735decdd478be3b71ae4b61e42134c29b20dbe32805bb95a32"
+   ],
+   "fit": {
+    "encoder": "optimal",
+    "slack": 0,
+    "stream_bytes": 224240,
+    "stored_size": 224240,
+    "padding_bytes": 0,
+    "scratch_needed": 110,
+    "scratch_retail": 144,
+    "matches_expanded": 158
+   },
+   "sideline": [
+    {
+     "package": "26hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 834192,
+     "span_size": 56656,
+     "retail_sha256": "17632687ce05c4207d9247a328928861c9c0ad3e243ed3f31f13901a84d99dc7",
+     "applied_sha256": "4723e7846f00e59d1273e1f2b516339ce816d152f43dde01e721b5291a03fce7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "26hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 409680,
+     "span_size": 56656,
+     "retail_sha256": "17632687ce05c4207d9247a328928861c9c0ad3e243ed3f31f13901a84d99dc7",
+     "applied_sha256": "4723e7846f00e59d1273e1f2b516339ce816d152f43dde01e721b5291a03fce7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "26hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 819232,
+     "span_size": 42736,
+     "retail_sha256": "ea47a460dde7bc12fe11b346e588df2d0d962bf95231bacba6be06666183e6ac",
+     "applied_sha256": "ba1d2c2215614b99730737b6c8868191d65dabd9ba6bd7eea03400217b5eeaaf",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "26hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 411920,
+     "span_size": 42736,
+     "retail_sha256": "ea47a460dde7bc12fe11b346e588df2d0d962bf95231bacba6be06666183e6ac",
+     "applied_sha256": "ba1d2c2215614b99730737b6c8868191d65dabd9ba6bd7eea03400217b5eeaaf",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "26adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5392,
+     "span_size": 56656,
+     "retail_sha256": "17632687ce05c4207d9247a328928861c9c0ad3e243ed3f31f13901a84d99dc7",
+     "applied_sha256": "4723e7846f00e59d1273e1f2b516339ce816d152f43dde01e721b5291a03fce7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "26ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429904,
+     "span_size": 56656,
+     "retail_sha256": "17632687ce05c4207d9247a328928861c9c0ad3e243ed3f31f13901a84d99dc7",
+     "applied_sha256": "4723e7846f00e59d1273e1f2b516339ce816d152f43dde01e721b5291a03fce7",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 80
+    },
+    {
+     "package": "26arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5392,
+     "span_size": 42736,
+     "retail_sha256": "ea47a460dde7bc12fe11b346e588df2d0d962bf95231bacba6be06666183e6ac",
+     "applied_sha256": "ba1d2c2215614b99730737b6c8868191d65dabd9ba6bd7eea03400217b5eeaaf",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "26ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 412704,
+     "span_size": 42736,
+     "retail_sha256": "ea47a460dde7bc12fe11b346e588df2d0d962bf95231bacba6be06666183e6ac",
+     "applied_sha256": "ba1d2c2215614b99730737b6c8868191d65dabd9ba6bd7eea03400217b5eeaaf",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "TB",
+   "team_code": "27",
+   "body_code": "27",
+   "code": "27",
+   "archive": "c27.iff",
+   "outer_index": 375,
+   "outer_size": 236704,
+   "span_offset": 0,
+   "span_size": 226288,
+   "retail_sha256": "af2a88700299cd0f5600fa4ae3d3c204084423455ef44700354b6e3668065ba4",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "41fc01a376c699398be700a779dc3d938a68e12e051b9e34e9e4c84c670b1a0c",
+    "jacket": "0a0873feecf6f2e42fd71fcaf74609617a61660f6235389f4e23c4efa5c781f4",
+    "logo": "7e5692c7289541e8da5f12bf5b7bbb7846cb519c71272cb9b54151ef3196a919",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "f96ca8c7c645fa7b4c280591bd230308ea54fa2e0cf6b02fe158e92c62ae6889",
+    "sideline_dry": "4adabce58aa58a304e0c9581b37df840df69689564265db388f75a410c161600",
+    "sideline_rain": "6b6478d770d48f5821d94b2dca9f892e56e09720709d570c230b2a58328cc340"
+   },
+   "palette_max": 256,
+   "applied_sha256": "8231fc044d89309ecfb55e4f0ab4884fc4a3e9ccf2526a5c9d81149e70b70082",
+   "superseded_sha256": [
+    "9fbeb91115e21d4cbbd3bfb0352268cea9c2af0517eb1dfc36b4976a1ffb8ff0",
+    "0bcf4ca04ac09361486f7924aa5126cf1aa56bdd947c79b892a997c7a90abee2",
+    "e9b732c8bf227a2fb5a40027bb509e2083f4a5a7c10e53302b227abd6215fefc",
+    "772180660bbc7835d6505186d3800b858f36d8b351d68aa158810db8e3a102e5"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 226256,
+    "stored_size": 226256,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 96,
+    "matches_expanded": 332
+   },
+   "sideline": [
+    {
+     "package": "27hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 827280,
+     "span_size": 29936,
+     "retail_sha256": "f8a9cc500b8e5e060e6f389a2cb857b6ec8bb2e591fac35eab0fea3555034894",
+     "applied_sha256": "8a9eaa9ea05fb37f4972beb19ab59e72b2fdf2d4ca99859d319b188fea96c352",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "27hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 405264,
+     "span_size": 29936,
+     "retail_sha256": "f8a9cc500b8e5e060e6f389a2cb857b6ec8bb2e591fac35eab0fea3555034894",
+     "applied_sha256": "8a9eaa9ea05fb37f4972beb19ab59e72b2fdf2d4ca99859d319b188fea96c352",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "27hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 816896,
+     "span_size": 39216,
+     "retail_sha256": "21329c78d40952aff0a9a6129708530ede3947d9ee3b0503453f23a093d223d5",
+     "applied_sha256": "421f8a3f308a64d8d54a9ce056997ba15333df76ca9fb7bccef88aa04bd4001b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "27hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 407984,
+     "span_size": 39216,
+     "retail_sha256": "21329c78d40952aff0a9a6129708530ede3947d9ee3b0503453f23a093d223d5",
+     "applied_sha256": "421f8a3f308a64d8d54a9ce056997ba15333df76ca9fb7bccef88aa04bd4001b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "27adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4272,
+     "span_size": 29936,
+     "retail_sha256": "f8a9cc500b8e5e060e6f389a2cb857b6ec8bb2e591fac35eab0fea3555034894",
+     "applied_sha256": "8a9eaa9ea05fb37f4972beb19ab59e72b2fdf2d4ca99859d319b188fea96c352",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "27ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 426288,
+     "span_size": 29936,
+     "retail_sha256": "f8a9cc500b8e5e060e6f389a2cb857b6ec8bb2e591fac35eab0fea3555034894",
+     "applied_sha256": "8a9eaa9ea05fb37f4972beb19ab59e72b2fdf2d4ca99859d319b188fea96c352",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "27arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4272,
+     "span_size": 39216,
+     "retail_sha256": "21329c78d40952aff0a9a6129708530ede3947d9ee3b0503453f23a093d223d5",
+     "applied_sha256": "421f8a3f308a64d8d54a9ce056997ba15333df76ca9fb7bccef88aa04bd4001b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    },
+    {
+     "package": "27ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413184,
+     "span_size": 39216,
+     "retail_sha256": "21329c78d40952aff0a9a6129708530ede3947d9ee3b0503453f23a093d223d5",
+     "applied_sha256": "421f8a3f308a64d8d54a9ce056997ba15333df76ca9fb7bccef88aa04bd4001b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 96
+    }
+   ]
+  },
+  {
+   "team": "TEN",
+   "team_code": "28",
+   "body_code": "15",
+   "code": "15",
+   "archive": "c15.iff",
+   "outer_index": 363,
+   "outer_size": 238864,
+   "span_offset": 0,
+   "span_size": 228544,
+   "retail_sha256": "f2a1d137c4c9cff3fc66922f90fe1da5dcbebd2608af03122cdd97ec0c805bc2",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "552dd1e1dce61b4c6e8ffa5061b58b324f3e07c259e2684ef0c266f2dd15354a",
+    "jacket": "4fe11c84fd1614ba889c387176c81a29042757c8915a484c0ec93c04f4ff3f8a",
+    "logo": "3c9254aa20cc5d82d6aa8e951589e2fb9542e47c2c3740364f7a25df666e8762",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "cef4a840e0133abf4d616e56b0b674bfa74d30a41115ff883844047286d62293",
+    "sideline_dry": "f1dacb22bc5863f7c8e6784232c675a412373a44d588ca3d55eaee6c68ec2adc",
+    "sideline_rain": "fdef38afd90279f7ab7d75246650ee5a13259945319ac4f184d294db18db492a"
+   },
+   "geometry": "083f824ad14e6a33479addaaf5176424e76b8eac97d8e529f77509b000a06a88",
+   "palette_max": 256,
+   "applied_sha256": "c0a2d1ecc15c39df5afffdf83799e3ffe9450665553987b49b1e5e764f062e3e",
+   "superseded_sha256": [
+    "18ade6b63a139255753ea9bb10cd68de1e64882f74ff87cd5bba1db6eb9f9de6",
+    "af0a14763fa6a6ca9762a138702c1f18d1572c3016cc6606e24fd8da246b2eae",
+    "f6792f56d25fa44f2e9e369369623fd931ebbfb9015cdb0bb45808020e6ec44c",
+    "86844ecc7c17efc6b592684adf6c1a3006dcf871bc45622b53346e9dae05c589"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 228512,
+    "stored_size": 228512,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 96,
+    "matches_expanded": 95
+   },
+   "sideline": [
+    {
+     "package": "28hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 829424,
+     "span_size": 40720,
+     "retail_sha256": "1b5c188ecce391ef6ad95c700d6ee110d04631e22ebec420620539ce7b0cc34e",
+     "applied_sha256": "b0265e30199e4dfa043093c3f732ad1d18225ddb445a7ffaad87875e2c38a054",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 403168,
+     "span_size": 40720,
+     "retail_sha256": "1b5c188ecce391ef6ad95c700d6ee110d04631e22ebec420620539ce7b0cc34e",
+     "applied_sha256": "b0265e30199e4dfa043093c3f732ad1d18225ddb445a7ffaad87875e2c38a054",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 812768,
+     "span_size": 52816,
+     "retail_sha256": "de1d76838efdc8201a79f1a7a1f62e8119088aac4eebed2cdb55f750f8f03072",
+     "applied_sha256": "d90db7e4c26da57a57614ec119785622efdfdc7cac76a63b1147ed926a15126e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 406896,
+     "span_size": 52816,
+     "retail_sha256": "de1d76838efdc8201a79f1a7a1f62e8119088aac4eebed2cdb55f750f8f03072",
+     "applied_sha256": "d90db7e4c26da57a57614ec119785622efdfdc7cac76a63b1147ed926a15126e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4192,
+     "span_size": 40720,
+     "retail_sha256": "1b5c188ecce391ef6ad95c700d6ee110d04631e22ebec420620539ce7b0cc34e",
+     "applied_sha256": "b0265e30199e4dfa043093c3f732ad1d18225ddb445a7ffaad87875e2c38a054",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 430448,
+     "span_size": 40720,
+     "retail_sha256": "1b5c188ecce391ef6ad95c700d6ee110d04631e22ebec420620539ce7b0cc34e",
+     "applied_sha256": "b0265e30199e4dfa043093c3f732ad1d18225ddb445a7ffaad87875e2c38a054",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4192,
+     "span_size": 52816,
+     "retail_sha256": "de1d76838efdc8201a79f1a7a1f62e8119088aac4eebed2cdb55f750f8f03072",
+     "applied_sha256": "d90db7e4c26da57a57614ec119785622efdfdc7cac76a63b1147ed926a15126e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "28ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 410064,
+     "span_size": 52816,
+     "retail_sha256": "de1d76838efdc8201a79f1a7a1f62e8119088aac4eebed2cdb55f750f8f03072",
+     "applied_sha256": "d90db7e4c26da57a57614ec119785622efdfdc7cac76a63b1147ed926a15126e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "team_code": "29",
+   "body_code": "29",
+   "code": "29",
+   "archive": "c29.iff",
+   "outer_index": 377,
+   "outer_size": 233712,
+   "span_offset": 0,
+   "span_size": 223392,
+   "retail_sha256": "9967d59b6574ae4a9514c6c1a2165f2dc2df90a6720fd178c633d10a6c1bd209",
+   "hide_glasses": true,
+   "art": {
+    "shirt": "e23abbcd2d93ef8989fa93eb6186ec72cb0f3ecafcdd95f7bc8fde6054ac48fc",
+    "jacket": "b1973b961646e2a4d6c00350b01cc11035f8149492273952427a5b68e7e22397",
+    "logo": "9bb9ffd7406141a9f7aa6919c13c40d56e18215cf7b8bc476e935547ab0fabb1",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "29d444a3b34eaaa6b909e0ceb0e927a882791e272a2edb9cbe1e599626a157b7",
+    "sideline_dry": "8278fce55539f284f42e7a32c95765d67869cf2eb57748d66edda837ef0405e2",
+    "sideline_rain": "913f092bbddc50c67573ddf0afd384a5465169b5f07501c5356500aeb490328c"
+   },
+   "geometry": "eb8f60faee7cbc193e4504c6743712d0c3febaa46da87a14c68707f5d61d6c95",
+   "palette_max": 256,
+   "applied_sha256": "fe54aac80ad1eb7194e10a2209a99d50878ceabbd3af801fd432efd2b04d6cec",
+   "superseded_sha256": [
+    "9a8dd70bc4f9d7e25a85ac2c836361671b330b414477f270999233a1ea7cacfc",
+    "02faaf9493e17603c954573a8940cb4f82a00486a6a5c28f02f66e8f04572926",
+    "0e95058f3cc95a721257580465bd8225c2c97b6a93f4a0473d54c806a907f840",
+    "8f23da7ec9b7450ce15ba2c922fcd6623e6ee7b78012dd870aa9ec30675b508f"
+   ],
+   "fit": {
+    "encoder": "greedy",
+    "slack": 0,
+    "stream_bytes": 223360,
+    "stored_size": 223360,
+    "padding_bytes": 0,
+    "scratch_needed": 69,
+    "scratch_retail": 128,
+    "matches_expanded": 595
+   },
+   "sideline": [
+    {
+     "package": "29hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 831184,
+     "span_size": 33952,
+     "retail_sha256": "b8bc9ed7ff24ad5dafc1f7cbe65413a46e17df13d623c59443415389a79185a1",
+     "applied_sha256": "f96b8fb2c2ab135bcb19b039fc33cc725d179b46558aa49deea0ad930c36bb83",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 406800,
+     "span_size": 33952,
+     "retail_sha256": "b8bc9ed7ff24ad5dafc1f7cbe65413a46e17df13d623c59443415389a79185a1",
+     "applied_sha256": "f96b8fb2c2ab135bcb19b039fc33cc725d179b46558aa49deea0ad930c36bb83",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 817904,
+     "span_size": 39808,
+     "retail_sha256": "2214df1bfae0f2fe46c1d5d8b1480c9c6b370854dbfe3d60b56a099da6d9319d",
+     "applied_sha256": "f522ae0e6336bc1b3d17a6c3b68982595e25247f1652bb9aa7f9add56566c263",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 409232,
+     "span_size": 39808,
+     "retail_sha256": "2214df1bfae0f2fe46c1d5d8b1480c9c6b370854dbfe3d60b56a099da6d9319d",
+     "applied_sha256": "f522ae0e6336bc1b3d17a6c3b68982595e25247f1652bb9aa7f9add56566c263",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4528,
+     "span_size": 33952,
+     "retail_sha256": "b8bc9ed7ff24ad5dafc1f7cbe65413a46e17df13d623c59443415389a79185a1",
+     "applied_sha256": "f96b8fb2c2ab135bcb19b039fc33cc725d179b46558aa49deea0ad930c36bb83",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 428912,
+     "span_size": 33952,
+     "retail_sha256": "b8bc9ed7ff24ad5dafc1f7cbe65413a46e17df13d623c59443415389a79185a1",
+     "applied_sha256": "f96b8fb2c2ab135bcb19b039fc33cc725d179b46558aa49deea0ad930c36bb83",
+     "sideline_palette_max": 256,
+     "scratch_needed": 1,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4528,
+     "span_size": 39808,
+     "retail_sha256": "2214df1bfae0f2fe46c1d5d8b1480c9c6b370854dbfe3d60b56a099da6d9319d",
+     "applied_sha256": "f522ae0e6336bc1b3d17a6c3b68982595e25247f1652bb9aa7f9add56566c263",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    },
+    {
+     "package": "29ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 413200,
+     "span_size": 39808,
+     "retail_sha256": "2214df1bfae0f2fe46c1d5d8b1480c9c6b370854dbfe3d60b56a099da6d9319d",
+     "applied_sha256": "f522ae0e6336bc1b3d17a6c3b68982595e25247f1652bb9aa7f9add56566c263",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 112
+    }
+   ]
+  },
+  {
+   "team": "CLE",
+   "team_code": "30",
+   "body_code": "00",
+   "code": "00",
+   "archive": "c00.iff",
+   "outer_index": 348,
+   "outer_size": 232816,
+   "span_offset": 0,
+   "span_size": 222496,
+   "retail_sha256": "8235b3708620be9af742d20e44d1b93ffff3caa010f4c808fd6d64cb60b91823",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "e29ae3f3612b55689933eee1bab0686ec301db5b2db1e0b74c2b607b10932978",
+    "jacket": "afe3c4bf50a794a6cf3c4f7d93d8f6b88aae70b4b6fb455cac7c74c08a2e050d",
+    "logo": "fd0f0703cce0b2ad0bc1d8b7fb427b30a543ea0fddd37c61db23854d43595a38",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "d9ff629528775fa1cbfaee38c96d31e28eaa731b399ceafe7391dfd90655fe07",
+    "sideline_dry": "a8cd7b8eb5350d27cd6feb70f13797df8cc45a355bd08064cccc71a984818e9e",
+    "sideline_rain": "fce2a6fcae653bdd4e0c206dec52bc24cf2dcaeac936b254b39a624b4f1c0f0c"
+   },
+   "geometry": "f189391fd53a3c33d772a87acbf841a912d5645be9ed96ad55a96431a2b39d64",
+   "palette_max": 256,
+   "applied_sha256": "0a78cb479fbc87aa7a5138c2f6fe6b6d02de517bc6add36d79473580c13626e5",
+   "superseded_sha256": [
+    "f4e9a17cfde7c0030f7d2804b592873f89a7994d37fb86d36c3f98b2c5ea58eb",
+    "be724bac281f8c3be3316ce1e8e59b8dddbed1a067f0737db9186b33ae39bedd",
+    "bdfea94ac18493b4b58c92f3a8fd9c4bfe5f61bcf2fa8c093608ed69f6ddba2d",
+    "49dd6f4f6797d4fd5c8c1755d1b1ca9d2d4a429af7aa50b17dbd68b7be1d4dfd",
+    "75467647fd426d9d2a596213da5a87a53dca33801010c87a0fca256d6d949803"
+   ],
+   "fit": {
+    "encoder": "optimal",
+    "slack": 0,
+    "stream_bytes": 222464,
+    "stored_size": 222464,
+    "padding_bytes": 0,
+    "scratch_needed": 75,
+    "scratch_retail": 96,
+    "matches_expanded": 277
+   },
+   "sideline": [
+    {
+     "package": "30hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 820112,
+     "span_size": 25936,
+     "retail_sha256": "5b88f95a548c9e6abed4983e7ad814484d808946495d6084662f6bdf8ca838a4",
+     "applied_sha256": "915e16cff8ae02fbe07a61cb62a7fc0b0054fe0a4fb3f9dfd5f404b5e97f629b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "30hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 400128,
+     "span_size": 25936,
+     "retail_sha256": "5b88f95a548c9e6abed4983e7ad814484d808946495d6084662f6bdf8ca838a4",
+     "applied_sha256": "915e16cff8ae02fbe07a61cb62a7fc0b0054fe0a4fb3f9dfd5f404b5e97f629b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "30hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 805584,
+     "span_size": 39184,
+     "retail_sha256": "37de9cf41e2ca930373d5ae54043ba7348c0a666d391e85d5a9c76e45c0e7076",
+     "applied_sha256": "b7b7ec3fbea6966ea09cc1d8f2fc7db2c746c57787b584787746c42645fb8e6e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 2,
+     "scratch_retail": 128
+    },
+    {
+     "package": "30hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 401840,
+     "span_size": 39184,
+     "retail_sha256": "37de9cf41e2ca930373d5ae54043ba7348c0a666d391e85d5a9c76e45c0e7076",
+     "applied_sha256": "b7b7ec3fbea6966ea09cc1d8f2fc7db2c746c57787b584787746c42645fb8e6e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 2,
+     "scratch_retail": 128
+    },
+    {
+     "package": "30adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 4480,
+     "span_size": 25936,
+     "retail_sha256": "5b88f95a548c9e6abed4983e7ad814484d808946495d6084662f6bdf8ca838a4",
+     "applied_sha256": "915e16cff8ae02fbe07a61cb62a7fc0b0054fe0a4fb3f9dfd5f404b5e97f629b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "30ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 424464,
+     "span_size": 25936,
+     "retail_sha256": "5b88f95a548c9e6abed4983e7ad814484d808946495d6084662f6bdf8ca838a4",
+     "applied_sha256": "915e16cff8ae02fbe07a61cb62a7fc0b0054fe0a4fb3f9dfd5f404b5e97f629b",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 16
+    },
+    {
+     "package": "30arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 4480,
+     "span_size": 39184,
+     "retail_sha256": "37de9cf41e2ca930373d5ae54043ba7348c0a666d391e85d5a9c76e45c0e7076",
+     "applied_sha256": "b7b7ec3fbea6966ea09cc1d8f2fc7db2c746c57787b584787746c42645fb8e6e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 2,
+     "scratch_retail": 128
+    },
+    {
+     "package": "30ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 408224,
+     "span_size": 39184,
+     "retail_sha256": "37de9cf41e2ca930373d5ae54043ba7348c0a666d391e85d5a9c76e45c0e7076",
+     "applied_sha256": "b7b7ec3fbea6966ea09cc1d8f2fc7db2c746c57787b584787746c42645fb8e6e",
+     "sideline_palette_max": 256,
+     "scratch_needed": 2,
+     "scratch_retail": 128
+    }
+   ]
+  },
+  {
+   "team": "HOU",
+   "team_code": "37",
+   "body_code": "05",
+   "code": "05",
+   "archive": "c05.iff",
+   "outer_index": 353,
+   "outer_size": 221008,
+   "span_offset": 0,
+   "span_size": 210688,
+   "retail_sha256": "0fe02df31cc76b483c1395e5b5368efce29814c49fe6ce8a1f52939dac1ba87f",
+   "hide_glasses": false,
+   "art": {
+    "shirt": "7ebadee583b44358f2fbf42e3880150d41a1aacdcadbfd2acd6543140c9f28a6",
+    "jacket": "ff7a9a3c192a55bb365b0e8794e1887179c6564ff18726221ad40cddee462d71",
+    "logo": "b9f0f49f37fdec8a41fb1fd0ef17a6bdc9a898d5b2bfe39347ede2836fbbac6c",
+    "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
+    "head": "ebf25d4135c618fe1c07f1f2f83dc32d68f3ed4d985eaf360bbd3cddcd1e154e",
+    "sideline_dry": "fe351f66e01c9253781ea22e25d8ba8e811d049f1d62bc6e43589bd885f2d6e2",
+    "sideline_rain": "0f3836e2a6fc29effabadd4bc4891e7f796ed944a3d0fedfb4b19de6a1dbdb62"
+   },
+   "palette_max": 192,
+   "applied_sha256": "27a716ef9c4d8299a059c38ff09a888782bbb415f5bbe201ed0a9c8ed7312762",
+   "superseded_sha256": [
+    "ee5e8b8f4beb27f583ea85578def9d904c8aee5da88759c5ea4003b30fccf042",
+    "5b205bb02c6578375dba1c4bb57fd08cb5d766fb4cec83e69960f20bc86d43b7"
+   ],
+   "fit": {
+    "encoder": "optimal",
+    "slack": 0,
+    "stream_bytes": 210656,
+    "stored_size": 210656,
+    "padding_bytes": 0,
+    "scratch_needed": 62,
+    "scratch_retail": 96,
+    "matches_expanded": 252
+   },
+   "sideline": [
+    {
+     "package": "37hdn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 28,
+     "chunk_offset": 827408,
+     "span_size": 20528,
+     "retail_sha256": "8c3ba1d6827aa3d37c0d59dcced991b67cf20d0b9e0a8b148cd45d86a07f754a",
+     "applied_sha256": "3bb62858502ebe9bc8b43795d3ab5294ca917fb903b8e49e047592b71c5ca873",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 112
+    },
+    {
+     "package": "37hds.iff",
+     "design": "sideline_dry",
+     "chunk_index": 16,
+     "chunk_offset": 403264,
+     "span_size": 20528,
+     "retail_sha256": "8c3ba1d6827aa3d37c0d59dcced991b67cf20d0b9e0a8b148cd45d86a07f754a",
+     "applied_sha256": "3bb62858502ebe9bc8b43795d3ab5294ca917fb903b8e49e047592b71c5ca873",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 112
+    },
+    {
+     "package": "37hrn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 28,
+     "chunk_offset": 811760,
+     "span_size": 40048,
+     "retail_sha256": "e017774011ed2ac9f5ffe95a96324fde0064c8eb155b49c109124ba139fc166d",
+     "applied_sha256": "647b9540fa98267c0e473a610e8cebf0720740cb45362fae6bdfcb8dc4e51e11",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "37hrs.iff",
+     "design": "sideline_rain",
+     "chunk_index": 16,
+     "chunk_offset": 405296,
+     "span_size": 40048,
+     "retail_sha256": "e017774011ed2ac9f5ffe95a96324fde0064c8eb155b49c109124ba139fc166d",
+     "applied_sha256": "647b9540fa98267c0e473a610e8cebf0720740cb45362fae6bdfcb8dc4e51e11",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "37adn.iff",
+     "design": "sideline_dry",
+     "chunk_index": 1,
+     "chunk_offset": 5568,
+     "span_size": 20528,
+     "retail_sha256": "8c3ba1d6827aa3d37c0d59dcced991b67cf20d0b9e0a8b148cd45d86a07f754a",
+     "applied_sha256": "3bb62858502ebe9bc8b43795d3ab5294ca917fb903b8e49e047592b71c5ca873",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 112
+    },
+    {
+     "package": "37ads.iff",
+     "design": "sideline_dry",
+     "chunk_index": 13,
+     "chunk_offset": 429712,
+     "span_size": 20528,
+     "retail_sha256": "8c3ba1d6827aa3d37c0d59dcced991b67cf20d0b9e0a8b148cd45d86a07f754a",
+     "applied_sha256": "3bb62858502ebe9bc8b43795d3ab5294ca917fb903b8e49e047592b71c5ca873",
+     "sideline_palette_max": 256,
+     "scratch_needed": 6,
+     "scratch_retail": 112
+    },
+    {
+     "package": "37arn.iff",
+     "design": "sideline_rain",
+     "chunk_index": 1,
+     "chunk_offset": 5568,
+     "span_size": 40048,
+     "retail_sha256": "e017774011ed2ac9f5ffe95a96324fde0064c8eb155b49c109124ba139fc166d",
+     "applied_sha256": "647b9540fa98267c0e473a610e8cebf0720740cb45362fae6bdfcb8dc4e51e11",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    },
+    {
+     "package": "37ars.iff",
+     "design": "sideline_rain",
+     "chunk_index": 13,
+     "chunk_offset": 412032,
+     "span_size": 40048,
+     "retail_sha256": "e017774011ed2ac9f5ffe95a96324fde0064c8eb155b49c109124ba139fc166d",
+     "applied_sha256": "647b9540fa98267c0e473a610e8cebf0720740cb45362fae6bdfcb8dc4e51e11",
+     "sideline_palette_max": 256,
+     "scratch_needed": 0,
+     "scratch_retail": 128
+    }
+   ]
+  }
+ ],
+ "portraits": [
+  {
+   "team": "DAL",
+   "coach": "Brian Schottenheimer",
+   "portrait_id": "7031",
+   "retail_photo_id": 7007,
+   "outer_index": 3105,
+   "chunk_offset": 68818944,
+   "span_size": 17568,
+   "retail_sha256": "5f878ee2114c7b7ddab653260200d762a0acb99f56a6a7c045476eaa4b336ecd",
+   "outer_id": "0x35cb8d72",
+   "applied_sha256": "14ba57ab089f94fc3d935197018d688e1284b54b21bdb26e35127ab35d76806d",
+   "rejected_sha256": [
+    "d60466b3d4391e1673097a67343504b79aab10813ee2a3a09186d8593a7fc8ce",
+    "23a5b26e22f9c1c961fa2ac578e848c69c1d17e057ba860083b21debfda18c23"
+   ]
+  },
+  {
+   "team": "WAS",
+   "coach": "Dan Quinn",
+   "portrait_id": "7034",
+   "retail_photo_id": 7029,
+   "outer_index": 3105,
+   "chunk_offset": 62353920,
+   "span_size": 17568,
+   "retail_sha256": "72779564aad2076da86a72ab8a3d1f819dff21de8de7ad765d5e1dc59d40c8a4",
+   "outer_id": "0x35cb8d72",
+   "applied_sha256": "bce3177c246abb2ad68b480bc99dba35dc868b3e0f71ab138f25e8aab29cc270",
+   "rejected_sha256": [
+    "8efa56971ed7870330cbfae323f2bf1c58bb59e155c8c6c55ed20acf3c2de2fc"
+   ]
+  }
+ ],
+ "apparel": {
+  "ARI": {
+   "top": "#000000",
+   "trim": "#97233F",
+   "cap": "#000000",
+   "why": "dark jacket and cap (2026 preseason arrival frame)"
+  },
+  "ATL": {
+   "top": "#000000",
+   "trim": "#A71930",
+   "cap": "#000000",
+   "why": "black Falcons polo (headshot)"
+  },
+  "BAL": {
+   "top": "#24135F",
+   "trim": "#000000",
+   "cap": "#000000",
+   "why": "purple Ravens jacket (2026 Week 3 pregame)"
+  },
+  "BUF": {
+   "top": "#00338D",
+   "trim": "#C60C30",
+   "cap": "#00338D",
+   "why": "blue Bills hoodie or polo, blue cap (2025 practice)"
+  },
+  "CAR": {
+   "top": "#000000",
+   "trim": "#0085CF",
+   "cap": "#000000",
+   "why": "black Panthers polo (headshot)"
+  },
+  "CHI": {
+   "top": "#0B162A",
+   "trim": "#E64100",
+   "cap": "#0B162A",
+   "why": "club primary (no sideline frame)"
+  },
+  "CIN": {
+   "top": "#000000",
+   "trim": "#FB4F14",
+   "cap": "#000000",
+   "why": "black Bengals polo (headshot)"
+  },
+  "DAL": {
+   "top": "#002244",
+   "trim": "#869397",
+   "cap": "#002244",
+   "why": "navy Cowboys jacket and pullover (2025 Week 7)"
+  },
+  "DEN": {
+   "top": "#0A2343",
+   "trim": "#FC4C02",
+   "cap": "#0A2343",
+   "why": "navy Broncos windbreaker (2026 Week 5)"
+  },
+  "DET": {
+   "top": "#0076B6",
+   "trim": "#B0B7BC",
+   "cap": "#0076B6",
+   "why": "blue Lions polo (headshot)"
+  },
+  "GB": {
+   "top": "#203731",
+   "trim": "#FFB612",
+   "cap": "#203731",
+   "why": "club primary (no sideline frame)"
+  },
+  "IND": {
+   "top": "#013369",
+   "trim": "#FFFFFF",
+   "cap": "#000000",
+   "why": "blue Colts hoodie, black cap (2025 pregame)"
+  },
+  "JAX": {
+   "top": "#000000",
+   "trim": "#006778",
+   "cap": "#000000",
+   "why": "black Jaguars quarter-zip (headshot)"
+  },
+  "KC": {
+   "top": "#E31837",
+   "trim": "#FFB612",
+   "cap": "#E31837",
+   "why": "red Chiefs jacket, red cap (2025 Weeks 11 and 16)"
+  },
+  "MIA": {
+   "top": "#008E97",
+   "trim": "#FC4C02",
+   "cap": "#008E97",
+   "why": "club primary (no frame)"
+  },
+  "MIN": {
+   "top": "#4F2683",
+   "trim": "#FFC62F",
+   "cap": "#4F2683",
+   "why": "club primary (no frame)"
+  },
+  "NE": {
+   "top": "#002244",
+   "trim": "#C60C30",
+   "cap": "#002244",
+   "why": "club primary (press frames only)"
+  },
+  "NO": {
+   "top": "#000000",
+   "trim": "#D3BC8D",
+   "cap": "#000000",
+   "why": "club secondary black with old gold (headshot is a white polo)"
+  },
+  "NYG": {
+   "top": "#0B2265",
+   "trim": "#A71930",
+   "cap": "#0B2265",
+   "why": "royal-blue Giants jacket (2026 Week 5 warm-up)"
+  },
+  "NYJ": {
+   "top": "#115740",
+   "trim": "#FFFFFF",
+   "cap": "#115740",
+   "why": "club primary (headshot is a black striped polo)"
+  },
+  "LV": {
+   "top": "#000000",
+   "trim": "#C8C7C7",
+   "cap": "#000000",
+   "why": "black Raiders hoodie and cap (tunnel frames)"
+  },
+  "PHI": {
+   "top": "#004851",
+   "trim": "#A2AAAD",
+   "cap": "#000000",
+   "why": "club primary (headshot is a black polo)"
+  },
+  "PIT": {
+   "top": "#000000",
+   "trim": "#FFB612",
+   "cap": "#000000",
+   "why": "black Steelers jacket and black cap (2026 at NE)"
+  },
+  "LAR": {
+   "top": "#003594",
+   "trim": "#FFD100",
+   "cap": "#003594",
+   "why": "royal blue hoodie (sideline frame)"
+  },
+  "LAC": {
+   "top": "#0080C6",
+   "trim": "#FFC20E",
+   "cap": "#0080C6",
+   "why": "blue Chargers polo (headshot)"
+  },
+  "SF": {
+   "top": "#FFFFFF",
+   "trim": "#AA0000",
+   "cap": "#AA0000",
+   "why": "white 49ers pullover, red cap (2026 Week 3)"
+  },
+  "SEA": {
+   "top": "#002244",
+   "trim": "#69BE28",
+   "cap": "#002244",
+   "why": "navy Seahawks polo and pullover (2026 headshot, locker room)"
+  },
+  "TB": {
+   "top": "#A71930",
+   "trim": "#322F2B",
+   "cap": "#322F2B",
+   "why": "red Buccaneers polo (headshot)"
+  },
+  "TEN": {
+   "top": "#0C2340",
+   "trim": "#4495D2",
+   "cap": "#0C2340",
+   "why": "navy Titans hoodie (2026 Week 2)"
+  },
+  "WAS": {
+   "top": "#5A1414",
+   "trim": "#FFB612",
+   "cap": "#5A1414",
+   "why": "burgundy Commanders polo (headshot)"
+  },
+  "CLE": {
+   "top": "#311D00",
+   "trim": "#FF3C00",
+   "cap": "#000000",
+   "why": "brown Browns hoodie (2026 Week 2), black cap"
+  },
+  "HOU": {
+   "top": "#021018",
+   "trim": "#EB0028",
+   "cap": "#021018",
+   "why": "navy Texans polo (headshot)"
+  }
+ },
+ "bodies": {
+  "ARI": {
+   "body": "c12.iff",
+   "why": "lean Mike LaFleur: lean body (c12) instead of the heavy-ish c00"
+  },
+  "ATL": {
+   "body": "c01.iff",
+   "why": "lean-average Stefanski: his club's lean body"
+  },
+  "BAL": {
+   "body": "c02.iff",
+   "why": "average Minter: his club's average body"
+  },
+  "BUF": {
+   "body": "c03.iff",
+   "why": "lean Brady: his club's lean body"
+  },
+  "CAR": {
+   "body": "c09.iff",
+   "why": "average Canales: average body (c09) instead of the heavy-ish c04"
+  },
+  "CHI": {
+   "body": "c37.iff",
+   "why": "lean-average Ben Johnson: average body with a light-skinned head (c37); c05 goes to Ryans"
+  },
+  "CIN": {
+   "body": "c06.iff",
+   "why": "lean-average Taylor: his club's average body"
+  },
+  "CLE": {
+   "body": "c00.iff",
+   "why": "solid, average-build Monken: the broad heavy-ish c00 (the one body left once the four big men and the lean coaches are placed)"
+  },
+  "DAL": {
+   "body": "c07.iff",
+   "why": "average Schottenheimer: his club's average body"
+  },
+  "DEN": {
+   "body": "c08.iff",
+   "why": "average Payton: his club's average body"
+  },
+  "DET": {
+   "body": "c04.iff",
+   "why": "big, broad Campbell: heavy-ish body (c04)"
+  },
+  "GB": {
+   "body": "c10.iff",
+   "why": "average Matt LaFleur: his club's average body"
+  },
+  "HOU": {
+   "body": "c05.iff",
+   "why": "athletic Ryans: lean body with a dark-skinned head (c05)"
+  },
+  "IND": {
+   "body": "c11.iff",
+   "why": "lean Steichen: his club's average body"
+  },
+  "JAX": {
+   "body": "c30.iff",
+   "why": "average-build Coen: average body (c30); his club's lean c12 goes to Mike LaFleur"
+  },
+  "KC": {
+   "body": "c21.iff",
+   "why": "Andy Reid: the retail 2004 Reid model (Philadelphia's c21), the heaviest body"
+  },
+  "LAC": {
+   "body": "c24.iff",
+   "why": "lean, athletic Jim Harbaugh: his club's lean body, glasses kept"
+  },
+  "LAR": {
+   "body": "c23.iff",
+   "why": "lean McVay: his club's average body"
+  },
+  "LV": {
+   "body": "c20.iff",
+   "why": "lean Kubiak: his club's lean body"
+  },
+  "MIA": {
+   "body": "c14.iff",
+   "why": "lean Hafley: his club's average body"
+  },
+  "MIN": {
+   "body": "c28.iff",
+   "why": "tall, lean O'Connell: average body with a full-hair 2004 head (c28); his club's c15 has a bald crown"
+  },
+  "NE": {
+   "body": "c16.iff",
+   "why": "stocky Vrabel: his club's heavy-ish body"
+  },
+  "NO": {
+   "body": "c17.iff",
+   "why": "lean Kellen Moore: his club's average body"
+  },
+  "NYG": {
+   "body": "c22.iff",
+   "why": "average John Harbaugh: average capped body (c22) instead of the lean c18"
+  },
+  "NYJ": {
+   "body": "c19.iff",
+   "why": "lean Glenn: his club's average body with a dark-skinned head"
+  },
+  "PHI": {
+   "body": "c18.iff",
+   "why": "lean Sirianni: lean capped body (c18) instead of the heaviest c21"
+  },
+  "PIT": {
+   "body": "c26.iff",
+   "why": "heavy McCarthy: heavy body (c26, glasses hidden) instead of the average c22"
+  },
+  "SEA": {
+   "body": "c13.iff",
+   "why": "average-build Macdonald: average body (c13, glasses hidden) instead of the heavy c26"
+  },
+  "SF": {
+   "body": "c25.iff",
+   "why": "lean Shanahan: his club's average body"
+  },
+  "TB": {
+   "body": "c27.iff",
+   "why": "big Bowles: his club's average capped body"
+  },
+  "TEN": {
+   "body": "c15.iff",
+   "why": "shaved-head Saleh: average body (c15) whose 2004 head is bald on top"
+  },
+  "WAS": {
+   "body": "c29.iff",
+   "why": "lean, athletic Quinn: his club's lean body (glasses hidden)"
+  }
+ }
+}

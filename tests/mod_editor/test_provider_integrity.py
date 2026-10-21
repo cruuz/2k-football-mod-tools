@@ -183,7 +183,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             allow_sample_fallback=False, check_files=False
         )
 
-    def test_colour_defaults_load_inside_the_isolated_provider_bundle(self):
+    def test_colour_and_uniform_resources_load_inside_the_isolated_provider_bundle(self):
         import subprocess
         import sys
         provider = Nfl2k5UnifiedVisualProvider()
@@ -193,6 +193,15 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "import sys; sys.path.insert(0, sys.argv[1]); "
                 "from mod_editor.core.nfl2k5_build_settings import build_settings; "
                 "from mod_editor.core.nfl2k5_modern_color import default_settings; "
+                "from mod_editor.core.nfl2k5_unc_bowl_uniforms import PINS; "
+                "import json; assert json.loads(PINS.read_text())['schema'] == 'nfl2k5_unc_bowl_uniforms/v1'; "
+                "from mod_editor.core.nfl2k5_era_kits import pins as era_pins; assert len(era_pins()['kits']) == 10; "
+                "from mod_editor.core.nfl2k5_moment_kits import pins as kit_pins; assert len(kit_pins()['packages']) == 26; "
+                "from mod_editor.core.nfl2k5_nyg_numbers import pins; assert len(pins()['digits']) == 10; "
+                "from mod_editor.core.nfl2k5_kit_fixes_2026 import spec; assert len(spec()['textures']) == 60; "
+                "from mod_editor.core.nfl2k5_kit_fixes_2026 import alternates; assert len(alternates()['textures']) == 544; "
+                "from mod_editor.core.nfl2k5_kit_fixes_2026 import finish; assert len(finish()['textures']) > 0; "
+                "from mod_editor.core.nfl2k5_pants_hem_2026 import spec as hem; assert len(hem()['textures']) == 491; "
                 "assert build_settings({'modern_color_settings': default_settings()})['modern_color_settings']['values']['turf.value_lift'] == 2.8",
                 str(module.parents[1])], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -215,7 +224,15 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [403, 10, 8, 9, 8, 9]  # b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            [456, 10, 8, 9, 8, 9]  # b777-int7: 456 = ar1 + ol1 + qb3 together; b777-qb3: + the QB accuracy owner and its generated code (imported by throw_tuning; qb3 did not update this count); b777-ol1: + the run blocking owner and its generated code (imported by throw_tuning); b777-ar1: + the midfield centring module the modern venues and the Anniversary field compiler import; b776-int2: + pb1 (b776-pb1: + the modern offense catalog the concept engine imports); + ns1 (b776-ns1: + the per-kit jersey number size owner, a late xbe_space owner); + pa2 (b776-pa2: + the play art routes owner, imported by throw_tuning); + ku1 (b776-ku1: + the Chiefs menu card palette module); + ai2 (b776-ai2: + the CPU QB reads and defender ball-play owners and their generated code, imported by throw_tuning); fn2 + fs1 + pb2 + de2 together (pb2: + the coach ring diversity module nfl2k5_vip imports; de2: + the front schemes module the roster passes import); b776-fs1: + the moment face scans module; b776-fn2: + the 2026 glyph fixes module (Bears/Chiefs nameplate letters, Titans 7); b775-int1: sb1 + mo2 + ek1 + ui1 + ct1 + hs1 + fast2 together; b775-fast2: + the late-steps worker/cache module; b775-hs1: + the hair styles owner (imported by throw_tuning so the cave manifest recorder observes it); b775-ct1: + the classic teams module (an allocator owner the space union imports); b775-ui1: + the MyCareer Career Home module and its generated code (imported by throw_tuning); b775-ek1: + the Anniversary moment kits stage (new game-accurate kit slots); b775-mo2: + the moment context owner; b775-sb1: + the Super Bowl field flank module the Anniversary field compiler imports and the franchise Super Bowl hosts module the build calls after Broadcast greens; b773-i4: + the Anniversary era kits stage (a5k compiler) before the Unc Bowl finish; b773-gr1: + the Broadcast greens module the build calls after the last field writer; b773-me1: + the Super Bowl event walls module the Anniversary field compiler imports and the era ball module the moment-venue owner imports; b772-vt1: + the automatic coach AI owner, its generated code template and the coach VIP profile module; b772-sp1: + the ordinary tap-burst module the abilities runtime imports; b77-st1: + the stadium shadow module the MetLife model imports; b772-ny1: + the Giants shoulder-number module; b772-uf1: + the 2026 kit art fixes module; b77-f5: + the honors page module and its history module; b77-v1b: + the period goalposts module (an allocator owner imported by throw_tuning); b77-p48d: + the defense formation linter the pack checker imports (stage 5); b77-p48o: + the modern offense concept engine the play library imports; b77-q1: + the QB Throw Power roster-edits step; b77-h1: + the punter holder module (imported by throw_tuning); b77-a4: + the moment shotgun-weight module; b77-f4b: + the progression row module; b77-p13: + the playbook execution linter imported by the complete-offense compiler; b77-k1: + the player-name keyboard patch module; dn: + the resource load guard module; cl: + the college references module; mk2: + the official marks module (its catalog is a data pin); ht: + the historic season-roster module and its phase-2 import; b75: + the Edit Player elbow-pad and lineman-rating option patches.
+            # b773-sp2: + the human tap-burst compiler imported by the abilities runtime.
+            # b773-ic1: + the exact pinned menu-icon orientation repair.
+            # b773-mo1: + moment coaches and its newly reached scenarios and modern-coaches dependencies.
+            # b775-mo2: + the Anniversary moment context (Super Bowl game type and moment stats), imported by the moment coaches.
+            # b773-hu1: + Washington menu helmet compiler.
+            # b773-uf3: + the exact pinned Pittsburgh miniature correction.
+            # b773-pa1: + the 2026 pants hem pass (its kit document is a data pin).
+            # b771-v1g: + the Unc Bowl compiler and its archive helper; the owned-span document is a data pin.
             # b765 integration: + fixed-size spare-capacity owner for dated FA/historic composition.
             # b765-a1: + the Anniversary archive pack, field compiler and their 38 existing venue-tool dependencies.
             # b765-s2: + two explicitly selected field owners and their complete reviewed 38-module source closure.
@@ -255,10 +272,25 @@ class ProviderIntegrityTests(unittest.TestCase):
                 # Both package init files stay absent so their unrelated eager
                 # GUI/provider imports cannot escape the finite pin closure.
                 adapters = frozenset({
+                    "mod_editor/core/nfl2k5_menu_icon_orientation.py",
+                    "mod_editor/core/nfl2k5_menu_icon_uf3.py",
+                    "mod_editor/core/nfl2k5_pants_hem_2026.py",
+                    "mod_editor/core/nfl2k5_glyph_fixes_2026.py",
+                    "mod_editor/core/nfl2k5_menu_chiefs_2026.py",
+                    "mod_editor/core/nfl2k5_menu_helmet_w2026.py",
+                    "mod_editor/core/nfl2k5_era_kits.py",
+                    "mod_editor/core/nfl2k5_moment_kits.py",
+                    "mod_editor/core/nfl2k5_unc_bowl_uniforms.py",
+                    "mod_editor/core/nfl2k5_nyg_numbers.py",
+                    "mod_editor/core/nfl2k5_kit_fixes_2026.py",
                     "mod_editor/core/nfl2k5_anniversary_pack.py",
                     # Studio dynamically selects these reviewed field owners after surface compilation.
                     "mod_editor/core/nfl2k5_midfield_art.py",
                     "mod_editor/core/nfl2k5_split_endzone_art.py",
+                    # b773-gr1: the last field pass, called after every field writer.
+                    "mod_editor/core/nfl2k5_broadcast_greens.py",
+                    # b775-sb1: the franchise Super Bowl hosts, called after Broadcast greens.
+                    "mod_editor/core/nfl2k5_super_bowl_hosts.py",
                     "mod_editor/core/nfl2k5_momentum.py",
                     "mod_editor/core/nfl2k5_momentum_code.py",
                     "mod_editor/core/nfl2k5_defensive_try.py",
@@ -316,13 +348,41 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
+                "data/nfl2k5_modern_venues_2026/numbers/manifest.json": "fa9ca79e6175b4b50fb624841b4cb6aea47f9a9f910e891723de1fdf9cfed089",
+                "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
+                "data/nfl2k5_front_schemes.json": "1026ff34b0de28362b25f1019c5ef2ccd8b706bbee41f6ce77b26b6efc07a626",
+                "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
+                "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
+                "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
+                "data/nfl2k5_moment_kits_pins.json": "41e16f7cf9ca83af6b5f1ce4580018d0391b38e47390be73da77ab5958e9ca92",
+                "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
+                "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
+                "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",
+                "data/nfl2k5_kit_fixes_2026_alts.json": "800ef88d28d7ec19db3290f5cb3005efbe9863570775152d4a3d3f804e737caa",
+                "data/nfl2k5_kit_fixes_2026_uf3.json": "a1911b169c1a4bb8fe130575586563e1ac9c9567e490a7d753f7c017f492747c",
+                "data/nfl2k5_kit_fixes_2026_sea1.json": "507ea2233b31a41e5301427367186cca3c0f116be6b2f31172068b8dc9f34e35",
+                "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
+                "data/nfl2k5_pants_hem_2026.json": "902a3ec6b3eec65d09bd582e459b30c8c91ea26f432be20e7d2b5b35c869e6ca",
+                "data/nfl2k5_glyph_fixes_2026.json": "a709d39b5fb5ab4a6f6793e6626d36771197c6a196c410b8057e58f899148387",
+                "data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_arm_7.png": "01252bae05b33caa13780327eafd8add37303d54bc27d46429cef61230a292d5",
+                "data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_jersey_7.png": "5da1a357b81632f469e23f506155ff43af10b2fad036a3de285145e7b694c713",
+                "data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_arm_7.png": "078b28a7a0ae54e18d08b4580155ba6fa49fe566932305c7decd795a96f6d17b",
+                "data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_jersey_7.png": "25727ec3a92a703131e11766c4da6a781a63855be44d10a0a961e451cad02de6",
+                "data/nfl2k5_kit_fixes_2026_ku1.json": "2811ee1e688df9b388544d335106df651eedef26e4bedf69c0e3b914a8d08c97",
+                "data/nfl2k5_kit_fixes_2026_sw1.json": "f1f9c4cf56d45930782e9940e107ff46ffffb60e4319c013e1fe65d2dd15f9e6",
+                "data/nfl2k5_menu_chiefs_2026.json": "8b4a86d2bb6893d6e23546ebddc3ff1626e029fcf3b8ed4a14fbee6fd1748eb2",
+                "data/nfl2k5_menu_helmet_w2026.json": "ee8b9dcc3903f3c63fd4ae3bf0ab1f50e5aa7f7d26240c8d02ff10aa2c0ed590",
+                "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
+                "data/nfl2k5_indicator_names/metrics.json": "2bebe47d2fb50e36a5c3a736d95677c06c780addf88463c2b5b266111af4a129",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",
                 "data/nfl2k5_moment_goalposts.json": "256d15573650a24a24b83953d627d0bede614aff6587c16c3eb060ad48329acf",  # b77-v1b
                 "data/nfl2k5_era_rules.json": "fab269783f2f4524b01e031a15de8156629a6728d86249b9402822594778d1e4",
                 "data/nfl2k5_stock_books.json": "87d779bb2be3c4b20b901c4afa0a620bb4b0aae29ef833bc4440a38c396417fd",
-                "data/nfl2k5_moment_playbook_eras.json": "48e955c97b6c9b6b3dba04195fe5f4baa0be19d6af2c1d6966ade08784178130",
+                "data/nfl2k5_moment_coaches.json": "3b38c524f4a861ac100e96f847939f8d12ffe62c6eef3aba93e7f33144e9148b",
+                "data/nfl2k5_moment_stats.json": "1aea510df6cd581b7d992b640f3c0be0b07a89308592f691cda6c87dde052cc2",
+                "data/nfl2k5_moment_playbook_eras.json": "756d99acac597ceb86026264c23e67ab038fd765de19692ccfdbdc65f3ca61c9",
                 "data/nfl2k5_modern_color_pins.json": "670a9f1df1abe67c12d373318e4bca0c388e9e7a3c54d42e44ad37f52981719d",
                 "data/nfl2k5_modern_helmets/geometry.json": "3bd4a970dd27a614040c307fcca3f66e4a83fef6d008a8efa1384e4b76ef0c7a",
                 "data/nfl2k5_modern_helmets/pins.json": "6f4c8816369aec0087b52df23b2ae62a2fe1312817a118eeaade5ab52bd51a28",
@@ -335,9 +395,50 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "reports/specs/nfl2k5_crib_static_position_targets.v1.json": "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
                 "data/nfl2k5_ratings_forty_sources.json": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
                 "data/nfl2k5_espn25_more_teams/teams.json": "0484cc4ea617f4d250571ac3551f820368a15456c444326203d31c98eebd8cd3",
-                "data/nfl2k5_espn25_more_teams/manifest.json": "5bb9022cf3c1c85573f5506d99c690beecc875ed4a3805c5d1cc9337e09782cc",
-                "data/nfl2k5_espn25_more_moments_appearance.json": "2397399d6681a1c05f7e1287d3e4e83ff710e4fdc40b759621593a296643e3f3",
-                "data/nfl2k5_espn25_more_moments.json": "d9b58dbe05268ee35c32f35132cd9a94efd07b832db5aec7a90b38c7edfb652e",
+                "data/vip/coach_sources_2026.json": "54fac5e396a2d76c574d63b94217261c58ef2dbfa4f1906fbbade6e7951c9b63",
+                "data/vip/coach_portraits_2026.json": "aa398aa7b0e695c73b4a809ba5886bb7df95d1c4173adb00f542d6fd0ccfebe1",
+                "data/vip/coaches/ARI.json": "f05194553bd87ea58fd07e8c32a0f6c127ab72c84b337ce23fb28e88adf6bb25",
+                "data/vip/coaches/ATL.json": "47b81905bbcf74fd0fb3e70098e81191d17a47f0c332a2a2f7f9fc2f41f81713",
+                "data/vip/coaches/BAL.json": "3fb8a696df304884656d0c291ef07cc0ec3d29779433e2b2678cf2a2868db404",
+                "data/vip/coaches/BUF.json": "da4cb5baaf325761e3348c56bcdbe5bac43c32eb1be0e9ebe6eb0b7faf18c6dc",
+                "data/vip/coaches/CAR.json": "798f94047b3b14bf8125b101cfa82f334605551d3160f98fb30bdc66a1c4ee28",
+                "data/vip/coaches/CHI.json": "40fa7f7a9ec3365928daa61aa100a106ec424b66031fe8f0c73e795b0c9d8cbb",
+                "data/vip/coaches/CIN.json": "b30981f746a96d80bdd123887a1b02eff23ae2448a9f365956edeaf286bd4eaa",
+                "data/vip/coaches/CLE.json": "721689ead13c3fc10548fc5f81340ba60038729ee65a165103ed15c53317c845",
+                "data/vip/coaches/DAL.json": "fe6d1cefe369f4c8bfd527a2103dba4f38681a68607b69bb75654b4a9ac4d2ad",
+                "data/vip/coaches/DEN.json": "2153ab654d1e5225e7ec0028c7516d55e4fc8450931a8ea5900d8e418a3863a4",
+                "data/vip/coaches/DET.json": "bc91c0d3925209919b5b42c7a8f8d636827cdcefbbbf1a7fe724deab523b6474",
+                "data/vip/coaches/GB.json": "489428faad98e0b90a29d7c79acc63a44a29f68669d758bb7862bfb9797d4ada",
+                "data/vip/coaches/HOU.json": "d30d7c17a2f54c709e65150a3c1f5f7b3787813bdbee8cea87896a55bf4e5bfd",
+                "data/vip/coaches/IND.json": "232fa74ecb56dd02aed9968f35fae349aba6d8081d4e559eb5370bcabde10932",
+                "data/vip/coaches/JAX.json": "5d2d5c5393247cf1fa81ee0acb99e0da9b752d59a8ffa7d6edc819af01ac3a68",
+                "data/vip/coaches/KC.json": "f82aad77da6c424bdf2e2909be3b1d2cd9c5841eefa537792ae7c51227b2d6ed",
+                "data/vip/coaches/LAC.json": "6418953333be5652fc32da4ba72e09e46d4ba2a047b584880c6aece21361f8da",
+                "data/vip/coaches/LAR.json": "396d16b9fbaaf205e1a3b30754e99df50f4c3eb4dbfb4394ef5fb4dc1acdf2b4",
+                "data/vip/coaches/LV.json": "06ccb5edb5fc048201726149e73ca35ef0f4c2bd461a5a243f0f8997252af6ca",
+                "data/vip/coaches/MIA.json": "ca1eaa093d0931f7cb0dcac699ea3d2e06236cd5a5eddd073aa48e7d92c2e1de",
+                "data/vip/coaches/MIN.json": "0679b1718eec1327711876aa8213c89bdf0f159dff77013252f8d9d55a4e3dcc",
+                "data/vip/coaches/NE.json": "24d671a0e130aae21edd1d2b8fc35c3c6928d49123c73701dccb254b0820f4dc",
+                "data/vip/coaches/NO.json": "85f8a3f98d5b3f2e556d626937fdaf76814e157c3e4de1fd4a8935d639e4fce3",
+                "data/vip/coaches/NYG.json": "aa2fc658e75f65c20c26f07794289d31571ecd84397e0be3c307b816eecbbb0d",
+                "data/vip/coaches/NYJ.json": "b3f0c507de82070779956a1fce4e767dd0214deb4e529a4d9744e6531d2185f8",
+                "data/vip/coaches/PHI.json": "881f09f1b31df26633889bbc3e20fe53bb0356bf72f66f1209da602e24ee3890",
+                "data/vip/coaches/PIT.json": "1d0e71ad1a9b9a34adf91062b62acb739a24758c09408680a1eb835420d87c05",
+                "data/vip/coaches/SEA.json": "5e131b080819369335d3edef136e1d509154af25ae15c7519c8863ef8861e578",
+                "data/vip/coaches/SF.json": "002e71db711aef0896f4219f80fa578f23cd59c304da3e2ccd2b1bb41225c34b",
+                "data/vip/coaches/TB.json": "2f1626c3a8047afff41f6fa7a7cad359e9db96c92356a83ed8bc38368057057b",
+                "data/vip/coaches/TEN.json": "34a02ba96970f7b88597cd0a129394e908317f92154e0cb20332a85af831419f",
+                "data/vip/coaches/WAS.json": "a3975b14cc02719a2152b8f6764d80d091ad4c3a987ee6fb6ff6a157f6544b28",
+                "data/nfl2k5_espn25_more_teams/manifest.json": "1aefb229e40d438e32210669eb62459bb71aa056bfe23c460dcc86eb0fbc95ba",
+                "data/nfl2k5_espn25_more_moments_appearance.json": "d129d17eb71eac0f2bb5a5c3bbcec3a82ff256437dc06a104f14e60afae7232c",
+                "data/nfl2k5_moment_scans.json": "c95a90c155fe170d6a312acdf659b3bffd04c028b3d930ab1fdc13d6a8971627",
+                "data/nfl2k5_espn25_moment_rosters/appearance.json": "2349e073097edced764fe790d449ef8223f444363711494cfe9996a19678296c",
+                "data/nfl2k5_classic_teams/teams.json": "9034908931dce9508abc2ab8f466df4fcae0262351ff327172016a31d67c3b02",
+                "data/nfl2k5_classic_teams/manifest.json": "1542d507fe66009a31831396eac2eef46fa3c9bcb3eb2c7e2f0c74974ca21b65",
+                "data/nfl2k5_classic_teams/appearance.json": "481c62e8e13749f0082cb2d5de410b87a0ab6a8c81d090304c7fba636b63a9f5",
+                "data/nfl2k5_classic_teams/classic.json": "426da31818084e0e598bf0112fb222c0b5027fb9e2eb4d066330598d8a014041",
+                "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
+                "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
                 "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",
                 "data/nfl2k5_espn25_fields/source/nfl_2008_source.png": "6b8162747a0a58998b342a3a351ba5efbe70cb6ce1350889db9656e74514b119",
                 "data/nfl2k5_espn25_fields/source/manifest.json": "8b1addd0e0b8c392519b40cf661e3a65cfcaa4e3267c1c4a326ff316bfec6588",
@@ -508,6 +609,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row11/endzone_N.png": "322eefd24e0fa8f201ec3f4ff0d7f6b339d52383d81508cc108109473337b24a",
                 "data/nfl2k5_espn25_fields/row11/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
                 "data/nfl2k5_espn25_fields/row10/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row10/lettering.png": "7baf59cda0fde5793f976ff484008341da764cc8dfac96c26e875c44d2d731e2",
                 "data/nfl2k5_espn25_fields/row10/endzone_S.png": "ef01cb09f101c5d36b67d907721827958eabfe107604525d991dc50bbf48c199",
                 "data/nfl2k5_espn25_fields/row10/endzone_N.png": "ef01cb09f101c5d36b67d907721827958eabfe107604525d991dc50bbf48c199",
                 "data/nfl2k5_espn25_fields/row10/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -528,6 +630,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row06/endzone_N.png": "487d4f827ca5bed40fd332e10cd1d93a80a503da03453f28cede8ee0bd441ff8",
                 "data/nfl2k5_espn25_fields/row06/center_logo.png": "1427e0e1a617bf3e0d2ab0804dc8697bc60e1601d0248e9e31407fa4c9df1aa8",
                 "data/nfl2k5_espn25_fields/row05/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row05/lettering.png": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
                 "data/nfl2k5_espn25_fields/row05/endzone_S.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row05/endzone_N.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row05/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -540,6 +643,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row03/endzone_N.png": "ebebbe97f639a91083adc740cc6dcac2d95606813fb09933e5e84662ce1ce071",
                 "data/nfl2k5_espn25_fields/row03/center_logo.png": "f9559b5717fe3aaa4d4a8374c548ef12a33b5016bef5de7f5a2c5eabdb165732",
                 "data/nfl2k5_espn25_fields/row02/playoff_logo.png": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
+                "data/nfl2k5_espn25_fields/row02/lettering.png": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
                 "data/nfl2k5_espn25_fields/row02/endzone_S.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row02/endzone_N.png": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
                 "data/nfl2k5_espn25_fields/row02/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
@@ -547,7 +651,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_fields/row01/endzone_S.png": "bbc041dff4441c99eb2323161cca7eb2a5c4bb103036e7d0b382b71928790d2d",
                 "data/nfl2k5_espn25_fields/row01/endzone_N.png": "bbc041dff4441c99eb2323161cca7eb2a5c4bb103036e7d0b382b71928790d2d",
                 "data/nfl2k5_espn25_fields/row01/center_logo.png": "3c6c50f94ab35e9f96c772731fe6b7950048179bc81b8ab0396cc1edbde89163",
-                "data/nfl2k5_espn25_fields/manifest.json": "f0702f9f6b9758a632a308e86310b1ad0b853d8a64752c77753a46233ad8b141",
+                "data/nfl2k5_espn25_fields/manifest.json": "9f7e0cfc607f9068b143eeb7d44f68209b7a324ef3fe4857fa9dda676a588006",
                 "data/nfl2k5_espn25_fields/source/nfl100.png": "e5492f431984e885ba5e927e747a6716f39755ae3f078e3ac3714ca84b3dd41b",
                 "data/nfl2k5_espn25_fields/source/row03_center.png": "add4deaffc840b722d98c7bd91cb6286a165a8de922d160c601823e556f6f53e",
                 "data/nfl2k5_espn25_fields/source/row03_endzone_N.png": "f3c15f0bb902d97950f48de236c30a911012d60a5fbb03f0ef9ce09a0107fe14",
@@ -628,7 +732,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_espn25_more_teams/bengals_2025.csv": "23211f988adc97ea41c377f8c3c7bc2fe5f3f12e9d92ce42352dfdce0960a5db",
                 "data/nfl2k5_espn25_v04_profile.json": "3f1f60561c14a2a09fd23dae09d0fad6dbc5f2b49cf14cc171c4cb1a3ad5351d",
                 "data/nfl2k5_espn25_unc_bowl.json": "4a632282beb8cde62ffaa5e896ea22bc89eb67b54ba49a2e19a694c02abb9b18",
-                "data/nfl2k5_espn25_fields.json": "6f7e1d7667472fe600bb99cf770cc46022c5c2e30fd66611b36f1ac30c5f3371"
+                "data/nfl2k5_espn25_fields.json": "da73bb1f1a838fe642d8537596565600bd6febb1771b0829eb6e977bc056da4f"
             },
         )
         for relative, expected in unified.data_pins.items():

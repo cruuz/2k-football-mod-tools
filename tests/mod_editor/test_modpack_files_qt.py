@@ -47,6 +47,23 @@ class FilePackQtTests(unittest.TestCase):
         self.assertEqual(out.read_bytes(), self.fixture.built.read_bytes())
         self.assertTrue(self.panel.install_softdrink_button.isEnabled())
 
+    def test_studio_install_handles_exported_unaligned_source_copies(self):
+        f = fixtures.f
+        original = self.fixture.original
+        donor = original["a"]
+        wanted = b"new prefix" + donor[17:17 + f.BLOCK + 719] + b"new tail"
+        built = fixtures.image(self.fixture.root / "unaligned-built.iso", dict(original, a=wanted))
+        pack = self.fixture.root / "unaligned.2k5patch"
+        f.export(self.fixture.base, built, pack, require_retail=False)
+        out = self.fixture.root / "unaligned-studio.iso"
+        self.panel.load_pack(pack)
+        self.panel.source_field.setText(str(self.fixture.base))
+        self.panel.target_field.setText(str(out))
+        self.panel.start_file_install()
+        self.wait()
+        self.assertTrue(self.panel.last_apply["target"]["all_game_files_verified"])
+        self.assertEqual(fixtures.contents(out), fixtures.contents(built))
+
     def test_install_and_build_guards_without_resolve(self):
         from mod_editor.gui.build_panel_qt import _resolved_build_file, BuildPanel
         from mod_editor.core import modpack_files as f

@@ -12,8 +12,10 @@ from evdev import AbsInfo, UInput, ecodes
 BUTTONS = {
     "A": ecodes.BTN_SOUTH,
     "B": ecodes.BTN_EAST,
-    "X": ecodes.BTN_WEST,
-    "Y": ecodes.BTN_NORTH,
+    # SDL's Xbox 360 mapping uses Linux BTN_X/BTN_Y (307/308). The geometric
+    # NORTH/WEST aliases are misleading here and swapped these two pad labels.
+    "X": ecodes.BTN_X,
+    "Y": ecodes.BTN_Y,
     "START": ecodes.BTN_START,
     "BACK": ecodes.BTN_SELECT,
     "LB": ecodes.BTN_TL,
@@ -39,6 +41,8 @@ STICK_AXES = {
     "LS_DOWN": (ecodes.ABS_Y, 32767),
     "RS_LEFT": (ecodes.ABS_RX, -32768),
     "RS_RIGHT": (ecodes.ABS_RX, 32767),
+    "RS_UP": (ecodes.ABS_RY, -32768),
+    "RS_DOWN": (ecodes.ABS_RY, 32767),
 }
 
 stick = AbsInfo(value=0, min=-32768, max=32767, fuzz=16, flat=128, resolution=0)

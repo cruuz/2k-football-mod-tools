@@ -319,6 +319,40 @@ def _cmp8(label: str, va: int, retail: int, patched: int, note: str) -> Site:
 ROW17_END_VA = GRID_VA + 17 * GRID_ROW_BYTES      # 0xE58548: first byte after the 17 retail regular rows
 ROW18_END_VA = GRID_VA + 18 * GRID_ROW_BYTES      # 0xE585D0
 
+# v0.6 missed this independent comparison in the weekly awards dispatcher.
+# Keep the repair separate from WEEK_SITES so existing calendar overlays still
+# validate and can be upgraded without reinstalling their code or allocations.
+AWARDS_WEEK_VA = 0x00116D6E
+
+
+def repair_awards_timing(payload: bytes) -> tuple[bytes, dict]:
+    """Compute annual awards after the last regular week, including old builds.
+
+    0x135310 calls 0x116920 only when the week's last game is committed. Its
+    ``cmp ebp,16`` was left behind when the regular season grew to 18 weeks.
+    Validate the complete comparison/branch and the native season-week count;
+    change only its immediate and the containing section's digest.
+    """
+    sections = _sections(payload)
+    weeks_at = _offset(payload, SEASON_WEEKS_VA, sections)
+    weeks = payload[weeks_at]
+    _require(weeks in (17, 18), "foreign regular-season week count")
+    at = _offset(payload, AWARDS_WEEK_VA, sections)
+    _require(payload[at - 2:at] == b"\x83\xfd"
+             and payload[at + 1:at + 7] == bytes.fromhex("0f85ef000000")
+             and payload[at] in (16, 17), "foreign annual-awards week comparison")
+    desired = weeks - 1
+    receipt = {"award_week": weeks, "va": hex(AWARDS_WEEK_VA),
+               "already_applied": payload[at] == desired}
+    if receipt["already_applied"]:
+        return payload, receipt
+    out = bytearray(payload)
+    out[at] = desired
+    section = _section_for_offset(sections, at)
+    digest_at = section.header_offset + 36
+    out[digest_at:digest_at + 20] = section_digest(bytes(out), section)
+    return bytes(out), receipt
+
 WEEK_SITES: tuple[Site, ...] = (
     _cmp8("stage_table_season_weeks", SEASON_WEEKS_VA, 0x11, 0x12,
           ".rdata stage table row 8 (+4): weeks simulated by the Season stage (FUN_00247b20 / FUN_002480b0)"),
@@ -647,9 +681,18 @@ def apply(payload: bytes, *, groups: Sequence[str] = GROUPS, year: int = DEFAULT
             d = section.header_offset + 36
             buf[d: d + 20] = section_digest(bytes(buf), section)
     patched = bytes(buf)
+    awards_receipt = None
+    if "season_length" in groups:
+        patched, awards_receipt = repair_awards_timing(patched)
     for group in groups:
         _require(group_status(patched, group, **kwargs) == "applied", f"post-apply verification failed for {group}")
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
+    if awards_receipt is not None and not awards_receipt["already_applied"]:
+        edits.append({"group": "season_length", "label": "annual_awards_final_week",
+                      "va": hex(AWARDS_WEEK_VA), "file_offset": hex(_offset(payload, AWARDS_WEEK_VA, sections)),
+                      "before": payload[_offset(payload, AWARDS_WEEK_VA, sections):
+                                        _offset(payload, AWARDS_WEEK_VA, sections) + 1].hex(),
+                      "after": bytes([PATCHED_REGULAR_WEEKS - 1]).hex()})
     return patched, {"groups": list(groups), "year": year, "edits": edits, "changed_bytes": changed,
                      "sections_repinned": sorted(touched), "regular_weeks":
                      PATCHED_REGULAR_WEEKS if "season_length" in groups else RETAIL_REGULAR_WEEKS,
@@ -670,11 +713,11 @@ def site_table(**kwargs) -> list[dict[str, object]]:
     return rows
 
 
-__all__ = ["CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR", "DOB_FORMATTER_VA", "GROUPS", "XBE_GROUPS", "GRID_ROWS", "GRID_SLOTS", "GRID_VA",
+__all__ = ["AWARDS_WEEK_VA", "CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR", "DOB_FORMATTER_VA", "GROUPS", "XBE_GROUPS", "GRID_ROWS", "GRID_SLOTS", "GRID_VA",
            "POSTSEASON_LABELS", "POSTSEASON_TABLE_VA", "RETAIL_POSTSEASON", "RETAIL_YEAR", "SB_VENUE_CASES",
            "SB_VENUE_TABLE_VA", "SEASON_WEEKS_VA", "STAGE_TABLE_VA", "SeasonLengthError", "Site", "WEEK_SITES",
            "apply", "calendar_sites", "created_player_date_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
-           "dob_formatter_bytes", "dob_pivot", "read_year", "rookie_birth_base", "site_table", "status", "year_sites"]
+           "dob_formatter_bytes", "dob_pivot", "read_year", "repair_awards_timing", "rookie_birth_base", "site_table", "status", "year_sites"]
 
 
 def simple_status(payload: bytes) -> str:

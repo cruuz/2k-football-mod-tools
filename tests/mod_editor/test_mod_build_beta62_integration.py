@@ -38,6 +38,7 @@ class PlanTests(unittest.TestCase):
         gate = patch.object(build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0})
         gate.start()
         self.addCleanup(gate.stop)
+        self.enterContext(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
 
     def test_presets_clear_optins_and_recipe_retains_hires_inputs(self):
         initial = build.BuildPlan('s', 't', **dict.fromkeys(FLAGS, True),
@@ -101,7 +102,7 @@ class PlanTests(unittest.TestCase):
             stack.enter_context(patch.object(build, '_check_playbook_scoring', side_effect=scoring))
             receipt = build.build(build.BuildPlan(str(source), str(target), hires_pack=True, hires_folder='art'))
             self.assertEqual(events, ['inspect', 'hires', 'scoring'])
-            self.assertEqual([s['step'] for s in receipt['steps']], ['copy', 'hires_pack'])
+            self.assertEqual([s['step'] for s in receipt['steps']], ['copy', 'hires_pack', 'unc_bowl_uniforms', 'menu_icon_orientation'])
             self.assertEqual(receipt['pre_remap_inspection']['scorebug'], 'retail')
             self.assertNotIn('scorebug', receipt['result'])
             self.assertEqual(receipt['result']['hires_pack'], 'verified')
@@ -153,12 +154,13 @@ class PlanTests(unittest.TestCase):
             edits_path = root/'edits.json'
             edits_path.write_text(json.dumps({'schema': records.EDITS_SCHEMA, 'edits': []}), encoding='utf-8')
             receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
-            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026','commentary_final'])  # i1: b77-c2 final commentary pass
+            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026','unc_bowl_uniforms','commentary_final','menu_icon_orientation'])
             self.assertEqual(names.image_status(target), 'applied')
             # u3: five teams' runs plus Washington's old label nickname; the XBE key paths installed once.
-            self.assertEqual(len(receipt['steps'][-2]['runs']), 6)
-            self.assertEqual([t['team'] for t in receipt['steps'][-2]['teams']], [7, 8, 22, 23, 25])
-            self.assertEqual((receipt['steps'][-2]['xbe']['status'], xbe['state']), ('applied', 'applied'))
+            name_step = next(row for row in receipt['steps'] if row['step'] == 'team_names_2026')
+            self.assertEqual(len(name_step['runs']), 6)
+            self.assertEqual([t['team'] for t in name_step['teams']], [7, 8, 22, 23, 25])
+            self.assertEqual((name_step['xbe']['status'], xbe['state']), ('applied', 'applied'))
             self.assertEqual(names.image_status(fixture.path), 'retail')
             def conflicting(path, *args, **kwargs):
                 with records._outer_image()(path) as archive:
@@ -243,10 +245,11 @@ class ExecutableTests(unittest.TestCase):
                             build._tools_module('nfl2k5_kickoff_alignment'), 'apply', return_value={'status':'applied','kicker_depth_yd':5,'changed_bytes':0,'books':[]}), patch.object(
                             build._tools_module('nfl2k5_kickoff_returns'), 'apply', return_value={'status':'applied','changed_bytes':0,'books':[]}), patch.object(
                             build, '_check_playbook_menus', return_value=None), patch.object(
+                            build._core_module('nfl2k5_unc_bowl_uniforms'), 'apply_to_image', return_value={'synthetic':True}), patch.object(
                             build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0}):  # Synthetic image has no PLAY archive; both real gates are covered with retail resources separately.
                         result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
                                                            kickoff_relocated=True,**GROWN))
-                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
+                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space','unc_bowl_uniforms','menu_icon_orientation'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
                 final=build._xbe_bytes(target)
                 for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')

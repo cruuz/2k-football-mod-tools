@@ -58,7 +58,11 @@ def build(final, variant):
         payload_ranges = [(stock.STUB_OFFSET, stock.CODE_SIZE - stock.STUB_OFFSET,
                            "a4 stub, relocated moment table, single team table and padding")]
     else:
-        result, repair_receipt = a4_repair.repair_xbe(final, moments, bins)
+        # X5 is a historical diagnostic, not an alias for the latest owner.
+        # Keep its exact FRZ4 bytes after subsequent defensive hardening.
+        body = stock.code_for(va, weights=moments, team_weights=bins, legacy_unguarded_live_team=True)
+        result = stock._write_body(final, allocation, body)
+        repair_receipt = a4_repair.scope_receipt(final, result)
         evidence = dict(repair=repair_receipt, moment_and_bin_tables_identical=True,
                         inserted_instructions="mov eax,[eax+0x1c]; test eax,eax; je ordinary")
         payload_ranges = [(stock.STUB_OFFSET, gun.STUB_SPACE, "fixed per-bin stub")]

@@ -147,6 +147,11 @@ def taken_styles(source, styles):
                       for a in AGGREGATES for p in a["members"])
             if kit or art:
                 out.setdefault(code, set()).add(index)
+    # b775-ek1: the new game-accurate moment kits own their indexes; a franchise without a spare must not pick one
+    from . import nfl2k5_moment_kits as moment_kits
+    for code, index in moment_kits.reserved_styles():
+        if code in styles and index >= styles[code]:
+            out.setdefault(code, set()).add(index)
     return out
 
 
@@ -645,6 +650,10 @@ def image_status(path, source):
                     continue                      # style 0 is the 2026 kit there: not a user of the retail look
                 if code in styles and kit in (0, spare_of[code]):
                     users.add(code)
+            # b775-ek1: a later stage (nfl2k5_moment_kits) may move a franchise's last moment side off its spare to a
+            # new game-accurate index; the installed spare stays and is still checked byte for byte.
+            users |= {code for code in styles if code != EAGLES and spare_of[code] >= styles[code]
+                      and all(target.has(f"{code}{side}{spare_of[code]}.iff") for side in "ha")}
             if not users:
                 return "retail"
             spares = {code: spare_of[code] for code in users}

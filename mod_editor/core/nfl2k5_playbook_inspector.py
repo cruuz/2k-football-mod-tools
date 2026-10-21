@@ -559,6 +559,104 @@ def corpus_counts(books: Iterable[Nfl2k5Playbook]) -> dict[str, int]:
 MENU_SINGLE_PLAY_GROUPS = (0, 1, 2)
 MENU_EMPTY_PLAY = 0x01FF
 
+# FUN_00144BA0 formats category/formation/play labels at aligned ESP+0x100;
+# the adjacent 0x2B0-byte camera object starts at ESP+0x180. Its calls at
+# 0x144D58, 0x144DC3 and 0x144E74 pass the name as swprintf's FORMAT and a
+# null argument list. Keep the terminating UTF-16 unit inside the 128-byte
+# label slot and refuse conversions that would read that null argument list.
+# This is a label-storage bound, not a measured on-screen pixel width.
+PLAYCALL_LABEL_BYTES = 0x80
+PLAYCALL_LABEL_MAX_UNITS = PLAYCALL_LABEL_BYTES // 2 - 1
+PLAYCALL_PLAYS_PER_PAGE = 3  # 0xACD80 compares the page-local item number with 3.
+PLAYCALL_MAX_CATEGORY_CODE = 24  # 0x222390, called by both native category walkers.
+
+
+def playcall_name_problems(name: str) -> list[str]:
+    """Native label constraints, shared by authors, the linter and Build.
+
+    Studio's existing 40-character ASCII authoring limit is stricter than the
+    native label slot. Do not shorten shipped 17-25-character team play names,
+    or impose an eight-play menu limit: native menus page 36 links in threes.
+    Stored names are literal text, not printf programs (even ``%%`` is refused).
+    """
+    problems = []
+    units = len(name.encode("utf-16le")) // 2
+    if units > PLAYCALL_LABEL_MAX_UNITS:
+        problems.append(f"name uses {units} UTF-16 units; the play-call label holds "
+                        f"{PLAYCALL_LABEL_MAX_UNITS} plus its terminator")
+    if "%" in name:
+        problems.append("name contains %; the play-call formatter treats names as formats with no arguments")
+    return problems
+
+
+def playcall_ui_problems(resource_or_body: bytes) -> list[str]:
+    """Check both units' label slots and every formation menu, without running geometry lint."""
+    problems = menu_link_problems(resource_or_body)
+    data = bytes(resource_or_body)
+    if len(data) == RESOURCE_HEADER_SIZE + BODY_SIZE and data[:4] == b"PLAY":
+        data = data[RESOURCE_HEADER_SIZE:]
+    if len(data) != BODY_SIZE:
+        return problems
+    for label, field, maximum, base, stride in (
+        ("formation", 0x34, FORMATION_CAPACITY, FORMATION_BASE, FORMATION_SIZE),
+        ("play", 0x38, PLAY_CAPACITY, PLAY_BASE, PLAY_SIZE),
+        ("category", 0x3C, CATEGORY_CAPACITY, CATEGORY_BASE, CATEGORY_SIZE),
+    ):
+        count = struct.unpack_from("<I", data, field)[0]
+        if not 1 <= count <= maximum:
+            problems.append(f"{label} count {count} is outside 1 through {maximum}")
+            continue
+        for index in range(count):
+            context = f"{label} {index}"
+            if label == "category":
+                code = data[base + index * stride + 4] & 0x3F
+                if code > PLAYCALL_MAX_CATEGORY_CODE:
+                    problems.append(f"{context}: type code {code} is outside the native menu range 0 through "
+                                    f"{PLAYCALL_MAX_CATEGORY_CODE}")
+            try:
+                name = _name(data, base + index * stride, context + " name")
+            except ValidationError as exc:
+                problems.append(str(exc))
+                continue
+            problems.extend(f"{context} ({name}): {p}" for p in playcall_name_problems(name))
+    return problems
+
+
+def category_menu_rows(resource_or_body: bytes) -> list[dict]:
+    """Model the native root preview lookup (0xE10D0, 0xE0BF0, 0xE1060).
+
+    Category masks are distinct from the owning category. The first category
+    with a given code also admits owners whose category has alias flag 0x40.
+    A category without either kind of member returns NULL to 0x181010.
+    """
+    data = bytes(resource_or_body)
+    if len(data) == RESOURCE_HEADER_SIZE + BODY_SIZE:
+        data = data[RESOURCE_HEADER_SIZE:]
+    book = _parse_body(data, asset_id="category-menu", outer_index=-1)
+    codes = [data[CATEGORY_BASE + c.index * CATEGORY_SIZE + 4] for c in book.categories]
+    metadata = [struct.unpack_from("<II", data, FORMATION_AUX_BASE + f.index * FORMATION_AUX_SIZE + 0x48)
+                for f in book.formations]
+    for fi, (owner, mask) in enumerate(metadata):
+        if (owner & 0x3F) >= len(codes) or mask >> len(codes):
+            raise ValidationError(f"Formation {fi} has an out-of-range personnel category")
+    rows = []
+    for c in book.categories:
+        code = codes[c.index] & 0x3F
+        first = next(i for i, v in enumerate(codes) if v & 0x3F == code)
+        members = [fi for fi, (owner, mask) in enumerate(metadata)
+                   if mask & (1 << c.index) or (c.index == first
+                       and codes[owner & 0x3F] & 0xC0 == 0x40
+                       and codes[owner & 0x3F] & 0x3F == code)]
+        rows.append(dict(index=c.index, name=c.name, code=codes[c.index], members=members,
+                         owners=[fi for fi, (owner, _mask) in enumerate(metadata) if owner & 0x3F == c.index]))
+    return rows
+
+
+def category_menu_problems(resource_or_body: bytes) -> list[str]:
+    """Reject root entries whose native preview dereferences a NULL formation."""
+    return [f"category {r['index']} ({r['name']}) has no formation for the native menu preview"
+            for r in category_menu_rows(resource_or_body) if not r['members']]
+
 
 def menu_link_problems(resource_or_body: bytes) -> list[str]:
     """What in a book's formation play menus the game cannot survive or show; empty when the book is sound.
@@ -633,7 +731,11 @@ __all__ = [
     "PlaybookNode",
     "PlaybookPlay",
     "corpus_counts",
+    "category_menu_rows",
+    "category_menu_problems",
     "menu_link_problems",
+    "playcall_name_problems",
+    "playcall_ui_problems",
     "parse_playbook_resource",
 ]
 

@@ -101,6 +101,12 @@ NOT_PNG_IMPORTERS = frozenset({
     # then fits the whole scene in the retail stored span with a literal fill; every applied bundle is pinned
     # (data/nfl2k5_metlife_model/pins.json), so the fit is proved once at author time.
     "mod_editor/core/nfl2k5_scne_builder.py",
+    # The 2026 head coaches (beta 77 co1/co2) have Arrowhead's shape too: shipped authored PNGs written into the
+    # retail P8 allocations of the decoded coach scene (shared model writer write_p8, palette size pinned per club),
+    # then the whole scene refit in its fixed span by the module's own _refit with the retail wrapper and scratch
+    # word kept; every applied span is pinned (data/nfl2k5_modern_coaches/pins.json). Its one plain
+    # quantize_levels call fills the two raw, uncompressed 128x128 portrait spans, where nothing can overflow.
+    "mod_editor/core/nfl2k5_modern_coaches.py",
 })
 
 

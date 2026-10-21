@@ -9,6 +9,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 import copy
 from dataclasses import replace
+import hashlib
 import os
 import struct
 from types import SimpleNamespace
@@ -59,7 +60,10 @@ class Native(unittest.TestCase):
             for slot in range(11):
                 desc = ip.PLAY_BASE+(play-1)*96+12+slot*8
                 chain = desc+struct.unpack_from('<i',body,desc)[0]-1
-                found = next((chain+i*8 for i in range(body[desc-4]&15) if body[chain+i*8]==0x16), None)
+                ops = [body[chain+i*8] for i in range(body[desc-4]&15)]
+                # a ball carrier's take (b776: a flea flicker's QB takes the pitch back and then passes; the native
+                # scorer does not range-check that node, so the fixture skips chains that also throw)
+                found = next((chain+i*8 for i, op in enumerate(ops) if op==0x16), None) if 0x06 not in ops else None
                 if found is not None:
                     break
             if found is not None:
@@ -145,6 +149,70 @@ class Native(unittest.TestCase):
         result = scoring.NativeScorer(payload).sweep(self.fixed)
         self.assertEqual(result['faults'], [])
         self.assertEqual(result['coverage']['pass_plan_states'], [0, 1, 9])
+
+    def coach_loader_fixture(self, resource):
+        """Use production code and an authenticated tag, without selecting a coach.
+
+        The loader authenticates identity and bytes. Its compact play history is
+        unused here; roster attachment and coach selection have their own tests.
+        """
+        from mod_editor.core import nfl2k5_coach_ai as ai
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        payload = tt._apply_all(self.xbe, None, False, coach_ai=True)[0]
+        row = next(r for r in ai.portrait_rows() if r['team'] == 'DAL')
+        tag = bytearray(ai.PROFILE_SIZE)
+        tag[:8] = ai.MAGIC
+        struct.pack_into('<4H', tag, 8, 1, row['book_index'], row['asset'], row['portrait'])
+        struct.pack_into('<4I', tag, 16,
+                         ai.fnv(resource[32+0x30:32+ai.PROFILE_OFFSET]), 0, row['identity'], 0)
+        tag[32:64] = hashlib.sha256(resource).digest()
+        name = row['name'].encode('utf-16le')
+        tag[64:64+len(name)] = name
+        struct.pack_into('<I', tag, 20, ai.tag_checksum(tag))
+        raw = bytearray(resource)
+        raw[32+ai.PROFILE_OFFSET:32+ai.PROFILE_OFFSET+ai.PROFILE_SIZE] = tag
+        return payload, bytes(raw)
+
+    def test_coach_hash_load_exceeds_old_budget_and_scores_without_bypass(self):
+        from mod_editor.core import nfl2k5_coach_ai as ai
+        payload, tagged = self.coach_loader_fixture(self.fixed)
+        m = scoring.NativeScorer(payload)
+        m.m.mem_write(scoring.SOURCE, tagged[32:])
+        with patch.object(scoring, 'BOOK_LOAD_BUDGET', scoring.INSTRUCTION_BUDGET):
+            with self.assertRaisesRegex(scoring.ScoringError, 'instruction budget expired'):
+                m.call(scoring.BOOK_LOAD, ecx=scoring.SOURCE, edx=0)
+        result = m.sweep(tagged)
+        self.assertEqual(result['faults'], [])
+        for address in (scoring.SOURCE, scoring.BOOK):
+            self.assertEqual(m.get(address+ai.PROFILE_OFFSET+28), ai.VALID_MARKER)
+        # Authenticate an invalid handoff too: passing the coach checksum must
+        # never exempt PLAY operands from the native scoring gate.
+        _, bad = self.coach_loader_fixture(self.corrupted())
+        with self.assertRaisesRegex(scoring.ScoringError, 'Native PLAY scoring rejected'):
+            scoring.require_safe(bad, payload)
+
+    def test_coach_hash_still_checks_tag_and_body(self):
+        from mod_editor.core import nfl2k5_coach_ai as ai
+        payload, tagged = self.coach_loader_fixture(self.fixed)
+        for offset in (32+0x3400, 32+ai.PROFILE_OFFSET+128):
+            with self.subTest(offset=offset):
+                bad = bytearray(tagged)
+                bad[offset] ^= 1
+                m = scoring.NativeScorer(payload)
+                m.m.mem_write(scoring.SOURCE, bytes(bad[32:]))
+                m.call(scoring.BOOK_LOAD, ecx=scoring.SOURCE, edx=0)
+                self.assertEqual(m.get(scoring.BOOK+ai.PROFILE_OFFSET+28), 0)
+
+    def test_loader_and_scorers_still_have_separate_finite_budgets(self):
+        for pc, budget in ((scoring.BOOK_LOAD, 1_000_000), (0x2815f0, 100_000)):
+            with self.subTest(pc=hex(pc)):
+                m = scoring.NativeScorer(self.xbe)
+                # Deliberate native infinite loop, including at the loader.
+                m.m.mem_write(pc, b'\xeb\xfe')
+                with patch.object(m.m, 'emu_start', wraps=m.m.emu_start) as execute:
+                    with self.assertRaisesRegex(scoring.ScoringError, 'instruction budget expired'):
+                        m.call(pc)
+                self.assertEqual(execute.call_args.kwargs['count'], budget)
 
 
 if __name__ == "__main__":

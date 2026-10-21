@@ -4,15 +4,15 @@
   "team": "GB",
   "name": "NFL 2K28 GB Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Jonathan Gannon (Zimmer / Gannon split coverage); 2025 baseline ARI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "9015cb2e43a314b334543b678e758c73fea581ee976edb0fb789fb2b97cacf5e",
-  "donor_formation_count": 48,
-  "donor_play_count": 264,
-  "donor_node_count": 1864
+  "book_fingerprint": "2721a4fc7b693591e656152d592d43b96a4ee313645194c84a02eec1fc55f694",
+  "donor_formation_count": 50,
+  "donor_play_count": 268,
+  "donor_node_count": 2298
  },
  "budget": {
   "formations": 50,
@@ -39,7 +39,7 @@
     [-255, 0],
     [275, 457],
     [-40, 457],
-    [-610, 91],
+    [-455, 320],
     [640, 1188],
     [-640, 1097],
     [1371, 365],
@@ -59,13 +59,13 @@
    "replace_index": 35,
    "replace_name": "Bear",
    "slot_positions": [
-    [200, 0],
+    [365, 0],
     [-365, 0],
     [0, 0],
     [-200, 0],
-    [460, 91],
+    [330, 274],
     [0, 411],
-    [-600, 91],
+    [-430, 274],
     [0, 1097],
     [-300, 411],
     [1371, 152],
@@ -1520,7 +1520,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [0, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
@@ -1558,7 +1558,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
@@ -1596,7 +1596,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
@@ -2218,7 +2218,7 @@
    }
   },
   {
-   "id": "n264",
+   "id": "n268",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2256,7 +2256,7 @@
    }
   },
   {
-   "id": "n265",
+   "id": "n269",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",

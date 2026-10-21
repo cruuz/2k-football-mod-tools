@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1911,21 +1911,21 @@
  "receipt": {
   "team": "SEA",
   "offense_pack": "data/playbooks/softdrink_sea_modern.2k5book",
-  "offense_pack_sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157",
-  "source_fingerprint": "4db6e188be96f6548aaa1d12885dd4797e54686193d3e0fd92c6d926c5e73154",
-  "replacement_sha256": "b8ebafbc3a6ad6380d8122f436584ef3be0075c2771c67694a54ad5184a13015",
-  "semantic_sha256": "f4bf143331257167c73599d1d20f12d7fd4d8c821b4794cfc650d9d1d77e6055",
+  "offense_pack_sha256": "47b711564bfea941c4ac19037c5009174a94ad38b2359c4b23b03eed3134b0f0",
+  "source_fingerprint": "b54f60397e935016945b6df4bcf039d47843cc5cf07932ea485eb7f06c79c812",
+  "replacement_sha256": "55cd7417089d398c53f83601a2489c5946038d9242269251eac0118d42291b8e",
+  "semantic_sha256": "a3e3be83fa872cb3f4ee30399d95b1f0949ca6ed762249ad91b3e4863e60fca0",
   "plays": 63,
   "formations": 4,
-  "nodes": 2290,
+  "nodes": 2741,
   "node_capacity": 3500,
-  "formation_count": 43,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.09156,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sea_defense.2k5book",
-  "pack_sha256": "a3b32e13d0d9ae8f9eee28f427f2198781a43d0ba1a0ade753e39935b2c3f554"
+  "pack_sha256": "da84cf70a307c449f096d43aa11c358a05a9aba924e5b42706a4d6f8ee100bdb"
  }
 }

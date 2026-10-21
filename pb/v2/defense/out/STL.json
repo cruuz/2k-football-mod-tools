@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1906,21 +1906,21 @@
  "receipt": {
   "team": "STL",
   "offense_pack": "data/playbooks/softdrink_stl_modern.2k5book",
-  "offense_pack_sha256": "ce87d2237e4336cfe3994079129c68b0af192921aeee72988ac4174247862061",
-  "source_fingerprint": "0396eadccabe3ee9e1730b1d24caf0d33c9f02ec9a084f46dfd38a4a2d58dbc5",
-  "replacement_sha256": "2d982de10aab275aa455a3a4094f79abc84f0aa9f25cc39779ffa379a57f8f5b",
-  "semantic_sha256": "f3917b778f4155dcaf6ee51075b7e452f203965c2130c0e7abdc086d39159069",
+  "offense_pack_sha256": "e13eef86db5c07bd9e78c44209af635c5b814f32e23800f3f6990ee420b9f4e9",
+  "source_fingerprint": "49f558b95d4884200295906a534da89e6e03a89de2f5f4c5b6d00d428232d82e",
+  "replacement_sha256": "747f676f535530a1b0461484fde58f30b040e8ca77f41958e9eb1824be54be9e",
+  "semantic_sha256": "a0c5d961552ad3ef3c5414d99880720b4155da43af08af6e26637f19dd51d66d",
   "plays": 63,
   "formations": 4,
-  "nodes": 2298,
+  "nodes": 2727,
   "node_capacity": 3500,
-  "formation_count": 45,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.1069,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_stl_defense.2k5book",
-  "pack_sha256": "3b9228401fa7a7433da010dd4f63f468133539d7f0ba319e011ef66fff6384c0"
+  "pack_sha256": "54acc2aed1c705292c900fe08908abf9250e90afb5290247bc1c862356320b55"
  }
 }

@@ -434,11 +434,17 @@ ABILITY_LABELS = {"speedster": "Speedster", "right_stick_moves": "Right-Stick Mo
 ABILITY_TIERS = ("Unranked", "Star", "Superstar", "X-Factor")
 VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap", "ability_tier")
 
+# b775-hs1: roster +0x0D bits 0-3 (labels kept in step with nfl2k5_hair_styles.STYLE_LABELS by its tests)
+HAIR_STYLES = ("Retail (Dreads bit)", "Retail dreads", "Long locs", "Short twists", "Long hair, blond",
+               "Long hair, brown", "Afro puff", "Braids", "Bun", "Mullet, brown", "Mullet, blond",
+               "Long locs, light ends", "Long hair, black", "No hair model", "Reserved 14", "Reserved 15")
+
 ENUMS: dict[str, Sequence[str]] = {
     "ability_tier": ABILITY_TIERS,
     "guardian_cap": YES_NO,
     "position": POSITIONS, "hand": HANDS, "body": BODIES, "helmet": HELMETS,
     "face_shield": FACE_SHIELDS, "dreads": YES_NO, "eye_black": YES_NO, "mouthpiece": YES_NO,
+    "hair_style": HAIR_STYLES,
     "left_glove": GLOVES, "right_glove": GLOVES, "left_wrist": WRISTS, "right_wrist": WRISTS,
     "left_elbow": ELBOWS, "right_elbow": ELBOWS, "sleeves": SLEEVES, "turtleneck": TURTLENECKS,
     "left_shoe": SHOES, "right_shoe": SHOES, "neck_roll": NECK_ROLLS,
@@ -662,7 +668,7 @@ ATTRIBUTE_CARDS: dict[str, tuple[str, ...]] = {
     "Mental": ("leadership", "composure", "consistency", "aggressiveness"),
     # the three style channels, first-class: two segmented controls over the bytes plus the raw values
     "Style": ("power_run_style_bucket", "power_run_style", "throw_style", "scramble", "kicking_style"),
-    "Appearance": ("skin", "face", "body", "dreads", "eye_black", "helmet", "face_mask", "face_shield",
+    "Appearance": ("skin", "face", "body", "dreads", "hair_style", "eye_black", "helmet", "face_mask", "face_shield",
                    "mouthpiece", "turtleneck", "sleeves", "neck_roll", "left_glove", "right_glove",
                    "left_wrist", "right_wrist", "left_elbow", "right_elbow", "left_shoe", "right_shoe",
                    "hand", "photo_id"),
@@ -778,7 +784,10 @@ FIELDS: tuple[Field, ...] = (
     _f("right_shoe", 0x0C, 1, 3, 3, "Right Shoe"),
     _f("helmet", 0x0C, 1, 6, 1, "Helmet"),
     _f("headless", 0x0C, 1, 7, 1, "Headless Bit", "Finn's 12Unk1; a set bit renders the model without a head"),
-    _f("unknown_0d", 0x0D, 1, 0, 8, "Unknown +0x0D"),
+    _f("hair_style", 0x0D, 1, 0, 4, "Hair Style",
+       "b775-hs1: 0 = retail (the Dreads bit decides), 1 = retail dreads, 2-12 = the added hair models, "
+       "13 = no hair model (nfl2k5_hair_styles; needs that build step); zero in every retail record"),
+    _f("unknown_0d_high", 0x0D, 1, 4, 4, "Unknown +0x0D bits 4-7"),
     _f("unknown_0e", 0x0E, 1, 0, 8, "Unknown +0x0E"),
     _f("unknown_0f", 0x0F, 1, 0, 8, "Unknown +0x0F"),
     _f("first_name_pointer", 0x10, 4, 0, 32, "First name pointer"),
@@ -3158,7 +3167,11 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
         roster.free_agents = selected
     coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
-    roster.check_depth_locks()
+    # A dated refresh validates its final club chains after membership changes.
+    # Alumni aliases cannot own independent locks, including on a replay after
+    # one of their aliased NFL players has moved to a reserve list.
+    if not doc.get("roster_refresh"):
+        roster.check_depth_locks()
     out = roster.to_body()
     # Resolve against the final serialized membership, including reserve repacks.
     special_count = 0
@@ -3181,7 +3194,18 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             from . import nfl2k5_spare_capacity
             out, spare_receipt = nfl2k5_spare_capacity.apply_body(out)
             fa_receipt = dict(fa_receipt, historic_spare_capacity=spare_receipt)
-    return out, {"modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    refresh_receipt = None
+    if doc.get("roster_refresh"):
+        from . import nfl2k5_roster_refresh
+        out, refresh_receipt = nfl2k5_roster_refresh.apply_body(out, doc["roster_refresh"])
+        if doc.get("restore_import_floor"):
+            # b775: a refresh's new identities take vacant create records; Anniversary moments and historic games
+            # import two 53-player teams at once and need 106 of them (nfl2k5_spare_capacity.restore_import_floor).
+            _require(doc["restore_import_floor"] is True, "Import floor marker must be Boolean")
+            from . import nfl2k5_spare_capacity
+            out, floor_receipt = nfl2k5_spare_capacity.restore_import_floor(out)
+            refresh_receipt = dict(refresh_receipt, import_floor=floor_receipt)
+    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,
@@ -3523,7 +3547,8 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
 CSV_LOCK_COLUMNS = tuple("lock_" + role for role in ("rank", "side", "kr1", "kr2", "pr"))
 CSV_COLUMNS = (CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) +
                ("guardian_cap", "ability_tier", "birth_month", "birth_day", "birth_year",
-                "power_run_style_bucket", "throw_style") + CSV_LOCK_COLUMNS)
+                "power_run_style_bucket", "throw_style") + CSV_LOCK_COLUMNS
+               + ("hair_style",))  # b775-hs1: last, so earlier columns keep their places
 CSV_TEXT_COLUMNS = frozenset({"team", "first", "last", "college", "birth_date"})
 CSV_HELP = (
     "CSV uses pool + index from the loaded roster; keep both columns. Import previews every changed "
@@ -3573,6 +3598,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
         "contract_remaining": record.values["contract_remaining"],
         "skin": record.skin, "face": record.values["face"],
         "body": BODIES[record.values["body"]], "dreads": YES_NO[record.values["dreads"]],
+        "hair_style": HAIR_STYLES[record.values["hair_style"]],
         "eye_black": YES_NO[record.values["eye_black"]], "helmet": HELMETS[record.values["helmet"]],
         "face_mask": record.values["face_mask"],
         "face_shield": FACE_SHIELDS[record.values["face_shield"]] if record.values["face_shield"] < len(FACE_SHIELDS) else record.values["face_shield"],

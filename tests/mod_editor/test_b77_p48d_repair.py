@@ -34,7 +34,42 @@ class Manifest(unittest.TestCase):
                 for row in rows:
                     self.assertEqual((row['offense_pack_sha256'], row['defense_pack_sha256']), (off, dfn),
                                      'stale manifest: run pb/v2/defense/regen.py and refresh the repair manifests')
-                    self.assertNotEqual(row['input_sha256'], row['output_sha256'])
+                    if row.get('repair_kind') != 'category-menus-v1':
+                        self.assertNotEqual(row['input_sha256'], row['output_sha256'])
+
+
+V06 = Path('/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6 (2026-10-09).xiso.iso')
+
+
+@unittest.skipUnless(V06.is_file(), 'needs the shipped v0.6 disc')
+class CategoryRepair(unittest.TestCase):
+    def test_all_32_pinned_repairs_are_scoped_idempotent_and_have_no_null_roots(self):
+        from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+        import p48o_repair as O
+        changed = 0
+        with OuterImage(V06) as image:
+            for team in R.pk.TEAM_BOOKS:
+                entry = BOOK_ENTRIES[team]
+                raw = image.read_entry(entry)
+                with self.subTest(team=team):
+                    fixed, receipt = O.repair_category_menus(raw, entry)
+                    self.assertTrue(receipt['outside_scope_identical'])
+                    self.assertEqual(R.ip.category_menu_problems(fixed), [])
+                    self.assertEqual(O.repair_category_menus(fixed, entry)[0], fixed)
+                    self.assertEqual(R.repair_resource(raw, entry)[0], fixed)
+                    changed += raw != fixed
+        self.assertEqual(changed, 26)
+
+    def test_unknown_input_and_nonteam_entry_refuse(self):
+        from nfl2k5_playbook_position_recode import OuterImage
+        import p48o_repair as O
+        with OuterImage(V06) as image:
+            raw = image.read_entry(341)
+        changed = bytearray(raw)
+        changed[-1] ^= 1
+        for data, entry in ((bytes(changed), 341), (raw, 318)):
+            with self.assertRaises(ValueError):
+                O.repair_category_menus(data, entry)
 
 
 @unittest.skipUnless(HAVE, 'needs the v0.5 disc, the retail disc and the retail default.xbe')

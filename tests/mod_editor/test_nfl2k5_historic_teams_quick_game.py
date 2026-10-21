@@ -396,6 +396,37 @@ class NativeTeamSelectTests(unittest.TestCase):
             self.assertNotEqual(away["away"]["category"], 4)
             self.assertFalse(home["loaded"] or away["loaded"])
 
+    def test_random_team_away_from_a_historic_team_returns_its_slot(self):
+        # mc3 (D01): Noah 10/16 put the away side on a historic team, then pressed Random Team. The spin
+        # showed a resident team but left the historic team in USER2, 53 players out of the spare pool,
+        # into MyCareer, where the first free record was then a split-name one ("Roster is full.").
+        cpu = self.cpu()
+        user1, user2 = cpu.spare_slots()[:2]
+        start = cpu.pool()["used"]
+        cpu.team_select(cpu.team(15), cpu.last_resident())
+        away = cpu.press("away", +1)
+        self.assertEqual((away["away"]["index"], away["away"]["category"]), (cpu.index(user2), 4))
+        self.assertEqual(cpu.pool()["used"], start + away["away"]["players"])
+        spun = cpu.random_step("away", 5)
+        self.assertNotEqual(spun["away"]["index"], cpu.index(user2))
+        self.assertFalse(spun["loaded"])
+        self.assertEqual(cpu.pool()["used"], start)                  # every player back in the pool
+        self.assertEqual((cpu.view(user2)["category"], cpu.view(user2)["players"],
+                          cpu.view(user2)["identity"]), (2, 0, 91))  # an empty created-team slot again
+        # Stepping into the list again loads entry 0 afresh (the remembered entry was cleared).
+        cpu.team_select(cpu.team(15), cpu.last_resident())
+        self.assertEqual(cpu.press("away", +1)["loaded"], [self.names[0]])
+        # The home side, the same way; a spin from a resident team never touches either slot.
+        cpu.team_select(cpu.last_resident(), cpu.team(0))
+        home = cpu.press("home", +1)
+        self.assertEqual(home["home"]["index"], cpu.index(user1))
+        cpu.random_step("home", 9)
+        self.assertEqual((cpu.view(user1)["category"], cpu.view(user1)["players"]), (2, 0))
+        self.assertEqual(cpu.view(user2)["category"], 4)              # the away side still shows its team
+        before = cpu.pool()
+        cpu.random_step("home", 11)
+        self.assertEqual(cpu.pool(), before)
+
     def test_moment_quit_quick_game_historic_teams_then_a_moment_again(self):
         cpu = self.cpu()
         before = len(cpu.imports)

@@ -4,15 +4,15 @@
   "team": "KC",
   "name": "NFL 2K28 KC Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Steve Spagnuolo (Jim Johnson pressure); 2025 baseline KC. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "71057dc40cca553275f106f3661ab02a54cb04d0da90e7a55709c90e073debb0",
-  "donor_formation_count": 42,
-  "donor_play_count": 261,
-  "donor_node_count": 1855
+  "book_fingerprint": "eceae419ad9716c700fa39afc14ef997d3fe31d130c7d93c7e25845cd5153fd2",
+  "donor_formation_count": 49,
+  "donor_play_count": 262,
+  "donor_node_count": 2277
  },
  "budget": {
   "formations": 50,
@@ -59,13 +59,13 @@
    "replace_index": 28,
    "replace_name": "Bear",
    "slot_positions": [
-    [200, 0],
+    [365, 0],
     [-365, 0],
     [0, 0],
     [-200, 0],
-    [460, 91],
+    [330, 274],
     [0, 411],
-    [-600, 91],
+    [-430, 274],
     [0, 1097],
     [-300, 411],
     [1371, 152],
@@ -1326,7 +1326,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [0, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
@@ -1364,7 +1364,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
@@ -1402,7 +1402,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
@@ -1976,7 +1976,7 @@
    }
   },
   {
-   "id": "n261",
+   "id": "n262",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2014,7 +2014,7 @@
    }
   },
   {
-   "id": "n262",
+   "id": "n263",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",
@@ -2052,7 +2052,7 @@
    }
   },
   {
-   "id": "n263",
+   "id": "n264",
    "custom_name": "Mug Wide",
    "play_type": "defense",
    "concept": "Front: Mug Wide",
@@ -2090,7 +2090,7 @@
    }
   },
   {
-   "id": "n264",
+   "id": "n265",
    "custom_name": "Mug Contain",
    "play_type": "defense",
    "concept": "Front: Mug Contain",
@@ -2128,7 +2128,7 @@
    }
   },
   {
-   "id": "n265",
+   "id": "n266",
    "custom_name": "Mug Zero",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
@@ -2166,7 +2166,7 @@
    }
   },
   {
-   "id": "n266",
+   "id": "n267",
    "custom_name": "Mug Fire 3",
    "play_type": "defense",
    "concept": "Fire Zone 3",
@@ -2204,10 +2204,10 @@
    }
   },
   {
-   "id": "n267",
+   "id": "n268",
    "custom_name": "Mug Sim 3",
    "play_type": "defense",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "donor": {
     "index": 9,
     "name": "4 Cloud",
@@ -2221,7 +2221,7 @@
    "link_group": null,
    "assignments": [
     [[27, [0, 0, 0, 0, 0, 0]], [13, [1280.1599999999999, 548.64, 8, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.1599999999999, 548.64, 8, 7, 6, 0, 0]]],
+    null,
     null,
     null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
@@ -2242,7 +2242,7 @@
    }
   },
   {
-   "id": "n268",
+   "id": "n269",
    "custom_name": "Mug Bail 3",
    "play_type": "defense",
    "concept": "Cover 3 Sky",

@@ -260,18 +260,18 @@ class NativeTests(unittest.TestCase):
             m.run("filter", regs={"EBX": m.P})
             self.assertEqual(m.read(m.T + 0x1C), 0x25 if flick else 0, tier)
 
-    def test_non_carriers_keep_the_retail_charge_and_consumption(self):
+    def test_nonstar_defenders_cannot_charge_or_consume_a_stale_charge(self):
         m = Machine(self.gated)
         m.player(abilities=word(0))
         m.u32(m.BALL, m.P + 0x8000)             # someone else holds the ball: not a carrier
         m.u32(m.S + 0x28, 0)
         m.f32(0xB71D0C, .2)
         m.run(0x2D43F0)
-        self.assertEqual(m.read(m.S + 0x90) & 3, 2)
+        self.assertEqual(m.read(m.S + 0x90) & 3, 0)
         m.f32(m.S + 0x44, 1)
         m.u32(m.S + 0x90, 3)
         m.run(0x2D4740, stop=0x2DC808, return_address=0x2DC808)
-        self.assertEqual(m.read(m.S + 0x90) & 3, 1)
+        self.assertEqual(m.read(m.S + 0x90) & 3, 0)
 
     def test_gate_off_keeps_the_retail_charge_for_everyone(self):
         m = Machine(patch.apply(self.retail, right_stick_stars_only=True)[0])

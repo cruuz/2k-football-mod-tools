@@ -80,7 +80,7 @@ class LayoutTests(unittest.TestCase):
             self.assertLessEqual(n, capacity[k], k)
         self.assertEqual(sprite.probe_sizes(), (34, 327904, 327680))    # +128 B (sb), +384 B the OT tokens (sbfix): same HUD sectors
         code, _ = owner.code_for(CODE_VA, DATA_VA)
-        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5376, 13))
+        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5376, 14))
         self.assertLess(len(code.rstrip(b'\xcc')), owner.CODE_SIZE - 8)
 
     def test_tokens_and_metrics(self):

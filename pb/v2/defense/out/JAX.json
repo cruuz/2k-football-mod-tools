@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1879,21 +1879,21 @@
  "receipt": {
   "team": "JAX",
   "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
-  "offense_pack_sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a",
-  "source_fingerprint": "0b5dd07cb00ed7f378db6843f15285a24d5bfac64d94a9f09253cb0e82730570",
-  "replacement_sha256": "f4863087eb6aa6aa6319cea37ef81e208bfb0e25c600bec6884bfa5752ca5be3",
-  "semantic_sha256": "a630ff1bc93afd1a7c4ce590602d660fa60628ba924485cddbc86643ae2a87d6",
+  "offense_pack_sha256": "ac91e137e01c64796b4ad5bd3b2cf136b9e4addc5cc2ebe32e6416db3f93a290",
+  "source_fingerprint": "ac1997801b3b5e058c76fd873a0549419678f9be6680c046f87f241794163f45",
+  "replacement_sha256": "443654d004ed001f7e9ce3359a1c12dc95d3770c35dd80ab0201ce677f70da3c",
+  "semantic_sha256": "557f851186af89991561791d6ffe778afc0add23f0700b288c1c7fff12c20ae9",
   "plays": 62,
   "formations": 4,
-  "nodes": 2376,
+  "nodes": 2787,
   "node_capacity": 3500,
-  "formation_count": 41,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.10195,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_jax_defense.2k5book",
-  "pack_sha256": "5610e62136832fe186068316e420b3c566515c21115a9a918cec68005371b609"
+  "pack_sha256": "1c15d5bc7cd228ddef76293c9a49f38248b19424cafa13fb8e9fedbd676a7ea3"
  }
 }

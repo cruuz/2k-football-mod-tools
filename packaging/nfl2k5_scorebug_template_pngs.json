@@ -1122,6 +1122,12 @@
       "size": 6688,
       "width": 256
     },
+    "data/nfl2k5_indicator_names/atlas.png": {
+      "height": 128,
+      "sha256": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
+      "size": 2981,
+      "width": 256
+    },
     "data/nfl2k5_kick_meter_2026/arrow32.png": {
       "height": 32,
       "sha256": "a691a700d169278a677524690ea8d397015e6233f9cea380875c7a632d45bb13",
@@ -2078,8 +2084,8 @@
     },
     "data/nfl2k5_modern_metlife/art/s18/field/center_logo.png": {
       "height": 256,
-      "sha256": "cc4455387902ee27b8fce049a53e8c245dafc20d17ad5e7aec8dde07be7c43ba",
-      "size": 37046,
+      "sha256": "6b573f24ab695d8a927b332a802abe4b2a06827cd507d218493ff7d40622a224",
+      "size": 18434,
       "width": 256
     },
     "data/nfl2k5_modern_metlife/art/s18/field/endzone_N_L.png": {
@@ -2180,50 +2186,50 @@
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda.png": {
       "height": 384,
-      "sha256": "564df28c89ed72c820ae5ea895bed202349bcea8ccadc699d9792da8b6e0fe79",
-      "size": 124508,
+      "sha256": "4fcd35ad564dc7fdc9185be3af2a050d03c7780f72815c175faf9312fc2ad934",
+      "size": 151916,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bermuda_tile.png": {
       "height": 96,
-      "sha256": "95d1f6c8d4c3766230dc5c3bb1befb66664a3fc7a6ccb104fed83d8a652c6a91",
-      "size": 12937,
+      "sha256": "68087a3f5b5256643f2e0266d81168c3a58abf904a8aa03f7626a8fdca177fcb",
+      "size": 15551,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass.png": {
       "height": 384,
-      "sha256": "d24e1ad126df00cc3ac407789707942655f941e68892ded510ccc3a0a4c8ce0b",
-      "size": 123227,
+      "sha256": "234033a2110be5d3450c635919a8a3879bffb2bfa8778cb82c54e2e30e70788a",
+      "size": 151906,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_blade_bluegrass_tile.png": {
       "height": 96,
-      "sha256": "915980274a06f2bfcbdfab52710a2a5321088cccc9cb2b3c096b7c56c066b357",
-      "size": 12818,
+      "sha256": "53bb3f5e4d7b4c1dcc57807b968c350c95ce473bec1c99c406daccfa6300834c",
+      "size": 15543,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_fibre.png": {
       "height": 384,
-      "sha256": "7af63431c4a3367e5d016c65eb2e53e377884e06a7edd24f1fc389d5c1200d43",
-      "size": 126815,
+      "sha256": "5608ec4f70a99c25e5ee839e1ff3daf0da6f7a0607516157eb61e86d477427bb",
+      "size": 155880,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_fibre_tile.png": {
       "height": 96,
-      "sha256": "4704ecf11f13fcbad111e117969bd17a21a7feb2504b678d2bfde944a32c8754",
-      "size": 13147,
+      "sha256": "498c67d3970fb693ccaed4c9cb84cc6048cb265a8a0f63e6385866ce3d6a483f",
+      "size": 15935,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/detail_helix.png": {
       "height": 384,
-      "sha256": "70a30006d3e5d01dc1a1b29d14955f28b98abedc11d2613a444b3d10b185381c",
-      "size": 127306,
+      "sha256": "1fcd373c8e6c426ae06382626e065cfcfb8d478e3553c716aedd66a9e97d1bba",
+      "size": 156758,
       "width": 512
     },
     "data/nfl2k5_modern_surfaces/art/detail_helix_tile.png": {
       "height": 96,
-      "sha256": "47c123469c5ca8307dfbd19ef715f8cf648ecbe0be11b79837288d84ea6d1d87",
-      "size": 13205,
+      "sha256": "4c18de30b115f2288c551952a1bcec7609addf1764a495140b982fd1dfd8e489",
+      "size": 15991,
       "width": 192
     },
     "data/nfl2k5_modern_surfaces/art/pattern_grass_bermuda.png": {
@@ -2846,8 +2852,8 @@
     },
     "data/nfl2k5_scorebug_sprite/template.png": {
       "height": 512,
-      "sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b",
-      "size": 27963,
+      "sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398",
+      "size": 27390,
       "width": 1536
     },
     "data/nfl2k5_sofi_model/art/LIGHT_sf_concourse.png": {
@@ -4556,8 +4562,8 @@
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_facade_glass.png": {
       "height": 64,
-      "sha256": "a723ceaee58351b490ee82ac303103052d358019e8848e2c6525e740013c00f9",
-      "size": 1914,
+      "sha256": "ca9df674eb0f66d02c1706039829a973850d3a91add775a8b198a5d707b03314",
+      "size": 8735,
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glass.png": {
@@ -4567,16 +4573,16 @@
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall.png": {
-      "height": 128,
-      "sha256": "5a624aa0412b9d9df4cda6cf9ae260cb8f4e7c412987866c2442e8a818d7118c",
-      "size": 784,
-      "width": 128
+      "height": 64,
+      "sha256": "641a4aa8601e4c3555d6897a97874ef9e21ee5f8c1baf5ee30eb85062b1a4726",
+      "size": 965,
+      "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_glasswall_n.png": {
-      "height": 128,
-      "sha256": "4361f2bece434a8e0d8a572062868e7c12073966ab2eaf2daa929b757ac808d8",
-      "size": 847,
-      "width": 128
+      "height": 64,
+      "sha256": "75bfe37a5a7ea30cebb38bc49f60afee8b4ab09dfbc8e275a4013b0719a296ba",
+      "size": 1133,
+      "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_lights.png": {
       "height": 32,
@@ -4585,9 +4591,9 @@
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_prow_display.png": {
-      "height": 128,
-      "sha256": "1ea9b0366b1324b7f82d7cb9eaef07a01e38100498e6977a2dc11b7e2e05ea31",
-      "size": 11114,
+      "height": 64,
+      "sha256": "48fcd78d9b29575fa2205b3778b78a0d1ab3c0a243bed548adf8db6d2e4c1380",
+      "size": 7719,
       "width": 128
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_ribbon.png": {
@@ -4597,9 +4603,27 @@
       "width": 256
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_signs.png": {
+      "height": 64,
+      "sha256": "4cb325c7e9340e9fd6a3fad62006d9938183c9a05d7fe5a90d97605409363df3",
+      "size": 14284,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_a.png": {
       "height": 128,
-      "sha256": "96199464ecb41c51eacc9e2dc5a34865570cb65551348ee9d148726536c43d40",
-      "size": 29422,
+      "sha256": "59995e5b3b983503f2f4aefecb23b51709ef14c8c0c4510b86bdb5212ec85901",
+      "size": 22191,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_d.png": {
+      "height": 128,
+      "sha256": "6c3246b87a0a13e88d52947baba2dec470ea56d37e19b8af28a4e31e1b44578e",
+      "size": 22907,
+      "width": 256
+    },
+    "data/nfl2k5_usbank_model/art/LIGHT_usb_skyline_n.png": {
+      "height": 128,
+      "sha256": "b379a8c098b9ac743274abe8ed8bcc75eb896fbeef8e20b09e93a6e986b067fc",
+      "size": 34427,
       "width": 256
     },
     "data/nfl2k5_usbank_model/art/LIGHT_usb_towers.png": {
@@ -4658,8 +4682,8 @@
     },
     "data/nfl2k5_usbank_model/art/usb_etfe_top.png": {
       "height": 64,
-      "sha256": "6946d882cdba2a9201d714ad289238403fbb8adebcfc628027fbd6d893702b8b",
-      "size": 345,
+      "sha256": "b3311d1642202c92ea8a1d730623e8b4192dcc9c1b2a9fcfbbdfb3105315c685",
+      "size": 588,
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/usb_etfe_under.png": {
@@ -4760,14 +4784,14 @@
     },
     "data/nfl2k5_usbank_model/art/usb_zinc.png": {
       "height": 64,
-      "sha256": "3d20ee7d47d1e2a30441f5c3d47e0212e4f91d60f9f76d84be8e17d3e077b858",
-      "size": 637,
+      "sha256": "b46e08ddba342f524324e750ebff8333b4c317040e921411e1b3f81f82758ea8",
+      "size": 1219,
       "width": 64
     },
     "data/nfl2k5_usbank_model/art/usb_zinc_top.png": {
       "height": 64,
-      "sha256": "478f4e5d8c813d04b9e2165ac6bc057682faedfd0254a21607c2b1fb5331a463",
-      "size": 215,
+      "sha256": "9e1e1bf31c6fd7cfff468d38c1938d54bba862c0b52bb65e5b3649f75ec16af9",
+      "size": 464,
       "width": 64
     },
     "docs/mod_editor/scorebug_studio/page_fable_down.png": {

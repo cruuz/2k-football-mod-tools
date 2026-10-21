@@ -339,6 +339,18 @@ class Composition(unittest.TestCase):
                                                           "modern_surfaces")]
         self.assertEqual(steps, sorted(steps))
 
+    def test_softdrink_presets_keep_the_retail_lambeau_field(self):
+        # b776-sm1 (Noah, 2026-10-18, after the b775 video): the SOFTDRINK build uses the retail Lambeau Field. The st2 model
+        # and its venue record stay in the repo as an option, but no preset or Studio default may turn them on.
+        from mod_editor.core import mod_build
+        from mod_editor.core import nfl2k5_lambeau_venue as venue
+        for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
+            plan = mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso", target="out.iso"), name)
+            self.assertIs(plan.modern_lambeau, False, name)
+        # Off: the Packers' row keeps the retail capacity (the record change belongs to the model option only).
+        self.assertEqual(venue.RETAIL_WORDS[0], 72515)
+        self.assertNotEqual(venue.LAMBEAU_WORDS, venue.RETAIL_WORDS)
+
     def test_the_4x_pack_names_a_master_for_every_material(self):
         import nfl2k5_lambeau_model_pack as pack
         from mod_editor.core import nfl2k5_stadium_environment as env

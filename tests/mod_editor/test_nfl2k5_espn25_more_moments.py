@@ -960,6 +960,31 @@ class AnniversaryQcRetailTests(unittest.TestCase):
             self.assertEqual(p.record.values["star_tag"], int(prospects.native_overall(p.record) >= mm.STAR_MIN_OVERALL))
         self.assertTrue(any(p.record.values["star_tag"] for p in players))
 
+    def test_a_scan_the_league_overwrote_lives_in_its_unused_id(self):
+        """b776-fs1: retail id 4321 is a current record's now; the player's own copy is in id 777 (the scans table)."""
+        with outer_image() as archive:
+            main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
+            by_id = {e.name_id: e for e in archive.entries}
+            template = archive.read(by_id[mm.name_id(TEAMS["falcons_1998"]["template"])].virtual_offset,
+                                    by_id[mm.name_id(TEAMS["falcons_1998"]["template"])].size)
+        doc = rr.RosterDocument(main[32:])
+        rows = self.data.rosters["falcons_1998"]
+        looks = [{"name": f"{r['first']} {r['last']}", "tone": None} for r in rows]
+        looks[1] = dict(looks[1], tone=1, retail={"photo": 4321, "skin": 16, "face": 9, "dreads": 1})
+        ids = lambda raw: [p.record.values["photo_id"] for p in sorted(rr.RosterDocument(raw[32:]).players, key=lambda p: p.index)]  # noqa: E731
+        taken = mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200, appearance=looks,
+                                main_photos=frozenset({4321}), scans={4321: 777})
+        self.assertEqual(ids(taken)[1], 777)
+        free = mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200, appearance=looks,
+                               main_photos=frozenset(), scans={4321: 777})
+        self.assertEqual(ids(free)[1], 4321)                     # nobody holds the retail id: his own head is still there
+        none = mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200, appearance=looks,
+                               main_photos=frozenset({4321}), scans={})
+        self.assertEqual(ids(none)[1], mm.NOPHOTO_BASE + 1)
+        with self.assertRaises(mm.MoreMomentsError):             # a main-roster record using the copy's id would show him
+            mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200, appearance=looks,
+                            main_photos=frozenset({4321, 777}), scans={4321: 777})
+
 
 if __name__ == "__main__":
     unittest.main()

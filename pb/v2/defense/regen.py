@@ -17,6 +17,12 @@ offense packs change (job p48o, p6s team packages, anyone), the defense must be 
   # proof only, no rebuild (exit 1 and a list of stale teams when anything is out of date):
   python3 pb/v2/defense/regen.py --check
 
+  # THE INTEGRATION COMMAND (job de2): after the offense packs change, this one command regenerates the 32 defense packs,
+  # refreshes the offense pins and both repair manifests (about 25 minutes niced, needs only the retail XISO):
+  nice -n 19 ionice -c3 python3 pb/v2/defense/regen.py --workers 2 \\
+      --expect-offense-digest <digest from the offense report> --expect-manifest-sha <league_manifest sha>
+  # then: python3 packaging/repin.py --apply --include-tests && python3 packaging/repin.py --check --include-tests
+
 Exit codes: 0 fresh, 1 stale or inconsistent (loud), 2 usage/expectation error (offense is not the expected one).
 
 What "stale" means (all of these are checked, per team):
@@ -29,8 +35,11 @@ What "stale" means (all of these are checked, per team):
   5. the repair manifests (tools/b77/p48d_repair_manifest.json, p48o_repair_manifest.json) have no row for the current
      offense/defense pack hashes.  This one is reported as 'repair manifests need refreshing' (exit 1 as well) with
      the commands that fix it; pass --no-manifest-check to skip while you iterate.
-After a regeneration the repair manifests are refreshed with the commands printed at the end (about 12 minutes each,
-niced); they need the user's v0.5 disc and retail XISO, so they are separate on purpose.
+After a full regeneration the repair manifests are refreshed in the same run (``refresh_repair_manifests``, b776 de2):
+tools/b77/p48d_repair_manifest.json rows get the new offense/defense pack hashes, and tools/b77/p48o_repair_manifest.json
+gets each team's new composed book (the same pb/v2/compose.py a Build runs, from the retail XISO) as ``after_sha256``,
+keeping the earlier output and every earlier stacked input as accepted inputs, so a disc built before still repairs.  The
+v0.5 disc is not needed: its hashes are already pinned in the manifest.  ``--no-manifest-refresh`` skips it.
 """
 from __future__ import annotations
 
@@ -158,6 +167,39 @@ def manifest_problems(now: dict, teams: list[str]) -> list[str]:
     return out
 
 
+def refresh_repair_manifests(teams: list[str] | None = None, books_dir: Path | None = None) -> None:
+    """Re-pin both repair manifests to the packs in this tree (see the module docstring)."""
+    sys.path.insert(0, str(ROOT / 'tools/b77'))
+    import p48o_repair as O
+    from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+    import build as B
+    xbe = B.RETAIL_XBE.read_bytes()
+    manifest = json.loads(O.MANIFEST.read_text(encoding='utf-8'))
+    d_manifest = json.loads(P48D_MANIFEST.read_text(encoding='utf-8'))
+    wanted = teams or list(BOOK_ENTRIES.keys() & set(O.packs.TEAM_BOOKS))
+    with OuterImage(B.L.RETAIL_IMAGE) as image:
+        for team in sorted(wanted):
+            entry = str(BOOK_ENTRIES[team])
+            retail = image.read_entry(int(entry))
+            final, receipt = O.build(retail, team, xbe)
+            row = manifest['books'][entry]
+            new_after = O.sha(final)
+            stacked = set(row.get('stacked_inputs', [])) | ({row['after_sha256']} if row.get('after_sha256') else set())
+            row['stacked_inputs'] = sorted(stacked - {new_after, row['v05_sha256']})
+            row['after_sha256'] = new_after
+            row['offense_pack_sha256'] = receipt['offense_pack_sha256']
+            row['defense_pack_sha256'] = receipt['defense_pack_sha256']
+            for d_row in d_manifest['books'].get(entry, []):
+                d_row['offense_pack_sha256'] = receipt['offense_pack_sha256']
+                d_row['defense_pack_sha256'] = receipt['defense_pack_sha256']
+            if books_dir:
+                books_dir.mkdir(parents=True, exist_ok=True)
+                (books_dir / f'{team}.play').write_bytes(final)
+            print(f'repair manifests: {team} composed {new_after[:12]}', flush=True)
+    O.MANIFEST.write_text(json.dumps(manifest, indent=1) + '\n', encoding='utf-8', newline='\n')
+    P48D_MANIFEST.write_text(json.dumps(d_manifest, indent=1) + '\n', encoding='utf-8', newline='\n')
+
+
 def banner(lines: list[str]) -> None:
     bar = '!' * 78
     print(bar, file=sys.stderr)
@@ -177,6 +219,8 @@ def main(argv=None) -> int:
     ap.add_argument('--expect-manifest-sha', help='refuse unless pb/league_manifest.json has this sha256')
     ap.add_argument('--no-manifest-check', action='store_true', help='skip the repair manifest rows check')
     ap.add_argument('--no-compile-check', action='store_true', help='skip recompiling each offense (faster, weaker)')
+    ap.add_argument('--no-manifest-refresh', action='store_true', help='do not re-pin the repair manifests after a rebuild')
+    ap.add_argument('--books-dir', type=Path, help='also write each composed team book here (scratch evidence)')
     args = ap.parse_args(argv)
     teams = [t for t in args.team.split(',') if t]
 
@@ -220,6 +264,8 @@ def main(argv=None) -> int:
             recorded['offense_digest'] = now['offense_digest']
             PINS.write_text(json.dumps(recorded, indent=1) + '\n', encoding='utf-8', newline='\n')
 
+    if not args.check and not args.no_manifest_refresh and not args.no_manifest_check:
+        refresh_repair_manifests(teams or None, args.books_dir)
     problems = stale_report(args.offense_dir, teams=teams or None, manifests=not args.no_manifest_check,
                             compile_check=not args.no_compile_check)
     if problems:
@@ -229,9 +275,7 @@ def main(argv=None) -> int:
         return 1
     print('FRESH: 32 defense packs pin exactly this offense compile; pins file, receipts and repair manifests agree.'
           if not teams else f'FRESH: {",".join(teams)}')
-    print('Next (needs the v0.5 disc + retail XISO, ~12 min each, nice 19): refresh the repair manifests:\n'
-          '  python3 tools/b77/p48o_repair.py manifest --v05 <v0.5 pack0 / disc> --retail <retail> --xbe <default.xbe>\n'
-          '  python3 tools/b77/p48d_repair.py --build-manifest <v0.5 disc> --stack <name> [--input-dir DIR]')
+    print('Next: python3 packaging/repin.py --apply --include-tests, then --check --include-tests')
     return 0
 
 

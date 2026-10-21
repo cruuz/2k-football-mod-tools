@@ -45,6 +45,9 @@ def bounded_projection(retail, document=None):
     observed = recorder.finish(final)
     layout = space.layout(final)
     known = {space.OWNER, "nfl2k5_xbe_space_directory"} | {a["owner"] for a in layout["allocations"]}
+    # b775-int1: the scale-out image's one extra section slot holds the music library OR Career Home (ui1); the
+    # production manifest observes both alternatives there.
+    known |= set(space.EXTRA_SECTION_OWNERS)
     inherited = []
     for row in parent["spans"]:
         start, end = int(row["start"], 0), int(row["end"], 0)

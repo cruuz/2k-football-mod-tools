@@ -66,6 +66,9 @@ from .nfl2k5_playbook_inspector import (
     PLAY_SIZE,
     RESOURCE_HEADER_SIZE,
     STRING_BASE,
+    playcall_name_problems,
+    playcall_ui_problems,
+    category_menu_rows,
     menu_link_problems,
     parse_playbook_resource,
 )
@@ -122,6 +125,9 @@ def _clean_custom_name(value: object) -> str | None:
         )
     if any(ord(ch) < 0x20 or ord(ch) > 0x7E for ch in name):
         raise ValidationError("A custom name may use printable ASCII only.")
+    problems = playcall_name_problems(name)
+    if problems:
+        raise ValidationError("A custom name cannot be displayed: " + "; ".join(problems))
     return name
 
 
@@ -504,6 +510,71 @@ def _pool_end(
     for k in range(category_count):
         ends.append(_string_end(body, CATEGORY_BASE + k * CATEGORY_SIZE))
     return max(ends)
+
+
+def compact_unused_categories(resource: bytes, *, trim_name_tail: bool = False) -> tuple[bytes, dict]:
+    """Retire unreferenced root menus and remap both category reference fields.
+
+    Formation/play indices, personnel, names, geometry, links and node pools
+    stay identical. Only the category count, table and aux+0x48/+0x4C change.
+    Never guess a formation or remove an owned category with a broken mask.
+    """
+    rows = category_menu_rows(resource)
+    removed = [r for r in rows if not r['members']]
+    if any(r['owners'] for r in removed):
+        raise ValidationError("An owned category has no menu membership; repair its formation mask")
+    kept = [r['index'] for r in rows if r['members']]
+    mapping = {old: new for new, old in enumerate(kept)}
+    receipt = dict(removed=[{k: r[k] for k in ('index', 'name', 'code')} for r in removed],
+                   index_map=mapping, scopes=[])
+    if not removed:
+        return resource, receipt
+    if not kept:
+        raise ValidationError("Cannot retire every personnel category")
+    book = parse_playbook_resource(resource)
+    old, out = resource[RESOURCE_HEADER_SIZE:], bytearray(resource)
+    h = RESOURCE_HEADER_SIZE
+    struct.pack_into('<I', out, h + 0x3C, len(kept))
+    receipt['scopes'].append([h + 0x3C, h + 0x40])
+    start = h + CATEGORY_BASE
+    out[start:start + len(rows) * CATEGORY_SIZE] = bytes(len(rows) * CATEGORY_SIZE)
+    receipt['scopes'].append([start, start + len(rows) * CATEGORY_SIZE])
+    for ci in kept:
+        src, dst = CATEGORY_BASE + ci * CATEGORY_SIZE, CATEGORY_BASE + mapping[ci] * CATEGORY_SIZE
+        out[h + dst:h + dst + CATEGORY_SIZE] = old[src:src + CATEGORY_SIZE]
+        target = src - 1 + struct.unpack_from('<i', old, src)[0]
+        struct.pack_into('<i', out, h + dst, target - dst + 1)
+    for f in book.formations:
+        off = FORMATION_AUX_BASE + f.index * FORMATION_AUX_SIZE + 0x48
+        owner, mask = struct.unpack_from('<II', old, off)
+        new_mask = sum(1 << mapping[ci] for ci in kept if mask & (1 << ci))
+        struct.pack_into('<II', out, h + off, (owner & ~0x3F) | mapping[owner & 0x3F], new_mask)
+        receipt['scopes'].append([h + off, h + off + 8])
+    if trim_name_tail:
+        # Source builds may append names in a following pack. Retiring the last
+        # named category can leave an orphan string past the last live name.
+        # Clear that unused tail and its count; the minimal native repair does
+        # not need to move or erase any string bytes.
+        end = _pool_end(bytes(out[h:]), len(book.formations), len(book.plays), len(kept))
+        old_end = STRING_BASE + 2 * struct.unpack_from('<I', old, POOL_COUNT_WORD)[0]
+        if not STRING_BASE <= end <= old_end <= BODY_SIZE:
+            raise ValidationError('Category retirement found an inconsistent name pool count')
+        if end < old_end:
+            out[h + end:h + old_end] = bytes(old_end - end)
+            struct.pack_into('<I', out, h + POOL_COUNT_WORD, (end - STRING_BASE) // 2)
+            receipt['scopes'].extend([[h + end, h + old_end], [h + POOL_COUNT_WORD, h + POOL_COUNT_WORD + 4]])
+    result = bytes(out)
+    final = category_menu_rows(result)
+    if any(not r['members'] for r in final):
+        raise ValidationError("Category retirement left an empty native menu")
+    for r in final:
+        before = rows[kept[r['index']]]
+        if any(r[k] != before[k] for k in ('name', 'code', 'members', 'owners')):
+            raise ValidationError("Category retirement changed native menu semantics")
+    allowed = {i for a, b in receipt['scopes'] for i in range(a, b)}
+    if any(a != b and i not in allowed for i, (a, b) in enumerate(zip(resource, result))):
+        raise ValidationError("Category retirement changed an undeclared byte")
+    return result, receipt
 
 
 def compile_personnel_categories(
@@ -1045,11 +1116,11 @@ def compile_formation_play_creations(
         raise ValidationError("Formation/play compilation changed an unowned byte.")
 
     reparsed = parse_playbook_resource(rebuilt, asset_id=asset_id)
-    # Every menu of the finished book must be one the play call can walk to its end (see menu_link_problems).
-    menu_problems = menu_link_problems(rebuilt)
+    # Check both units' labels and menu walks after all edits have been composed.
+    menu_problems = playcall_ui_problems(rebuilt)
     if menu_problems:
         raise ValidationError(
-            "The compiled playbook has a formation play menu the game cannot use: "
+            "The compiled playbook has unsafe play-call names or menus: "
             + "; ".join(menu_problems[:3]) + ("; ..." if len(menu_problems) > 3 else "")
         )
     # Sanity checks

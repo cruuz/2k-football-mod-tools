@@ -72,19 +72,23 @@ STANCE_STANDING = 1
 RETAIL_BACK_FIRST_READ_SHARE = 0.29         # retail team books: a back is the QB's first read on 10-29% of pass links
 
 SEVERITY = {
+    "PLAYCALL_UI": "error",
     "HANDOFF_FAR": "error", "HANDOFF_PLAN_FAR": "error", "PITCH_FAR": "error",
     "CHECKDOWN_BACKWARD": "error", "BACKWARD_TARGET": "warning",
     "SCREEN_DEPTH_MARGIN": "error", "SCREEN_SIDE_CROSS": "warning",
     "SCREEN_NO_RELEASE": "warning",
     "FORMATION_OVERLAP": "error", "FORMATION_ILLEGAL": "warning",
     "DEF_STACK": "warning", "DEF_MIDDLE_MUG": "warning", "BACK_PRIMARY_SHARE": "warning",
+    "CATEGORY_EMPTY": "error",
 }
 GOAL_IDS = {
+    "PLAYCALL_UI": "V1A",
     "HANDOFF_FAR": "P1", "HANDOFF_PLAN_FAR": "P1", "PITCH_FAR": "P1",
     "CHECKDOWN_BACKWARD": "P3", "BACKWARD_TARGET": "P3",
     "SCREEN_DEPTH_MARGIN": "P2", "SCREEN_SIDE_CROSS": "P2", "SCREEN_NO_RELEASE": "P2",
     "FORMATION_OVERLAP": "P5", "FORMATION_ILLEGAL": "P5", "DEF_STACK": "P5", "DEF_MIDDLE_MUG": "P5",
     "BACK_PRIMARY_SHARE": "P3",
+    "CATEGORY_EMPTY": "P5",
 }
 # Play-level execution defects the Studio repair rules remove (BACK_PRIMARY_SHARE is a book-level design warning).
 EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
@@ -277,7 +281,7 @@ def route_end_depth(chain: Sequence[codec.Node], start_z: float) -> float | None
     """Depth (cm) where a receiver's route finishes, or None when the chain has no route.
 
     Upfield legs add their downfield component; lateral legs (4/5) and chips (8)
-    keep depth; comebacks (7/11) give back 4 ft. Kind 9 is a pass block (or a
+    keep depth; comebacks (7/11) give back 4 ft; kind 10 ends 1 yd behind the line. Kind 9 is a pass block (or a
     screen release judged separately) and returns None.
     """
     z, seen = start_z, False
@@ -288,7 +292,9 @@ def route_end_depth(chain: Sequence[codec.Node], start_z: float) -> float | None
         seen = True
         if kind == 9:
             return None
-        if kind in (0, 10):
+        if kind == 10:
+            z = -codec.YD_CM        # native endpoint of kind 10: one yard behind the line (b777 sc1, route initializer 0x229AE0)
+        elif kind == 0:
             z += dist
         elif kind in codec.ROUTE_BREAK_DEGREES:
             z += dist * math.cos(math.radians(codec.ROUTE_BREAK_DEGREES[kind]))
@@ -506,6 +512,10 @@ def lint_views(views: Iterable[PlayView], label: str, native_plan: NativePlan | 
 def lint_resource(resource: bytes, label: str = "book", native_plan: NativePlan | None = None) -> LintReport:
     report = lint_views(resource_views(resource), label, native_plan)
     report.findings.extend(defense_findings(resource))
+    report.findings.extend(Finding("PLAYCALL_UI", problem, -1, "")
+                           for problem in insp.playcall_ui_problems(resource))
+    report.findings.extend(Finding("CATEGORY_EMPTY", problem, -1, "(category menu)")
+                           for problem in insp.category_menu_problems(resource))
     return report
 
 
@@ -527,6 +537,13 @@ def lint_pack(pack, label: str | None = None, *, studio_rules: bool = False,
         views = (as_built(v) for v in views)
     report = lint_views(views, label or pack.book.name, native_plan)
     report.findings.extend(pack_defense_findings(pack))
+    for kind, rows in (("formation", pack.formations), ("play", pack.plays)):
+        for index, row in enumerate(rows):
+            report.findings.extend(Finding("PLAYCALL_UI", f"{kind} {index}: {problem}", -1, "")
+                                   for problem in insp.playcall_name_problems(row.custom_name))
+            if kind == "formation" and row.category_name is not None:
+                report.findings.extend(Finding("PLAYCALL_UI", f"category of formation {index}: {problem}", -1, "")
+                                       for problem in insp.playcall_name_problems(row.category_name))
     return report
 
 

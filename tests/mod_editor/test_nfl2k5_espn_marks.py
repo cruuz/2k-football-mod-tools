@@ -352,6 +352,7 @@ class BuildWiringTests(unittest.TestCase):
         patcher = mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True})
         patcher.start()
         self.addCleanup(patcher.stop)
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
 
     def test_plan_default_presets_availability_and_settings(self) -> None:
         plan = mod_build.BuildPlan("s", "t")

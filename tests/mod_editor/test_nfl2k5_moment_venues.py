@@ -150,6 +150,85 @@ class Native(unittest.TestCase):
         cpu.w(0xE5FF80, 8)
         self.assertEqual(cpu.text(cpu.run(0x77540)), 'Tampa Stadium')
 
+    def _bundle_name(self, cpu, normal):
+        from nfl2k5_b77_menu_native import run_to
+        cpu.write(0xB306D0, (normal + "\0").encode("utf-16le"))
+        run_to(cpu, 0x62C96, 0x62C9B, esi=0x69)
+        return cpu.text(0xB306D0)
+
+    def test_situation_mode_keeps_the_real_stadium_bundle_and_name(self):
+        # b777-sm2 (Noah 10/20: Situation at MetLife rendered a black void). The Situation mode is game mode 8 with
+        # the situation flag 0xE6014C = 1; the row word still holds 0 or the last moment. No alias may fire there.
+        cpu = self.cpu()
+        cpu.stubs[0x127188] = lambda: cpu.ret(cpu.reg('edx'))
+        cpu.stubs[0x1271C8] = lambda: cpu.ret(cpu.reg('ecx'))
+        cpu.stubs[0x31855F] = lambda: cpu.ret(cpu.reg('ecx'))
+        cpu.select(14)
+        row = cpu.r(0xBF1858)
+        stadium = cpu.run(0x77460)
+        modern = 'METLIFE STADIUM TEST'
+        cpu.write(0x2500800, (modern + '\0').encode('utf-16le'))
+        cpu.w(stadium, 0x2500800)
+        cpu.w(stadium + 0x10, 0x2500800)
+        historical = v.rows()[row]['venue']
+        for flag, ordinal in ((1, 0), (1, row), (1, 50), (2, row), (0xFFFFFFFF, row)):
+            cpu.w(0xE5FF80, 8)
+            cpu.w(0xE6014C, flag)
+            cpu.w(0xBF1858, ordinal)
+            for suffix in ('dd', 'nd', 'ar', 'ds'):
+                self.assertEqual(self._bundle_name(cpu, f's18{suffix}.iff'), f's18{suffix}.iff', (flag, ordinal))
+            self.assertEqual(cpu.text(cpu.run(0x77540)), modern, (flag, ordinal))
+            self.assertEqual(cpu.text(cpu.run(0x127181)), modern)
+            self.assertEqual(cpu.text(cpu.run(0x1271C1)), modern)
+            self.assertEqual(cpu.text(cpu.run(0x318557)), modern)
+            cpu.run(0x1C0910, args=(0x2500000, 200))
+            self.assertEqual(cpu.text(0x2500000), modern)
+        # The moment itself (flag 0) still takes its alias and its historical name, before and after a Situation.
+        cpu.w(0xE6014C, 0)
+        cpu.w(0xBF1858, row)
+        self.assertEqual(self._bundle_name(cpu, 's18ds.iff'), f'a{row:02d}ds.iff')
+        self.assertEqual(cpu.text(cpu.run(0x77540)), historical)
+        self.assertEqual(cpu.text(cpu.run(0x127181)), historical)
+        cpu.run(0x1C0910, args=(0x2500000, 200))
+        self.assertEqual(cpu.text(0x2500000), historical)
+        # Quick Game with a stale Situation flag stays normal too.
+        cpu.w(0xE5FF80, 0)
+        cpu.w(0xE6014C, 1)
+        self.assertEqual(self._bundle_name(cpu, 's18dd.iff'), 's18dd.iff')
+        self.assertEqual(cpu.text(cpu.run(0x77540)), modern)
+
+    def test_b776_owner_body_is_recognized_and_upgraded_in_place(self):
+        owned = v.allocation(self.payload)
+        old, old_edits = v.code_for(owned['va'], owned['spans'], situation=False)
+        new, edits = v.code_for(owned['va'], owned['spans'])
+        self.assertEqual(old_edits, edits)
+        self.assertNotEqual(old, new)
+        self.assertEqual(len(old), len(new))
+        image, b776 = XbeImage(self.payload), bytearray(self.payload)
+        cursor = 0
+        for part in owned['spans']:
+            at = image.offset(part['va'], part['size'])
+            b776[at:at + part['size']] = old[cursor:cursor + part['size']]
+            cursor += part['size']
+        # Reseal the allocator directory over the swapped body, as the owner's own retire step does.
+        _, _, requests = space._validate(self.payload)
+        if space.is_scaleout(self.payload):
+            space._seal_scaleout(b776, requests)
+        else:
+            b776[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                requests, space._code_bytes(b776, requests))
+        b776 = v.seal(b776)
+        self.assertEqual(v.status(b776), 'previous')
+        upgraded, receipt = v.apply(b776)
+        self.assertEqual((v.status(upgraded), receipt['status']), ('applied', 'applied'))
+        self.assertEqual(v.apply(upgraded)[1]['status'], 'already_applied')
+        self.assertEqual(v.status(v.apply(upgraded, enabled=False)[0]), 'retail')
+        # The b776 body really is the one that aliased in the Situation mode.
+        cpu = self.cpu(b776)
+        cpu.select(14)
+        cpu.w(0xE6014C, 1)
+        self.assertEqual(self._bundle_name(cpu, 's18dd.iff'), 'a14dd.iff')
+
     def test_guard_replay_reversal_and_m1_composition(self):
         self.assertEqual(mm.status(self.payload), 'applied')
         self.assertEqual(v.apply(self.payload)[0], self.payload)

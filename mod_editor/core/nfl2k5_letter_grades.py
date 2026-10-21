@@ -4,7 +4,15 @@ Noah, 2026-10-07: "in franchise, let's do something radical: take player ratings
 letter grades", on his "2K Player Grade System" scale: 95+ A+, 90-94 A, 85-89 B+, 80-84 B, 75-79 C+, 70-74 C,
 65-69 D+, 60-64 D, 55-59 F+, 50-54 F, 0-49 F- (eleven grades; there is no A-, B-, C- or D-).
 
-What changes (all in ``default.xbe``; display only)
+The current default also installs ``nfl2k5_letter_grades_attributes`` (lg2):
+all individual attributes in lists, cards, depth charts, scouting, progression,
+MyCareer views and substitution displays. Screens that edit a rating stay numeric
+(lg3, Noah 2026-10-20): Create Player, Edit Player, Franchise Edit Player, the
+MyCareer Create Player hand-off, MyCareer Upgrades and its prospect tier labels.
+``all_ratings=False`` preserves the historical F4/F4b output for pinned repair
+tools. Studio values remain numeric.
+
+Historical F4 component (all in ``default.xbe``; display only)
 ---------------------------------------------------
 The game shows a rating as an integer and never stores one: the player overall is computed on demand
 (``0xE6660`` -> ``0x246D90`` = ``round(100 x template overall)``) and the team offense, defense and overall are
@@ -73,14 +81,15 @@ PROGRESS_OWNER = "nfl2k5_letter_grades_progress"
 PROGRESS_REQUESTS = ((PROGRESS_OWNER, "code", 16, 16),)
 REQUESTS = F4_REQUESTS + PROGRESS_REQUESTS
 
-UI_LABEL = "Letter grades in Franchise"
+UI_LABEL = "Letter grades for all player ratings"
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: Franchise shows a player's overall and a team's offense, defense and "
-    "overall as numbers. Patch: the same numbers are shown as letter grades on Noah's 2K scale (95+ A+, 90-94 A, "
+    "EXPERIMENTAL / UNWITNESSED. Show player attributes, overall and team ratings "
+    "as letter grades on Noah's 2K scale (95+ A+, 90-94 A, "
     "85-89 B+, 80-84 B, 75-79 C+, 70-74 C, 65-69 D+, 60-64 D, 55-59 F+, 50-54 F, 0-49 F-): roster, trade, free "
-    "agent and contract lists, the player card, the depth chart panel, team select and the defense lists. Only the "
-    "text changes: lists still sort by the number, and the individual attributes (speed, strength, ...) stay "
-    "numbers. Off in the Basic preset, which keeps the 2004 numbers.")
+    "agent and contract lists, player cards, depth charts, scouting, progression, MyCareer views "
+    "and substitution panels. Screens where you edit ratings (Create Player, Edit Player, MyCareer creation "
+    "and Upgrades) keep numbers. Lists still sort numerically. "
+    "The Studio keeps numeric ratings. Off in the Basic preset, which keeps the 2004 numbers.")
 BUILD_CAPTION = UI_LABEL
 
 BAND_ROWS = 11
@@ -324,6 +333,15 @@ def _check_guards(image: XbeImage, checked_sites) -> None:
         for _label, address, before, _after in checked_sites:
             if va <= address and address + len(before) <= va + size:
                 content[address - va:address - va + len(before)] = before
+        # lg2 changes the attribute literal in the shared weekly-prep tail.
+        # Accept only our allocated %R pointer, never an arbitrary replacement.
+        address = 0x2B0A7E
+        if va <= address and address + 4 <= va + size:
+            old = bytes.fromhex("e867e900")
+            actual = image.read(address, 4)
+            fmt = next(after for name, _, _, after in checked_sites if name == "matchups_overall")
+            _require(actual in (old, fmt), "foreign weekly-prep attribute format")
+            content[address - va:address - va + 4] = old
         _require(hashlib.sha256(content).hexdigest() == digest, f"foreign letter grades dependency at {va:#x}")
 
 
@@ -349,6 +367,14 @@ def _owned_state(payload: bytes):
     bands = decode_band_table(ro[at:at + BAND_ROWS * 12])
     _require((code, ro) == code_for(code_va, ro_va, bands), "foreign letter grades code")
     edits = sites(code_va, ro_va, bands)
+    # lg2 removes the remaining numeric cutoffs from the two lowest trade labels.
+    from . import nfl2k5_letter_grades_attributes as attributes
+    for i, (label, va, before, after) in enumerate(edits):
+        if label in ("trade_guideline_40", "trade_guideline_30"):
+            threshold = int(label.rsplit("_", 1)[1])
+            graded = attributes.guideline_bytes(threshold, bands)
+            if image.read(va, len(graded)) == graded:
+                edits[i] = label, va, before, graded
     _require(rdata.status(payload, edits) == "applied", "mixed letter grade sites")
     _check_guards(image, edits)
     return "applied", found, bands
@@ -366,22 +392,26 @@ def read_settings(payload: bytes) -> dict:
     if state != "applied":
         return {"status": state, "letter_grades": False, "bands": None}
     from . import nfl2k5_letter_grades_progress as progress
+    from . import nfl2k5_letter_grades_attributes as attributes
     bands = _owned_state(payload)[2]
     return {"status": state, "letter_grades": True, "progression": progress.status(payload),   # b77-f4b
+            "all_player_ratings": attributes.status(payload),
             "bands": [{"minimum": m, "label": label} for m, label in bands]}
 
 
 def reservations(payload: bytes) -> list[dict]:
+    from . import nfl2k5_letter_grades_attributes as attributes
     rows = [r for r in space.reservations(payload) if r["owner"] == OWNER]
     base = allocations(payload)
     edits = sites(base["code"]["va"] if base else 0x14DA000, base["read_only"]["va"] if base else 0x1506000)
-    return rows + [dict(owner=OWNER, start=hex(va), end=hex(va + len(before)), size=len(before),
+    return (rows + [dict(owner=OWNER, start=hex(va), end=hex(va + len(before)), size=len(before),
                         basis="pinned live " + label + "; not a cave") for label, va, before, _after in edits]
+            + [dict(row, owner=OWNER) for row in attributes.reservations(payload)])
 
 
 def apply(payload: bytes, *, bands: Sequence[tuple[int | None, str]] = DEFAULT_BANDS,
-          progression: bool = True) -> tuple[bytes, Mapping[str, object]]:
-    """Install the owner and its sites, then (default) the progression screen's overall row (b77-f4b).
+          progression: bool = True, all_ratings: bool = True) -> tuple[bytes, Mapping[str, object]]:
+    """Install F4, progression, and by default all player rating displays (lg2).
 
     ``progression=False`` is exactly the F4 patch (the native repair ``tools/b77/f4_repair.py`` asks for it).
     Idempotent for the same bands; a different band table needs a rebuild."""
@@ -391,9 +421,16 @@ def apply(payload: bytes, *, bands: Sequence[tuple[int | None, str]] = DEFAULT_B
         return result, receipt
     from . import nfl2k5_letter_grades_progress as progress
     final, progress_receipt = progress.apply(result)
-    return final, {**receipt, "progression": progress_receipt,
+    combined = {**receipt, "progression": progress_receipt,
                    "already_applied": bool(receipt["already_applied"] and progress_receipt["already_applied"]),
                    "changed_bytes": int(receipt["changed_bytes"]) + int(progress_receipt["changed_bytes"])}
+    if all_ratings:
+        from . import nfl2k5_letter_grades_attributes as attributes
+        final, attribute_receipt = attributes.apply(final)
+        combined["attributes"] = attribute_receipt
+        combined["already_applied"] &= attribute_receipt["already_applied"]
+        combined["changed_bytes"] += attribute_receipt["changed_bytes"]
+    return final, combined
 
 
 def _apply_f4(payload: bytes, *, bands, requests) -> tuple[bytes, Mapping[str, object]]:

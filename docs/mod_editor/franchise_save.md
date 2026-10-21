@@ -119,9 +119,9 @@ in-game save/load observation. No save format or serializer changes are made.
 | `0x2E83` | `0x9C57F` | 32 | team permutation (same as table 0 in year 7; `0xFF` in 2004) | `DAT_00e41bb8` | HYPOTHESIS |
 | `0x2EA3` | `0x9C59F` | 1 | pad | — | OPAQUE |
 | `0x2EA4` | `0x9C5A0` | 32×36 | per-team record: seven f32 0.5 + two dwords | `DAT_00e41ce0` | HYPOTHESIS (AI weights) |
-| `0x3324` | `0x9CA20` | 8 | eight bytes before the ledger count | — | OPAQUE |
-| `0x332C` | `0x9CA28` | u32 | ledger count (552 in year 7) | `DAT_00e3f06c` | PROVED |
-| `0x3330` | `0x9CA2C` | 600×12 | ledger `{u32 packed, u16 player, u16, u8 team, pad}` | `DAT_00e3f070` | HYPOTHESIS (franchise history) |
+| `0x3324` | `0x9CA20` | 8 | two event-ring boundary cursors, advanced by `FUN_002bfdd0`; not dates | `DAT_00e3f064/68` | PROVED |
+| `0x332C` | `0x9CA28` | u32 | next event write slot, wraps at 600; **not an entry count** | `DAT_00e3f06c` | PROVED |
+| `0x3330` | `0x9CA2C` | 600×12 | event ring `{u32 packed, u16 player, u16, u8 team, pad}`; kind 0 means inactive | `DAT_00e3f070` | PROVED layout and retention; not a complete season history |
 | `0x4F50` | `0x9E64C` | 32×u32 | per-team dword (~53.6 M in both saves) | `DAT_00e42160` | OPAQUE |
 | `0x4FD0` | `0x9E6CC` | 32×5×4 | **injured reserve**: `{u16 primary player index, u16 pad}`, `0xFFFF` empty; index → record via `FUN_002d0540` | `DAT_00e421e0` | PROVED |
 | `0x5250` | `0x9E94C` | 32×2000 | per-team blocks (constant `00 00 00 01` fill in both saves) | `DAT_00e42460` | OPAQUE |
@@ -205,3 +205,108 @@ The runtime string table (`.bss`) that names stages, stat ids and log kinds is n
 labels need a memory dump or an in-game read.  The 17-row league stat tables, the 600-record ledger,
 the 32 × 2000-byte team blocks and the per-team floats are carried verbatim.  Player season/career stat
 cells live in the arena's history pool (`nfl2k5_roster_records`), not here.
+
+## Upgrade an older SOFTDRINK franchise
+
+On the Franchise page, choose **Upgrade franchise save to the current build**.
+This supports signed Xbox FXG franchises that began with the SOFTDRINK 2026
+roster and still carry its old experience convention. Save and reload any
+pending editor changes first. Select the current build's disc, preview the
+changes, then write a new signed save folder. The original stays untouched;
+a JSON receipt beside the new folder lists every changed field and input/output
+hashes. The preview and disc checks run in the background.
+
+The migration matches imported players by full name and birth date, corrects
+experience consistently with native season rollover, and shifts existing career
+and honors history slots without changing their values or flags. Generated
+players and unmatched identities are preserved. Current book references and
+coach body/portrait IDs come from the selected disc. The source cohort is the
+public f12 identity data bundled at `mod_editor/data/f12_cohort.json`.
+
+Custom or mixed experience counts, history-slot overflow, shared history that
+would need migration, invalid references, unsupported save types and damaged
+signatures are refused. An already-current cohort stays unchanged, including
+native shared history tails created by later in-game saves. Repeating an upgrade
+against the same disc changes nothing. Structural checks cannot guarantee that
+all future games or different executable builds are freeze-free.
+
+The same workflow is available from the command line:
+
+```bash
+python3 tools/nfl2k5_franchise_upgrade.py upgrade \
+  --input /path/to/signed-franchise-folder \
+  --disc /path/to/current-build.iso \
+  --dry-run --receipt /path/to/preview.json
+
+python3 tools/nfl2k5_franchise_upgrade.py upgrade \
+  --input /path/to/signed-franchise-folder \
+  --disc /path/to/current-build.iso \
+  --output /path/to/new-franchise-folder \
+  --receipt /path/to/upgrade.json
+```
+
+Every output and receipt path must be new. Signed ZIP input is also supported;
+output is always a folder with all container metadata retained. To apply new
+coach art to an upgraded franchise, use `coach-sync` in place of `upgrade`,
+select the final disc, and choose new output/receipt paths. That command copies
+only matching coaches' body and portrait IDs; it leaves progress, experience,
+playbooks, coach assignments and coaching statistics unchanged. The command
+never edits an HDD image or installs a save automatically.
+
+The upgrade also restores missing TEAM entries for imported seasons before
+2026 when the disc and save match on full name, birth date, season and all
+regular-season counters. It preserves existing TEAM entries. It does not infer
+a historical club from today's roster membership: trades make that unreliable.
+The receipt lists every season that still lacks historical evidence.
+
+Use `team-history` in place of `upgrade` to run only that repair. Completed
+seasons played inside the franchise can additionally use `--team-history
+/path/to/evidence.json`. This optional document has schema
+`nfl2k5_franchise_team_evidence/v1`, a `sources` object and a `rows` array.
+Each source needs a description and the SHA-256 of the evidence supporting the
+club assignment. Each row supplies `first`, `last`, `birth_date` (ISO date),
+`season`, `team` (the save's abbreviation), `source` (a source key), and
+`stats_sha256`. Obtain that counter fingerprint with
+`nfl2k5_franchise_upgrade.season_stats_sha256(words, slot)` on the decoded save's
+history stream. Evidence must establish the club for that particular saved
+season; real NFL roster data cannot establish trades made in a franchise.
+
+The repair refuses mismatched counters, ambiguous identities, conflicts with
+recorded teams and insufficient history space. It inserts entries using the
+game's bounded history pool, preserving existing counters and native holes.
+Shared streams are copied so their other owners remain unchanged; those cases
+require more than one word of free space per repaired row. Unused native pool
+space may contain stale bytes left by earlier compaction.
+Replaying the same repair changes zero bytes. It benefits existing saves and
+does not require a disc rebuild. Current rows and newly recorded seasons use
+the executable's TEAM patch. A Total row is blank; folded history, unknown past
+clubs and a current free agent without recorded participation may show `--`.
+
+The receipt's `native_evidence` and `unresolved_by_reason` distinguish a missing
+pre-franchise source, a played season with retained player events but no season
+coverage, and a played season with no retained player event. Neither latter
+case means the player actually changed clubs. The save cannot establish that
+he did not. These diagnostics do not authorize a TEAM insertion.
+
+The native event writer at `0x2BFDF0` wraps its next-write cursor after 600
+entries. The native iterators at `0x2BFFC0` and `0x2BFFF0` inspect all slots,
+including those beyond the cursor. Kind zero means inactive, even when stale
+player/team references remain. `FranchiseSave.ledger()` follows those rules
+and returns physical slot order. Packed bits 0..4 are the kind, 5..20 and
+21..30 are event arguments, and bit 31 ends a group. The exposed arguments
+are unsigned raw bit fields; the native accessor sign-extends them. They
+are not timestamps: the draft caller at `0x325C68` supplies round/pick values.
+Signing, draft, trade and release events use kinds 1, 4, 7 and 8/9 respectively.
+The two boundary cursors are advanced at `0x247D57`; they provide no year or
+full-season completeness marker. A missing move in this ring is not evidence
+of an uninterrupted contract or club assignment.
+
+Rollover calls `0xC3F60` at `0x247BCD` to clear team season totals, including
+passing yards, rushing yards, total yards and games. The retained league-stat
+block includes partial player highlights, with references restored at
+`0x134A00`, not a guaranteed complete set of player counters by club for a
+past season. Current contracts, roster/depth membership, draft order tables,
+injured reserve and partial highlights cannot substitute for missing season
+coverage. No automatic played-season reconstruction is enabled from those
+fields. A completed season still needs a recorded TEAM or independently
+verified evidence covering that player's entire season.

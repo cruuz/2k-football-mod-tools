@@ -370,7 +370,7 @@ class InstructionTests(unittest.TestCase):
         results = []
         for payload in payloads:
             a = AbilityMachine(payload)
-            a.player(speed=127, abilities=abilities.SPEEDSTER)
+            a.player(speed=127, abilities=abilities.SPEEDSTER | 0x100)  # b771-g3: only roster stars (word bit 0x0100) extend Speed
             a.seed_native_speed_cache()
             a.run(0x75CC5, ecx=a.R, stop=0x75CDB, regs={"EBX": a.P, "ESI": a.S, "EDI": 0x184})
             self.assertAlmostEqual(a.number(a.S + 0x1B4), 1.27, places=6)

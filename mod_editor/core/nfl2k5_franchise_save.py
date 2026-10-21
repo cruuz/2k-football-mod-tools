@@ -123,7 +123,9 @@ F_BYTE_2E82 = 0x2E82     # -> DAT_00e3f060
 F_TEAM_ORDER_2 = 0x2E83  # 32 u8 -> DAT_00e41bb8 (0xFF in the 2004 save, a team permutation in year 7)
 F_TEAM_RECORDS = 0x2EA4  # 32 x 36 -> DAT_00e41ce0 (seven f32 0.5 + two u32 in both saves)
 F_TEAM_RECORD_SIZE = 36
-F_LEDGER_COUNT = 0x332C  # u32 -> DAT_00e3f06c
+F_LEDGER_BOUNDARIES = 0x3324  # two cursors -> DAT_00e3f064 / DAT_00e3f068
+F_LEDGER_CURSOR = 0x332C  # next write slot -> DAT_00e3f06c, wraps at 600
+F_LEDGER_COUNT = F_LEDGER_CURSOR  # compatibility alias; this is NOT an entry count
 F_LEDGER = 0x3330        # 600 x 12: {u32 packed, u16 player, u16, u8 team, 3 pad} -> DAT_00e3f070
 F_LEDGER_CAPACITY, F_LEDGER_SIZE = 600, 12
 F_TEAM_DWORDS_4F50 = 0x4F50  # 32 u32 -> DAT_00e42160
@@ -905,14 +907,26 @@ class FranchiseSave:
         return out
 
     def ledger(self) -> list[dict[str, Any]]:
-        """The 600-record table at F+0x3330 (HYPOTHESIS: franchise history ledger; count at F+0x332C)."""
+        """Active events in physical slot order, not a complete career timeline.
 
-        count = min(self.u32(self.front_office_block + F_LEDGER_COUNT), F_LEDGER_CAPACITY)
+        FUN_002bfdf0 appends and wraps the cursor at 600. FUN_002bffc0 /
+        FUN_002bfff0 enumerate all 600 slots, skipping kind zero; truncating
+        at F+0x332C loses retained events after a wrap. FUN_002bfdc0 clears
+        only the kind bits, leaving stale player/team references behind.
+        The packed arguments are event-specific, not dates. Neither the
+        cursor nor the two boundary cursors certify full-season coverage.
+        """
+
         out = []
-        for index in range(count):
+        for index in range(F_LEDGER_CAPACITY):
             offset = self.front_office_block + F_LEDGER + index * F_LEDGER_SIZE
             packed, player, word, team = struct.unpack_from("<IHHB", self.buffer, offset)
-            out.append({"index": index, "offset": offset, "packed": packed, "player_index": player,
+            kind = packed & 31
+            if not kind:
+                continue
+            out.append({"index": index, "offset": offset, "packed": packed, "kind": kind,
+                        "argument_1": (packed >> 5) & 65535, "argument_2": (packed >> 21) & 1023,
+                        "last_in_group": bool(packed & 0x80000000), "player_index": player,
                         "player": self.player_name(player) if player != IR_EMPTY and player < self.player_table[0] else "",
                         "word": word, "team": team, "team_name": self.team_abbreviation(team) if team != 0xFF else ""})
         return out
@@ -1101,9 +1115,9 @@ def _regions() -> list[Region]:
         (F + F_TEAM_ORDER_2, NFL_TEAMS, "team permutation (DAT_00e41bb8)", "HYPOTHESIS", ""),
         (F + F_TEAM_ORDER_2 + NFL_TEAMS, 1, "pad", "OPAQUE", ""),
         (F + F_TEAM_RECORDS, NFL_TEAMS * F_TEAM_RECORD_SIZE, "32 x 36 team records (DAT_00e41ce0)", "HYPOTHESIS", "seven f32 0.5"),
-        (F + F_TEAM_RECORDS + NFL_TEAMS * F_TEAM_RECORD_SIZE, 8, "8 bytes before the ledger count", "OPAQUE", ""),
-        (F + F_LEDGER_COUNT, 4, "ledger count (DAT_00e3f06c)", "PROVED", ""),
-        (F + F_LEDGER, F_LEDGER_CAPACITY * F_LEDGER_SIZE, "ledger 600 x 12 (DAT_00e3f070)", "HYPOTHESIS", "player + team refs"),
+        (F + F_LEDGER_BOUNDARIES, 8, "ledger boundary cursors", "PROVED", "FUN_002bfdd0; not dates"),
+        (F + F_LEDGER_CURSOR, 4, "ledger next write slot (DAT_00e3f06c)", "PROVED", "wraps at 600"),
+        (F + F_LEDGER, F_LEDGER_CAPACITY * F_LEDGER_SIZE, "ledger 600 x 12 (DAT_00e3f070)", "PROVED", "event kind + player/team refs; no season coverage"),
         (F + F_TEAM_DWORDS_4F50, 4 * NFL_TEAMS, "per-team dword (DAT_00e42160)", "OPAQUE", ""),
         (F + F_INJURED_RESERVE, NFL_TEAMS * IR_SLOTS * IR_ENTRY, "injured reserve 32 x 5 (DAT_00e421e0)", "PROVED", "Finn 0x9E6CC"),
         (F + F_TEAM_BLOCKS, NFL_TEAMS * F_TEAM_BLOCK_SIZE, "32 x 2000-byte team blocks (DAT_00e42460)", "OPAQUE", ""),

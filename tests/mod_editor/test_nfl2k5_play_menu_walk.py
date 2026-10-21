@@ -67,9 +67,16 @@ def _compile_menu_case(job):
 
 
 def _body(formation_links: dict[int, list[int]], play_count: int = 40, formations: int = 4) -> bytearray:
-    """A bare PLAY body carrying only counts and menu words (names unreadable, which the rule tolerates)."""
+    """A bare body with menu words and valid label pointers for the Build UI gate."""
     body = bytearray(insp.BODY_SIZE)
-    struct.pack_into("<II", body, 0x34, formations, play_count)
+    struct.pack_into("<III", body, 0x34, formations, play_count, 1)
+    body[insp.STRING_BASE:insp.STRING_BASE + 10] = "Test\0".encode("utf-16le")
+    for count, base, stride in ((formations, insp.FORMATION_BASE, insp.FORMATION_SIZE),
+                                (play_count, insp.PLAY_BASE, insp.PLAY_SIZE),
+                                (1, insp.CATEGORY_BASE, insp.CATEGORY_SIZE)):
+        for index in range(count):
+            field = base + index * stride
+            struct.pack_into("<i", body, field, insp.STRING_BASE - field + 1)
     for index in range(formations):
         words = formation_links.get(index, [])
         packed = list(words) + [0x07FF] * (insp.FORMATION_PLAY_LINKS - len(words))
@@ -143,11 +150,23 @@ class BuildGateTests(unittest.TestCase):
             return build._check_playbook_menus(Path("unused.iso"), lambda *a: None)
 
     def test_sound_books_pass_and_a_duplicate_link_refuses_the_build(self):
-        good = b"PLAY" + bytes(0x1C) + bytes(_body({0: [_link(1), _link(2)]}))
-        bad = b"PLAY" + bytes(0x1C) + bytes(_body({0: [_link(1), _link(2), _link(1)]}))
+        from tests.mod_editor.test_nfl2k5_playbook_inspector import _fixture
+        # The final gate now parses category ownership as well as menu links.
+        # Supply a complete structured book, including its membership mask.
+        good = bytearray(_fixture())
+        aux = insp.RESOURCE_HEADER_SIZE + insp.FORMATION_AUX_BASE
+        struct.pack_into("<2H", good, aux, _link(1), _link(0))
+        struct.pack_into("<II", good, aux + 0x48, 0, 1)
+        good = bytes(good)
+        bad = bytearray(good)
+        struct.pack_into("<H", bad, aux + 4, _link(1))
         self.assertEqual(self._gate({307: good, 308: good}), {"books": 2, "problems": 0})
         with self.assertRaisesRegex(RuntimeError, r"book 308: formation 0 .*play 1 is listed twice"):
-            self._gate({307: good, 308: bad})
+            self._gate({307: good, 308: bytes(bad)})
+        empty = bytearray(good)
+        struct.pack_into("<I", empty, aux + 0x4C, 0)
+        with self.assertRaisesRegex(RuntimeError, r"book 308: category 0 .*no formation"):
+            self._gate({307: good, 308: bytes(empty)})
 
 
 class NativeWalkTests(unittest.TestCase):

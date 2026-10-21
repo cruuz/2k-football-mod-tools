@@ -61,3 +61,29 @@ DESIGN: The release gate exhausts every PLAY record, every compatible formation,
 DESIGN: Global floating-point ratings, clocks and field coordinates have enormous domains. They are not exhaustively enumerated as whole-game Cartesian states. The per-play indexed domains above are exhaustive; the outer-selector experiment is additional factored state coverage, recorded explicitly by `scoring_selectors.py`. Roster resolution and rating helpers are environmental inputs, not native gameplay proof. No selector, scoring function, compatibility function, trajectory function or opcode decoder is stubbed. The optional world experiment additionally supplies a kicker's range scalar. This distinction prevents a clean offline sweep from becoming an unsupported claim of universal game stability.
 
 DESIGN: Both publication gates are mandatory: `apply_pack_to_resource` certifies the compiled resource; `mod_build._check_playbook_scoring` certifies every final disc PLAY after all PLAY writers. Missing tools/code cannot silently skip the gate. The final-draft proof also reopens the completed disc and runs the expanded scorer again using its actual patched executable. The shipped encoder rejects out-of-domain handoff values before nibble packing, and the editor labels the field as a handoff hole.
+
+## PROVED OFFLINE: coach profile loader budget
+
+The native book loader at `0x161E30` also executes the installed coach profile
+authentication hook. On a tagged book, `coach_validate_source` checks the identity,
+hashes 896 tag bytes and hashes `0x12FD0` (77,776) body bytes before the original
+copy and relocation. The body hash has six instructions per byte, or 466,656
+instructions. Its counter increments from zero to the constant bound; it does
+not wait on a clock, game state, controller or another thread.
+
+The old 100,000-instruction limit stopped the first shipped v0.6.1 book after
+14,990 body bytes, at the loop comparison. Running those same native bytes to
+completion takes 533,184 instructions and sets the valid profile marker in both
+the source and the loaded book. This failure is a checker budget error, not an
+infinite loop in the game. Addresses inside allocated hooks vary between builds.
+Tracing all 69 books on that disc completes within 533,198 instructions per
+load, with all 32 tagged books setting the valid marker.
+
+The loader now has a finite 1,000,000-instruction limit. All scoring, decoding,
+trajectory and compatibility calls retain their 100,000-instruction limit.
+No instruction or checksum is bypassed, and no disc bytes change. Regression
+tests execute the production hook, reproduce the old budget failure, check
+successful authentication and stale tag/body rejection, reject an authenticated
+book with an invalid handoff hole, and refuse deliberate infinite loops at both
+the loader and a scorer entry point. This proves this bounded load path, not
+universal gameplay stability.

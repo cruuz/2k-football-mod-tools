@@ -53,6 +53,11 @@ if HAVE_UNICORN:
             team = self.run(0x61C50 if side == 1 else 0x61C60)
             key = self.text(self.r(self.r(team + 0x110) + 4))
             historical = self.r(0xE5FF80) == 8 or self.r(team + 0x128) == 4
+            if self.r(0xE5FF80) != 8 and historical:
+                # b776-int2: a classic team of 2010 on (team identity, low byte) takes its franchise's current book
+                first, last = sb.CLASSIC_MODERN_IDS
+                if first <= self.r(team + 0x118) & 0xFF <= last:
+                    historical = False
             if self.r(0xE5FF80) == 8:
                 count, base, ordinal = self.r(0xC8F0D8), self.r(0xC8F0D4), self.r(0xBF1858)
                 if base and ordinal < count <= sb.MOMENT_COUNT:
@@ -169,6 +174,19 @@ if HAVE_UNICORN:
             LiveCPU.select(self, index)
 
 
+def retail_one_pool(outer, raw):
+    """The One-pool positions pass on one retail historic resource, exactly as the build applies it (b776-de2: the sourced
+    retail 3-4 team-seasons take the 3-4 rule, chosen by outer entry)."""
+    from tools import nfl2k5_roster_reclassify as rc
+    resource = rc.parse_resource(outer, 0, raw)
+    moves, _ = rc.plan_resource(resource, {})
+    body = bytearray(resource.body)
+    rc.apply_moves(body, moves)
+    return raw[:32] + bytes(body)
+
+
+# b777-ci2: these two skips sat on retail_one_pool() above (a helper, where they did nothing for the class) and the class
+# errored in setUpClass on every runner without the retail disc.
 @unittest.skipUnless(HAVE_UNICORN, 'Unicorn required for native stock-book execution')
 @unittest.skipUnless(SOURCE.is_file(), 'private USA source required')
 class NativeStockBooks(unittest.TestCase):
@@ -198,7 +216,7 @@ class NativeStockBooks(unittest.TestCase):
                              for key in cls.data.team_order()}
                 cls.collection = mm.compile_situ(cls.resources[22], cls.data, main, named=True)
                 cls.files = mm.compile_files(main, templates, cls.data, one_pool=True)
-                cls.resources.update({o: mm._one_pool(raw) for o, raw in cls.resources.items() if o not in (5, 22)})
+                cls.resources.update({o: retail_one_pool(o, raw) for o, raw in cls.resources.items() if o not in (5, 22)})
                 manifest, _ = er.dataset()
                 applied, _ = er.apply({t['outer']: cls.resources[t['outer']] for t in manifest['resources']})
                 cls.resources.update(applied)

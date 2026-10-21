@@ -10,6 +10,9 @@ table taken from published analytics (ESPN Analytics chart and the nfl4th model,
 ``docs/mod_editor/nfl2k5_cpu_decisions_modern2_sources.json``), an overtime branch that reads the overtime owner's possession
 byte, a late-lead field-goal rule, a sourced two-point chart at 0x206E70, a field-goal guard so a kick the policy forces is
 never run as a fake, and defensive lottery exponents 3 -> 2. Levels Modern and Aggressive keep their beta-76.5 bytes.
+The VIP-aware revision delegates fourth-down, two-point and field-goal policy
+to retail while a matching CPU user VIP is in playback mode. The v0.6.1
+Modern 2 template remains recognizable and upgrades within the same allocation.
 """
 from __future__ import annotations
 
@@ -75,6 +78,7 @@ GUARDS = (
     (0x20b670, 421, "808e5f312ea504432b392298dff1db6a6c8e85c51b10448cb66ddd5eb67f425a"),
     (0x20a7f0, 570, "839344edda804dc83f1cf3d19f8bf19b2e9f2f823ef44a29b75938427b30a538"),
     (0x20aa40, 551, "ff89b39078bb4a2d99b30b24d41059b54476ebb5153278aed43f5a01cf904901"),
+    (0x0f71e0, 19, "5c08a7153ba0c9a94ddeb94b8a76215462a00393acb1b490c146c15397ef10d5"),
 )
 FIELD_BANDS = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 95), (95, 100))
 GO_LIMITS = {"modern": (0, 1, 2, 3, 2, 2), "aggressive": (0, 2, 3, 5, 3, 3)}
@@ -166,7 +170,8 @@ def togo_in_range(own_yard, kick_range):
 
 def decision(*, level="modern", down=4, own_yard=50, distance=2,
              score_margin=0, quarter=2, seconds=600, cpu=True, phase=4,
-             quarter_seconds=0.0, ot_bits=0, home=False, kick_range=None, native_fg=False, hail_mary=False):
+             quarter_seconds=0.0, ot_bits=0, home=False, kick_range=None, native_fg=False, hail_mary=False,
+             vip_playback=False):
     """Reviewable policy: 'go' or 'retail' (delegate punt/FG/go to the game); level modern2 also returns 'fg'.
 
     Seconds means remaining time in this half, matching native 205F80 (Modern 2: the quarter clock, to which the half
@@ -179,6 +184,8 @@ def decision(*, level="modern", down=4, own_yard=50, distance=2,
     This is a policy oracle, not a port of every retail decision branch.
     """
     _level(level)
+    if level == "modern2" and vip_playback:
+        return "retail"
     values = (own_yard, distance, seconds)
     if level == "modern2":
         if (not cpu or phase != 4 or down != 4 or quarter not in (1, 2, 3, 4) and quarter < 5 or
@@ -252,18 +259,21 @@ def mapping(level="modern"):
             overtime="Possession byte E602A8: first possession typical table, no early field goal; last possession behind: go",
             late_lead_field_goal="Fourth quarter, <= 120 s, leading by 1 to 3, 7+ yards to go, inside kicker range - 5 yd: kick",
             defensive_lottery_exponent={"front": 2, "coverage": 2, "retail": 3},
+            vip_policy="Matching CPU VIP playback: retail fourth-down/two-point/FG policy, with native VIP optional rolls",
             sources=SOURCES_FILE)
     return out
 
 
-def code_for(va, level="modern"):
+def code_for(va, level="modern", *, legacy_modern2=False):
     if _level(level) == "retail":
         raise ValueError("Retail has no installed code")
     symbols = {"code": va, "fourth_tail": 0x20B185, "play_tail": 0x209813,
                "target_tail": 0x1987BB, "native_category": 0x209FE0, "half_time": 0x205F80,
-               "native_fg": 0x20AF80, "kicker_range": 0x18B120, "margin_fn": 0x205F40, "hail_mary": 0x206DD0}
+               "native_fg": 0x20AF80, "kicker_range": 0x18B120, "margin_fn": 0x205F40, "hail_mary": 0x206DD0,
+               "native_vip": 0xF71E0, "two_point_tail": 0x206E75}
     if level == "modern2":
-        code, relocations = bytearray(assembly.CODE2), assembly.RELOCATIONS2
+        code, relocations = ((bytearray(assembly.CODE2_LEGACY), assembly.RELOCATIONS2_LEGACY) if legacy_modern2
+                             else (bytearray(assembly.CODE2), assembly.RELOCATIONS2))
     else:
         code, relocations = bytearray(assembly.CODE), assembly.RELOCATIONS
     for offset, kind, symbol, value in relocations:
@@ -278,12 +288,13 @@ def code_for(va, level="modern"):
     return bytes(code).ljust(CODE_SIZE, b"\xcc")
 
 
-def sites(va, level="modern"):
+def sites(va, level="modern", *, legacy_modern2=False):
     if level == "modern2":
+        labels = assembly.LABELS2_LEGACY if legacy_modern2 else assembly.LABELS2
         rows = []
         for name, (hook, before) in HOOKS2.items():
             if name in HOOK2_LABEL:
-                rel = struct.pack("<i", va + assembly.LABELS2[HOOK2_LABEL[name]] - hook - 5)
+                rel = struct.pack("<i", va + labels[HOOK2_LABEL[name]] - hook - 5)
                 opcode = b"\xe8" if name.startswith("fg_") else b"\xe9"
                 after = opcode + rel + b"\x90" * (len(before) - 5)
             else:
@@ -299,23 +310,40 @@ def _neighbors(payload):
     """b76-vb3: the 25th Anniversary kickoff gate enters the pinned diagram reader FUN_0017FE60 through a 7-byte
     trampoline. Restore its retail entry for the hash only after that owner's complete recognizer accepts it."""
     from . import nfl2k5_anniversary_kickoff as anniversary
+    from . import nfl2k5_playbook_pair as pair
+    from . import nfl2k5_coach_ai as coach_ai
+    neighbors = []
     va, entry = dict(anniversary.READER_SITES)["reader_diagram"], anniversary.READER_ENTRY
-    if XbeImage(payload).read(va, len(entry)) == entry:
-        return ()
-    space._require(anniversary.status(payload) == "applied", "Foreign play-call diagram reader neighbor")
-    return ((va, entry),)
+    image = XbeImage(payload)
+    if image.read(va, len(entry)) != entry:
+        space._require(anniversary.status(payload) == "applied", "Foreign play-call diagram reader neighbor")
+        neighbors.append((va, entry))
+    # Paired sides intentionally return no VIP; unpaired sides retain the
+    # native accessor. Normalize only the complete recognized pair owner.
+    _, va, original, _ = next(row for row in pair.HOOKS if row[0] == "vip")
+    entry = bytes.fromhex(original)
+    if image.read(va, len(entry)) != entry:
+        space._require(pair.status(payload) == "applied", "Foreign VIP accessor neighbor")
+        neighbors.append((va, entry))
+    # Automatic tendencies enter the ordinary CPU publication tail. Accept
+    # that selector-boundary hook only when the entire owner is recognized.
+    neighbors.extend((va, before) for _, va, before, _ in coach_ai.normalized_sites(payload))
+    return tuple(neighbors)
 
 
-def _adapter(level):
+def _adapter(level, *, legacy_modern2=False):
     return SimpleNamespace(OWNER=OWNER, CODE_SIZE=CODE_SIZE, REQUESTS=REQUESTS,
-                           GUARDS=GUARDS, sites=lambda va: sites(va, level), mapping=lambda: mapping(level),
-                           code_for=lambda va: code_for(va, level), neighbors=_neighbors)
+                           GUARDS=GUARDS, sites=lambda va: sites(va, level, legacy_modern2=legacy_modern2),
+                           mapping=lambda: mapping(level),
+                           code_for=lambda va: code_for(va, level, legacy_modern2=legacy_modern2), neighbors=_neighbors)
 
 
 def read_settings(payload):
     for level in LEVELS[1:]:
         if lever.status(payload, _adapter(level)) == "applied":
-            return {"level": level, "experimental": True, "runtime_witnessed": False}
+            return {"level": level, "vip_policy": level == "modern2", "experimental": True, "runtime_witnessed": False}
+    if lever.status(payload, _adapter("modern2", legacy_modern2=True)) == "applied":
+        return {"level": "modern2", "vip_policy": False, "experimental": True, "runtime_witnessed": False}
     return None
 
 
@@ -324,7 +352,7 @@ def status(payload):
         state = lever.status(payload, _adapter(level))
         if state != "foreign":
             return state
-    return "foreign"
+    return lever.status(payload, _adapter("modern2", legacy_modern2=True))
 
 
 def apply(payload, *, level="modern"):
@@ -335,6 +363,8 @@ def apply(payload, *, level="modern"):
         return payload, {"owner": OWNER, "level": "retail", "changed_bytes": 0,
                          "edits": [], "experimental": True, "runtime_witnessed": False}
     adapter = _adapter(level)
+    if level == "modern2" and lever.status(payload, _adapter(level, legacy_modern2=True)) == "applied":
+        return upgrade_to_modern2(payload)
     # A standalone new owner can still fit the allocator's legacy pages.
     # Explicitly request v3 as required by this owner's integration contract.
     # Validate the complete owner before allocating any bytes.
@@ -359,16 +389,19 @@ def upgrade_to_modern2(payload):
     if lever.status(payload, _adapter("modern2")) == "applied":
         return payload, {"owner": OWNER, "level": "modern2", "already_applied": True, "changed_bytes": 0, "edits": []}
     old = read_settings(payload)
-    space._require(old is not None and old["level"] in ("modern", "aggressive"),
-                   "CPU money downs: only an installed Modern or Aggressive owner upgrades to Modern 2")
+    space._require(old is not None and old["level"] in ("modern", "aggressive", "modern2"),
+                   "CPU money downs: only a verified installed owner upgrades to Modern 2")
     space._require(space.is_scaleout(payload), "CPU money downs upgrade needs the sealed scale-out allocator")
     a = lever.allocation(payload, OWNER, CODE_SIZE)
     requests = space._read_scale_directory(payload)
-    old_sites = {name: (hook, before, after) for name, hook, before, after in sites(a["va"], old["level"])}
+    legacy = old["level"] == "modern2" and not old["vip_policy"]
+    old_sites = {name: (hook, before, after) for name, hook, before, after
+                 in sites(a["va"], old["level"], legacy_modern2=legacy)}
     new_sites = sites(a["va"], "modern2")
     buf = bytearray(payload)
     code = code_for(a["va"], "modern2")
-    space._require(bytes(buf[a["raw"]:a["raw"] + a["size"]]) == code_for(a["va"], old["level"]), "foreign owner code")
+    space._require(bytes(buf[a["raw"]:a["raw"] + a["size"]]) ==
+                   code_for(a["va"], old["level"], legacy_modern2=legacy), "foreign owner code")
     buf[a["raw"]:a["raw"] + a["size"]] = code
     edits, touched = [], set()
     sections = _sections(payload)
@@ -388,7 +421,8 @@ def upgrade_to_modern2(payload):
     result = bytes(buf)
     space._require(lever.status(result, _adapter("modern2")) == "applied" and space.status(result) == "applied",
                    "CPU money downs upgrade postcondition failed")
-    return result, {"owner": OWNER, "level": "modern2", "from_level": old["level"], "already_applied": False,
+    return result, {"owner": OWNER, "level": "modern2", "vip_policy": True, "from_level": old["level"],
+                    "from_vip_policy": old["vip_policy"], "already_applied": False,
                     "edits": edits, "changed_bytes": sum(x != y for x, y in zip(payload, result)),
                     "before_sha256": hashlib.sha256(payload).hexdigest(), "after_sha256": hashlib.sha256(result).hexdigest(),
                     "sections_repinned": sorted(touched), "experimental": True, "runtime_witnessed": False}

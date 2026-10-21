@@ -89,6 +89,7 @@ class Owner(unittest.TestCase):
         shifted = {
             ("nfl2k5_letter_grades", "read_only", 0),
             ("nfl2k5_period_goalposts", "read_only", 0),
+            ("nfl2k5_classic_teams", "read_only", 0),  # b775-ct1: the last appended late read-only owner
         }
         self.assertEqual({key for key in before if before[key] != after[key]}, shifted)
         for allocation, row in before.items():

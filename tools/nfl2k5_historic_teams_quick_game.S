@@ -13,7 +13,7 @@
  * (category 4), and never while the other side is showing it. A user-created team is never touched:
  * that side just skips the historic list. The resident list skips both spare slots while they hold
  * historic teams, so neither side can pick the team in the other side's slot. The Random Team spin
- * stays on the resident list. Every other Team Select flow calls the retail step functions.
+ * stays on the resident list and, leaving a historic team, returns its slot. Every other Team Select flow calls the retail step functions.
  * Loading waits in the menu; nothing stays queued, and no memory is added: the two slots and the
  * 155-record spare pool exist in retail. A network session (128C70 nonzero: Xbox Live or system link) keeps
  * the retail steps, so both consoles always name the same resident team. State: 16 zero-initialised RW bytes, per side
@@ -50,44 +50,43 @@
 
 /* ---- the six replaced calls ------------------------------------------------------------------ */
 home_next:                       /* 2C22D0 in the next handler 2C2240; EDX = the flow's team mask */
-    push edx
-    push 1
-    push 0
-    call step
-    add esp, 12
-    ret
+    xor eax, eax
+    jmp next_side
 away_next:                       /* 2C2280 */
+    push 1
+    pop eax
+next_side:                       /* EAX = side */
     push edx
     push 1
-    push 1
+    push eax
     call step
     add esp, 12
     ret
 home_prev:                       /* 2C2392 in the previous handler 2C2310; retail computes its mask */
-    call team_mask
-    push eax
-    push -1
-    push 0
-    call step
-    add esp, 12
-    ret
+    xor eax, eax
+    jmp prev_side
 away_prev:                       /* 2C2349 */
+    push 1
+    pop eax
+prev_side:
+    push eax
     call team_mask
+    pop ecx
     push eax
     push -1
-    push 1
+    push ecx
     call step
     add esp, 12
     ret
 home_random:                     /* 2C1B02 in the Random Team spin 2C1AC0; EDX = mask */
-    push edx
-    push 0
-    call random_step
-    add esp, 8
-    ret
+    xor eax, eax
+    jmp random_side
 away_random:                     /* 2C1B52 in 2C1B10 */
-    push edx
     push 1
+    pop eax
+random_side:
+    push edx
+    push eax
     call random_step
     add esp, 8
     ret
@@ -162,7 +161,6 @@ step_leave:
     mov ecx, esi
     mov edx, edi
     call release_slot
-    mov word ptr [state+esi*8+4], 0
     xor ecx, ecx                         /* forward: the first resident team after "none" */
     cmp dword ptr [esp+24], 0
     jg step_leave_target
@@ -274,6 +272,19 @@ random_local:
     push ebx
     call resident_step
     add esp, 12
+    /* mc3: a spin away from the historic team this side loaded returns its slot, as stepping out of
+     * the list does. It was left holding the team, 53 players out of the spare pool, into the next
+     * mode (Noah 10/16: Packers '96, then Random Team; MyCareer then met a split free record). */
+    cmp ebx, dword ptr [state+esi*8]
+    jne random_publish
+    cmp dword ptr [ebx+CAT], 4
+    jne random_publish
+    push eax
+    mov edx, ebx
+    mov ecx, esi
+    call release_slot
+    pop eax
+random_publish:
     mov edx, eax
     mov ecx, esi
     call publish
@@ -433,6 +444,7 @@ release_slot:
     mov dword ptr [ebx+CAT], 2
     lea eax, [esi+0x5a]
     mov word ptr [ebx+IDENT], ax
+    mov word ptr [state+esi*8+4], 0      /* this side no longer shows a list entry */
     pop esi
     pop ebx
 release_done:

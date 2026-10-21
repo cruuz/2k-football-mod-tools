@@ -1,0 +1,108 @@
+{
+  "schema": "nfl2k5_nyg_numbers/v1",
+  "resource": "18H0.IFF",
+  "size": 1490704,
+  "method": "Copy existing plain-white jersey P8 palette and all four mip levels, preserving arm descriptors and wrappers.",
+  "digits": [
+    {
+      "digit": 0,
+      "donor_offset": 429056,
+      "donor_length": 1008,
+      "donor_sha256": "d7142ec8fe262ca3427a9a0d7171f757dd4b333507bf538a5be7572522277443",
+      "offset": 449200,
+      "length": 1008,
+      "before_sha256": "77b4185886791f695bd4b6d10979bf4bc5264c4a7eead93cf3dbc06a8ca91787",
+      "after_sha256": "291e5e4fa7f5d18f6a99622b7216f86272e4a213907b33cc28bdcd172de3861a"
+    },
+    {
+      "digit": 1,
+      "donor_offset": 430064,
+      "donor_length": 800,
+      "donor_sha256": "e4b7a959a26ab7417261cd035543458a07c1f371cf36516afa65258b21caff24",
+      "offset": 450208,
+      "length": 800,
+      "before_sha256": "b041f53e5a198ffa725724ae74a01feeaaee3db220fe79aa4c049a0618781c90",
+      "after_sha256": "3caa2cc416698ef2eb47474c052e05bc0c90cc5a5cec723ce57dc0edb3418ee7"
+    },
+    {
+      "digit": 2,
+      "donor_offset": 430864,
+      "donor_length": 1296,
+      "donor_sha256": "9dcc057cbced91f2c660b24b813116a6c5720810474a5b74d36741c5de306bb8",
+      "offset": 451008,
+      "length": 1312,
+      "before_sha256": "526d12a77bf00ff7c86a1d4653dd5096e92c4ff64d38150000ab56d8e41e24c3",
+      "after_sha256": "2b868b67259c215ccaf4ea6d91b3226187aabfea39154aa9cb1d8bfbf385f5de"
+    },
+    {
+      "digit": 3,
+      "donor_offset": 432160,
+      "donor_length": 1328,
+      "donor_sha256": "83d7d7e53460e1e380ea2a93b4949a335fc067c72c1d340b2325f96617ca12a6",
+      "offset": 452320,
+      "length": 1328,
+      "before_sha256": "407c50bdb04b947e011a0ffea56af6498bd32e77743d1e55a7c896e468b73466",
+      "after_sha256": "3d32aa89a5db5f044815432e6eca50416628d6e3b65b641c25757f1001664b4d"
+    },
+    {
+      "digit": 4,
+      "donor_offset": 433488,
+      "donor_length": 1232,
+      "donor_sha256": "b5fa5bbb46da08f75ba71e40bf58b23680ad8c615ce3a1f65e506dc6f207cd50",
+      "offset": 453648,
+      "length": 1232,
+      "before_sha256": "2c3d27e2c8dfe61d73868207236e3a0d67819e466b1d000945b981c0f81428b0",
+      "after_sha256": "3373229602f196bf6ffc5961437a9c89876baa63fe3c432a9b866a76cb02fe86"
+    },
+    {
+      "digit": 5,
+      "donor_offset": 434720,
+      "donor_length": 1168,
+      "donor_sha256": "98640adea42ce2be9ef6bb164dbce6d844a398d2efa1cc9f3da8f8cc2a4339fa",
+      "offset": 454880,
+      "length": 1184,
+      "before_sha256": "2343d7d8565b7d1b19c6632107a1386f53194949d8b2c6900be6cc24893126ce",
+      "after_sha256": "470af87e90282a1432ecf6f122cec2eacbe22ea6b1d9966be1eb9ed2c99cf5ac"
+    },
+    {
+      "digit": 6,
+      "donor_offset": 435888,
+      "donor_length": 1200,
+      "donor_sha256": "9686aa53c51c7e4a33a2860653ac0b372f04b2dd1be4733c3f7bc52363a6e868",
+      "offset": 456064,
+      "length": 1216,
+      "before_sha256": "f7760552f7d4ddb7ea72dc49934d705edb3857f223cb6a951bc20f105379fc11",
+      "after_sha256": "e18d2aa5fc6907b74df8de1246e9337ff4e7e75ec756aace3ccde3c4f872028c"
+    },
+    {
+      "digit": 7,
+      "donor_offset": 437088,
+      "donor_length": 1312,
+      "donor_sha256": "9d14e1cac291c3a555d28fac396b9cb0498a2530ef7654341dd0220c8f5462ad",
+      "offset": 457280,
+      "length": 1312,
+      "before_sha256": "b59edafc409c585154172f672abe33adc8b34524df6fa30f9e32663a2aaf126d",
+      "after_sha256": "55d78d0a85032e66685cec0facd0ff4e2c8c0290aa09a6165baee1dbd22530aa"
+    },
+    {
+      "digit": 8,
+      "donor_offset": 438400,
+      "donor_length": 1184,
+      "donor_sha256": "555e29c0ba16f42942c7b42ae71766c4cf1bdfe7e7d7622aee8c8f54affc9b9a",
+      "offset": 458592,
+      "length": 1184,
+      "before_sha256": "8b7481310274a64644834cedd03a6a691604dae525e4739c068ae0e6ac65cc6f",
+      "after_sha256": "d5ee9295c3ef61aa2721224b1bab1034de2791ee3bf92be943c17bfaa466c688"
+    },
+    {
+      "digit": 9,
+      "donor_offset": 439584,
+      "donor_length": 1216,
+      "donor_sha256": "d93b9afd68f57cb54949ec7d5f46dd10cf1694cfeda17fea05dc4384921607c1",
+      "offset": 459776,
+      "length": 1216,
+      "before_sha256": "dfa88c4005f51589bd06990e0e9e7b70578393854405b5d358a29a4596d164a3",
+      "after_sha256": "00a2f9c760ef9c65fc7aba368eadb1640e7dc911ddf144495a33de2872c009da"
+    }
+  ]
+}

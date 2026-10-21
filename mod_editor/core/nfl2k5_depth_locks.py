@@ -6,11 +6,61 @@ compactor allocate unlocked rows around reserved locked rows, capped at 7.
 The existing screen swap and confirmed KR/PR arms set the relevant locks;
 bench promotions are recognized by pinned return addresses in the compactor.
 
-All six rewrites stay inside their original function/block allocations.
-There are NO code caves or absolute runtime variables. Scratch is on the
+All rewrites stay inside their original function/block allocations.
+There are NO code caves or absolute runtime variables (revision 3 reads one
+retail .rdata float constant).
+
+Revision 2 (b777, job mc5; Noah 10/20: a blank RB1 on TEN's depth chart in
+MyCareer, and selecting it froze the game). The 2026 roster refresh locks the
+rank and side of every club player, and a locked row was reserved even after
+every player above it had left, so a departed starter left a permanent hole
+(the depth chart getter 0x242AE0 returns no player for that row). The shared
+compactor now seats each position's locked players in row order: a lock keeps
+its row while unlocked players can fill the rows above it, otherwise it moves
+up (close_holes, in the weekly rank stage's spare bytes). Nothing changes when
+no hole exists. The screen compactor runs at every depth-chart entry and the
+weekly rank stage for CPU clubs, so old saves repair themselves. Separately,
+the detail list's ratings bars (0x242E00) divided by the top row's ratings,
+which were never stored when that row was empty: STATUS_INTEGER_DIVIDE_BY_ZERO
+at 0x242E53, the freeze. Its empty-row branch now stores the native floor (1)
+first (a 6-byte branch; the stub is in the swap block's spare bytes). And
+the weekly auto-depth, which skips user-controlled clubs (a MyCareer club is
+one, though the league still moves its players), now gives such a club the
+screen compactor's pass (order kept, holes closed) before skipping it (a
+6-byte branch in the pinned sort frame; stub in the swap block). On the
+side chain, a lock who also starts the rank chain is never seated in side row
+0 or 1, so one player never fills two starting slots (MIKE+WILL, both EDGEs:
+the screen's exit check 0x243B50 refuses that; Discord 10/18). Bytes for this
+come from shorter encodings elsewhere in the compactor. Revision-1 images
+report ``legacy`` and upgrade in place. Scratch is on the
 stack; persistent bits are in writable roster records, separate from stars.
 The annotated GNU assembler source is docs/mod_editor/nfl2k5_depth_locks.S;
 embedded code makes application independent of an assembler on Windows.
+
+Revision 3 (b777, job dl3; Noah 10/20: a better free-agent signing must
+start for a CPU club). Locks pin the real 2026 depth charts but must not keep
+a clearly better player on the bench. The native weekly pointer sort of
+CPU-run clubs (0x2BDD31..0x2BDDE0) is rewritten in place: the same exchange
+sort (same compares and 0xC3D70 stores, so the same order) plus a release
+rule. When a roster index is final it holds the best remaining player of its
+position under the native sort rating 0x246D80 (edx=1; 0..1, overall/100), so
+the first unlocked player seen is the position's best unlocked player. A
+rank-locked player whose rating plus MARGIN (0.03 = 3 overall points, the
+retail .rdata constant at 0x4F0F48) is not above that rating loses his rank
+and side locks (bits 0..1; KR/PR bits stay), permanently, and the rank stage
+that follows seats everyone by the native order. Three points keeps the real
+depth chart against week-to-week noise and near ties (a 1-point-better
+signing does not start) while a clearly better signing, trade or draft pick
+does. User clubs never reach the sort (the native user-club skip, revision
+2's compactor pass is unchanged), so a user's Franchise club and the
+MyCareer club keep their depth charts. Players who change team already lose
+all locks in the native roster removal (membership_remove). Separately, the
+weekly side chain of paired positions now maps the rank row just assigned
+(not the sorted ordinal) to retail's side rows 2/0/1, so an unlocked rank
+starter is never also a side starter (Noah's save: BUF Rousseau EDGE+EDGE,
+BAL Wagner MIKE+WILL behind a better locked player at rank 3); identical to
+retail when there are no locks. Revision-2 and revision-1 images report
+``legacy`` and upgrade in place.
 
 Conflicting imported locks are preserved (and reported by the roster API),
 not silently reassigned. Valid records have unique locked rows 0..6 per
@@ -94,7 +144,7 @@ RETAIL_COMPACT = bytes.fromhex(
     "ffff5f8886990100005e5d5b8be55dc3"
 )
 
-PATCHED_COMPACT = bytes.fromhex(
+V1_PATCHED_COMPACT = bytes.fromhex(
     "31d2eb036a015a6083ec6c89cdc7442468000000008b84248c0000006a025a3d57442400741a4a3d7644240074123d64"
     "44240075188b94248800000083e20142895424688b742470f7d22056528b942480000000895424440fb6851c01000083"
     "f8410f87a10100008944245431ffc744244c0a000000c744245001000000c744245800000000c74424640000000031db"
@@ -115,7 +165,7 @@ RETAIL_RANK_STAGE = bytes.fromhex(
     "0d0bcaeb0e81c900200000eb0681c900400000668948288bd38bcf46e84f5ee0ff483bf07c8f4383fb110f8c72ffffff"
 )
 
-PATCHED_RANK_STAGE = bytes.fromhex(
+V1_PATCHED_RANK_STAGE = bytes.fromhex(
     "89f9e8ad59f8ffe984000000"
 )
 
@@ -125,9 +175,80 @@ RETAIL_SWAP = bytes.fromhex(
     "3341285f25001c000066314128c20400"
 )
 
-PATCHED_SWAP = bytes.fromhex(
+V1_PATCHED_SWAP = bytes.fromhex(
     "5731ffa801ba001c0000b801000000740aba00e00000b8020000000841520846520fb7792866337e2821d766317e2866"
     "3179285fc20400"
+)
+
+# Revision 2 (b777 mc5): hole-free seating of locked rows and the ratings-panel guard.
+V2_PATCHED_COMPACT = bytes.fromhex(
+    "31d2eb036a015a6083ec6c89cd83642468008b84248c0000006a025a3d57442400741a4a3d7644240074123d64442400"
+    "75188b94248800000083e20142895424688b742470f7d22056528b942480000000895424440fb6851c01000083f8410f"
+    "87880100008944245431ff6a0a8f44244c6a018f44245031c0894424608944246431db3b5c24547377c6041cff8b749d"
+    "0089f838463575658b4c244c0fb74628d3e883e0078b542450845652740b0c4088041cff442460eb40837c2444007436"
+    "8b44246483f90d7525ba98ec01000fa3fa720b0fb74628d3e883e007eb1883f803730b83c00283f803720383e80383f8"
+    "0776036a075888041cff44246443eb83e857a5070031db3b5c245473478b44246038041c753b8b44245c83f80772056a"
+    "0758eb0a0fa3442458730340ebec8944245cff44245c8b749d008b4c244cd3e0ba07000000d3e26633462821d0663146"
+    "2843ebb3ff442460837c24600872a6837c244c0d740fc644244c0dc644245002e902ffffff4783ff110f82ecfeffff83"
+    "7c244400756789ee31c0b9fe000000e88cf2ffff8886950100006a0158b9fe000000e879f2ffff88869601000031c0b9"
+    "fd000000e867f2ffff8886990100008b5c24544b78278b749d008a4652a8047406889d95010000a8087406889d960100"
+    "00a81074de889d99010000ebd68b44246885c074078b74247008465283c46c61c383fa02731783fe077412807f4c0d75"
+    "0c8b449d00f640291c7502f9c3f8c3"
+)
+
+# Revision 3 (b777 dl3): the weekly side chain of paired positions maps the
+# assigned rank row (not the sorted ordinal) to retail's side rows 2/0/1.
+PATCHED_COMPACT = bytes.fromhex(
+    "31d2eb036a015a6083ec6c89cd83642468008b84248c0000006a025a3d57442400741a4a3d7644240074123d64442400"
+    "75188b94248800000083e20142895424688b742470f7d22056528b942480000000895424440fb6851c01000083f8410f"
+    "87880100008944245431ff6a0a8f44244c6a018f44245031c0894424608944246431db3b5c24547378c6041cff8b749d"
+    "0089f838463575668b4c244c0fb74628d3e883e0078b542450845652740b0c4088041cff442460eb41837c2444007437"
+    "83f90d7515ba98ec01000fa3fa73288b4628c1e80a83e007eb068b442464eb1083f803730b83c00283f803720383e803"
+    "83f8077602b00788041cff44246443eb82e856a5070031db3b5c245473468b44246038041c753a8b44245c83f8077204"
+    "b007eb0a0fa3442458730340ebed8944245cff44245c8b749d008b4c244cd3e0ba07000000d3e26633462821d0663146"
+    "2843ebb4ff442460837c24600872a7837c244c0d740fc644244c0dc644245002e902ffffff4783ff110f82ecfeffff83"
+    "7c244400756789ee31c0b9fe000000e88cf2ffff8886950100006a0158b9fe000000e879f2ffff88869601000031c0b9"
+    "fd000000e867f2ffff8886990100008b5c24544b78278b749d008a4652a8047406889d95010000a8087406889d960100"
+    "00a81074de889d99010000ebd68b44246885c074078b74247008465283c46c61c383fa02731783fe077412807f4c0d75"
+    "0c8b449d00f640291c7502f9c3f8c3"
+)
+
+PATCHED_RANK_STAGE = bytes.fromhex(
+    "89f9e8ad59f8ffe984000000608d7c24248b47642b476089476431c089475c89475831f631db3b5f5473528d56403814"
+    "1f75478b575c39d6760e837f64007408ff4f64ff475cebebe8645bf8ff730ac6041f47804829e0eb2183fa077602b207"
+    "0fab5758ff475cc6041ffe8b449d0031f28b4f4cd3e26631502843eba94683fe0872a131c089475c89476061c3"
+)
+
+PATCHED_SWAP = bytes.fromhex(
+    "5731ffa801ba001c0000b801000000740aba00e00000b8020000000841520846520fb7792866337e2821d766317e2866"
+    "3179285fc2040085f675126a0158a3c474c100a3c874c100a3cc74c100e91e02000089f9e8970a0000e9d6b20700"
+)
+
+PANEL_VA = 0x242E40  # FUN_00242E00's empty-row branch
+RETAIL_PANEL = bytes.fromhex("0f84ca000000")
+PATCHED_PANEL = bytes.fromhex(
+    "0f8491feffff"
+)
+SORT_VA = 0x2BDD31  # the native weekly pointer sort of CPU-run clubs, after the user-club skip
+RETAIL_SORT = bytes.fromhex(
+    "0fb6871c01000033ed4885c0896c24180f8e99000000897c241ceb038d49000fb68f1c0100003be97d65eb038d49008b"
+    "54241c8b328b1caf8a46353a4335753fba010000008bcee80390f8ffd95c2430ba010000008bcbe8f38ff8ffd85c2430"
+    "dfe0f6c4417518558bd68bcfe8ce5fe0ff8b4c2418518bd38bcfe8c05fe0ff0fb6971c010000453bea7ca48b6c24188b"
+    "74241c0fb6871c0100004583c604483be8896c24188974241c0f8c70ffffff"
+)
+# Revision 3 (b777 dl3): the same exchange sort plus the release rule.
+PATCHED_SORT = bytes.fromhex(
+    "6a13596a00e2fc31db389f1c01000076438b4424488b34878b2c9f8a46353a4535752e89f1e87a000000d91c2489e9e8"
+    "70000000d81c24dfe09e761589f95389f2e8f95fe0ffff74244889eae8ee5fe0ff43ebb58b44244839d874508b34870f"
+    "b646353c1077308d6c840489f1e832000000f6465201750d837d00007503d95500ddd8eb12d805480f4f00d85d00dfe0"
+    "9e7704806652fcff4424488b5c2448e965ffffff6a015ae9a38ff8ff83c44c"
+)
+MARGIN_VA = 0x4F0F48  # retail .rdata float constant 0.03f, the release margin
+MARGIN = 0.03
+HUMAN_VA = 0x2BDD2B  # the weekly auto-depth's user-club skip, inside the pinned sort frame
+RETAIL_HUMAN = bytes.fromhex("0f84a3020000")
+PATCHED_HUMAN = bytes.fromhex(
+    "0f84c14ff8ff"
 )
 
 RETAIL_KR_SET = bytes.fromhex(
@@ -163,6 +284,38 @@ SORT_PREFIX_SHA256 = "55a6689d6bccfea9d6aadbf39c3261ae7af8614e8adf309ebff78fca34
 FALLBACK_SHA256 = "ab0cf0d699372e7996efaaf7edf988dec7ced0cfd211fcacdf7438e3923934d5"
 
 
+
+def seat_rows(locked_rows, unlocked: int, starter: int | None = None) -> list[int]:
+    """Reference model of revision 2's close_holes for one position and chain.
+
+    ``locked_rows`` are the stored rows (0..7) of the locked players in roster
+    order; ``unlocked`` is how many unlocked players share the chain. Returns
+    each locked player's seated row: in row order, then roster order, a lock
+    keeps its row while unlocked players can still fill the rows above it,
+    otherwise it moves up. Row 7 is the shared overflow row. On the side chain
+    pass ``starter``, the index of the locked player who starts the rank chain:
+    he is never seated in side row 0 or 1 (he would fill two starting slots)
+    and is seated after the others instead.
+    """
+    tags = [int(r) for r in locked_rows]
+    if any(not 0 <= r <= 7 for r in tags) or unlocked < 0:
+        raise DepthLockError("rows are 0..7 and the unlocked count is not negative")
+    seated, row, left = [None] * len(tags), 0, int(unlocked)
+    for a in range(8):
+        for index, tag in enumerate(tags):
+            if tag != a or seated[index] is not None:
+                continue
+            while a > row and left:
+                left -= 1
+                row += 1
+            if index == starter and row < 2 and a < 7:
+                tags[index] = 7
+                continue
+            seated[index] = min(row, 7)
+            row += 1
+    return seated
+
+
 @dataclass(frozen=True)
 class Site:
     label: str
@@ -171,19 +324,36 @@ class Site:
     after: bytes
 
 
-def sites(layout: str = "retail") -> tuple[Site, ...]:
-    """Both layouts use stride 11; SPECIAL alone uses encoded swap chains."""
+REVISION = 3
+
+
+def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
+    """Both layouts use stride 11; SPECIAL alone uses encoded swap chains.
+
+    Revision 1 (before b777) had six sites; revision 2 rewrites the compactor,
+    rank stage and swap block in their same spans and adds the ratings-panel
+    branch, which stays retail in a revision-1 image. Revision 3 (b777 dl3)
+    adds the weekly sort with the release rule; it stays retail before."""
     if layout not in ("retail", "special"):
         raise DepthLockError("unknown depth-chart layout")
-    swap_before, swap_after = bytearray(RETAIL_SWAP), bytearray(PATCHED_SWAP)
+    if revision not in (1, 2, 3):
+        raise DepthLockError("unknown depth-lock revision")
+    v1 = revision == 1
+    swap_before = bytearray(RETAIL_SWAP)
+    swap_after = bytearray(V1_PATCHED_SWAP if v1 else PATCHED_SWAP)
     swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if layout == "retail" else "a801")
     values = (
-        ("compactor", COMPACT_VA, RETAIL_COMPACT, PATCHED_COMPACT),
-        ("weekly_rank_stage", RANK_STAGE_VA, RETAIL_RANK_STAGE, PATCHED_RANK_STAGE),
+        ("compactor", COMPACT_VA, RETAIL_COMPACT, V1_PATCHED_COMPACT if v1 else
+         V2_PATCHED_COMPACT if revision == 2 else PATCHED_COMPACT),
+        ("weekly_rank_stage", RANK_STAGE_VA, RETAIL_RANK_STAGE,
+         V1_PATCHED_RANK_STAGE if v1 else PATCHED_RANK_STAGE),
         ("screen_swap", SWAP_VA, bytes(swap_before), bytes(swap_after)),
         ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET),
         ("screen_pr", PR_SET_VA, RETAIL_PR_SET, PATCHED_PR_SET),
         ("membership_remove", REMOVE_VA, RETAIL_REMOVE, PATCHED_REMOVE),
+        ("ratings_panel_guard", PANEL_VA, RETAIL_PANEL, RETAIL_PANEL if v1 else PATCHED_PANEL),
+        ("user_club_compact", HUMAN_VA, RETAIL_HUMAN, RETAIL_HUMAN if v1 else PATCHED_HUMAN),
+        ("weekly_sort_release", SORT_VA, RETAIL_SORT, PATCHED_SORT if revision >= 3 else RETAIL_SORT),
     )
     return tuple(Site(label, va, before, after + b"\x90" * (len(before) - len(after)))
                  for label, va, before, after in values)
@@ -199,7 +369,19 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     if rows_state == "foreign":
         raise DepthLockError("unknown or mixed retail/SPECIAL depth-chart layout")
     layout = "special" if rows_state == "applied" else "retail"
-    if hashlib.sha256(image.read(0x2BDCF0, 0xF0)).hexdigest() != SORT_PREFIX_SHA256:
+    frame = bytearray(image.read(0x2BDCF0, 0xF0))
+    at = HUMAN_VA - 0x2BDCF0
+    if frame[at:at + len(PATCHED_HUMAN)] == PATCHED_HUMAN:
+        frame[at:at + len(RETAIL_HUMAN)] = RETAIL_HUMAN  # revision 2 owns this one branch
+    at = SORT_VA - 0x2BDCF0
+    if frame[at:at + len(PATCHED_SORT)] == PATCHED_SORT:
+        frame[at:at + len(RETAIL_SORT)] = RETAIL_SORT  # revision 3 owns the sort body
+    if image.read(MARGIN_VA, 4) != struct.pack("<f", MARGIN):
+        raise DepthLockError("unknown release margin constant")
+    msec = image.section(MARGIN_VA, 4)
+    if msec is None or msec.name != ".rdata":
+        raise DepthLockError("expected the retail .rdata margin constant")
+    if hashlib.sha256(bytes(frame)).hexdigest() != SORT_PREFIX_SHA256:
         raise DepthLockError("unknown native weekly pointer-sort frame")
     if hashlib.sha256(image.read(0x242BB0, 0x4A)).hexdigest() != FALLBACK_SHA256:
         raise DepthLockError("unknown returner fallback ABI")
@@ -224,8 +406,17 @@ def read_any(payload: bytes) -> dict[str, object]:
                                   "applied" if got == site.after else "foreign")
         unique = set(states.values())
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
+        legacy = None
+        if state == "foreign":
+            for old in (2, 1):
+                if all(image.read(site.va, len(site.after)) == site.after
+                       for site in sites(layout, old)):
+                    # A complete revision-2 (b777 release candidate) or revision-1
+                    # (b775/b776 discs) install: upgrade in place.
+                    state, legacy = "legacy", old
+                    break
         return {"status": state, "sites": states, "stride": modern.SLOTS_PER_UNIT,
-                "layout": layout}
+                "layout": layout, "revision": REVISION if state == "applied" else legacy}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
 
@@ -248,6 +439,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     touched, edits = set(), []
     for site in sites(layout):
         off = image.offset(site.va, len(site.before))
+        if buf[off:off + len(site.after)] == site.after:
+            continue  # a revision-1 upgrade keeps its unchanged sites
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": site.label, "va": hex(site.va),
@@ -260,6 +453,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if status(patched) != "applied":
         raise DepthLockError("depth locks post-apply verification failed")
     return patched, {"status": "applied", "already_applied": False, "edits": edits,
+                     "revision": REVISION, "upgraded_from": state["revision"] if state["status"] == "legacy" else None,
                      "changed_bytes": sum(a != b for a, b in zip(payload, patched)),
                      "sections_repinned": sorted(touched), "stride": modern.SLOTS_PER_UNIT,
                      "layout": layout,

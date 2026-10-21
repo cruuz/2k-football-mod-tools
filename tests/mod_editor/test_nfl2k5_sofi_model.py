@@ -55,15 +55,25 @@ class Geometry(unittest.TestCase):
                 self.assertLess(max(us) - min(us), 0.25)
 
     def test_fan_spacing_follows_the_seating_row_through_corners(self):
+        # b77 cr1: V runs along the band's own bottom line (not the field wall's arc) at each column's row density,
+        # metres per V unit = the retail texel aspect x that column's person strip height / a quarter strip, so the
+        # corners and upper rows keep the retail proportion; every step lies inside the retail person range.
+        mm = sm.mm
+        lo = mm.CROWD_ASPECT * mm.CROWD_PERSON_M[0] / mm.CROWD_STRIP
+        hi = mm.CROWD_ASPECT * mm.CROWD_PERSON_M[1] / mm.CROWD_STRIP
+        steps = 0
         for mesh in self.model.meshes.values():
             for strip in mesh.groups.get("crowd", ()):
-                # Higher U is the foot of the billboard in the retail atlas.
-                foot_u = max(mesh.UV[i][0] for i in strip)
-                feet = [i for i in strip if abs(mesh.UV[i][0] - foot_u) < 1e-6]
+                feet = strip[0::2] if mesh.P[strip[0]][1] <= mesh.P[strip[1]][1] else strip[1::2]
                 for a, b in zip(feet, feet[1:]):
                     metres = np.linalg.norm(np.array(mesh.P[a]) - mesh.P[b])
                     repeats = abs(mesh.UV[a][1] - mesh.UV[b][1])
-                    self.assertAlmostEqual(metres, repeats * 9.14, places=5)
+                    if metres < 1e-6:
+                        continue
+                    steps += 1
+                    self.assertGreaterEqual(metres / repeats, lo * (1 - 1e-9))
+                    self.assertLessEqual(metres / repeats, hi * (1 + 1e-9))
+        self.assertGreater(steps, 1000)
 
     def test_crowd_fans_continue_across_sector_joins(self):
         """Matched active columns must show the same atlas phase on both sides of a sector join."""
@@ -552,8 +562,8 @@ class Pins(unittest.TestCase):
 
     @requires_real_pack("modern_sofi")
     def test_the_super_bowl_field(self):
-        """s40: the LXI mark at midfield and the NFL shield on both 25s, each quad at its art's true proportions, the
-        marks' palettes kept through Modern colour, and the SoFi turf."""
+        """s40: the NFL shield at midfield and the LXI mark on both 25s (sb1: the modern Super Bowl layout), each quad
+        at its art's true proportions, the marks' palettes kept through Modern colour, and the SoFi turf."""
         from mod_editor.core import nfl2k5_modern_color as colour
         ml = sm._ml()
         tx = ml._tools()[0]
@@ -565,15 +575,15 @@ class Pins(unittest.TestCase):
         ov = sm._field_shape(rec, "D_graphic_overlays")
         st0 = sm._stream(ov, 0)
         art = sm.art_manifest()
-        for material, name, count in (("center_logo", "s40_midfield", 1), ("logo", "s40_shield", 2)):
-            across, along = art[f"field/{name}"]["quad_m"]
+        for material, name, count in (("center_logo", "s40_shield", 1), ("logo", "s40_midfield", 2)):
+            across, along = sm.SUPER_BOWL_SHIELD_M if material == "center_logo" else art[f"field/{name}"]["quad_m"]
             idx = sm._submesh_vertices(rec, dec, ov, material)
             self.assertEqual(len(idx), 4 * count)
             for quad in [idx[k:k + 4] for k in range(0, len(idx), 4)]:
                 P = np.array([struct.unpack_from("<3f", dec, st0["offset"] + st0["stride"] * i) for i in quad]) / 100.0
                 self.assertAlmostEqual(P[:, 0].max() - P[:, 0].min(), across, places=2)
                 self.assertAlmostEqual(P[:, 2].max() - P[:, 2].min(), along, places=2)
-                if material == "logo":                                   # the shields sit on the 25-yard lines
+                if material == "logo":                                   # the LXI marks sit on the 25-yard lines
                     self.assertAlmostEqual(abs(P[:, 2].mean()), 25 * 0.9144, places=2)
         # the grade's end-zone pass leaves these marks alone (design A: none of their colours is turf-like); any entry
         # it did move would be restored
