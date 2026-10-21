@@ -9,10 +9,10 @@
   "notes": "DESIGN: Zak Kuhr (Vrabel / Bowen multiple); 2025 baseline NE. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "54f41daaf2951d8bec558285a101b81356336e02da1f0e87add32f19cac3be74",
+  "book_fingerprint": "29720a4d845213c09c45f2d5328596f3ae73219b2e415de49c11e82db4742b8c",
   "donor_formation_count": 50,
-  "donor_play_count": 252,
-  "donor_node_count": 2281
+  "donor_play_count": 250,
+  "donor_node_count": 2243
  },
  "budget": {
   "formations": 50,
@@ -2326,7 +2326,7 @@
    }
   },
   {
-   "id": "n252",
+   "id": "n250",
    "custom_name": "Sim Pressure Corner",
    "play_type": "defense",
    "concept": "Sim Pressure 3",
@@ -2364,7 +2364,7 @@
    }
   },
   {
-   "id": "n253",
+   "id": "n251",
    "custom_name": "Cover 1 Double Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
@@ -2406,7 +2406,7 @@
    }
   },
   {
-   "id": "n254",
+   "id": "n252",
    "custom_name": "Cover 1 Nickel Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
@@ -2444,7 +2444,7 @@
    }
   },
   {
-   "id": "n255",
+   "id": "n253",
    "custom_name": "Cover 1 Man Off 2",
    "play_type": "defense",
    "concept": "Cover 1",
@@ -2482,7 +2482,7 @@
    }
   },
   {
-   "id": "n256",
+   "id": "n254",
    "custom_name": "Cover 2 Zone 3",
    "play_type": "defense",
    "concept": "Cover 2",
@@ -2520,7 +2520,7 @@
    }
   },
   {
-   "id": "n257",
+   "id": "n255",
    "custom_name": "Cover 3 Sky",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
@@ -2558,7 +2558,7 @@
    }
   },
   {
-   "id": "n258",
+   "id": "n256",
    "custom_name": "Cover 3 Sky Bail",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
@@ -2596,7 +2596,7 @@
    }
   },
   {
-   "id": "n259",
+   "id": "n257",
    "custom_name": "Cover 2 Zone 4",
    "play_type": "defense",
    "concept": "Cover 2",
@@ -2634,7 +2634,7 @@
    }
   },
   {
-   "id": "n260",
+   "id": "n258",
    "custom_name": "Cover 3 Cloud",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
@@ -2672,7 +2672,7 @@
    }
   },
   {
-   "id": "n261",
+   "id": "n259",
    "custom_name": "Cover 3 Sky Strong 2",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
@@ -2710,7 +2710,7 @@
    }
   },
   {
-   "id": "n262",
+   "id": "n260",
    "custom_name": "Cover 2 Double Fire",
    "play_type": "defense",
    "concept": "Cover 2 Fire",
@@ -2748,7 +2748,7 @@
    }
   },
   {
-   "id": "n263",
+   "id": "n261",
    "custom_name": "2 Fire Double",
    "play_type": "defense",
    "concept": "Cover 2 Fire",
@@ -2786,7 +2786,7 @@
    }
   },
   {
-   "id": "n264",
+   "id": "n262",
    "custom_name": "Cover 3 Cloud Bail",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
@@ -2824,7 +2824,7 @@
    }
   },
   {
-   "id": "n265",
+   "id": "n263",
    "custom_name": "Cover 0 Nickel Off",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
@@ -2862,7 +2862,7 @@
    }
   },
   {
-   "id": "n266",
+   "id": "n264",
    "custom_name": "Cover 0 Safety Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
@@ -2900,7 +2900,7 @@
    }
   },
   {
-   "id": "n267",
+   "id": "n265",
    "custom_name": "Cover 1 Man Off 3",
    "play_type": "defense",
    "concept": "Cover 1",
@@ -2938,7 +2938,7 @@
    }
   },
   {
-   "id": "n268",
+   "id": "n266",
    "custom_name": "Cover 6 Split",
    "play_type": "defense",
    "concept": "Cover 6",
@@ -2976,7 +2976,7 @@
    }
   },
   {
-   "id": "n269",
+   "id": "n267",
    "custom_name": "Cover 1 Man Off 4",
    "play_type": "defense",
    "concept": "Cover 1",

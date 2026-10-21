@@ -11,6 +11,7 @@
 # tools/launch_2k5_mod_studio.sh via the desktop entry.
 2K5-Mod-Studio.bat
 2K5-Mod-Studio.command
+2K5-Mod-Studio.sh
 LICENSE
 NOTICE.md
 docs/mod_editor/2k5_mod_studio_changelog.md
@@ -170,6 +171,7 @@ docs/mod_editor/number_sheets.md
 docs/mod_editor/install_softdrink_2k28.md
 docs/mod_editor/recommended_xemu_settings.md
 docs/mod_editor/discord_bugs_2_faq.md
+docs/mod_editor/discord_bugs_3_faq.md
 mod_editor/gui/equipment_texture_import_dialog.py
 mod_editor/gui/gameplay_project_ui.py
 docs/mod_editor/discord_bugs_1_faq.md
@@ -612,6 +614,7 @@ data/nfl2k5_kit_fixes_2026_uf3.json
 data/nfl2k5_kit_fixes_2026_sea1.json
 data/nfl2k5_kit_fixes_2026_ov1.json
 data/nfl2k5_kit_fixes_2026_ku1.json
+data/nfl2k5_kit_fixes_2026_sw1.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_pants_hem_2026.py
 data/nfl2k5_pants_hem_2026.json
@@ -1945,6 +1948,8 @@ mod_editor/core/nfl2k5_cpu_qb_reads.py
 mod_editor/core/nfl2k5_cpu_qb_reads_code.py
 mod_editor/core/nfl2k5_db_ball_play.py
 mod_editor/core/nfl2k5_db_ball_play_code.py
+mod_editor/core/nfl2k5_qb_accuracy.py
+mod_editor/core/nfl2k5_qb_accuracy_code.py
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
@@ -3406,6 +3411,7 @@ data/nfl2k5_super_bowl_walls/row50/banner_home_player.png
 data/nfl2k5_super_bowl_walls/row50/banner_home_team.marks.png
 data/nfl2k5_super_bowl_walls/row50/banner_home_team.png
 mod_editor/core/nfl2k5_era_ball.py
+mod_editor/core/nfl2k5_midfield_centre.py
 data/nfl2k5_era_ball/manifest.json
 data/nfl2k5_era_ball/modern_ball.png
 
@@ -3516,6 +3522,8 @@ mod_editor/core/nfl2k5_vip.py
 # b776 pb2: CPU coach play-ring variety and the formation menu page check (nfl2k5_vip imports the first).
 mod_editor/core/nfl2k5_coach_diversity.py
 mod_editor/core/nfl2k5_formation_menu_pages.py
+# b777 sc1: route reversal model and screen-blocker repair (imported by the offense generator only).
+mod_editor/core/nfl2k5_route_reversal.py
 data/vip/coach_sources_2026.json
 data/vip/coach_portraits_2026.json
 data/vip/coaches/ARI.json
@@ -3582,6 +3590,10 @@ docs/mod_editor/hback_roles.md
 mod_editor/core/nfl2k5_team_ratings.py
 mod_editor/core/nfl2k5_play_art_routes.py
 tests/mod_editor/test_nfl2k5_play_art_routes.py
+mod_editor/core/nfl2k5_run_blocking.py
+mod_editor/core/nfl2k5_run_blocking_code.py
+tests/mod_editor/test_nfl2k5_run_blocking.py
+tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md

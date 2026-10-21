@@ -1766,7 +1766,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 252,
+   "play": 250,
    "appended": true,
    "name": "Sim Pressure Corner",
    "component": "coverage",
@@ -1789,7 +1789,7 @@
    "authored_nodes": 20
   },
   {
-   "play": 253,
+   "play": 251,
    "appended": true,
    "name": "Cover 1 Double Fire",
    "component": "coverage",
@@ -1812,7 +1812,7 @@
    "authored_nodes": 19
   },
   {
-   "play": 254,
+   "play": 252,
    "appended": true,
    "name": "Cover 1 Nickel Fire",
    "component": "coverage",
@@ -1835,7 +1835,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 255,
+   "play": 253,
    "appended": true,
    "name": "Cover 1 Man Off 2",
    "component": "coverage",
@@ -1858,7 +1858,7 @@
    "authored_nodes": 10
   },
   {
-   "play": 256,
+   "play": 254,
    "appended": true,
    "name": "Cover 2 Zone 3",
    "component": "coverage",
@@ -1881,7 +1881,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 257,
+   "play": 255,
    "appended": true,
    "name": "Cover 3 Sky",
    "component": "coverage",
@@ -1904,7 +1904,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 258,
+   "play": 256,
    "appended": true,
    "name": "Cover 3 Sky Bail",
    "component": "coverage",
@@ -1927,7 +1927,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 259,
+   "play": 257,
    "appended": true,
    "name": "Cover 2 Zone 4",
    "component": "coverage",
@@ -1950,7 +1950,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 260,
+   "play": 258,
    "appended": true,
    "name": "Cover 3 Cloud",
    "component": "coverage",
@@ -1973,7 +1973,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 261,
+   "play": 259,
    "appended": true,
    "name": "Cover 3 Sky Strong 2",
    "component": "coverage",
@@ -1996,7 +1996,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 262,
+   "play": 260,
    "appended": true,
    "name": "Cover 2 Double Fire",
    "component": "coverage",
@@ -2019,7 +2019,7 @@
    "authored_nodes": 16
   },
   {
-   "play": 263,
+   "play": 261,
    "appended": true,
    "name": "2 Fire Double",
    "component": "coverage",
@@ -2042,7 +2042,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 264,
+   "play": 262,
    "appended": true,
    "name": "Cover 3 Cloud Bail",
    "component": "coverage",
@@ -2065,7 +2065,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 265,
+   "play": 263,
    "appended": true,
    "name": "Cover 0 Nickel Off",
    "component": "coverage",
@@ -2088,7 +2088,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 266,
+   "play": 264,
    "appended": true,
    "name": "Cover 0 Safety Blitz",
    "component": "coverage",
@@ -2111,7 +2111,7 @@
    "authored_nodes": 10
   },
   {
-   "play": 267,
+   "play": 265,
    "appended": true,
    "name": "Cover 1 Man Off 3",
    "component": "coverage",
@@ -2134,7 +2134,7 @@
    "authored_nodes": 6
   },
   {
-   "play": 268,
+   "play": 266,
    "appended": true,
    "name": "Cover 6 Split",
    "component": "coverage",
@@ -2157,7 +2157,7 @@
    "authored_nodes": 18
   },
   {
-   "play": 269,
+   "play": 267,
    "appended": true,
    "name": "Cover 1 Man Off 4",
    "component": "coverage",
@@ -2183,21 +2183,21 @@
  "receipt": {
   "team": "NE",
   "offense_pack": "data/playbooks/softdrink_ne_modern.2k5book",
-  "offense_pack_sha256": "dc091802eac27288122656a58d412e9f7f402f3f5030877999759faf2c4b3e6d",
-  "source_fingerprint": "54f41daaf2951d8bec558285a101b81356336e02da1f0e87add32f19cac3be74",
-  "replacement_sha256": "d5ed2924ac03e57582078e51ca181dff9d2bd781d3b456807931e34e7800de06",
+  "offense_pack_sha256": "7dd82f78e118bd303b3c1ce75ff5188187d766a06840e822d415cfe938c55591",
+  "source_fingerprint": "29720a4d845213c09c45f2d5328596f3ae73219b2e415de49c11e82db4742b8c",
+  "replacement_sha256": "01b1a98aac946d52cc11b1f07e39a701e53b9943fd5080bc311315251d0bbf96",
   "semantic_sha256": "7a81f3e53215b82d1045f18e19debfea21d2d5e4c485ec8f672a2fa5c56f0f41",
   "plays": 77,
   "formations": 3,
-  "nodes": 3278,
+  "nodes": 3240,
   "node_capacity": 3500,
   "formation_count": 50,
-  "play_count": 270,
+  "play_count": 268,
   "misses": [],
   "band_loss": 0.82124,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_ne_defense.2k5book",
-  "pack_sha256": "846c023d2cab19f9435d888b3ad30268fa5b64bca00175a66d12f98a0a2293d4"
+  "pack_sha256": "fcee89adf4034d4e4b14da4b4badde640ab4af75e921437f509a0c8b84ffa14e"
  }
 }

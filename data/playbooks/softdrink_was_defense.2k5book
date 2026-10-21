@@ -9,10 +9,10 @@
   "notes": "DESIGN: Daronte Jones (Flores / Zimmer disguise); 2025 baseline MIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "ccf87ebd029fce950f686eb3808e0346d19be1bfbe27582408ad162d01cbdc29",
+  "book_fingerprint": "11c039973d80ab1bbabaa18fd9a5a048b2ba7d6526e0f482b433866c8c2fbecf",
   "donor_formation_count": 49,
   "donor_play_count": 262,
-  "donor_node_count": 2281
+  "donor_node_count": 2251
  },
  "budget": {
   "formations": 50,

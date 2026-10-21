@@ -9,10 +9,10 @@
   "notes": "DESIGN: Vic Fangio (Fangio split coverage); 2025 baseline PHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "992f1998a097031c4eccf4fd562213396d88401032148304babc83c35b9886b3",
+  "book_fingerprint": "dc8c01eeb822de76844093106dbd6115b2df6b43bf5a5bb5d13d3c9e8647535b",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2367
+  "donor_node_count": 2309
  },
  "budget": {
   "formations": 50,

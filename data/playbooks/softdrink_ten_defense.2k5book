@@ -9,10 +9,10 @@
   "notes": "DESIGN: Gus Bradley (Seattle / Saleh four-down); 2025 baseline SF. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "7b7a3331da61e89124e6a39973c2affa349cd0c55655e5784f45d5e6ee4d85dd",
+  "book_fingerprint": "44d90e079b52c4ee63d9ed21ca4b8a60e0263f0fdba2f394869e911c3dd26f8c",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2328
+  "donor_node_count": 2279
  },
  "budget": {
   "formations": 50,

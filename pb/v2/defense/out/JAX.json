@@ -1879,13 +1879,13 @@
  "receipt": {
   "team": "JAX",
   "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
-  "offense_pack_sha256": "250bbfae0f998dc2cb78dc8530eb41cf36c2d27946d7860f8536602721cfc223",
-  "source_fingerprint": "798520e01608242949d6c0586157980adca68d9d90c08772497aa2ca364593ab",
-  "replacement_sha256": "66197d1666ddfdd4f89e9c452264f81cdfb3a512635042617e814826e5ccb0da",
+  "offense_pack_sha256": "ac91e137e01c64796b4ad5bd3b2cf136b9e4addc5cc2ebe32e6416db3f93a290",
+  "source_fingerprint": "ac1997801b3b5e058c76fd873a0549419678f9be6680c046f87f241794163f45",
+  "replacement_sha256": "443654d004ed001f7e9ce3359a1c12dc95d3770c35dd80ab0201ce677f70da3c",
   "semantic_sha256": "557f851186af89991561791d6ffe778afc0add23f0700b288c1c7fff12c20ae9",
   "plays": 62,
   "formations": 4,
-  "nodes": 2773,
+  "nodes": 2787,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1894,6 +1894,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_jax_defense.2k5book",
-  "pack_sha256": "9fe6aed32ff8f9507e43ed7914fbdc88d02c328a55a1b212fc69e13ad60f137e"
+  "pack_sha256": "1c15d5bc7cd228ddef76293c9a49f38248b19424cafa13fb8e9fedbd676a7ea3"
  }
 }

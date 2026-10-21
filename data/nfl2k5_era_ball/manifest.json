@@ -1,5 +1,7 @@
 {
  "schema": "nfl2k5_era_ball/v1",
+ "enabled": false,
+ "enabled_note": "b777 ar1 (Noah 2026-10-20: revert the football to how it looked before). false = every game keeps the user's own retail ball: the build skips the ball step and the moment-venue owner carries no ball selector or hook. true = the b773 me1 modern ball for modern games and the disc ball for moments before modern_from_season.",
  "modern_from_season": 2006,
  "note": "Authored modern Wilson game ball on the retail ball UV layout. Moments of seasons before 2006 keep the ball already on the user's disc.",
  "texture": {

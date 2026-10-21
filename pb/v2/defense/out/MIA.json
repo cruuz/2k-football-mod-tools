@@ -2096,13 +2096,13 @@
  "receipt": {
   "team": "MIA",
   "offense_pack": "data/playbooks/softdrink_mia_modern.2k5book",
-  "offense_pack_sha256": "ca1f7bf2b5ebb906a3c7113dc5e9e4c7b067769a0532818097c0ef15521482ff",
-  "source_fingerprint": "28fe56b79e18ee5230d2bed4f8a3e1c825441c73862f26683cc832c4f902de87",
-  "replacement_sha256": "4bc6141e2c47b4e94115d6bffab6909d4eca49c695139b6a0baf39040a3637d1",
+  "offense_pack_sha256": "7aa2920d1a2c08e07e6b37309932375c7e2e611e0b88f8cb1703037fcf33f093",
+  "source_fingerprint": "ed002aa2e4c96aa7cc318c1bfe9d75c3b42436a5726c57ead83e12b63d2492c5",
+  "replacement_sha256": "6962bffe7338f417cc97b438dcff149e3feeec5216db87dfa2b31dc66bf0e843",
   "semantic_sha256": "87104c1460d518abb73e5d2ae043c8b2a42e56f1f03883029861f1fd4b5aa3e9",
   "plays": 72,
   "formations": 4,
-  "nodes": 2835,
+  "nodes": 2810,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -2111,6 +2111,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_mia_defense.2k5book",
-  "pack_sha256": "65d1cc073e04c7cc880c84ed68e4b2c7efa00169d6a4dd86f18d6c7e158ed1a3"
+  "pack_sha256": "e9cb156e15044de45dc70cfce16b8a719ae1106ddeed2543a187b287c364d0fb"
  }
 }

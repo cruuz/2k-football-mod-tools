@@ -105,7 +105,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "33da6a654db9be954a53918532f10c2aadad262ee451d209db4daf1763ef9802",
+        "6b1eec78dfb3aeed76fcc8c12c9b97b5da1419d89c590448a3e4264b92f0e063",
     "mod_editor/studio/project_archive.py":
         "07ee0383db64aac79cd2846903da63756b45b09c05118de4fd6fec612701c8bb",
     "mod_editor/studio/session.py":
@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ced1c64174d1ecd531c34fb0c8320a9e6fdaa11a900a498ee4f33464b6a6ae10",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "d13cd48cd43209bd9f4ee0fceac4d86ad6e0bdba21d7f277f97928bdd08b13a3",
+    "mod_editor/gui/build_panel_qt.py": "e5127243d79b426ba956c6f8c757d3db0cf50da14846b3894ccdc3fdf0ec1580",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "d13cd48cd43209bd9f4ee0fceac4d86ad6e0bdba21d7f277f97928bdd08b13a3",
+    "mod_editor/gui/build_panel_qt.py": "e5127243d79b426ba956c6f8c757d3db0cf50da14846b3894ccdc3fdf0ec1580",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2020,6 +2020,10 @@ def main() -> int:
         "mod_editor.core.nfl2k5_cpu_qb_reads_code",               # b776-ai2
         "mod_editor.core.nfl2k5_db_ball_play",                    # b776-ai2
         "mod_editor.core.nfl2k5_db_ball_play_code",               # b776-ai2
+        "mod_editor.core.nfl2k5_run_blocking",                    # b777-ol1
+        "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
+        "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
+        "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1

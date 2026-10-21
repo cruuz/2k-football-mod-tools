@@ -2270,13 +2270,13 @@
  "receipt": {
   "team": "DAL",
   "offense_pack": "data/playbooks/softdrink_dal_modern.2k5book",
-  "offense_pack_sha256": "d64b34797e8b199d8a598f220ad1ae9663e4e4b936c1004316233d59608d3476",
-  "source_fingerprint": "fdacc0dc9e6aba992ed573833a0dee91dfe46d92319655361c71865b3742a707",
-  "replacement_sha256": "daaaec3794b08732feffdfaf8c4308d7e9b516d6748571ec94a3ffaa011a5e8e",
+  "offense_pack_sha256": "eb05f3691422124e032e56605f3cf24959f0e788a9b9a9c71d432e2addf53ff6",
+  "source_fingerprint": "d83e41cf315517e99ee80e506263fa9b49a5153bb7b0fd67ce7ebf80c1110b2d",
+  "replacement_sha256": "afe3a0103d5c42b3f6969df3ec3c95e125ad283450898a7afdb2be9f186819f5",
   "semantic_sha256": "479323acb9de71caeb6b465b4c58b5490fe1a2d54810b834333dcd69a64870a3",
   "plays": 76,
   "formations": 5,
-  "nodes": 2937,
+  "nodes": 2895,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -2285,6 +2285,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_dal_defense.2k5book",
-  "pack_sha256": "19438ba3288c1ce9aa1552a7f98e0aabc792feef7fd0a09cbe1492dd36f4d8b5"
+  "pack_sha256": "1ccf4d4e817ef39ea0acf96015015ab9838070dd1a1ad4ac6273f3ac234b3feb"
  }
 }

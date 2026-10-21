@@ -9,10 +9,10 @@
   "notes": "DESIGN: Brian Flores (Belichick pressure disguise); 2025 baseline MIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "ede6db35200016d938cf3bfdcdee3103630ef905b364ad9be1486ef867a04e6c",
+  "book_fingerprint": "002c603933b9176ba6846a983b084505b62e0d757ef662801933d36d0ca7018c",
   "donor_formation_count": 49,
   "donor_play_count": 266,
-  "donor_node_count": 2260
+  "donor_node_count": 2247
  },
  "budget": {
   "formations": 50,
@@ -46,7 +46,7 @@
     [-1371, 365]
    ],
    "position_codes": [47, 44, 12, 13, 46, 14, 15, 16, 17, 50, 18],
-   "category_index": 22,
+   "category_index": 23,
    "situation": [2, 1, 2]
   },
   {
@@ -72,7 +72,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 11,
    "situation": [2, 1, 2]
   },
   {
@@ -98,7 +98,7 @@
     [-1371, 152]
    ],
    "position_codes": [44, 12, 45, 13, 47, 14, 15, 16, 17, 50, 18],
-   "category_index": 10,
+   "category_index": 11,
    "situation": [1, 4, 4]
   },
   {
@@ -124,7 +124,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 12,
    "situation": [1, 1, 1]
   },
   {
@@ -150,7 +150,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 114, 15, 82, 16, 17, 50, 18],
-   "category_index": 12,
+   "category_index": 13,
    "situation": [4, 2, 1]
   },
   {
@@ -176,7 +176,7 @@
     [-1371, 365]
    ],
    "position_codes": [44, 12, 45, 13, 15, 14, 82, 16, 17, 50, 18],
-   "category_index": 11,
+   "category_index": 12,
    "situation": [4, 4, 1]
   }
  ],

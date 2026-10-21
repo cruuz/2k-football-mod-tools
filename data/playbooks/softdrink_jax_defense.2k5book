@@ -9,10 +9,10 @@
   "notes": "DESIGN: Anthony Campanile (Hafley / Flores multiple); 2025 baseline JAX. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "798520e01608242949d6c0586157980adca68d9d90c08772497aa2ca364593ab",
+  "book_fingerprint": "ac1997801b3b5e058c76fd873a0549419678f9be6680c046f87f241794163f45",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2329
+  "donor_node_count": 2343
  },
  "budget": {
   "formations": 50,

@@ -2231,13 +2231,13 @@
  "receipt": {
   "team": "NYJ",
   "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-  "offense_pack_sha256": "0c61e15bb0abc8e5d1a0c09e10022b8c0f0798b1fb7e4d3ac9b0264d87a6d317",
-  "source_fingerprint": "d7c04109497b00b41428c690d318ea22ad532f195759d7b7ef2f0f07bcf62060",
-  "replacement_sha256": "c5fd2e033924f4b942448ef265aee177229380e364f13c48a3482b026b058482",
+  "offense_pack_sha256": "660957646302c42d9615ab320e6753a1adc6e6920324998178b8b895a7b35871",
+  "source_fingerprint": "461008452b13875bf1d9959a92ad67125a5e576ab4fa994237643b641b512eac",
+  "replacement_sha256": "b5aeacd2ec5c111b84f4c657b2107a121ad4d252e7e3f9984e5e1892de1f7716",
   "semantic_sha256": "d060a95a158c4be4a5e0e38758403c3f21853b61ab72c405417adcc178dc5b75",
   "plays": 74,
   "formations": 5,
-  "nodes": 2879,
+  "nodes": 2872,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -2246,6 +2246,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
-  "pack_sha256": "c6a1753aa40e4a980221ae588f6a2ac89ad1ff54c9fdf2f6a8f1bf8e823ad9ac"
+  "pack_sha256": "d907d720c4172a275885044c09261905a97c348607fb27bcd9a83915f862891d"
  }
 }

@@ -176,14 +176,19 @@ Double-click launchers are bundled for all three platforms (see *Install*).
    sha256sum -c 2K5-Mod-Studio-*.tar.gz.sha256      # must say OK
    ```
 2. Extract it, then launch for your platform:
-   - **Linux** — install per-user (no `sudo`) or run portable:
+   - **Linux, SteamOS and Steam Deck (Desktop Mode)**: the archive has the
+     application but no Python, so run the one-time setup first. It builds a
+     private runtime in the extracted folder (no `sudo`, no change to the
+     system partition) and needs Python 3.11 or 3.12 plus an internet
+     connection:
      ```bash
      tar -xzf 2K5-Mod-Studio-*.tar.gz
      cd 2K5-Mod-Studio-*/
-     ./install.sh            # app-menu shortcut + command on PATH
-     # or, portable:
-     ./2K5-Mod-Studio.sh
+     ./2K5-Mod-Studio.sh --setup     # once
+     ./2K5-Mod-Studio.sh             # every time after that
      ```
+     (On Debian, Ubuntu and Mint the setup needs `sudo apt install python3-venv`
+     first. `install.sh` belongs to APF 2K8 Mod Studio only.)
    - **Windows** — extract the archive, then double-click
      **`2K5-Mod-Studio.bat`**.
    - **macOS** — extract the archive, then double-click
