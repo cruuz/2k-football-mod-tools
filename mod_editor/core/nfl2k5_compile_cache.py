@@ -14,11 +14,24 @@ import os
 from pathlib import Path
 import stat
 import tempfile
+import time
 
 from . import platform_compat
 
 MAX_ENTRY_BYTES = 64 * 1024 * 1024
 MAX_CACHE_BYTES = 1024 * 1024 * 1024
+PENDING_MAX_AGE_NS = 3600 * 10 ** 9   # fx1: an orphaned .pending-* older than this is swept
+
+
+def max_cache_bytes() -> int:
+    """The size cap: NFL2K5_COMPILE_CACHE_MAX_MB, else MAX_CACHE_BYTES."""
+    configured = os.environ.get("NFL2K5_COMPILE_CACHE_MAX_MB", "").strip()
+    if configured:
+        try:
+            return max(1, int(configured)) * 1024 * 1024
+        except ValueError:
+            pass
+    return MAX_CACHE_BYTES
 
 
 def _encode(value):
@@ -68,6 +81,16 @@ class CompileCache:
             info = path.lstat()
             if stat.S_ISREG(info.st_mode):
                 entries.append((info.st_mtime_ns, path, info.st_size))
+        # fx1 (review r2-build MINOR 4): a build killed mid-write leaves its .pending-* temporary, which the *.json
+        # inventory never counts or evicts. One that is over an hour old belongs to no live writer; remove it.
+        stale_before = time.time_ns() - PENDING_MAX_AGE_NS
+        for path in self.root.glob(".pending-*"):
+            try:
+                info = path.lstat()
+                if stat.S_ISREG(info.st_mode) and info.st_mtime_ns < stale_before:
+                    path.unlink()
+            except OSError:
+                pass
         self._entries = OrderedDict((path, size) for _, path, size in sorted(entries))
         self._bytes = sum(self._entries.values())
         self._directory_stamp = stamp
@@ -158,7 +181,8 @@ class CompileCache:
             self._bytes -= self._entries.pop(destination, 0)
             self._entries[destination] = len(raw)
             self._bytes += len(raw)
-            while self._bytes > MAX_CACHE_BYTES and self._entries:
+            limit = max_cache_bytes()
+            while self._bytes > limit and self._entries:
                 path, size = self._entries.popitem(last=False)
                 path.unlink(missing_ok=True)
                 self._bytes -= size

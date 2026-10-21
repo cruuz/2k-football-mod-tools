@@ -92,9 +92,18 @@ MOMENT_VA = 0xBF1858
 ERA_TEST_OFFSET = CODE_SIZE - 48
 # Return ZF set for a historical Anniversary row, clear for every other game.
 # EAX and the caller's flags survive the surrounding pushfd/popfd trampoline.
-ERA_TEST = (b'\x50\xa1' + struct.pack('<I', MODE_VA) + b'\x83\xf8\x08\x75\x11'
+# b777-sm2: the Situation mode is game mode 8 too (situation flag 0xE6014C = 1, row word 0 or the last moment); it is
+# modern play, so a non-zero flag takes the same "modern" exit as the Unc Bowl row (EAX = 9, ZF clear).
+SITUATION_FLAG_VA = 0xE6014C
+ERA_TEST = (b'\x50\xa1' + struct.pack('<I', MODE_VA) + b'\x83\xf8\x08\x75\x1a'
+            + b'\x83\x3d' + struct.pack('<I', SITUATION_FLAG_VA) + b'\x00\x75\x09'
             + b'\x83\x3d' + struct.pack('<I', MOMENT_VA) + bytes((MODERN_MOMENT,))
             + b'\x75\x05\xb8\x09\x00\x00\x00\x83\xf8\x08\x58\xc3')
+# The b776 test (no Situation check), recognised so an installed b776 gate is completed in place.
+ERA_TEST_B776 = (b'\x50\xa1' + struct.pack('<I', MODE_VA) + b'\x83\xf8\x08\x75\x11'
+                 + b'\x83\x3d' + struct.pack('<I', MOMENT_VA) + bytes((MODERN_MOMENT,))
+                 + b'\x75\x05\xb8\x09\x00\x00\x00\x83\xf8\x08\x58\xc3')
+assert len(ERA_TEST) <= 48 and len(ERA_TEST_B776) <= 48
 KICK_FLAGS_KEY = "_kick_flags"     # forwards entry: the dynamic kickoff's state byte (E1 reads the kicking direction)
 
 
@@ -428,7 +437,7 @@ def _patch_pointers(code, labels, tables):
     return bytes(buf)
 
 
-def build_code(code_va, data_va, forwards, touchback, tables, *, e1=False, legacy=False):
+def build_code(code_va, data_va, forwards, touchback, tables, *, e1=False, legacy=False, era_test=None):
     code, labels = code_for(code_va, data_va, forwards, touchback, tables, e1=e1)
     require(labels["k_launch"] == code_va, "the first trampoline must open the allocation")
     code = _patch_pointers(code, labels, tables)
@@ -442,7 +451,8 @@ def build_code(code_va, data_va, forwards, touchback, tables, *, e1=False, legac
             cursor = at + 7
             tests += 1
         require(tests == 26, 'Anniversary condition count differs')
-        buf[ERA_TEST_OFFSET:ERA_TEST_OFFSET+len(ERA_TEST)] = ERA_TEST
+        test = ERA_TEST if era_test is None else era_test
+        buf[ERA_TEST_OFFSET:ERA_TEST_OFFSET+len(test)] = test
         code = bytes(buf)
     return code, labels
 
@@ -451,7 +461,8 @@ def _gate_test(image, raw, at, owner_va):
     if raw == GATE_CMP:
         return True
     wanted = b'\xe8' + struct.pack('<i', owner_va + ERA_TEST_OFFSET - at - 5) + b'\x90\x90'
-    return raw == wanted and image.read(owner_va + ERA_TEST_OFFSET, len(ERA_TEST)) == ERA_TEST
+    return raw == wanted and (image.read(owner_va + ERA_TEST_OFFSET, len(ERA_TEST)) == ERA_TEST
+                              or image.read(owner_va + ERA_TEST_OFFSET, len(ERA_TEST_B776)) == ERA_TEST_B776)
 
 
 # --------------------------------------------------------------------------------------------- sites
@@ -672,7 +683,8 @@ def status(payload):
             except AnniversaryKickoffError:
                 continue
             expected, labels = build_code(code["va"], data["va"], forwards, touchback, tables, e1=e1)
-            if body not in (expected, build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, legacy=True)[0]):
+            if body not in (expected, build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, legacy=True)[0],
+                            build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, era_test=ERA_TEST_B776)[0]):
                 continue
             for label, va, before, after in _site_edits(base, labels):
                 if image.read(va, len(after)) != after:
@@ -697,7 +709,8 @@ def installed_blocking(payload):
         except AnniversaryKickoffError:
             continue
         if body in tuple(build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1, legacy=old)[0]
-                         for old in (False, True)):
+                         for old in (False, True)) + (build_code(code['va'], data['va'], forwards, touchback, tables, e1=e1,
+                                                                 era_test=ERA_TEST_B776)[0],):
             return e1
     return None
 
@@ -757,6 +770,24 @@ def apply(payload, tables, *, blocking=False):
         code, data = _owned(payload)
         if payload[code['raw']+ERA_TEST_OFFSET:code['raw']+ERA_TEST_OFFSET+len(ERA_TEST)] == ERA_TEST:
             return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+        if payload[code['raw']+ERA_TEST_OFFSET:code['raw']+ERA_TEST_OFFSET+len(ERA_TEST_B776)] == ERA_TEST_B776:
+            # b777-sm2: the b776 gate (status() proved every other byte). Only the shared test changes; every call into it,
+            # every hook and every table stay where they are.
+            buf = bytearray(payload)
+            at = code['raw'] + ERA_TEST_OFFSET
+            require(payload[at + len(ERA_TEST_B776):at + 48] == b'\xcc' * (48 - len(ERA_TEST_B776)), 'foreign Anniversary test tail')
+            buf[at:at + 48] = ERA_TEST.ljust(48, b'\xcc')
+            if space.is_scaleout(payload):
+                space._seal_scaleout(buf, space._read_scale_directory(payload))
+            else:
+                requests = space._validate(payload)[2]
+                buf[space.DIRECTORY:space._directory_end(requests)] = space._directory(requests, space._code_bytes(buf, requests))
+            for section in _sections(buf):
+                buf[section.header_offset+36:section.header_offset+56] = section_digest(buf, section)
+            result = bytes(buf)
+            require(status(result) == 'applied' and result[at:at + len(ERA_TEST)] == ERA_TEST, 'Situation gate upgrade postcondition')
+            return result, dict(common, status='upgraded', changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                                situation_mode_modern=True)
         # Exact legacy code was recognized above. Keep every hook address and
         # table pointer, including era_rules' wrappers, and replace only tests.
         from . import nfl2k5_era_rules as era

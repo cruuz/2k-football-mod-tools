@@ -21,6 +21,10 @@ REQUESTS = legacy.REQUESTS + ((EXTRA_OWNER, "data", 4096, 16),)
 CODE_SIZE, DATA_SIZE = legacy.CODE_SIZE, legacy.DATA_SIZE
 TAG = b"MC-INLINE-M003\0\0\0"
 TAG_OFFSET = CODE_SIZE - len(TAG)
+POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3_unsigned_text", "m3_bench_text"))
+# mc2: a second pool in M3 RW past its menus (<= 256 + 1900) and before +2700.
+POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
+                     "m3_confirm_text", "m3_drafted_format"))
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
 SAVE_HOOKS = (
@@ -70,6 +74,10 @@ MODE_HOOKS = (
     ("mode_loaded_replace", 0x16DDE0, "e9fb04f0ff", 0xE9),
 )
 GUARDS = (
+    # Offensive arrival flags and the streamed-clip prefetch gate.
+    (0x1feb20, 0x7c, "b6b6cdd4ab5eeed24dfe1c5972a48acd34c9ac08be4a313087a6432079d0efeb"),
+    (0x1ff2d0, 0xe2, "ddc7d47e21c94f2e1f09b82cb26140f2758f53ae6d6ff33bc41cf66884ba012f"),
+    (0x1ff920, 0x20, "6033bba345b727c5b52ac1ac07e5b2dce326b4bf1d2101d74cd0cc169fdef43e"),
     (0x9fbe0, 0x41, "c00bfff2b13dd91660707a54bbae6d5d792f750928f56b3dd4e925abfe51621b"),
     (0xacb90, 0x17, "9b2a5dc083a819159900424bbdadfaf7e001024da8f0202e969e8c4bc878606e"),
     (0xaca80, 0x48, "74f13a622b24bf44572181b9f6ff4500667004426695de90e31b10dd89fdf92e"),
@@ -190,6 +198,8 @@ GUARDS = (
     (0x3e7c0, 0x14a, "fff3acc5372da3a7eccde98e3eb7c91090ad3308adb5dd71144a442edcc8873d"),
     (0x3da90, 0x130, "4fa22becdf00ce39929ba994562c059ada8c4ca5faf028309cd35bf4db031109"),
     (0x3cf20, 0x59, "a482b4f07daf4cd2114141ea2fa72c3fd2d49e8169bfecfe7655db7a77fe9efb"),
+    # nl1: Franchise Team Select's side permission (its 13EC30 return sites 27B2F4 and 27B306).
+    (0x27b2e8, 0x34, "1b5f28761d7dc6b7258eef08c8802ec9554937b163cfc22fa9d312126f8e9e17"),
 )
 
 
@@ -229,7 +239,9 @@ def _encode_menu(source):
     return bytes(encoded)
 
 
-def code_for(code_va, data_va):
+def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=None):
+    # letter_grades/grade_bands are accepted for older callers. Since lg3 the blob is the same either way: the
+    # Upgrades line and prospect tier labels are editing/creation text and stay numeric (Noah, 2026-10-20).
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
     out = bytearray(assembly.CODE)
@@ -243,9 +255,16 @@ def code_for(code_va, data_va):
         return at
 
     text_pool = bytearray()
+    text_pool2 = bytearray()
 
     def string(name, value):
-        if name not in ("mode_text", "team_text") and not name.startswith("m3_"):
+        if name in POOLED2:
+            labels[name] = EXTRA_VA + 2160 + 2 * len(text_pool2)
+            text_pool2.extend((value + "\0").encode("ascii"))
+            return
+        # mc2: these M3 notes are drawn only after init_menus, so they use the
+        # RW text pool (one RX byte per character) to make room for the fixes.
+        if name in POOLED or (name not in ("mode_text", "team_text") and not name.startswith("m3_")):
             labels[name] = data_va + 1408 + 2 * len(text_pool)
             text_pool.extend((value + "\0").encode("ascii"))
             return
@@ -280,6 +299,7 @@ def code_for(code_va, data_va):
         ("m3_upgrade_text", "Upgrades"), ("m3_prev_text", "Previous attribute"),
         ("m3_next_text", "Next attribute"), ("m3_buy_text", "Buy one point"),
         ("m3_back_text", "Back"),
+        # lg3 (Noah 10/20): buying a point edits an attribute, so it stays numeric with letter grades on.
         ("m3_upgrade_format", "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
         ("m3_calendar_format", "Week %u. %u/%u/%u at %02u:%02u"),
         ("m3_pick_format", "Round %u, pick %u"),
@@ -310,6 +330,9 @@ def code_for(code_va, data_va):
         ("m3_prospect_3", "Prospect: 3rd Day (64)"),
         ("m3_prospect_4", "Prospect: Undrafted (59)"),
         ("m3_prospect_error", "Overall unavailable. Change style or prospect tier."),
+        ("m3_bench_text", "MyPlayer is a backup. Yes: start him. No: Supersim to his snaps."),
+        # nl1: the notice after the draft places MyPlayer (city, nickname).
+        ("m3_drafted_format", "You were drafted by the %s %s."),
     ):
         string(name, value)
     at = reserve("m3_prospect_labels", 20)
@@ -329,6 +352,10 @@ def code_for(code_va, data_va):
     at = reserve("text_template", len(text_pool))
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
+    legacy.require(2160 + 2 * len(text_pool2) <= 2700, "MyCareer M3 text RW exceeds 2160..2699")
+    at = reserve("text2_template", len(text_pool2))
+    out[at:at + len(text_pool2)] = text_pool2
+    labels["text2_bytes"] = len(text_pool2)
     menu = bytearray()
     extra_menu = bytearray()
 
@@ -363,7 +390,7 @@ def code_for(code_va, data_va):
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_undrafted"),
                         ("load_text", "mode_load"), ("quit_text", "mode_quit"),
                         ("m3_prospect_0", "mode_prospect_toggle")))
-    rows("hub_rows", (("play_text", "mode_play"), (0xE9C3BC, "mode_practice"),
+    rows("hub_rows", (("play_text", "mode_play_row"), (0xE9C3BC, "mode_practice"),
                       ("card_text", "mode_card"), ("start_text", "mode_start"),
                       ("m3_upgrade_text", "m3_upgrade_open"),
                       ("m3_settings_text", "mode_settings_open"),
@@ -390,18 +417,28 @@ def code_for(code_va, data_va):
         struct.pack_into("<11I", extra_menu, labels[name] - EXTRA_VA - 256,
                          labels[title], 0, labels["mode_handler"], 0, labels[table], 0,
                          0xE7F928, 0xAA281C, 0x02400044, 0x018D0052,
-                         0x13 if name == "m3_settings_menu" else 3)
+                         # ui1: with Career Home, B also leaves Upgrades (native back, flag 0x10).
+                         0x13 if name == "m3_settings_menu" or (home is not None and name == "m3_upgrade_menu")
+                         else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
     compressed = _encode_menu(extra_menu)
     at = reserve("m3_menu_template", len(compressed))
     out[at:at + len(compressed)] = compressed
     labels["m3_menu_bytes"] = len(extra_menu)
-    for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 3),
-                                      ("apartment", "apartment_text", "hub_rows", 3),
+    # mc2: flag 0x10 lets B reach mode_event (native event 10) on these two.
+    for name, title, table, flags in (("entry_menu", "mode_text", "entry_rows", 0x13),
+                                      ("apartment", "apartment_text", "hub_rows", 0x13),
                                       ("team_menu", "team_text", "team_rows", 0x13)):
         struct.pack_into("<11I", menu, labels[name] - data_va - 200, labels[title], 0, labels["mode_handler"],
                          0, labels[table], 0, 0xE7F928,
                          0xAA281C, 0x02400044, 0x018D0052, flags)
+    if home is not None:
+        # ui1 Career Home (nfl2k5_my_career_home): the same Apartment descriptor, so every MyCareer
+        # route, B/quit, autosave and hub() check is unchanged; only its title, row table and draw
+        # handler name the Career Home section. Its handler forwards every event but the draw here.
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200, home["title"])
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200 + 8, home["handler"])
+        struct.pack_into("<I", menu, labels["apartment"] - data_va - 200 + 16, home["rows"])
     struct.pack_into("<11I", menu, 0, labels["team_text"], 0, labels["mode_handler"],
                      0, data_va + 432, 0, 0xE7F928, 0xAA281C, 0x02400044, 0x018D0052, 0x13)
     # Own Practice descriptor: native settings, teams, input and Back lifecycle.
@@ -492,13 +529,19 @@ def check_context(payload, edits, *, installed=False):
     image = XbeImage(payload)
     legacy.check_context(image)
     # Shared enum abbreviations follow the installed EDGE/LB labels. Only
-    # the exact retail pointers or those two known label pointers are valid.
+    # the exact retail pointers or fully validated companion labels are valid.
     names = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
     pointers = (15113192, 15113200, 15113204, 15113208, 15113216, 15113224, 15113232, 15113240, 15113248, 15113256, 15113300, 15113308, 15113272, 15113276, 15113280, 15113284, 15113292)
     for i, (pointer, name) in enumerate(zip(pointers, names)):
         actual = struct.unpack("<I", image.read(0x4F26D0+4*i, 4))[0]
         if i == 11 and actual == 0xE69C30: name, pointer = "LB", actual
         if i == 16 and actual == 0x10CA2: name, pointer = "EDGE", actual
+        if i == 7 and image.read(actual, 6) == "RB\0".encode("utf-16le"): name = "RB"  # b777-rb2 in-place rename
+        if i == 8 and actual != pointer:
+            from . import nfl2k5_hback as hback
+            legacy.require(hback.status(payload) == "applied", "foreign H-back label companion")
+            pointer = hback.strings(hback.allocation(payload)["va"])[1]["abbr"]
+            name = hback.TEXT["abbr"]
         legacy.require(actual == pointer and image.read(actual,2*(len(name)+1)) == (name+"\0").encode("utf-16le"),
                        "foreign MyPlayer HUD position label")
 
@@ -515,6 +558,13 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(economy.status(payload) == "applied", "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
+    # The optional dated pick owner shares this initializer. Normalize only
+    # its exact hook after its complete allocation, code and contexts validate.
+    # It does not call MyCareer validation, so this introduces no guard cycle.
+    from . import nfl2k5_draft_picks as draft_picks
+    if image.read(draft_picks.SITE, 5) != draft_picks.ORIGINAL:
+        legacy.require(draft_picks.status(payload) == "applied", "foreign draft-pick initializer companion")
+        camera_edits.extend(draft_picks.sites(draft_picks.allocation(payload)["va"]))
     from . import nfl2k5_franchise_autosave as autosave
     # Practice and music already validate MyCareer. Avoid a dependency cycle
     # by checking Auto Save on a private retail view of our fully validated
@@ -586,6 +636,14 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(defensive_try.status(payload) == "applied", "foreign live-stat companion")
         after = defensive_try._hook_bytes("player_stat", defensive_try.assembled(payload)[3])
         camera_edits.append(("defensive_try_player_stat", hook, before, after))
+    # b775 mo2: the Anniversary moment context wraps the live call at 0xCB295 (inside the pinned 0xCB240 span).
+    # Accept it only after that owner's complete status, then restore the exact call in this hash view.
+    from . import nfl2k5_moment_context as moment_context
+    for name, va, before, after in moment_context.view_edits(payload):
+        if name == "player_stat":
+            camera_edits.append(("moment_context_player_stat", va, before, after))
+    if image.read(0xCB295, 5) != bytes.fromhex("e8d6f1ffff"):
+        legacy.require(moment_context.status(payload) == "applied", "foreign live player-stat companion")
     # Dynamic kickoffs extends this same readiness predicate. Accept only
     # its complete verified legacy or relocated implementation, then restore
     # the exact entry hook in our private native-context hash view.
@@ -626,6 +684,12 @@ def check_context(payload, edits, *, installed=False):
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
+        # nm1 changes only the collector's label decision, not career control.
+        # Normalize its exact declared bytes so inspecting/replaying a Studio
+        # image after the final indicator pass retains the same strict guard.
+        if va == 0x75d90:
+            from . import nfl2k5_indicator_names as indicator_names
+            raw = bytearray(indicator_names.canonical_context(va, raw))
         for _, hook, before, after in [*edits, *camera_edits]:
             if va <= hook and hook + len(before) <= va + size:
                 at = hook - va
@@ -653,7 +717,19 @@ def _recognize(payload):
         legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
         blob = image.read(code["va"], CODE_SIZE)
         if blob != b"\xcc" * CODE_SIZE:
-            legacy.require(blob == code_for(code["va"], data["va"])[0], "mixed generic MyCareer install")
+            # ui1: with the Career Home section the Apartment descriptor names it (and only then).
+            home = None
+            if space.has_home_section(payload):
+                from . import nfl2k5_my_career_home as career_home
+                career = {**code_for(code["va"], data["va"])[1], "state": data["va"], "m3": EXTRA_VA}
+                home = career_home.apartment_fields(career_home.code_for(career)[1])
+            expected = code_for(code["va"], data["va"], home=home)[0]
+            if blob != expected:
+                from . import nfl2k5_letter_grades as grades
+                legacy.require(grades.status(payload) == "applied", "MyCareer grade formatter missing")
+                expected = code_for(code["va"], data["va"], letter_grades=True,
+                                    grade_bands=grades._owned_state(payload)[2], home=home)[0]
+            legacy.require(blob == expected, "mixed generic MyCareer install")
             state = "applied"
     legacy.require(rdata.status(payload, edits) == state, "mixed generic MyCareer hooks/code")
     check_context(payload, edits, installed=state == "applied")
@@ -679,7 +755,12 @@ def apply(payload):
     if space.status(payload) == "retail":
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     code, data = legacy.allocations(payload)
-    blob, labels = code_for(code["va"], data["va"])
+    from . import nfl2k5_letter_grades as grades
+    graded = XbeImage(payload).read(0x541288, 4) == grades.GRADE_FLAGS
+    if graded:
+        legacy.require(grades.status(payload) == "applied", "MyCareer grade formatter missing")
+    blob, labels = code_for(code["va"], data["va"], letter_grades=graded,
+                            grade_bands=grades._owned_state(payload)[2] if graded else None)
     common["code_bytes"] = labels["content_end"] - code["va"]
     common["code_spare_bytes"] = TAG_OFFSET - common["code_bytes"]
     if state == "applied":

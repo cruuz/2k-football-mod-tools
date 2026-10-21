@@ -36,12 +36,7 @@ def master_for(material, team_masters, tod="d", weather="d"):
         name = env.master_name(material, um.VENUE, tod, weather)
         return Path(name) if name else None
     if material in um.MATERIALS:
-        key = um.MATERIALS[material][0]
-        if key == "usb_sky":
-            key = f"usb_sky_{tod}"
-        elif key in um.NIGHT_TEXTURES and tod == "n":
-            key = f"{key}_n"
-        return Path(key + ".png")
+        return Path(um.texture_name(um.MATERIALS[material][0], tod) + ".png")
     if team_masters is not None and material in um.TEAM_FIELD:
         p = team_masters / f"{material}.png"
         if not p.is_file() and material.startswith("endzone_S_"):

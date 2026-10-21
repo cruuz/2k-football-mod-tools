@@ -1,0 +1,20 @@
+{
+  "disc_before": "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4",
+  "disc_after": "ed39266d967b8e5bf409fd9dfdad5bc266f2c5663ac41416150bdc4d70f52c40",
+  "disc_size": 6004408320,
+  "xbe_before": "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f",
+  "xbe_after": "1a8f20fd4a03c4d1f08b73c633ba7634ca2175ba2a08d5c3732e597e479e9331",
+  "scene_before": "763f7830f0887a775ae4c9efbfcc1f30bdaff98f81de6dcff8f70a1e3498ce1d",
+  "xbe_extent": {
+    "offset": 2398208,
+    "size": 12300288
+  },
+  "scene_extent": {
+    "offset": 1752921824,
+    "size": 24480
+  },
+  "retail_scene_extent": {
+    "offset": 1750231808,
+    "size": 4832
+  }
+}

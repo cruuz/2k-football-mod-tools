@@ -14,11 +14,26 @@ def policy_data(state):
     return native.encode_data(masks, rows, weights if modern else None)
 
 
-def prepare(state, profile_name):
+def _document(state, profile_name):
     profile = next((p for p in native.PROFILES if p.name == profile_name), None)
     if profile is None:
         raise ValidationError('Choose BASE or TU 1.1 for the situation patch')
-    document = native.SituationPatch(profile, policy_data(state) if state.situation_masks_enabled else native.encode_data({}, {}))
+    return native.SituationPatch(profile, policy_data(state) if state.situation_masks_enabled else native.encode_data({}, {}))
+
+
+def expected_payload(state, profile_name):
+    """The exact bytes prepare() would write, without the slow canonical read-back.
+
+    The editor compares the installed patch with this after every staged edit. The
+    read-back re-parses the 324 KB TOML twice (about 0.25 s, against about 0.01 s to
+    produce the bytes), which made each weight or multiplier change hitch whenever a
+    patch was installed (Urianus, 10/9). Export and install still go through prepare().
+    """
+    return _document(state, profile_name).as_toml().encode('utf-8')
+
+
+def prepare(state, profile_name):
+    document = _document(state, profile_name)
     payload = document.as_toml().encode('utf-8')
     native.canonical_payload(payload)
     return {'payload': payload, 'receipt': document.receipt, 'profile': profile_name}

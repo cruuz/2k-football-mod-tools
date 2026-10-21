@@ -3189,7 +3189,7 @@
    "WAS": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 0.94,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3323,7 +3323,25 @@
     ]
    }
   },
-  "sb2": "reports/b76_sb2/author_receipt.json; PHI/CHI official-mark placement and 24 px down labels; ESPN mark keeps its box"
+  "sb2": "reports/b76_sb2/author_receipt.json; PHI/CHI official-mark placement and 24 px down labels; ESPN mark keeps its box",
+  "hu1_corner": {
+   "job": "hu1 2026-10-14",
+   "radius": 21.0,
+   "rendered_radius": 18.5,
+   "layers": [
+    "body",
+    "body_right",
+    "home_wing"
+   ],
+   "method": "rounded-rectangle coverage in layout pixels, box-filtered per source texel through each layer stretch and flip; home rim top-line falloff continued around the curve and down the right side; left and lower-right corners unchanged",
+   "reference": "2026 ESPN MNF Broncos at Chiefs and NFL Raiders at Texans temporal-median contours, R 19.25 and 17.75 px on a 110 px bar (measurement only, no broadcast pixels)",
+   "logo_clearance": {
+    "WAS": {
+     "zoom": 0.94
+    }
+   },
+   "template_before_sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b"
+  }
  },
  "layer_order": "increasing-z",
  "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.",

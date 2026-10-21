@@ -213,7 +213,9 @@ class IntegrityTests(unittest.TestCase):
     def test_budget_and_complete_union(self):
         from tests.nfl2k5_allocator_stack import REQUESTS
         rows = json.loads((ROOT/'tests/fixtures/nfl2k5_allocator_beta62_requests.json').read_text())
-        self.assertEqual([tuple(r) for r in rows if r[0]==patch.OWNER], list(patch.REQUESTS))
+        # b773 sp2: REQUESTS also carries the human tap burst's named directory spill (its own owner).
+        self.assertEqual([tuple(r) for r in rows if r[0]==patch.OWNER],
+                         [r for r in patch.REQUESTS if r[0]==patch.OWNER])
         self.assertTrue(set(patch.REQUESTS) <= set(REQUESTS))
         self.assertLessEqual(patch.CODE_SIZE, patch.BUDGET)
         space.plan(rows)
@@ -319,7 +321,10 @@ class EffectReplays(unittest.TestCase):
             m.player(abilities=0,speed=127)
             m.seed_native_speed_cache()
             m.run('speed',ecx=m.R,args=(0x184,))
-            self.assertAlmostEqual(m.pop_float(), .99 if settings['lock_speedster'] else 1.27, places=6)
+            self.assertAlmostEqual(m.pop_float(), 1, places=6)  # non-stars retain retail speed even with locks off
+            m.flags(0x100)
+            m.run('speed',ecx=m.R,args=(0x184,))
+            self.assertAlmostEqual(m.pop_float(), 1 if settings['lock_speedster'] else 1.27, places=6)
             m.flags(0xC000)  # disabling locks must never invent a stored rating ability
             m.f32(0xAA43B8+12*8,.5); m.f32(0xAA43BC+12*8,0)
             m.run(0x17B010,ecx=m.R,edx=12,args=(0x184,))

@@ -16,22 +16,27 @@
   "wordmark_vector": "https://commons.wikimedia.org/wiki/File:Kansas_City_Chiefs_wordmark.svg (public domain)"
  },
  "palette": {
-  "red": "#E31837",
-  "gold": "#FFB612",
+  "red": "#E4282E",
+  "gold": "#F7C542",
   "white": "#FFFFFF",
   "black": "#000000"
  },
  "albedo": {
-  "red": "#E31837",
-  "helmet_red": "#C1142F",
-  "gold": "#FFB612",
+  "red": "#E4282E",
+  "helmet_red": "#CC242A",
+  "gold": "#F7C542",
   "white": "#FFFFFF",
   "black": "#000000",
   "shield_navy": "#013369",
   "shield_red": "#D50A0A",
   "field_red": "#C8102E",
   "banner_gold": "#FFB612",
-  "pad_red": "#C8102E"
+  "pad_red": "#C8102E",
+  "arm_red": "#A01C20",
+  "arm_gold": "#AD8A2E",
+  "ku1_retired_red": "#E31837",
+  "ku1_retired_gold": "#FFB612",
+  "ku1_retired_helmet_red": "#C0142F"
  },
  "roster": {
   "season": 2026,
@@ -565,7 +570,8 @@
     "glyph_donor": "13H0",
     "fill": "white",
     "outline": "gold",
-    "outline_frac": 0.033
+    "structure": "retail",
+    "note": "ku1 v3 (Noah 10/18): the retail 2K5 Chiefs digit shapes and edge, in the 2026 colours"
    },
    "nameplate": {
     "glyph_donor": "13H0",
@@ -622,6 +628,13 @@
       "tolerance": 0.22
      }
     ]
+   },
+   "arm_digits": {
+    "glyph_donor": "13H0",
+    "fill": "white",
+    "outline": "arm_gold",
+    "structure": "retail",
+    "note": "ku1 v3 (Noah 10/18): the retail 2K5 Chiefs digit shapes and edge, in the 2026 colours"
    }
   },
   "away": {
@@ -1146,7 +1159,8 @@
     "glyph_donor": "13A0",
     "fill": "red",
     "outline": "gold",
-    "outline_frac": 0.033
+    "structure": "retail",
+    "note": "ku1 v3 (Noah 10/18): the retail 2K5 Chiefs digit shapes and edge, in the 2026 colours"
    },
    "nameplate": {
     "glyph_donor": "13A0",
@@ -1197,34 +1211,41 @@
       "tolerance": 0.22
      }
     ]
+   },
+   "arm_digits": {
+    "glyph_donor": "13A0",
+    "fill": "arm_red",
+    "outline": "arm_gold",
+    "structure": "retail",
+    "note": "ku1 v3 (Noah 10/18): the retail 2K5 Chiefs digit shapes and edge, in the 2026 colours"
    }
   }
  },
  "part_intents": {
   "home": {
    "torso": "red jersey body, small NFL shield at the collar, white maker marks on the shoulders; the light grey patch is the neck opening",
-   "sleeve": "red sleeve with white-gold-white bands",
+   "sleeve": "red sleeve, white / gold / white band above a red hem",
    "pants": "white with a red-gold-red side stripe, red maker mark",
    "helmet": "red shell, white arrowhead with red KC and black outline, white and grey hardware, flag and shield decals",
-   "digit_jersey": "white numbers with a thin gold outline",
-   "digit_arm": "white numbers with a thin gold outline",
+   "digit_jersey": "white retail 2K5 Chiefs numbers with their gold edge",
+   "digit_arm": "white shoulder-top numbers with a gold edge (stored at 0.7: the shoulder tops are lit brighter)",
    "digit_helmet": "black numbers (unused by the Chiefs helmet)",
    "nameplate": "white letters with a gold outline",
-   "socks00": "solid red",
+   "socks00": "red sock, white / gold / white band, red band, white foot",
    "splayer": "far-away player atlas: white pants with red and gold stripe, red torso, red helmet, red socks, skin and glove patches",
    "team-select_unif": "menu render: red jersey with a white number trimmed in gold, white pants with red and gold stripe, red helmet with arrowhead",
    "team-select_helm": "menu render: red helmet with the white arrowhead, white facemask, a dark bar and yellow UI strip below"
   },
   "away": {
    "torso": "white jersey body, small NFL shield at the collar, red maker marks on the shoulders; the light grey patch is the neck opening",
-   "sleeve": "white sleeve with red-gold-red bands",
+   "sleeve": "white sleeve, red / gold / red band above a white hem",
    "pants": "red with a white-gold-white side stripe, white maker mark",
    "helmet": "red shell, white arrowhead with red KC and black outline, white and grey hardware, flag and shield decals",
-   "digit_jersey": "red numbers with a thin gold outline",
-   "digit_arm": "red numbers with a thin gold outline",
+   "digit_jersey": "red retail 2K5 Chiefs numbers with their gold edge",
+   "digit_arm": "red shoulder-top numbers with a gold edge (stored at 0.7)",
    "digit_helmet": "black numbers (unused by the Chiefs helmet)",
    "nameplate": "red letters with a gold outline",
-   "socks00": "solid white",
+   "socks00": "white sock with a red / gold / red band",
    "splayer": "far-away player atlas: red pants with white and gold stripe, white torso, red helmet, white socks, skin and glove patches",
    "team-select_unif": "menu render: white jersey with a red number trimmed in gold, red pants with white and gold stripe, red helmet",
    "team-select_helm": "menu render: red helmet with the white arrowhead, white facemask, a dark bar and yellow UI strip below"
@@ -1624,5 +1645,12 @@
     ]
    }
   }
- }
+ },
+ "status_ku1": "b776 ku1 (2026-10-18, Noah: pinkish red, old numbers and sleeve stripes): the 2026 look. Albedo red #E4282E, helmet #CC242A, gold #F7C542 chosen through the measured in-game response (drawn ~ 1.02 x texture - 19 per channel) to land on the club photos' red (202, 27, 32) and gold (233, 182, 48); Nike block numbers (v3: the retail 2K5 digit shapes re-tinted, Noah 10/18); arm numbers on the shoulder tops (route 1); Nike sleeve band above the hem; 2026 socks and pants stripes; AFL roundel. Applied by the Studio pass data/nfl2k5_kit_fixes_2026_ku1.json and the Chiefs rows of data/nfl2k5_glyph_fixes_2026.json.",
+ "sources_ku1": [
+  "https://www.chiefs.com/photos/photos-game-action-from-regular-season-week-1-broncos-vs-chiefs (home: red, white numbers with a gold edge, white/gold/white sleeve band, white pants with red/gold/red stripe, red socks with white/gold/white band)",
+  "https://www.chiefs.com/photos (2026 week 2 vs IND gallery: home #9, #4, #15 front close-ups, AFL roundel)",
+  "https://www.chiefs.com/photos (2026 week 4 at LV gallery: road white, red numbers with a gold edge, red/gold/red sleeve band, red pants with white/red/gold/red/white stripe, white socks with a red/gold/red band)",
+  "https://commons.wikimedia.org/wiki/File:Washington_Commanders_at_Kansas_City_Chiefs_(55091352530).jpg (2025 week 8 home, #77 back)"
+ ]
 }

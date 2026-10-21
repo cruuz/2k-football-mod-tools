@@ -82,17 +82,52 @@ bytes matching other retail files after same-file exclusion alone. In particular
 retail `/f` supplies large spans to finished `/e` and `/d`.
 
 Every member, including `copies`, has its own uncompressed `length` and `sha256`.
-Export builds a shared index of every complete 4 KiB window in **every retail
-file**, at 512-byte source alignment, including windows crossing 1 MiB read boundaries.
-This alignment follows the measured shifted content in SOFTDRINK E. Every
-changed output 4 KiB grain is looked up in that index. A BLAKE2b-96 lookup key
-narrows candidates; byte equality, never that key alone, authorizes a copy.
-All offsets sharing a key remain candidates. Adjacent literals and contiguous
-source copies coalesce separately within 1 MiB windows. Identical same-offset
-grains remain implicit source copies. No stored literal 4 KiB grain can equal
-an indexed window in any source file; final partial grains and shorter common sequences
-are outside this exclusion guarantee. This is a measured byte-content rule,
-not a claim about ownership or uniqueness of every smaller byte sequence.
+Export builds a shared index of 32-byte anchors sampled every 512 bytes in
+all retail files. It searches every destination byte, then extends a matched
+anchor backward and forward to exact byte boundaries in the verified source
+file. Destination offsets, source offsets and lengths need not be aligned.
+Lookahead across each 1 MiB output boundary rescues prefixes whose anchor falls
+in the next read. The index keys are the actual bytes; Python hash collisions
+cannot authorize a copy. Repetitive anchors retain one verified occurrence and
+later anchors remain searchable. Same-offset matching bytes stay implicit.
+Any identical range of at least 543 bytes contains a sampled anchor, regardless
+of alignment; exact extension also covers shorter adjoining prefixes and tails.
+A second pass indexes 16-byte seeds from the remaining literals and searches
+**every byte offset** in every retail file. It extends those exact matches in
+both directions and writes additional ordinary source-copy records. This
+inverse search uses bounded batches of at most about 512 MiB of literal data,
+plus the seed set. Studio's existing NumPy runtime accelerates large searches
+with a conservative Bloom prefilter, followed by exact byte comparisons for
+every candidate. Hash collisions cannot authorize copies. Standalone systems
+without NumPy use sixteen shifted standard-library regex scans. Both paths
+cover every alignment, including windows across reads. A final pass
+checks sixteen-byte prefixes of the remaining short literals, including any new short tail
+created by copying a longer literal's prefix. It repeats until no matching
+short literal remains, caching both matches and misses between passes. Small
+sets use exact bounded-file `mmap.find` searches. Old and new copy streams are
+merged by destination offset, preserving their bounds and before/after hashes.
+Temporary ZIP and spool files are closed before replacement on Windows and
+removed on failure. The normal export replay still checks every resulting byte
+before the pack is published.
+
+After refinement, any remaining game-operation literal subrange identical to
+retail file content is shorter than 31 bytes, and no whole game-operation
+literal of sixteen or more bytes is identical to retail file content. Two
+bounded final passes handle remaining 8..15-byte and 4..7-byte literals. Each
+pass searches every retail byte offset and extends its exact matches, leaving
+no whole literal of four or more bytes identical to retail file content. These
+short passes do not repeatedly split prefixes of long authored literals. Remaining
+one-to-three-byte matches are enumerated by the independent whole-pack audit.
+Short binary constants can coincide with the game. Release evidence must audit
+all literal records against the retail image and enumerate such coincidences;
+this matching limit is not a statement about ownership of small byte strings.
+
+The existing source-copy-v1 contract already accepts these byte-granular runs.
+Both Studio install actions and the standalone `tools/nfl2k5_modpack.py apply`
+route use `modpack.apply` and the same `modpack_files._reconstruct` bounds and
+hash checks. No wire format or reader requirement changes: current reader-4
+installers accept the new exports and old packs retain their original behavior.
+Readers predating source-copy-v1 retain the existing clear newer-Studio refusal.
 Growth and shrinkage retain full before/after file identities.
 `full_copy_bytes`, `full_deflated_bytes` and payload `compressed_bytes` report
 the per-file baselines. `literal_bytes`, `source_copy_bytes` and

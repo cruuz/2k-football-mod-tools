@@ -146,17 +146,37 @@ class RuleTests(unittest.TestCase):
         self.check("K0 ILB2 ILB1 OLB2 FS1 SS1 SS2 FS2 CB3 CB2 OLB3", "K0 LB2 LB1 LB3 FS1 SS1 SS2 FS2 CB3 CB2 LB4", "even", 0x15)
         self.check("P0 ILB1 DE2 C1 OLB1 OLB2 HB1 FB1 FS1 SS1 CB2", "P0 LB1 EDGE2 C1 LB2 LB3 HB1 FB1 FS1 SS1 CB2", "even", 0x11)
 
+    def test_one_outside_backer_sub_packages_get_their_second_edge_from_the_strong_end(self) -> None:
+        # b776 de2: BAL / HOU / NE nickel and dime, the 3-2, the Dime Odd: the line is the weak EDGE (the OLB), a 4i end,
+        # the nose and a 5-technique end; the outermost two slots must be EDGE, so the strong end (variant 0) is EDGE
+        self.check("OLB0 DE1 DE0 DT0 ILB1 ILB0 CB2 FS0 SS0 CB1 CB0",
+                   "EDGE0 DT1 EDGE1 DT0 LB1 LB0 CB2 FS0 SS0 CB1 CB0", "odd_one_edge", 0x0C)
+
     def test_goalline_variants(self) -> None:
-        self.check("DE1 DE2 DT2 DT0 DT1 DE0 ILB0 OLB0 FS0 CB1 CB0", "EDGE1 EDGE2 DT2 DT0 DT1 EDGE0 LB0 LB1 FS0 CB1 CB0", "even", 0x0B)
+        # b776 de2: the 3-4 teams' six-man goal line keeps its two outside ends EDGE and makes the third end an interior DT
+        self.check("DE1 DE2 DT2 DT0 DT1 DE0 ILB0 OLB0 FS0 CB1 CB0", "EDGE1 DT3 DT2 DT0 DT1 EDGE0 LB0 LB1 FS0 CB1 CB0", "six_front", 0x0B)
         self.check("DE1 DE0 DT1 DT3 DT0 OLB1 ILB1 OLB0 FS1 CB1 CB0", "EDGE1 EDGE0 DT1 DT3 DT0 LB3 LB1 LB2 FS1 CB1 CB0", "even", 0x0B)
 
-    def test_prevent_default_and_two_edges(self) -> None:
-        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "EDGE0 DT2 DT1 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "odd", 0x10)
-        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "EDGE0 EDGE1 DT1 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "odd", 0x10,
+    def test_prevent_keeps_the_ends_as_edge_and_the_dropper_as_a_linebacker(self) -> None:
+        # b776-de1: slot 0 of a retail Prevent is a dropping linebacker in every coverage play; it must never be an EDGE
+        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "LB1 EDGE1 EDGE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "prevent", 0x10)
+        # the legacy flag no longer changes anything
+        self.check("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "LB1 EDGE1 EDGE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "prevent", 0x10,
                    prevent_two_edges=True)
-        # the option only touches Prevent
+        # the other retail Prevent shapes: the nose variant (GEN, WCO) and a slot 0 that is already an ILB (MIA, reference)
+        self.check("OLB1 DE1 DE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0", "LB2 EDGE1 EDGE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0", "prevent", 0x10)
+        self.check("ILB1 DE1 DE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0", "LB1 EDGE1 EDGE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0", "prevent", 0x10)
+        # the 3-4 itself still takes the odd rule, flag or not
         self.check("OLB1 DE1 DE0 DT0 ILB1 ILB0 OLB0 FS0 SS0 CB1 CB0", "EDGE1 DT2 DT1 DT0 LB1 LB0 EDGE0 FS0 SS0 CB1 CB0", "odd", 0x0D,
                    prevent_two_edges=True)
+
+    def test_no_prevent_slot_that_drops_is_ever_an_edge(self) -> None:
+        # slot 0 of every Prevent shape is an LB code after the recode
+        for before in ("OLB0 DE1 DE0 DT0 SS1 CB2 FS1 FS0 SS0 CB1 CB0", "OLB1 DE1 DE0 DT1 SS0 FS1 CB3 FS0 SS1 CB1 CB0",
+                       "ILB1 DE1 DE0 DT1 CB2 FS0 CB3 FS1 SS1 CB1 CB0"):
+            new, _ = pr.recode_codes(codes(before), 0x10)
+            self.assertEqual(new[0] & 0x1F, pr.KIND_ILB, before)
+            self.assertEqual([c & 0x1F for c in new[1:3]], [pr.KIND_DE, pr.KIND_DE], before)
 
     def test_offense_untouched(self) -> None:
         before = codes("QB0 T0 T1 C0 G0 G1 TE0 WR1 WR0 FB0 HB0")
@@ -281,12 +301,12 @@ class SyntheticImageTests(unittest.TestCase):
             arz = pr.load_books(archive, ["ARZ"])[0]
         self.assertEqual(arz.categories[0].codes, custom[0][2])
 
-    def test_prevent_two_edges_reads_applied_custom(self) -> None:
+    def test_prevent_two_edges_flag_is_the_default_recode(self) -> None:
         retail, applied = self.digests["retail"], self.digests["applied"]
         receipt = pr.apply(self.fixture.path, names=TEST_BOOKS, prevent_two_edges=True, retail=retail, applied=applied)
-        self.assertEqual(receipt["after"]["ARZ"], "applied-custom")
-        self.assertEqual(receipt["after"]["BAL"], "applied")          # no Prevent in that book
-        self.assertEqual(receipt["status"], "applied-custom")
+        self.assertEqual(receipt["after"]["ARZ"], "applied")
+        self.assertEqual(receipt["after"]["BAL"], "applied")
+        self.assertEqual(receipt["status"], "applied")
 
     def test_inspect_lists_every_defensive_category(self) -> None:
         with pr.OuterImage(self.fixture.path) as archive:
@@ -299,6 +319,73 @@ class SyntheticImageTests(unittest.TestCase):
 
 @unittest.skipUnless(RETAIL_PACKS.is_dir(), "retail packs not present")
 class RetailPackSmokeTests(unittest.TestCase):
+    def test_category_compaction_preserves_retail_personnel_recognition(self) -> None:
+        from mod_editor.core.nfl2k5_formation_play_writer import compact_unused_categories
+
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            for name in pr.BOOK_NAMES:
+                entry = archive.entries[pr.BOOK_ENTRIES[name]]
+                raw = archive.read_entry(entry.index)
+                before = pr.parse_book(name, entry, raw)
+                after_raw, _ = compact_unused_categories(raw)
+                after = pr.parse_book(name, entry, after_raw)
+                self.assertEqual(before.relocated_table_sha256(), pr.RELOCATED_RETAIL_TABLE_SHA256[name])
+                self.assertEqual(pr.book_state(after), "retail", name)
+                # Explicit caller pins remain authoritative.
+                if before.table_sha256() != after.table_sha256():
+                    self.assertEqual(pr.book_state(after, retail=pr.RETAIL_TABLE_SHA256), "foreign", name)
+
+    def test_relocated_retail_guard_rejects_changed_types_slots_and_order(self) -> None:
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            original = pr.load_books(archive, ["KC"])[0]
+            entry = archive.entries[pr.BOOK_ENTRIES["KC"]]
+        rows = [(c.name, c.formation_type, c.codes[:]) for c in original.categories]
+        # Delete an offense row so none of these cases can use the old indexed pin.
+        del rows[next(i for i, row in enumerate(rows) if pr.rule_for(row[2]) == "untouched")]
+        relocated = pr.parse_book("KC", entry, build_book("KC", rows))
+        self.assertNotEqual(relocated.table_sha256(), pr.RETAIL_TABLE_SHA256["KC"])
+        self.assertEqual(pr.book_state(relocated), "retail")
+        self.assertEqual(pr.book_state(relocated, retail=pr.RETAIL_TABLE_SHA256), "foreign")
+        defensive = [i for i, row in enumerate(rows) if pr.rule_for(row[2]) != "untouched"]
+        first = defensive[0]
+        duplicate = next(i for i in defensive if any(rows[i][1:] == rows[j][1:] for j in defensive if j < i))
+        without_duplicate = rows[:duplicate] + rows[duplicate + 1:]
+        self.assertEqual(pr.book_state(pr.parse_book("KC", entry, build_book("KC", without_duplicate))), "retail")
+        for mutation in ("type", "slot", "order", "missing"):
+            bad = [(name, kind, slots[:]) for name, kind, slots in rows]
+            if mutation == "type":
+                name, kind, slots = bad[first]
+                bad[first] = (name, kind ^ 1, slots)
+            elif mutation == "slot":
+                bad[first][2][0] ^= 0x20
+            elif mutation == "missing":
+                del bad[first]
+            else:
+                second = next(i for i in defensive[1:] if bad[i][1:] != bad[first][1:])
+                bad[first], bad[second] = bad[second], bad[first]
+            with self.subTest(mutation=mutation):
+                self.assertEqual(pr.book_state(pr.parse_book("KC", entry, build_book("KC", bad))), "foreign")
+
+    def test_modern_kc_offense_and_defense_compose_with_pool_recode(self) -> None:
+        from mod_editor.core import mod_build, nfl2k5_playbook_pack as packs
+
+        xbe = (RETAIL_PACKS.parent / "default.xbe").read_bytes()
+        with pr.OuterImage(RETAIL_PACKS) as archive:
+            entry = archive.entries[pr.BOOK_ENTRIES["KC"]]
+            raw = archive.read_entry(entry.index)
+        for path in mod_build.softdrink_book_paths(["KC"]):
+            pack = packs.load_pack(path)
+            book = packs.parse_playbook_resource(raw, asset_id="book:KC")
+            if packs.book_fingerprint(raw[pr.RESOURCE_HEADER_SIZE:]) != pack.base.book_fingerprint:
+                pack, _ = packs.retarget_pack(pack, "KC", book, raw[pr.RESOURCE_HEADER_SIZE:])
+            raw = packs.apply_pack_to_resource(raw, pack, asset_id="book:KC", xbe=xbe).replacement
+        book = pr.parse_book("KC", entry, raw)
+        self.assertNotEqual(book.table_sha256(), pr.RETAIL_TABLE_SHA256["KC"])
+        self.assertEqual(pr.book_state(book), "retail")
+        table, changes = pr.recoded_table(book)
+        self.assertNotEqual(table, book.table_bytes())
+        self.assertTrue(all(not any((c & 0x1F) == pr.KIND_OLB for c in new) for _, new, _ in changes))
+
     def test_retail_packs_read_retail_and_every_book_recodes_cleanly(self) -> None:
         st = pr.status(RETAIL_PACKS)
         self.assertEqual(st["status"], "retail")

@@ -48,6 +48,7 @@ from PIL import Image
 from . import nfl2k5_modern_metlife as ml
 from . import nfl2k5_scne_builder as sb
 from . import nfl2k5_stadium_environment as env
+from . import nfl2k5_stadium_shadow as shadow
 
 OWNER = "nfl2k5_metlife_model"
 LABEL = "EXPERIMENTAL / UNWITNESSED"
@@ -212,6 +213,49 @@ def up(p):
 
 def down(p):
     return np.array([0, -1.0, 0])
+
+
+# ------------------------------------------------------------------------------------------------ crowd proportion
+
+#: b77 cr1 (2026-10-12): the crowd people keep the retail proportion. The runtime crowd atlas is square; U runs a
+#: person's height (one person strip is a quarter of U, heads at its low-U edge) and V runs along the row. Measured
+#: over every retail venue's crowd triangles (tools/b77/cr1_crowd_measure.py; 137,510 triangles, 41 distinct retail
+#: stadium scenes): one atlas texel is drawn 1.081 times as wide along the row as it is tall (median), and a whole
+#: person strip stands 1.872 to 3.404 m tall in the world (median 2.203 m). A billboard keeps that aspect at every
+#: column: its people are the retail median size, larger only when the billboard is taller than such a person (up to
+#: the retail maximum), and a billboard shorter than one shows the top of a person (heads kept, the strip cropped from
+#: below), never a squeezed one. V follows each column's person size, accumulated along the band, so a band built in
+#: sector slices still runs unbroken across the joins.
+CROWD_ASPECT = 1.081
+CROWD_PERSON_M = (2.203, 3.404)
+CROWD_STRIP = 0.25
+CROWD_MARGIN = 0.0075
+
+
+def crowd_person_m(length, person=CROWD_PERSON_M):
+    """World height (m) of one whole person strip on a billboard column ``length`` metres tall."""
+    shown = (CROWD_STRIP - 2 * CROWD_MARGIN) / CROWD_STRIP
+    return min(max(length / shown, person[0]), person[1])
+
+
+def crowd_u(quarter, bottom, top, person=CROWD_PERSON_M):
+    """(u at the billboard bottom, u at its top) of one column: heads at the top, the strip cropped from below on a
+    billboard shorter than a person, and the whole strip on one as tall or taller (stretched only past the retail
+    maximum)."""
+    length = math.dist(tuple(bottom), tuple(top))
+    span = min(CROWD_STRIP * length / crowd_person_m(length, person), CROWD_STRIP - 2 * CROWD_MARGIN)
+    return quarter + CROWD_MARGIN + span, quarter + CROWD_MARGIN
+
+
+def crowd_band_v(bot, top, v0, aspect=CROWD_ASPECT, person=CROWD_PERSON_M):
+    """V at each column of one band: ``v0`` at the first, then each step along the bottom line at the mean of its two
+    columns' row densities (metres per V unit = ``aspect`` x the column's person strip height / ``CROWD_STRIP``)."""
+    dens = [aspect * crowd_person_m(math.dist(tuple(b), tuple(t)), person) / CROWD_STRIP for b, t in zip(bot, top)]
+    vs = [float(v0)]
+    for i in range(1, len(dens)):
+        step = math.dist(tuple(bot[i - 1]), tuple(bot[i]))
+        vs.append(vs[-1] + step * 2.0 / (dens[i - 1] + dens[i]))
+    return vs
 
 
 # ------------------------------------------------------------------------------------------------ parameters
@@ -416,7 +460,7 @@ class MetLife:
         R = max(len(pr) for pr in profiles) - 1
         for b, k in enumerate(range(0, R, q["rows_per_band"])):
             quarter = [0.0, 0.5, 0.25, 0.75][b % 4]
-            bot, top, ub, ut = [], [], [], []
+            bot, top = [], []
             for lp, pr in zip(loop, profiles):
                 last = len(pr) - 1
                 d0, y0 = pr[min(k, last)]
@@ -425,10 +469,15 @@ class MetLife:
                 h = 0.0 if k >= last else (y1 - y0) + q["extra"]
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
-                v = lp.s * q["v_per_m"]
-                ub.append((quarter + 0.2425, v))
-                ut.append((quarter + 0.0075, v))
-            m.grid("crowd", [bot, top], [ub, ut], facing=toward_field)
+            # b77 cr1: V ran with the field wall's arc (lp.s), so the upper rows, three times longer, drew every fan up
+            # to 3.6 times too wide, and U squeezed a whole person into any billboard height. Each column now keeps the
+            # retail proportion (crowd_u, crowd_band_v), the phase carried across the sector joins.
+            phases = self.__dict__.setdefault("_band_phase", {})
+            vs = crowd_band_v(bot, top, phases.get(tuple(np.round(bot[0], 4)), loop[0].s * q["v_per_m"]))
+            phases[tuple(np.round(bot[-1], 4))] = vs[-1]
+            us = [crowd_u(quarter, pb, pt) for pb, pt in zip(bot, top)]
+            m.grid("crowd", [bot, top], [[(u[0], v) for u, v in zip(us, vs)], [(u[1], v) for u, v in zip(us, vs)]],
+                   facing=toward_field)
 
     # -- signage decals (b76-u5b): every sign and Ring of Honor plate is its own strip of geometry at the cell's
     #    own aspect on the dark fascia, following the fascia's curve; no texture is stretched along a band.
@@ -1391,8 +1440,13 @@ def model_bundle(skin_bundle, filename, model=None, *, cameras=True):
     sb.require(back == decoded, "model chunk read-back differs")
     back_cam, _ = tx.decode_chunk(out, chunks[cam_chunk.index])
     sb.require(back_cam == new_cam, "intro cameras read-back differs")
+    # b77 st1: the afternoon bundles' field shadow is cast from this model under Giants Stadium's retail sun (the
+    # retail texture was the old stadium's shadow); a bundle without a shadow texture is left as it is
+    out, shadow_receipt = shadow.bundle_shadow(out, filename[:3])
+    sb.require(len(out) == len(skin_bundle), "model bundle changed size")
     return out, dict(info, shapes=len(sc.shapes), materials=len(sc.materials), textures=len(sc.textures),
-                     markers=len(sc.markers), cameras_borrowed=extra, cameras_scratch=cam_info.get("scratch"))
+                     markers=len(sc.markers), cameras_borrowed=extra, cameras_scratch=cam_info.get("scratch"),
+                     shadow=shadow_receipt)
 
 
 def skin_bundle(retail, filename, retail_dry):
@@ -1488,6 +1542,24 @@ def _stretch(bundle):
     return off, bytes(bundle[off:end])
 
 
+def _shadow_span(bundle):
+    """(offset, bytes) of the afternoon bundles' shadow texture span (b77 st1), or None."""
+    found = shadow.shadow_chunk(bundle)
+    if found is None:
+        return None
+    chunk = found[0]
+    return chunk.offset, bytes(bundle[chunk.offset:chunk.offset + 32 + chunk.stored_size])
+
+
+def _sites(pin):
+    """[(offset, length, skin sha, model sha)] a pin owns: the stretch, and the shadow span when the bundle has one."""
+    out = [(pin["offset"], pin["length"], pin["skin_sha256"], pin["model_sha256"])]
+    if "shadow" in pin:
+        sp = pin["shadow"]
+        out.append((sp["offset"], sp["length"], sp["skin_sha256"], sp["model_sha256"]))
+    return out
+
+
 def model_pins():
     global _PINS
     if _PINS is None:
@@ -1510,10 +1582,19 @@ def record_pins(source, out_path=PINS_PATH, *, progress=None):
             m_off, model_stretch = _stretch(model)
             sb.require(m_off == off and len(model_stretch) == len(skin_stretch), f"{name}: stretch differs")
             e = entries[name]
-            bundles.append(dict(name=name, outer=e.index, name_id=e.name_id, size=e.size, offset=off,
-                                length=len(skin_stretch), skin_sha256=sha(skin_stretch),
-                                model_sha256=sha(model_stretch), system=info["system"], video=info["video"],
-                                scratch=info["scratch"], shapes=info["shapes"]))
+            row = dict(name=name, outer=e.index, name_id=e.name_id, size=e.size, offset=off,
+                       length=len(skin_stretch), skin_sha256=sha(skin_stretch),
+                       model_sha256=sha(model_stretch), system=info["system"], video=info["video"],
+                       scratch=info["scratch"], shapes=info["shapes"])
+            skin_shadow, model_shadow = _shadow_span(skin), _shadow_span(model)
+            sb.require((skin_shadow is None) == (model_shadow is None), f"{name}: shadow texture presence differs")
+            if skin_shadow is not None:
+                sb.require(skin_shadow[0] == model_shadow[0] and len(skin_shadow[1]) == len(model_shadow[1]),
+                           f"{name}: shadow span moved")
+                row["shadow"] = dict(offset=skin_shadow[0], length=len(skin_shadow[1]),
+                                     skin_sha256=sha(skin_shadow[1]), model_sha256=sha(model_shadow[1]),
+                                     sun=info["shadow"]["sun"])
+            bundles.append(row)
         crowds = []
         for outer in crowd.TARGETS:
             e = archive.entries[outer]
@@ -1538,8 +1619,9 @@ def image_status(source):
             e = archive.entries[pin["outer"]]
             if e.name_id != pin["name_id"] or e.size != pin["size"]:
                 return "foreign"
-            have = sha(archive.read(e.virtual_offset + pin["offset"], pin["length"]))
-            states.add("applied" if have == pin["model_sha256"] else "skin" if have == pin["skin_sha256"] else "other")
+            for at, length, skin_sha, model_sha in _sites(pin):
+                have = sha(archive.read(e.virtual_offset + at, length))
+                states.add("applied" if have == model_sha else "skin" if have == skin_sha else "other")
         crowd_states = set()
         for pin in pins["crowd"]:
             e = archive.entries[pin["outer"]]
@@ -1612,15 +1694,14 @@ def apply_to_image(target, *, retail_source, progress=None):
         for name in ml.VARIANTS:
             pin = by_name[name]
             skin, model, info = built[name]
-            off, model_stretch = _stretch(model)
-            sb.require(off == pin["offset"] and sha(model_stretch) == pin["model_sha256"],
-                       f"{name}: the compiled model differs from its pin")
             e = archive.entries[pin["outer"]]
-            at = e.virtual_offset + off
-            sb.require(sha(archive.read(at, pin["length"])) == pin["skin_sha256"], f"{name}: not the skin")
-            archive.write(at, model_stretch)
-            sb.require(archive.read(at, len(model_stretch)) == model_stretch, f"{name}: write-back differs")
-            receipt["bundles"].append(dict(name=name, outer=pin["outer"], offset=off, size=len(model_stretch)))
+            for at, length, skin_sha, model_sha in _sites(pin):
+                span = bytes(model[at:at + length])
+                sb.require(sha(span) == model_sha, f"{name}: the compiled model differs from its pin")
+                sb.require(sha(archive.read(e.virtual_offset + at, length)) == skin_sha, f"{name}: not the skin")
+                archive.write(e.virtual_offset + at, span)
+                sb.require(archive.read(e.virtual_offset + at, length) == span, f"{name}: write-back differs")
+                receipt["bundles"].append(dict(name=name, outer=pin["outer"], offset=at, size=length))
             written[name] = archive.read(e.virtual_offset, e.size)
         for pin in pins["crowd"]:
             e = archive.entries[pin["outer"]]

@@ -79,6 +79,12 @@ PRESET_CAPTIONS = {
 }
 BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
 PRESET_NOTE = "Review the selected changes below. Unavailable or already-installed changes are listed here."
+# Discord, 10/16 (tinpanalley): the Modern preset "doesn't produce a disc with any mods installed".
+# These presets are gameplay and franchise options, which are easy to miss in play.
+# The SOFTDRINK 2K28 pack (edited rosters, uniforms, stadium art, moments) comes from Share.
+PRESET_SCOPE_NOTE = ("These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28 "
+                     "pack (its edited rosters, uniforms, stadium art and moments). For that disc, use Share, "
+                     "Install SOFTDRINK 2K28.")
 
 # Lab scope from BETA75_WAVE_2026-09-21.md and the Beta 76 release draft.
 # Earlier lab observations do not certify later revisions or Xbox play.
@@ -216,7 +222,27 @@ ANNIVERSARY_OPTIONS = (
      "Use season-specific rules in Anniversary moments. Requires historic Anniversary moments, dynamic kickoff, "
      "defensive tries and modern overtime as the base. EXPERIMENTAL / UNWITNESSED in game."),
 )
-BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS)
+# b776-ai2: the CPU AI options, each its own toggle, off in every preset.
+from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
+from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
+CPU_AI_OPTIONS = (
+    ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
+    ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
+    ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
+)
+# b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
+from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
+CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
+BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
+                 ("team_ratings", "Modern team ratings",
+                  "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
+                  "Requires modern position pools. Not yet tested in-game."),
+                 *CPU_AI_OPTIONS,
+                 ("play_art_routes", "Play art: full-length routes",
+                  "Draws each route's last segment at its real length in the play-call art, like Madden: go routes run up "
+                  "the panel, drags cross the formation, flats and outs reach the sideline. Retail cuts that segment to "
+                  "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
+                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT))
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
@@ -228,6 +254,7 @@ ANNIVERSARY_DEPENDENCIES = {
     "espn25_named_previews": ("espn25_more_moments",),
     "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
     "historic_rosters_2026": ("historic_teams_quick_game",),
+    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
 }
 
 
@@ -307,6 +334,7 @@ class BuildPanel(QWidget):
         self._heartbeat_timer.timeout.connect(self._heartbeat)
 
         self._state: dict[str, object] | None = None
+        self._preset_applying = False         # fx1: apply_preset holds the child-ticks-parent cascade
         self._available = mod_build.availability() if available is None else available
         # Named previews use the same shipped moment resources and the venue
         # owner already imported by throw tuning. Keep this UI binding here so
@@ -452,6 +480,11 @@ class BuildPanel(QWidget):
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
         pr.addWidget(self.preset_note)
+        self.preset_scope_note = QLabel(PRESET_SCOPE_NOTE)
+        self.preset_scope_note.setObjectName("throwMuted")
+        self.preset_scope_note.setWordWrap(True)
+        self.preset_scope_note.setAccessibleName("What the presets do not include")
+        pr.addWidget(self.preset_scope_note)
         root.addWidget(presets)
 
         # The disc, the copy and the button come BEFORE the long option list, so the one
@@ -972,6 +1005,14 @@ class BuildPanel(QWidget):
             f, "resource_load_guard", tt.resource_load_guard_patch.BUILD_CAPTION,
             "Skip a cutaway if its presentation pool is full so the game can continue.",
             badge=NOT_TESTED, details=tt.resource_load_guard_patch.HELP_TEXT)
+        self.loader_wakeup_fix_check = self._option(  # b777-st1
+            f, "loader_wakeup_fix", tt.loader_wakeup_patch.BUILD_CAPTION,
+            "Fixes a rare endless LOADING screen: the disc loader can no longer sleep through a read.",
+            badge=NOT_TESTED, details=tt.loader_wakeup_patch.HELP_TEXT)
+        self.rb_rename_check = self._option(  # b777-rb2
+            f, "rb_rename", tt.rb_rename_patch.BUILD_CAPTION,
+            "Halfback and HB read Running Back and RB on every screen (text only).",
+            badge=NOT_TESTED, details=tt.rb_rename_patch.HELP_TEXT)
         self.name_keyboard_check = self._option(  # b77-k1
             f, "name_keyboard", tt.name_keyboard_patch.UI_LABEL,
             "Create Player and Edit Player keyboards take space, period, apostrophe and hyphen.",
@@ -993,9 +1034,10 @@ class BuildPanel(QWidget):
                                                       "rewrites KR and PR every week. With this patch, moving a player on the depth chart or confirming a "
                                                       "returner locks that choice in the player's record and the weekly sort keeps it; unlock from the "
                                                       "Rosters tab. Works with the retail rows or the SPECIAL tab. Experimental.")
-        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (experimental)",
-                                                 "Practice Type 7-On-7, retail line positions and a delayed end rush. UNWITNESSED.",
+        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice (unavailable until repaired)",
+                                                 "Removed from Practice until it works. Existing installs are removed when building a copy.",
                                                  badge=NOT_TESTED, needs_image=True)
+        self.seven_on_seven_check.parentWidget().setVisible(mod_build.SEVEN_ON_SEVEN_RELEASED)
         ol.addWidget(franchise)
 
         # ---- Rosters & positions
@@ -1078,6 +1120,10 @@ class BuildPanel(QWidget):
         self.historic_rosters_2026_check = self._option(
             r, "historic_rosters_2026", historic_seasons.CAPTION,
             historic_seasons.HELP_TEXT, needs_image=True)
+        from mod_editor.core import nfl2k5_classic_teams as classic_teams  # b775-ct1
+        self.classic_teams_check = self._option(
+            r, "classic_teams", classic_teams.UI_LABEL, classic_teams.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -1259,6 +1305,31 @@ class BuildPanel(QWidget):
         self.official_marks_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.official_marks_status)
         self.official_marks_pack_field.textChanged.connect(self._official_marks_pack_changed)
+        # b773-sb2: the user's own Super Bowl logos for the Super Bowl walls (Anniversary named previews)
+        super_bowl_row = QHBoxLayout()
+        super_bowl_row.addWidget(QLabel("Your Super Bowl logos"))
+        self.super_bowl_user_art_field = QLineEdit()
+        self.super_bowl_user_art_field.setPlaceholderText(
+            "Optional folder: super_bowl/XLVI.png, brands/nbc.png, teams/STL.png")
+        self.super_bowl_user_art_field.setToolTip(
+            "Your own PNG files for the Super Bowl moments' walls, ribbon boards and banners. A file placed in the "
+            "folder replaces the authored mark in its slots; anything missing keeps the authored marks. Nothing in "
+            "this folder is shipped. Create folder... makes the layout with a README listing every file name. "
+            "Used with Anniversary: named previews and period fields.")
+        super_bowl_row.addWidget(self.super_bowl_user_art_field, 1)
+        self.super_bowl_user_art_button = QPushButton("Choose...")
+        self.super_bowl_user_art_button.clicked.connect(self._choose_super_bowl_user_art)
+        super_bowl_row.addWidget(self.super_bowl_user_art_button)
+        self.super_bowl_user_art_create = QPushButton("Create folder...")
+        self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
+        super_bowl_row.addWidget(self.super_bowl_user_art_create)
+        r.addLayout(super_bowl_row)
+        self.super_bowl_user_art_status = QLabel()
+        self.super_bowl_user_art_status.setWordWrap(True)
+        self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
+        r.addWidget(self.super_bowl_user_art_status)
+        self.super_bowl_user_art_field.textChanged.connect(self._super_bowl_user_art_changed)
+        self._super_bowl_user_art_changed()
         from mod_editor.core import nfl2k5_kick_meter_2026 as kick_meter  # b76-km
         self.kick_meter_check = self._option(
             r, "kick_meter_2026", kick_meter.BUILD_CAPTION, kick_meter.HELP_TEXT,
@@ -1266,6 +1337,22 @@ class BuildPanel(QWidget):
         from mod_editor.core import nfl2k5_modern_goalposts as goalposts  # b77-v1
         self.modern_goalposts_check = self._option(
             r, "modern_goalposts", goalposts.BUILD_CAPTION, goalposts.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_coaches as coaches  # b77-co1
+        self.modern_coaches_check = self._option(
+            r, "modern_coaches", coaches.BUILD_CAPTION, coaches.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_hair_styles as hair_styles  # b775-hs1
+        self.hair_styles_check = self._option(
+            r, "hair_styles", hair_styles.BUILD_CAPTION, hair_styles.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_fans as fans  # b77-fr1
+        self.modern_fans_check = self._option(
+            r, "modern_fans", fans.BUILD_CAPTION, fans.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_modern_officials as officials  # b77-rf1
+        self.modern_officials_check = self._option(
+            r, "modern_officials", officials.BUILD_CAPTION, officials.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_intro_videos as intro_videos
         self.trim_intro_videos_check = self._option(
@@ -1805,7 +1892,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -1826,7 +1913,7 @@ class BuildPanel(QWidget):
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
-            ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
+            ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
@@ -1834,6 +1921,8 @@ class BuildPanel(QWidget):
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
             ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
             if state.get(key) == "applied"]
+        if state.get("depth_locks") == "legacy":   # fx1 (review pr68 #4): an older revision, upgraded in place
+            applied.append("depth locks: older revision (needs update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -1852,11 +1941,18 @@ class BuildPanel(QWidget):
             value = str(state.get(key))
             available = self._available.get(module or key, True)
             upgrade = key == "position_pools" and value == "needs_fix"
-            box.setEnabled(available and (value == "retail" or upgrade) and (is_image or not needs_image))
+            # fx1 (review pr68 #4): revision 1/2 depth locks (b775/b776 discs) read "legacy"; the build upgrades them
+            # in place (_apply_all accepts it), so the box is an upgrade like the position pools repair.
+            locks_upgrade = key == "depth_locks" and value == "legacy"
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade) and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
                 self._set_badge(key, "Not available in this release")
+            elif locks_upgrade:
+                box.setToolTip("Depth chart locks from an older build are installed. Select to update them to this "
+                               "release's revision (in place).")
+                self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")
                 self._set_badge(key, "Needs CPU lineup fix")
@@ -2183,6 +2279,43 @@ class BuildPanel(QWidget):
         self._set_badge("modern_goalposts", "EXPERIMENTAL / UNWITNESSED" if goal_ok else
                         "Already in this source (Off cannot restore it)" if goal_done else
                         "Needs a supported USA disc image with the retail goalposts")
+        # b77-co1: 2026 head coaches
+        coach_state = state.get("modern_coaches")
+        coach_ok = bool(self._available.get("modern_coaches", False) and is_image and coach_state in ("retail", "mixed"))
+        coach_done = bool(self._available.get("modern_coaches", False) and is_image and coach_state == "applied")
+        self.modern_coaches_check.setEnabled(coach_ok)
+        self.modern_coaches_check.setChecked(coach_done)
+        self._set_badge("modern_coaches", "EXPERIMENTAL / UNWITNESSED" if coach_ok else
+                        "Already in this source (Off cannot restore it)" if coach_done else
+                        "Needs a supported USA disc image with the retail coach models")
+        # b775-hs1: hair styles
+        hair_state = state.get("hair_styles")
+        hair_ok = bool(self._available.get("hair_styles", False) and is_image and hair_state == "retail")
+        hair_done = bool(self._available.get("hair_styles", False) and is_image and hair_state == "applied")
+        self.hair_styles_check.setEnabled(hair_ok)
+        self.hair_styles_check.setChecked(hair_done)
+        self._set_badge("hair_styles", "EXPERIMENTAL / UNWITNESSED" if hair_ok else
+                        "Already in this source (Off cannot restore it)" if hair_done else
+                        "Needs a supported USA disc image with the retail player models")
+        # b77-fr1: 2026 fans
+        fan_state = state.get("modern_fans")
+        fan_ok = bool(self._available.get("modern_fans", False) and is_image and fan_state in ("retail", "mixed"))
+        fan_done = bool(self._available.get("modern_fans", False) and is_image and fan_state == "applied")
+        self.modern_fans_check.setEnabled(fan_ok)
+        self.modern_fans_check.setChecked(fan_done)
+        self._set_badge("modern_fans", "EXPERIMENTAL / UNWITNESSED" if fan_ok else
+                        "Already in this source (Off cannot restore it)" if fan_done else
+                        "Needs a supported USA disc image with the retail crowd texture sets")
+        # b77-rf1: 2025-26 officials
+        official_state = state.get("modern_officials")
+        official_ok = bool(self._available.get("modern_officials", False) and is_image
+                           and official_state in ("retail", "mixed"))
+        official_done = bool(self._available.get("modern_officials", False) and is_image and official_state == "applied")
+        self.modern_officials_check.setEnabled(official_ok)
+        self.modern_officials_check.setChecked(official_done)
+        self._set_badge("modern_officials", "EXPERIMENTAL / UNWITNESSED" if official_ok else
+                        "Already in this source (Off cannot restore it)" if official_done else
+                        "Needs a supported USA disc image with the retail referee model")
         espn_state = str(state.get("espn25_plan"))
         espn_available = self._available.get("espn25_plan", True)
         self.espn25_plan_check.setEnabled(espn_available and is_image and espn_state == "available")
@@ -2215,6 +2348,8 @@ class BuildPanel(QWidget):
         gate(self.the1wam_lineman_rating_check, "the1wam_lineman_rating")
         gate(self.xemu_display_list_fix_check, "xemu_display_list_fix")
         gate(self.resource_load_guard_check, "resource_load_guard")
+        gate(self.loader_wakeup_fix_check, "loader_wakeup_fix")
+        gate(self.rb_rename_check, "rb_rename")
         gate(self.name_keyboard_check, "name_keyboard")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
@@ -2249,6 +2384,7 @@ class BuildPanel(QWidget):
         gate(self.position_pools_keep_olb_check, "position_pools_keep_olb", needs_image=True)
         gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
         gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
+        gate(self.classic_teams_check, "classic_teams", needs_image=True)  # b775-ct1
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -2353,23 +2489,41 @@ class BuildPanel(QWidget):
             box.blockSignals(True)
             box.setChecked(bool(values.get(key, False)))
             box.blockSignals(False)
+        for key, box in self.abilities_lock_checks.items():   # N35: a preset must clear a leftover move lock too
+            box.blockSignals(True)
+            box.setChecked(bool(values.get(key, False)))
+            box.blockSignals(False)
+        if not self._abilities_lock_sync:   # fx1: the Rosters page's lock boxes follow the preset (once, after the loop)
+            self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         boxes = self._boxes()
         applied, skipped = [], []
         if "max_deep_yards" in values:
             self.ceiling_spin.setValue(int(round(float(values["max_deep_yards"]))))
-        for key, box in boxes.items():
-            if key not in values:
-                continue
-            want = (values[key] == "matte" if key == "helmet_finish" else
+        def wanted(key):
+            return (values[key] == "matte" if key == "helmet_finish" else
                     values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
                     bool(values[key]))
-            if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
-                skipped.append(key)
-                continue
-            box.setChecked(want)
-            if want and key not in ("realistic_flight", "arc_by_distance"):
-                applied.append(key)
+        # fx1: the build is exactly the preset. A dependency child whose parent the preset leaves off stays off (it would
+        # do nothing in mod_build, which needs both), and the child/parent cascades are held while the boxes are set, so a
+        # child processed later can no longer tick a parent the preset turns off (experimental: classic teams ticked
+        # historic teams in Quick Game, against the b76-h1 rule). A parent turned off still clears its children.
+        orphans = {child for child, parents in ANNIVERSARY_DEPENDENCIES.items()
+                   if child in values and any(parent in values and not wanted(parent) for parent in parents)}
+        self._preset_applying = True
+        try:
+            for key, box in boxes.items():
+                if key not in values:
+                    continue
+                want = wanted(key) and key not in orphans
+                if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
+                    skipped.append(key)
+                    continue
+                box.setChecked(want)
+                if want and key not in ("realistic_flight", "arc_by_distance"):
+                    applied.append(key)
+        finally:
+            self._preset_applying = False
         preset_money = str(values.get("cpu_money_downs", "retail"))
         if preset_money != "retail" and self.cpu_money_downs_check.isChecked() and self.cpu_money_downs_level.findData(preset_money) >= 0:
             self.cpu_money_downs_level.blockSignals(True)
@@ -2436,6 +2590,8 @@ class BuildPanel(QWidget):
             "the1wam_lineman_rating": self.the1wam_lineman_rating_check,
             "xemu_display_list_fix": self.xemu_display_list_fix_check,
             "resource_load_guard": self.resource_load_guard_check,
+            "loader_wakeup_fix": self.loader_wakeup_fix_check,
+            "rb_rename": self.rb_rename_check,
             "name_keyboard": self.name_keyboard_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
             "kick_laces": self.kick_laces_check, "punter_holder": self.punter_holder_check,
@@ -2472,10 +2628,15 @@ class BuildPanel(QWidget):
             "espn_wipes_boards_2026": self.espn_wipes_boards_check,  # b76-p2
             "kick_meter_2026": self.kick_meter_check,  # b76-km
             "modern_goalposts": self.modern_goalposts_check,  # b77-v1
+            "modern_coaches": self.modern_coaches_check,  # b77-co1
+            "hair_styles": self.hair_styles_check,  # b775-hs1
+            "modern_fans": self.modern_fans_check,  # b77-fr1
+            "modern_officials": self.modern_officials_check,  # b77-rf1
             "trim_intro_videos": self.trim_intro_videos_check,
             "custom_intro": self.custom_intro_check,
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "historic_rosters_2026": self.historic_rosters_2026_check,
+            "classic_teams": self.classic_teams_check,  # b775-ct1
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -2554,6 +2715,7 @@ class BuildPanel(QWidget):
             position_pools_keep_olb=False,
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             historic_rosters_2026=self.historic_rosters_2026_check.isChecked(),
+            classic_teams=self.classic_teams_check.isChecked(),  # b775-ct1
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
@@ -2561,12 +2723,14 @@ class BuildPanel(QWidget):
             season_cap=self.season_cap_check.isChecked(),
             xbe_space=self.xbe_space_check.isChecked(), kickoff_relocated=self.kickoff_relocated_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
-            overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
+            overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=mod_build.SEVEN_ON_SEVEN_RELEASED and self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             elbow_options=self.elbow_options_check.isChecked(),
             the1wam_lineman_rating=self.the1wam_lineman_rating_check.isChecked(),
             xemu_display_list_fix=self.xemu_display_list_fix_check.isChecked(),
             resource_load_guard=self.resource_load_guard_check.isChecked(),
+            loader_wakeup_fix=self.loader_wakeup_fix_check.isChecked(),
+            rb_rename=self.rb_rename_check.isChecked(),
             name_keyboard=self.name_keyboard_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
@@ -2594,10 +2758,15 @@ class BuildPanel(QWidget):
             modern_metlife_model=self._modern_metlife_model_changed(),
             modern_helmets=self._modern_helmets_changed(),  # b76-hm
             official_marks_pack=self.official_marks_pack_field.text().strip(),
+            super_bowl_user_art=self.super_bowl_user_art_field.text().strip(),  # b773-sb2
             espn_marks_2026=self._espn_marks_changed(),
             espn_wipes_boards_2026=self._espn_wipes_boards_changed(),  # b76-p2
             kick_meter_2026=self._kick_meter_changed(),  # b76-km
             modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
+            modern_coaches=self._modern_coaches_changed(),  # b77-co1
+            hair_styles=self._hair_styles_changed(),  # b775-hs1
+            modern_fans=self._modern_fans_changed(),  # b77-fr1
+            modern_officials=self._modern_officials_changed(),  # b77-rf1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
             custom_intro=(self.custom_intro_field.text().strip() if self.custom_intro_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
@@ -2660,9 +2829,17 @@ class BuildPanel(QWidget):
             return True
         if p.modern_goalposts:  # b77-v1
             return True
+        if p.modern_coaches:  # b77-co1
+            return True
+        if p.hair_styles:  # b775-hs1
+            return True
+        if p.modern_fans:  # b77-fr1
+            return True
+        if p.modern_officials:  # b77-rf1
+            return True
         return bool(self.softdrink_project_check.isChecked() or self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression or p.franchise_economy
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.name_keyboard or p.penalties or p.uniform_choice or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
                     or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
@@ -2735,6 +2912,14 @@ class BuildPanel(QWidget):
                 if key == "kick_meter_2026" and not self._kick_meter_changed():  # b76-km
                     continue
                 if key == "modern_goalposts" and not self._modern_goalposts_changed():  # b77-v1
+                    continue
+                if key == "modern_coaches" and not self._modern_coaches_changed():  # b77-co1
+                    continue
+                if key == "hair_styles" and not self._hair_styles_changed():  # b775-hs1
+                    continue
+                if key == "modern_fans" and not self._modern_fans_changed():  # b77-fr1
+                    continue
+                if key == "modern_officials" and not self._modern_officials_changed():  # b77-rf1
                     continue
                 if key == "decided_clock":
                     text += f" ({self.decided_clock_margin.currentData()} points, {self.decided_clock_seconds.currentData()} seconds)"
@@ -2971,7 +3156,7 @@ class BuildPanel(QWidget):
             combo.setEnabled(False)
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
-        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page"):
+        for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page", "team_ratings", "play_art_routes"):
             if (self._state or {}).get(key) == "applied":
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
@@ -3065,7 +3250,7 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _anniversary_toggled(self, child, on):
-        if on:
+        if on and not self._preset_applying:
             for parent in ANNIVERSARY_DEPENDENCIES[child]:
                 box = getattr(self, parent + "_check")
                 if box.isEnabled():
@@ -3083,6 +3268,37 @@ class BuildPanel(QWidget):
         if on and box.isEnabled():
             box.setChecked(False)
         self._refresh()
+
+    def _choose_super_bowl_user_art(self):
+        folder = QFileDialog.getExistingDirectory(self, "Choose your Super Bowl logos folder")
+        if folder:
+            self.super_bowl_user_art_field.setText(folder)
+
+    def _create_super_bowl_user_art(self):
+        from mod_editor.core import nfl2k5_super_bowl_walls as walls
+        parent = QFileDialog.getExistingDirectory(self, "Create the user_art folder inside")
+        if not parent:
+            return
+        try:
+            folder = walls.create_user_art_layout(Path(parent) / "user_art")
+        except (OSError, ValueError) as exc:
+            show_operation_error(self, "create the Super Bowl logos folder", str(exc))
+            return
+        self.super_bowl_user_art_field.setText(str(folder))
+
+    def _super_bowl_user_art_changed(self):
+        from mod_editor.core import nfl2k5_super_bowl_walls as walls
+        folder = self.super_bowl_user_art_field.text().strip()
+        if not folder:
+            self.super_bowl_user_art_status.setText(
+                "Super Bowl walls use the authored event marks, network type and the mod's team logos.")
+            return
+        try:
+            found = walls.user_art_status(folder)
+        except (OSError, ValueError) as exc:
+            self.super_bowl_user_art_status.setText(f"Super Bowl logos folder unreadable: {exc}")
+            return
+        self.super_bowl_user_art_status.setText(found)
 
     def _choose_official_marks_pack(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose official marks pack")
@@ -3441,6 +3657,29 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("kick_meter_2026")
         return bool(self.kick_meter_check.isEnabled() and state == "retail" and self.kick_meter_check.isChecked())
 
+    def _modern_coaches_changed(self):  # b77-co1
+        """Only turning the option on counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("modern_coaches")
+        return bool(self.modern_coaches_check.isEnabled() and state in ("retail", "mixed")
+                    and self.modern_coaches_check.isChecked())
+
+    def _hair_styles_changed(self):  # b775-hs1
+        """Only turning the option on counts: Off leaves an already-styled source as it is."""
+        state = (self._state or {}).get("hair_styles")
+        return bool(self.hair_styles_check.isEnabled() and state == "retail" and self.hair_styles_check.isChecked())
+
+    def _modern_fans_changed(self):  # b77-fr1
+        """Only turning the option on counts: Off leaves an already-2026 source as it is."""
+        state = (self._state or {}).get("modern_fans")
+        return bool(self.modern_fans_check.isEnabled() and state in ("retail", "mixed")
+                    and self.modern_fans_check.isChecked())
+
+    def _modern_officials_changed(self):  # b77-rf1
+        """Only turning the option on counts: Off leaves an already-2025-26 source as it is."""
+        state = (self._state or {}).get("modern_officials")
+        return bool(self.modern_officials_check.isEnabled() and state in ("retail", "mixed")
+                    and self.modern_officials_check.isChecked())
+
     def _modern_goalposts_changed(self):  # b77-v1
         """Only turning the option on counts: Off leaves an already-modern source as it is."""
         state = (self._state or {}).get("modern_goalposts")
@@ -3690,6 +3929,7 @@ class BuildPanel(QWidget):
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
         self.official_marks_pack_field.setText(saved.build_settings(state).get("official_marks_pack") or "")
+        self.super_bowl_user_art_field.setText(saved.build_settings(state).get("super_bowl_user_art") or "")
         restore(self, state)
         # b76-i1: the custom intro movie path is not one of the shared path fields
         from mod_editor.core import nfl2k5_build_settings as saved

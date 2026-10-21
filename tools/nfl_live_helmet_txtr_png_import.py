@@ -322,6 +322,27 @@ def load_template(index_path: Path, target: HelmetTarget) \
     return index, span, decoded, decode_info
 
 
+def _locked_palette_budget(locked_colors):
+    """Keep previously successful tiers, then approach the reserved-colour floor.
+
+    The old 256,128,... ladder can cross below a valid set of locked colours.
+    Try every still-valid old tier first, preserving its output byte for byte.
+    Only the final gap to the floor gains intermediate 16-colour steps.
+    """
+    message = "locked palette colors exceed the palette budget or contain invalid RGBA values"
+    require(all(isinstance(c, (list, tuple)) and len(c) == 4
+                and all(type(v) is int and 0 <= v <= 255 for v in c)
+                for c in locked_colors), message)
+    count = len(set(map(tuple, locked_colors)))
+    require(count <= 256, message)
+    floor = max(2, count)
+    old = palette_tools._BOUNDED_PALETTE_LIMITS
+    valid = tuple(limit for limit in old if limit >= floor)
+    if valid[-1] == floor:
+        return floor, valid
+    return floor, valid + tuple(range(valid[-1] - 16, floor, -16)) + (floor,)
+
+
 def build_import(index_path: Path, compatibility_path: Path,
                  asset_code: str, side: str, variant: int, family: str,
                  png_path: Path) \
@@ -352,12 +373,15 @@ def build_import(index_path: Path, compatibility_path: Path,
     # retail span. The tier ladder starts at 256, so art that already fit is
     # byte-for-byte unchanged; only art that used to fail outright now steps
     # down instead of refusing.
+    palette_floor, palette_limits = _locked_palette_budget(locked_colors)
     bounded = palette_tools.quantize_levels_to_vc_lz_bound(
         mips,
         candidate_decoded,
         stream_tag=target.stream_tag,
         offset_bits=target.offset_bits,
         max_encoded_size=target.stored_size,
+        minimum_palette_limit=palette_floor,
+        palette_limits=palette_limits,
         quantizer=(lambda levels, maximum: palette_tools.quantize_levels(
             levels, maximum, locked_colors=locked_colors)) if locked_colors else None,
     )

@@ -20,6 +20,27 @@ HALF_EXTENTS = {
 }
 MATERIAL = "center_logo"
 LOAN_PREFIX = "s22"
+#: The allocation each loan venue's detail normal lends its field when the normal is Modern surfaces' TILED art (tf-v4,
+#: gr3): exactly the lossless loan the tf-v3.1 full-resolution art gave on the v0.6.1 disc (stored 155,280, 149,664,
+#: 174,192 and 146,880 bytes of 175,872), so every field span keeps the size its paint was proved in. tf-v4's
+#: premipped full art no longer compresses that far, its tiled art (about 98 KB at width 15) is filled up to these.
+TILED_NORMAL_LOANS = {"s09": 20592, "s22": 26208, "s29": 1680, "s30": 28992}
+
+
+def normal_loan(prefix, span):
+    """The reviewed loan for a raw normal span holding the tiled art (TILED_NORMAL_LOANS), or None: the largest
+    lossless loan its full-resolution content gives (the tf-v3.1 route)."""
+    from . import nfl2k5_modern_metlife as ml
+    from . import nfl2k5_modern_surfaces as surfaces
+    tx = ml._tools()[0]
+    chunk = tx.parse_chunks(span)[0]
+    if chunk.compressed:
+        return None
+    decoded, _ = tx.decode_chunk(span, chunk)
+    if not surfaces.tiled_video(decoded[chunk.system_bytes:]):
+        return None
+    sb.require(prefix in TILED_NORMAL_LOANS, "a tiled normal loan is not reviewed for " + prefix)
+    return TILED_NORMAL_LOANS[prefix]
 
 
 class TeamField(dict):
@@ -132,6 +153,29 @@ def pit_sites(data):
     return field, layer, normal, decoded
 
 
+def _final_read_candidates(encoded, decoded, count=16):
+    """The stream, then the same decoded bytes with one late match spelled as literals, or a byte shorter with that
+    byte a literal: one to three more commands, so a fill to a FIXED size (a reviewed loan) can move the command count
+    off the parity that makes the native decoder's final flag fetch, or the in-place read-ahead, cross the allocation.
+    The last 32 commands are left alone (expanding those raises the in-place overlap at the very end), and earlier
+    ones are tried because the fill itself expands the earliest matches."""
+    import nfl_vc_lz_fill as fill
+    yield encoded
+    size, tag, bits, tokens = fill.parse_tokens(encoded)
+    ends, position = [], 0
+    for token in tokens:
+        position += token[2] if token[0] == "M" else 1
+        ends.append(position)
+    late = [i for i in range(len(tokens) - 33, -1, -1) if tokens[i][0] == "M"][:count]
+    for i in late:
+        _kind, distance, length = tokens[i]
+        start = ends[i] - length
+        yield fill.serialize(size, tag, bits, tokens[:i] + [("L", v) for v in decoded[start:ends[i]]] + tokens[i + 1:])
+        if length >= 4:
+            split = [("M", distance, length - 1), ("L", decoded[ends[i] - 1])]
+            yield fill.serialize(size, tag, bits, tokens[:i] + split + tokens[i + 1:])
+
+
 def compress_detail_normal(span, *, loan_bytes=None):
     """Losslessly compress PIT's raw P8 normal with its original zero scratch.
 
@@ -150,7 +194,14 @@ def compress_detail_normal(span, *, loan_bytes=None):
     sb.require(not chunk.compressed and chunk.overlap_scratch_bytes == 0,
                "PIT allocation loan needs the reviewed raw, zero-scratch normal")
     decoded, _ = tx.decode_chunk(span, chunk)
-    encoded = fill.compress_optimal(decoded, stream_tag=4614, offset_bits=15)
+    from . import nfl2k5_modern_surfaces as surfaces
+    tiled = surfaces.tiled_video(decoded[chunk.system_bytes:])
+    if tiled:
+        # Modern surfaces' tiled art (the loan venues since tf-v4): its blocks repeat at known swizzled distances,
+        # where the optimal parser walks very long hash chains; the same fixed-distance encoder s11 and s15 use
+        encoded = surfaces._encode_repeats(decoded, 4614, 15, surfaces.TILED_DISTANCES)
+    else:
+        encoded = fill.compress_optimal(decoded, stream_tag=4614, offset_bits=15)
     first = (len(encoded) + 15) & ~15
     for stored in range(first, min(chunk.stored_size, first + 256), 16):
         filled, expanded = fill.fill_stream(encoded, decoded, stored, slack=0)
@@ -165,18 +216,22 @@ def compress_detail_normal(span, *, loan_bytes=None):
                    "normal allocation loan must be a positive aligned byte count")
         requested = chunk.stored_size-loan_bytes
         sb.require(requested >= stored, "normal cannot provide the requested allocation loan")
-        filled, expanded = fill.fill_stream(encoded, decoded, requested, slack=0)
-        alias = tx.minimum_vc_lz_overlap_scratch(filled, requested, len(decoded))
-        sb.require(len(filled) == requested and alias == 0 and len(fill.parse_tokens(filled)[3]) % 8 != 0,
-                   "normal allocation loan cannot keep its native final read inside zero scratch")
+        for candidate in _final_read_candidates(encoded, decoded):
+            filled, expanded = fill.fill_stream(candidate, decoded, requested, slack=0)
+            alias = tx.minimum_vc_lz_overlap_scratch(filled, requested, len(decoded))
+            if len(filled) == requested and alias == 0 and len(fill.parse_tokens(filled)[3]) % 8 != 0:
+                break
+        else:
+            raise sb.ScneBuildError("normal allocation loan cannot keep its native final read inside zero scratch")
         stored = requested
     header[1], header[4] = stored, tx.COMPRESSED_SENTINEL
+    tx.check_vc_lz_native(filled, stored, 0, decoded)
     rebuilt = tx.HEADER.pack(*header) + filled
     back, info = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt)[0])
     sb.require(back == decoded and info.consumed_bytes == stored,
                "PIT normal lossless read-back differs")
     return rebuilt, dict(old_stored=chunk.stored_size, stored=stored,
-                         loan=chunk.stored_size - stored, offset_bits=15,
+                         loan=chunk.stored_size - stored, offset_bits=15, tiled=tiled,
                          encoded=len(encoded), expanded=expanded, scratch=0,
                          alias_scratch=alias, decoded_identical=True)
 
@@ -198,7 +253,8 @@ def append_pit_bundle(data, name, logo):
         sb.require(any(scene.materials[s.material].name == MATERIAL
                        for shape in scene.shapes for s in shape.submeshes), "existing PIT midfield has no draw")
         return bytes(data), dict(added=False, reason="existing midfield draw")
-    new_normal, detail = compress_detail_normal(ml.scene_span(data, normal))
+    normal_span = ml.scene_span(data, normal)
+    new_normal, detail = compress_detail_normal(normal_span, loan_bytes=normal_loan(name[:3], normal_span))
     header = list(tx.HEADER.unpack_from(field_span))
     header[1] += detail["loan"]
     enlarged = tx.HEADER.pack(*header) + field_span[tx.HEADER.size:] + bytes(detail["loan"])
@@ -294,7 +350,7 @@ def apply_late_to_image(target, art_root, *, progress=None):
         for name, after in changed.items():
             if name in venues_receipt.get("bundles", {}):
                 venues_receipt["bundles"][name]["applied_sha256"] = ml.sha(after)
-        mv._save_json(mv.receipt_path(target), venues_receipt)
+        mv._save_receipt(target, venues_receipt)
     surface_receipt = surfaces.read_receipt(target)
     if surface_receipt is not None:
         for row in receipts:

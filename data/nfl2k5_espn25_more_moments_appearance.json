@@ -681,7 +681,13 @@
    {
     "name": "Robert Griffith",
     "tone": 3,
-    "source": "retail_historic_same_season"
+    "source": "retail_historic_same_season",
+    "retail": {
+     "photo": 920,
+     "skin": 3,
+     "face": 0,
+     "dreads": 0
+    }
    },
    {
     "name": "Gregg Briggs",
@@ -714,7 +720,14 @@
    {
     "name": "Eli Manning",
     "tone": 0,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6504,
+     "skin": 0,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Anthony Wright",
@@ -1482,7 +1495,14 @@
    {
     "name": "Ben Roethlisberger",
     "tone": 0,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6568,
+     "skin": 16,
+     "face": 6,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Byron Leftwich",
@@ -1909,7 +1929,14 @@
    {
     "name": "Larry Fitzgerald",
     "tone": 3,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6403,
+     "skin": 10,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Anquan Boldin",
@@ -2227,7 +2254,14 @@
    {
     "name": "Eli Manning",
     "tone": 0,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6504,
+     "skin": 0,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "David Carr",
@@ -2717,7 +2751,13 @@
    {
     "name": "Gerard Warren",
     "tone": 4,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 3227,
+     "skin": 21,
+     "face": 13,
+     "dreads": 0
+    }
    },
    {
     "name": "Brandon Deaderick",
@@ -4273,7 +4313,13 @@
    {
     "name": "Jay Foreman",
     "tone": 4,
-    "source": "public_record"
+    "source": "public_record",
+    "retail": {
+     "photo": 1868,
+     "skin": 2,
+     "face": 5,
+     "dreads": 0
+    }
    },
    {
     "name": "Keith Newman",
@@ -4417,7 +4463,13 @@
    {
     "name": "Lorenzo Neal",
     "tone": 1,
-    "source": "retail_historic_same_season"
+    "source": "retail_historic_same_season",
+    "retail": {
+     "photo": 1661,
+     "skin": 1,
+     "face": 6,
+     "dreads": 0
+    }
    },
    {
     "name": "Kevin Dyson",
@@ -4464,7 +4516,13 @@
    {
     "name": "Frank Wycheck",
     "tone": 0,
-    "source": "retail_historic_same_season"
+    "source": "retail_historic_same_season",
+    "retail": {
+     "photo": 1722,
+     "skin": 8,
+     "face": 12,
+     "dreads": 0
+    }
    },
    {
     "name": "Jackie Harris",
@@ -4768,7 +4826,14 @@
    {
     "name": "Rich Gannon",
     "tone": 0,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 1245,
+     "skin": 16,
+     "face": 5,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=1)"
    },
    {
     "name": "Marques Tuiasosopo",
@@ -6888,7 +6953,13 @@
    {
     "name": "Will Smith",
     "tone": 4,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6595,
+     "skin": 11,
+     "face": 8,
+     "dreads": 0
+    }
    },
    {
     "name": "Paul Spicer",
@@ -6972,7 +7043,14 @@
    {
     "name": "Jonathan Vilma",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6640,
+     "skin": 11,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=1)"
    },
    {
     "name": "Anthony Waters",
@@ -7390,7 +7468,13 @@
    {
     "name": "Michael Vick",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 3223,
+     "skin": 4,
+     "face": 3,
+     "dreads": 0
+    }
    },
    {
     "name": "Kevin Kolb",
@@ -7681,7 +7765,14 @@
    {
     "name": "Eli Manning",
     "tone": 0,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6504,
+     "skin": 0,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Sage Rosenfels",
@@ -8168,7 +8259,13 @@
    {
     "name": "Will Smith",
     "tone": 4,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6595,
+     "skin": 11,
+     "face": 8,
+     "dreads": 0
+    }
    },
    {
     "name": "Jimmy Wilkerson",
@@ -8251,7 +8348,14 @@
    {
     "name": "Jonathan Vilma",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6640,
+     "skin": 11,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=1)"
    },
    {
     "name": "Anthony Waters",
@@ -8786,7 +8890,13 @@
    {
     "name": "Will Smith",
     "tone": 4,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6595,
+     "skin": 11,
+     "face": 8,
+     "dreads": 0
+    }
    },
    {
     "name": "Turk McBride",
@@ -8863,7 +8973,14 @@
    {
     "name": "Jonathan Vilma",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 6640,
+     "skin": 11,
+     "face": 0,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=1)"
    },
    {
     "name": "Nate Bussey",
@@ -9508,7 +9625,14 @@
    {
     "name": "Ed Reed",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 3684,
+     "skin": 4,
+     "face": 4,
+     "dreads": 1
+    },
+    "match": "last+birthdate"
    },
    {
     "name": "Sean Considine",
@@ -9780,7 +9904,14 @@
    {
     "name": "Champ Bailey",
     "tone": 5,
-    "source": "headshot_review"
+    "source": "headshot_review",
+    "retail": {
+     "photo": 1957,
+     "skin": 4,
+     "face": 1,
+     "dreads": 0
+    },
+    "match": "fuzzy(dy=2)"
    },
    {
     "name": "Chris Harris",

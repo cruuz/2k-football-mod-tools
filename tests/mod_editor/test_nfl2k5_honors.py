@@ -102,10 +102,20 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(len([h for _o, h in honors.SEASON_SLOTS if h == "all_pro"]), 10)
 
     def test_late_owner_order_and_placement(self):
-        # the honors owner is the last late owner (after K128, F4's letter grades, F4b, V1b's goalposts)
+        # the honors owner follows K128, F4's letter grades, F4b and V1b's goalposts; b772-vt1 appends the coach AI
+        # owner after it (the last late owner, so honors keeps its place)
         late = space.LATE_OWNERS
         self.assertEqual(late[0], "nfl2k5_k128")
-        self.assertEqual(late[-1], "nfl2k5_honors")
+        # b773: mo1's historical coaches follow them, and sp2/ro1/tr1 append their owners and named directory spills
+        # after those (none of them moves honors or the coach AI)
+        self.assertEqual(late[late.index("nfl2k5_honors"):][:2], ("nfl2k5_honors", "nfl2k5_coach_ai"))
+        self.assertLess(late.index("nfl2k5_coach_ai"), late.index("nfl2k5_moment_coaches"))
+        # b775-ct1 appends the classic teams' read-only helpers after the team ratings owners; b775-hs1's hair styles code
+        # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
+        # b776-ns1's jersey number sizes (int2 order), then b777-ol1's run blocking and b777-qb3's QB accuracy (int7)
+        self.assertEqual(late[-11:], ("nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams",
+                                     "nfl2k5_hair_styles", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale",
+                                     "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing"))  # b777-tp1 last
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
@@ -214,7 +224,7 @@ class Machine:
         self.text = []
         self._ctx = {}
         self._hooks = {}
-        self.uc.hook_add(u.UC_HOOK_CODE, self._dispatch)
+        self._dispatch_handle = self.uc.hook_add(u.UC_HOOK_CODE, self._dispatch)
 
     # memory helpers
     def put(self, va, value):
@@ -257,7 +267,7 @@ class Machine:
         self.reg("ESP", sp + 4 + pop)
         self.reg("EIP", ret)
 
-    def call(self, va, ecx=0, edx=0, stack=(), eax=None):
+    def call(self, va, ecx=0, edx=0, stack=(), eax=None, budget=2_000_000):
         sp = self.SP
         for value in reversed(list(stack)):
             sp -= 4
@@ -271,7 +281,9 @@ class Machine:
             self.reg("EAX", eax)
         for name in ("EBX", "ESI", "EDI", "EBP"):
             self.reg(name, 0x0BADF00D)
-        self.uc.emu_start(va, self.STOP, count=2_000_000)
+        self.uc.emu_start(va, self.STOP, count=budget)
+        if self.reg("EIP") != self.STOP:
+            raise AssertionError(f"instruction budget exhausted at {self.reg('EIP'):#x}, entry {va:#x}")
         return self.reg("EAX")
 
     # text capture

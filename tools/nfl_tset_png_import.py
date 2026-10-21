@@ -686,6 +686,19 @@ def _is_vc_lz_size_overflow(exc: TxtrError) -> bool:
     )
 
 
+def _native_decoder_safe(compressed: bytes, decoded: bytes, stored_size: int) -> bool:
+    """True when the stream, zero padded to its fixed span, passes the retail decoder model (fn1)."""
+    from nfl_txtr import check_vc_lz_native, minimum_vc_lz_overlap_scratch
+    padded = compressed + bytes(max(0, stored_size - len(compressed)))
+    scratch = (max(stored_size - len(compressed), minimum_vc_lz_overlap_scratch(padded, stored_size, len(decoded)),
+                   stored_size - len(decoded)) + 15) & ~15
+    try:
+        check_vc_lz_native(padded, stored_size, scratch, decoded)
+    except TxtrError:
+        return False
+    return True
+
+
 def quantize_levels_to_vc_lz_bound(
     levels: list[MipLevel],
     build_decoded: Callable[
@@ -748,6 +761,17 @@ def quantize_levels_to_vc_lz_bound(
                 "maximum_palette_entries": maximum,
                 "palette_entries": actual_entries,
                 "result": "vc_lz_overflow",
+            })
+            continue
+        if not _native_decoder_safe(compressed, decoded, max_encoded_size):
+            # fn1's native decoder model: the retail loader fetches one more flag byte after the last item. A stream
+            # that fills the whole fixed span has no byte there (it reads outside the allocation), so it is no fit;
+            # the next tier is smaller and leaves room.
+            last_overflow = TxtrError("native decoder: stream leaves no readable byte inside its fixed span")
+            attempts.append({
+                "maximum_palette_entries": maximum,
+                "palette_entries": actual_entries,
+                "result": "vc_lz_native_unsafe",
             })
             continue
         attempts.append({

@@ -98,8 +98,8 @@ class PatchTests(unittest.TestCase):
     def test_code_budget_and_full_manifest_site_reservations(self):
         from mod_editor.core.nfl2k5_cave_manifest import Recorder
         code,_ = owner.code_for(0x5100000,0x5200000)
-        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5376,128,13))
-        self.assertEqual(len(code.rstrip(b'\xcc')),5287)
+        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5376,128,14))  # b773-hd1: the watermark position revision
+        self.assertEqual(len(code.rstrip(b'\xcc')),5297)  # b773-hd1: +10 bytes
         self.assertEqual(len(pc.code_for(0x5100000)),129)
         rec = Recorder(self.retail)
         rec.observe(owner,'apply',self.retail,self.patched,self.receipt)

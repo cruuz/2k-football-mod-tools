@@ -266,7 +266,20 @@ class PresetTests(unittest.TestCase):
         mod_build._check_playbook_menus = fake_check_menus
         mod_build._check_playbook_scoring = lambda target, progress: {"books": 1, "faults": 0, "status": "applied"}
         try:
-            with tempfile.TemporaryDirectory() as tmp:
+            # This synthetic XBE also supplies the new disc-only uniform stage.
+            with tempfile.TemporaryDirectory() as tmp, mock.patch(
+                "mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                return_value={"state": "other_moment_slots", "changed": False},
+            ), mock.patch(
+                "mod_editor.core.nfl2k5_menu_icon_orientation.apply_to_image",
+                return_value={"state": "not_applicable", "written": 0},
+            ), mock.patch(
+                "mod_editor.core.nfl2k5_menu_icon_uf3.apply_to_image",
+                return_value={"state": "not_applicable", "written": 0},
+            ), mock.patch(
+                "mod_editor.core.nfl2k5_menu_helmet_w2026.apply_to_image",
+                return_value={"state": "not_applicable", "written": 0},
+            ):
                 source = Path(tmp) / "default.xbe"
                 source.write_bytes(_build_synthetic_xbe())
                 target = Path(tmp) / "out.xbe"

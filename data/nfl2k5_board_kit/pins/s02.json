@@ -25,7 +25,7 @@
     },
     {
       "length": 1042624,
-      "model_sha256": "b73e024b8ef25f3ee3f00d3cb7f936b0a690e39acdc2c60abe882ce1c7dfb12b",
+      "model_sha256": "643cf4105628dd9b53809dc94e94ad0f37b17a51234b57482c55e59f8dd0f19f",
       "name": "s02dr.iff",
       "offset": 403216,
       "published": {
@@ -71,7 +71,7 @@
     },
     {
       "length": 1024992,
-      "model_sha256": "237aa8fd089ea3f9c0875f43d55e245caa6ca5a816ede5810d96c68f178dbd5e",
+      "model_sha256": "168dd819d5e7849b3556f0e42ba3722092c49adbac12e591db09d62b123efc60",
       "name": "s02ad.iff",
       "offset": 401376,
       "published": {
@@ -140,7 +140,7 @@
     },
     {
       "length": 1028352,
-      "model_sha256": "75657855219ceec9cdaf6fc15409fd3263d8ea5ca52e676248e60b60715fd76e",
+      "model_sha256": "94bb1390f1b3bca0dbe8d816b65e2fe666ae17815fa9221c1603709ba6c84f22",
       "name": "s02nd.iff",
       "offset": 400384,
       "published": {

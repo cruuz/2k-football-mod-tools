@@ -14,11 +14,33 @@ ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/'data/nfl2k5_espn25_fields.json'
 ART=ROOT/'data/nfl2k5_espn25_fields'
 SCHEMA='nfl2k5_espn25_fields/v1'
+# Native 768-wide donor strips put artwork outside the old 104:664 crop.
+# These are separator columns between existing text and side decals, not
+# newly authored placements. Preserve the side decals' original colours.
+DONOR_SIDE_REGIONS = {
+    'MIA': ((0, 208), (560, 768)),
+    'WAS': ((0, 152), (616, 768)),
+    'SF': ((0, 210), (560, 768)),
+}
+# Only routes present in this catalog are migrated. Other donors need their
+# own reviewed separation bounds before changing their composition contract.
+FULL_STRIP_DONORS = frozenset(('MIA', 'WAS', 'SF'))
+# Measured native text bounds, with blank separator columns. These donors
+# keep the authored side logos and the existing 560-pixel destination slot.
+WORDMARK_RECTS = {'SEA': (96, 632), 'MIN': (64, 704), 'STL': (48, 720)}
 WORDMARKS={'ARI':'s00','STL':'s00','BUF':'s03','CAR':'s04','CIN':'s06','DAL':'s07',
           'DEN':'s08','DET':'s09','GB':'s10','IND':'s11','KC':'s13','MIA':'s14',
           'MIN':'s15','NE':'s16','NO':'s17','NYG':'s18','OAK':'s20','PHI':'s21',
           'PIT':'s22','LAR':'s23','SF':'s25','SEA':'s26','TEN':'s28','WAS':'s29',
           'CLE':'s30','ATL':'s01','BAL':'s02'}
+
+# The native field swap (0x9C5DE) overwrites these material bindings with
+# loaded team TXTRs, including the retail end-zone shield. Keep the authored
+# paint on dedicated Anniversary fields. Equal-length names preserve offsets.
+PERIOD_MATERIALS = {'center_logo': 'era_midlogo', **{
+    f'endzone_{end}_{part}': f'era_end_{end}_{part}'
+    for end in 'NS' for part in 'LMR'}}
+PRESERVED_RETAIL_ROWS = (24, 25, 34)
 
 
 def require(ok,message):
@@ -26,6 +48,110 @@ def require(ok,message):
 
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
+
+
+# b775-fan2: an alias is a copy of its source venue taken when the fields are
+# compiled. A later change to the venue's crowd (the cr1 proportion repair was
+# applied natively to the 153 sNN bundles only) left the v0.6.1 Oct 13 disc's
+# ten built aliases with the old squashed and stretched fans. The crowd digest
+# lets the compiler, the final build gate and disc audits prove that every
+# alias draws exactly the crowd of the venue it was made from.
+def stadium_crowd_digest(bundle):
+    """sha256 of what draws a venue's stadium crowd.
+
+    Covers every shape with a ``crowd`` submesh (name, UV scale and offset,
+    positions, UV lanes, draw words) and the embedded ``crowd`` atlas (pixels
+    and palette) when the bundle carries one. Baked vertex colours are left
+    out: lighting passes repaint them without changing the fans' shape.
+    """
+    from . import nfl2k5_modern_metlife as mm
+    from . import nfl2k5_scne_builder as sb
+    import numpy as np
+    tx=mm._tools()[0]
+    # The stadium is normally the largest scene: try it first (one decode).
+    chunks=sorted((c for c in tx.parse_chunks(bundle,allow_trailing=True) if c.kind=='SCNE'),
+                  key=lambda c:-c.stored_size)
+    for chunk in chunks:
+        decoded,_=tx.decode_chunk(bundle,chunk)
+        scene=sb.parse(decoded,chunk.system_bytes,secondary=True)
+        if scene.name!='stadium':continue
+        h=hashlib.sha256(b'fan2-stadium-crowd/v1')
+        lanes=np.dtype([('c','u1',4),('uv','<i2',2),('s','<i2')])
+        shapes=0
+        for shape in scene.shapes:
+            subs=[s for s in shape.submeshes if scene.materials[s.material].name=='crowd']
+            if not subs:continue
+            shapes+=1
+            h.update(shape.name.encode()+b'\0');h.update(bytes(shape.record[0x30:0x40]))
+            h.update(shape.streams[0] or b'')
+            if shape.streams[1] and shape.stride(1)==10:
+                h.update(np.frombuffer(shape.streams[1],dtype=lanes)['uv'].tobytes())
+            else:h.update(shape.streams[1] or b'')
+            for sub in subs:h.update(sub.words)
+        require(shapes,'venue stadium scene has no crowd')
+        for index in sorted({m.texture for m in scene.materials if m.name=='crowd' and m.texture is not None}):
+            atlas=scene.textures[index]
+            h.update(b'atlas');h.update(bytes(atlas.record[0x0C:0x10]));h.update(atlas.pixels);h.update(atlas.palette)
+        return h.hexdigest()
+    raise ValueError('venue resource lacks its stadium scene')
+
+
+def crowd_drift(get,assets):
+    """Rows whose alias no longer draws the crowd of its source venue.
+
+    ``get(name)`` reads the image; ``assets`` are compile receipt rows (or any
+    rows with ``row``, ``alias``, ``source`` and ``source_kind``). Only built
+    rows are compared: a retail row's source is the read-only retail venue,
+    which the image's own sNN file no longer equals.
+    """
+    drift=[]
+    for row in assets:
+        if row.get('source_kind')!='built':continue
+        alias,source=stadium_crowd_digest(get(row['alias'])),stadium_crowd_digest(get(row['source']))
+        if alias!=source:drift.append(dict(row=row['row'],alias=row['alias'],source=row['source'],
+                                           alias_crowd=alias,source_crowd=source))
+    return drift
+
+
+def protect_period_field(bundle):
+    """Keep embedded period paint through the native team-texture swap.
+
+    Only seven material-name strings change in the decoded field. Textures,
+    pointers, geometry and the rest of the bundle stay byte-identical. The
+    compressed field retains its allocation; replay is an exact no-op.
+    """
+    from . import nfl2k5_modern_metlife as mm
+    tx = mm._tools()[0]
+    chunk, rec, decoded = _field_chunk(bundle)
+    names = {m['name']: m for m in rec['materials']}
+    old = set(PERIOD_MATERIALS) & names.keys()
+    new = set(PERIOD_MATERIALS.values()) & names.keys()
+    require((old == set(PERIOD_MATERIALS) and not new) or
+            (new == set(PERIOD_MATERIALS.values()) and not old),
+            'mixed or incomplete period field material names')
+    if new:
+        return bundle, dict(already_applied=True, decoded_changed_bytes=0)
+    edited = bytearray(decoded)
+    ranges = []
+    for before, after in PERIOD_MATERIALS.items():
+        start = names[before]['name_target']
+        source = (before + '\0').encode('utf-16le')
+        target = (after + '\0').encode('utf-16le')
+        require(len(source) == len(target) and
+                decoded[start:start + len(source)] == source,
+                'unexpected period material string')
+        edited[start:start + len(target)] = target
+        ranges.append(dict(offset=start, size=len(target), before=before, after=after))
+    span = mm.scene_span(bundle, chunk)
+    replacement, _ = tx.rebuild_compressed_chunk_fixed_span(span, bytes(edited))
+    result = bundle[:chunk.offset] + replacement + bundle[chunk.offset + len(span):]
+    _, actual, back = _field_chunk(result)
+    require(back == bytes(edited) and len(result) == len(bundle), 'period material readback differs')
+    require(set(PERIOD_MATERIALS.values()) <= {m['name'] for m in actual['materials']},
+            'period material bindings were not retained')
+    return result, dict(already_applied=False, field_offset=chunk.offset, field_size=len(span),
+                        decoded_changed_bytes=sum(a != b for a, b in zip(decoded, edited)),
+                        name_ranges=ranges, textures_and_geometry_identical=True)
 
 
 def catalog():
@@ -84,8 +210,20 @@ def _field_chunk(bundle):
     raise ValueError('venue resource lacks its native field scene')
 
 
+def _centre_midfield(out,rec,rows,materials):
+    """b777 ar1: put the midfield logo on the 50-yard line and the centre line. Returns the float ranges moved, as
+    (offset, size) pairs for _seal_field's protection audit (empty for a field whose logo is already within a texel)."""
+    from . import nfl2k5_midfield_centre as midfield_centre
+    from . import nfl2k5_modern_venues_2026 as mv
+    row=midfield_centre.logo_row(rows,materials)
+    if row is None:return [],None
+    texture=mv.read_texture(out,rec,row)
+    moved,receipt=midfield_centre.recentre(out,rec,bytes(out),texture)
+    return list(moved),receipt
+
+
 def _wordmark(bundle,team=None):
-    """The user's retail wordmark, separated from its turf/background.
+    """The user's retail wordmark or full strip, separated from its background.
 
     This retains an existing team typeface instead of inventing one. A 2004
     typeface is still only an approximation where an era used another mark.
@@ -113,14 +251,24 @@ def _wordmark(bundle,team=None):
         rgba[:,:,3]=np.where(~outside,255,0).astype('uint8')
         im=Image.fromarray(rgba);box=im.getbbox();require(box is not None,'retail Bengals wordmark is blank')
         return np.asarray(im.crop(box).resize((560,104),Image.Resampling.LANCZOS))
-    rgba=rgba[:,104:664]
+    if team not in FULL_STRIP_DONORS:
+        left,right=WORDMARK_RECTS.get(team,(104,664))
+        rgba=rgba[:,left:right]
     rgb=rgba[:,:,:3].astype(float)
     corners=np.concatenate([rgb[:8,:8].reshape(-1,3),rgb[-8:,-8:].reshape(-1,3)])
     bg=np.median(corners,axis=0)
     grass=(rgb[:,:,1]>rgb[:,:,0]*1.02)&(rgb[:,:,1]>rgb[:,:,2]*1.07)
-    mask=(np.linalg.norm(rgb-bg,axis=2)>60)&~grass
+    distance=np.linalg.norm(rgb-bg,axis=2)>60
+    mask=distance&~grass
+    if team in FULL_STRIP_DONORS:
+        # The native side decals contain pale green-tinted silver/white. The
+        # wordmark's broad grass test deletes those shield/helmet outlines.
+        # Use the measured background distance for these bounded decals.
+        for left,right in DONOR_SIDE_REGIONS.get(team,()):
+            mask[:,left:right]=distance[:,left:right]
     rgba[:,:,3]=np.where(mask,255,0).astype('uint8')
-    return np.asarray(Image.fromarray(rgba).resize((560,104),Image.Resampling.LANCZOS))
+    width=768 if team in FULL_STRIP_DONORS else 560
+    return np.asarray(Image.fromarray(rgba).resize((width,104),Image.Resampling.LANCZOS))
 
 
 def _endzone(row,end,wordmarks):
@@ -132,26 +280,41 @@ def _endzone(row,end,wordmarks):
     # authored phrase until its specific period stencil is supplied.
     if key not in wordmarks or e['text']=='GREEN BAY' or e.get('wordmark_file'):return art(row['row'],'endzone_'+end)
     rgba=wordmarks[key].copy();rgb=rgba[:,:,:3].astype(float)
+    full_strip=rgba.shape[1]==768
+    require(rgba.shape in ((104,560,4),(104,768,4)), 'unexpected donor strip dimensions')
     primary=np.asarray(Image.new('RGB',(1,1),e['foreground']).getpixel((0,0)))
     outline=np.asarray(Image.new('RGB',(1,1),e['outline']).getpixel((0,0)))
     white=np.min(rgb,axis=2)>190
     rgba[:,:,:3]=np.where(white[:,:,None],outline,primary).astype('uint8')
+    if full_strip:
+        for left,right in DONOR_SIDE_REGIONS.get(key,()):
+            rgba[:,left:right,:3]=rgb[:,left:right].astype('uint8')
+    letters=None
+    if e.get('lettering'):
+        # Authored period capitals replace the donor's text in its own colours;
+        # a full-strip donor keeps only its native side decals.
+        letters=art(row['row'],e['lettering']);require(letters.shape==(104,768,4),'lettering is not 768x104')
+        keep=np.zeros(rgba.shape[1],dtype=bool)
+        for left,right in (DONOR_SIDE_REGIONS.get(key,()) if full_strip else ()):keep[left:right]=True
+        rgba[:,~keep,3]=0
     # Preserve the supplied end-zone fill/logo layout; the donor covers the
     # old authored wordmark region with its own shape.
     base=art(row['row'],'endzone_'+end).copy()
     fill=(0,0,0,0) if e['background']=='turf' else Image.new('RGBA',(1,1),e['background']).getpixel((0,0))
-    base[10:118,104:664]=fill
+    left,right=(0,768) if full_strip else (104,664)
+    base[10:118,left:right]=fill
     canvas=Image.fromarray(base)
     if row.get('pattern')=='stripes':
         from PIL import ImageDraw
         canvas=Image.new('RGBA',(768,128),e['background']);d=ImageDraw.Draw(canvas)
         for x in range(-128,850,100):
             d.polygon([(x,0),(x+45,0),(x+173,128),(x+128,128)],fill='#101820')
-    canvas.alpha_composite(Image.fromarray(rgba),(104,12))
+    canvas.alpha_composite(Image.fromarray(rgba),(left,12))
+    if letters is not None:canvas.alpha_composite(Image.fromarray(letters),(0,12))
     return np.asarray(canvas)
 
 
-def _field(template,row,wordmarks=None,old_shield=None):
+def _field(template,row,wordmarks=None,old_shield=None,marks=None):
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     from PIL import Image
@@ -180,10 +343,21 @@ def _field(template,row,wordmarks=None,old_shield=None):
             paint=old_shield
         paint=np.asarray(Image.fromarray(paint).resize((r['width'],r['height']),Image.Resampling.LANCZOS))
         mm.write_p8(out,rec['system_bytes'],r,paint,256);textures.append(materials[key])
-    return _seal_field(template,chunk,rec,decoded,out,textures)
+    # sb1: the Super Bowl rows' marks on the 30s/25s (renamed, painted and placed title-week quads)
+    from . import nfl2k5_super_bowl_fields as super_bowl_fields
+    flank_textures,extra,flanks=super_bowl_fields.apply_field(out,rec,decoded,row['row'],marks)
+    if flank_textures:
+        textures=textures+[t for t in flank_textures if t not in textures]
+    centred,centre_receipt=_centre_midfield(out,rec,rows,materials)
+    span,detail=_seal_field(template,chunk,rec,decoded,out,textures,list(extra)+centred)
+    if flanks:
+        detail['super_bowl_flanks']=flanks
+    if centre_receipt is not None:
+        detail['midfield_centre']=centre_receipt
+    return span,detail
 
 
-def _seal_field(template,chunk,rec,decoded,out,textures):
+def _seal_field(template,chunk,rec,decoded,out,textures,extra_ranges=()):
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
     tx,_,_,HEADER,_=mm._tools();rows=mv.p8_rows(rec)
@@ -191,6 +365,12 @@ def _seal_field(template,chunk,rec,decoded,out,textures):
     # decoded geometry and descriptors stay exactly the field template's size.
     stream,_=tx.compress_vc_lz(bytes(out));stored=(len(stream)+15)&~15;stream+=bytes(stored-len(stream))
     scratch=tx.minimum_vc_lz_overlap_scratch(stream,stored,len(out));scratch=(scratch+15)&~15
+    try:
+        tx.check_vc_lz_native(stream,stored,scratch,bytes(out))
+    except tx.TxtrError:
+        stream+=bytes(16);stored+=16
+        scratch=tx.minimum_vc_lz_overlap_scratch(stream,stored,len(out));scratch=(scratch+15)&~15
+        tx.check_vc_lz_native(stream,stored,scratch,bytes(out))
     fields=list(HEADER.unpack_from(template,chunk.offset));fields[1]=stored;fields[5]=scratch
     span=HEADER.pack(*fields)+stream
     back,_=tx.decode_chunk(span,tx.parse_chunks(span,allow_trailing=True)[0]);require(back==bytes(out),'period field round trip differs')
@@ -200,9 +380,12 @@ def _seal_field(template,chunk,rec,decoded,out,textures):
         for at,size in ((rec['system_bytes']+r['pixel_offset'],r['palette_offset']-r['pixel_offset']),
                         (rec['system_bytes']+r['palette_offset'],1024)):
             protected[at:at+size]=original[at:at+size]
+    for at,size in extra_ranges:
+        protected[at:at+size]=original[at:at+size]
     require(protected==original,'period paint changed protected geometry or texture metadata')
     return span,dict(template_field=sha(mm.scene_span(template,chunk)),field=sha(span),
-                     decoded=sha(out),geometry_and_descriptors_preserved=True,stored_size=stored,
+                     decoded=sha(out),geometry_and_descriptors_preserved=not extra_ranges,
+                     flank_ranges=[list(x) for x in extra_ranges],stored_size=stored,
                      overlap_scratch=scratch,texture_indices=textures)
 
 
@@ -217,21 +400,85 @@ def _retail_playoff_field(source):
         r=rows[materials[key]]
         mm.write_p8(out,rec['system_bytes'],r,np.zeros((r['height'],r['width'],4),dtype='uint8'),256)
         indices.append(materials[key])
-    span,detail=_seal_field(source,chunk,rec,decoded,out,indices)
+    centred,centre_receipt=_centre_midfield(out,rec,rows,materials)
+    span,detail=_seal_field(source,chunk,rec,decoded,out,indices,centred)
     detail['retail_field_reused_except_championship_stamps']=True
+    if centre_receipt is not None:
+        detail['midfield_centre']=centre_receipt
     return span,detail
 
 
-def compile_assets(get_built,get_retail,situ,*,progress=None):
+def _row_job(job):
+    """Worker: one catalog row's field, from the bytes the caller read. No callback and no shared state.
+
+    The row's own end-zone wordmarks and the era shield travel with the job; ``Marks`` is rebuilt from its inputs
+    (its caches only save time). Returns (alias, field bytes, the row's receipt entry).
+    """
+    from . import nfl2k5_modern_metlife as mm
+    from . import nfl2k5_super_bowl_walls as super_bowl_walls
+    row,code,name,source,template,wordmarks,old_shield,period,user_art=job
+    marks=super_bowl_walls.Marks(period,user_art)
+    index=row['row']-1
+    chunk,_,_=_field_chunk(source);before=mm.scene_span(source,chunk)
+    if row['row'] in (24,25):
+        # Keep the actual 2003 helmet/wordmark/NFL PLAYOFFS paint. The
+        # generic retail field also carries conference-title stamps, which
+        # do not belong to these wildcard/divisional matchups.
+        span,detail=_retail_playoff_field(source)
+    else:span,detail=_field(template,row,wordmarks,old_shield,marks)  # sb1: Super Bowl flank marks
+    after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
+    if row['row'] not in PRESERVED_RETAIL_ROWS:
+        after, protection = protect_period_field(after)
+        detail['period_material_protection'] = protection
+    after, walls = super_bowl_walls.apply(after, row['row'], marks=marks)
+    if walls:
+        detail['super_bowl_walls'] = walls
+    _field_chunk(after)
+    # fan2: field paint and Super Bowl walls never touch the fans.
+    crowd=stadium_crowd_digest(after)
+    require(crowd==stadium_crowd_digest(source),f'row {row["row"]}: the alias changed its venue crowd')
+    alias=f'a{index:02d}{code}.iff'
+    return alias,after,dict(row=row['row'],alias=alias,source=name,
+        source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),crowd_sha256=crowd,
+        field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
+        outside_field_chunks_identical=not walls,art_status=row['art_status'],detail=detail)
+
+
+def _user_art_digest(user_art):
+    """What the Super Bowl walls read from the user's own logos folder (names and content), for the step cache."""
+    from . import nfl2k5_late_steps as late
+    if not user_art:return None
+    folder=Path(user_art)
+    if not folder.is_dir():return ['missing']
+    return [[child.relative_to(folder).as_posix(),late.file_sha(child)] for child in sorted(folder.rglob('*')) if child.is_file()]
+
+
+def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
     """Return ``({alias filename: bytes}, receipt)`` from name-keyed read callbacks.
 
     get_built reads the completed target's existing venue resources. get_retail
     reads the unchanged retail source. No input callback is ever written to.
+    ``user_art`` is the optional folder of the user's own Super Bowl logos.
+
+    The callbacks are read here, in catalog order, exactly as before. Each row's
+    field is then a pure function of the bytes read (nothing reads another
+    row's output), so the rows compile in worker processes
+    (nfl2k5_late_steps; NFL2K5_SERIAL_ANNIVERSARY_FIELDS=1 or
+    NFL2K5_BUILD_WORKERS=1 compile them here, one at a time) and unchanged rows
+    come from a verified cache. Results are consumed in row order either way.
     """
+    from . import nfl2k5_late_steps as late
     from . import nfl2k5_modern_metlife as mm
     from . import nfl2k5_modern_venues_2026 as mv
+    from . import nfl2k5_super_bowl_walls as super_bowl_walls
+    from . import nfl2k5_super_bowl_fields as super_bowl_fields
     require(struct.unpack_from('<I',situ,32+0x40)[0]==51,'expected 51 physical Anniversary rows')
     output={};receipts=[];templates={};wordmarks={};old_shield=None
+    # sb2: the Super Bowl walls' NFL shield; seasons before 2008 take the period shield from the retail disc
+    marks=super_bowl_walls.Marks(None,user_art);shield_receipt=None
+    if super_bowl_walls.period_shield_needed():
+        marks.period,shield_receipt=super_bowl_walls.period_shield(get_retail(super_bowl_walls.PERIOD_SHIELD_RESOURCE))
+    jobs=[]
     for row in catalog():
         index=row['row']-1;code=variant(situ,index);name=row['source_prefix']+code+'.iff'
         source=(get_built if row['source_kind']=='built' else get_retail)(name)
@@ -247,22 +494,41 @@ def compile_assets(get_built,get_retail,situ,*,progress=None):
             # Retail 2004's many-star shield has a flat green outer fill.
             rgb=old_shield[:,:,:3].astype(int);grass=(rgb[:,:,1]>rgb[:,:,0])&(rgb[:,:,1]>rgb[:,:,2])
             old_shield[:,:,3]=__import__('numpy').where(grass,0,255).astype('uint8')
-        chunk,_,_=_field_chunk(source);before=mm.scene_span(source,chunk)
-        if row['row'] in (24,25):
-            # Keep the actual 2003 helmet/wordmark/NFL PLAYOFFS paint. The
-            # generic retail field also carries conference-title stamps, which
-            # do not belong to these wildcard/divisional matchups.
-            span,detail=_retail_playoff_field(source)
-        else:span,detail=_field(templates[code],row,wordmarks,old_shield)
-        after=source[:chunk.offset]+span+source[chunk.offset+len(before):]
-        _field_chunk(after)
-        alias=f'a{index:02d}{code}.iff';require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
-        output[alias]=after;receipts.append(dict(row=row['row'],alias=alias,source=name,
-            source_kind=row['source_kind'],before=sha(source),after=sha(after),size=len(after),
-            field_offset=chunk.offset,before_field_size=len(before),after_field_size=len(span),
-            outside_field_chunks_identical=True,art_status=row['art_status'],detail=detail))
+        jobs.append((row,code,name,source,templates[code],{end['team']:wordmarks[end['team']] for end in row['endzones']},
+                     old_shield,marks.period,marks.user_art))
+    cache=late.StepCache.open('anniversary-fields',**late.step_code('anniversary-fields'))
+    keys={};answers={};misses=[]
+    for position,job in enumerate(jobs):
+        if cache is not None:
+            keys[position]=cache.key(late.digest(job[:1]),job[1],job[2],late.sha(job[3]),late.sha(job[4]),job[5],job[6],
+                                     job[7],job[8],_user_art_digest(job[8]))
+            hit=cache.get(keys[position])
+            if (isinstance(hit,dict) and isinstance(hit.get('after'),bytes) and isinstance(hit.get('row'),dict)
+                    and hit.get('after_sha256')==sha(hit['after']) and hit['row'].get('after')==hit.get('after_sha256')
+                    and hit['row'].get('before')==sha(job[3])):
+                answers[position]=(hit['row']['alias'],hit['after'],hit['row']);continue
+        misses.append(position)
+    # The rows with Super Bowl walls take 3 to 5 times as long as the others: start them first.
+    computed=late.ordered_map(_row_job,[jobs[i] for i in misses],
+                              late.worker_count(len(misses),'NFL2K5_SERIAL_ANNIVERSARY_FIELDS',per_worker_mb=600),
+                              cost=lambda job:1 if super_bowl_walls.entry(job[0]['row']) is not None else 0)
+    for position,job in enumerate(jobs):
+        row=job[0]
+        if position in answers:alias,after,entry=answers[position]
+        else:
+            alias,after,entry=next(computed)
+            if cache is not None:cache.put(keys[position],dict(after=after,after_sha256=sha(after),row=entry))
+        require(mv.name_id(alias) not in {mv.name_id(n) for n in output},'alias ID collision')
+        output[alias]=after;receipts.append(entry)
         if progress:progress(row['row'],51,alias)
+    walls_receipts=[r['detail']['super_bowl_walls'] for r in receipts if r['detail'].get('super_bowl_walls')]
+    flank_receipts=[r['detail']['super_bowl_flanks'] for r in receipts if r['detail'].get('super_bowl_flanks')]
     return output,dict(schema='nfl2k5_espn25_fields_receipt/v1',catalog_sha256=sha(DATA.read_bytes()),
         manifest_sha256=sha((ART/'manifest.json').read_bytes()),runtime_witnessed=False,
         assets=receipts,total_bytes=sum(map(len,output.values())),
+        super_bowl_walls=dict(manifest_sha256=sha((super_bowl_walls.ART/'manifest.json').read_bytes()),
+            period_shield=shield_receipt,user_art=str(user_art) if user_art else None,
+            log=super_bowl_walls.user_art_summary(walls_receipts) if user_art else []),
+        super_bowl_fields=dict(manifest_sha256=sha((super_bowl_fields.ART/'manifest.json').read_bytes()),
+            flanks=flank_receipts,log=super_bowl_fields.user_art_lines(flank_receipts)),
         scope='Separate Anniversary resources only; existing modern and retail venue files are read only.')

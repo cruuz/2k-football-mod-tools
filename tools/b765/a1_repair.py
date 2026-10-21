@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 from mod_editor.core import nfl2k5_anniversary_pack as packs
 from mod_editor.core import nfl2k5_anniversary_kickoff as gate
+from mod_editor.core import nfl2k5_era_ball as ball
 from mod_editor.core import nfl2k5_era_rules as era
 from mod_editor.core import nfl2k5_espn25_fields as fields
 from mod_editor.core import nfl2k5_espn25_more_moments as mm
@@ -242,7 +243,7 @@ def xbe_scope(before, after):
     allowed.extend((image.offset(va, len(raw)), len(raw), "moments/" + name)
                    for name, va, raw, _after in mm.sites(code["va"], dat["va"], 51))
     allowed.extend((image.offset(site, len(raw)), len(raw), "venues/" + name)
-                   for name, site, raw in venues.HOOKS + (venues.FILENAME_HOOK,))
+                   for name, site, raw in venues.HOOKS + (venues.FILENAME_HOOK, ball.HOOK))
     allowed.extend((image.offset(va, size), size, "era/" + name) for name, va, size, _kind in era.specs())
     allowed.extend(((space.DIRECTORY, space.LIB_COPY - space.DIRECTORY, "allocator header seal"),
                     (space.META_START, space.SCALE_HEADER_END - space.META_START, "allocator section descriptors")))

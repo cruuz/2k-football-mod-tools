@@ -10,6 +10,9 @@ profile:
     xor eax, eax
     cmp dword ptr [0xe5ff80], 8
     jne profile_done
+    /* b777-sm2: the Situation mode is mode 8 too (flag 0xE6014C = 1); it plays modern rules, never a moment's. */
+    cmp dword ptr [0xe6014c], 0
+    jne profile_done
     mov eax, [0xbf1858]
     cmp eax, 51
     jae profile_none

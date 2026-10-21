@@ -30,6 +30,11 @@ from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 import test_nfl2k5_letter_grades as f4tests  # noqa: E402
 
+# Keep the historical F4/F4b byte pins covered. lg2's default is tested separately.
+def legacy_apply(payload, **options):
+    return lg.apply(payload, all_ratings=False, **options)
+
+
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_CS = importlib.util.find_spec("capstone") is not None
 noah_grade = f4tests.noah_grade
@@ -89,14 +94,14 @@ class RetailNativeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.retail = f4tests._retail()
-        cls.both, cls.receipt = lg.apply(cls.retail)
-        cls.f4_only, _ = lg.apply(cls.retail, progression=False)
+        cls.both, cls.receipt = legacy_apply(cls.retail)
+        cls.f4_only, _ = legacy_apply(cls.retail, progression=False)
 
     def test_studio_apply_installs_both_and_is_idempotent(self) -> None:
         self.assertEqual(lg.status(self.both), "applied")
         self.assertEqual(progress.status(self.both), "applied")
         self.assertEqual(lg.read_settings(self.both)["progression"], "applied")
-        again, receipt = lg.apply(self.both)
+        again, receipt = legacy_apply(self.both)
         self.assertEqual(again, self.both)
         self.assertTrue(receipt["already_applied"])
         self.assertEqual(self.receipt["progression"]["owner_bytes"], 16)
@@ -211,9 +216,9 @@ class V05NativeTests(unittest.TestCase):
         self.assertEqual(len(self.patched), len(self.f4))
 
     def test_the_studio_path_equals_the_two_repairs(self) -> None:
-        studio, _ = lg.apply(self.v05)
+        studio, _ = legacy_apply(self.v05)
         self.assertEqual(studio, self.patched)
-        f4_alone, _ = lg.apply(self.v05, progression=False)               # F4 alone is exactly as F4 shipped it
+        f4_alone, _ = legacy_apply(self.v05, progression=False)               # F4 alone is exactly as F4 shipped it
         self.assertEqual(hashlib.sha256(f4_alone).hexdigest(), self.f4_repair.FIXED_V05_SHA256)
 
     def test_the_repair_refuses_unpatched_or_foreign_input(self) -> None:

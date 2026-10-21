@@ -43,6 +43,12 @@
       "size": 12645,
       "width": 768
     },
+    "data/nfl2k5_espn25_fields/row02/lettering.png": {
+      "height": 104,
+      "sha256": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
+      "size": 4178,
+      "width": 768
+    },
     "data/nfl2k5_espn25_fields/row02/playoff_logo.png": {
       "height": 128,
       "sha256": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc",
@@ -113,6 +119,12 @@
       "height": 128,
       "sha256": "cb09f5b9a788b61412dec608a36bb97ce997455fcd30b803ee218d92cc6d2c8d",
       "size": 12645,
+      "width": 768
+    },
+    "data/nfl2k5_espn25_fields/row05/lettering.png": {
+      "height": 104,
+      "sha256": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed",
+      "size": 4178,
       "width": 768
     },
     "data/nfl2k5_espn25_fields/row05/playoff_logo.png": {
@@ -233,6 +245,12 @@
       "height": 128,
       "sha256": "ef01cb09f101c5d36b67d907721827958eabfe107604525d991dc50bbf48c199",
       "size": 14160,
+      "width": 768
+    },
+    "data/nfl2k5_espn25_fields/row10/lettering.png": {
+      "height": 104,
+      "sha256": "7baf59cda0fde5793f976ff484008341da764cc8dfac96c26e875c44d2d731e2",
+      "size": 6715,
       "width": 768
     },
     "data/nfl2k5_espn25_fields/row10/playoff_logo.png": {

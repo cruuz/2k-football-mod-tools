@@ -49,6 +49,25 @@ class Receipt(unittest.TestCase):
 EXTRACTED=ROOT/'extracted'/'ESPN NFL 2K5 (USA)'
 
 @unittest.skipUnless(EXTRACTED.is_dir(),'needs the hydrated retail archive')
+class FanVenueCopy(unittest.TestCase):
+ def test_a_venue_that_adds_a_missing_midfield_still_plans_only_its_fan_items(self):
+  # b773 i4: Hard Rock's manifest sets add_missing_midfield; the fan plan keeps stadium items only, so the flag must
+  # not reach plan_venue (it would look for a center_logo item that was filtered out: StopIteration).
+  key=sorted(fans.FAN_KEYS)[0]
+  venue={'items':[dict(scene='stadium',key=key),dict(scene='field',key='center_logo')],'add_missing_midfield':True,
+         'manifest':'m','digest':'d'}
+  seen=[]
+  def plan(prefix,given,retail):
+   seen.append(dict(given));return {'items':list(given['items'])}
+  data=[('s14dd.iff',b'model',{})]
+  with patch.object(mv,'load_art',return_value={'venues':{'s14':venue}}),patch.object(mv,'plan_venue',side_effect=plan),patch.object(fans,'paint_bundle',return_value=(b'model',None)):
+   fans.paint_results(data,{'s14dd.iff':b'retail'},'root',{'bundles':[{'name':'s14dd.iff'}]})
+  self.assertEqual(len(seen),1)
+  self.assertNotIn('add_missing_midfield',seen[0])
+  self.assertEqual([(i['scene'],i['key']) for i in seen[0]['items']],[('stadium',key)])
+  self.assertTrue(venue['add_missing_midfield'])      # the shared manifest entry itself is not edited
+
+
 class NeutralSlot(unittest.TestCase):
  """SoFi's s40 keeps the retail cloth atlas; the neutral plan paints its ESPN VIDEOGAMES cloth with fb2's ESPN
  item through the same painter, inside the scene's span, in the dry-day and night-snow bundles."""

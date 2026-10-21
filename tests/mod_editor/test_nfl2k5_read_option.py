@@ -22,7 +22,7 @@ from mod_editor.core import nfl2k5_playbook_pack as pk
 from mod_editor.core import nfl2k5_playbook_inspector as insp
 from mod_editor.core import nfl2k5_formation_play_writer as writer
 from mod_editor.core.errors import ValidationError
-from tests.mod_editor.test_nfl2k5_defense_play import retail_resources
+from tests.mod_editor.test_nfl2k5_defense_play import retail_resources, EXTRACT
 
 SEED = ROOT / 'data/playbooks/softdrink_option.2k5book'
 
@@ -154,6 +154,7 @@ class OptionRetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.resources = retail_resources()
+        cls.xbe = (EXTRACT / "default.xbe").read_bytes()
         cls.books = {t: insp.parse_playbook_resource(r, asset_id='book:' + t) for t, r in cls.resources.items()}
 
     def test_all_9251_retail_graphs_and_sync_references_are_accepted(self):
@@ -201,7 +202,7 @@ class OptionRetailTests(unittest.TestCase):
                         self.assertEqual([c for _, c in out], expected)
                     exported = pk.pack_from_staged_rows(team=team, book=book, body=r[32:], play_rows=[req.provider_edit()])
                     exported = pk.loads_pack(exported.dumps())
-                    rebuilt = pk.apply_pack_to_resource(r, exported)
+                    rebuilt = pk.apply_pack_to_resource(r, exported, xbe=self.xbe)
                     self.assertEqual(rebuilt.replacement, compiled.replacement)
                     for a in rebuilt.parsed_replacement.plays[pi].assignments:
                         self.assertEqual(len(rebuilt.parsed_replacement.assignment_chain(a).nodes), a.declared_length)
@@ -256,9 +257,9 @@ class OptionRetailTests(unittest.TestCase):
         r, b = self.resources['MIN'], self.books['MIN']
         pack = pk.option_pack(b, r[32:])
         self.assertEqual(pk.load_pack(SEED), pack)
-        check = pk.check_pack(pack, resource=r)
+        check = pk.check_pack(pack, resource=r, xbe=self.xbe)
         self.assertTrue(check.ok, check.errors)
-        out = pk.apply_pack_to_resource(r, pack)
+        out = pk.apply_pack_to_resource(r, pack, xbe=self.xbe)
         self.assertEqual((out.report['new_play_count'], out.report['new_formation_count'], out.report['new_node_count']), (266, 46, 2543))
         self.assertEqual(out.replacement[:32], r[:32])
         self.assertEqual(out.replacement[32 + insp.FORMATION_BASE:32 + insp.PLAY_BASE], r[32 + insp.FORMATION_BASE:32 + insp.PLAY_BASE])
@@ -271,13 +272,13 @@ class OptionRetailTests(unittest.TestCase):
         imported = pk.loads_pack(exported.dumps())
         self.assertEqual({p.custom_name: p.option_intent for p in imported.plays}, {p.custom_name: p.option_intent for p in pack.plays})
         self.assertEqual(imported.schema, pk.OPTION_SCHEMA)
-        other = pk.apply_pack_to_resource(r, imported)
+        other = pk.apply_pack_to_resource(r, imported, xbe=self.xbe)
         for p in pack.plays:
             self.assertEqual(lib.play_chains(other.replacement[32:], p.replace_index), lib.play_chains(out.replacement[32:], p.replace_index))
         self.assertEqual(len(other.report['option_intent']['records']), 8)
-        self.assertEqual(pk.apply_pack_to_resource(r, pack).replacement, out.replacement)
+        self.assertEqual(pk.apply_pack_to_resource(r, pack, xbe=self.xbe).replacement, out.replacement)
         with self.assertRaisesRegex(pk.PlaybookPackError, 'fingerprint'):
-            pk.apply_pack_to_resource(out.replacement, pack)
+            pk.apply_pack_to_resource(out.replacement, pack, xbe=self.xbe)
 
     def test_foreign_fixture_source_intent_append_and_pool_refuse(self):
         r, b = self.resources['MIN'], self.books['MIN']; pack = pk.load_pack(SEED)
@@ -285,10 +286,10 @@ class OptionRetailTests(unittest.TestCase):
         bad = deepcopy(read.option_intent); bad['opponent']['signature'] = '0' * 64
         edited = replace(pack, plays=(replace(read, option_intent=bad),))
         with self.assertRaisesRegex(ValidationError, 'signature mismatch'):
-            pk.apply_pack_to_resource(r, edited)
+            pk.apply_pack_to_resource(r, edited, xbe=self.xbe)
         bad = deepcopy(read.option_intent); bad['back_slot'] = 9
         with self.assertRaisesRegex(ValidationError, 'graph'):
-            pk.apply_pack_to_resource(r, replace(pack, plays=(replace(read, option_intent=bad),)))
+            pk.apply_pack_to_resource(r, replace(pack, plays=(replace(read, option_intent=bad),)), xbe=self.xbe)
         row = read.request_mapping(b.asset_id); row.pop('replace_index')
         with self.assertRaisesRegex(ValidationError, 'never append'):
             writer.compile_formation_play_creations(r, [], [row])
@@ -302,7 +303,7 @@ class OptionRetailTests(unittest.TestCase):
             writer.compile_formation_play_creations(bytes(full), [], [read.request_mapping(b.asset_id)])
         foreign = bytearray(r); foreign[-1] ^= 1
         with self.assertRaisesRegex(pk.PlaybookPackError, 'fingerprint'):
-            pk.apply_pack_to_resource(bytes(foreign), pack)
+            pk.apply_pack_to_resource(bytes(foreign), pack, xbe=self.xbe)
         self.assertEqual(pk.retarget_pack(pack, 'MIN', b, r[32:])[0], pack)
         edited = replace(pack, plays=(replace(pack.plays[0], custom_name='My edited option'), *pack.plays[1:]))
         with self.assertRaisesRegex(pk.PlaybookPackError, 'Regenerate'):
@@ -315,14 +316,14 @@ class OptionRetailTests(unittest.TestCase):
                 for name in ('modern_gun_core', 'softdrink_modern_defense'):
                     b = insp.parse_playbook_resource(r)
                     p, _ = pk.retarget_pack(pk.load_pack(ROOT / 'data/playbooks' / (name + '.2k5book')), team, b, r[32:])
-                    r = pk.apply_pack_to_resource(r, p).replacement
+                    r = pk.apply_pack_to_resource(r, p, xbe=self.xbe).replacement
                 b = insp.parse_playbook_resource(r)
                 if team == 'MIN':
                     with self.assertRaisesRegex(pk.PlaybookPackError, 'eight replacement calls'):
                         pk.option_pack(b, r[32:], team)
                     continue
                 p = pk.option_pack(b, r[32:], team)
-                compiled = pk.apply_pack_to_resource(r, p)
+                compiled = pk.apply_pack_to_resource(r, p, xbe=self.xbe)
                 self.assertEqual(compiled.report['new_play_count'], len(b.plays))
                 self.assertLessEqual(compiled.report['new_node_count'], 3500)
                 self.assertEqual(len(compiled.replacement), 78768)

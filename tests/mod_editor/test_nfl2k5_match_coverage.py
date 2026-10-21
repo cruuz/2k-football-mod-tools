@@ -100,6 +100,7 @@ class MatchRetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.resources = resources()  # 37 x 78 KB, never a disc or pack in RAM
+        cls.xbe = (EXTRACT / 'default.xbe').read_bytes()
         cls.books = {t: insp.parse_playbook_resource(r, asset_id='book:' + t) for t, r in cls.resources.items()}
         cls.seed = pk.load_pack(SEED)
 
@@ -141,7 +142,7 @@ class MatchRetailTests(unittest.TestCase):
             with self.subTest(team=team):
                 book = self.books[team]
                 pack, _ = pk.retarget_pack(self.seed, team, book, raw[32:])
-                compiled = pk.apply_pack_to_resource(raw, pack)
+                compiled = pk.apply_pack_to_resource(raw, pack, xbe=self.xbe)
                 out, new = compiled.replacement, compiled.parsed_replacement
                 self.assertEqual(len(out), 78768)
                 self.assertEqual(out[:32], raw[:32])
@@ -187,7 +188,7 @@ class MatchRetailTests(unittest.TestCase):
                         sequence = (gun_seed, *order) if order[0] is modern_seed else (*order, gun_seed)
                     for seed in sequence:
                         pack, _ = pk.retarget_pack(seed, team, book, raw[32:])
-                        c = pk.apply_pack_to_resource(raw, pack)
+                        c = pk.apply_pack_to_resource(raw, pack, xbe=self.xbe)
                         raw, book = c.replacement, c.parsed_replacement
                     self.assertTrue(set(match.PACK_NAMES + match.MODERN_NAMES) <= {p.name for p in book.plays})
                     self.assertLessEqual(book.node_count, 3500)
@@ -205,15 +206,15 @@ class MatchRetailTests(unittest.TestCase):
         raw, b = self.resources['BAL'], self.books['BAL']
         dirty = bytearray(raw); dirty[32 + insp.NODE_BASE + 4] ^= 1
         with self.assertRaises(ValidationError):
-            pk.apply_pack_to_resource(bytes(dirty), self.seed)
+            pk.apply_pack_to_resource(bytes(dirty), self.seed, xbe=self.xbe)
         doc = self.seed.to_json()
         doc['plays'][0]['assignments'][9][1][1][5] = 6
         altered = pk.pack_from_json(doc)
-        self.assertFalse(pk.check_pack(altered, resource=raw).ok)
+        self.assertFalse(pk.check_pack(altered, resource=raw, xbe=self.xbe).ok)
         partial = replace(self.seed, plays=self.seed.plays[:-1])
         with self.assertRaisesRegex(ValidationError, 'all five'):
             pk.retarget_pack(partial, 'BAL', b, raw[32:])
-        completed = pk.apply_pack_to_resource(raw, self.seed)
+        completed = pk.apply_pack_to_resource(raw, self.seed, xbe=self.xbe)
         with self.assertRaisesRegex(ValidationError, 'already contains'):
             match.match_coverage_pack(completed.parsed_replacement, completed.replacement[32:], 'BAL')
 
@@ -232,7 +233,7 @@ class MatchRetailTests(unittest.TestCase):
         archive = Archive()
         pack = replace(self.seed, book=replace(self.seed.book, targets=('BAL', 'CHI')))
         with self.assertRaises(ValidationError):
-            pk.apply_packs_to_archive(archive, [('match', pack)], book_entries={'BAL': 0, 'CHI': 1})
+            pk.apply_packs_to_archive(archive, [('match', pack)], book_entries={'BAL': 0, 'CHI': 1}, xbe=self.xbe)
         self.assertEqual(archive.writes, [])
 
 

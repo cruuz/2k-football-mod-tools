@@ -66,6 +66,15 @@ class PlanningTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             space.plan(mode.REQUESTS + (('other_large_state', 'data', 80*1024, 16),))
 
+    def test_full_reservations_cannot_overlap_m3_runtime_state(self):
+        rows = space.plan(REQUESTS)['allocations']
+        state = next(r for r in rows if (r['owner'], r['kind']) == (mode.OWNER, 'data'))
+        # A placement regression into even the last unused word of the primary
+        # state must fail before any executable or owner digest can be written.
+        with patch.object(space, 'MYCAREER_M3_STATE_VA', state['va'] + state['size'] - 4):
+            with self.assertRaisesRegex(ValueError, 'reservation overlap'):
+                space.plan(REQUESTS)
+
 
 @unittest.skipUnless(XBE.is_file(), 'private USA retail XBE required')
 class InstallTests(unittest.TestCase):

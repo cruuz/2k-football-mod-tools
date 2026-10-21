@@ -1,0 +1,186 @@
+{
+ "schema": 1,
+ "about": "ct1 hand decisions per classic team (2026-10-17): kit = 'modern' (style 0, the franchise's current kit), 'retail' (the franchise's historic spare: the retail 2004 kit, nfl2k5_historic_styles), an existing style index, or {prefer, fallback}; stadium = 'franchise' (the main roster's home venue row of that franchise). Noah 10/17: reuse an existing kit or stadium wherever the real one exists in the game. quality: match / close / stand-in. Uniform references: Gridiron Uniform Database season pages (reference only, never ship).",
+ "teams": {
+  "bears_2006": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "The current Bears kit is the same design: navy over white pants at home, white over navy pants on the road (GUD 2006_CHI_3/1); only sock striping differs.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "broncos_2015": {
+   "kit": {
+    "prefer": 9,
+    "fallback": "retail"
+   },
+   "kit_quality": "match",
+   "kit_note": "ek1's 2012-2023 Broncos kit (style 9: the 1997 design with the orange home jersey, navy side panels; road white with navy panels), GUD 2015_DEN_2/1. Without ek1's kit on the disc the franchise spare (navy home of the same design) is used.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "browns_2017": {
+   "kit": {
+    "prefer": 14,
+    "fallback": "modern"
+   },
+   "kit_quality": "match",
+   "kit_note": "New kit authored by ct1 (style 14, CT1-CLE in data/nfl2k5_moment_kits.json): the 2015-2019 set, CLEVELAND across the chest, BROWNS down the pant leg, orange numerals with a drop shadow, orange road socks (GUD 2017_CLE_B/A). Falls back to the current kit when the kit is not on the disc.",
+   "stadium": "franchise",
+   "stadium_note": "FirstEnergy Stadium: the Browns' row."
+  },
+  "browns_2020": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "The 2020 redesign is the current kit (GUD 2020_CLE_H/C). The most-worn 2020 home look paired the brown jersey with orange pants; the kit's home pants are white.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "buccaneers_2020": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "2020 return to the 1997-2013 look = current kit, GUD 2020_TB_C/B.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "chargers_2006": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The 2002-2006 navy kit = the retail 2004 Chargers kit on the franchise spare, GUD 2006_SD_2/1.",
+   "stadium": "franchise",
+   "stadium_note": "Qualcomm Stadium (2006): the Chargers' row is SoFi Stadium in the 2026 build; the team plays in the Chargers' row."
+  },
+  "chiefs_2022": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Unchanged design = current kit, GUD 2022_KC_CCC/BB.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "colts_2006": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Same design as the current kit, GUD 2006_IND_3/1.",
+   "stadium": "franchise",
+   "stadium_note": "RCA Dome (2006): its model is gone (the Colts' row is Lucas Oil Stadium); the team plays in the Colts' row."
+  },
+  "colts_2014": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Same design as the current kit, GUD 2014_IND_2/1 (the 2020 numeral update is the only difference).",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "eagles_2017": {
+   "kit": 14,
+   "kit_quality": "match",
+   "kit_note": "The 2017 era kit (a5k, style 14: midnight green over white pants both ways), what they wore in 11 of 18 games, GUD 2017_PHI_D.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "eagles_2024": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Current midnight green kit, GUD 2024_PHI_D.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "giants_2016": {
+   "kit": {
+    "prefer": 9,
+    "fallback": "retail"
+   },
+   "kit_quality": "close",
+   "kit_note": "ek1's 2007-2011 Giants kit (style 9, the same road set Giants wore through 2016: road white with red numerals and grey pants, GUD 2016_NYG_4; home = the retail 18H8 blue over grey pants, while GUD 2016_NYG_3 shows white home pants). Without ek1's kit on the disc the retail 2004 look is used.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "giants_2022": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Current kit = what they wore in 2022 (blue over white pants; white with red numerals on the road), GUD 2022_NYG_D/A.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "lions_2008": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The 2003-2008 kit with black trim = the retail 2004 Lions kit, GUD 2008_DET_3/1.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "lions_2024": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "The 2024 redesign = current kit, GUD 2024_DET_E/C2.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "packers_2010": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The retail 2004 Packers kit (same design), GUD 2010_GB_2/1.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "packers_2011": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The retail 2004 Packers kit (same design), GUD 2011_GB_2/1.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "panthers_2015": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The retail 2004 Panthers kit (black home, silver pants), GUD 2015_CAR_4/1.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "patriots_2018": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The 2000-2019 design = the retail 2004 Patriots kit, GUD 2018_NE_C/A.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "ravens_2019": {
+   "kit": 1,
+   "kit_quality": "match",
+   "kit_note": "The 2008-2025 era kit (a5k, style 1), GUD 2019_BAL_E/B.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "seahawks_2013": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "The 2012 Nike design = current kit, GUD 2013_SEA_2/6.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "seahawks_2025": {
+   "kit": "modern",
+   "kit_quality": "match",
+   "kit_note": "Current kit, GUD 2025_SEA_F/C2.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "steelers_2005": {
+   "kit": "retail",
+   "kit_quality": "match",
+   "kit_note": "The retail 2004 Steelers kit (same Reebok era), GUD 2005_PIT_3/1.",
+   "stadium": "franchise",
+   "stadium_note": ""
+  },
+  "titans_2019": {
+   "kit": {
+    "prefer": 14,
+    "fallback": "retail"
+   },
+   "kit_quality": "match",
+   "kit_note": "New kit authored by ct1 (style 14, CT1-TEN in data/nfl2k5_moment_kits.json): the 2018-2023 set, navy home and white road over navy pants, titanium-grey shoulders edged in Titans blue, block numerals with a Titans-blue outline, navy helmet, grey sword stripe on the pants (GUD 2019_TEN_H2/B). Falls back to the franchise spare (the 1999-2017 kit) when the kit is not on the disc.",
+   "stadium": "franchise",
+   "stadium_note": "Nissan Stadium: the Titans' row."
+  }
+ }
+}

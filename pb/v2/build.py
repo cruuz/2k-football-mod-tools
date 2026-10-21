@@ -768,6 +768,12 @@ def semantic_digest(pack) -> str:
 
 
 def main(argv=None):
+    """b776 pb1: the league is built by the v3 generator (pb/v2/generator.py); ``--legacy`` runs the v2 path."""
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if "--legacy" not in argv:
+        from pb.v2 import generator
+        return generator.main(argv)
+    argv.remove("--legacy")
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--image", type=Path, required=True, help="retail ISO (read only)")
     ap.add_argument("--team", action="append", help="limit to these teams")

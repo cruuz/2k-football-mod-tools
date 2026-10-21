@@ -128,7 +128,7 @@ class _StubHost:
         return pk.preview_pack(
             pack, team or self.team, self.book, self.body, resource=self.resource,
             staged_formation_targets=self.staged_formations,
-            staged_play_targets=self.staged_plays,
+            staged_play_targets=self.staged_plays, xbe=EXTRACT / "default.xbe",
         )
 
     def install_playbook_pack(self, pack, teams=None, progress=None):

@@ -35,6 +35,12 @@ class SituationMaskPanel(QGroupBox):
         self.candidates=QTableWidget(0,6)
         self.candidates.setHorizontalHeaderLabels(('Formation','Candidacy at sample state','Personnel / requested TEs','Exclude here','Formation multiplier here','Retail x multiplier = weight'))
         self.candidates.setAccessibleName('Per-situation formation exclusion checkboxes')
+        # QTableWidget's own sorting moves items but not the checkbox and multiplier widgets in
+        # their cells, so header clicks sort the rows here and render them in that order.
+        self.sort_column, self.sort_ascending = None, True
+        header=self.candidates.horizontalHeader();header.setSectionsClickable(True);header.setSortIndicatorShown(True)
+        header.setToolTip('Click a column heading to sort the formation list; click again to reverse it.')
+        header.sectionClicked.connect(self.sort_by)
         root.addWidget(self.candidates)
         label=QLabel('Requested row is computed by the game and is read-only. The stored comparison row below is editable in MASTER and affects that personnel category in every book and situation. '
                      'Requested TEs are roles, not guaranteed players: an empty TE depth list substitutes an FB.')
@@ -136,36 +142,72 @@ class SituationMaskPanel(QGroupBox):
                 if request['exclude']: masks.add(request['formation'])
                 else: masks.discard(request['formation'])
         forms=[f for f in self.context['formations'] if f['id']<151]
-        self.candidates.setRowCount(len(forms))
-        for i,f in enumerate(forms):
+        entries=[]
+        for f in forms:
             pairs=[c for c in candidates if c['formation']==f['id']]
             text='Candidate' if pairs else 'No ordinary candidate at this sample'
             if f['id'] in masks:text+='; excluded when patch is enabled'
             if f['id'] in pending:text+='; pending confirmation'
             personnel=', '.join(dict.fromkeys(f"{c['personnel']} ({c['tight_ends']} TE)" for c in pairs)) or '-'
-            for col,value in enumerate((f['name'],text,personnel)):
-                item=QTableWidgetItem(value);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,col,item)
-            check=QCheckBox();check.setChecked(f['id'] in masks)
-            check.setAccessibleName(f"Exclude {f['name']} in {self.bucket.currentText()}")
-            check.setToolTip("Exclude this formation only in the selected live bucket; an empty draw falls back to the original candidates.")
-            check.setAccessibleDescription(check.toolTip())
-            check.setEnabled(state.situation_masks_enabled or self.owner.queue_edits.isChecked())
-            check.toggled.connect(lambda value,formation=f['id']:self.exclude(formation,value))
-            self.candidates.setCellWidget(i,3,check)
-            weight=QComboBox()
-            for factor in (.25,.5,1.,2.,4.): weight.addItem(f'{factor:g}x',factor)
             factor=weights.get(str(f['id']),1.)
-            weight.setCurrentIndex(weight.findData(factor))
-            weight.setAccessibleName(f"Formation multiplier for {f['name']} in {self.bucket.currentText()}")
-            weight.setToolTip('Stage a weight only for this book and live bucket. Shared coaching samples edit this same live bucket. 1x removes the override. Install the matching v4 patch after confirming edits.')
-            weight.setAccessibleDescription(weight.toolTip())
-            weight.currentIndexChanged.connect(lambda index,formation=f['id']:self.weight(formation,(.25,.5,1.,2.,4.)[index]))
-            self.candidates.setCellWidget(i,4,weight)
             retail=pairs[0]['formation_weight'] if pairs else None
-            text=f'{retail:g} x {factor:g} = {retail*factor:g}' if retail is not None else 'No candidate at sample'
-            item=QTableWidgetItem(text);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,5,item)
-        self.candidates.resizeColumnsToContents()
+            entries.append({'f':f,'text':text,'personnel':personnel,'excluded':f['id'] in masks,
+                            'factor':factor,'retail':retail,'product':None if retail is None else retail*factor})
+        entries=self.sorted_entries(entries)
+        self.candidates.setUpdatesEnabled(False)
+        try:
+            self.candidates.setRowCount(len(entries))
+            for i,entry in enumerate(entries):
+                f,text,personnel,factor,retail=entry['f'],entry['text'],entry['personnel'],entry['factor'],entry['retail']
+                for col,value in enumerate((f['name'],text,personnel)):
+                    item=QTableWidgetItem(value);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,col,item)
+                check=QCheckBox();check.setChecked(f['id'] in masks)
+                check.setAccessibleName(f"Exclude {f['name']} in {self.bucket.currentText()}")
+                check.setToolTip("Exclude this formation only in the selected live bucket; an empty draw falls back to the original candidates.")
+                check.setAccessibleDescription(check.toolTip())
+                check.setEnabled(state.situation_masks_enabled or self.owner.queue_edits.isChecked())
+                check.toggled.connect(lambda value,formation=f['id']:self.exclude(formation,value))
+                self.candidates.setCellWidget(i,3,check)
+                weight=QComboBox()
+                for option in (.25,.5,1.,2.,4.): weight.addItem(f'{option:g}x',option)
+                weight.setCurrentIndex(weight.findData(factor))
+                weight.setAccessibleName(f"Formation multiplier for {f['name']} in {self.bucket.currentText()}")
+                weight.setToolTip('Stage a weight only for this book and live bucket. Shared coaching samples edit this same live bucket. 1x removes the override. Install the matching v4 patch after confirming edits.')
+                weight.setAccessibleDescription(weight.toolTip())
+                weight.currentIndexChanged.connect(lambda index,formation=f['id']:self.weight(formation,(.25,.5,1.,2.,4.)[index]))
+                self.candidates.setCellWidget(i,4,weight)
+                text=f'{retail:g} x {factor:g} = {retail*factor:g}' if retail is not None else 'No candidate at sample'
+                item=QTableWidgetItem(text);item.setFlags(item.flags()&~Qt.ItemIsEditable);self.candidates.setItem(i,5,item)
+            self.candidates.resizeColumnsToContents()
+        finally:
+            self.candidates.setUpdatesEnabled(True)
         self.render_personnel()
+
+    @staticmethod
+    def _natural(text):
+        import re
+        return [int(part) if part.isdigit() else part.casefold() for part in re.split(r'(\d+)',text)]
+
+    def sorted_entries(self,entries):
+        """Order the formation rows by the clicked column; ties keep the book's own order."""
+        column=self.sort_column
+        if column is None:return entries
+        if column==5:
+            have=[e for e in entries if e['product'] is not None]
+            none=[e for e in entries if e['product'] is None]
+            return sorted(have,key=lambda e:e['product'],reverse=not self.sort_ascending)+none
+        key={0:lambda e:self._natural(e['f']['name']),
+             1:lambda e:e['text'].casefold(),
+             2:lambda e:e['personnel'].casefold(),
+             3:lambda e:0 if e['excluded'] else 1,
+             4:lambda e:e['factor']}[column]
+        return sorted(entries,key=key,reverse=not self.sort_ascending)
+
+    def sort_by(self,column):
+        if self.sort_column==column:self.sort_ascending=not self.sort_ascending
+        else:self.sort_column,self.sort_ascending=column,True
+        self.candidates.horizontalHeader().setSortIndicator(column,Qt.AscendingOrder if self.sort_ascending else Qt.DescendingOrder)
+        self.render()
 
     def render_personnel(self,*_):
         if self.loading or not self.context:return
@@ -205,8 +247,8 @@ class SituationMaskPanel(QGroupBox):
         matching=False
         if self.context and result.get('installed'):
             try:
-                from .situation_masks import prepare
-                expected=prepare(self.context['state'],self.profile.currentData())['payload']
+                from .situation_masks import expected_payload
+                expected=expected_payload(self.context['state'],self.profile.currentData())
                 matching=Path(result['patch_path']).read_bytes()==expected
             except (OSError,ValueError,KeyError,ValidationError):
                 pass

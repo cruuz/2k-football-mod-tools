@@ -78,6 +78,9 @@ class RenamedBuildOutputTests(unittest.TestCase):
         # This disc has a synthetic XBE and textures, with no PLAY archive.
         self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
                                              return_value={"synthetic": True}))
+        # This fixture has no native SITU or uniform packs.
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                                     return_value={"synthetic": True}))
         self.retail = digest(self.source)
 
     def build(self, source: Path, target: Path) -> dict:
@@ -205,6 +208,9 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         # This disc has a synthetic XBE and textures, with no PLAY archive.
         self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
                                              return_value={"synthetic": True}))
+        # This fixture has no native SITU or uniform packs.
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                                     return_value={"synthetic": True}))
         self.panel = BuildPanel()
         self.addCleanup(self.panel.deleteLater)
         self.panel._pool = _Immediate()

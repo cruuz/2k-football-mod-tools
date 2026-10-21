@@ -103,6 +103,7 @@ class DefenseRetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.resources = retail_resources()
+        cls.xbe = (EXTRACT / 'default.xbe').read_bytes()
         cls.books = {team: insp.parse_playbook_resource(r, asset_id='book:' + team) for team, r in cls.resources.items()}
 
     def test_every_retail_play_and_defense_node_round_trips(self):
@@ -129,9 +130,9 @@ class DefenseRetailTests(unittest.TestCase):
             with self.subTest(team=team):
                 book = self.books[team]
                 pack, _ = pk.retarget_pack(seed, team, book, r[32:])
-                check = pk.check_pack(pack, resource=r)
+                check = pk.check_pack(pack, resource=r, xbe=self.xbe)
                 self.assertTrue(check.ok, check.errors)
-                compiled = pk.apply_pack_to_resource(r, pack)
+                compiled = pk.apply_pack_to_resource(r, pack, xbe=self.xbe)
                 out = compiled.replacement
                 for play in compiled.parsed_replacement.plays:
                     flags, assignments = lib.play_chains(out[32:], play.index)
@@ -159,10 +160,10 @@ class DefenseRetailTests(unittest.TestCase):
                     self.assertEqual((len(counts['rushers']), len(counts['deep'])), expected)
                 if team in pk.TEAM_BOOKS:
                     g, _ = pk.retarget_pack(gun, team, book, r[32:])
-                    gun_result = pk.apply_pack_to_resource(r, g)
+                    gun_result = pk.apply_pack_to_resource(r, g, xbe=self.xbe)
                     composed_book = gun_result.parsed_replacement
                     d, _ = pk.retarget_pack(seed, team, composed_book, gun_result.replacement[32:])
-                    composed = pk.apply_pack_to_resource(gun_result.replacement, d)
+                    composed = pk.apply_pack_to_resource(gun_result.replacement, d, xbe=self.xbe)
                     self.assertLessEqual(composed.report['new_node_count'], 3500)
 
     def test_multi_book_preflight_refuses_smallest_budget_before_any_write(self):
@@ -183,7 +184,7 @@ class DefenseRetailTests(unittest.TestCase):
         pack = pk.load_pack(SEED)
         pack = replace(pack, book=replace(pack.book, targets=('ATL', 'CHI')))
         with self.assertRaises(ValidationError):
-            pk.apply_packs_to_archive(archive, [('defense', pack)], book_entries={'ATL': 0, 'CHI': 1})
+            pk.apply_packs_to_archive(archive, [('defense', pack)], book_entries={'ATL': 0, 'CHI': 1}, xbe=self.xbe)
         self.assertEqual(archive.writes, [])
 
     def test_native_personnel_namespace_and_shared_row_refusal(self):
@@ -260,7 +261,7 @@ class DefenseRetailTests(unittest.TestCase):
             path = pk.save_pack(pack, Path(td).resolve() / 'spy.2k5book')
             loaded = pk.load_pack(path)
             self.assertEqual(loaded.plays[0].spy_slots, (5,))
-            self.assertEqual(pk.apply_pack_to_resource(r, loaded).replacement, compiled.replacement)
+            self.assertEqual(pk.apply_pack_to_resource(r, loaded, xbe=self.xbe).replacement, compiled.replacement)
         with self.assertRaisesRegex(ValueError, 'MLB'):
             lib.spy_fallback(self.books['CLE'], self.resources['CLE'][32:], 28, 5)
         with self.assertRaisesRegex(ValueError, '3 through 5'):
@@ -270,10 +271,10 @@ class DefenseRetailTests(unittest.TestCase):
         r = self.resources['ATL']; b = self.books['ATL']; pack = pk.modern_defense_pack(b, r[32:], 'ATL')
         foreign = bytearray(r); foreign[-1] = 1
         with self.assertRaisesRegex(pk.PlaybookPackError, 'fingerprint'):
-            pk.apply_pack_to_resource(bytes(foreign), pack)
+            pk.apply_pack_to_resource(bytes(foreign), pack, xbe=self.xbe)
         bad = replace(pack.plays[0], donor=replace(pack.plays[0].donor, signature='defense/v1:foreign'))
         with self.assertRaisesRegex(pk.PlaybookPackError, 'signature'):
-            pk.apply_pack_to_resource(r, replace(pack, plays=(bad,)))
+            pk.apply_pack_to_resource(r, replace(pack, plays=(bad,)), xbe=self.xbe)
         donor, chain = lib.spy_fallback(b, r[32:], 23, 5)
         chain[0][1][2] = 30.48  # cannot silently change a start operand under Spy intent
         req = writer.PlayCreateRequest('book:ATL', donor, 'Forged Spy',

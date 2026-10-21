@@ -1,0 +1,1127 @@
+{
+ "status": "SOURCED (fan database, unofficial)",
+ "source": "Civil.GG Playbook Database, Madden NFL 27 team playbooks (https://civil.gg/playbooks/madden/formations), pulled 2026-10-18 by the b776 research job; RPO/read-option entries excluded. Percent of each book's offensive (formation, play) entries.",
+ "research_file": "b77_session/research/PLAYBOOK_RESEARCH_M27_CFB27.md section 1.6",
+ "teams": {
+  "SF": {
+   "book": "49ers",
+   "entries": 541,
+   "formations": 42,
+   "gun": 53,
+   "pistol": 3,
+   "singleback": 33,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 51,
+    "12": 20,
+    "21": 15,
+    "13": 5,
+    "22+23": 4,
+    "10+20+00": 5
+   },
+   "signature": [
+    {
+     "formation": "Singleback Bunch X Nasty",
+     "plays": 27
+    },
+    {
+     "formation": "Gun Bunch Y-Flex",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Trips X Nasty",
+     "plays": 21
+    }
+   ]
+  },
+  "CHI": {
+   "book": "Bears",
+   "entries": 529,
+   "formations": 42,
+   "gun": 61,
+   "pistol": 4,
+   "singleback": 25,
+   "uc_two_back": 8,
+   "personnel": {
+    "11": 51,
+    "12": 20,
+    "21": 7,
+    "13": 4,
+    "22+23": 7,
+    "10+20+00": 7
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Off Trio Wk",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 21
+    },
+    {
+     "formation": "Singleback Deuce Close",
+     "plays": 18
+    },
+    {
+     "formation": "Singleback Ace Double Wing",
+     "plays": 18
+    }
+   ]
+  },
+  "CIN": {
+   "book": "Bengals",
+   "entries": 561,
+   "formations": 41,
+   "gun": 84,
+   "pistol": 0,
+   "singleback": 12,
+   "uc_two_back": 2,
+   "personnel": {
+    "11": 71,
+    "12": 14,
+    "21": 2,
+    "13": 5,
+    "22+23": 4,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Doubles",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 20
+    },
+    {
+     "formation": "Gun Y Off Trio Close Wk",
+     "plays": 20
+    }
+   ]
+  },
+  "BUF": {
+   "book": "Bills",
+   "entries": 531,
+   "formations": 38,
+   "gun": 65,
+   "pistol": 3,
+   "singleback": 20,
+   "uc_two_back": 9,
+   "personnel": {
+    "11": 65,
+    "12": 13,
+    "21": 14,
+    "13": 3,
+    "22+23": 2,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Trey Open HB Str",
+     "plays": 27
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Y Off Trips Wk",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Y Off X Close",
+     "plays": 20
+    }
+   ]
+  },
+  "DEN": {
+   "book": "Broncos",
+   "entries": 501,
+   "formations": 41,
+   "gun": 61,
+   "pistol": 6,
+   "singleback": 18,
+   "uc_two_back": 13,
+   "personnel": {
+    "11": 66,
+    "12": 8,
+    "21": 10,
+    "13": 4,
+    "22+23": 4,
+    "10+20+00": 6
+   },
+   "signature": [
+    {
+     "formation": "Gun Spread Y-Slot",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Spread Dbl Flex",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 20
+    },
+    {
+     "formation": "Gun Tight Slots",
+     "plays": 20
+    }
+   ]
+  },
+  "CLE": {
+   "book": "Browns",
+   "entries": 535,
+   "formations": 42,
+   "gun": 56,
+   "pistol": 8,
+   "singleback": 20,
+   "uc_two_back": 13,
+   "personnel": {
+    "11": 57,
+    "12": 18,
+    "21": 9,
+    "13": 3,
+    "22+23": 12,
+    "10+20+00": 0
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Off Trips Wk",
+     "plays": 31
+    },
+    {
+     "formation": "Gun Y Trips Wk",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Tight Y Off Wk",
+     "plays": 19
+    }
+   ]
+  },
+  "TB": {
+   "book": "Buccaneers",
+   "entries": 544,
+   "formations": 37,
+   "gun": 62,
+   "pistol": 12,
+   "singleback": 19,
+   "uc_two_back": 5,
+   "personnel": {
+    "11": 68,
+    "12": 12,
+    "21": 6,
+    "13": 3,
+    "22+23": 2,
+    "10+20+00": 7
+   },
+   "signature": [
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Tight Open",
+     "plays": 21
+    }
+   ]
+  },
+  "ARZ": {
+   "book": "Cardinals",
+   "entries": 550,
+   "formations": 40,
+   "gun": 59,
+   "pistol": 15,
+   "singleback": 19,
+   "uc_two_back": 4,
+   "personnel": {
+    "11": 55,
+    "12": 29,
+    "21": 4,
+    "13": 0,
+    "22+23": 4,
+    "10+20+00": 7
+   },
+   "signature": [
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 26
+    },
+    {
+     "formation": "Pistol Wing Slot",
+     "plays": 22
+    },
+    {
+     "formation": "Pistol Bunch",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Wing Slot Offset Wk",
+     "plays": 20
+    }
+   ]
+  },
+  "SD": {
+   "book": "Chargers",
+   "entries": 537,
+   "formations": 44,
+   "gun": 59,
+   "pistol": 9,
+   "singleback": 18,
+   "uc_two_back": 12,
+   "personnel": {
+    "11": 58,
+    "12": 17,
+    "21": 12,
+    "13": 4,
+    "22+23": 3,
+    "10+20+00": 2
+   },
+   "signature": [
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Y Off Trips Close",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Tight Y Off Wk",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 20
+    }
+   ]
+  },
+  "KC": {
+   "book": "Chiefs",
+   "entries": 525,
+   "formations": 40,
+   "gun": 75,
+   "pistol": 3,
+   "singleback": 16,
+   "uc_two_back": 4,
+   "personnel": {
+    "11": 76,
+    "12": 10,
+    "21": 4,
+    "13": 6,
+    "22+23": 3,
+    "10+20+00": 0
+   },
+   "signature": [
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 20
+    }
+   ]
+  },
+  "IND": {
+   "book": "Colts",
+   "entries": 524,
+   "formations": 38,
+   "gun": 65,
+   "pistol": 10,
+   "singleback": 14,
+   "uc_two_back": 9,
+   "personnel": {
+    "11": 56,
+    "12": 23,
+    "21": 11,
+    "13": 0,
+    "22+23": 2,
+    "10+20+00": 7
+   },
+   "signature": [
+    {
+     "formation": "Gun Trips TE Flex Close Wk",
+     "plays": 26
+    },
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Tight Y Off Wk",
+     "plays": 20
+    }
+   ]
+  },
+  "WAS": {
+   "book": "Commanders",
+   "entries": 545,
+   "formations": 41,
+   "gun": 58,
+   "pistol": 9,
+   "singleback": 25,
+   "uc_two_back": 5,
+   "personnel": {
+    "11": 54,
+    "12": 22,
+    "21": 3,
+    "13": 4,
+    "22+23": 6,
+    "10+20+00": 8
+   },
+   "signature": [
+    {
+     "formation": "Gun Bunch Str Offset",
+     "plays": 26
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 22
+    }
+   ]
+  },
+  "DAL": {
+   "book": "Cowboys",
+   "entries": 547,
+   "formations": 38,
+   "gun": 55,
+   "pistol": 7,
+   "singleback": 26,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 60,
+    "12": 15,
+    "21": 9,
+    "13": 5,
+    "22+23": 5,
+    "10+20+00": 5
+   },
+   "signature": [
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 25
+    },
+    {
+     "formation": "Singleback Bunch",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Tight Slots",
+     "plays": 20
+    }
+   ]
+  },
+  "MIA": {
+   "book": "Dolphins",
+   "entries": 533,
+   "formations": 42,
+   "gun": 63,
+   "pistol": 11,
+   "singleback": 13,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 56,
+    "12": 15,
+    "21": 13,
+    "13": 4,
+    "22+23": 4,
+    "10+20+00": 4
+   },
+   "signature": [
+    {
+     "formation": "Gun Normal Y Off Close",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Y Trips Wk",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Wing Slot Offset Wk",
+     "plays": 20
+    }
+   ]
+  },
+  "PHI": {
+   "book": "Eagles",
+   "entries": 545,
+   "formations": 42,
+   "gun": 60,
+   "pistol": 11,
+   "singleback": 16,
+   "uc_two_back": 9,
+   "personnel": {
+    "11": 55,
+    "12": 23,
+    "21": 8,
+    "13": 3,
+    "22+23": 10,
+    "10+20+00": 2
+   },
+   "signature": [
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Tight Y Off",
+     "plays": 22
+    },
+    {
+     "formation": "Pistol Bunch",
+     "plays": 22
+    }
+   ]
+  },
+  "ATL": {
+   "book": "Falcons",
+   "entries": 563,
+   "formations": 42,
+   "gun": 61,
+   "pistol": 13,
+   "singleback": 15,
+   "uc_two_back": 9,
+   "personnel": {
+    "11": 69,
+    "12": 11,
+    "21": 10,
+    "13": 5,
+    "22+23": 2,
+    "10+20+00": 2
+   },
+   "signature": [
+    {
+     "formation": "Gun Normal Y Off Close",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Bunch Spread",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Tight Open",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Bunch Offset",
+     "plays": 21
+    }
+   ]
+  },
+  "NYG": {
+   "book": "Giants",
+   "entries": 529,
+   "formations": 40,
+   "gun": 74,
+   "pistol": 6,
+   "singleback": 16,
+   "uc_two_back": 2,
+   "personnel": {
+    "11": 71,
+    "12": 14,
+    "21": 3,
+    "13": 2,
+    "22+23": 2,
+    "10+20+00": 6
+   },
+   "signature": [
+    {
+     "formation": "Gun Tight Open",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Y Off Trio Wk",
+     "plays": 20
+    },
+    {
+     "formation": "Gun Trey Y-Flex",
+     "plays": 20
+    }
+   ]
+  },
+  "JAX": {
+   "book": "Jaguars",
+   "entries": 547,
+   "formations": 39,
+   "gun": 63,
+   "pistol": 8,
+   "singleback": 24,
+   "uc_two_back": 2,
+   "personnel": {
+    "11": 68,
+    "12": 18,
+    "21": 2,
+    "13": 5,
+    "22+23": 2,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Y Off Trio Wk",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 21
+    }
+   ]
+  },
+  "NYJ": {
+   "book": "Jets",
+   "entries": 515,
+   "formations": 38,
+   "gun": 51,
+   "pistol": 8,
+   "singleback": 22,
+   "uc_two_back": 16,
+   "personnel": {
+    "11": 40,
+    "12": 27,
+    "21": 12,
+    "13": 6,
+    "22+23": 6,
+    "10+20+00": 8
+   },
+   "signature": [
+    {
+     "formation": "Gun Tight Open",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 21
+    },
+    {
+     "formation": "Strong Pro",
+     "plays": 20
+    }
+   ]
+  },
+  "DET": {
+   "book": "Lions",
+   "entries": 526,
+   "formations": 37,
+   "gun": 66,
+   "pistol": 0,
+   "singleback": 21,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 65,
+    "12": 17,
+    "21": 9,
+    "13": 0,
+    "22+23": 5,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Tight Slots",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Bunch X Nasty",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Box Y Split",
+     "plays": 22
+    }
+   ]
+  },
+  "GB": {
+   "book": "Packers",
+   "entries": 559,
+   "formations": 39,
+   "gun": 65,
+   "pistol": 9,
+   "singleback": 17,
+   "uc_two_back": 6,
+   "personnel": {
+    "11": 66,
+    "12": 16,
+    "21": 6,
+    "13": 2,
+    "22+23": 4,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Trio",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 24
+    },
+    {
+     "formation": "Pistol Wing Slot",
+     "plays": 22
+    },
+    {
+     "formation": "Pistol Bunch",
+     "plays": 22
+    }
+   ]
+  },
+  "CAR": {
+   "book": "Panthers",
+   "entries": 514,
+   "formations": 41,
+   "gun": 59,
+   "pistol": 11,
+   "singleback": 22,
+   "uc_two_back": 6,
+   "personnel": {
+    "11": 70,
+    "12": 15,
+    "21": 6,
+    "13": 4,
+    "22+23": 2,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Trips TE",
+     "plays": 26
+    },
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 20
+    },
+    {
+     "formation": "Gun Y Off Trips",
+     "plays": 18
+    }
+   ]
+  },
+  "NE": {
+   "book": "Patriots",
+   "entries": 565,
+   "formations": 43,
+   "gun": 62,
+   "pistol": 4,
+   "singleback": 18,
+   "uc_two_back": 15,
+   "personnel": {
+    "11": 55,
+    "12": 18,
+    "21": 11,
+    "13": 2,
+    "22+23": 8,
+    "10+20+00": 5
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Off Trips Close",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Tight Y Off",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Y Off Trips Wk",
+     "plays": 20
+    }
+   ]
+  },
+  "OAK": {
+   "book": "Raiders",
+   "entries": 533,
+   "formations": 40,
+   "gun": 60,
+   "pistol": 6,
+   "singleback": 19,
+   "uc_two_back": 13,
+   "personnel": {
+    "11": 50,
+    "12": 22,
+    "21": 8,
+    "13": 3,
+    "22+23": 5,
+    "10+20+00": 11
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Trips Wk",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Tight Flex Wk",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Trips HB Wk",
+     "plays": 19
+    },
+    {
+     "formation": "Gun Spread Y-Flex",
+     "plays": 19
+    }
+   ]
+  },
+  "STL": {
+   "book": "Rams",
+   "entries": 564,
+   "formations": 42,
+   "gun": 56,
+   "pistol": 4,
+   "singleback": 35,
+   "uc_two_back": 3,
+   "personnel": {
+    "11": 69,
+    "12": 12,
+    "21": 3,
+    "13": 9,
+    "22+23": 2,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 21
+    },
+    {
+     "formation": "Singleback Bunch X Nasty",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 21
+    }
+   ]
+  },
+  "BAL": {
+   "book": "Ravens",
+   "entries": 504,
+   "formations": 42,
+   "gun": 59,
+   "pistol": 11,
+   "singleback": 16,
+   "uc_two_back": 11,
+   "personnel": {
+    "11": 49,
+    "12": 19,
+    "21": 10,
+    "13": 4,
+    "22+23": 17,
+    "10+20+00": 0
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Off Trio Wk",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Trey Open",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 20
+    },
+    {
+     "formation": "Gun Tight Slots",
+     "plays": 20
+    }
+   ]
+  },
+  "NO": {
+   "book": "Saints",
+   "entries": 542,
+   "formations": 40,
+   "gun": 70,
+   "pistol": 6,
+   "singleback": 11,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 66,
+    "12": 16,
+    "21": 10,
+    "13": 2,
+    "22+23": 4,
+    "10+20+00": 2
+   },
+   "signature": [
+    {
+     "formation": "Gun Doubles Clamp Stack",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Normal Y Off",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Trips TE",
+     "plays": 24
+    },
+    {
+     "formation": "I Form Pro",
+     "plays": 23
+    }
+   ]
+  },
+  "SEA": {
+   "book": "Seahawks",
+   "entries": 536,
+   "formations": 40,
+   "gun": 57,
+   "pistol": 0,
+   "singleback": 25,
+   "uc_two_back": 15,
+   "personnel": {
+    "11": 60,
+    "12": 14,
+    "21": 13,
+    "13": 3,
+    "22+23": 6,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Trips TE",
+     "plays": 29
+    },
+    {
+     "formation": "Gun Y Trips Wk",
+     "plays": 26
+    },
+    {
+     "formation": "Gun Tight Y Off",
+     "plays": 22
+    },
+    {
+     "formation": "Singleback Deuce Close",
+     "plays": 21
+    }
+   ]
+  },
+  "PIT": {
+   "book": "Steelers",
+   "entries": 539,
+   "formations": 36,
+   "gun": 71,
+   "pistol": 0,
+   "singleback": 18,
+   "uc_two_back": 9,
+   "personnel": {
+    "11": 62,
+    "12": 14,
+    "21": 9,
+    "13": 3,
+    "22+23": 4,
+    "10+20+00": 5
+   },
+   "signature": [
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Y Off Trips Wk",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Tight Y Off",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Normal Y Off",
+     "plays": 21
+    }
+   ]
+  },
+  "HOU": {
+   "book": "Texans",
+   "entries": 540,
+   "formations": 37,
+   "gun": 67,
+   "pistol": 0,
+   "singleback": 21,
+   "uc_two_back": 10,
+   "personnel": {
+    "11": 65,
+    "12": 13,
+    "21": 6,
+    "13": 3,
+    "22+23": 6,
+    "10+20+00": 6
+   },
+   "signature": [
+    {
+     "formation": "Gun Y Off Trio Close",
+     "plays": 25
+    },
+    {
+     "formation": "Gun Y Trips Wk",
+     "plays": 24
+    },
+    {
+     "formation": "Gun Doubles Flex Y Off Close",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 21
+    }
+   ]
+  },
+  "TEN": {
+   "book": "Titans",
+   "entries": 558,
+   "formations": 41,
+   "gun": 70,
+   "pistol": 6,
+   "singleback": 15,
+   "uc_two_back": 6,
+   "personnel": {
+    "11": 68,
+    "12": 17,
+    "21": 4,
+    "13": 2,
+    "22+23": 2,
+    "10+20+00": 2
+   },
+   "signature": [
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 23
+    },
+    {
+     "formation": "Gun Trips TE Flex",
+     "plays": 22
+    },
+    {
+     "formation": "Gun Bunch Spread",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Trey Y-Flex",
+     "plays": 19
+    }
+   ]
+  },
+  "MIN": {
+   "book": "Vikings",
+   "entries": 552,
+   "formations": 42,
+   "gun": 58,
+   "pistol": 3,
+   "singleback": 25,
+   "uc_two_back": 12,
+   "personnel": {
+    "11": 55,
+    "12": 22,
+    "21": 11,
+    "13": 2,
+    "22+23": 5,
+    "10+20+00": 3
+   },
+   "signature": [
+    {
+     "formation": "Gun Bunch TE",
+     "plays": 24
+    },
+    {
+     "formation": "Singleback Bunch X Nasty",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Bunch Spread Nasty",
+     "plays": 21
+    },
+    {
+     "formation": "Gun Wing Slot Offset",
+     "plays": 20
+    }
+   ]
+  }
+ }
+}

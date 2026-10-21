@@ -1,5 +1,339 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC112, beta 77.1: SOFTDRINK 2K28 v0.6.1
+
+Prepared by Claude on Noah's behalf. This section is the Studio part of the beta-77.1 release notes: the b777 changes from Noah's October 19 playtest first, then the October 10 to 19 test waves. The game changes are on the SOFTDRINK 2K28 v0.6.1 release page (https://github.com/cruuz/softdrink-2k28/releases/tag/v0.6.1). APF 2K8 Mod Studio advances to 0.1.0-alpha.108 (see its changelog).
+
+### b777 changes (October 20)
+
+Noah played the b776 test disc on October 19 and sent twelve findings early on October 20, plus more later that day and that night (depth locks, letter grades, the tush push lag, formation art spacing and the Running Back rename). Nine jobs worked on the first findings in parallel, and follow-up jobs (qb4, ci2, dl3, dl4, lg3, fx1, st1, rb2 and tp1) came after, each with its own tests, a pin recheck and a plan-only preflight of the release recipe that writes nothing. Several game changes were also run in a headless emulator on a copy of the b776 disc with the new code written into memory. They were merged onto one branch (`job/b777-int`, head `39ccb3488`), and the release disc was built from that head with the Studio itself. This section lists what each change does in the Studio. What it does in the game, and what Noah should check, is on the SOFTDRINK page.
+
+**The release disc carries the new playbooks.** The b776 test recipe still listed 64 frozen playbook packs from October 15, so the books Noah played on b776 (and complained about) were the old b775 books. The release recipe points `playbook_packs` at the repository's own 64 team packs in `data/playbooks`. This is the first disc with the rebuilt offense books, the regenerated defense packs and the classic-team book rules.
+
+#### New build options
+
+- **Run blocking: blocks hold longer on running plays (`run_blocking`).** A new late allocator owner, 160 bytes of code. On in the SOFTDRINK Advanced and Experimental presets, off in Basic. It changes three running-play sites only; pass protection keeps every retail byte. The tuning values are module constants in `mod_editor/core/nfl2k5_run_blocking.py` (roll add 0.15, delay 0.30 + 0.60 x the rating gap, clamped to 0.08 to 0.60 s, shed divisor 25). Turn it off with `"run_blocking": false` in a recipe.
+- **Accurate short throws and throws on the run (experimental) (`qb_accuracy`).** A new late allocator owner (384 bytes) with three pieces under one toggle: the short-throw accuracy model, quick outs and flats aimed on the receiver's path, and screen passes that lead the back. On only in the Experimental preset. `"qb_accuracy": false` turns all three off together.
+- **Era ball is off by default.** `data/nfl2k5_era_ball/manifest.json` now says `"enabled": false`. When it is off the build writes nothing to the ball, its final gate requires the retail ball scene, and the moment-venue owner carries no ball selector. The option and its repair tool still work if `enabled` is set back to true.
+- **Depth locks revision 4 (`depth_locks`, on in the Experimental preset).** The existing owner is rewritten in three steps. Revision 2: a departed locked starter can no longer leave a blank row, and an empty top row can no longer reach the ratings division that froze the depth chart. Revision 3: the native weekly depth sort of CPU-run clubs (175 bytes at 0x2BDD31, rewritten in place, same sort order as retail) releases a rank-locked player's rank and side locks when an unlocked player of his position is 3 or more overall points better (returner locks kept), and paired positions seed unlocked players from their new rank row, which removes double starters. Revision 4: the unlocked rank starter is seated at retail's side row 2 like a lock, so with three or more players he never also takes a vacated side starter row, and a deferred locked starter gets its own pass after the overflow row (compactor 536 of 544 bytes). User clubs (Franchise user clubs and the MyCareer club) are unchanged from revision 2. Revision 1, 2 and 3 images (the b775, b776 and earlier b777 discs) are recognised and upgraded in place, and each upgrade equals a fresh install; no allocator entry or new cave. In the Build panel an older depth-locks install now shows as an upgrade ("Needs update") instead of a disabled box.
+- **Loader wake-up fix (`loader_wakeup_fix`, on in every SOFTDRINK preset).** New owner `nfl2k5_loader_wakeup`: an in-place re-encode of the retail disc loader worker (0x4D810..0x4D900, 240 bytes, no cave, no file growth) that closes a lost-wakeup race behind the endless LOADING card (see the SOFTDRINK page).
+
+- **Letter grades: numbers where you edit ratings (`letter_grades`, on in Advanced and Experimental).** The attribute grades module (`nfl2k5_letter_grades_attributes`) now grades 65 rating columns instead of 91: the 26 attribute controls of the game's own player editor are left as retail numbers and are guarded (an image whose controls carry the earlier grade bytes reads as foreign, so rebuild it from the original). That one editor table drives Create Player, Edit Player, Franchise Edit Player and MyCareer's Create Player. MyCareer's Upgrades line and its prospect labels are numeric again whether or not letter grades are on. No allocator change.
+
+- **Running Back text (`rb_rename`, on in every SOFTDRINK preset).** New owner `nfl2k5_rb_rename`: HB/Halfback display text reads RB/RBs in place in the executable (230 bytes in their own slots, no cave, no allocator request, no file growth; the depth chart record reads RB / RUNNING BACK) plus two same-length disc scene labels. Patterns are checked, so anything but retail or already-applied text is refused. `nfl2k5_depth_chart_rows` and `nfl2k5_my_career_mode` recognise the renamed text. Off in a bare BuildPlan.
+
+#### Changes that run automatically
+
+- **Midfield logo centring.** New module `mod_editor/core/nfl2k5_midfield_centre.py`. It runs inside every field writer (the 2026 venue painter, Modern MetLife's field painter and the Anniversary alias compiler). When the logo's ink is more than 1.25 texels off the 50 and the centre line, it moves only the eight floats of the logo quad. A field within a texel keeps every byte. A build without a 2026 art root keeps retail midfield geometry, and 12 retail home fields are off by more than a texel there.
+- **Sleeve swoosh layer.** A new pinned kit layer, `data/nfl2k5_kit_fixes_2026_sw1.json` (126 textures across 71 kits, torso and sleeve chunks only), applied by a new `apply_swooshes` step after the Chiefs pass and before the Anniversary moment kits. It adds a `warp` operation to `nfl2k5_kit_fixes_2026.py` that carries the Packers home sleeve's own swoosh pixels from your disc, so no swoosh drawing ships in the repository. The moment-kit pins were re-recorded because three donor kits changed.
+- **Situation mode and the Anniversary venues.** The moment-venue owner, the era-rules getter and the Anniversary kickoff test now check the game's Situation flag. Older bodies (b776) are recognised and upgraded in place.
+- **Banner numbers.** `tools/b77/ar1_banner_numbers.py check --disc` lists numbered wall cloths whose number does not match the disc roster; `rebuild` redraws only flagged text sheets. The two fixed specs are in `data/nfl2k5_teams_2026/TEN.json` and `HOU.json`. The banner art itself lives in the 2026 venue art tree, not in git, so a recipe must point at a corrected tree.
+
+- **Formation art icon spacing (with `play_art_routes`).** New late allocator owner `nfl2k5_formation_art_spacing` (1 KB, last in the late-owner order, no new key): it hooks the play-call diagram transform calls at 0x18108E and 0x1824EF and, on offense diagrams only, moves icons that the original grid would draw on one spot apart. Players on the field do not move.
+
+#### Playbook tooling
+
+- **Generator v4** (`pb/v2/generator.py` 4.0.0): menus up to 36 links (target 30), a final pass that adds shared plays one menu page at a time, a slot rule, a mesh cap, at most two screens per menu across a whole page, and a rule that a shared record must move a route runner at least 2 yards and the skill players at least 4 yards in total against every menu that already lists it.
+- **New gates:** `pb/v2/rules_b777.py` (duplicate plays and records, near duplicates, slot rule, mesh and vertical shares, menus, and a defense-family check that every book keeps a formation with plays behind every retail defense and kicking play-call code and has no empty category); `pb/v2/capacity.py` (the PLAY body limits).
+- **Route reversal check.** New module `mod_editor/core/nfl2k5_route_reversal.py` and tool `pb/v2/repair_reversals.py` (`--audit`, `--apply --out DIR`, never in place). The route-end arithmetic in `oc.route_end_depth_yd` and `nfl2k5_playbook_lint.route_end_depth` now models kind 10 as the game does (1 yard behind the line), so the linter catches a play that runs out and back.
+- The shipped packs are the generator output, then `repair_reversals.py --apply`, then `pb/v2/menu_screen_cap.py`. A fresh generator run includes both fixes, so it gives a different but equally gated set.
+- **Tush push and Goal Line Sneak.** `nfl2k5_offense_modern` and the generator give the Goal Line Sneak retail-like back spacing and the Tush Push the retail QB Sneak back leg; `pb/v2/tush_push_spacing.py` applies the same to the 32 shipped books (and catalogs and manifests) and renames 788 play names HB to RB.
+
+#### Studio fixes from the Discord sweep
+
+A read-only sweep of 554 Discord messages from October 10 to 20 found 14 editor items. Four were already fixed before this wave (two reports of the same unchecked-SOFTDRINK-items build failure, the charge-ups lock message and the squashed Modern Colour and Lighting section). These are new:
+
+- **Linux and Steam Deck launch.** The README told Linux users to run `./2K5-Mod-Studio.sh` and `./install.sh`, and the RC111 archive shipped neither. The archive now has `2K5-Mod-Studio.sh` (it sets up a `.venv` beside it on first run with `--setup`), and the README matches the archive. Tested in a sandbox copy: setup took 12.4 s and about 112 MB of downloads, then the Studio started. Not tested on a Steam Deck.
+- **Blank launch-failure dialog on Linux.** Both launchers passed raw text to zenity and kdialog, which read a Python traceback's `<module>` as markup and showed an empty box. The text is escaped now (2K5 and APF).
+- **"Out of space" with plenty of space.** Opening a disc writes about 6 GiB into the Studio's private cache in your user profile (drive C: on Windows), not beside the ISO, and the raw error named no drive. A disk-full error now names the folder, its free space and the size needed. The reporter's exact cause is inferred.
+- **"My modded ISO is still the base game."** The Basic, Advanced and Experimental presets set gameplay and franchise options; they do not contain the SOFTDRINK 2K28 pack. A sentence under the preset buttons and in Getting Started now points to Share, Install SOFTDRINK 2K28. Another cause on the reporter's PC is possible.
+- **Patch "does nothing".** No code defect found (the install already checks the finished disc byte for byte). An FAQ checklist was added: `docs/mod_editor/discord_bugs_3_faq.md`.
+- **APF Situations panel:** column sorting and the edit stall (see the APF changelog).
+- Still open: an export error posted only as a screenshot (PS3 tag, not readable), the APF weights preview not refreshing (not reproduced), and editing APF base personnel weights (a missing feature).
+
+#### Review fixes (fx1)
+
+The release was reviewed by three cloud ultrareviews on draft pull requests #67, #68 and #69 (10, 10 and 9 findings), eight local review passes (data, playbooks twice, build, franchise, GUI, kits, native code) and a Fable review of the staged release. Job fx1 checked every finding against the code and fixed the real ones in the Studio, each with a test that fails on the old code. None of these changes the release disc's bytes (the plan-only preflight of the release recipe gives the same plan and receipt before and after).
+
+| Finding | What it was | Fix |
+|---|---|---|
+| Experimental preset button | Pressing Experimental in Build & Share also ticked Historic teams in Quick Game (through classic teams), so the GUI plan differed from the preset | Each preset button now gives exactly the preset's plan (test: every preset, every key) |
+| Linux `--setup` | Ignored `MOD_STUDIO_PYTHON` once a `.venv` existed, and checked the system Python | Honours it and rebuilds an old `.venv` |
+| Rosters lock boxes | The abilities lock boxes on the Rosters page stayed stale after a preset | They follow the preset |
+| Franchise upgrade | A year edit after an upgrade bumped experience twice; a loose SAVEGAME.DAT was not taken as its signed folder; the default output could land inside the source; the receipt was written after the publish; an empty output field raised an error | All fixed: no double bump, the save's folder is used, the output goes beside it, the receipt is written first, empty fields are refused |
+| Late-step worker pool | A worker that could not start raised instead of running in the process; the pool lived on after the last result | Serial fallback; the pool ends with the last result |
+| Cancel during the playbook warm-up | Cancelling killed the helper but left its pool workers running | The workers end with the helper |
+| Team ratings preflight | Crashed when the source was given as a plain string | Fixed |
+| **Fresh build: Advanced + 25 more moments with MyCareer off** | **A real fresh-build failure: the historical Anniversary coaches' code space was reserved after later owners, so this combination was refused at the end of the build** | Its space is reserved with the first pass when MyCareer is off |
+| Roster refresh lock check | The depth-lock check could run before a custom roster refresh | It runs after the refresh |
+| Dated roster refresh without modern position pools | Only refused deep in the build | Refused in the preflight |
+| Rebuilding over an earlier disc | Era ball, older moment venues, older letter grades and late-owner order could fail only after the whole build | Refused before any write, with "Build from your unmodified retail dump instead" |
+| Run blocking | No preflight for a foreign source; two tests checked less than they claimed | Preflight added; tests fixed |
+| Anniversary moment stats | Two source players could map to one roster slot (no current data triggers it) | One slot per player |
+| Fan art writes | A failed span write was not rolled back | Rolled back |
+| Complete offense packs | A bad Snap To operand raised an IndexError; the name pool bound was too loose | A pack error; the pool ends at the coach profile |
+| Compile cache | Orphaned `.pending-*` temporaries were never removed | Swept after an hour |
+| Historic moment rosters on a non-2026 main roster | Four moment players are pointed at head ids the main roster already uses (ids 1770, 2733, 3082, 3559 on a retail roster) | Not fixed: the build log and receipt now say so. The SOFTDRINK 2026 roster has no clash |
+
+#### Release preparation fixes
+
+- The 2K5 release gate refused the merged tree: `data/nfl2k5_kit_fixes_2026_sw1.json` was written as one line of compact JSON, and the gate refuses any whitespace-free run longer than 4,096 characters as a possible embedded blob. The file is now written with a space after each comma and colon. It parses to exactly the same document, its pins were updated, and no build byte changes.
+- The cave-manifest generator (a developer tool that records which executable bytes each owner holds) refused the b777 tree because the new run blocking and QB accuracy owners were not left out of its allocator-free probe build, as the older late owners were. Fixed in `nfl2k5_cave_manifest.py`, and `data/nfl2k5_cave_reservations.json` was regenerated from an observed build of the release tree.
+- The local emulation of the hosted test job found tests that hosted CI would have failed: two whose "needs the private retail disc" skip had moved onto a helper function, and three whose expectations predate the review fixes (the compile cache's stale-temporary sweep, and the Anniversary coaches' space now reserved with the first pass when MyCareer is off). All fixed; the tests now check the new behaviour.
+
+#### Screen pass timing
+
+The b776 build refused "Screen pass timing (experimental)" because its frozen October 15 packs did not match the screen pins in the repository. The repository packs and pins agree again (pb4 regenerated them), and an offline check of every book found no refusal. **The release disc was still built with screen timing off**, the same as the b776 disc Noah played, so books carrying their own authored timing keep it and retail and stock books keep the original game's.
+
+#### Not in this release (known limits)
+
+- **Open review items** (minor, reported and left for the next update): the franchise upgrade's 0700 temporary output folder and fsync of the save files before the rename; direct-snap and special play types accepted in every pack schema; vertical variants that can repeat; a moment-kit refusal that only shows at the end of a build; negative stem depth and exit codes in the route-reversal tool; a stale H-back fixture and missing moment-context install tests; kit numbers 100 to 127; anniversary kickoff tests that ignore `NFL2K5_RETAIL_EXTRACTION`; a macOS memory cap; the APF number-texture tool's default path and one APF research note that still name a private folder; en dashes in some new research notes.
+- **Share export speed and memory:** exporting a full pack takes about 1.5 hours and a lot of memory (a faster scan was suggested, not done). The late-step caches have no shared size budget (up to about 6 GiB).
+- **Historic moment rosters on a non-2026 main roster:** four moment players can share head ids with the main roster (see the table above).
+- **One Green Bay play-call page** shows two screens of the same type (game data, next update).
+
+- **Rollover release of CPU depth locks** (year-two CPU depth charts purely best by position): not done; no code space left in place, and the rollover call site may also run at MyCareer creation, so it needs a proved MyCareer-creation gate first. **MyCareer-club promotions** are not automatic either.
+- **MyCareer save name.** Noah asked for MyCareer saves to be named and labelled MyCareer instead of MyNFL. A hook was written but never committed or tested, so it is not in this release. The load list's Type column would still say MyNFL even with it.
+- **Tripling the playbooks** inside the book format is not possible (see the SOFTDRINK page). Growing the PLAY body would mean moving two resident book buffers and about 34 fixed offsets; it was not attempted.
+- **Titans slot receiver.** The old Titans book put the inside receiver at the right ordinal 99% of the time, so the likely cause of "the outside receiver in the slot" is the Titans' WR depth order (the SLOT RECEIVER row). Not checked yet.
+
+
+### New build options (October 10 to 19)
+
+The first four options are on in the SOFTDRINK experimental preset and off in Basic, Advanced and plain plans. Each one can be switched off. The options after them were added during the October 17 to 19 test waves, and each says where it is on.
+
+- **Automatic 2026 CPU coach profiles (experimental).**
+  - CPU teams in Play Now, Season, Franchise and Playoffs call plays from their head coach's profile: pass and shotgun mix by situation, plays from their own book, fourth-down and two-point tendencies, and hurry-up.
+  - Human sides, explicit Coach Matchup picks and special modes keep native behavior.
+  - When a CPU side has a profile, the Modern 2 fourth-down, two-point and field-goal setting follows the original game's required calls plus the coach's tendencies. Without a profile, Modern 2 is unchanged.
+  - Profiles are stored in unused space in the 32 playbooks.
+- **2026 head coaches (sideline look and faces).**
+  - The 2026 head coach for every club, in team colors with a painted face.
+  - Andy Reid uses the original game's Philadelphia Reid model.
+  - 14 clubs move to a closer-fitting coach body.
+  - Dallas and Washington get coach pictures.
+- **2025-26 NFL officials' uniform.** All seven officials, with role letters on the back panel.
+- **2026 fans in the crowd cutaways.** 2026 gear for all 32 clubs in the replay and crowd-reaction shots.
+
+- **Classic teams (`classic_teams`).** The 149-team Quick Game list: the 75 retail teams, the 50 Anniversary team-seasons and 24 new 2005 to 2025 team-seasons, sorted by year. On in the Experimental preset. It acts only with the historic Quick Game option. It adds a 288-byte read-only allocator owner and one roster file per new team; it adds no players to the main roster. Classic teams of 2010 and later take the franchise's current playbook (the stock-books hook, cut at 2010).
+- **Career Home (`my_career_home`).** The MyCareer Career Home screen with Schedule, in its own 29th executable section of 12 KB. Needs MyCareer. A build with the jukebox music library skips it with a receipt note, because both use the same slot. A build without it keeps the classic Apartment and is byte-identical to the build before.
+- **Hair styles (`hair_styles`).** Seven new hair meshes and nine textures, a 768-byte late owner and a roster byte (`hair_style`, bits 0 to 3 of +0x0D). On in the Experimental preset only. The step also writes the tracked 2026 assignments (259 players) itself, only for players it finds by pool, index and surname (it needs 90 percent of them), and never over a style you set. It refuses to run together with the Guardian cap overlay (the separate `guardian_cap` option is fine). An existing image cannot be upgraded in place.
+- **Anniversary moments:** the build steps `moment_context` (Super Bowl game type, historic stats), `moment_booth` (the Super Bowl welcome line), `moment_kits` (10 new kit slots and 27 classic-team default kits), `moment_scans` (39 real face scans copied into unused head ids), `super_bowl_fields` (flank marks) and `super_bowl_hosts` (franchise Super Bowls LXI to LXIV). They run with the Anniversary and classic team options.
+- **Play-call route length (`play_art_routes`).** Draws a route's last segment at its authored length. On in the Advanced and Experimental SOFTDRINK presets, off elsewhere. It has a Build panel checkbox.
+- **CPU quarterback and defender changes** (`cpu_qb_zone_windows`, `cpu_qb_recheck`, `db_ball_play`). Off in every preset. The b776 test recipe set all three to true, and the release recipe keeps them on. See the SOFTDRINK page for what each does.
+- **Team number size (`team_number_scale`).** Recipe key only, with no Build panel control: a map of kit name to scale, for example `{"13H0": 1.1, "13A0": 1.1}` for the Chiefs. Empty by default, which writes retail bytes.
+- **Controlled-player name label style (`indicator_names_style`).** `retail` (the default in every preset, installs no code), `retail_persistent` (the original font, name stays on for the player you control) or `scorebug` (the broadcast-style label from the October 15 build). The two non-default styles are kept as choices. `retail_persistent` was the default on the b775 disc and replaced the original game's R1 name check, so R1 stopped naming players; it is not a default any more.
+- **Lambeau model (`modern_lambeau`).** Off in every preset (a test pins that). The b776 recipe also removes the Green Bay walls, banners and ad boards from its copy of the 2026 venue art so the retail Lambeau shows.
+
+Some repairs run automatically and have no checkbox:
+
+- **Stadium shadows.** These run whenever a modern stadium option is on.
+- **Uniform repairs.** The Giants shoulder numbers, the 2026 home and away kit fixes and the alternate kit fixes run on every disc build. Each applies only where the disc holds the known kit art it was made for.
+- **Glyph fixes (`nfl2k5_glyph_fixes_2026`).** A new pass after the kit fixes. It re-colours the original game's own nameplate letters for the Bears (home, road, orange style) and Chiefs, and the original Chiefs digits, reading them from your disc so no retail pixels ship, and imports a redrawn Titans 7. It is pinned to the known spans. It uses three row kinds (`names_retint`, `digit_png`, `digit_retint`).
+- **Chiefs kit pass (`apply_chiefs`).** After the pants hem and before the Anniversary kits. It uses a new exact-integer `palette_remap` row key; all 374 earlier kit-fix rows produce the same bytes.
+
+### Studio fixes (October 10 to 19)
+
+- **Applying a preset clears leftover move locks.**
+  - Applying the advanced SOFTDRINK settings in Build & Share could stop with "Charge-ups: stars only replaces the charge policy of the two move locks: turn both locks off". The settings turn both locks off, but a lock left on from earlier settings survived the apply.
+  - A preset now sets both lock boxes from its own values, so the apply goes through. Reported by a tester on the public release.
+- **The Modern Colour and Lighting section is readable again.**
+  - In Build & Share the section's controls were crushed together, so some could not be seen or used.
+  - The section now asks for the height its tabs need, and each tab scrolls inside itself when its page is taller than the space it gets.
+
+- **The moment-scans preflight read the wrong image.** The first b776 build stopped after 18 minutes with "0201:f: not the retail game". In a project build, the source argument is the project-built image (2026 faces already written into retail head ids), and the preflight took it for the retail game. The plan-only check had passed because there the source is the retail ISO. The preflight now reads the retail source.
+- **Classic teams and relabelled colleges.** The first b775 build stopped at classic teams because Noah's 2026 roster edits reuse retail college slot 223 (Tennessee-Martin) for Indiana State, and one classic player lists Tennessee-Martin. Classic team compiles now accept a missing college (opt-in, classic teams only), keep the template's college and record it in the receipt. Moments stay strict.
+- **Smaller closure and manifest fixes found while merging:** the indicator-name recorder wanted three label sites even when the style installs two; the observed-manifest probe grew when the hair step was on; the music-storage evidence check ignored its slot's other occupant (Career Home); a recorder wrapper hid Career Home from the manifest; the project's new modules and data files were added to the release allowlist and the modern-art PNG catalog (871 to 875 files); a missing module pin was added (the coach diversity module).
+
+### More changes that ride on the SOFTDRINK preset
+
+These are the game changes on the SOFTDRINK release page that the Studio builds. The release disc was built from the Experimental preset plus the SOFTDRINK recipe's overrides: 125 build options on and 25 off (the receipt is the build's inputs file). The recipe turns on 69 options the plain Experimental preset leaves off (among them the modern stadiums, Modern surfaces and colour, MyCareer and Career Home, the Anniversary and classic team options, abilities, the 128 MiB memory options, music, and the three CPU quarterback and defender options), and turns off two that Experimental has on (the acceleration ramp and the Guardian cap). Screen pass timing is off and the Kansas City number scale is 1.10.
+
+- **Sprite scorebug.** The Experimental preset turns on the sprite scorebug, which the scorebug-style name label is drawn from. The label is no longer the default (see the name label option above). Basic and Advanced are unchanged.
+- **Controlled-player names.** The broadcast-style alphabet and outline are kept as the `scorebug` style. The default is the original game's label.
+- **Letter grades** on 91 more ratings and screens, and **modern team ratings** on the display screens only.
+- **Pants above the knee** on current kits, a rebuilt **Washington helmet W**, the Seattle shoulder-number grey, and the Tampa Bay collar shield fix.
+- **Super Bowl walls** with the real NFL shield and team logos, Super Bowl fields and host stadiums. The era ball (`nfl2k5_era_ball`, a modern ball and the old disc ball chosen by season) was in the b775 and b776 builds. Noah's verdict on the b776 disc was to bring back the earlier ball look, so it is off in this release (see the b777 section).
+- **Block yard numbers** for Indianapolis, Tennessee, Minnesota and Cincinnati, **MetLife's midfield helmet**, and end zones that no longer clip helmets, logos and wordmarks.
+- **Playing surfaces.** Modern surfaces writes a premipped detail with per-level grain (tf-v4). Natural grass is at 20% and synthetic turf at 15% of the way to the strong candidate. The October 18 retune (gr4) replaced the October 16 colour targets: every natural-grass stadium has one shade (day (50, 69, 29)), turf is the October 13 turf with a small per-channel factor, and end zones take the field's gain times a measured factor. The Broadcast greens pass gives Anniversary alias fields the grass gain instead of the turf gain (except rows 24 and 25). Detroit, Pittsburgh, Washington and Cleveland take a tiled detail so it fits the space their fields share with other art. The practice-field pins were re-recorded.
+- **U.S. Bank Stadium** exterior and the downtown skyline seen through the Legacy Gate glass.
+- **Stronger tap burst for human players**, scaled by Speed.
+- **7-on-7 practice** is off in the recipes and removed from the menu.
+
+### MyCareer fixes
+
+The four MyCareer fixes are described on the SOFTDRINK release page (controller port ownership, B to quit, the backup quarterback question, and the Enter the Draft "Roster is full." check). They live in the MyCareer runtime, which `tools/mycareer_mode/build_runtime.py --check` regenerates and verifies. The Studio and the pack build the same bytes. Later work on the same runtime: the Franchise Team Select side-permission fix and the "You were drafted" notice (nl1), the Random Team slot release (mc3), the black prior-season sim (mc4, 27 bytes of assembly) and the Schedule screen (mcs, in the Career Home section).
+
+- **Tests.** The new `test_nfl2k5_my_career_mc2.py` has 12 native tests: a pad in port 2 going through the game's menu input code, Practice, B on the Apartment (No and Yes) and on the MyCareer screen, the backup question (B, No, Yes) and no question for a starter, and the draft-path creation (the bad record is skipped through Create Player, team choice, Sign and the Apartment; a clean league is unchanged; with no clean record it still refuses and writes nothing). On the unfixed disc executable 7 of them fail and 2 error, including "Roster is full." for a bad first record, which matches what Noah saw. A batch of 45 MyCareer, Supersim and practice test files passes, including the 34-test live Supersim file (2,511 s).
+- **Changed tests.** B on the MyCareer screen now quits, so the frontend test expects that. A record already in use elsewhere is skipped instead of refusing the career. The events test hashes follow the regenerated runtime.
+- **Repair tool.** `tools/b77/mc2_repair.py` accepts only the base executable or its own output, changes 16,748 bytes all inside declared spans, and equals the Studio's output. A second run writes 0 bytes.
+- **Later tests.** `test_nfl2k5_my_career_nl1` (7; draft notice 970 s), `test_nfl2k5_my_career_mc3` (8; the shipped MyCareer refuses with "Roster is full." with the 1996 Packers held, the new one creates the player; the new code was run on the October 13 disc's own executable and roster), `test_nfl2k5_my_career_mc4` (8, 1 skipped; 3 of 4 fail on the old code), `test_nfl2k5_my_career_mcs` (11; a whole natively simulated season), `test_nfl2k5_my_career_home` (13; every row, sub-list, Classic, B, port 2, panel bounds, missing art). A batch of 63 to 69 MyCareer, Supersim and practice files passed each time (the 34-test live Supersim file about 2,300 to 3,700 s, the 538-case pairwise composition file about 3,100 s, 119 memory-write tests, 131 cave-reference tests). Two allocator tests and the stale-manifest test failed in every batch (see Release checks).
+- **Played.** Noah played the whole career flow on the b775 disc on October 18 and said it worked end to end. The mc4 black sim, the Schedule screen and the grown 12 KB Career Home section were first on the b776 disc; he did not report on them separately. The Discord report of a failed load after a draft and save is still not reproduced (see the SOFTDRINK page).
+
+### Franchise page: upgrade an older save
+
+The **Franchise** page has a new button, **Upgrade franchise save to the current build**.
+
+1. Save and reload any pending edits first.
+2. Select the disc you play.
+3. Preview the changes.
+4. Write a new signed save folder. The original stays untouched.
+
+A JSON receipt beside the new folder lists every changed field and the input and output hashes.
+
+What the upgrade changes:
+
+- **Experience.** For franchises that began with the SOFTDRINK 2026 roster before v0.6, imported players get one more year pro. Their career and honors history slots shift with it, and the values and flags stay the same. Players are matched by full name and birth date, and generated players are left alone. A save that is already current is unchanged.
+- **Playbooks.** Each team's playbook reference is checked against the disc.
+- **Coaches.** Coach bodies and pictures come from the disc, matched by the coach's name. This is how an existing franchise gets the new coach bodies and the Dallas and Washington pictures.
+
+The upgrade refuses:
+
+- custom or mixed experience counts;
+- history-slot overflow;
+- shared history that would need moving;
+- invalid references;
+- unsupported save types;
+- damaged signatures.
+
+Repeating an upgrade against the same disc changes nothing. The same steps are available from the command line as `tools/nfl2k5_franchise_upgrade.py upgrade` and `coach-sync` (see `docs/mod_editor/franchise_save.md`). The command never edits an HDD image or installs a save for you.
+
+The upgrade has not been re-run against the b775 or b776 disc. This upgrade was run on a real franchise (Tennessee, 2027 Week 1). In xemu that save then played a full CPU game, saved in game, reloaded and simulated the next week. Structural checks cannot promise that every future game is free of crashes.
+
+### Coach VIP library
+
+`tools/nfl2k5_coach_vip.py` packages the 32 coach profiles as Xbox VIP saves. Load one and pick it in **Quick Game > Coach Matchup > VIP Coaches**. See `docs/mod_editor/nfl2k5_coach_vip.md`. From October 18 the profile builder (`nfl2k5_coach_diversity.py`, used by `nfl2k5_vip.py`) rebuilds the play rings with more variety. `build_profile(..., varied=False)` reproduces the old rings. Offline numbers are on the SOFTDRINK page. The VIP profiles come from the same builder.
+
+### Playbook authoring checks
+
+- Play and category labels longer than 63 characters, and labels containing `%`, are refused.
+- Category types above 24 are refused.
+- The linter's new `PLAYCALL_UI` code is enforced by the final Build gate.
+- Empty play categories that point at no formation (`CATEGORY_EMPTY`) are now an error, and the Build gate refuses them. One such empty category caused v0.6's defensive menu freeze.
+- The book compiler retires only categories with no members and no owner.
+
+None of the shipped v0.6.1 books trip the new checks.
+
+A further measure, not a build gate: `nfl2k5_formation_menu_pages.summary()` counts offense formations whose link count is not a multiple of 3. The play-call menu pages three buttons at a time and repeats the last play on the empty buttons, which is what looked like "three bubble screens in a row" in the b775 video (424 of 927 formations in the b775 books; 879 of 927 in the retail books are multiples of 3). It is not a gate because the retail books have 48 short formations and a test compares the menu receipt exactly.
+
+### Builds and existing discs
+
+- **Unchecked SOFTDRINK items.**
+  - Building with some SOFTDRINK items unchecked could fail with `project repeats target live_number_nameplate:16H0:jersey_digit:0`.
+  - The SOFTDRINK recipe held 340 repeated jersey-digit targets under two names. They are merged (11,540 edits became 11,200), and the last complete edit for each target wins.
+  - Every subset of the edits was proven free of repeats, and all 340 merged targets compiled.
+- **Updating an existing v0.6 disc in place.** A Studio rebuild on top of a v0.6 disc applies:
+  - the guarded shotgun-weight routine (the exact v0.6 routine is upgraded in place);
+  - the Week 18 awards timing (when the 18-week calendar is already installed);
+  - the sprint rules (a recognized older sprint install is upgraded).
+
+  Fresh builds also get the MyCareer Fast Forward fix through the regenerated MyCareer runtime.
+
+  Unknown code is still refused.
+- **Build fixes found while assembling this release.** A full build from retail stopped at several points between the project edits and the late steps. These are fixed in the source:
+  - A number or helmet stream that exactly filled its fixed space was accepted by the colour-palette step and then refused by the game's native decoder model ("read outside allocation"). The palette step now runs the same model on each candidate and steps to the next smaller palette when needed. Streams with a spare byte are unchanged.
+  - A helmet whose locked colours do not fit the next smaller palette (Seattle's helmet02, 207 locked colours) now fits at 208 colours instead of failing.
+  - The 2026 team-names step assumed the unshifted layout. The roster edits restore 140 blank team records (11,760 bytes before the string pool), so the step now measures that shift and reads and writes at it.
+  - The late midfield pass called a function that does not exist and stopped at Pittsburgh. It now saves its receipt with the right writer.
+  - The Unc Bowl uniforms step stopped with "foreign or partially repaired Unc Bowl uniform spans". The cause was that the Studio never composed the Anniversary era kits, so Pittsburgh's 22A4 was still the retail 1961-62 kit. The Studio now composes them before the Unc Bowl step (a byte-exact port of the kit compiler used for the v0.6 era kits). The next stop, three alternate-kit chunk pins whose compressed bytes the new native-decoder guard changed (the decoded pixels are identical), is fixed too. The era kits were checked offline against the v0.6 disc, and the Unc Bowl output against the October 13 disc.
+- **Coach profiles and the scoring check.** A Studio build with the CPU coach profiles on can finish now. The final play-scoring check used to refuse the shipped v0.6.1 disc.
+- **Share export.** The pack exporter stores no retail bytes as literals. The 15 retail coach archives kept for the Anniversary moment coaches (3,527,904 bytes) are copies of your retail dump, byte for byte, and no whole literal of 4 bytes or more in the pack matches retail. The pack grew from 889,447,523 to 921,597,909 bytes (3.6%) as a result. The pack format and the minimum reader are unchanged. An installer replay of the whole image matched on Linux and on Windows Python with 0 differences.
+- **Native code space.** The coach, tap-burst, draft, H-back and ratings features together needed more room than the executable's allocator had. Fixed-size directory slots were added (448 bytes in code, 464 in the roster area) and no existing feature moved. All 32 subsets and 24 insertion orders of the features were tested.
+- **Decoder guard.** The native decoder can fetch its next flag byte before checking that its output is complete. Every field, venue, scene, period and presentation fitter now refuses a stream that would trigger that. On rebuild this changed the compressed bytes of 55 model and crowd outputs, 7 MetLife skin outputs and 24 board kits. The decoded pixels and meshes are identical.
+- **Faster builds, same output bytes.**
+  - A full build from retail used to take about 3 hours on one core: 14 minutes of setup, 2 hours 8 minutes for the 11,202 project texture edits, and 32 minutes of late steps.
+  - The texture step now compiles digits, faces, portraits and P8 art (and the kit and card kinds that were already parallel) in separate worker processes. The default is one fewer than your core count, bounded by memory. `NFL2K5_BUILD_WORKERS` sets it.
+  - Compiled units are cached in the project's compile cache. A cache entry is used only if the edit, its input files, the code the compile loaded and the Python, PIL and NumPy versions are all unchanged. A corrupt or stale entry is recompiled. `NFL2K5_DISABLE_COMPILE_CACHE=1` turns the cache off, and `NFL2K5_COMPILE_CACHE_MAX_MB` caps its size (default 1 GiB; one full league uses about 390 MB).
+  - The 64 playbook packs were compiled twice, once in setup and once late in the build. The late install now reuses the first compile.
+  - On a busy 32-core machine the texture step went from 9,129 s to 906 s (10 times faster) and 169 s with a warm cache. The playbook preview went from 1,021 s to 254 s.
+  - Measured end to end: a full release-candidate build from retail (coach AI on, the canonical recipe, a cold compile cache, 31 workers, on a machine that other work was also using) took 2 hours 39 minutes. The previous full build of the integrated branch (before this release candidate), on a machine that was also shared, took 5 hours 24 minutes. The 11,202 project texture edits took about 16 minutes instead of 128. The rest is single-threaded late steps that this release does not speed up (stadium models, Modern surfaces, the Anniversary fields and era kits, native play scoring). The earlier projection of 25 to 30 minutes was too optimistic for the whole build.
+  - The output is the same. For all 10,325 project spans, and for the receipts, previews and kept-retail rows, the new code matched the old code exactly, with and without the cache. A worker error or an unprovable result falls back to the old serial code for that edit.
+  - Workers use the `spawn` start method on every platform. It was tested with real encoders in spawned workers on Linux, and on October 17 the 24 worker tests also passed under Windows Python (Wine; see Release checks). It has not been run on a real Windows PC.
+  - One older issue was found and left alone: the equipment receipts (not their bytes) depend on the state of a shared stage cache next to pack0 and on worker scheduling. The bytes written are identical in every case.
+- **Late build steps run in parallel with a verified cache (fast2, October 17).** Six late steps (fan art, Anniversary fields, native play scoring, era kits, Broadcast greens, venue art) now use a worker pool and a content-addressed cache. A cache entry is used only if the code it traced and its inputs are unchanged, and a tampered entry is recomputed. Two complete plan-only builds of the same source, one with the pool and cache and one with `NFL2K5_SERIAL_LATE_STEPS=1` and the cache off, produced the same image (sha256 973345fd, 6,032,195,584 bytes, 69 books scored): 4,474 s against 9,298 s on a busy machine. Step times, parallel against serial: Anniversary fields 1,136 s to 143 s, native play scoring 583 s to 53 s, Broadcast greens 598 s to 259 s. Venue art barely moved (669 s to 573 s) because it is limited by writing and reading each bundle back. The tests are `test_b775_fast2_late_steps` (40 to 41). Each time a branch adds imports to the stadium, field or fan-art code, its traced-code list must be refreshed; a test catches that.
+- **Real full builds.** The b775 test disc (a full Studio build with Noah's art and coach AI) took 6,752 s (1 h 52 min), against 5.4 hours for the October 16 to 17 disc. The b776 test disc took 6,633 s (1 h 50 min) on its fourth try. Try 1 failed at the moment-scans preflight (fixed above), try 2 at screen timing (below), and try 3 was stopped by the 75 GB free-space guard, so two worktrees were removed first. The finished b776 disc scored 69 books with 0 faults, passed the executable validator (349 checks, 29 sections) and used 90 of the 95 allocator requests.
+- **Speedster lock.**
+  - `lock_speedster=False` still waives the stored Speedster requirement, but no longer waives the star requirement.
+  - Charge-ups are star-only for every player on the field.
+  - The SOFTDRINK defaults keep the lock on.
+
+### Known differences: Studio build and the October 13 disc
+
+The October 13 disc, which Noah played, was assembled with some native repairs that the Studio's recipe cannot reproduce yet. The Studio has no step for the helmet and numeral layer. A disc built by this Studio therefore differs from the October 13 disc in these places:
+
+- **Seattle helmet02 fixes** on kits 26H0, 26A0, 26H4 and 26A4 are not produced.
+- **Giants home shoulder numbers** (kit 18H0) are not produced.
+- **Chargers alternate 10** (kit 24A10) does not carry the art the October 13 disc had.
+
+The SOFTDRINK release page lists the same three. The replay was repeated on the b775 and b776 integration builds (190 of 190 kits, 0 errors, the same 12 known skipped lines) with the same result.
+
+**Screen pass timing refuses the b776 build.** The "Screen pass timing (experimental)" step stopped the second b776 build with "Screen timing refused: Mixed, foreign or different-level declared screen assignments": one book's declared-screen signature matched neither its retail pin, its timing pin, nor the complete offense pins. The b776 disc was built with the step switched off, so books carrying their own authored timing kept it and retail and stock books kept the original game's. The plan-only preflights cannot see this. The cause was found in the b777 wave: the b776 recipe used frozen October 15 packs that did not match the repository's pins. The release disc was also built with the step off (see the b777 section). Nothing else is known to differ, a replay of the late uniform steps against a full release-candidate build (190 kits, 0 errors) found exactly these three and no others.
+
+The late uniform steps (era kits, Unc Bowl finish, Giants numbers, the kit fixes and the pants hem) can be replayed offline against a build's verified project manifest with `tools/b77/kit_pin_chain_check.py`. It reports a step that would stop a build, or a texture a step would skip silently. It is a developer check and is not part of the installer.
+
+### Release checks
+
+**Test waves b775 and b776 (October 17 to 19).** Each job had its own gate (its tests, `repin --check` with 0 updates, both release closures, `build_runtime.py --check` for the MyCareer runtimes, a plan-only preflight of the canonical recipe that writes nothing). Integration merged 12 branches for b775 (head `c7ffafe9`, then `ee6495ce` with the classic-college fix) and 17 for b776 (head `41fcc68d7`). Details that matter:
+
+- **Sweeps.** b775 sweep 1 on 1,081 files had 24 failures, 9 of them mismatched pins since fixed. Sweep 2 on the frozen head ran 1,082 files and 1,073 passed. The 9 that failed: `test_b772_ny1`, `test_b772_uf1` (their old test discs were deleted), `test_nfl2k5_coach_ai` (exact fixed-span test), `allocator_scaleout`, `allocator_directory_slots`, `period_goalposts`, `draft_picks` and `hback` (see below), and `music_metadata` (fixed after the freeze). b776 ran targeted sweeps instead of the full one: 136 files, 126 passed first time, the failures being the coach test, two fixtures that no longer validate (see below), the New England Okie share (since fixed by trimming that book), two kickoff tests on a stale manifest, the Build tab control test and the v2 screens test. A 22-file set of manifest-dependent tests passed on the installed manifest.
+- **Allocator ceiling.** The executable allocator directory holds 96 entries. The complete test union (every owner switched on) is at 94 of the 95 caller requests (plus the boot logo). The two allocator tests were failing until the b777 wave because their synthetic test owner added two requests; ci2 made it one request, and both tests pass now (scale-out 29, directory slots 5). Real builds are far below (the b777 release candidate used 92). There is still no room for another allocating owner in the test union. New owners are observed on a separate probe copy for the cave manifest.
+- **Goalposts and classic teams.** The classic-teams table sits after the period-goalposts owner, so a disc built with classic teams and goalposts off cannot later take goalposts without the table moving. Fresh Studio builds compose from retail and are unaffected. `period_goalposts` was failing its worst-case test on the classic-teams tip itself until ci2 limited the comparison to owners placed before it (24 OK now). The ordering itself is unchanged.
+- **Old executable fixtures.** `draft_picks` and `hback` use a private test executable from before the October 17 MyCareer change. `cpu_qb_reads` and `db_ball_play` have b775-executable variants that no longer validate after the Career Home section grew. Fresh builds compose from retail, so these are test fixtures and not product faults.
+- **Cave reservations** were regenerated from an observed full build several times for b775 and six tries for b776 (final: 16,089 reservations from 193 writer calls, sha d3b04309). Early tries failed on a recorder that required all three name-label sites, a probe build that grew when the hair step was on, a wrapper that hid Career Home, and the play-art owner needing a code page the full union does not have. Each was fixed. Some source files are fingerprinted by the manifest, so a late change to one of them (the b776 New England book pin was one) needs a regeneration.
+- **Executable validator.** `tools/b77/int1_xbe_validate.py` is a static header and section checker, negative-tested on mutated copies (overlap, bad count, thunk, TLS, raw overlap are all caught). It passed 21 of 21 executables the observed builds read back and the finished discs (349 checks, 29 sections; 338 checks, 28 sections for the Career-Home-off disc). The two 29-section images list the last section out of virtual address order; the validator flags that as a note, with no overlap and inside the image size.
+- **Windows and CI.** The Windows (Wine) gate described below was done on the October 17 release candidate. The checks on the b777 release tree are in the last part of this section.
+
+- **Integration.** The six fix branches were merged onto one branch: sprint tap burst, stadium shadows, officials, uniform fixes, CPU coach profiles and franchise upgrade. After every merge we ran:
+  - a recheck of every pinned file (no changes needed);
+  - the packaging allowlist check (nothing missing);
+  - both release closures;
+  - the merged job's own tests and the closure and pin test files;
+  - an automated review of the diff.
+
+
+- **Release candidate assembly.** The release candidate branch starts from the integrated build (the six fix branches above, then about thirty playtest-wave jobs and their fixes) and adds three more jobs, each with its own gate:
+  - the Studio fixes above (preset move locks, colour and lighting panel): its two test files, the provider and pin tests, a pin recheck with no updates needed, and both release closures;
+  - the U.S. Bank Stadium exterior: its pins conflicted with the guarded refit already on the branch, so the nine bundle pins were re-recorded from the retail archive with the module's own recorder. With the native-decoder guard switched off the merged code reproduces the job's own pins exactly, so the only change is the guard. The art catalog, allowlist and capability registry row were resealed, and the model, venue, board-kit and stadium tests, the guardian manifest test (430 s) and both closures passed;
+  - the playing surfaces: its tests, a re-record of every stadium model that shares code or settings with it (Mercedes-Benz, Practice Field and U.S. Bank pins came out identical), a pin recheck, both closures, and a repeat of the job's offline dry run over all 288 home-venue bundles of the v0.6.1 disc on the merged code. On the merged code all 288 bundles fit, and every recorded measurement (fit, mean colour, grain per level, changed sites, loan sizes) equals the job's own run.
+  - a shared-builder fix found by the pin recheck: Lucas Oil Stadium and State Farm Stadium subclass the U.S. Bank builder, and the U.S. Bank job's coarser roof layout had changed their roof meshes (1,168 to 396 vertices at Lucas Oil, 847 to 329 at State Farm), so their pins no longer reproduced. The new roof layout now applies to the U.S. Bank model alone. Both models' meshes are identical to the integrated build before the merge, their pins reproduce from the retail archive, and a regression test covers it;
+  - the full test suite on a frozen clone of the release candidate, one process per file: 1,070 test files and 12,365 tests (373 skipped). 1,063 files passed and 7 did not:
+    - two need old test discs that were deleted, and fail the same way on the previous branch;
+    - one (the exact fixed-span coach profile test) fails the same way on the previous branch;
+    - one was a real stale hash left by the MyCareer change, in the beta 65 positions evidence. It is fixed and passes;
+    - two (H-back and draft picks) use a private test executable that predates the MyCareer change. Both pass when it is replaced by the repaired one;
+    - one (the Oct 13 letter-grade attribute repair test) runs a one-off repair tool that is pinned to the same pre-MyCareer-change executable, so it cannot pass any more. It does not affect a Studio build.
+  - a pin recheck, both release closures and the guardian manifest test after the cave reservations were regenerated from an observed build of the release candidate (15,040 reservations from 184 native writer calls);
+  - a replay of the late uniform steps against that full build (190 kits, 0 errors), whose only findings are the three known differences above;
+  - hosted CI was not run on the October 17 candidate; it runs on this release's commit (below);
+  - the Windows check on the release candidate: Windows Python 3.12.10 (under Wine) and Linux Python 3.12.3 built the same experimental disc (stadium models, Modern surfaces, the kit fixes) from the same retail dump and got the same image, and the same kit build. A retail dump repacked in a different physical file order gave the same 19 changed files. The new compile workers (`test_b774_fast_units`, 24 tests with real spawned workers) pass under Windows Python, as do the 12 MyCareer fix tests. This is Wine, not a real Windows machine;
+
+- **Full test suite.** The suite ran in a clean copy of the branch: 1,027 test files and 11,865 tests, 242 of them skipped.
+  - On the first run, 15 files failed. 11 were real problems the merges left behind, all fixed: tests that no longer matched the merged code, and one code-placement defect. The other 4 were timeouts or load problems.
+  - A rerun of those 15 files plus every test that reads the regenerated placement manifest passed 66 of 67.
+  - The remaining failure is a Qt panel test that fails only under heavy parallel load and passes on its own.
+
+- **Windows.** Windows Python 3.12.10 (under Wine) and Linux Python 3.12.3 each built the same disc and the same kit build from the same retail dump, and the results were byte for byte identical. The disc build used the SOFTDRINK experimental options: officials, coaches, fans, abilities, the stadium models with shadows, Modern surfaces, the kit fixes and 12 playbooks.
+  - A retail dump with its files stored in alphabetical order gave the same 19 changed files.
+  - CPU coach profiles were off in this check, because a plain retail dump does not carry the 2026 rosters.
+  - On October 15 the pack install of that day was also replayed under Windows Python (Wine) and matched the Linux image with 0 differences (6,007,947,264 bytes).
+
+The checks run on this release commit (the retail-free gates, a lean CI emulation, the Windows gate under Wine and the pack install proof) are listed on the GitHub release page for beta-77.1.
+
+### Proof limits
+
+- The new CPU coach profiles were tested live on:
+  - a Play Now half;
+  - a full franchise game with an in-game save;
+  - a reload and the following week.
+
+  Untested: long franchises, overtime and real Xbox hardware.
+- The 2026 coaches, officials, fans and uniform repairs were checked against dated photos in renders, plus the xemu checks listed on the SOFTDRINK page.
+- The Studio's complete source rebuild is still missing one uniform layer: the helmet and numeral layer (see Known differences above). The Anniversary era kits, which were the other missing layer at the first draft, are now composed by the Studio. Installing the SOFTDRINK pack reproduces the pack's disc exactly. Building the same disc from the editable recipe differs only where Known differences says.
+- Checked offline only: the retuned playing-surface greens, the U.S. Bank exterior, the 91 letter-grade screens, the Chiefs kit and number scale, the nameplate and Titans 7 fixes, the hair drape, the face eye fix, the real face scans, the Super Bowl fields, walls, hosts, welcome line and Super Bowl LVI kits, the Schedule screen and the black prior-season sim, the CPU quarterback and defender changes, the deep-lob speeds, the play-art route length, the defensive lineup rules and the sorted classic team list. The pack's disc has not had a live pass for them yet.
+- Seen by Noah (SOFTDRINK page lists them): MyCareer end to end, a Super Bowl XLII moment, classic teams, the Unc Bowl, pants above the knee and the Super Bowl XLII grass on the b775 disc, and the b776 disc running on his desktop and on a Steam Machine at 4x and 128 MiB.
+- **On the release disc for the first time, never played by Noah:** the rebuilt offense books and defense packs and the 2010 and later classic playbooks (see the b777 section).
+- Existing images that cannot be upgraded in place: the hair styles (the step accepts only retail or matching player models), and any image from before the Career Home section grew to 12 KB. A fresh Studio build from retail is the supported path.
+
 ## v1.0 RC111, beta 77: SOFTDRINK 2K28 v0.6
 
 The Studio source changes and SOFTDRINK v0.6 contents are described below. Native replays, file comparisons and offscreen editor checks establish the stated offline results. Gameplay and platform acceptance remain separate.

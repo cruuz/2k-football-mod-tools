@@ -1,0 +1,292 @@
+[
+  {
+    "team": "SF",
+    "name": "SF Shanahan",
+    "book_index": 0,
+    "asset": 25,
+    "portrait": 7025,
+    "identity": 443893182,
+    "legacy_identity": 968776674
+  },
+  {
+    "team": "CHI",
+    "name": "CHI Johnson",
+    "book_index": 1,
+    "asset": 5,
+    "portrait": 7005,
+    "identity": 3364245916,
+    "legacy_identity": 189574513
+  },
+  {
+    "team": "CIN",
+    "name": "CIN Taylor",
+    "book_index": 2,
+    "asset": 6,
+    "portrait": 7006,
+    "identity": 282283557,
+    "legacy_identity": 3718478799
+  },
+  {
+    "team": "BUF",
+    "name": "BUF Brady",
+    "book_index": 3,
+    "asset": 3,
+    "portrait": 7003,
+    "identity": 896158713,
+    "legacy_identity": 172044736
+  },
+  {
+    "team": "DEN",
+    "name": "DEN Payton",
+    "book_index": 4,
+    "asset": 8,
+    "portrait": 7008,
+    "identity": 1804323773,
+    "legacy_identity": 405257150
+  },
+  {
+    "team": "CLE",
+    "name": "CLE Monken",
+    "book_index": 5,
+    "asset": 30,
+    "portrait": 7030,
+    "identity": 962584401,
+    "legacy_identity": 2680000808
+  },
+  {
+    "team": "TB",
+    "name": "TB Bowles",
+    "book_index": 6,
+    "asset": 27,
+    "portrait": 7027,
+    "identity": 1419452452,
+    "legacy_identity": 1223706621
+  },
+  {
+    "team": "ARI",
+    "name": "ARI LaFleur",
+    "book_index": 7,
+    "asset": 0,
+    "portrait": 7000,
+    "identity": 1849644698,
+    "legacy_identity": 2720240426
+  },
+  {
+    "team": "LAC",
+    "name": "LAC Harbaugh",
+    "book_index": 8,
+    "asset": 24,
+    "portrait": 7024,
+    "identity": 245951599,
+    "legacy_identity": 1679361679
+  },
+  {
+    "team": "KC",
+    "name": "KC Reid",
+    "book_index": 9,
+    "asset": 13,
+    "portrait": 7013,
+    "identity": 2596844777,
+    "legacy_identity": 1079705794
+  },
+  {
+    "team": "IND",
+    "name": "IND Steichen",
+    "book_index": 10,
+    "asset": 11,
+    "portrait": 7011,
+    "identity": 596364211,
+    "legacy_identity": 3805199965
+  },
+  {
+    "team": "DAL",
+    "name": "DAL BSchotte",
+    "book_index": 11,
+    "asset": 7,
+    "portrait": 7007,
+    "identity": 1739293493,
+    "legacy_identity": 1562109328,
+    "alternate_portrait": 7031
+  },
+  {
+    "team": "MIA",
+    "name": "MIA Hafley",
+    "book_index": 12,
+    "asset": 14,
+    "portrait": 7014,
+    "identity": 1436424133,
+    "legacy_identity": 2942321307
+  },
+  {
+    "team": "PHI",
+    "name": "PHI Sirianni",
+    "book_index": 13,
+    "asset": 21,
+    "portrait": 7021,
+    "identity": 4130294721,
+    "legacy_identity": 1192037785
+  },
+  {
+    "team": "ATL",
+    "name": "ATL KStefans",
+    "book_index": 14,
+    "asset": 1,
+    "portrait": 7001,
+    "identity": 1210696509,
+    "legacy_identity": 368560627
+  },
+  {
+    "team": "NYG",
+    "name": "NYG Harbaugh",
+    "book_index": 15,
+    "asset": 18,
+    "portrait": 7018,
+    "identity": 3057043929,
+    "legacy_identity": 917415267
+  },
+  {
+    "team": "JAX",
+    "name": "JAX Coen",
+    "book_index": 16,
+    "asset": 12,
+    "portrait": 7012,
+    "identity": 3220734121,
+    "legacy_identity": 1955284831
+  },
+  {
+    "team": "NYJ",
+    "name": "NYJ Glenn",
+    "book_index": 17,
+    "asset": 19,
+    "portrait": 7019,
+    "identity": 2966665428,
+    "legacy_identity": 4276163993
+  },
+  {
+    "team": "DET",
+    "name": "DET Campbell",
+    "book_index": 18,
+    "asset": 9,
+    "portrait": 7009,
+    "identity": 1451148807,
+    "legacy_identity": 3366237566
+  },
+  {
+    "team": "GB",
+    "name": "GB LaFleur",
+    "book_index": 19,
+    "asset": 10,
+    "portrait": 7010,
+    "identity": 1783861528,
+    "legacy_identity": 1231702740
+  },
+  {
+    "team": "CAR",
+    "name": "CAR Canales",
+    "book_index": 20,
+    "asset": 4,
+    "portrait": 7004,
+    "identity": 1847738533,
+    "legacy_identity": 1577927671
+  },
+  {
+    "team": "NE",
+    "name": "NE Vrabel",
+    "book_index": 21,
+    "asset": 16,
+    "portrait": 7016,
+    "identity": 3181970898,
+    "legacy_identity": 1539293627
+  },
+  {
+    "team": "LV",
+    "name": "LV Kubiak",
+    "book_index": 22,
+    "asset": 20,
+    "portrait": 7020,
+    "identity": 321500978,
+    "legacy_identity": 3765956801
+  },
+  {
+    "team": "LAR",
+    "name": "LAR McVay",
+    "book_index": 23,
+    "asset": 23,
+    "portrait": 7023,
+    "identity": 4097011423,
+    "legacy_identity": 2053272771
+  },
+  {
+    "team": "BAL",
+    "name": "BAL Minter",
+    "book_index": 24,
+    "asset": 2,
+    "portrait": 7002,
+    "identity": 2178289402,
+    "legacy_identity": 2836189152
+  },
+  {
+    "team": "WAS",
+    "name": "WAS Quinn",
+    "book_index": 25,
+    "asset": 29,
+    "portrait": 7029,
+    "identity": 2053775247,
+    "legacy_identity": 236668036,
+    "alternate_portrait": 7034
+  },
+  {
+    "team": "NO",
+    "name": "NO Moore",
+    "book_index": 26,
+    "asset": 17,
+    "portrait": 7017,
+    "identity": 468703412,
+    "legacy_identity": 1135314197
+  },
+  {
+    "team": "SEA",
+    "name": "SEA MMacdona",
+    "book_index": 27,
+    "asset": 26,
+    "portrait": 7026,
+    "identity": 2239713618,
+    "legacy_identity": 1064807838
+  },
+  {
+    "team": "PIT",
+    "name": "PIT McCarthy",
+    "book_index": 28,
+    "asset": 22,
+    "portrait": 7022,
+    "identity": 2827701287,
+    "legacy_identity": 3797459495
+  },
+  {
+    "team": "HOU",
+    "name": "HOU Ryans",
+    "book_index": 29,
+    "asset": 37,
+    "portrait": 7037,
+    "identity": 4179576444,
+    "legacy_identity": 3583322903
+  },
+  {
+    "team": "TEN",
+    "name": "TEN Saleh",
+    "book_index": 30,
+    "asset": 28,
+    "portrait": 7028,
+    "identity": 2337579737,
+    "legacy_identity": 176829258
+  },
+  {
+    "team": "MIN",
+    "name": "MIN OConnell",
+    "book_index": 31,
+    "asset": 15,
+    "portrait": 7015,
+    "identity": 2092244835,
+    "legacy_identity": 983437212
+  }
+]

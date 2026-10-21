@@ -568,6 +568,11 @@ def paint_scene(decoded, rec, venue, weather, dry=None, palette_cap=256):
                                           palette_entries=colours, weather_fit=fits))
     receipt["geometry"] = geometry_edits(edited, rec, venue) if scene == "stadium" else quad_edits(edited, rec, venue)
     receipt["markers"] = marker_edits(edited, rec, venue) if scene == "stadium" else []
+    if scene == "field" and "center_logo" in rows:
+        # b777 ar1: the midfield logo on the 50 and the centre line (the shared NY mark's ink sat 2 texels off along z)
+        from . import nfl2k5_midfield_centre as midfield_centre
+        _moved, receipt["midfield_centre"] = midfield_centre.recentre(
+            edited, rec, bytes(edited), read_p8(edited, system, rows["center_logo"])[0])
     return bytes(edited), receipt
 
 
@@ -643,6 +648,10 @@ def _peak_aware_fit(span, decoded):
         alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
         if padding <= scratch and alias <= scratch:
             rebuilt = span[:HEADER.size] + filled + bytes(padding)
+            try:
+                tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
+            except tx.TxtrError:
+                continue
             back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
             require(back == decoded and info.consumed_bytes == len(filled), "full-fill refit failed its decode check")
             return rebuilt, dict(encoder=name, fill="trailing-full", padding_bytes=padding, alias_scratch=alias,

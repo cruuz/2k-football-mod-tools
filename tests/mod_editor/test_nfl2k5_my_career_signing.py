@@ -147,11 +147,16 @@ class SigningTests(unittest.TestCase):
             struct.pack_into('<I', block, 20, zlib.crc32(block) & 0xFFFFFFFF)
             m.uc.mem_write(m.root + arena.BLOCK_OFFSET, bytes(block))
             self.assertGreater(m.call(0x3EE10C, ecx=team), 0)
-            before = bytes(m.uc.mem_read(m.root, arena.ARENA_SIZE))
+            before = bytes(m.uc.mem_read(m.root, player - m.root + 84))
             m.select(1)
-            self.assertEqual(m.top(), m.labels['entry_menu'])
-            self.assertEqual(m.get(m.state + 2676), 0)
-            self.assertEqual(bytes(m.uc.mem_read(m.root, arena.ARENA_SIZE)), before)
+            # mc2 (D01): the overflow-owned record is never used; creation takes
+            # the next clean free record instead of refusing the whole career.
+            self.assertEqual(m.top(), 0x56F050)
+            self.assertNotIn(m.get(m.state + 2676), (0, player))
+            self.assertEqual(m.get(m.state + 2676), m.get(0xCB8B14))
+            self.assertGreater(m.get(m.state + 2676), player)
+            self.assertEqual(bytes(m.uc.mem_read(m.root, len(before))), before)
+            self.assertNotIn(('notice', 'Roster is full.'), m.events)
 
     def test_created_player_resolves_from_overflow_and_native_promotion(self):
         with Machine(self.extended, self.grown) as m:

@@ -255,6 +255,11 @@ class FranchisePanel(QWidget):
         header.addWidget(self.redo_button)
         layout.addLayout(header)
 
+        self.upgrade_button = QPushButton("Upgrade franchise save to the current build")
+        self.upgrade_button.setToolTip("Preview an older SOFTDRINK 2026 franchise upgrade and export a new signed copy.")
+        self.upgrade_button.clicked.connect(self._upgrade_clicked)
+        layout.addWidget(self.upgrade_button)
+
         self.tabs = QTabWidget()
         self.tabs.addTab(self._build_overview(), "Overview")
         self.tabs.addTab(self._build_schedule(), "Schedule")
@@ -554,6 +559,15 @@ class FranchisePanel(QWidget):
         return page
 
     # ------------------------------------------------------------------ loading
+    def _upgrade_clicked(self) -> None:
+        if self._container is None or not self.sync_from_roster():
+            return
+        if self._save.to_bytes() != self._container.savegame:
+            self._set_status("Write your edits to a save copy and reload it before upgrading that saved franchise.")
+            return
+        from mod_editor.gui.franchise_upgrade_dialog_qt import FranchiseUpgradeDialog
+        FranchiseUpgradeDialog(self._container.path, self).exec_()
+
     def load(self, container: rr.SaveContainer, document: rr.RosterDocument) -> bool:
         """Adopt a save; returns False (and stays hidden) unless it is a franchise save."""
 

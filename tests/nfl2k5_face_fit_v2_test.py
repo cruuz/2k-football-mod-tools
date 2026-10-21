@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import unittest
 
+import cv2
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -137,6 +138,102 @@ class ChromaRelightTest(unittest.TestCase):
         self.assertGreater(lips, 17.5)
 
 
+class EyesTest(unittest.TestCase):
+    """fc1 (10/18, "an eye over an eye"): the photo's eye is registered against a reference eye on the mesh's
+    openings and moved into them; the openings and any photo sclera left on the lids take the template's eye/lid;
+    the eyeball's iris follows the player's eye colour. Retail-free: a drawn face surface with two openings."""
+
+    def setUp(self):
+        S, K = v2.S, v2.K
+        self._saved = (v2._R, v2._OPENINGS, v2._SYNTH_EYE, v2._EYE_REF)
+        cov = np.ones((S, S), bool)
+        cov[: int(20 * K)] = False                                    # (outside the face: does not matter)
+        for cx, cy in v2.UV_EYES:                                     # two lens-shaped openings, 34 x 11 texels
+            d = ((v2.XX - cx * K) / (17 * K)) ** 2 + ((v2.YY - cy * K) / (5.5 * K)) ** 2
+            cov &= d > 1.0
+        v2._R = (np.zeros((S, S, 3), np.float32), np.zeros((S, S, 3), np.float32), cov)
+        v2._OPENINGS = v2._SYNTH_EYE = None
+        v2.use_eye_reference(None)
+
+    def tearDown(self):
+        v2._R, v2._OPENINGS, v2._SYNTH_EYE, v2._EYE_REF = self._saved
+
+    @staticmethod
+    def drawn_photo(dy_texels):
+        """A face in texture space: the drawn eye moved down by dy texels, as grey-scale RGB."""
+        S, K = v2.S, v2.K
+        eye = v2.synthetic_eye()
+        M = np.float32([[1, 0, 0], [0, 1, dy_texels * K]])
+        moved = cv2.warpAffine(eye, M, (S, S), borderMode=cv2.BORDER_REPLICATE)
+        g = np.clip(120 + 40 * moved, 0, 255).astype(np.uint8)
+        return np.repeat(g[..., None], 3, axis=2)
+
+    def test_the_openings_are_found_where_the_mesh_has_holes(self):
+        ops = v2.eye_openings()
+        self.assertEqual(len(ops), 2)
+        for o, (cx, cy) in zip(ops, v2.UV_EYES):
+            self.assertAlmostEqual(o["cx"] / v2.K, cx, delta=0.6)
+            self.assertAlmostEqual(o["cy"] / v2.K, cy, delta=0.6)
+
+    def test_a_photo_eye_drawn_low_is_measured_low(self):
+        for dy in (0.0, 3.0, -2.0):
+            got = v2.register_eyes(self.drawn_photo(dy))
+            for gdy, ncc, edge in got:
+                self.assertAlmostEqual(gdy, dy, delta=0.6)
+                self.assertGreater(ncc, 0.9)
+                self.assertFalse(edge)
+
+    def test_the_opening_and_photo_sclera_on_the_lid_take_the_template(self):
+        S, K = v2.S, v2.K
+        skin = np.array([150.0, 140.0, 145.0], np.float32)
+        P = np.tile(skin, (S, S, 1)).astype(np.float32)
+        w = np.ones((S, S), np.float32)
+        o = v2.eye_openings()[0]
+        sx, sy = int(o["cx"]), int(o["y1"] + 3 * K)                   # 3 texels under the lower rim
+        P[sy - 4:sy + 4, sx - 8:sx + 8] = (235.0, 128.0, 129.0)       # bright, neutral: the photo's sclera
+        m = v2.eye_blend(P, skin, w)
+        self.assertGreater(float(m[int(o["cy"]), int(o["cx"])]), 0.99)   # inside the opening
+        self.assertGreater(float(m[sy, sx]), 0.9)                        # the stray sclera
+        self.assertLess(float(m[int(o["cy"] + 15 * K), int(o["cx"])]), 0.01)  # the cheek is the photo's
+        self.assertLess(float(m[int(o["y0"] - 8 * K), int(o["cx"])]), 0.01)  # and so are the brows
+
+    def test_the_brows_follow_the_eye_shift(self):
+        S, K = v2.S, v2.K
+        q0 = np.stack([v2.XX, v2.YY], -1).astype(np.float32)
+        q1 = q0.copy()
+        q1[..., 1] += 3.0 * K                                         # every texel now samples 3 texels lower
+        self.assertEqual([round(v, 2) for v in v2.brow_shift(q0, q1)], [3.0, 3.0])   # the brows sit 3 higher
+        self.assertEqual(v2.brow_shift(q0, q0), [0.0, 0.0])
+
+    def test_light_and_brown_irises(self):
+        brown = [40.0, 140.0, 150.0]; blue = [90.0, 130.0, 113.0]; grey = [100.0, 133.0, 128.0]
+        self.assertFalse(v2.iris_light(brown))
+        self.assertTrue(v2.iris_light(blue))
+        self.assertTrue(v2.iris_light(grey))
+        self.assertFalse(v2.iris_light([20.0, 129.0, 127.0]))          # near-black is not a light eye
+        self.assertLess(v2.iris_distance(blue, grey), v2.iris_distance(blue, brown))
+        # a dark brown photo iris against retail's mid brown: lightness alone does not separate them
+        self.assertLess(v2.iris_distance([10.0, 132.0, 131.0], [34.0, 133.0, 133.0]), 3.0)
+
+    def test_the_eye_patch_is_read_and_copied_alone(self):
+        S = 256
+        a = np.full((S, S, 3), 200, np.uint8)
+        y0, y1, x0, x1 = (int(v2.EYE_PATCH[0] * S), int(v2.EYE_PATCH[1] * S), int(v2.EYE_PATCH[2] * S), int(v2.EYE_PATCH[3] * S))
+        cy, cx = (y0 + y1 - 1) / 2, (x0 + x1 - 1) / 2
+        yy, xx = np.mgrid[0:S, 0:S]
+        r = np.hypot(yy - cy, xx - cx) / (y1 - y0)
+        b = a.copy()
+        b[(r < 0.3)] = (60, 90, 160)                                   # a blue iris
+        b[(r < 0.1)] = (5, 5, 5)                                       # its pupil
+        lab_iris = v2.patch_iris(b)
+        self.assertTrue(v2.iris_light(lab_iris) or lab_iris[2] < 120)
+        self.assertLess(lab_iris[2], 128)                              # blue: b* below neutral
+        c = v2.copy_eye_patch(a, b)
+        self.assertTrue(np.array_equal(c[y0:y1, x0:x1], b[y0:y1, x0:x1]))
+        outside = np.ones((S, S), bool); outside[y0:y1, x0:x1] = False
+        self.assertTrue(np.array_equal(c[outside], a[outside]))
+
+
 @unittest.skipUnless(os.environ.get("NFL2K5_HI_HEAD_GLTF"), "set NFL2K5_HI_HEAD_GLTF to a Models export of hi_head")
 class MeshFeaturesTest(unittest.TestCase):
     def test_the_feature_constants_are_the_mesh_own(self):
@@ -145,6 +242,22 @@ class MeshFeaturesTest(unittest.TestCase):
         self.assertLess(float(np.abs(f["eyes"] - v2.UV_EYES).max()), 0.6)
         self.assertLess(float(np.abs(f["nose"] - v2.UV_NOSE).max()), 0.6)
         self.assertLess(float(np.abs(f["nose_pos"] - v2.P_NOSE).max()), 0.05)
+
+    def test_the_eye_openings_are_the_meshs_holes_around_the_eyeballs(self):
+        saved = (v2._R, v2._OPENINGS, v2._SYNTH_EYE)
+        try:
+            v2.use_head(os.environ["NFL2K5_HI_HEAD_GLTF"])
+            ops = v2.eye_openings()
+            # the openings sit level (UV_EYES[1]'s y, 52.8, is pulled 3 texels up by the lid seam's boundary edges
+            # that mesh_features counts in; register_eyes measures against the openings themselves)
+            self.assertLess(abs(ops[0]["cy"] - ops[1]["cy"]) / v2.K, 1.0)
+            for o, (cx, cy) in zip(ops, v2.UV_EYES):
+                self.assertAlmostEqual(o["cx"] / v2.K, cx, delta=2.5)
+                self.assertAlmostEqual(o["cy"] / v2.K, 55.8, delta=1.0)
+                self.assertTrue(8.0 < (o["y1"] - o["y0"]) / v2.K < 16.0)     # about 11 game texels tall
+                self.assertTrue(30.0 < (o["x1"] - o["x0"]) / v2.K < 40.0)    # about 35 wide
+        finally:
+            v2._R, v2._OPENINGS, v2._SYNTH_EYE = saved
 
 
 if __name__ == "__main__":

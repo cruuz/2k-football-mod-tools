@@ -68,6 +68,8 @@ where the fine texture lives.
 - End zones painted over the old turf: palette entries inside the old turf's colour envelope (hue +-12 degrees,
   saturation and value +-0.10) take the new turf colour with their shading; team paint is untouched (tests: sol gold,
   dark greens, white, navy, midnight green).
+- The detail texture (tf-v4 since 2026-10-16; the tf-v3 text below is its history): see "tf-v4: the grain Noah
+  picked" at the end of this section.
 - The detail texture (tf-v3): the look's kind (`fibre`, `helix`, `blade_bermuda`, `blade_bluegrass`) from the shipped
   palette PNG. The game shows this texture through its palette ALPHA (see the measured response), so the 256 entries
   carry one flat normal and alpha = the index, and the pixels carry short blades or fibres (2 to 3.5 texels, 2.5 to
@@ -86,10 +88,125 @@ where the fine texture lives.
   the whole ladder first and the optimal parser only if none fits. The retail 32-byte wrapper, loader scratch word
   included, never changes.
 
+### tf-v4: the grain Noah picked (gr3, 2026-10-16; DESIGN, PROVED OFFLINE, unwitnessed in game)
+
+Noah's playtest of v0.6.1 (10/14 and 10/16): "the grass just doesn't look good ... it needs texture". gr2 measured why
+(`.b77-scratch/gr2/DIAGNOSIS.md`): tf-v3.1's far mips were a 2 x 2 box of mip 0, so the play camera (mips 1.4 to 5)
+drew about a quarter of retail's grain, and the grass colour was bright and yellow. Noah rejected the strong candidates
+and picked the in-between steps: synthetic turf at 15 % and natural grass at 20 % of the way from tonight's look toward
+candidate A, with grass a touch warmer than tonight's turf.
+
+- One premipped art per kind (`tools/nfl2k5_modern_surfaces_art.py`): each mip is the box of the level above mixed
+  with fresh clump noise at that level's own texel scale (fresh 0, .25, .45, .6, .7, .8; Helix .7 at mips 2 and 3),
+  stored at FULL strength (candidate A: 0.20, 0.17, 0.15, 0.12, 0.09, 0.065 sd/mean), every level mean on the kind's
+  alpha. Bermuda and fibre use the noise draws of gr2's pick sheet.
+- `DETAIL_STRENGTH = {"synthetic": 0.15, "grass": 0.20}`: the module scales each level's spread to
+  `rel_t = anchor + t (full - anchor)` (anchor = tf-v3.1) with integer arithmetic, so the bytes do not depend on the
+  machine. Turf (fibre) per mip: 0.094, 0.071, 0.065, 0.042, 0.025, 0.016; Bermuda: 0.104, 0.071, 0.056, 0.038,
+  0.025, 0.017. Mip 0 stays at less than half of the 0.225 that read as gravel on painted logos (lab 5). A build may
+  pass another strength (`apply_to_image(detail_strength=...)`); the receipt records it and the status recognizes it.
+- Natural grass colour: (63, 98, 45) on screen by day AFTER Broadcast greens (gr1 multiplies grass by 102/111), so
+  `grass_bermuda`'s day target is (68.6, 106.6, 49.0); the other grass looks take the same per-channel step and land
+  at the same luminance (bluegrass stays 4 degrees bluer), and every other light keeps its measured ratio to the day.
+  The measured medians stay in each grass look's `broadcast`. A grass venue with its own broadcast row keeps only its
+  character (its broadcast over the look's median, at unit luminance, hue turn capped at 6 degrees); Allegiant's
+  `design` row is still met exactly. Turf colours and gr1 are unchanged.
+- **gr4 (Noah, 2026-10-18, after the b775 playtest video; supersedes the natural-grass colour above).** Noah called the
+  tf-v4 grass "way too green", "too saturated", "artificial", and the end zones and 5-yard strips "lighter than the
+  rest", and said the Super Bowl XLII moment field is "how outdoor grass should look". Findings, measured from his video
+  (green-pixel means) and the b775 disc: that field is not a modern surface at all (an Anniversary alias takes the RETAIL
+  s25 colour map, times gr1's 0.919, under the night indoor rig) and draws (45, 59, 27), hue 86, S 0.54, V 0.23, like the
+  retail RFK of the 10/14 video (42, 59, 23); the tf-v4 grass drew (56, 98, 38) at Lambeau, hue 100, S 0.60, V 0.38.
+  Changes:
+  * natural grass targets are `GRASS_SCREEN` (on screen, measured units: day (50, 69, 29) hue 88 S 0.58 V 0.27, afternoon
+    (51, 69, 28), night (46, 63, 28), dome (50, 69, 30)), authored before gr1 by dividing by its grass gain; every grass
+    venue lands on that one shade (`uniform` looks; a venue's own broadcast or design row no longer moves it);
+  * the blade `FIELD_RESPONSE` is per channel (`BLADE_RESPONSE`), re-measured on the video: the old scalar over-drew
+    red by about 8 percent and blue by about 17 (Lambeau and EverBank by day, XLII by night);
+  * the mowing and factory bands keep 0.4 of their tone difference (`STRIPE_CONTRAST`, `soften_bands`; the light band
+    was 11 percent over the dark one on grass and 15 on turf, now about 4), the field mean unchanged;
+  * turf is the 10/13 turf (the LOOKS targets) with `SYNTHETIC_GAIN` (74/88, 102/108, 102/108) in Broadcast greens
+    instead of gr1's (58/87, 102/111, 56/62): 7 percent deeper in luma, about 10 degrees toward forest green, no more
+    saturated (MetLife by day (88, 108, 64) lands on (74, 102, 60), hue 100, S 0.41; gr1 drew (61, 103, 60), hue 120);
+  * end zones: the turf-coloured end-zone entries now take the field's Broadcast greens gain too (they were left at the
+    pre-gain colour: 9 percent lighter than the field on grass, 50 percent lighter in red on turf) and `END_ZONE_MATCH`
+    (1/1.11, 1/1.07, 1/1.15) on top, the factor by which an end-zone texel draws brighter than a field texel in game
+    (measured at Lambeau: the end zone drew (1.21, 1.16, 1.32) times the field while its texture was only
+    (1.091, 1.086, 1.084) times it). The pass also covers the Anniversary aliases' end zones;
+  * Anniversary aliases take the grass gain whatever surface their venue has today (their field is the retail s25 grass
+    map), except rows 24 and 25, which keep their venue's own retail field.
+  Limits: the end-zone factor and the turf end zones are measured on grass only; the blade response at afternoon and
+  dome is inferred; unwitnessed in game.
+- Loan venues (`LOAN_NORMAL_VENUES`: DET s09 and CLE s30 end-zone loan, PIT s22 late midfield, WAS s29 field normal
+  loan): the premipped full art no longer compresses into their loans (gr2: 174,029 to 191,864 bytes against 146,880
+  to 174,192), so they take the TILED art, compressed with the fixed-distance repeat encoder into exactly the loan the
+  v0.6.1 disc carries (`nfl2k5_midfield_art.TILED_NORMAL_LOANS`: 20,592, 26,208, 1,680 and 28,992 bytes), filled with
+  literals up to that size. Every field span keeps the size its paint was proved in. The final pass keeps the
+  compressed tiled normal (`normal_span(preserve_full=True)` accepts the tiled art), and the Studio passes PIT through
+  `tiled_normal_prefixes` when its late midfield is selected.
+- Revision `tf-v4`; the eight tf-v3.1 detail hashes moved to `LEGACY_DETAIL_SHA256`, so v0.6 and v0.6.1 discs still
+  read as this option.
+- Proof (gr3, PROVED OFFLINE, memory only, `.b77-scratch/gr3/REPORT.md`): all 288 home bundles of the v0.6.1 disc,
+  painted as a first pass and then through Broadcast greens, refit inside their fixed spans with the retail wrapper
+  (169 greedy and 3 optimal refits at full pattern detail and 256 colours, 9 Highmark bundles at detail 1 and 64
+  colours as on v0.6.1, 107 turf fields byte-identical; every chunk keeps its offset and size). The four loan venues
+  through their real routes from the retail packs: WAS and PIT 18 of 18 (PIT with its late midfield), DET and CLE
+  18 of 18 through the 2026 venue writer with the v0.6 author art (end-zone split at its first padding). The decoded
+  output draws its target through the module's calibrated model within 0.5 per channel on every unclamped bundle
+  (grass by day (63, 98, 45) after gr1), and detail mip 0 is at most 0.104 (the gravel level was 0.225). Offline
+  renders of the decoded output match the pick sheets: grass gameplay grain 0.036 (pick 0.036), turf 0.042 (between
+  the 10 % sheet's 0.038 and the 20 % sheet's 0.045).
+- Limits: unwitnessed in game. The lab must read the median (the brightness response was measured with the same
+  level means, so FIELD_RESPONSE should hold), the play-camera grain, the coin-toss logo and a slow pan for shimmer.
+  Afternoon and rain grass still reach MAP_CEILING (they draw 0.69 to 0.99 of the deeper target, as they did of the
+  old one). The loan venues show the tiled grain (three 64 x 64 tiles) up close.
+
 Build step: last of the stadium writers (after Modern colour, Arrowhead, MetLife and its model, the 2026 venue art,
 SoFi and Highmark). It repaints what they left, updates Modern colour's receipt (bundle pins, the MetLife and
 Arrowhead rows) and the 2026 venue receipt, and writes `<image>.surfaces.json`. The painter is idempotent, so a
 writer may compose it itself and the post-pass then leaves the same bytes.
+
+## Venue responses measured in game (Beta 77 st1)
+
+Beta 77 gr1 adds a final palette correction in
+`mod_editor/core/nfl2k5_broadcast_greens.py`, enabled with Modern surfaces.
+It runs after the Anniversary field compiler and before disc compaction, so
+retail layouts, modern venues, practice, special venues and installed period
+aliases receive the same correction. Source writers keep their existing
+targets and response calibration; this pass changes their completed grass RGB.
+
+The synthetic RGB gain is `(58/87, 102/111, 56/62)`, from the channel median
+of three neutral MetLife photo medians divided by three playtest still
+medians. The magenta-lit fireworks photograph is excluded. Natural grass uses
+`102/111` on all three channels, preserving its warmer hue. The grass reduction
+implements the owner's whole-game request and is an extrapolation, not a new
+broadcast calibration. Night, rain and snow carry the same gain; they do not
+have a new independently measured response. Stored palette changes require
+live rendering to establish their final screen color.
+
+Ownership is explicit: field `color_premipped` and
+`grass_outside_premipped`, practice `pf_ground`, `pf_field_strip`,
+`pf_turf_strip`, environment `env_grass`, and visible green divot pixels.
+Only green RGB changes. White markings inside a grass texture, snow, alpha,
+indices and every mip index plane retain their bytes. Shared grass/paint textures or
+palettes are refused. All end-zone textures, logos, numbers, wall art,
+geometry, detail normals, Fldd words, light rigs and st1 shadow data are kept.
+Green backgrounds embedded in protected end-zone artwork remain unchanged.
+Mixed ground textures without explicit grass ownership are excluded.
+
+Each scene is compressed losslessly into its existing allocation, preserving
+its header and decoder scratch word. The image receipt (`.greens.json`) makes
+replay a zero-write operation and refuses intervening field changes. Calling
+the pure bundle transform twice without that receipt would compound the
+gain; the Studio places it once, after every field writer. The fixed-span
+`tools/b77/gr1_repair.py` separately pins full input/output disc hashes.
+
+A venue row may carry `response`: a per-channel response for one light class measured in game, which replaces the
+look's table value for that venue and light (`venue_response`). MetLife (s18, s19) carries the afternoon one: on the
+v0.6.1 disc the afternoon field drew (92.5, 135.5, 84.5) at the play camera against its target (82.5, 102.6, 66.9),
+about 1.4 times too bright; halving the colour map showed the screen value is A x map - C (C about 20), and the
+response that lands the target is (1.4744, 1.7017, 1.6134) against the inferred 1.30. The afternoon bundles also
+carry the stadium shadow (`nfl2k5_stadium_shadow`): the field in that shadow reads about 0.45 of the sunlit field.
 
 ## The game's measured response (PROVED IN GAME, tf-v2)
 
@@ -184,9 +301,11 @@ the target.
 | `synthetic_fieldturf` | synthetic | fibre | +-7 %, 5 yd | (88, 108, 64) |
 | `synthetic_helix` | synthetic | helix | +-9.5 % | (86, 107, 58) |
 | `synthetic_vivid` | synthetic | fibre | +-6 % | (84, 114, 56) |
-| `grass_bluegrass` | grass | blade_bluegrass | +-5 % stripes | (88, 110, 64) |
-| `grass_bermuda` | grass | blade_bermuda | +-6 % stripes | (102, 121, 70) |
-| `grass_checker` | grass | blade_bermuda | +-5 % checkerboard | (100, 120, 68) |
+| `grass_bluegrass` | grass | blade_bluegrass | +-5 % stripes | (65.8, 107.9, 49.8) (measured (88, 110, 64)) |
+| `grass_bermuda` | grass | blade_bermuda | +-6 % stripes | (68.6, 106.6, 49.0) (measured (102, 121, 70)) |
+| `grass_checker` | grass | blade_bermuda | +-5 % checkerboard | (68.0, 107.1, 48.2) (measured (100, 120, 68)) |
+
+Since tf-v4 the grass targets are authored before Broadcast greens; since gr4 they are the XLII shade (`GRASS_SCREEN`, day (50, 69, 29) on screen), the same for every grass look, and the table below shows the pre-gr1 tf-v4 values for history.
 
 The table assigns FieldTurf, Act Global and Turf Nation venues `synthetic_fieldturf`, Hellas venues
 `synthetic_helix`, bluegrass and hybrid venues `grass_bluegrass` and Bermuda venues `grass_bermuda`.

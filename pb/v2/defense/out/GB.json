@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -1931,7 +1931,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 264,
+   "play": 268,
    "appended": true,
    "name": "Speed Rush",
    "component": "front",
@@ -1952,7 +1952,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 265,
+   "play": 269,
    "appended": true,
    "name": "Dime Twist",
    "component": "front",
@@ -1976,21 +1976,21 @@
  "receipt": {
   "team": "GB",
   "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
-  "offense_pack_sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0",
-  "source_fingerprint": "9015cb2e43a314b334543b678e758c73fea581ee976edb0fb789fb2b97cacf5e",
-  "replacement_sha256": "c16620738b024fd32ae2193b5db2a431e88fe544d9c4b4072f539bce3b45dfa3",
-  "semantic_sha256": "55d8cdfefaf1734f22c271cc0958d6f757aba3449fee8705793d0270c3772054",
+  "offense_pack_sha256": "fc1c7ec51b889c6a4ca53b694fb16184c9367956716373e474447a988fb0f3cd",
+  "source_fingerprint": "921f7d8ce72df5ca11cfe1c0b6aed9a80941e84725604fdf23cdb6de7d8363e5",
+  "replacement_sha256": "28966324d181116a677aa44069c00054b4cceedf954c024f131b9163d21b5e98",
+  "semantic_sha256": "74c053fdc45e333f622f1881aa896e29804334f3a8c59bb31e8f96627cde2231",
   "plays": 66,
   "formations": 4,
-  "nodes": 2244,
+  "nodes": 2674,
   "node_capacity": 3500,
-  "formation_count": 48,
-  "play_count": 266,
+  "formation_count": 50,
+  "play_count": 270,
   "misses": [],
   "band_loss": 0.06801,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_gb_defense.2k5book",
-  "pack_sha256": "6db2079743cc6dd6a3a73d626c76dd27dea024cac3af3d5119e0a1c7e7cf3b69"
+  "pack_sha256": "19e9801b9fdf25dc117bc9217e0c8370b9266767e6ceecf65b34871cd8f6c1e7"
  }
 }

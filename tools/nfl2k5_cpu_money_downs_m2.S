@@ -19,6 +19,9 @@
 .text
 .global fourth, play, target, two_point, fg_guard, code_end, policy, primary_depth, limit_x, shift, thr
 .extern fourth_tail, play_tail, target_tail, native_category, half_time, native_fg, kicker_range, margin_fn, hail_mary
+.ifdef VIP_AWARE
+.extern native_vip, two_point_tail
+.endif
 
 fourth:
     pushfd
@@ -46,6 +49,11 @@ fourth_kick:
  * Locals: [esp] yards to goal, +4 yards to go, +8 seconds (then game seconds), +12 yard index, +16 period,
  * +20 limit, +24 region (0 own side of the 40, 1 middle, 2 opponent 40 and in). */
 policy:
+.ifdef VIP_AWARE
+    call vip_active
+    test eax, eax
+    jnz no                         /* the native VIP already made its optional fourth-down decision */
+.endif
     call eligible
     test eax, eax
     jz no
@@ -273,6 +281,14 @@ floor_zero:
 
 /* Replaces the whole retail chart 206E70 (ECX = team). EAX = 1 go for two. Preserves every register but EAX/EDX. */
 two_point:
+.ifdef VIP_AWARE
+    call vip_active
+    test eax, eax
+    jz tp_modern
+    call margin_fn                 /* displaced retail entry; its mandatory chart precedes the VIP's optional roll */
+    jmp two_point_tail
+tp_modern:
+.endif
     push ebx
     push esi
     sub esp, 8
@@ -331,6 +347,11 @@ tp_exit:
 fg_guard:
     pushfd
     pushad
+.ifdef VIP_AWARE
+    call vip_active
+    test eax, eax
+    jnz fg_native
+.endif
     call eligible_any
     test eax, eax
     jz fg_native
@@ -589,6 +610,31 @@ eligible_any:
 no:
     xor eax, eax
     ret
+.ifdef VIP_AWARE
+/* The same side accessor and guards used by native playback. Preserve ECX
+ * (two_point's caller contract); no RNG, mutable scratch, or USR marker. */
+vip_active:
+    push ecx
+    mov ecx, [0xe60280]
+    test ecx, ecx
+    jz vip_no
+    cmp dword ptr [ecx+0x30], 0
+    jne vip_no
+    call native_vip
+    test eax, eax
+    jz vip_no
+    cmp dword ptr [eax+0x38], 2
+    jne vip_no
+    cmp dword ptr [eax+0x10], 0
+    je vip_no
+    mov eax, 1
+    pop ecx
+    ret
+vip_no:
+    xor eax, eax
+    pop ecx
+    ret
+.endif
 .balign 4, 0xcc
 yard: .float 91.44
 eps: .float 0.0001

@@ -2,7 +2,7 @@
 
 Every NFL team has its own home venue record in the retail main ROST (+0x114 of the team record), and each venue
 has nine archive bundles, ``<prefix>{d,a,n}{d,r,s}.iff`` (day, afternoon, night; dry, rain, snow). A bundle holds
-a field scene (end zones, midfield mark, turf) and a stadium scene (the bowl, its walls, boards, ribbons, signs and
+a field scene (end zones, midfield mark, yard numbers, turf) and a stadium scene (the bowl, its walls, boards, ribbons, signs and
 fan banners). Noah, 2026-09-23: "the field art should be updated for every team. The stadium wall art should be
 updated for every team. We can keep the same stadiums for now". So this option keeps every stadium and writes each
 team's 2026 art into its home venue:
@@ -17,8 +17,8 @@ team's 2026 art into its home venue:
 
 The art comes from a folder of per-team art in the ``metlife_team_art/v1`` contract (job u1's ``art.py venue``,
 extended for walls by job u4): ``<art root>/<ABBR>/venue/manifest.json`` with the team's ``spec.json`` beside
-``venue/``. Nothing retail or from the web ships: the repository carries the venue table (hashes, texture maps,
-the team-art targets), the code and the tests. The Giants and Jets venues (s18, s19) belong to Modern MetLife and
+``venue/``. The per-team art stays local. The repository carries reviewed authored shared art, the venue table
+(hashes, texture maps, team-art targets), the code and tests; retail pixels and reference photographs do not ship. The Giants and Jets venues (s18, s19) belong to Modern MetLife and
 are skipped. Kansas City (s13) is written here only when the art folder carries a Kansas City venue, and then Modern
 Arrowhead must be off (one writer per bundle); its reviewed art fills what the Kansas City folder leaves out,
 except the sideline yard markers, which stay retail.
@@ -34,6 +34,12 @@ EXPERIMENTAL and UNWITNESSED in game unless a report says otherwise.
 
 The shared supplement also writes yearless plain-type event field logos in s31,
 s39 and s41-s45. SoFi owns s40 and keeps its existing LXI field art.
+
+The optional field material ``numbers`` is a full 256x256 alpha atlas in the
+native UV cells. Reviewed authored block numerals are supplied by default for
+CIN, IND, MIN and TEN when their venue manifests are loaded. Explicit manifest
+art overrides the default. The Lucas Oil and U.S. Bank model painters carry
+the same atlas through their field rewrites; period fields use their own art.
 """
 from __future__ import annotations
 
@@ -86,7 +92,8 @@ TIMES, WEATHERS = "dan", "drs"
 CODES = tuple(t + w for t in TIMES for w in WEATHERS)
 SCENES = ("field", "stadium")
 END_ZONE_PARTS = ("L", "M", "R")
-FIELD_KEYS = tuple(f"endzone_{end}_{part}" for end in "NS" for part in END_ZONE_PARTS) + ("center_logo",)
+ENDZONE_KEYS = tuple(f"endzone_{end}_{part}" for end in "NS" for part in END_ZONE_PARTS)
+FIELD_KEYS = ENDZONE_KEYS + ("center_logo", "numbers")
 # Classes of the team-art targets (see the table): walls and pads take the retail snow drift in snow bundles.
 DRIFT_CLASSES = ("wall", "colour")
 # A variant texture counts as the same texture as the dry-day one when their small luma images correlate at
@@ -500,6 +507,33 @@ def _rects_ok(rects, width, height):
     return all(len(r) == 4 and 0 <= r[0] < r[2] <= width and 0 <= r[1] < r[3] <= height for r in rects)
 
 
+def default_numbers(prefix):
+    """Reviewed native atlas defaults for the four measured modern venues.
+
+    Explicit user numbers art takes precedence. Historical and moment fields
+    never use this home-venue manifest. The atlas replaces its full alpha layer,
+    with no turf compositing or weather fit that could fill its clear cells.
+    """
+    path = DATA_DIR / "numbers" / "manifest.json"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    require(doc.get("schema") == "nfl2k5_modern_venue_numbers/v1", "unsupported yard-number manifest")
+    if prefix not in doc["venues"]:
+        return []
+    out = []
+    for raw in doc["items"]:
+        require(raw["scene"] == "field" and raw["material"] == "numbers" and raw["layer"] == "full"
+                and raw["size"] == [256, 256], "invalid native yard-number item")
+        file = (path.parent / raw["file"]).resolve()
+        require(file.is_relative_to(path.parent.resolve()), "yard-number art escapes manifest")
+        data = file.read_bytes()
+        require(sha(data) == raw["sha256"], "yard-number art differs from its pin")
+        rgba = _rgba(data)
+        require(rgba.shape == (256, 256, 4), "yard-number atlas dimensions differ")
+        out.append(dict(scene="field", key="numbers", layer="full", size=[256, 256], rgba=rgba,
+                        master=None, rects=None, sha256=raw["sha256"], source="team"))
+    return out
+
+
 def load_art(root):
     """Read and check every venue manifest under ``root``.
 
@@ -533,7 +567,9 @@ def load_art(root):
             require(isinstance(key, str) and key and (scene, key) not in seen, f"{path}: item {key} is missing or repeated")
             seen.add((scene, key))
             if scene == "field":
-                require(key in FIELD_KEYS, f"{path}: field item {key} is not an end zone panel or the midfield mark")
+                require(key != "numbers" or (layer == "full" and raw.get("size") == [256, 256]),
+                        f"{path}: numbers needs a full 256x256 native atlas")
+                require(key in FIELD_KEYS, f"{path}: field item {key} is not an end zone panel, the midfield mark or numbers")
             file = (base / raw["file"]).resolve()
             require(file.is_file() and file.stat().st_size <= MAX_ART_BYTES, f"{path}: item {key}: {raw['file']} is missing")
             data = file.read_bytes()
@@ -568,6 +604,8 @@ def load_art(root):
                               **(dict(native_from_master=True, master_sha256=raw["master_sha256"])
                                  if native_from_master else {})))
         require(items, f"{path}: the manifest has no items")
+        if ("field", "numbers") not in seen:
+            items.extend(default_numbers(prefix))
         digest = sha(json.dumps([[i["scene"], i["key"], i["layer"], i["sha256"], i["rects"]] for i in items],
                                 sort_keys=True).encode("utf-8"))
         selected = [[i["scene"], i["key"], i["master_sha256"]]
@@ -591,7 +629,7 @@ def load_art(root):
         require(type(endzone_turf) is bool, f"{path}: endzone_turf_from_field must be a boolean")
         if endzone_turf:
             require(prefix in {"s27", "s29"}, f"{path}: field turf donor is reviewed only for s27/s29")
-            required = set(FIELD_KEYS[:-1] if prefix == "s27" else FIELD_KEYS[:3])
+            required = set(ENDZONE_KEYS if prefix == "s27" else ENDZONE_KEYS[:3])
             require(required <= {i["key"] for i in items if i["scene"] == "field"},
                     f"{path}: field turf donor needs " +
                     ("all six end-zone panels" if prefix == "s27" else "all three shared North end-zone panels"))
@@ -610,7 +648,7 @@ def load_art(root):
             from . import nfl2k5_split_endzone_art as endzone_art
             require(prefix in endzone_art.VENUES, f"{path}: end-zone split is not reviewed for {prefix}")
             supplied = {i["key"] for i in items if i["scene"] == "field"}
-            require(set(FIELD_KEYS[:-1]) <= supplied,
+            require(set(ENDZONE_KEYS) <= supplied,
                     f"{path}: split_shared_endzones needs all six end-zone panels")
             digest = sha((digest + ":split_shared_endzones").encode("ascii"))
         prefix_loan = doc.get("field_prefix_loan", False)
@@ -930,6 +968,12 @@ def field_normal_loan_prefixes(art_root):
                  if art["venues"].get(prefix, {}).get("endzone_turf_from_field"))
 
 
+def midfield_normal_loan_prefixes(art_root):
+    """PIT's explicit late midfield borrows from the surfaced detail normal, so Modern surfaces writes it tiled."""
+    art = load_art(art_root)
+    return tuple(prefix for prefix in ("s22",) if art["venues"].get(prefix, {}).get("add_missing_midfield"))
+
+
 def _prepare_field_prefix(data, name, plan, base, *, settings=None):
     """Surface the selected field before fitting six complete painted textures.
 
@@ -1141,6 +1185,9 @@ def compose(item, base, current, art, weather, cls=None, canvas=None, neighbours
     """
     mm = _mm()
     height, width = current.shape[:2]
+    if item["scene"] == "field" and item["key"] == "numbers":
+        require(item["layer"] == "full", "numbers must replace the full native alpha atlas")
+        return art.copy()
     if item["layer"] == "overlay" and item["key"] != "center_logo":
         # The paint takes the retail dry-day to bundle fit and goes over this bundle's own retail turf with the
         # 2004 marks filled in (clean_turf): rain and snow turf stay exactly retail (and compress like it), and
@@ -1255,6 +1302,15 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
     if scene == "field" and plan.get("midfield_scale_xz"):
         receipt["midfield_position_ranges"] = scale_existing_midfield(edited, rec, prefix, plan["midfield_scale_xz"])
         receipt["midfield_scale_xz"] = list(plan["midfield_scale_xz"])
+    if scene == "field":
+        # b777 ar1: the midfield logo sits on the 50-yard line and the centre line (retail quads were off by up to 1.55 m)
+        from . import nfl2k5_midfield_centre as midfield_centre
+        logo_row = midfield_centre.logo_row(rows, rows_by_material(rec))
+        if logo_row is not None:
+            texture = read_texture(edited, rec, logo_row)
+            moved, receipt["midfield_centre"] = midfield_centre.recentre(edited, rec, bytes(edited), texture)
+            if moved:
+                receipt["midfield_centre"]["position_ranges"] = [list(r) for r in moved]
     if turf_donor is not None:
         receipt["endzone_background"] = "cleaned same-variant color_premipped; source texture unchanged"
     return bytes(edited), receipt
@@ -1837,9 +1893,15 @@ def preflight(source, art_root, *, modern_arrowhead=False, sofi=False, highmark=
 # --- apply -------------------------------------------------------------------------------------------------
 
 def _workers(requested=None):
+    """Venue-art workers: the caller's count, else NFL2K5_BUILD_WORKERS, else the late-step pool (cores - 1).
+
+    NFL2K5_SERIAL_VENUE_ART=1 (or NFL2K5_SERIAL_LATE_STEPS=1) restores the old cap of min(16, cores // 2). Bundles
+    are independent and their results are collected by name, so the count never changes a byte."""
     if requested is not None:
         return max(1, int(requested))
-    return max(1, min(16, (os.cpu_count() or 2) // 2))
+    from . import nfl2k5_late_steps as late
+    return late.worker_count(1 << 30, "NFL2K5_SERIAL_VENUE_ART", per_worker_mb=900,
+                             legacy=max(1, min(16, (os.cpu_count() or 2) // 2)))
 
 
 def _compile_job(job):
@@ -1852,29 +1914,96 @@ def _compile_job(job):
     return name, after, edits
 
 
+def _job_key(cache, memo, job):
+    """Cache key of one bundle job: its bytes, the venue plan's art and the settings (the plan is digested once)."""
+    from . import nfl2k5_late_steps as late
+    name, data, graded, plan, base, outer, settings = job
+    if id(plan) not in memo:
+        masters = sorted({i["master"]: late.file_sha(Path(i["master"])) for i in plan["items"] if i.get("master")}.items())
+        # the memo holds the plan, so its id cannot be reused while the stream runs
+        memo[id(plan)] = (plan, late.digest(plan, base, masters))
+    return cache.key(name, late.sha(data), None if graded is None else late.sha(graded), memo[id(plan)][1],
+                     outer, settings)
+
+
+def _safe_job_key(cache, memo, job):
+    """The job's cache key, or None when there is no cache or the job holds something that cannot be digested."""
+    if cache is None:
+        return None
+    try:
+        return _job_key(cache, memo, job)
+    except (TypeError, ValueError, OSError):
+        return None
+
+
+def _remembered_job(cache, key, job):
+    from . import nfl2k5_late_steps as late
+    record = cache.get(key)
+    name, data = job[0], job[1]
+    if not (isinstance(record, dict) and record.get("name") == name and isinstance(record.get("after"), bytes)
+            and isinstance(record.get("edits"), list) and record.get("after_sha256") == late.sha(record["after"])
+            and len(record["after"]) == len(data)):
+        return None
+    return name, record["after"], record["edits"]
+
+
 def _stream(jobs, workers):
-    """Yield (name, after, edits) for every job, compiled in worker processes with a bounded queue."""
+    """Yield (name, after, edits) for every job, compiled in worker processes with a bounded queue.
+
+    Results are yielded in completion order (the caller collects them by name). Unchanged bundles come from a
+    verified cache (NFL2K5_DISABLE_COMPILE_CACHE=1 turns it off) and are yielded without a worker.
+    """
+    from . import nfl2k5_late_steps as late
     count = _workers(workers)
+    cache = late.StepCache.open("venue-art", **late.step_code("venue-art"))
+    memo = {}
+
+    def remember(key, job, result):
+        if cache is not None and key is not None:
+            cache.put(key, dict(name=result[0], after=result[1], edits=result[2], after_sha256=late.sha(result[1])))
+
     if count == 1:
         for job in jobs:
-            yield _compile_job(job)
+            key = _safe_job_key(cache, memo, job)
+            hit = _remembered_job(cache, key, job) if key is not None else None
+            if hit is not None:
+                yield hit
+                continue
+            result = _compile_job(job)
+            remember(key, job, result)
+            yield result
         return
     from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
     with ProcessPoolExecutor(max_workers=count) as pool:
-        pending = set()
+        pending = {}
+        ready = []
         iterator = iter(jobs)
         exhausted = False
         while True:
-            while not exhausted and len(pending) < 2 * count:
+            while not exhausted and len(pending) < 2 * count and len(ready) < count:
                 try:
-                    pending.add(pool.submit(_compile_job, next(iterator)))
+                    job = next(iterator)
                 except StopIteration:
                     exhausted = True
+                    break
+                key = _safe_job_key(cache, memo, job)
+                hit = _remembered_job(cache, key, job) if key is not None else None
+                if hit is not None:
+                    ready.append(hit)
+                    continue
+                pending[pool.submit(_compile_job, job)] = (key, job)
+            yield from ready
+            ready = []
             if not pending:
-                return
-            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+                if exhausted:
+                    return
+                continue
+            done, _ = wait(set(pending), return_when=FIRST_COMPLETED)
             for future in done:
-                yield future.result()
+                key, job = pending.pop(future)
+                result = future.result()
+                remember(key, job, result)
+                yield result
 
 
 def apply_to_image(target, art_root, *, progress=None, retail_source=None, modern_arrowhead=False, workers=None,

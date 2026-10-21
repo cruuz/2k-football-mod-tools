@@ -2177,15 +2177,16 @@
   ],
   "minimal_composition": {
     "edge_modern_pools_sha256": "fba54dc68b2cc31903e675c3880605c23fec077ffb9fe7eca8905530536b5b27",
-    "with_inline_mycareer_sha256": "d79525bca99ad8c4545237352f1ebf3d7aae333aa64f96a320d12641e24a26f3",
+    "with_inline_mycareer_sha256": "205b26213cffe191b54a0bef9c939f75008a05a1f6c66ad30aab2e79096c2fd4",
     "pool_changed_bytes": 1916,
     "pool_sections_repinned": [
       0,
       12,
       14
     ],
-    "mycareer_content_bytes": 20318
+    "mycareer_content_bytes": 20450
   },
   "lineup_exhaustion_revision": "SD2, 2026-09-28; PROVED OFFLINE; see sd/SD2_REPORT.md",
-  "halfback_side_chain_revision": "2c82378d5: HB list pair and inverse list-kind mapping; minimal hashes rebuilt with current inline MyCareer mode; PROVED OFFLINE, historical FPF evidence unchanged"
+  "halfback_side_chain_revision": "2c82378d5: HB list pair and inverse list-kind mapping; minimal hashes rebuilt with current inline MyCareer mode; PROVED OFFLINE, historical FPF evidence unchanged",
+  "fast_forward_revision": "b771-v1h: minimal position-pool and inline MyCareer composition regenerated from pinned USA retail after the Supersim Fast Forward repair; native position-choice tests pass."
 }

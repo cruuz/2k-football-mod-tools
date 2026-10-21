@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.107`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.108`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.108: beta 77.1 (2026-10-20)
+
+Version aligned with beta-77.1. The Playcalling Situations formation list sorts by column, staged weight and multiplier edits no longer stall the panel, and the Linux launcher's failure dialog shows its text. APF gameplay features are unchanged.
 
 ## 0.1.0-alpha.107: beta 77 (2026-10-09)
 

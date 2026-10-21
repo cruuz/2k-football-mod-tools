@@ -34,15 +34,15 @@ class InstructionTests(unittest.TestCase):
             for bit in (0,patch.SPEEDSTER):
                 for injury in (1,.5):
                     with self.subTest(raw=raw,bit=bit,injury=injury):
-                        m.player(speed=raw,abilities=bit)
+                        m.player(speed=raw,abilities=bit | 0x100)
                         native=m.seed_native_speed_cache(injury=injury)
                         m.run('speed',ecx=m.R,args=(0x184,))
                         self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP),m.STACK+8)
                         actual=m.pop_float()
                         expected=max(0,min(1,native))
-                        expected=expected*raw/100 if bit and 100<=raw<=127 else min(.99,expected)
+                        expected=expected*raw/100 if bit and 100<=raw<=127 else expected
                         self.assertAlmostEqual(actual,expected,places=6)
-        m.player(speed=127,abilities=patch.SPEEDSTER)
+        m.player(speed=127,abilities=patch.SPEEDSTER | 0x100)
         self.assertEqual(m.seed_native_speed_cache(),1)
         m.run('speed',ecx=m.R,args=(0x184,))
         self.assertAlmostEqual(m.pop_float(),1.27,places=6)
@@ -225,7 +225,7 @@ class InstructionTests(unittest.TestCase):
         self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EFLAGS)&0x8D5,0x202&0x8D5)
         for address,size in m.writes:
             self.assertTrue(m.P<=address<address+size<=m.P+0x10000 or 0x3100000<=address<address+size<=0x3110000)
-        m.player(speed=127);m.seed_native_speed_cache()
+        m.player(speed=127,abilities=patch.ABILITY_MASK | 0x100);m.seed_native_speed_cache()
         m.uc.mem_write(m.STOP+0x300,bytes.fromhex('d9e8'))  # keep a live lower x87 value
         m.uc.emu_start(m.STOP+0x300,m.STOP+0x302,count=1)
         m.run('speed',ecx=m.R,args=(0x184,))
@@ -239,7 +239,7 @@ class InstructionTests(unittest.TestCase):
         base=momentum.apply(patch.apply(base)[0])[0]
         for with_ramp in (False,True):
             payload=ramp.apply(base)[0] if with_ramp else base
-            m=Machine(payload);m.player(speed=127);m.seed_native_speed_cache()
+            m=Machine(payload);m.player(speed=127,abilities=patch.ABILITY_MASK | 0x100);m.seed_native_speed_cache()
             m.f32(m.S+0x1B4,0)
             # Actual upstream call and six-byte store, including ramp when on.
             m.run(0x75CC5,ecx=m.R,stop=0x75CDB,regs={'EBX':m.P,'ESI':m.S,'EDI':0x184})

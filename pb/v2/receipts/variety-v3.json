@@ -1,0 +1,9095 @@
+{
+ "status": "PROVED OFFLINE (metrics of composed book bytes)",
+ "tool": "pb/v2/variety.py",
+ "books": {
+  "retail": {
+   "league": {
+    "label": "books_retail",
+    "teams": 32,
+    "formations_mean": 25.3,
+    "plays_mean": 144.3,
+    "links_mean": 278.0,
+    "run_blocking_signatures_mean": 35.2,
+    "route_kinds_used_mean": 12.0,
+    "route_shapes_mean": 66.5,
+    "duplicate_play_records_mean": 0.1,
+    "short_menu_formations_mean": 0.4,
+    "deep_shot_plays_mean": 0.8,
+    "combo_distinct_combo_signatures_mean": 88.781,
+    "combo_distinct_combo_signatures_max": 103,
+    "combo_max_signature_share_mean": 0.015,
+    "combo_max_signature_share_max": 0.024,
+    "combo_plain_vertical_route_share_mean": 0.14,
+    "combo_plain_vertical_route_share_max": 0.241,
+    "combo_three_plus_vertical_plays_pct_mean": 2.219,
+    "combo_three_plus_vertical_plays_pct_max": 7.4,
+    "combo_post_plus_verticals_plays_mean": 1.469,
+    "combo_post_plus_verticals_plays_max": 4,
+    "combo_duplicate_alignment_signatures_mean": 0.062,
+    "combo_duplicate_alignment_signatures_max": 1,
+    "formation_families_total": {
+     "Singleback": 294,
+     "I-Form": 93,
+     "Strong/Weak I": 87,
+     "Gun Single": 84,
+     "I-Form Heavy": 61,
+     "Split Backs": 55,
+     "Empty UC": 39,
+     "Strong/Weak I Heavy": 29,
+     "Gun Split": 26,
+     "Split Backs Heavy": 18,
+     "Gun Empty": 18,
+     "Singleback Heavy": 4,
+     "Full House Heavy": 1
+    },
+    "formation_family_kinds": 13,
+    "play_families_total": {
+     "dropback": 1219,
+     "run": 1091,
+     "quick": 743,
+     "play action": 542,
+     "trick": 449,
+     "boot/rollout": 349,
+     "screen": 121,
+     "QB run": 95,
+     "direct snap": 9
+    },
+    "run_schemes_total": {
+     "toss": 389,
+     "reverse/end around": 199,
+     "power": 174,
+     "draw": 133,
+     "duo/drive": 132,
+     "iso/lead": 126,
+     "counter": 123,
+     "outside zone": 89,
+     "inside zone": 61,
+     "QB draw": 49,
+     "pitch": 35,
+     "other": 30,
+     "stretch/reach": 24,
+     "QB sneak": 22,
+     "trap": 17,
+     "QB sneak (stacked)": 11,
+     "QB keep": 10,
+     "off tackle": 9,
+     "power (two pullers)": 7,
+     "QB power": 3,
+     "direct snap": 1
+    },
+    "run_scheme_kinds": 21,
+    "route_kinds_total": {
+     "0": 11056,
+     "1": 1180,
+     "2": 1867,
+     "3": 818,
+     "4": 2097,
+     "5": 1844,
+     "6": 2359,
+     "7": 769,
+     "8": 849,
+     "9": 1976,
+     "10": 429,
+     "11": 840
+    },
+    "primary_by_position_pct": {
+     "WR1": 29.9,
+     "WR2": 24.6,
+     "TE1": 13.2,
+     "HB1": 9.6,
+     "WR3": 9.4,
+     "TE2": 5.0,
+     "FB1": 4.5,
+     "WR4": 2.7,
+     "WR5": 0.4,
+     "TE3": 0.2,
+     "k53": 0.2,
+     "HB2": 0.1,
+     "k54": 0.1,
+     "FB2": 0.0
+    },
+    "primary_by_alignment_pct": {
+     "outside WR": 37.9,
+     "slot/inside": 28.3,
+     "TE": 17.4,
+     "back": 16.4
+    },
+    "screens_per_menu_max": 3,
+    "same_screen_in_menu_max": 2,
+    "team_unique_play_pct_mean": 32.4,
+    "team_unique_play_pct_min": 0.7,
+    "distinct_plays_league": 2135,
+    "distinct_formation_names_league": 142
+   },
+   "teams": {
+    "ARZ": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.134,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+11m | 0+3m | 6+5s | 2+4s",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+11d",
+        1
+       ],
+       [
+        "0+2+4m | 0+10m | 0+4m | 0+2+6d",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0d | 2+4s",
+        1
+       ],
+       [
+        "0+11+0m | 0+4m | 0+10m | 0+11+0m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+1s | 0+1s",
+        1
+       ],
+       [
+        "0+11d | 0+6d | 0+6d | 0+11d",
+        1
+       ],
+       [
+        "0+11m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+2d | 6+5+0s | 0+8d | 0+4m",
+        1
+       ],
+       [
+        "0+5m | 0+4m | 0+8m | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 60,
+     "run_blocking_signatures": 41,
+     "primary_by_position": {
+      "WR1": 29,
+      "WR2": 25,
+      "HB1": 10,
+      "TE1": 10,
+      "WR3": 8,
+      "TE2": 7,
+      "FB1": 3,
+      "WR4": 2
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 0
+    },
+    "ATL": {
+     "route_combos": {
+      "pass_plays": 83,
+      "distinct_combo_signatures": 83,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.134,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 3,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+2d | 6+0s | 0+7d | 2+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0+4m | 6+5s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 6+0+5s | 6+0+5s | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+11s | 0+2d | 6+0s | 1+0+4s",
+        1
+       ],
+       [
+        "0+2d | 0+11m | 1+4s | 1+4s",
+        1
+       ],
+       [
+        "0+3m | 6+0+5s | 0+7d | 0+5d",
+        1
+       ],
+       [
+        "0+8d | 1s | 0+11+0d",
+        1
+       ],
+       [
+        "0+6m | 0+2d | 6+5s | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 6+5+0s | 6+5+0s | 0+8d",
+        1
+       ],
+       [
+        "0+4s | 0+4m | 6+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 60,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR1": 51,
+      "WR2": 8,
+      "TE1": 7,
+      "HB1": 7,
+      "FB1": 5,
+      "TE2": 4,
+      "WR4": 3,
+      "WR3": 2
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "BAL": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.117,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 6+0s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+4m | 0+6d | 2s",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+4m",
+        1
+       ],
+       [
+        "0+4d | 6+0s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+5+0m | 0+10m | 0+4m | 0+6+2d",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+11d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 2+4s | 0+7d",
+        1
+       ],
+       [
+        "0+4m | 0+5m | 0+8d",
+        1
+       ],
+       [
+        "1+0+4s | 6+5s | 2+4s",
+        1
+       ],
+       [
+        "0d | 0+1d | 0+10m | 6+5s | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 60,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR1": 26,
+      "WR2": 24,
+      "HB1": 12,
+      "TE1": 11,
+      "TE2": 8,
+      "WR3": 6,
+      "FB1": 6,
+      "WR5": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 1
+    },
+    "BUF": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.144,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0d | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+7d | 0+4m | 1+0s",
+        1
+       ],
+       [
+        "0+7d | 0+4m | 1+0s | 6+0s",
+        1
+       ],
+       [
+        "0d | 0+2d | 0+4m | 0+10m | 0+2+6m",
+        1
+       ],
+       [
+        "0+11d | 0+7m | 1+0+4s | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+5s | 0+3m | 1+5s",
+        1
+       ],
+       [
+        "0+1s | 0+7s | 0+7s | 0+1s",
+        1
+       ],
+       [
+        "0d | 1+0s | 0+4m",
+        1
+       ],
+       [
+        "0+2d | 0+3m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+3s | 0+11m | 0+11m | 0+3s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR1": 30,
+      "WR2": 26,
+      "WR3": 9,
+      "HB1": 7,
+      "TE2": 7,
+      "TE1": 7,
+      "WR4": 4,
+      "FB1": 4
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 1
+    },
+    "CAR": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.13,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+2d | 0+4m | 0+8+5m",
+        2
+       ],
+       [
+        "2s | 2s | 2s",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+4m | 0+8d",
+        1
+       ],
+       [
+        "0+2+4+0m | 0+8d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+7d | 0+10m | 0+2+0s",
+        1
+       ],
+       [
+        "0+3m | 0+7d | 0+7d",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+6m | 0+8d",
+        1
+       ],
+       [
+        "0+5m | 0+5m | 3s",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+5+4m | 0+5m",
+        1
+       ],
+       [
+        "0+4s | 6+5s | 1+0+11s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 71,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR2": 31,
+      "WR1": 26,
+      "TE1": 13,
+      "HB1": 9,
+      "WR3": 8,
+      "FB1": 7,
+      "TE2": 6
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "CHI": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.108,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+5m | 0+5m | 0+2d",
+        2
+       ],
+       [
+        "0+11d | 0+4m | 6+0s | 1s",
+        1
+       ],
+       [
+        "0+8+0m | 6+0+5s | 0+6s | 2+0+1s",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2+4s | 0d | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+3s | 0+8d | 1+5+0s",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0d | 0+7d",
+        1
+       ],
+       [
+        "0+7m | 0+4m | 1+0+4s | 0+11m",
+        1
+       ],
+       [
+        "1+0s | 0+8m | 0+5m | 3+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 74,
+     "run_blocking_signatures": 38,
+     "primary_by_position": {
+      "TE1": 34,
+      "WR2": 23,
+      "WR1": 21,
+      "WR3": 7,
+      "HB1": 6,
+      "TE2": 5,
+      "FB1": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "CIN": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.146,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 4,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 6+0s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+3s | 2+4s | 6+5s | 0+4m | 0+7d",
+        1
+       ],
+       [
+        "2s | 2s | 2+9s | 2s",
+        1
+       ],
+       [
+        "0d | 0+8d | 0+6d",
+        1
+       ],
+       [
+        "0+4d | 0+10m | 0+5m | 0+5+0m",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+11d | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 2+4s | 0+2+6d",
+        1
+       ],
+       [
+        "0+8d | 0+1s | 0+11m",
+        1
+       ],
+       [
+        "0+11s | 0+2d | 6+0s | 1+0+4s",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+8d | 0+7d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 62,
+     "run_blocking_signatures": 42,
+     "primary_by_position": {
+      "WR1": 30,
+      "WR2": 29,
+      "TE1": 11,
+      "WR3": 10,
+      "HB1": 7,
+      "FB1": 5,
+      "WR4": 4,
+      "TE2": 3
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 1
+    },
+    "CLE": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.145,
+      "three_plus_vertical_plays_pct": 3.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+5m | 0+5m | 0+2d",
+        2
+       ],
+       [
+        "0d | 0d | 0d | 6+0s",
+        1
+       ],
+       [
+        "0+4d | 0+5d | 0+4m",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+5m | 0+6d | 0+7d",
+        1
+       ],
+       [
+        "0d | 0d | 0+2d | 0+6d",
+        1
+       ],
+       [
+        "0+11d | 0+7m | 1+0+4s | 0+11d",
+        1
+       ],
+       [
+        "0+11d | 0+6d | 6+5s | 0+6d | 0+11d",
+        1
+       ],
+       [
+        "0+5m | 0+6d | 0d | 0+6d | 0+5m",
+        1
+       ],
+       [
+        "0+4s | 0+2m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0d | 0d | 0d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 73,
+     "run_blocking_signatures": 39,
+     "primary_by_position": {
+      "WR2": 29,
+      "WR1": 28,
+      "TE1": 12,
+      "HB1": 10,
+      "WR3": 10,
+      "TE2": 7,
+      "FB1": 3,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 2
+    },
+    "DAL": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 87,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.132,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+5m | 3s",
+        1
+       ],
+       [
+        "1+0s | 0+8d | 2+4s | 1+0s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 2+5s",
+        1
+       ],
+       [
+        "0d | 0+6+5m | 0+5m | 0+3m",
+        1
+       ],
+       [
+        "0+3s | 6+5s | 3+0s | 0+11d",
+        1
+       ],
+       [
+        "0d | 0+10m | 6+5s | 0+5m | 0+1d",
+        1
+       ],
+       [
+        "0+6d | 0+1s | 2+4s | 2+0+7s | 2+0s",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0+7d | 0+11+0d",
+        1
+       ],
+       [
+        "0+1m | 0+1s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 78,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 36,
+      "WR2": 19,
+      "TE1": 12,
+      "WR3": 9,
+      "HB1": 5,
+      "WR4": 5,
+      "FB1": 2,
+      "TE2": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 0
+    },
+    "DEN": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.106,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+11m | 0+4m | 1+0s | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0+4m | 1+4s",
+        1
+       ],
+       [
+        "2+4s | 6+4s | 1+3s | 2+6s",
+        1
+       ],
+       [
+        "0+8d | 1+0+4s | 6+5s | 3+0s",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+7m | 0+11+0d | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+7d | 0+5m | 0+5d",
+        1
+       ],
+       [
+        "0+2d | 1+0s | 0+5m | 0+8d",
+        1
+       ],
+       [
+        "0d | 0+4m | 0+5s | 0+2d",
+        1
+       ],
+       [
+        "0+2+4m | 0+2+4s | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+4m | 0+6d | 0+5s | 2+6s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 33,
+      "WR1": 26,
+      "TE1": 17,
+      "WR3": 10,
+      "HB1": 8,
+      "TE2": 4,
+      "FB1": 4
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 1
+    },
+    "DET": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.143,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+1s | 0+4m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+8d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 6+9s | 6+9s | 1+0s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 6+5+0s | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+7d",
+        1
+       ],
+       [
+        "0+2+4m | 0+6d | 6+5s | 6+5s | 0+4m",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0+10m | 0+6m",
+        1
+       ],
+       [
+        "0+3m | 6+5s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 6+5+0s | 6+5+0s | 0+8d",
+        1
+       ],
+       [
+        "0+4d | 6+0s | 0+6d | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 62,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR2": 32,
+      "WR1": 16,
+      "WR3": 13,
+      "HB1": 12,
+      "TE1": 8,
+      "FB1": 6,
+      "TE2": 6,
+      "WR4": 3
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 1
+    },
+    "GB": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.159,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 3,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 6+0s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+3s | 6+5s | 0+5m | 0+5+0m",
+        1
+       ],
+       [
+        "0+3s | 0+4m | 0+7d",
+        1
+       ],
+       [
+        "0+5m | 0+5m | 3s",
+        1
+       ],
+       [
+        "0+11s | 0+2d | 6+0s | 1+0+4s",
+        1
+       ],
+       [
+        "0+4d | 0+10m | 0+5m | 0+5+0m",
+        1
+       ],
+       [
+        "0+11+0d | 6+5s | 2+4s",
+        1
+       ],
+       [
+        "0+3d | 0+6d | 0+6d",
+        1
+       ],
+       [
+        "0+11d | 0+11d | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+11+0m | 3+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 61,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 27,
+      "WR1": 22,
+      "HB1": 11,
+      "TE1": 11,
+      "WR3": 9,
+      "TE2": 7,
+      "FB1": 4,
+      "WR4": 3,
+      "k53": 2,
+      "WR5": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 1
+    },
+    "HOU": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 97,
+      "max_signature_share": 0.02,
+      "plain_vertical_route_share": 0.121,
+      "three_plus_vertical_plays_pct": 1.0,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+2d | 0+6d",
+        2
+       ],
+       [
+        "0d | 0+5d | 0+11d | 6+0s",
+        1
+       ],
+       [
+        "0d | 0+5d | 0+11+0d | 6+0s",
+        1
+       ],
+       [
+        "0+3m | 0+6d | 0+6d | 0+3m",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0+10m | 0+7d | 0+6+0m",
+        1
+       ],
+       [
+        "0d | 1+0+4s | 0+3m",
+        1
+       ],
+       [
+        "0+11d | 0+4m | 6+0s | 1s",
+        1
+       ],
+       [
+        "0d | 0d",
+        1
+       ],
+       [
+        "0+7d | 0+2d | 0+10m | 0+7d | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 6+5s | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 77,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR2": 30,
+      "WR1": 24,
+      "TE1": 17,
+      "WR3": 15,
+      "HB1": 7,
+      "TE2": 5,
+      "FB1": 5,
+      "WR4": 3
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "IND": {
+     "route_combos": {
+      "pass_plays": 103,
+      "distinct_combo_signatures": 103,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.115,
+      "three_plus_vertical_plays_pct": 1.0,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+2+5m | 1+0s | 0+5d | 0+4m",
+        1
+       ],
+       [
+        "0d | 0+2d | 0+4m | 0+5m | 3s",
+        1
+       ],
+       [
+        "0+2s | 0+2+4m | 6+5s | 1+0s | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+3m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+1+0s | 0+2+4m | 0+7d | 0+6d",
+        1
+       ],
+       [
+        "0+8d | 1+0+4s | 6+5s | 3+0s",
+        1
+       ],
+       [
+        "0+3m | 0+4m | 0+4m | 0+4s",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+4m | 0+4m",
+        1
+       ],
+       [
+        "0+2d | 0+7d | 0+5m | 0+5d",
+        1
+       ],
+       [
+        "0+7d | 0+11+0m | 0+4m | 0+10m | 0+11+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 72,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR1": 38,
+      "WR2": 19,
+      "HB1": 12,
+      "TE1": 11,
+      "WR3": 9,
+      "WR4": 6,
+      "TE2": 6,
+      "FB1": 6
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "JAX": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 96,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.129,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 5+6s | 1+0+4s | 0d | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 1+0s | 0+7+0m | 0+5m",
+        1
+       ],
+       [
+        "0+6d | 1+0s | 0+7d | 0+8+4d",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 6+5s | 0+6d",
+        1
+       ],
+       [
+        "0d | 0+2+4m | 0+4s | 6+0s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+1s | 0+1s",
+        1
+       ],
+       [
+        "0+5m | 0+6d | 6+0s | 6+0+8s | 1+0s",
+        1
+       ],
+       [
+        "0+6d | 0+4d | 0+4m | 1+0s",
+        1
+       ],
+       [
+        "0+5m | 0+8d | 0+3s | 1+0+4s",
+        1
+       ],
+       [
+        "0+11d | 0+6d | 0+2d | 0+11+0d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 79,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR1": 38,
+      "WR2": 25,
+      "TE1": 13,
+      "HB1": 7,
+      "WR3": 6,
+      "TE2": 5,
+      "WR5": 4,
+      "FB1": 3,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "KC": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 92,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.11,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+5m | 0+5m | 0+2d",
+        2
+       ],
+       [
+        "0+11d | 1+0+4s | 0+7d | 6+5s",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+5+4m | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+3m | 6+0+8+5s | 0+5d",
+        1
+       ],
+       [
+        "0+11+0d | 0+8d | 0+10m | 0+2d | 1+0s",
+        1
+       ],
+       [
+        "0+7d | 1+0s | 0+3s | 0+8d",
+        1
+       ],
+       [
+        "0+4m | 1+4s | 6+5s | 0+7m",
+        1
+       ],
+       [
+        "0+2+4m | 0+2+4s | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0d | 0+2d | 0+6+0d | 0d",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+8d | 0+3s | 1+5+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 76,
+     "run_blocking_signatures": 37,
+     "primary_by_position": {
+      "TE1": 34,
+      "WR1": 23,
+      "WR2": 22,
+      "HB1": 6,
+      "TE2": 5,
+      "WR3": 5,
+      "WR4": 3,
+      "FB1": 1,
+      "TE3": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "MIA": {
+     "route_combos": {
+      "pass_plays": 80,
+      "distinct_combo_signatures": 80,
+      "max_signature_share": 0.013,
+      "plain_vertical_route_share": 0.119,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+8m | 1+4s | 1+0s | 0+11m",
+        1
+       ],
+       [
+        "0+2+4m | 0+2+4s | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 1+4s | 0+4s | 1+0s",
+        1
+       ],
+       [
+        "0+5+0m | 0+11m | 0+2d | 0+10m | 0+11d",
+        1
+       ],
+       [
+        "0+3m | 0+6d | 0+5d | 0+5m",
+        1
+       ],
+       [
+        "0+3m | 3+0s | 6+5s | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 1+0+4s | 0+6d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+11m | 0+2d | 3s",
+        1
+       ],
+       [
+        "0+3m | 0+6d | 6+5s | 0+6d | 0+3m",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 0+10m | 0+7d | 6+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 38,
+     "primary_by_position": {
+      "WR1": 30,
+      "TE1": 14,
+      "WR2": 11,
+      "WR3": 10,
+      "HB1": 7,
+      "FB1": 4,
+      "TE2": 3,
+      "WR4": 2,
+      "WR5": 2,
+      "FB2": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "MIN": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 87,
+      "max_signature_share": 0.023,
+      "plain_vertical_route_share": 0.153,
+      "three_plus_vertical_plays_pct": 2.3,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3m | 0+6d | 0+5d | 0+5m",
+        2
+       ],
+       [
+        "0+8m | 1+0+4s | 6+5s | 2s",
+        1
+       ],
+       [
+        "0+3m | 0+6d | 0+6d | 0+3m",
+        1
+       ],
+       [
+        "0d | 1+0s | 0+4m",
+        1
+       ],
+       [
+        "0d | 1+0+4s | 0+3m",
+        1
+       ],
+       [
+        "0d | 0+8d | 0+10m | 0+6m | 0+3d",
+        1
+       ],
+       [
+        "0+4m | 1+4s | 6+5s | 0+7m",
+        1
+       ],
+       [
+        "0d | 0+2d | 0+6+0d | 0d",
+        1
+       ],
+       [
+        "0+3s | 0+11m | 0+11m | 0+3s",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+8d | 0+3s | 1+5+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 53,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 30,
+      "WR2": 18,
+      "WR3": 15,
+      "TE1": 12,
+      "WR4": 7,
+      "HB1": 5,
+      "HB2": 2,
+      "TE2": 2,
+      "FB1": 1,
+      "WR5": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 1
+    },
+    "NE": {
+     "route_combos": {
+      "pass_plays": 77,
+      "distinct_combo_signatures": 77,
+      "max_signature_share": 0.013,
+      "plain_vertical_route_share": 0.143,
+      "three_plus_vertical_plays_pct": 1.3,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 1+0+4s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 6+0+5s | 0+6s | 2+0+1s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+7m | 0+6d | 0+4m | 0+8d",
+        1
+       ],
+       [
+        "0+3m | 6+5s | 0+5m | 0+6d",
+        1
+       ],
+       [
+        "0+8d | 1+0+4s | 6+5s | 3+0s",
+        1
+       ],
+       [
+        "0d | 6+5+0s | 0+8d | 0+2d | 0+4m",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+5m | 6+5s | 0+8m",
+        1
+       ],
+       [
+        "0+5m | 6+0s | 0+1s | 6+0s | 2s",
+        1
+       ],
+       [
+        "0+4d | 0+10m | 3+0+2s | 0+11+0d | 0+6d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 63,
+     "run_blocking_signatures": 37,
+     "primary_by_position": {
+      "WR1": 22,
+      "WR2": 19,
+      "HB1": 15,
+      "FB1": 9,
+      "TE1": 8,
+      "TE2": 7,
+      "WR3": 4,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "NO": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.137,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 6+0s | 0d | 0+2d",
+        2
+       ],
+       [
+        "1+0s | 5+6s | 0+11d | 0+5m | 1+4s",
+        1
+       ],
+       [
+        "0d | 0+8+0m | 0+8+0m | 0+5m",
+        1
+       ],
+       [
+        "0+4m | 6+5s | 0+11+0d | 0+3m | 0+11d",
+        1
+       ],
+       [
+        "0+3m | 0+7d | 0+6d | 0+4m",
+        1
+       ],
+       [
+        "0+2+6m | 0d | 0+2d | 0+10m | 0+4m",
+        1
+       ],
+       [
+        "0d | 0d | 6+0s | 0d",
+        1
+       ],
+       [
+        "0+11d | 0+7d | 6+5s | 0+7d | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 0+3s | 0+10m | 1+0s | 1+5+11s",
+        1
+       ],
+       [
+        "0+3m | 0+4s | 0+7d | 0+8+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 80,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 29,
+      "WR1": 18,
+      "HB1": 15,
+      "WR3": 13,
+      "TE1": 13,
+      "WR4": 4,
+      "FB1": 4,
+      "TE2": 2
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 1
+    },
+    "NYG": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.129,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+7m | 0+5m | 0+3s | 0+11d",
+        1
+       ],
+       [
+        "1+0s | 0+6d | 6+0+8s | 0+5m | 6+0s",
+        1
+       ],
+       [
+        "0+2+0s | 1+4s | 0+11d | 0+11d",
+        1
+       ],
+       [
+        "0+3s | 1+4s | 0+11d | 0+11d",
+        1
+       ],
+       [
+        "0d | 0+6d | 0+2d | 0+2+4s",
+        1
+       ],
+       [
+        "0+8m | 0+6m | 0+2s | 6+5s | 1+0s",
+        1
+       ],
+       [
+        "0+2d | 0+8m | 6+5s | 1+0s",
+        1
+       ],
+       [
+        "0+1+0s | 0+6d | 0+2+4+0s | 0+8m",
+        1
+       ],
+       [
+        "0+7m | 1+0s | 2+4s | 0+8m",
+        1
+       ],
+       [
+        "0+2d | 0+2+6m | 0+8d | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "TE1": 26,
+      "WR2": 25,
+      "WR1": 22,
+      "HB1": 10,
+      "TE2": 6,
+      "FB1": 6,
+      "WR3": 6
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 1
+    },
+    "NYJ": {
+     "route_combos": {
+      "pass_plays": 83,
+      "distinct_combo_signatures": 83,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.17,
+      "three_plus_vertical_plays_pct": 6.0,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 6s | 1+0+4s | 0d | 0+11d",
+        1
+       ],
+       [
+        "0+3m | 0+4m | 0+4m | 6+5s | 0+4s",
+        1
+       ],
+       [
+        "0+2d | 0+7d | 0+5m | 0+5d",
+        1
+       ],
+       [
+        "0+6d | 0+8d | 1+0s | 0+10m | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+5s | 0+6d | 1+5s",
+        1
+       ],
+       [
+        "0+3s | 0+11m | 0+11m | 0+3s",
+        1
+       ],
+       [
+        "0d | 0d | 6+0s | 0d",
+        1
+       ],
+       [
+        "0+8d | 0+8d | 0+8m | 0+8m",
+        1
+       ],
+       [
+        "0+3d | 0+6d | 0+4m | 0+7d",
+        1
+       ],
+       [
+        "0d | 0+2d | 0+5m | 0+4m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 62,
+     "run_blocking_signatures": 38,
+     "primary_by_position": {
+      "WR1": 18,
+      "WR2": 18,
+      "HB1": 14,
+      "TE1": 13,
+      "WR3": 11,
+      "FB1": 10,
+      "WR4": 4,
+      "k53": 1,
+      "TE2": 1,
+      "WR5": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "OAK": {
+     "route_combos": {
+      "pass_plays": 82,
+      "distinct_combo_signatures": 80,
+      "max_signature_share": 0.024,
+      "plain_vertical_route_share": 0.154,
+      "three_plus_vertical_plays_pct": 2.4,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 1,
+      "top10": [
+       [
+        "6+0s",
+        2
+       ],
+       [
+        "0+2d",
+        2
+       ],
+       [
+        "1+5s | 0+2d | 1+4s | 6+0s",
+        1
+       ],
+       [
+        "0+8m | 2+4s | 1+0s | 0+11m",
+        1
+       ],
+       [
+        "0+2+6m | 2+4s | 0d | 6+0s | 0+4m",
+        1
+       ],
+       [
+        "0d | 0+4m | 0+5s | 0+2d",
+        1
+       ],
+       [
+        "0d | 6+0s | 0d | 0+2d",
+        1
+       ],
+       [
+        "0+2d | 0+6d | 0+6m | 0+11m",
+        1
+       ],
+       [
+        "0+2+4m | 2+4s | 1+0s | 6+5s | 0+6d",
+        1
+       ],
+       [
+        "0+5m | 0d | 0d | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 58,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR1": 22,
+      "TE1": 19,
+      "WR2": 17,
+      "WR3": 10,
+      "HB1": 7,
+      "k53": 3,
+      "WR4": 2,
+      "TE2": 2,
+      "k54": 2,
+      "FB1": 1
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 1
+    },
+    "PHI": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.241,
+      "three_plus_vertical_plays_pct": 7.4,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 1,
+      "top10": [
+       [
+        "0d | 0d",
+        2
+       ],
+       [
+        "0+9m | 6+5s | 0+4m | 5+0s | 6+0s",
+        1
+       ],
+       [
+        "0d | 0+9m | 0d | 6+5s | 0d",
+        1
+       ],
+       [
+        "0+6d | 2+0+2s | 0+4m | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+11d | 0+1d | 0+9m",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 0+4m",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 6+0+5s | 0+6d",
+        1
+       ],
+       [
+        "0+6d | 0+11d | 6+5s | 0+11d | 0+6d",
+        1
+       ],
+       [
+        "6+0s | 0d | 6+0+10s | 0+4s | 6+0s",
+        1
+       ],
+       [
+        "0+9d | 0+5m | 0+2d | 6+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 63,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR1": 26,
+      "WR2": 23,
+      "HB1": 12,
+      "TE1": 11,
+      "TE2": 10,
+      "WR3": 9,
+      "FB1": 3,
+      "TE3": 2,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "PIT": {
+     "route_combos": {
+      "pass_plays": 86,
+      "distinct_combo_signatures": 85,
+      "max_signature_share": 0.023,
+      "plain_vertical_route_share": 0.119,
+      "three_plus_vertical_plays_pct": 2.3,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0d | 0d",
+        2
+       ],
+       [
+        "0+2+4m | 6+5s | 0+5s | 0+5+0m",
+        1
+       ],
+       [
+        "0+11s | 0+2d | 6+0s | 1+0+4s",
+        1
+       ],
+       [
+        "0d | 0+5m | 0+10m | 0d",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0+7d | 0+7d",
+        1
+       ],
+       [
+        "0+8d | 0+1s | 0+11m",
+        1
+       ],
+       [
+        "0+2+4m | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+10m | 0+11+0m | 3+4s",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0+7d | 0+11+0d",
+        1
+       ],
+       [
+        "2s | 0+11s | 6+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 62,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR2": 28,
+      "WR1": 24,
+      "WR3": 13,
+      "HB1": 6,
+      "TE1": 6,
+      "FB1": 5,
+      "TE2": 4,
+      "WR4": 3,
+      "WR5": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 1
+    },
+    "SD": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 87,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.118,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 3,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 6+0s | 0+5m | 0+5m",
+        1
+       ],
+       [
+        "0+2+4+3m | 0+8d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 2+4s | 0+4m",
+        1
+       ],
+       [
+        "0+3s | 0+8m | 0+7m",
+        1
+       ],
+       [
+        "0+5+0m | 0+2+4m | 2+4s",
+        1
+       ],
+       [
+        "0d | 1+0s | 0+10m | 0+2d",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 0+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+8+4m | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0+8m | 6+5s | 1+0s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 72,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR1": 28,
+      "WR2": 23,
+      "WR3": 14,
+      "HB1": 8,
+      "TE2": 7,
+      "TE1": 6,
+      "FB1": 6,
+      "WR4": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "SEA": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.113,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "1+0+2s | 0+10m | 1+5s | 6+0s",
+        2
+       ],
+       [
+        "0+7d | 1+0+4s | 0+11d",
+        1
+       ],
+       [
+        "0+2+4d | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+5+4m | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 2+5s",
+        1
+       ],
+       [
+        "0+11s | 0+2d | 1+0+4s",
+        1
+       ],
+       [
+        "0+2+4+0m | 0+8d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+8m | 6+5s | 1+0s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+8d",
+        1
+       ],
+       [
+        "0+4d | 0+10m | 0+5m | 0+5+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 78,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR1": 31,
+      "WR2": 20,
+      "HB1": 12,
+      "TE1": 11,
+      "WR3": 11,
+      "FB1": 7,
+      "TE2": 5,
+      "WR4": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 0
+    },
+    "SF": {
+     "route_combos": {
+      "pass_plays": 83,
+      "distinct_combo_signatures": 83,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.133,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 3,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+8d | 1+0+4s | 6+5s | 3+0s",
+        1
+       ],
+       [
+        "0d | 0+2+4m | 0+4s | 6+0s",
+        1
+       ],
+       [
+        "0d | 6+5s | 6+5s | 0+2d",
+        1
+       ],
+       [
+        "0d | 0+5m | 0+7d | 0+2d",
+        1
+       ],
+       [
+        "0d | 0+10m | 0+6m | 0+8d | 0+3d",
+        1
+       ],
+       [
+        "0+5m | 6+5s | 0+3m | 0+7m",
+        1
+       ],
+       [
+        "0+4m | 0+3s | 0+11d | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0+11m | 1+4s | 1+4s",
+        1
+       ],
+       [
+        "0d | 0+4m | 6+5s | 0+7d | 0+2d",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0+6d | 0+4m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 59,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR1": 54,
+      "WR2": 10,
+      "HB1": 7,
+      "TE1": 5,
+      "FB1": 4,
+      "WR4": 3,
+      "TE2": 3,
+      "WR3": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 1
+    },
+    "STL": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.154,
+      "three_plus_vertical_plays_pct": 3.3,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+11m | 1s | 1s | 6+0s",
+        1
+       ],
+       [
+        "6+0s | 0+2+4m | 0+4s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 0+4m | 1+0s",
+        1
+       ],
+       [
+        "0+3m | 0+4m | 6+5s | 0+3m",
+        1
+       ],
+       [
+        "0+4s | 0+4m | 0+1d | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+11m | 0+4m | 0+11m",
+        1
+       ],
+       [
+        "0+2+4m | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0d | 0+4m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+3m | 0+10m | 0+11+0m | 0+11d | 0+11+0m",
+        1
+       ],
+       [
+        "0+11s | 2+0s | 0+2d | 1+0+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 62,
+     "run_blocking_signatures": 38,
+     "primary_by_position": {
+      "WR2": 26,
+      "WR1": 25,
+      "HB1": 13,
+      "WR3": 11,
+      "WR4": 9,
+      "TE1": 5,
+      "TE2": 3,
+      "FB1": 3
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "TB": {
+     "route_combos": {
+      "pass_plays": 83,
+      "distinct_combo_signatures": 82,
+      "max_signature_share": 0.024,
+      "plain_vertical_route_share": 0.154,
+      "three_plus_vertical_plays_pct": 3.6,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+2d | 0+6d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+0s | 0+4m | 0+11d",
+        1
+       ],
+       [
+        "0+3m | 0+6s | 6+5s | 0+7d",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+6s",
+        1
+       ],
+       [
+        "0+2d | 0+4m | 6+5s | 6+5s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 6+0+5s | 6+0+5s | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+7d | 1+0+4s | 0+11d",
+        1
+       ],
+       [
+        "0+2+4d | 0+7d | 6+5s | 0+6d",
+        1
+       ],
+       [
+        "0+3s | 6+5s | 0+4m | 0+7d",
+        1
+       ],
+       [
+        "0+6d | 0+2d | 6+5s | 6+5s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 48,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR1": 40,
+      "WR2": 20,
+      "HB1": 6,
+      "TE1": 6,
+      "WR3": 5,
+      "TE2": 4,
+      "FB1": 3,
+      "WR4": 3
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "TEN": {
+     "route_combos": {
+      "pass_plays": 82,
+      "distinct_combo_signatures": 82,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.191,
+      "three_plus_vertical_plays_pct": 6.1,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+6d | 0+5m | 1+10s | 0+6d | 0+8m",
+        1
+       ],
+       [
+        "0d | 0d",
+        1
+       ],
+       [
+        "0d | 0+5m | 0+5m | 0+2d",
+        1
+       ],
+       [
+        "0+8d | 0+8d | 0+8m | 0+8m",
+        1
+       ],
+       [
+        "0+1s | 0+7s | 0+7s | 0+1s",
+        1
+       ],
+       [
+        "0+2d | 0+3m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+4s | 0+2m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+5m | 0+1s | 6+0s | 2s",
+        1
+       ],
+       [
+        "0+2+4m | 0+2+4s | 0+5s | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 6+5s | 1+4s | 1+0+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 60,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR1": 23,
+      "WR2": 23,
+      "TE1": 12,
+      "HB1": 10,
+      "WR3": 9,
+      "TE2": 5,
+      "WR4": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    },
+    "WAS": {
+     "route_combos": {
+      "pass_plays": 85,
+      "distinct_combo_signatures": 85,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.169,
+      "three_plus_vertical_plays_pct": 2.4,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+3s | 0+7d | 1+0+4s | 0+7d",
+        1
+       ],
+       [
+        "0+2+3m | 1+0s | 0+4m | 0+8d | 0+11+0m",
+        1
+       ],
+       [
+        "0+2d | 2+0+8s | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0+2+6d | 0d | 1+4s | 0+4d",
+        1
+       ],
+       [
+        "0+5m | 1+0s | 6+0+8s | 1+0s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+8d | 0+5m | 0+11+0m",
+        1
+       ],
+       [
+        "0+11m | 0+4m | 1+0s | 0+11m",
+        1
+       ],
+       [
+        "0+3s | 0s | 1+0s | 0+3s | 0+8d",
+        1
+       ],
+       [
+        "0d | 0+3d | 0+5m | 0+4m",
+        1
+       ],
+       [
+        "0d | 0+2d | 6+5s | 0d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 75,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR2": 32,
+      "WR1": 28,
+      "HB1": 9,
+      "WR3": 7,
+      "TE1": 6,
+      "FB1": 3,
+      "TE2": 2,
+      "TE3": 2
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 0
+    }
+   }
+  },
+  "b775": {
+   "league": {
+    "label": "books_b775",
+    "teams": 32,
+    "formations_mean": 25.3,
+    "plays_mean": 144.3,
+    "links_mean": 247.2,
+    "run_blocking_signatures_mean": 14.0,
+    "route_kinds_used_mean": 10.8,
+    "route_shapes_mean": 30.0,
+    "duplicate_play_records_mean": 7.4,
+    "short_menu_formations_mean": 12.2,
+    "deep_shot_plays_mean": 1.8,
+    "combo_distinct_combo_signatures_mean": 57.938,
+    "combo_distinct_combo_signatures_max": 66,
+    "combo_max_signature_share_mean": 0.054,
+    "combo_max_signature_share_max": 0.076,
+    "combo_plain_vertical_route_share_mean": 0.191,
+    "combo_plain_vertical_route_share_max": 0.226,
+    "combo_three_plus_vertical_plays_pct_mean": 2.681,
+    "combo_three_plus_vertical_plays_pct_max": 7.0,
+    "combo_post_plus_verticals_plays_mean": 0.031,
+    "combo_post_plus_verticals_plays_max": 1,
+    "combo_duplicate_alignment_signatures_mean": 6.562,
+    "combo_duplicate_alignment_signatures_max": 13,
+    "formation_families_total": {
+     "Gun Single": 259,
+     "Singleback": 229,
+     "I-Form Heavy": 62,
+     "Gun Empty": 47,
+     "Strong/Weak I": 43,
+     "I-Form": 41,
+     "Strong/Weak I Heavy": 32,
+     "Gun Split": 29,
+     "Pistol Single": 25,
+     "Singleback Heavy": 21,
+     "Split Backs": 12,
+     "Pistol Offset I": 9
+    },
+    "formation_family_kinds": 12,
+    "play_families_total": {
+     "run": 1517,
+     "dropback": 1320,
+     "quick": 829,
+     "boot/rollout": 434,
+     "play action": 219,
+     "QB run": 112,
+     "trick": 96,
+     "screen": 91
+    },
+    "run_schemes_total": {
+     "inside zone": 275,
+     "counter": 269,
+     "iso/lead": 220,
+     "outside zone": 219,
+     "toss": 178,
+     "power": 164,
+     "draw": 158,
+     "duo/drive": 71,
+     "QB sneak (stacked)": 61,
+     "QB draw": 48,
+     "reverse/end around": 34,
+     "trap": 25,
+     "QB sneak": 3
+    },
+    "run_scheme_kinds": 13,
+    "route_kinds_total": {
+     "0": 10480,
+     "1": 1018,
+     "2": 1213,
+     "3": 45,
+     "4": 2867,
+     "5": 3256,
+     "6": 3591,
+     "7": 360,
+     "8": 806,
+     "9": 62,
+     "10": 0,
+     "11": 1093
+    },
+    "primary_by_position_pct": {
+     "TE1": 41.6,
+     "WR1": 22.0,
+     "WR2": 16.7,
+     "WR3": 8.2,
+     "HB1": 6.9,
+     "TE2": 2.8,
+     "WR4": 1.1,
+     "TE3": 0.4,
+     "FB1": 0.4
+    },
+    "primary_by_alignment_pct": {
+     "TE": 47.5,
+     "outside WR": 31.7,
+     "slot/inside": 18.1,
+     "back": 2.7
+    },
+    "screens_per_menu_max": 3,
+    "same_screen_in_menu_max": 2,
+    "team_unique_play_pct_mean": 20.7,
+    "team_unique_play_pct_min": 5.7,
+    "distinct_plays_league": 1469,
+    "distinct_formation_names_league": 42
+   },
+   "teams": {
+    "ARZ": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 63,
+      "max_signature_share": 0.074,
+      "plain_vertical_route_share": 0.198,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        7
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0+6d | 0+4m | 6+5s | 0+4s | 0+6d",
+        2
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 30,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 60,
+      "WR1": 11,
+      "WR2": 10,
+      "WR3": 5,
+      "TE2": 5,
+      "HB1": 4,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 14
+    },
+    "ATL": {
+     "route_combos": {
+      "pass_plays": 82,
+      "distinct_combo_signatures": 57,
+      "max_signature_share": 0.061,
+      "plain_vertical_route_share": 0.177,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+2d | 0+6m | 6+5s | 0+11m | 0+4d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "TE1": 32,
+      "WR1": 28,
+      "WR2": 10,
+      "HB1": 9,
+      "WR3": 3,
+      "TE2": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 11
+    },
+    "BAL": {
+     "route_combos": {
+      "pass_plays": 84,
+      "distinct_combo_signatures": 57,
+      "max_signature_share": 0.048,
+      "plain_vertical_route_share": 0.19,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+2d | 0+4s | 0d | 0+4d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 49,
+      "WR1": 15,
+      "WR2": 11,
+      "HB1": 6,
+      "WR3": 3,
+      "TE3": 1,
+      "TE2": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 14
+    },
+    "BUF": {
+     "route_combos": {
+      "pass_plays": 78,
+      "distinct_combo_signatures": 50,
+      "max_signature_share": 0.051,
+      "plain_vertical_route_share": 0.176,
+      "three_plus_vertical_plays_pct": 1.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        4
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        3
+       ],
+       [
+        "0d | 0+4+5s | 0+6+5s | 0+11m | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 32,
+      "WR2": 22,
+      "WR1": 16,
+      "HB1": 9,
+      "WR3": 5,
+      "TE2": 2
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 13
+    },
+    "CAR": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 56,
+      "max_signature_share": 0.044,
+      "plain_vertical_route_share": 0.181,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 11,
+      "top10": [
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+2d | 0+2+4d",
+        3
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0d | 0+4+5s | 0+6+5s | 0+11m | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 30,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "WR1": 33,
+      "TE1": 31,
+      "WR2": 12,
+      "WR3": 7,
+      "HB1": 5,
+      "TE2": 2,
+      "TE3": 1,
+      "FB1": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 10
+    },
+    "CHI": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 60,
+      "max_signature_share": 0.044,
+      "plain_vertical_route_share": 0.185,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 13,
+      "top10": [
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2d | 0+2+4d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+2d | 0+5+0m | 0+4m | 0+4d",
+        2
+       ],
+       [
+        "0+2d | 0+4s | 0d | 0+4d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8+0m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 33,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 32,
+      "WR2": 25,
+      "WR1": 15,
+      "WR3": 13,
+      "HB1": 4,
+      "WR4": 4,
+      "TE2": 1
+     },
+     "deep_shot_plays": 4,
+     "short_menu_formations": 11
+    },
+    "CIN": {
+     "route_combos": {
+      "pass_plays": 100,
+      "distinct_combo_signatures": 61,
+      "max_signature_share": 0.04,
+      "plain_vertical_route_share": 0.196,
+      "three_plus_vertical_plays_pct": 4.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 4,
+      "top10": [
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 35,
+      "WR2": 29,
+      "WR1": 19,
+      "WR3": 8,
+      "HB1": 8,
+      "TE2": 4,
+      "WR4": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 17
+    },
+    "CLE": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 61,
+      "max_signature_share": 0.032,
+      "plain_vertical_route_share": 0.208,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4m | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 50,
+      "WR2": 30,
+      "WR3": 7,
+      "HB1": 4,
+      "TE2": 3,
+      "WR1": 1,
+      "FB1": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 19
+    },
+    "DAL": {
+     "route_combos": {
+      "pass_plays": 86,
+      "distinct_combo_signatures": 58,
+      "max_signature_share": 0.047,
+      "plain_vertical_route_share": 0.226,
+      "three_plus_vertical_plays_pct": 7.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 12,
+      "top10": [
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 31,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 31,
+      "WR1": 26,
+      "WR2": 11,
+      "WR3": 10,
+      "HB1": 4,
+      "WR4": 4,
+      "TE2": 2
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 10
+    },
+    "DEN": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 56,
+      "max_signature_share": 0.046,
+      "plain_vertical_route_share": 0.211,
+      "three_plus_vertical_plays_pct": 3.4,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 13,
+      "top10": [
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 35,
+      "WR1": 28,
+      "WR2": 12,
+      "WR3": 8,
+      "HB1": 7,
+      "TE2": 2,
+      "WR4": 2,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 8
+    },
+    "DET": {
+     "route_combos": {
+      "pass_plays": 75,
+      "distinct_combo_signatures": 56,
+      "max_signature_share": 0.04,
+      "plain_vertical_route_share": 0.194,
+      "three_plus_vertical_plays_pct": 1.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 2,
+      "top10": [
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4m | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0+2+4m | 0+4s | 0+6d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 0+6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 30,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "TE1": 32,
+      "WR1": 30,
+      "HB1": 8,
+      "WR2": 5,
+      "WR3": 3,
+      "TE2": 3,
+      "FB1": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 6
+    },
+    "GB": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 59,
+      "max_signature_share": 0.064,
+      "plain_vertical_route_share": 0.183,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 11,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        3
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 31,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "TE1": 39,
+      "WR2": 24,
+      "WR1": 19,
+      "HB1": 5,
+      "WR3": 4,
+      "WR4": 3,
+      "TE2": 2
+     },
+     "deep_shot_plays": 4,
+     "short_menu_formations": 13
+    },
+    "HOU": {
+     "route_combos": {
+      "pass_plays": 100,
+      "distinct_combo_signatures": 66,
+      "max_signature_share": 0.05,
+      "plain_vertical_route_share": 0.194,
+      "three_plus_vertical_plays_pct": 3.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 8,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 56,
+      "WR2": 23,
+      "WR3": 8,
+      "WR1": 6,
+      "TE2": 5,
+      "HB1": 5
+     },
+     "deep_shot_plays": 4,
+     "short_menu_formations": 14
+    },
+    "IND": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 60,
+      "max_signature_share": 0.043,
+      "plain_vertical_route_share": 0.222,
+      "three_plus_vertical_plays_pct": 5.4,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 11,
+      "top10": [
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0d | 6+5s | 0+8m | 0+8m | 0+1s",
+        3
+       ],
+       [
+        "0+11m | 0+8m | 5s | 0+8m | 0+11m",
+        3
+       ],
+       [
+        "0d | 0d | 0d | 0d | 0d",
+        3
+       ],
+       [
+        "0+1s | 0+11m | 6+5s | 0+6m | 0+1+8s",
+        3
+       ]
+      ]
+     },
+     "route_shapes": 28,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 37,
+      "WR1": 27,
+      "WR2": 12,
+      "WR3": 7,
+      "HB1": 5,
+      "WR4": 3,
+      "TE3": 1,
+      "TE2": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 16
+    },
+    "JAX": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 66,
+      "max_signature_share": 0.052,
+      "plain_vertical_route_share": 0.201,
+      "three_plus_vertical_plays_pct": 3.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        5
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 33,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 48,
+      "WR3": 19,
+      "WR2": 16,
+      "HB1": 9,
+      "TE2": 6,
+      "WR1": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 13
+    },
+    "KC": {
+     "route_combos": {
+      "pass_plays": 86,
+      "distinct_combo_signatures": 57,
+      "max_signature_share": 0.047,
+      "plain_vertical_route_share": 0.175,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 9,
+      "top10": [
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        3
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0d | 0+8m | 6+5s | 0+8m | 0+1s",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 50,
+      "WR2": 18,
+      "HB1": 10,
+      "WR3": 6,
+      "WR1": 4,
+      "TE2": 4,
+      "FB1": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 11
+    },
+    "MIA": {
+     "route_combos": {
+      "pass_plays": 79,
+      "distinct_combo_signatures": 55,
+      "max_signature_share": 0.076,
+      "plain_vertical_route_share": 0.193,
+      "three_plus_vertical_plays_pct": 2.5,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 6,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+2d | 0+5+0s | 0+4s | 0+4d",
+        2
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0+2d | 0+4s | 0d | 0+4d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4m | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 28,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 33,
+      "WR1": 28,
+      "WR2": 8,
+      "HB1": 7,
+      "WR3": 6,
+      "TE2": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 11
+    },
+    "MIN": {
+     "route_combos": {
+      "pass_plays": 86,
+      "distinct_combo_signatures": 59,
+      "max_signature_share": 0.07,
+      "plain_vertical_route_share": 0.178,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 4,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0+11d | 5s | 0+11d",
+        2
+       ],
+       [
+        "0d | 0+4+5s | 0+6+5s | 0+11m | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 30,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 54,
+      "WR2": 16,
+      "HB1": 8,
+      "WR3": 3,
+      "WR1": 3,
+      "TE2": 2,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 10
+    },
+    "NE": {
+     "route_combos": {
+      "pass_plays": 81,
+      "distinct_combo_signatures": 54,
+      "max_signature_share": 0.049,
+      "plain_vertical_route_share": 0.196,
+      "three_plus_vertical_plays_pct": 2.5,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 4,
+      "top10": [
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        3
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 28,
+      "WR1": 21,
+      "WR3": 13,
+      "WR2": 12,
+      "HB1": 7,
+      "TE2": 3
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 10
+    },
+    "NO": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 62,
+      "max_signature_share": 0.043,
+      "plain_vertical_route_share": 0.184,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 3,
+      "top10": [
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        4
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        3
+       ],
+       [
+        "0+2d | 0+2+4d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 34,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "WR1": 32,
+      "TE1": 31,
+      "WR2": 14,
+      "HB1": 10,
+      "WR3": 8,
+      "TE2": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 15
+    },
+    "NYG": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 63,
+      "max_signature_share": 0.054,
+      "plain_vertical_route_share": 0.197,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0+2d | 0+4s | 0d | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 31,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 55,
+      "WR1": 18,
+      "WR2": 9,
+      "WR3": 5,
+      "HB1": 3,
+      "TE2": 3
+     },
+     "deep_shot_plays": 4,
+     "short_menu_formations": 15
+    },
+    "NYJ": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 57,
+      "max_signature_share": 0.055,
+      "plain_vertical_route_share": 0.174,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 9,
+      "top10": [
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        5
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 6+5s | 0+4d",
+        4
+       ],
+       [
+        "0+11d | 5s | 0+11d",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+2+4m | 0d | 0+4s | 0+4s",
+        3
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "WR1": 37,
+      "TE1": 26,
+      "WR2": 12,
+      "WR3": 11,
+      "HB1": 9,
+      "TE2": 2,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 8
+    },
+    "OAK": {
+     "route_combos": {
+      "pass_plays": 85,
+      "distinct_combo_signatures": 56,
+      "max_signature_share": 0.071,
+      "plain_vertical_route_share": 0.194,
+      "three_plus_vertical_plays_pct": 2.4,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0d | 0+4+5s | 0+6+5s | 0+11m | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4m | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 28,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "TE1": 52,
+      "WR2": 12,
+      "WR1": 8,
+      "HB1": 7,
+      "WR3": 4,
+      "TE2": 3,
+      "FB1": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 12
+    },
+    "PHI": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 58,
+      "max_signature_share": 0.068,
+      "plain_vertical_route_share": 0.177,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 6,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 31,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "WR1": 33,
+      "TE1": 31,
+      "WR3": 10,
+      "WR2": 10,
+      "HB1": 5,
+      "TE2": 2
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 14
+    },
+    "PIT": {
+     "route_combos": {
+      "pass_plays": 80,
+      "distinct_combo_signatures": 55,
+      "max_signature_share": 0.05,
+      "plain_vertical_route_share": 0.21,
+      "three_plus_vertical_plays_pct": 3.8,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 7,
+      "top10": [
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        4
+       ],
+       [
+        "0+2+4m | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 29,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 31,
+      "WR1": 29,
+      "WR3": 10,
+      "WR2": 7,
+      "HB1": 5,
+      "TE2": 3
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 10
+    },
+    "SD": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 53,
+      "max_signature_share": 0.069,
+      "plain_vertical_route_share": 0.186,
+      "three_plus_vertical_plays_pct": 2.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        4
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+7d | 0d | 6+5s | 0d | 0+7d",
+        3
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 27,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 29,
+      "WR3": 21,
+      "WR2": 19,
+      "WR1": 11,
+      "WR4": 3,
+      "TE2": 2,
+      "HB1": 2,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 12
+    },
+    "SEA": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 55,
+      "max_signature_share": 0.065,
+      "plain_vertical_route_share": 0.172,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 8,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        6
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 6+5s | 0+4d",
+        3
+       ]
+      ]
+     },
+     "route_shapes": 26,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 37,
+      "WR1": 29,
+      "WR2": 14,
+      "WR3": 5,
+      "HB1": 5,
+      "TE2": 2,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 11
+    },
+    "SF": {
+     "route_combos": {
+      "pass_plays": 76,
+      "distinct_combo_signatures": 53,
+      "max_signature_share": 0.066,
+      "plain_vertical_route_share": 0.18,
+      "three_plus_vertical_plays_pct": 1.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 4,
+      "top10": [
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        5
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        4
+       ],
+       [
+        "0+2d | 0+2+4d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+2+4d | 0+4s | 5s | 0+6d",
+        2
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 0+6d | 0+11m",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0+4d | 6+5s | 0d | 6+5s | 0+5d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 26,
+     "run_blocking_signatures": 14,
+     "primary_by_position": {
+      "TE1": 31,
+      "WR1": 27,
+      "HB1": 8,
+      "WR2": 7,
+      "WR3": 4,
+      "TE2": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 11
+    },
+    "STL": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 60,
+      "max_signature_share": 0.074,
+      "plain_vertical_route_share": 0.191,
+      "three_plus_vertical_plays_pct": 3.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 6,
+      "top10": [
+       [
+        "0+2d | 0+2+4d",
+        7
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        5
+       ],
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4d | 5s | 0+2d",
+        2
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 31,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 35,
+      "WR2": 28,
+      "WR1": 19,
+      "HB1": 7,
+      "WR3": 4,
+      "TE2": 2,
+      "WR4": 1
+     },
+     "deep_shot_plays": 3,
+     "short_menu_formations": 11
+    },
+    "TB": {
+     "route_combos": {
+      "pass_plays": 81,
+      "distinct_combo_signatures": 48,
+      "max_signature_share": 0.062,
+      "plain_vertical_route_share": 0.18,
+      "three_plus_vertical_plays_pct": 3.7,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+4d | 6+5s | 0+6d | 0+11m",
+        5
+       ],
+       [
+        "0+2+4d | 0+4s | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+2d | 0+2+4d",
+        4
+       ],
+       [
+        "0d | 0+6+5d | 6+5s | 0+4d",
+        4
+       ],
+       [
+        "0+2+4d | 0d | 0+4s | 0+4s",
+        3
+       ],
+       [
+        "0d | 6+5s | 0+8m | 0+8m | 0+1s",
+        3
+       ],
+       [
+        "0+11m | 0+8m | 5s | 0+8m | 0+11m",
+        3
+       ],
+       [
+        "0+1s | 0+11m | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+6d | 0+4m | 0d | 0+4s | 0+6d",
+        3
+       ],
+       [
+        "0d | 0d | 0d | 0d | 0d",
+        3
+       ]
+      ]
+     },
+     "route_shapes": 26,
+     "run_blocking_signatures": 13,
+     "primary_by_position": {
+      "TE1": 31,
+      "WR1": 20,
+      "WR2": 15,
+      "HB1": 8,
+      "WR3": 7,
+      "WR4": 5,
+      "TE2": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 0,
+     "short_menu_formations": 15
+    },
+    "TEN": {
+     "route_combos": {
+      "pass_plays": 83,
+      "distinct_combo_signatures": 63,
+      "max_signature_share": 0.036,
+      "plain_vertical_route_share": 0.184,
+      "three_plus_vertical_plays_pct": 3.6,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 4,
+      "top10": [
+       [
+        "0+2+4m | 0+4s | 5s | 0+6d",
+        3
+       ],
+       [
+        "0+2d | 0+2+4d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+11m | 0+8m | 5s | 6+5s | 0+11m",
+        3
+       ],
+       [
+        "0+6d | 0+4m | 6+5s | 0+4s | 0+6d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+2+4m | 5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 0+4d | 0+4s | 6+5s | 0+7d",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 30,
+     "run_blocking_signatures": 11,
+     "primary_by_position": {
+      "TE1": 35,
+      "WR1": 29,
+      "WR2": 11,
+      "HB1": 7,
+      "TE2": 4,
+      "WR3": 3
+     },
+     "deep_shot_plays": 1,
+     "short_menu_formations": 12
+    },
+    "WAS": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 60,
+      "max_signature_share": 0.046,
+      "plain_vertical_route_share": 0.199,
+      "three_plus_vertical_plays_pct": 3.4,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 5,
+      "top10": [
+       [
+        "0+2+4d | 0+4m | 0+4s | 0+6d",
+        4
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        3
+       ],
+       [
+        "0d | 0+6+5d | 5s | 6+5s | 0+4d",
+        3
+       ],
+       [
+        "0+4d | 0+4m | 0d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+1s | 0+6+5s | 6+5s | 0+6m | 0+1+8s",
+        3
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        2
+       ],
+       [
+        "0d | 6+5s | 0+8m | 6+5s | 0+1s",
+        2
+       ]
+      ]
+     },
+     "route_shapes": 32,
+     "run_blocking_signatures": 15,
+     "primary_by_position": {
+      "TE1": 29,
+      "WR2": 25,
+      "WR1": 20,
+      "WR3": 9,
+      "TE2": 4,
+      "HB1": 2
+     },
+     "deep_shot_plays": 2,
+     "short_menu_formations": 13
+    }
+   }
+  },
+  "v3_before_route_pass": {
+   "league": {
+    "label": "books_v3_old",
+    "teams": 32,
+    "formations_mean": 32.6,
+    "plays_mean": 147.0,
+    "links_mean": 382.8,
+    "run_blocking_signatures_mean": 32.4,
+    "route_kinds_used_mean": 12.0,
+    "route_shapes_mean": 65.6,
+    "duplicate_play_records_mean": 2.6,
+    "short_menu_formations_mean": 0.0,
+    "deep_shot_plays_mean": 10.2,
+    "combo_distinct_combo_signatures_mean": 91.812,
+    "combo_distinct_combo_signatures_max": 98,
+    "combo_max_signature_share_mean": 0.015,
+    "combo_max_signature_share_max": 0.033,
+    "combo_plain_vertical_route_share_mean": 0.217,
+    "combo_plain_vertical_route_share_max": 0.27,
+    "combo_three_plus_vertical_plays_pct_mean": 4.406,
+    "combo_three_plus_vertical_plays_pct_max": 9.5,
+    "combo_post_plus_verticals_plays_mean": 0.406,
+    "combo_post_plus_verticals_plays_max": 2,
+    "combo_duplicate_alignment_signatures_mean": 0.062,
+    "combo_duplicate_alignment_signatures_max": 1,
+    "formation_families_total": {
+     "Gun Single": 331,
+     "Singleback": 173,
+     "Pistol Single": 138,
+     "I-Form Heavy": 68,
+     "Full House Heavy": 64,
+     "I-Form": 59,
+     "Gun Empty": 40,
+     "Split Backs": 39,
+     "Empty UC": 32,
+     "Strong/Weak I": 31,
+     "Singleback Heavy": 23,
+     "Pistol Offset I": 19,
+     "Strong/Weak I Heavy": 8,
+     "Gun Split": 7,
+     "Pistol Single Heavy": 6,
+     "Pistol Full House Heavy": 4,
+     "Pistol Offset I Heavy": 2
+    },
+    "formation_family_kinds": 17,
+    "play_families_total": {
+     "dropback": 1334,
+     "run": 1127,
+     "quick": 845,
+     "play action": 683,
+     "screen": 311,
+     "QB run": 197,
+     "boot/rollout": 94,
+     "trick": 79,
+     "direct snap": 35
+    },
+    "run_schemes_total": {
+     "toss": 151,
+     "inside zone": 142,
+     "power": 126,
+     "iso/lead": 124,
+     "trap": 123,
+     "counter": 113,
+     "draw": 104,
+     "outside zone": 89,
+     "QB sneak (stacked)": 84,
+     "power (two pullers)": 81,
+     "duo/drive": 59,
+     "off tackle": 49,
+     "reverse/end around": 45,
+     "QB draw": 36,
+     "QB keep": 36,
+     "other": 35,
+     "QB power": 30,
+     "QB sneak": 11
+    },
+    "run_scheme_kinds": 18,
+    "route_kinds_total": {
+     "0": 12456,
+     "1": 1192,
+     "2": 1245,
+     "3": 590,
+     "4": 1868,
+     "5": 4007,
+     "6": 2966,
+     "7": 352,
+     "8": 1054,
+     "9": 219,
+     "10": 317,
+     "11": 1307
+    },
+    "primary_by_position_pct": {
+     "WR2": 20.4,
+     "WR1": 20.0,
+     "TE1": 18.8,
+     "WR3": 18.4,
+     "HB1": 11.7,
+     "TE2": 4.6,
+     "FB1": 2.2,
+     "TE3": 1.8,
+     "WR4": 1.4,
+     "HB2": 0.6,
+     "WR5": 0.2
+    },
+    "primary_by_alignment_pct": {
+     "slot/inside": 33.2,
+     "outside WR": 30.3,
+     "TE": 25.2,
+     "back": 11.3
+    },
+    "screens_per_menu_max": 2,
+    "same_screen_in_menu_max": 1,
+    "team_unique_play_pct_mean": 62.7,
+    "team_unique_play_pct_min": 58.2,
+    "distinct_plays_league": 3205,
+    "distinct_formation_names_league": 106
+   },
+   "teams": {
+    "ARZ": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.193,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0d | 0+8m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 6+3s | 0+11m | 0+5+0m",
+        1
+       ],
+       [
+        "0+5m | 5s | 6+5s | 0+1s | 6+0s",
+        1
+       ],
+       [
+        "0d | 0d | 6+5+0s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 0+11+0d | 6+3s | 5s | 0+2d",
+        1
+       ],
+       [
+        "0+3d | 0d | 0+10m | 0+5s | 0+7d",
+        1
+       ],
+       [
+        "0d | 6+0+8s | 5s | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR1": 22,
+      "TE1": 20,
+      "WR2": 20,
+      "WR3": 17,
+      "HB1": 11,
+      "TE2": 6,
+      "WR4": 4,
+      "TE3": 2,
+      "FB1": 2,
+      "HB2": 2
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "ATL": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.158,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+11+0d | 0+5s | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+6+2d | 0+4s | 6+3s | 0+6+11d",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+3s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0d | 0+8m | 5s | 0+8+6m",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 6+5s | 0+11m | 0+4d",
+        1
+       ],
+       [
+        "0+3s | 0+2+4m | 0+10m | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0+6d | 3s | 0+2+4s | 5s | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR1": 21,
+      "WR2": 21,
+      "TE1": 19,
+      "WR3": 19,
+      "HB1": 13,
+      "TE2": 3,
+      "TE3": 3,
+      "FB1": 2,
+      "WR4": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "BAL": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.203,
+      "three_plus_vertical_plays_pct": 3.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0d | 6+3s | 0d | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+4d | 0+5+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+5s | 0+8m | 0d",
+        1
+       ],
+       [
+        "0+6+2d | 0+4s | 0+10m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 6+5s | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0d | 5s | 6+3s | 0+3m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4m | 6+5s | 0d | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "WR3": 15,
+      "HB1": 11,
+      "TE2": 5,
+      "WR5": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "BUF": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.205,
+      "three_plus_vertical_plays_pct": 3.4,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 6+5+0s | 0+2+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5+0m | 0d | 0+6m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+5m | 1s | 0+8+5m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0d | 0+4m | 0+4m | 0+6d",
+        1
+       ],
+       [
+        "0+11m | 5s | 0+2+4s | 0+6d | 0+11+0d",
+        1
+       ],
+       [
+        "0+7d | 0d | 0+10m | 0d | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR3": 20,
+      "WR1": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 0
+    },
+    "CAR": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.2,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s | 1s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+4d | 0+8d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+4d | 0+2d",
+        1
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 0+5+0s | 0+4s | 0+4d",
+        1
+       ],
+       [
+        "0d | 0d | 6+3s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 0+3m | 6+3s | 5s | 6+0+8s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR3": 22,
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "CHI": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.27,
+      "three_plus_vertical_plays_pct": 9.5,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+2+4d | 0+4m | 0+4d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+8m | 0+6+5s | 0d | 0+4+5s",
+        1
+       ],
+       [
+        "0d | 0+7d | 0+6+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+6+5d | 6+5+0s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+8d | 0+3d | 0+10m | 6+5s | 3s",
+        1
+       ],
+       [
+        "0d | 0+8+0m | 0+10m | 3s | 6+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 36,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 20,
+      "WR3": 15,
+      "HB1": 13,
+      "WR4": 6,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "CIN": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 97,
+      "max_signature_share": 0.02,
+      "plain_vertical_route_share": 0.221,
+      "three_plus_vertical_plays_pct": 6.1,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+8m | 0d | 6+5s | 0+8+0m",
+        1
+       ],
+       [
+        "0+3m | 0+5d | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+8m | 5s | 0+11m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0+3d",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 0+8m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0d | 0+10m | 0+2d | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 24,
+      "WR3": 22,
+      "WR1": 22,
+      "TE1": 21,
+      "HB1": 13,
+      "TE2": 5,
+      "TE3": 2
+     },
+     "deep_shot_plays": 6,
+     "short_menu_formations": 0
+    },
+    "CLE": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 96,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.207,
+      "three_plus_vertical_plays_pct": 4.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+7d | 0+5s | 0d | 0+8m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+2d | 0+5m | 0+4d | 0+10m | 0+8m",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+3s | 0d | 0+4+5s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+5s | 0+11m | 0+11m",
+        1
+       ],
+       [
+        "0+2+0m | 0+3s | 6+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+11m | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 64,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR3": 22,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "DAL": {
+     "route_combos": {
+      "pass_plays": 87,
+      "distinct_combo_signatures": 86,
+      "max_signature_share": 0.023,
+      "plain_vertical_route_share": 0.232,
+      "three_plus_vertical_plays_pct": 8.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+11+0d | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+5s | 0+4d",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+8+5m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+5s | 0d | 0+5d",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 6+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 20,
+      "WR3": 20,
+      "WR1": 19,
+      "TE1": 18,
+      "HB1": 10,
+      "TE3": 3,
+      "TE2": 2,
+      "HB2": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "DEN": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.214,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+4d | 0d | 6+5s | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0d | 0+6+5d | 0+4m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+3s | 0+3d | 0+10m | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0+11m | 0d | 5s | 0+11m",
+        1
+       ],
+       [
+        "0+3m | 0+8m | 0+10m | 0+5s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 23,
+      "WR3": 22,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 13,
+      "TE2": 5,
+      "TE3": 1,
+      "FB1": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "DET": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.23,
+      "three_plus_vertical_plays_pct": 6.4,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 6+5s | 5+6s | 0+1+8s",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+5+0s | 0+4s | 0+6+2d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+8m | 5s | 0+2d",
+        1
+       ],
+       [
+        "0d | 5s | 0+6+5d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 5s | 0+10m | 0+7+0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+4s | 0+2+4s | 0+2+4m | 0+11+0d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR1": 21,
+      "WR2": 21,
+      "WR3": 21,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "GB": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.187,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+6d | 0d | 0+4s",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+4m | 0+4s | 0d | 0+6d",
+        1
+       ],
+       [
+        "0+5s | 6+0s | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+5d | 6+5+0s | 0d | 0+6+5d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 6+3s | 0+8+5m | 0+11m",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 0+10m | 0+4s | 0+6+2d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+8m | 5s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR1": 21,
+      "WR2": 21,
+      "WR3": 19,
+      "HB1": 13,
+      "TE2": 4,
+      "TE3": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "HOU": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.226,
+      "three_plus_vertical_plays_pct": 4.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+11m | 0+5+0m | 1+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+4+5s | 0d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 6+0s | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+8m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+3s | 0+6d | 0+8m | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0d | 6+5s | 6+5+0s | 0+8+0m | 0+2d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR1": 22,
+      "TE1": 20,
+      "WR3": 18,
+      "HB1": 12,
+      "TE2": 4,
+      "TE3": 3,
+      "FB1": 3,
+      "WR4": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "IND": {
+     "route_combos": {
+      "pass_plays": 97,
+      "distinct_combo_signatures": 97,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.241,
+      "three_plus_vertical_plays_pct": 4.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 6+3s | 0+8+0m",
+        1
+       ],
+       [
+        "0+5m | 0d | 0+5m | 0+8m",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 2s | 0+11m",
+        1
+       ],
+       [
+        "0+3d | 0d | 6+5s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+3d | 0+5d | 0+10m | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0+2d | 0d | 0+10m | 0+5+0s | 1s",
+        1
+       ],
+       [
+        "0d | 0+11m | 0+8m | 6+5s | 0+1s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR1": 21,
+      "WR3": 21,
+      "TE1": 20,
+      "HB1": 11,
+      "TE2": 6,
+      "TE3": 2,
+      "FB1": 2,
+      "HB2": 2
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "JAX": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.251,
+      "three_plus_vertical_plays_pct": 6.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+11m | 6+3s | 0+3d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+3s | 0+4d | 0+2d",
+        1
+       ],
+       [
+        "0+5d | 0d | 0+10m | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5+0s | 0+4s | 0+6+2d",
+        1
+       ],
+       [
+        "0+3s | 0+5d | 6+5s | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0+1s | 0+8m | 0+2+4s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+5m | 0+8+5m | 6+5s | 1s | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR1": 21,
+      "WR2": 21,
+      "WR3": 20,
+      "HB1": 11,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 2
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "KC": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.032,
+      "plain_vertical_route_share": 0.201,
+      "three_plus_vertical_plays_pct": 3.2,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 1,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        2
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+6m | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+5s | 0+11d",
+        1
+       ],
+       [
+        "0+7d | 0d | 6+5s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0d | 0+10m | 0+4s | 0+6+2d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR3": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 13,
+      "TE2": 5,
+      "TE3": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "MIA": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.259,
+      "three_plus_vertical_plays_pct": 7.8,
+      "post_plus_verticals_plays": 2,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 0+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0d | 6+0s | 6+5+0s | 5s | 0+2d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+4m | 5s | 0+11d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        1
+       ],
+       [
+        "0d | 0+2+4d | 0+10m | 0+2d | 0+3d",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+3s | 0+1s | 0+1s",
+        1
+       ],
+       [
+        "0+1d | 0+5d | 0+10m | 6+5s | 0+5+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 64,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR3": 22,
+      "TE1": 20,
+      "WR2": 20,
+      "WR1": 20,
+      "HB1": 12,
+      "TE2": 5,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 14,
+     "short_menu_formations": 0
+    },
+    "MIN": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 87,
+      "max_signature_share": 0.023,
+      "plain_vertical_route_share": 0.247,
+      "three_plus_vertical_plays_pct": 5.7,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0d | 6+3s | 0d | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+6+5s | 0d | 0+7d | 0+4+5s",
+        1
+       ],
+       [
+        "0+4s | 0+4s | 0d | 0+6d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+5s | 0+8+5m | 0+11m",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 6+3s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+1s | 0+11m | 6+5s | 0+6m | 0+1+8s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR2": 20,
+      "TE1": 19,
+      "WR1": 18,
+      "WR3": 17,
+      "HB1": 10,
+      "TE2": 5,
+      "FB1": 3,
+      "HB2": 2,
+      "WR4": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 16,
+     "short_menu_formations": 0
+    },
+    "NE": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 98,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.215,
+      "three_plus_vertical_plays_pct": 4.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+4m | 0+4s | 0d | 0+6d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+5s | 0d | 0+4+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+8m | 5s | 0+8+6m",
+        1
+       ],
+       [
+        "0+1+8s | 0+2+0s | 6+5s | 5s | 0+6d",
+        1
+       ],
+       [
+        "0d | 0+4s | 6+5s | 0+2+4m | 0+3m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR1": 22,
+      "TE1": 21,
+      "WR3": 20,
+      "HB1": 11,
+      "TE2": 6,
+      "FB1": 4,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 6,
+     "short_menu_formations": 0
+    },
+    "NO": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.195,
+      "three_plus_vertical_plays_pct": 4.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+3m | 0d | 0+8m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+4s | 0+1+5m",
+        1
+       ],
+       [
+        "0+4d | 0d | 6+5s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 6+5s | 0+4m | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+11m | 0+6d | 0+10m | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 6+5+0s | 0+3s | 0+2+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR3": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 13,
+      "TE2": 6,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "NYG": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 92,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.243,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+3s | 6+0s",
+        1
+       ],
+       [
+        "0+5m | 1s | 0+8+5m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+6+5d | 6+3s | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+3d | 0+11+0d | 0+10m | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+2d | 0+5+0s | 0+10m | 0d | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR3": 21,
+      "TE1": 20,
+      "WR1": 20,
+      "WR2": 20,
+      "HB1": 12,
+      "TE2": 5,
+      "TE3": 1,
+      "FB1": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "NYJ": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 86,
+      "max_signature_share": 0.023,
+      "plain_vertical_route_share": 0.23,
+      "three_plus_vertical_plays_pct": 3.4,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+4+5s | 0+6+5s | 0+2d",
+        2
+       ],
+       [
+        "0d | 0d | 6+3s | 0d | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5+0s | 0+2d | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+8m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0+5d",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+0s | 6+5s",
+        1
+       ],
+       [
+        "0+11m | 0+6d | 6+5+0s | 0+6d | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 20,
+      "WR1": 20,
+      "WR3": 19,
+      "TE1": 18,
+      "HB1": 12,
+      "TE2": 6,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "OAK": {
+     "route_combos": {
+      "pass_plays": 85,
+      "distinct_combo_signatures": 85,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.22,
+      "three_plus_vertical_plays_pct": 3.5,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0d | 0+4d | 0+6+11d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 6+3s | 0+2d",
+        1
+       ],
+       [
+        "0+3s | 0+7d | 6+3s | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0+2+0s | 5s | 0+10m | 0d | 6+0+8s",
+        1
+       ],
+       [
+        "0+2d | 0d | 6+5s | 5s | 0+2+0s",
+        1
+       ],
+       [
+        "0+5m | 1s | 0+5s | 0+8+5m | 0+5+4s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 63,
+     "run_blocking_signatures": 29,
+     "primary_by_position": {
+      "WR1": 19,
+      "WR2": 19,
+      "TE1": 18,
+      "HB1": 12,
+      "WR4": 12,
+      "WR3": 7,
+      "TE2": 4,
+      "TE3": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "PHI": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.2,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+5m | 0+11m | 0+10m | 0+8m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 6+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 0+10m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0d | 5s | 0+10m | 0+6+5d | 6+0+8s",
+        1
+       ],
+       [
+        "0d | 0+4s | 6+5s | 0+2d | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 64,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR3": 20,
+      "WR1": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 6,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "PIT": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.229,
+      "three_plus_vertical_plays_pct": 6.7,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+4s | 0+4s | 0d | 0+6d",
+        1
+       ],
+       [
+        "0+7+0d | 0+5m | 0+8m",
+        1
+       ],
+       [
+        "0+5+4s | 6+0+11s | 6+0+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+5s | 0+4d | 0+2d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0+4s | 0d",
+        1
+       ],
+       [
+        "0d | 0+4s | 6+5+0s | 0+1d | 0+4d",
+        1
+       ],
+       [
+        "0+1+5m | 0+2d | 0+10m | 0+4m | 0+7d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR1": 20,
+      "TE1": 19,
+      "HB1": 13,
+      "WR3": 12,
+      "WR4": 8,
+      "TE2": 3,
+      "TE3": 3,
+      "FB1": 2
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 0
+    },
+    "SD": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.221,
+      "three_plus_vertical_plays_pct": 6.7,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+8m | 0+5m | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 6+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+7d | 0d | 0+6m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+3d | 0d | 6+5s | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+3s | 0+5d | 0+10m | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0d | 1+0s | 0+10m | 0d | 1+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR2": 20,
+      "WR3": 20,
+      "TE1": 19,
+      "WR1": 19,
+      "HB1": 13,
+      "TE2": 3,
+      "TE3": 3,
+      "FB1": 2
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "SEA": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.171,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0d | 6+3s | 0d | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+6+11d | 6+0+11s | 6+0+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1+8s | 0+6m",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+5s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 5s | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+5m | 0d | 0+10m | 5s | 0+7d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR3": 21,
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 13,
+      "TE2": 3,
+      "TE3": 3,
+      "FB1": 3
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "SF": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.202,
+      "three_plus_vertical_plays_pct": 4.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+11m | 0+11m | 2s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 6+5s | 0+11m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2d | 0d | 0+3d",
+        1
+       ],
+       [
+        "0+6d | 0d | 0+7d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5+0s | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 0+6m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+10m | 0+4m | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 20,
+      "TE1": 19,
+      "WR3": 13,
+      "HB1": 12,
+      "WR4": 7,
+      "TE2": 6,
+      "TE3": 3,
+      "FB1": 2,
+      "HB2": 2
+     },
+     "deep_shot_plays": 6,
+     "short_menu_formations": 0
+    },
+    "STL": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 98,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.215,
+      "three_plus_vertical_plays_pct": 3.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+8+0m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s | 0+2+4m",
+        1
+       ],
+       [
+        "0+11m | 0+8m | 6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0d | 0d | 0+6m | 5s | 0+11d",
+        1
+       ],
+       [
+        "0d | 0+8m | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+3s | 0+1d | 0+10m | 5+6s | 1+5+0s",
+        1
+       ],
+       [
+        "0+1d | 0d | 0+10m | 5s | 0+7d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 22,
+      "WR2": 22,
+      "WR3": 22,
+      "TE1": 20,
+      "HB1": 12,
+      "TE2": 4,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "TB": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 88,
+      "max_signature_share": 0.022,
+      "plain_vertical_route_share": 0.205,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+2d | 5s | 0+5m",
+        2
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+5+0s | 0+2d | 0+7+0d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+8m | 0d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+6d | 5s | 0+11m",
+        1
+       ],
+       [
+        "0+11d | 5s | 6+5s | 0+8m | 1+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR1": 21,
+      "WR2": 21,
+      "TE1": 19,
+      "WR3": 17,
+      "HB1": 12,
+      "TE2": 5,
+      "WR4": 3,
+      "TE3": 2,
+      "FB1": 1
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "TEN": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 88,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.239,
+      "three_plus_vertical_plays_pct": 5.7,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+6d | 0d | 0+4s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0d | 0+4+5s | 0d",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        1
+       ],
+       [
+        "0d | 0+8m | 0+5s | 0+2+0s | 6+5s",
+        1
+       ],
+       [
+        "0d | 5s | 1+5s | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0d | 0+10m | 0+5+0s | 0+6+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 63,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR3": 21,
+      "WR2": 20,
+      "WR1": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "WAS": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 86,
+      "max_signature_share": 0.033,
+      "plain_vertical_route_share": 0.202,
+      "three_plus_vertical_plays_pct": 6.7,
+      "post_plus_verticals_plays": 1,
+      "duplicate_alignment_signatures": 1,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        3
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+5m | 0d | 0+5m",
+        1
+       ],
+       [
+        "0+4+5s | 0d | 0+5+4m",
+        1
+       ],
+       [
+        "0+3m | 0+5m | 0d | 0+4+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 0+4+5s | 0+5s | 0+4m | 0+4d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0+7d",
+        1
+       ],
+       [
+        "0d | 5s | 0+1s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR3": 20,
+      "WR2": 20,
+      "WR1": 20,
+      "TE1": 18,
+      "HB1": 12,
+      "TE2": 5,
+      "TE3": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    }
+   }
+  },
+  "v3": {
+   "league": {
+    "label": "books_v3_final",
+    "teams": 32,
+    "formations_mean": 32.6,
+    "plays_mean": 147.0,
+    "links_mean": 383.4,
+    "run_blocking_signatures_mean": 32.0,
+    "route_kinds_used_mean": 12.0,
+    "route_shapes_mean": 68.1,
+    "duplicate_play_records_mean": 1.9,
+    "short_menu_formations_mean": 0.0,
+    "deep_shot_plays_mean": 9.8,
+    "combo_distinct_combo_signatures_mean": 92.062,
+    "combo_distinct_combo_signatures_max": 98,
+    "combo_max_signature_share_mean": 0.013,
+    "combo_max_signature_share_max": 0.034,
+    "combo_plain_vertical_route_share_mean": 0.083,
+    "combo_plain_vertical_route_share_max": 0.114,
+    "combo_three_plus_vertical_plays_pct_mean": 1.084,
+    "combo_three_plus_vertical_plays_pct_max": 5.4,
+    "combo_post_plus_verticals_plays_mean": 0.0,
+    "combo_post_plus_verticals_plays_max": 0,
+    "combo_duplicate_alignment_signatures_mean": 0.0,
+    "combo_duplicate_alignment_signatures_max": 0,
+    "formation_families_total": {
+     "Gun Single": 331,
+     "Singleback": 173,
+     "Pistol Single": 138,
+     "I-Form Heavy": 68,
+     "Full House Heavy": 64,
+     "I-Form": 59,
+     "Gun Empty": 40,
+     "Split Backs": 39,
+     "Empty UC": 32,
+     "Strong/Weak I": 31,
+     "Singleback Heavy": 23,
+     "Pistol Offset I": 19,
+     "Strong/Weak I Heavy": 8,
+     "Gun Split": 7,
+     "Pistol Single Heavy": 6,
+     "Pistol Full House Heavy": 4,
+     "Pistol Offset I Heavy": 2
+    },
+    "formation_family_kinds": 17,
+    "play_families_total": {
+     "dropback": 1338,
+     "run": 1131,
+     "quick": 832,
+     "play action": 700,
+     "screen": 315,
+     "QB run": 191,
+     "boot/rollout": 86,
+     "trick": 77,
+     "direct snap": 35
+    },
+    "run_schemes_total": {
+     "toss": 154,
+     "inside zone": 143,
+     "power": 126,
+     "iso/lead": 122,
+     "trap": 119,
+     "counter": 116,
+     "draw": 102,
+     "outside zone": 97,
+     "QB sneak (stacked)": 84,
+     "power (two pullers)": 81,
+     "duo/drive": 60,
+     "off tackle": 46,
+     "reverse/end around": 42,
+     "other": 35,
+     "QB keep": 34,
+     "QB draw": 33,
+     "QB power": 26,
+     "QB sneak": 14
+    },
+    "run_scheme_kinds": 18,
+    "route_kinds_total": {
+     "0": 12767,
+     "1": 1266,
+     "2": 1259,
+     "3": 682,
+     "4": 2488,
+     "5": 4971,
+     "6": 3095,
+     "7": 514,
+     "8": 1212,
+     "9": 215,
+     "10": 1283,
+     "11": 1347
+    },
+    "primary_by_position_pct": {
+     "WR2": 19.9,
+     "WR1": 19.9,
+     "TE1": 19.1,
+     "WR3": 18.1,
+     "HB1": 11.5,
+     "TE2": 4.5,
+     "FB1": 2.5,
+     "TE3": 1.9,
+     "WR4": 1.4,
+     "HB2": 0.8,
+     "WR5": 0.2
+    },
+    "primary_by_alignment_pct": {
+     "slot/inside": 32.3,
+     "outside WR": 30.8,
+     "TE": 25.1,
+     "back": 11.8
+    },
+    "screens_per_menu_max": 2,
+    "same_screen_in_menu_max": 1,
+    "team_unique_play_pct_mean": 62.6,
+    "team_unique_play_pct_min": 58.9,
+    "distinct_plays_league": 3225,
+    "distinct_formation_names_league": 106
+   },
+   "teams": {
+    "ARZ": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.065,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+6d | 0+7d | 0+4s",
+        2
+       ],
+       [
+        "0d | 0d | 6+3s | 0+11d",
+        2
+       ],
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+7d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+4s | 0+4s | 0+7d | 0+6d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0d | 6+3s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 6+5+0s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 5s | 0+10m | 0d | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 71,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "TE1": 22,
+      "WR2": 21,
+      "WR1": 20,
+      "WR3": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "WR4": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "ATL": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.082,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        1
+       ],
+       [
+        "0+3m | 6+3s | 0+11m | 2+4s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 6+5s | 0+4+5s | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 0+4m | 0+6+5d | 0+5+0m",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 0+5+0s | 0+11m | 0+6d",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 0+10m | 6+0+5s | 6+0+11s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 20,
+      "WR3": 17,
+      "HB1": 11,
+      "TE2": 5,
+      "FB1": 3,
+      "WR4": 3,
+      "TE3": 2,
+      "HB2": 2
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "BAL": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 92,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.055,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5+0s | 0+2d | 0+5+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+2+0s | 6+5s | 0+5d | 0+8m",
+        1
+       ],
+       [
+        "0+4d | 0+4+5s | 6+3s | 0+8+0m",
+        1
+       ],
+       [
+        "0+5+0m | 2+4s | 6+5+0s | 0+5+4m",
+        1
+       ],
+       [
+        "0+1d | 0+4+5s | 0+11m | 0+6d",
+        1
+       ],
+       [
+        "0+3d | 2+4s | 6+5+0s | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+5+0m | 5s | 0+10m | 1+5s | 0+6+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 20,
+      "TE1": 19,
+      "WR3": 18,
+      "HB1": 12,
+      "TE2": 4,
+      "WR5": 4,
+      "TE3": 3,
+      "FB1": 2
+     },
+     "deep_shot_plays": 14,
+     "short_menu_formations": 0
+    },
+    "BUF": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.071,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5s | 6+0s | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 0+5s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+5+0s | 0+1+8s | 0+7d",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        1
+       ],
+       [
+        "0+2+6m | 0+2+4m | 0+2+4s | 0+4s | 0+5+4m",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+5s | 0+8+6m | 0+7d",
+        1
+       ],
+       [
+        "0+3m | 0+2+4m | 0+10m | 0+4s | 0+5+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 20,
+      "WR2": 20,
+      "WR3": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 4,
+      "FB1": 4,
+      "TE3": 2
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "CAR": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.082,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+7+0d | 0+5+0m | 0+8m",
+        1
+       ],
+       [
+        "0+5d | 0+6+5d | 6+5+0s | 0+8m | 0+7d",
+        1
+       ],
+       [
+        "0+5+4m | 0+4+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4m | 6+5+0s | 0+4s | 0+6d",
+        1
+       ],
+       [
+        "0+1d | 0+4d | 0+5s | 0+4+5s | 0+2+4m",
+        1
+       ],
+       [
+        "0+2+0m | 0+3s | 6+3s | 0+3m | 0+7d",
+        1
+       ],
+       [
+        "0+3d | 0+2d | 0+10m | 0+2+4d | 0+5+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR3": 21,
+      "WR1": 21,
+      "WR2": 21,
+      "TE1": 20,
+      "HB1": 13,
+      "TE2": 5,
+      "FB1": 4,
+      "TE3": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "CHI": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.077,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0d | 0+2+4d | 0+4m | 0+4d",
+        2
+       ],
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1+5m | 0+1s | 6+5s | 0+4s",
+        1
+       ],
+       [
+        "0d | 0+11m | 0+11m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0+3m | 6+5s | 0+11m | 0+5+0m",
+        1
+       ],
+       [
+        "0+3d | 0+8+5m | 0+2+4s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+1d | 0+8+0m | 0+10m | 0+7+0d | 6+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 37,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 20,
+      "WR3": 14,
+      "HB1": 13,
+      "WR4": 6,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "CIN": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.021,
+      "plain_vertical_route_share": 0.074,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        2
+       ],
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "1s | 6+5s | 0+11m | 2+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+4d | 2+4s | 6+5+0s | 0+5+4m",
+        1
+       ],
+       [
+        "0+1d | 0+8m | 0+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+5d | 0+1+5m | 0+8m | 0+11m | 0+11m",
+        1
+       ],
+       [
+        "0+7d | 0+8+5m | 0+6d | 5s | 0+7d",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 6+5s | 0+4+5s | 0+5+0m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 23,
+      "WR2": 22,
+      "WR3": 22,
+      "TE1": 20,
+      "HB1": 12,
+      "TE2": 4,
+      "TE3": 3,
+      "FB1": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 0
+    },
+    "CLE": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 96,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.078,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+8m | 0+6d | 0d | 0+6+5s | 0+11m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+11m",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 6+5+0s | 2s | 0+11m",
+        1
+       ],
+       [
+        "0+7d | 0+8m | 0+8m | 0+8+5m | 0+7d",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        1
+       ],
+       [
+        "0+11d | 5s | 0+10m | 6+0+5s | 6+0+11s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR3": 21,
+      "WR2": 21,
+      "WR1": 21,
+      "HB1": 13,
+      "TE2": 4,
+      "FB1": 3,
+      "TE3": 2
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "DAL": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 88,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.088,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4d | 6+0+8s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 0+2d | 0+4d",
+        1
+       ],
+       [
+        "0+5d | 0+4+5s | 6+5s | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+7d | 0+1+8s | 6+5s | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+2d | 0+4s | 0+10m | 0+4d | 0+5d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5+0s | 0+4m | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR1": 20,
+      "WR2": 20,
+      "TE1": 19,
+      "WR3": 17,
+      "HB1": 10,
+      "TE2": 5,
+      "TE3": 3,
+      "HB2": 2,
+      "FB1": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "DEN": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.096,
+      "three_plus_vertical_plays_pct": 5.4,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+6+11d | 0+5m | 0d | 0+8m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+5s | 0+4+5s | 0+1d",
+        1
+       ],
+       [
+        "0+5+0m | 0+8m | 0+5s | 0+11m | 0+6d",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        1
+       ],
+       [
+        "0+2+0s | 0+6+5d | 6+5s | 5s | 0+5+4m",
+        1
+       ],
+       [
+        "0+2d | 5s | 0+10m | 0+4+5s | 1s",
+        1
+       ],
+       [
+        "0+5+0m | 0+4+5s | 6+5s | 0+3m | 0+7d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR1": 21,
+      "WR2": 21,
+      "WR3": 21,
+      "HB1": 13,
+      "TE2": 5,
+      "FB1": 2,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 0
+    },
+    "DET": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.087,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1+5m | 0+5d | 1+5s",
+        1
+       ],
+       [
+        "5+6s | 0+1+8s | 0+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2d | 0+5+0s | 0+1+8s | 0+4d",
+        1
+       ],
+       [
+        "0+11d | 5s | 0+10m | 0+8m | 6+0s",
+        1
+       ],
+       [
+        "0+2d | 0+3d | 0+10m | 0+6+11d | 0+5+0s",
+        1
+       ],
+       [
+        "0+3d | 0+1+5m | 0+8m | 0+4m | 0+4d",
+        1
+       ],
+       [
+        "0d | 0+3d | 6+5s | 6+5s | 0+8d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 35,
+     "primary_by_position": {
+      "WR2": 23,
+      "WR1": 21,
+      "TE1": 20,
+      "WR3": 19,
+      "HB1": 11,
+      "TE2": 3,
+      "TE3": 3,
+      "FB1": 3,
+      "HB2": 1,
+      "WR4": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "GB": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.087,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+6d | 6+5s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5d | 0+4+5s | 6+5s | 0+8m | 0+7d",
+        1
+       ],
+       [
+        "0+11m | 0d | 0+10m | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0d | 5s | 0+10m | 0+11+0d | 0+6+5d",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 0+8m | 0+8+6m | 0+7d",
+        1
+       ],
+       [
+        "0+5d | 0+8m | 6+5s | 6+5s | 0+5+4m",
+        1
+       ],
+       [
+        "0+1+8s | 5+6s | 6+5s | 5s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 29,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR3": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 4,
+      "TE3": 2,
+      "FB1": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 7,
+     "short_menu_formations": 0
+    },
+    "HOU": {
+     "route_combos": {
+      "pass_plays": 96,
+      "distinct_combo_signatures": 96,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.067,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+4+5s | 0d | 3s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5m | 0+5+4m | 0+8m",
+        1
+       ],
+       [
+        "0+7d | 0+8m | 6+5s | 0+8+5m | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 6+5s | 6+5s | 0d | 0+5d",
+        1
+       ],
+       [
+        "0+7d | 0d | 0+10m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 0+2+4d | 0+10m | 0+2d | 0+5+4m",
+        1
+       ],
+       [
+        "0+5d | 0+2+4m | 0+4m | 0+4s | 1+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "TE1": 21,
+      "WR2": 21,
+      "WR1": 20,
+      "WR3": 20,
+      "HB1": 12,
+      "TE2": 4,
+      "TE3": 3,
+      "FB1": 3,
+      "WR4": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "IND": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 98,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.075,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+5+4s | 0+11m | 0+6d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+8m | 0+5+4m | 0+5s | 0+11+0d",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+4+5s | 0+5+0m",
+        1
+       ],
+       [
+        "0+8+6m | 5s | 0+8m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+2+4d | 0+4m | 5s | 0+6d",
+        1
+       ],
+       [
+        "0d | 0+4s | 6+5s | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+2+0s | 0+6+5d | 6+5s | 0+4+5s | 0+5+4m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "WR3": 22,
+      "WR1": 21,
+      "TE1": 20,
+      "WR2": 20,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "WR5": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "JAX": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.099,
+      "three_plus_vertical_plays_pct": 2.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+7d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+4+5s | 0+3d | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+3d | 0+4+5s | 0+8m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+2+0s | 0+4+5s | 0+10m | 5s | 0+4d",
+        1
+       ],
+       [
+        "0+5+0m | 5s | 6+3s | 0+6+5d | 0+8d",
+        1
+       ],
+       [
+        "0+11m | 0+6d | 6+3s | 6+0s | 1+0s",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 0+1+8s | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR3": 21,
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 20,
+      "HB1": 12,
+      "TE2": 4,
+      "TE3": 3,
+      "FB1": 3,
+      "HB2": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "KC": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.032,
+      "plain_vertical_route_share": 0.059,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        2
+       ],
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+7d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5+4m | 0+4+5s | 6+3s | 0+6+11d",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 6+3s | 0+11m",
+        1
+       ],
+       [
+        "0+11d | 5s | 6+3s | 2+4s | 0+11m",
+        1
+       ],
+       [
+        "0d | 0+4m | 6+5+0s | 0+4s | 0+6d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR3": 21,
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 20,
+      "HB1": 13,
+      "TE2": 5,
+      "TE3": 2,
+      "FB1": 2
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "MIA": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.101,
+      "three_plus_vertical_plays_pct": 2.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+1d | 0+11m | 2s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+11m | 0d | 6+0+8s",
+        1
+       ],
+       [
+        "0+1d | 0+8+5m | 0+10m | 5s | 0+2d",
+        1
+       ],
+       [
+        "0+1d | 0+2d | 6+5+0s | 0+2+4d | 0+7+0d",
+        1
+       ],
+       [
+        "0+4d | 0+4d | 0+4m | 6+0s",
+        1
+       ],
+       [
+        "0+1+5m | 1s | 5s | 0+11d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 65,
+     "run_blocking_signatures": 30,
+     "primary_by_position": {
+      "TE1": 20,
+      "WR2": 20,
+      "WR1": 20,
+      "WR3": 18,
+      "HB1": 11,
+      "TE2": 6,
+      "FB1": 3,
+      "HB2": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "MIN": {
+     "route_combos": {
+      "pass_plays": 86,
+      "distinct_combo_signatures": 86,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.053,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+4s | 0+1+5m | 0+10m | 0+8+5m | 0+7d",
+        1
+       ],
+       [
+        "0+5+0m | 0+4+5s | 6+3s | 0+5m | 0+8m",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+3s | 6+0s | 0+5m",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+2+4s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 5s | 6+3s | 6+0+8s | 0+8+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 70,
+     "run_blocking_signatures": 29,
+     "primary_by_position": {
+      "TE1": 19,
+      "WR1": 19,
+      "WR2": 19,
+      "WR3": 17,
+      "HB1": 12,
+      "TE2": 5,
+      "TE3": 2,
+      "FB1": 2,
+      "WR4": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "NE": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 98,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.096,
+      "three_plus_vertical_plays_pct": 2.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+4+5s | 0+5+4m | 0+6+11d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0+1+5m | 6+5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+8+6m | 5s | 0+8m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+5d | 0+4d | 0+2+4s | 0+6+11d | 6+5s",
+        1
+       ],
+       [
+        "0+4d | 0+8+5m | 0+8+5m | 1s | 0+5m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR1": 22,
+      "WR3": 22,
+      "WR2": 22,
+      "TE1": 20,
+      "HB1": 12,
+      "TE2": 6,
+      "FB1": 4,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "NO": {
+     "route_combos": {
+      "pass_plays": 94,
+      "distinct_combo_signatures": 94,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.074,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4d | 0+5+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+4m | 0+8+5m | 0+7d",
+        1
+       ],
+       [
+        "0+11d | 5s | 0+2+4s | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 0+10m | 0+5+0s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 5s | 0+1+5m | 0+6d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "WR3": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "NYG": {
+     "route_combos": {
+      "pass_plays": 92,
+      "distinct_combo_signatures": 92,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.102,
+      "three_plus_vertical_plays_pct": 3.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0d | 0+6+5s | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+1+5m | 0+11m | 0+5s | 0+11+0d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+6+2d | 0+4s | 6+5+0s | 6+0s",
+        1
+       ],
+       [
+        "0+8+6m | 5s | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0+1+8s | 6+5s | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 6+3s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0d | 0d | 6+5s | 0d | 0d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR3": 20,
+      "TE1": 19,
+      "WR1": 19,
+      "HB1": 11,
+      "TE3": 5,
+      "TE2": 3,
+      "HB2": 2,
+      "FB1": 1
+     },
+     "deep_shot_plays": 6,
+     "short_menu_formations": 0
+    },
+    "NYJ": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 88,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.08,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5+0m | 0+4+5s | 6+3s | 0+7d",
+        1
+       ],
+       [
+        "0+1+8s | 5+6s | 0+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 2+4s | 6+5s | 0+11m | 0+6d",
+        1
+       ],
+       [
+        "0+11d | 5s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+5d | 0+6+2d | 0+8m | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+5+4m | 0+1+8s | 0+5s | 5s | 0+6d",
+        1
+       ],
+       [
+        "0+2d | 0+5+0s | 6+3s | 0d | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 34,
+     "primary_by_position": {
+      "WR3": 20,
+      "WR1": 20,
+      "TE1": 19,
+      "WR2": 19,
+      "HB1": 11,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "OAK": {
+     "route_combos": {
+      "pass_plays": 84,
+      "distinct_combo_signatures": 84,
+      "max_signature_share": 0.012,
+      "plain_vertical_route_share": 0.114,
+      "three_plus_vertical_plays_pct": 1.2,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        1
+       ],
+       [
+        "0+4s | 0+4s | 0+7d | 0+6d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+11d | 5s | 6+5s | 0+4+5s | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 2+4s | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+4d | 0d | 6+5+0s | 0+4m | 0+4d",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+10m | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+1d | 5s | 0+6+5d | 0+4m | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 28,
+     "primary_by_position": {
+      "TE1": 20,
+      "WR1": 19,
+      "WR2": 17,
+      "HB1": 12,
+      "WR3": 10,
+      "TE2": 7,
+      "WR4": 7,
+      "TE3": 1,
+      "FB1": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "PHI": {
+     "route_combos": {
+      "pass_plays": 91,
+      "distinct_combo_signatures": 91,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.094,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+4d | 2+4s | 0+10m | 0+5m | 0+8m",
+        1
+       ],
+       [
+        "0+8m | 0+11m | 0+6+5s | 0+8m | 0+11m",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+2+4s | 2s | 0+11m",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 0+8m | 0+5m",
+        1
+       ],
+       [
+        "0+5d | 5s | 6+3s | 1+5s | 0+6d",
+        1
+       ],
+       [
+        "0+4s | 0+11d | 0+10m | 0+2+4m | 0+5+0m",
+        1
+       ],
+       [
+        "0+11d | 2+4s | 0+2+4s | 5s | 3s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 66,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 21,
+      "TE1": 20,
+      "WR3": 20,
+      "WR2": 20,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 1
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "PIT": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.076,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+3s | 0+2+0m | 0+5+4s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1+8s | 5+6s | 0+5s | 0+8+6m | 0+7d",
+        1
+       ],
+       [
+        "0+4d | 0+8m | 0+4+5s | 0+5d",
+        1
+       ],
+       [
+        "0+11d | 5s | 0+4m | 0+6d | 2+4s",
+        1
+       ],
+       [
+        "0+11m | 0d | 6+5s | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+1+5m | 0+4s | 0+10m | 2s | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 20,
+      "WR2": 20,
+      "TE1": 19,
+      "WR3": 12,
+      "HB1": 12,
+      "WR4": 9,
+      "TE2": 4,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 8,
+     "short_menu_formations": 0
+    },
+    "SD": {
+     "route_combos": {
+      "pass_plays": 89,
+      "distinct_combo_signatures": 89,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.114,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+2d | 0+4d | 0+6d",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5+4s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+4d | 0+4m | 0+10m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 0+4d | 6+5+0s | 0+4s | 0+7+0d",
+        1
+       ],
+       [
+        "0d | 0+8m | 0+4m | 5s | 0+11d",
+        1
+       ],
+       [
+        "0+11m | 0d | 6+5+0s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+6d | 0+11m | 0+8m | 5s | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR2": 20,
+      "WR1": 20,
+      "TE1": 19,
+      "WR3": 19,
+      "HB1": 12,
+      "TE2": 4,
+      "FB1": 3,
+      "TE3": 2
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "SEA": {
+     "route_combos": {
+      "pass_plays": 95,
+      "distinct_combo_signatures": 95,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.089,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "5s | 0+11d | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0d | 0d | 6+5+0s | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+5d | 6+5s | 0+10m | 0+8+0m | 0+11d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 0+10m | 6+0+5s | 6+0+11s",
+        1
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        1
+       ],
+       [
+        "0+11m | 0+6d | 6+5s | 2s | 0+11m",
+        1
+       ],
+       [
+        "0+2d | 0+6+2d | 0+10m | 0+5+0s | 1s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 68,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 21,
+      "WR2": 21,
+      "WR3": 20,
+      "TE1": 19,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 3,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 11,
+     "short_menu_formations": 0
+    },
+    "SF": {
+     "route_combos": {
+      "pass_plays": 93,
+      "distinct_combo_signatures": 93,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.085,
+      "three_plus_vertical_plays_pct": 1.1,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+11m | 0+5+0m | 1s",
+        1
+       ],
+       [
+        "6+0s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1d | 0+6+5d | 0+4m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+11m | 0+11m | 6+5+0s | 6+0s | 1+0s",
+        1
+       ],
+       [
+        "0+5d | 0+4d | 0+10m | 0+4s | 0+7+0d",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 0+10m | 0+3m | 0+4d",
+        1
+       ],
+       [
+        "0+4d | 0+4s | 6+5s | 0+4d | 0+5d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 32,
+     "primary_by_position": {
+      "WR1": 21,
+      "TE1": 19,
+      "WR2": 19,
+      "WR3": 14,
+      "HB1": 12,
+      "WR4": 8,
+      "TE2": 3,
+      "TE3": 3,
+      "WR5": 2,
+      "HB2": 2,
+      "FB1": 1
+     },
+     "deep_shot_plays": 9,
+     "short_menu_formations": 0
+    },
+    "STL": {
+     "route_combos": {
+      "pass_plays": 98,
+      "distinct_combo_signatures": 98,
+      "max_signature_share": 0.01,
+      "plain_vertical_route_share": 0.103,
+      "three_plus_vertical_plays_pct": 2.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+5+4s | 0+1+8s | 5+6s",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+4d | 0d | 0d | 6+0s | 1+0s",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 0+10m | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 0+5+4m | 0+10m | 5s | 6+0s",
+        1
+       ],
+       [
+        "0+5d | 0+6+5d | 0+8m | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+5d | 0+6+5d | 6+5s | 0+4+5s | 0+11d",
+        1
+       ],
+       [
+        "0+8+6m | 5s | 0+10m | 0d | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "WR2": 22,
+      "WR1": 22,
+      "WR3": 21,
+      "TE1": 20,
+      "HB1": 12,
+      "TE2": 4,
+      "FB1": 4,
+      "TE3": 2,
+      "HB2": 1
+     },
+     "deep_shot_plays": 13,
+     "short_menu_formations": 0
+    },
+    "TB": {
+     "route_combos": {
+      "pass_plays": 90,
+      "distinct_combo_signatures": 90,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.083,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "6+0s | 0+7d | 6+5s | 6+0s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+5m | 0+8m | 6+5s | 0d | 0+11m",
+        1
+       ],
+       [
+        "0+7d | 0+3m | 0+2+4s | 0+6d | 0+11m",
+        1
+       ],
+       [
+        "0+5+0m | 5s | 0+5+4m | 0+8d",
+        1
+       ],
+       [
+        "0+1d | 0+8m | 6+3s | 0+1s | 0+1s",
+        1
+       ],
+       [
+        "0+5+0m | 0+2+4d | 0+10m | 0+2d | 0+7+0d",
+        1
+       ],
+       [
+        "0+4d | 0+1+8s | 0+10m | 0+4+5s | 0+4d",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 69,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "WR2": 21,
+      "WR1": 21,
+      "TE1": 19,
+      "WR3": 14,
+      "HB1": 11,
+      "WR4": 6,
+      "TE2": 5,
+      "FB1": 2,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 12,
+     "short_menu_formations": 0
+    },
+    "TEN": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 88,
+      "max_signature_share": 0.011,
+      "plain_vertical_route_share": 0.073,
+      "three_plus_vertical_plays_pct": 0.0,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0d | 6+5s | 0+5+4m | 0+4+5s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+1s | 6+5s | 6+5s | 2+4s | 0+7d",
+        1
+       ],
+       [
+        "0+2d | 0+6m | 0+10m | 6+5s | 0+5d",
+        1
+       ],
+       [
+        "0+1s | 0d | 6+5s | 0+1s",
+        1
+       ],
+       [
+        "0+3d | 0+11+0d | 6+5s | 6+5s | 0+8d",
+        1
+       ],
+       [
+        "0+4+5s | 0+5+4s | 0+5s | 0+11d | 0+5+0m",
+        1
+       ],
+       [
+        "0+5+4m | 0+8+0m | 6+3s | 0+7d | 6+5s",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 31,
+     "primary_by_position": {
+      "TE1": 20,
+      "WR3": 20,
+      "WR2": 20,
+      "WR1": 20,
+      "HB1": 12,
+      "TE2": 5,
+      "FB1": 2,
+      "TE3": 1
+     },
+     "deep_shot_plays": 10,
+     "short_menu_formations": 0
+    },
+    "WAS": {
+     "route_combos": {
+      "pass_plays": 88,
+      "distinct_combo_signatures": 85,
+      "max_signature_share": 0.034,
+      "plain_vertical_route_share": 0.078,
+      "three_plus_vertical_plays_pct": 2.3,
+      "post_plus_verticals_plays": 0,
+      "duplicate_alignment_signatures": 0,
+      "top10": [
+       [
+        "0+4d | 0+2d | 6+5s | 0+7d",
+        3
+       ],
+       [
+        "0+4d | 0+2d | 6+5s | 0+11m | 0+7d",
+        2
+       ],
+       [
+        "0+5m | 0+7d | 0+5m",
+        1
+       ],
+       [
+        "0+1s | 0+1s | 6+5s",
+        1
+       ],
+       [
+        "0+4m | 0+4s | 0+7d | 0+6d",
+        1
+       ],
+       [
+        "0+6d | 0+7d | 0+4s",
+        1
+       ],
+       [
+        "0+2+4d | 0d | 0+4d",
+        1
+       ],
+       [
+        "0+5+4m | 0+4+5s | 6+3s | 0+6d",
+        1
+       ],
+       [
+        "0+10m | 5s | 0+10m",
+        1
+       ],
+       [
+        "0+11d | 0+4+5s | 0+2+4s | 2s | 0+11m",
+        1
+       ]
+      ]
+     },
+     "route_shapes": 67,
+     "run_blocking_signatures": 33,
+     "primary_by_position": {
+      "TE1": 20,
+      "WR2": 20,
+      "WR1": 19,
+      "WR3": 17,
+      "HB1": 11,
+      "TE2": 7,
+      "FB1": 3,
+      "TE3": 1,
+      "HB2": 1
+     },
+     "deep_shot_plays": 6,
+     "short_menu_formations": 0
+    }
+   }
+  }
+ }
+}

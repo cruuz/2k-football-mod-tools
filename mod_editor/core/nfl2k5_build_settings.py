@@ -20,11 +20,11 @@ FEATURE_KEYS += (
     "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "dynamic_kickoff",
     "dynamic_kickoff_settings", "position_pools", "position_pools_keep_olb", "depth_chart_rows", "season_cap", "season_2026",
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",
-    "career_stats", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "name_keyboard", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder",
+    "career_stats", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "loader_wakeup_fix", "rb_rename", "name_keyboard", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder",
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",
     "player_tags", "roster_edits", "espn25_plan", "espn25_rosters", "playbook_packs", "screen_timing", "depth_roles", "edge_rename",
     "hires_pack", "hires_folder", "hires_scale", "hires_target", "guardian_cap", "scorebug",
-    "scorebug_runtime", "scorebug_folder", "scorebug_watermark", "music_policy", "music_unlock", "music_userlist",
+    "scorebug_runtime", "scorebug_folder", "scorebug_watermark", "indicator_names_folder", "indicator_names_style", "music_policy", "music_unlock", "music_userlist",
     "music_project", "music_library", "commentary", "name", "author", "notes",
 )
 FEATURE_KEYS += ("weather_plan", "weather_haze", "coin_defer", "decided_clock",
@@ -56,14 +56,27 @@ FEATURE_KEYS += ("number_kerning",)  # b76-k2: the jersey 1 kerned in two-digit 
 FEATURE_KEYS += ("espn_wipes_boards_2026",)  # b76-p2: ESPN 2026 wipes and boards
 FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN bar's look
 FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
+FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
+FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
+FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
+FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
+FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
+FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
+FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
+FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
+FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off
 FEATURE_KEYS += ("historic_teams_quick_game",)  # b76-h1: historic teams in Quick Game Team Select
 FEATURE_KEYS += ("historic_rosters_2026",)  # ht: held until all source/routing gaps are resolved
+FEATURE_KEYS += ("classic_teams",)  # b775-ct1: Anniversary and classic team-seasons in Quick Game
 FEATURE_KEYS += ("kickoff_return_blocking",)  # b76-vb3 E1: return blockers claim distinct men after the catch (test)
 FEATURE_KEYS += ("espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules")  # b76-m1: 25 more ESPN 25th Anniversary moments
 FEATURE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")  # b76-k1: 128 MB memory (K128), the roster heap, the early form
 FEATURE_KEYS += ("letter_grades",)  # b77-f4: letter grades in Franchise (allocator owner, late)
+FEATURE_KEYS += ("coach_ai",)  # preserved as an explicit editable Build setting
 FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors page (allocator owner, late) and its award history
+FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
+FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: optional folder of the user's own Super Bowl logos, "" = off
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -83,6 +96,8 @@ def build_settings(value):
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])
+    from . import nfl2k5_team_number_scale as number_scale
+    choices["team_number_scale"] = number_scale.normalize(choices["team_number_scale"])
     tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
     expected = defaults()
     for key in FEATURE_KEYS:
@@ -144,3 +159,5 @@ def to_plan(state, source, target):
     values = build_settings(state)
     values["commentary"] = [CommentarySwap(**row) for row in values.get("commentary", [])]
     return BuildPlan(source, target, **values)
+
+FEATURE_KEYS += ("team_ratings",)  # Dynamic modern team rating getters.

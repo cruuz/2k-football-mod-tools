@@ -155,12 +155,12 @@ def repair_xbe(payload: bytes, accepted: set[str] | None = None, *, right_stick_
     digest = sha(payload)
     if accepted is not None and digest not in accepted:
         state = abilities.revision(payload)
-        if state != "star-gate":
+        if state not in ("star-gate", "universal-sprint"):
             raise ValueError(f"unexpected input hash for default.xbe: {digest}")
     state, settings, revision = abilities._inspect_revision(payload)
     if state != "applied" or not space.is_scaleout(payload):
         raise ValueError("expected the installed abilities rules v2 owner on the sealed v3 allocator")
-    if revision not in ("beta-76.5", "star-gate"):
+    if revision not in ("beta-76.5", "star-gate", "universal-sprint"):
         raise ValueError(f"unexpected abilities revision {revision!r}")
     allocation = abilities.allocation(payload)
     raw, size = allocation["raw"], allocation["size"]
@@ -168,7 +168,10 @@ def repair_xbe(payload: bytes, accepted: set[str] | None = None, *, right_stick_
                   charge_stars_only=bool(charge_stars_only), button_moves_stars_only=bool(button_moves_stars_only),
                   star_access=tuple(star_access))
     old_content = payload[raw:raw + size]
-    new_content, _labels = abilities.code_for(allocation["va"], **wanted)
+    # Preserve the historical pinned G2 output. G3 has its own native repair;
+    # an already upgraded owner must not be downgraded by replaying this tool.
+    legacy = revision != "universal-sprint"
+    new_content, _labels = abilities.code_for(allocation["va"], **wanted, _legacy_g2=legacy)
     spans, ranges = declared_spans(payload)
     requests = space._read_scale_directory(payload)
     buf = bytearray(payload)
@@ -181,16 +184,13 @@ def repair_xbe(payload: bytes, accepted: set[str] | None = None, *, right_stick_
                 buf[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(buf), section)
     result = bytes(buf)
     after_state, after_settings, after_revision = abilities._inspect_revision(result)
-    if (after_state, after_revision) != ("applied", "star-gate") or any(
+    if (after_state, after_revision) != ("applied", "star-gate" if legacy else "universal-sprint") or any(
             after_settings[k] != wanted[k] for k in wanted):
         raise ValueError("star gate postcondition failed")
     if space._read_scale_directory(result) != requests:
         raise ValueError("allocator requests changed")
-    again, _ = abilities.apply(result, right_stick_stars_only=wanted["right_stick_stars_only"],
-                               charge_stars_only=wanted["charge_stars_only"],
-                               button_moves_stars_only=wanted["button_moves_stars_only"],
-                               star_access=wanted["star_access"])
-    if again != result:
+    again, _ = abilities.code_for(allocation["va"], **after_settings, _legacy_g2=legacy)
+    if again != result[raw:raw + size]:
         raise ValueError("the repair is not idempotent")
     scope = scope_receipt(payload, result, spans)
     changed_runs = [dict(file_offset=hex(o), size=n, owner_offset=o - raw,

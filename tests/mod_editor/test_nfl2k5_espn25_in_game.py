@@ -51,7 +51,8 @@ class PublicationTests(unittest.TestCase):
             preset = build.apply_preset(build.BuildPlan(str(source), str(target)), "softdrink_experimental")
             full = replace(preset, espn25_rosters=True)
             bn = replace(full, position_pools=False, position_pools_keep_olb=False, depth_roles=False,
-                         edge_rename=False, depth_chart_rows=False)
+                         edge_rename=False, depth_chart_rows=False,
+                         team_ratings=False)   # b773 tr1: modern team ratings need the modern position pools this plan turns off
             with patch.object(tuning, "is_disc_image", return_value=True), \
                     patch.object(tuning, "_naming_source_preflight", return_value=None), \
                     patch.object(scorebar, "image_plan", return_value={}), \

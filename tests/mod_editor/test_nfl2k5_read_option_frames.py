@@ -34,7 +34,7 @@ def final_reads(shotgun=False):
     else:
         raw, _ = compiled_reads()
         compiled = packs.apply_pack_to_resource(raw,
-            packs.load_pack(ROOT / 'data/playbooks/softdrink_option.2k5book'), asset_id='book:MIN')
+            packs.load_pack(ROOT / 'data/playbooks/softdrink_option.2k5book'), asset_id='book:MIN', xbe=XBE)
     final = roles.normalise(pool_resource(compiled.replacement)).replacement
     pairs, _, _ = resolve({'MIN': final}, [(compiled.replacement, compiled.report)])
     table, receipt = patch.compile_intent_table(pairs)

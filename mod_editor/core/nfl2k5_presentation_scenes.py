@@ -44,7 +44,7 @@ from . import nfl2k5_stadium_texture_writer as stadium  # noqa: E402
 from nfl_scene_probe import ResourceRecord, decode_resource  # noqa: E402
 from nfl_scne_inventory import parse_scene  # noqa: E402
 from nfl_tset_png_import import palette_bytes, quantize_levels, rgba_from_indices  # noqa: E402
-from nfl_txtr import COMPRESSED_SENTINEL, HEADER, minimum_vc_lz_overlap_scratch, swizzle_2d  # noqa: E402
+from nfl_txtr import COMPRESSED_SENTINEL, HEADER, check_vc_lz_native, minimum_vc_lz_overlap_scratch, swizzle_2d  # noqa: E402
 from nfl_vc_lz_fill import compress_optimal, fill_stream  # noqa: E402
 
 MRKS = "MRKS"
@@ -308,6 +308,12 @@ def compile_compressed(resource: SceneResource, edits: Sequence[tuple[int, Path 
         minimum = minimum_vc_lz_overlap_scratch(encoded, stored, len(edited))
         attempts.append(dict(encoder=encoder, compressed=len(stream), filled=len(encoded), minimum_scratch=minimum))
         if len(encoded) <= cap and max(minimum, stored - len(encoded)) <= resource.scratch:
+            try:
+                check_vc_lz_native(encoded + bytes(cap - len(encoded)) + resource.opaque_tail,
+                                   stored, resource.scratch, edited)
+            except ValueError as exc:
+                attempts[-1]["native_error"] = str(exc)
+                continue
             chosen = (encoder, encoded, expanded, minimum)
             break
     require(chosen is not None, f"{resource.scene['name']}: the edit cannot keep the retail scratch word "

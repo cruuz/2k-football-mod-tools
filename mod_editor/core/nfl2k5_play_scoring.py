@@ -25,6 +25,13 @@ BOOK = 0xB75A40
 SOURCE, STACK, STOP = 0x3000000, 0x303F000, 0x303FF00
 TEAM, META, DIRECTION, STATE, ACTOR = (0x3020000+i*0x1000 for i in range(5))
 CONTEXTS = (0, 1, 2, 3)
+INSTRUCTION_BUDGET = 100_000
+BOOK_LOAD = 0x161E30
+# The coach profile hook validates 896 tag bytes and hashes 0x12fd0 body
+# bytes before native copy/relocation. The body hash alone takes 466,656
+# instructions; a tagged production book loads in 533,184. Allow bounded
+# headroom for the loader only, while executing the entire hook unchanged.
+BOOK_LOAD_BUDGET = 1_000_000
 
 
 class ScoringError(ValueError):
@@ -178,7 +185,8 @@ class NativeScorer:
         m.mem_write(STACK, struct.pack('<'+'I'*(1+len(args)), STOP, *args))
         self.counts[hex(pc)] += 1
         try:
-            m.emu_start(pc, STOP, count=100000)
+            budget = BOOK_LOAD_BUDGET if pc == BOOK_LOAD else INSTRUCTION_BUDGET
+            m.emu_start(pc, STOP, count=budget)
         except self.ucmod.UcError as exc:
             if self.problem is None:
                 self.problem = dict(kind='native-fault', pc=hex(m.reg_read(r.UC_X86_REG_EIP)), error=str(exc))
@@ -196,7 +204,7 @@ class NativeScorer:
         self.counts.clear()
         self.environment_calls.clear()
         self.m.mem_write(SOURCE, resource[32:])
-        self.call(0x161E30, ecx=SOURCE, edx=0)
+        self.call(BOOK_LOAD, ecx=SOURCE, edx=0)
         self.put(TEAM+0x20, BOOK)
         for play in book.plays:
             pv = BOOK+ip.PLAY_BASE+play.index*96
@@ -307,3 +315,65 @@ def require_safe(resource, xbe=None):
         first = result['faults'][0]
         raise ScoringError(f"Native PLAY scoring rejected {result['fault_count']} cases: {first}")
     return result
+
+
+# -- many books, in worker processes ---------------------------------------------------------------------------
+# Every book is scored by the same unmodified emulation; a book's result is a function of its bytes and the
+# executable's. The books are read by the caller, scored in worker processes (nfl2k5_late_steps;
+# NFL2K5_SERIAL_PLAY_SCORING=1 or NFL2K5_BUILD_WORKERS=1 score them here one at a time) and consumed in book order,
+# so the first rejected book is the one that raises. A verified cache may hand back a book that already passed.
+
+_WORKER_XBE = None
+
+
+def _init_worker(payload):
+    global _WORKER_XBE
+    _WORKER_XBE = payload
+
+
+def _score_task(task):
+    index, resource = task
+    return index, require_safe(resource, _WORKER_XBE)
+
+
+def _remembered(cache, key, resource, payload):
+    """A cached passing result for exactly these book and executable bytes, or None. The hard gate never relaxes:
+    the record must name both digests and carry no fault."""
+    record = cache.get(key) if cache is not None else None
+    if not (isinstance(record, dict) and record.get('schema') == SCHEMA and record.get('faults') == []
+            and record.get('fault_count') == 0 and record.get('resource_sha256') == hashlib.sha256(resource).hexdigest()
+            and record.get('xbe_sha256') == hashlib.sha256(payload).hexdigest() and record.get('status') == 'PROVED OFFLINE'):
+        return None
+    return record
+
+
+def require_safe_many(books, xbe, *, progress=None):
+    """[{'entry': index, **result}] for ``books`` = [(index, PLAY bytes)]; raises ScoringError at the first rejected book."""
+    from . import nfl2k5_late_steps as late
+    payload = executable_bytes(xbe)
+    cache = late.StepCache.open('play-scoring', **late.step_code('play-scoring'))
+    xbe_digest = hashlib.sha256(payload).hexdigest()
+    answers, keys, misses = {}, {}, []
+    for position, (index, resource) in enumerate(books):
+        if cache is not None:
+            keys[position] = cache.key(hashlib.sha256(resource).hexdigest(), xbe_digest)
+            hit = _remembered(cache, keys[position], resource, payload)
+            if hit is not None:
+                answers[position] = hit
+                continue
+        misses.append(position)
+    computed = late.ordered_map(_score_task, [books[i] for i in misses],
+                                late.worker_count(len(misses), 'NFL2K5_SERIAL_PLAY_SCORING', per_worker_mb=500),
+                                initializer=_init_worker, initargs=(payload,))
+    rows = []
+    for position, (index, resource) in enumerate(books):
+        if progress:
+            progress(index, len(rows), len(books))
+        if position in answers:
+            result = answers[position]
+        else:
+            _, result = next(computed)
+            if cache is not None:
+                cache.put(keys[position], result)
+        rows.append({'entry': index, **result})
+    return rows
