@@ -148,6 +148,59 @@ class NativeRules(unittest.TestCase):
             m.row(ordinal, mode)
             self.assertAlmostEqual(m.multiply(kr.KICKOFF_SITES[0][1]), (50 - yard) * 91.44, places=2)
 
+    def _rule_values(self):
+        m = self.m
+        out = [round(m.multiply(at, sign), 2) for _name, at, _const, _kind in kr.KICKOFF_SITES for sign in (1, -1)]
+        for phase in (2, 4, 1):
+            m.w(0xE602B4, phase)
+            out.append(round(m.multiply(kr.TOUCHBACK_SITE_VA), 2))
+        out.append(round(m.multiply(kr.TRY_RECORD_SITE_VA), 2))
+        score, actor = m.SCRATCH + 400, m.SCRATCH + 500
+        m.w(score, 7)
+        m.w(actor + 0x38, 0xE5FC20)
+        m.call(0xB8487, eax=score, ecx=actor, stop=0xB848D)
+        out.append(m.r32(score))
+        return out
+
+    def test_situation_mode_never_takes_a_moment_profile(self):
+        # b777-sm2: the Situation mode is game mode 8 with the flag 0xE6014C = 1 and the row word left at 0 (the Ice Bowl) or
+        # the last moment played. Its rules (era profile and the Anniversary kickoff gate) must be Quick Game's (mode 4),
+        # whatever that word holds.
+        m = self.m
+        m.row(0, 4)
+        m.w(0xE6014C, 0)
+        no_moment = self._rule_values()
+        self.assertEqual(no_moment[0], round(15 * 91.44, 2))      # the modern kickoff from the 35
+        for ordinal in (0, 1, 14, 26, 49, 50):
+            for flag in (1, 2, 0xFFFFFFFF):
+                m.row(ordinal)
+                m.w(0xE6014C, flag)
+                self.assertEqual(self._rule_values(), no_moment, (ordinal, flag))
+        m.row(0)
+        m.w(0xE6014C, 0)
+        self.assertNotEqual(self._rule_values(), no_moment)   # the Ice Bowl itself keeps its 1967 rules
+
+    def test_b776_core_is_recognized_and_reinstalled(self):
+        owned = era.places(self.payload)
+        image = XbeImage(self.payload)
+        saved, edits, revision = era._installed_definition(image, owned)
+        self.assertEqual(revision, 2)
+        old, old_ro, old_edits = era.code_for(owned, saved, situation=False)
+        new, new_ro, _ = era.code_for(owned, saved)
+        self.assertNotEqual(old, new)
+        self.assertEqual(old_ro, new_ro)
+        b776 = bytearray(self.payload)
+        at = image.offset(owned["code"]["va"], era.CODE_SIZE)
+        b776[at:at + era.CODE_SIZE] = old
+        space._seal_scaleout(b776, space._read_scale_directory(self.payload))
+        b776 = era._seal(b776)
+        self.assertEqual(era.status(b776), "applied")
+        self.assertEqual(era._installed_definition(XbeImage(b776), owned)[2], 1)
+        upgraded, receipt = era.apply(b776)
+        self.assertEqual(receipt["status"], "applied")
+        self.assertEqual(upgraded, self.payload)
+        self.assertEqual(era.apply(upgraded)[1]["status"], "already_applied")
+
     def test_every_try_value_including_afl_and_reentry(self):
         m = self.m
         for i, row in enumerate(self.rows):

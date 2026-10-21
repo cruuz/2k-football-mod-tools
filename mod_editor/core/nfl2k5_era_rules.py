@@ -31,6 +31,26 @@ LEGACY_PROFILE_SHA256 = "db5ee784c18f00af8ba842dc26dac33f863ec537a336fa578f7db22
 ROOT = Path(__file__).resolve().parents[2]
 
 
+# b777-sm2: the b776 core (its profile getter also matched the Situation mode, game mode 8 with flag 0xE6014C = 1), kept
+# only so an installed b776 body is recognised and replaced in place.
+B776_CORE = dict(
+    code=bytes.fromhex(
+    "31c0833d80ffe500087515a15818bf0083f8337309c1e0050500000000c331c0c3833dc402e60005"
+    "7c450fb6481783f901742a83f90275198b1528fce5008b128b0d68fce5002b117902f7da83fa0673"
+    "21e8fcffffff0f94c00fb6c0c38b0d28fce5008b1568fce5008b093b0a750331c0c3b801000000c3"
+    "8b4010a3b002e6008b0d8c02e60085c97403894110833d0000000000752dc7050000000001000000"
+    "c605a802e600008b0d8402e60085c97412b00481f920fce500740200c00805a802e600c38b0d28fc"
+    "e5008b1568fce5008b093b0a749cf6401604749380781702728d8b0d8002e60085c974838b51088b"
+    "128b098b49083b110f8c74ffffffe96cffffffc7050800000000000000f64016207458833db402e6"
+    "0002754f85d2744b8b4a388b49088b490c8b5218d94238d84904d81d6c010000dfe0f6c4057a2cd9"
+    "4238d84904d81d70010000dfe0f6c4417519d94104d80d6c010000d91d04000000c7050800000001"
+    "000000c300e00ec500e08ec5"
+    ),
+    relocations=((25, 1, 'profiles', 0), (82, 2, 'native_ot_check', 0), (143, 1, 'state', 0), (152, 1, 'state', 0), (261, 1, 'state', 0), (308, 1, 'code', 0), (327, 1, 'code', 0), (343, 1, 'code', 0), (349, 1, 'state', 0), (355, 1, 'state', 0)),
+    labels={'both': 81, 'clock_done': 195, 'clock_no_object': 141, 'clock_pending': 189, 'fair_25': 364, 'fair_catch': 259, 'fair_done': 363, 'fair_goal': 368, 'magnitude': 76, 'not_over': 111, 'ot_check': 33, 'ot_clock': 120, 'ot_expiry': 196, 'over': 114, 'profile': 0, 'profile_done': 32, 'profile_none': 30, 'sudden_death': 93},
+)
+
+
 def require(ok, message):
     if not ok:
         raise ValueError(message)
@@ -114,18 +134,21 @@ JUMPS = {"regular_tie", "no_ot", "try_points", "try_event", "def_interception", 
          "try_ai", "fair_catch", "fair_spot", "penalty_finish", "coin_choose", "coin_winner_result", "clock_huddle"}
 
 
-def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revision=2):
+def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revision=2, situation=True):
+    """``situation=False`` rebuilds the b776 body (its getter also served the Situation mode); recognition only."""
+    core_code, core_relocations, core_labels = ((assembly.CODE, assembly.RELOCATIONS, assembly.LABELS) if situation else
+        (B776_CORE["code"], B776_CORE["relocations"], B776_CORE["labels"]))
     from . import nfl2k5_overtime as ot, nfl2k5_coin_defer as coin, nfl2k5_kick_rules as kr
     va, state = owned["code"]["va"], owned["data"]["va"]
     symbols = dict(code=va, profiles=owned["read_only"]["va"] + PROFILES, state=state, native_ot_check=ot.cave_labels()["ot_check"])
-    core = bytearray(assembly.CODE)
+    core = bytearray(core_code)
     if profile_data is not None:
         # The sealed v0.4 table used 50 profiles and sixteen-byte displaced slots.
         require(len(profile_data) == 1600 and hashlib.sha256(profile_data).hexdigest() == LEGACY_PROFILE_SHA256,
                 "foreign legacy era profiles")
         limit = core.index(bytes.fromhex("83f833")) + 2
         core[limit] = 50
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    for offset, kind, symbol, value in core_relocations:
         target = symbols[symbol] + value + struct.unpack_from("<i", core, offset)[0]
         if kind == 2:
             target -= va + offset
@@ -138,7 +161,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revi
         require(len(before) == size, "era displaced span size")
         a.label(name)
         a.b("9c60")
-        a.call(va + assembly.LABELS["profile"])
+        a.call(va + core_labels["profile"])
         # Game init always clears our OT latch, including Quick Game after a moment.
         if dispatch == "ot_init":
             a.b("c705" + imm(state) + "00000000c705" + imm(state + 8) + "00000000")
@@ -168,7 +191,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revi
                            "pat_audible": kr.AUDIBLE_TARGET_VA}[dispatch])
         elif dispatch in ("ot_pred", "ot_expiry"):
             helper = "ot_check" if dispatch == "ot_pred" else "ot_expiry"
-            a.call(va + assembly.LABELS[helper])
+            a.call(va + core_labels[helper])
             a.b("85c0")
             a.j32("0f85", name + "_yes")
             a.b("619d")
@@ -181,7 +204,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revi
                 a.b("a1c402e600")
             a.b("39c0c3")
         elif dispatch == "ot_clock":
-            a.call(va + assembly.LABELS["ot_clock"])
+            a.call(va + core_labels["ot_clock"])
             a.b("619d")
             a.jmp_abs(ot.FN_KICK_SETUP)
         elif dispatch == "regular_tie":
@@ -207,7 +230,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revi
             a.b("619d33c0c3")  # prefer the one-point kick; a human can still run/pass for one
         elif dispatch == "fair_catch":
             a.b("8b54241c")  # original EAX is the receiver
-            a.call(va + assembly.LABELS["fair_catch"])
+            a.call(va + core_labels["fair_catch"])
         elif dispatch == "fair_spot":
             a.b("833d" + imm(state + 8) + "00")
             a.j32("0f84", name + "_forward")
@@ -317,18 +340,20 @@ def _installed_definition(image, owned):
     """Recognize the exact shipped wrapper or its successor before unwrapping."""
     body = image.read(owned["code"]["va"], CODE_SIZE)
     constants = image.read(owned["read_only"]["va"], RO_SIZE)
-    limit = assembly.CODE.index(bytes.fromhex("83f833")) + 2
+    limit = B776_CORE["code"].index(bytes.fromhex("83f833")) + 2   # the v0.4 bodies carry the b776 core layout
     legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
     saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
-    for revision in (2, 1):
-        if legacy and revision != 1:
-            continue
-        saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
-                 for i, (_n, _va, size, _d) in enumerate(specs(revision))]
-        expected, expected_ro, edits = code_for(owned, saved,
-            profile_data=constants[:1600] if legacy else None, saved_stride=stride, revision=revision)
-        if body == expected and constants == expected_ro:
-            return saved, edits, revision
+    for situation in (True, False):
+        for revision in (2, 1):
+            if legacy and revision != 1:
+                continue
+            saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
+                     for i, (_n, _va, size, _d) in enumerate(specs(revision))]
+            expected, expected_ro, edits = code_for(owned, saved, profile_data=constants[:1600] if legacy else None,
+                                                    saved_stride=stride, revision=revision, situation=situation)
+            if body == expected and constants == expected_ro:
+                # b777-sm2: a body without the Situation test reports as revision 1, so apply() reinstalls it in place.
+                return saved, edits, revision if situation else 1
     raise ValueError("foreign era rules code, profiles or displaced-site table")
 
 

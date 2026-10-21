@@ -13,6 +13,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / 'tools')]
 import numpy as np
+from unittest import mock
 from PIL import Image
 from mod_editor.core import nfl2k5_espn25_fields as fields
 from mod_editor.core import nfl2k5_super_bowl_walls as walls
@@ -284,7 +285,7 @@ class BallData(unittest.TestCase):
         self.assertEqual(struct.unpack('<Q', code[-8:])[0], ball.row_mask())
 
     def test_moment_venues_installs_the_selector_inside_its_owner(self):
-        body, edits = venues.code_for(0x500000)
+        body, edits = venues.code_for(0x500000, ball=True)
         self.assertEqual(len(body), venues.CODE_SIZE)
         self.assertIn(ball.HOOK[1], [site for site, _, _ in edits])
         site, _, hook = edits[-1]
@@ -292,10 +293,29 @@ class BallData(unittest.TestCase):
         self.assertEqual(body[target - 0x500000:][:ball.SELECTOR_SIZE], ball.selector(target)[0])
         old_body, old_edits = venues.code_for(0x500000, ball=False)
         self.assertNotIn(ball.HOOK[1], [s for s, _, _ in old_edits])
+        with mock.patch.object(ball, 'enabled', return_value=True):  # the switch picks the same layouts
+            self.assertEqual(venues.code_for(0x500000), (body, edits))
+        with mock.patch.object(ball, 'enabled', return_value=False):
+            self.assertEqual(venues.code_for(0x500000), (old_body, old_edits))
         at = target - 0x500000
         self.assertEqual(at + ball.SELECTOR_SIZE, venues.TABLE)
         self.assertEqual(old_body[at:venues.TABLE], b'\xcc' * ball.SELECTOR_SIZE)
         self.assertEqual(body[:at] + body[venues.TABLE:], old_body[:at] + old_body[venues.TABLE:])
+
+    def test_the_era_ball_is_off_by_default_and_the_owner_carries_no_selector(self):
+        """b777 ar1 (Noah: revert the football): the shipped switch is off, so the venue owner has no ball hook."""
+        self.assertIs(ball.manifest()['enabled'], False)
+        self.assertFalse(ball.enabled())
+        body, edits = venues.code_for(0x500000)
+        self.assertNotIn(ball.HOOK[1], [site for site, _, _ in edits])
+        self.assertEqual(body[venues.TABLE - ball.SELECTOR_SIZE:venues.TABLE], b'\xcc' * ball.SELECTOR_SIZE)
+        self.assertEqual((body, edits), venues.code_for(0x500000, ball=False))
+
+    def test_build_skips_the_ball_when_off_and_checks_it_at_the_gate(self):
+        source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
+        self.assertIn('if era_ball.enabled():', source)
+        self.assertIn('"state": "off"', source)
+        self.assertIn('the era ball is off but the ball scene is not the user', source)
 
     def test_build_runs_the_ball_after_every_global_writer(self):
         source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
@@ -360,13 +380,21 @@ class BallDisc(unittest.TestCase):
         self.assertGreater(float(np.abs(a[index][..., :3].astype(int) - disc).mean()), 3.0)
 
     def test_previous_venue_owner_upgrades_and_restores(self):
-        self.assertEqual(venues.status(self.xbe), 'previous')
-        upgraded, receipt = venues.apply(self.xbe)
-        self.assertEqual((venues.status(upgraded), receipt['status']), ('applied', 'applied'))
-        self.assertEqual(venues.apply(upgraded)[1]['status'], 'already_applied')
-        image = XbeImage(upgraded)
-        self.assertNotEqual(image.read(ball.HOOK[1], 5), ball.HOOK[2])
-        self.assertEqual(XbeImage(venues.underlying(upgraded)).read(ball.HOOK[1], 5), ball.HOOK[2])
+        with mock.patch.object(ball, 'enabled', return_value=True):
+            self.assertEqual(venues.status(self.xbe), 'previous')
+            upgraded, receipt = venues.apply(self.xbe)
+            self.assertEqual((venues.status(upgraded), receipt['status']), ('applied', 'applied'))
+            self.assertEqual(venues.apply(upgraded)[1]['status'], 'already_applied')
+            image = XbeImage(upgraded)
+            self.assertNotEqual(image.read(ball.HOOK[1], 5), ball.HOOK[2])
+            self.assertEqual(XbeImage(venues.underlying(upgraded)).read(ball.HOOK[1], 5), ball.HOOK[2])
+            # b777 ar1: switched off again, the ball-owner goes back to the no-ball owner and the retail push
+            with mock.patch.object(ball, 'enabled', return_value=False):
+                self.assertEqual(venues.status(upgraded), 'previous')
+                reverted, _ = venues.apply(upgraded)
+                self.assertEqual(venues.status(reverted), 'applied')
+                self.assertEqual(XbeImage(reverted).read(ball.HOOK[1], 5), ball.HOOK[2])
+                self.assertEqual(reverted, venues.apply(self.xbe)[0])  # same bytes as a plain apply with the ball off
 
 
 class RepairContract(unittest.TestCase):

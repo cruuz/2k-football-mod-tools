@@ -476,10 +476,21 @@ class BuildPlan:
     cpu_qb_zone_windows: bool = False
     cpu_qb_recheck: bool = False
     db_ball_play: bool = False
+    # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss
+    # distance: a miss on a throw under 40 yd shrinks with the passer's Pass Accuracy and falls behind the receiver as
+    # often as ahead (short drags/outs/slants/digs on the run were always overthrown and ignored the rating).
+    # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    qb_accuracy: bool = False
     # b776-pa2: play art routes at their real length: the play-art filter no longer cuts a chain's last route segment
     # (go, drag, flat, out, post/corner break) to 10 ft; it is drawn at its authored length, kept inside the play-call
     # panel. Only how the art is drawn changes. A late executable owner. EXPERIMENTAL / UNWITNESSED in game
     play_art_routes: bool = False
+    # b777-ol1: run blocking: on running plays a defender sheds a block after a rating-based delay (Run Blocking of the
+    # blocker against Run Coverage of the defender, 0.08-0.60 s instead of retail's 0.05 s for everyone), sheds far less
+    # often once a controlled carrier's run has declared, and wins the first contact a little less often. Pass
+    # protection keeps every retail byte. The last late executable owner (nfl2k5_run_blocking). EXPERIMENTAL: on in
+    # the Advanced and Experimental presets (Noah 10/20: "my offensive line just does not block very well").
+    run_blocking: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -658,12 +669,24 @@ for _preset in PRESETS.values():
     _preset["cpu_qb_zone_windows"] = False
     _preset["cpu_qb_recheck"] = False
     _preset["db_ball_play"] = False
+# b777-qb3: QB accuracy is experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK 2K28
+# recipe builds from (Noah 10/20 asked for it in the next build).
+for _preset in PRESETS.values():
+    _preset["qb_accuracy"] = False
+PRESETS["softdrink_experimental"]["qb_accuracy"] = True
 # b776-pa2: full-length play art routes: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
 # from Experimental; Noah 10/18: "drags ... all the way across the screen ... go routes ... 20 plus yards").
 for _preset in PRESETS.values():
     _preset["play_art_routes"] = False
 PRESETS["softdrink_advanced"]["play_art_routes"] = True
 PRESETS["softdrink_experimental"]["play_art_routes"] = True
+del _preset
+# b777-ol1: run blocking: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
+# Experimental; Noah 10/20 asked for better run blocking and more chunk runs); Basic keeps the retail bytes.
+for _preset in PRESETS.values():
+    _preset["run_blocking"] = False
+PRESETS["softdrink_advanced"]["run_blocking"] = True
+PRESETS["softdrink_experimental"]["run_blocking"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -873,6 +896,38 @@ def _apply_cpu_ai(plan: "BuildPlan", target: Path, receipt: dict, progress) -> N
         receipt["result"]["db_ball_play"] = "applied"
 
 
+def _qb_accuracy_preflight(source: Path, progress) -> None:
+    """b777-qb3: refuse a source whose pass accuracy routine is foreign, before any write."""
+    accuracy = _core_module("nfl2k5_qb_accuracy")
+    if accuracy is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Accurate short throws is not available in this installation.")
+    progress("Checking the pass accuracy code for accurate short throws", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Accurate short throws cannot read default.xbe: {exc}") from exc
+    if accuracy.status(payload) == "foreign":
+        raise ValueError("The pass accuracy code in this source is not retail or Accurate short throws. Turn it off or "
+                         "rebuild from a supported USA source.")
+
+
+def _apply_qb_accuracy(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b777-qb3: install the QB accuracy owner, the last late allocator owner, and read it back."""
+    if not plan.qb_accuracy:
+        return
+    accuracy = _core_module("nfl2k5_qb_accuracy")
+    if accuracy is None:
+        raise RuntimeError("Accurate short throws needs nfl2k5_qb_accuracy.")
+    progress("Passing: accurate short throws and throws on the run", 0, 0)
+    payload, accuracy_receipt = accuracy.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or accuracy.status(final) != "applied":
+        raise RuntimeError("Accurate short throws: the output does not read back as applied")
+    receipt["steps"].append({"step": "qb_accuracy", **{k: v for k, v in accuracy_receipt.items() if k != "reservations"}})
+    receipt["result"]["qb_accuracy"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -941,7 +996,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
-                               ("db_ball_play", "nfl2k5_db_ball_play"))},
+                               ("db_ball_play", "nfl2k5_db_ball_play"), ("qb_accuracy", "nfl2k5_qb_accuracy"))},
         "team_number_scale": _core_module("nfl2k5_team_number_scale") is not None
                              and _core_module("nfl2k5_xbe_space") is not None,  # b776-ns1
         "modern_fans": _modern_fans_available(),  # b77-fr1
@@ -970,6 +1025,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("k128_memory", "nfl2k5_k128"), ("k128_roster_heap", "nfl2k5_k128"), ("k128_early", "nfl2k5_k128"),
                                ("team_ratings", "nfl2k5_team_ratings"),
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
+                               ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1170,6 +1226,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["team_ratings"] = ratings.status(_xbe_bytes(source)) if ratings is not None else "unavailable"
     play_art = _core_module("nfl2k5_play_art_routes")  # b776-pa2
     out["play_art_routes"] = play_art.status(_xbe_bytes(source)) if play_art is not None else "unavailable"
+    run_blocking = _core_module("nfl2k5_run_blocking")  # b777-ol1
+    out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -1661,6 +1719,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                               ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
                               ("db_ball_play", ball, lambda m, x: m.status(x))):
         out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
+    accuracy = _core_module("nfl2k5_qb_accuracy")  # b777-qb3
+    if accuracy is None:
+        out["qb_accuracy"] = "unavailable"
+    else:
+        try:
+            out["qb_accuracy"] = accuracy.status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["qb_accuracy"] = "unknown"
     # b776-ns1: the per-kit jersey number size (the executable's table)
     number_scale = _core_module("nfl2k5_team_number_scale")
     if number_scale is None:
@@ -2582,6 +2648,23 @@ def _apply_play_art_routes(plan, target, receipt, progress):
     receipt["result"]["play_art_routes"] = "applied"
 
 
+def _apply_run_blocking(plan, target, receipt, progress):
+    """b777-ol1: the run-blocking owner, the last allocator owner (after the per-kit jersey number size)."""
+    if not plan.run_blocking:
+        return
+    module = _core_module("nfl2k5_run_blocking")
+    if module is None:
+        raise RuntimeError("The run blocking module is not available in this build")
+    progress("Run blocking: blocks hold longer on running plays", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Run blocking: the executable does not read back as applied")
+    receipt["steps"].append({"step": "run_blocking", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["run_blocking"] = "applied"
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -2758,12 +2841,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Hair styles must be Off or On.")
     if type(plan.play_art_routes) is not bool:  # b776-pa2
         raise ValueError("Full-length play art routes must be Off or On.")
+    if type(plan.run_blocking) is not bool:  # b777-ol1
+        raise ValueError("Run blocking must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
     for key, label in (("cpu_qb_zone_windows", "CPU QB respects zone defenders"),  # b776-ai2
                        ("cpu_qb_recheck", "CPU QB re-checks his read before throwing"),
-                       ("db_ball_play", "Defenders break on the thrown ball")):
+                       ("db_ball_play", "Defenders break on the thrown ball"),
+                       ("qb_accuracy", "Accurate short throws and throws on the run")):  # b777-qb3
         if type(getattr(plan, key)) is not bool:
             raise ValueError(f"{label} must be Off or On.")
     if type(plan.modern_fans) is not bool:  # b77-fr1
@@ -3464,6 +3550,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                              "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
     if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:  # b776-ai2
         _cpu_ai_preflight(plan, source, progress)
+    if plan.qb_accuracy:  # b777-qb3: the pass accuracy routine must be retail or this owner, before any write
+        _qb_accuracy_preflight(source, progress)
     if plan.modern_coaches:  # b77-co1
         coaches = _core_module("nfl2k5_modern_coaches")
         if coaches is None or not is_image:
@@ -4340,6 +4428,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      **{k: v for k, v in chiefs_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                               for kit in chiefs_receipt["kits"]]})
+        # b777-sw1 (Noah 10/20): the sleeve swoosh centred on the sleeve on every 2026 kit, over the arm number where
+        # the number sits on the sleeve, clear of numbers, stripes and logos; the last kit writer. Pinned spans only.
+        swoosh_receipt = kit_fixes.apply_swooshes(target)
+        if swoosh_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_sw1",
+                                     **{k: v for k, v in swoosh_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in swoosh_receipt["kits"]]})
         if plan.espn25_more_moments:
             # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
             # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
@@ -4866,15 +4962,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             user_art=plan.super_bowl_user_art or None, log=lambda line: progress(line, 0, 0))
         receipt["steps"].append({"step": "espn25_fields", **field_receipt})
         receipt["result"]["espn25_fields"] = "applied"
-        # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006; normal games
-        # and later moments keep the modern ball. global.iff is written by earlier passes, so this runs last.
-        progress("Giving modern games the modern ball", 0, 0)
+        # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006. b777 ar1: the
+        # era ball is switched off in data/nfl2k5_era_ball/manifest.json (Noah: the football looks as it did before),
+        # so the ball scene stays the user's own and no selector is installed; the step runs again when it is on.
         era_ball = _core_module("nfl2k5_era_ball")
         if era_ball is None:
             raise ValueError("the era ball compiler is unavailable")
-        ball_receipt = era_ball.apply_to_image(target)
-        receipt["steps"].append({"step": "era_ball", **ball_receipt})
-        receipt["result"]["era_ball"] = ball_receipt["state"]
+        if era_ball.enabled():
+            progress("Giving modern games the modern ball", 0, 0)
+            ball_receipt = era_ball.apply_to_image(target)
+            receipt["steps"].append({"step": "era_ball", **ball_receipt})
+            receipt["result"]["era_ball"] = ball_receipt["state"]
+        else:
+            receipt["steps"].append({"step": "era_ball", "state": "off", "reason": "switched off in the era ball manifest"})
+            receipt["result"]["era_ball"] = "off"
     if plan.modern_surfaces:
         # gr1: every field writer, including the period aliases, has finished.
         # Palette RGB only, preserving painted assets and st1's lighting.
@@ -4915,6 +5016,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                                                  if k not in ("edits", "code_install")},
                                  "edits": number_receipt.get("edits", [])})
         receipt["result"]["team_number_scale"] = number_receipt["scales"]
+    # b777 (int7 order, nfl2k5_xbe_space.LATE_OWNERS): after the per-kit jersey number size come ol1's run blocking,
+    # then qb3's QB accuracy, the last late allocator owner, so nothing else moves.
+    _apply_run_blocking(plan, target, receipt, progress)
+    _apply_qb_accuracy(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -4947,15 +5052,22 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.team_number_scale and _core_module("nfl2k5_team_number_scale").read_settings(_xbe_bytes(target)) != {
             "status": "applied", "scales": plan.team_number_scale}:  # b776-ns1
         raise ValueError("the jersey number sizes did not survive the final passes")
+    if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
+        raise ValueError("run blocking did not survive the final passes")
+    if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3
+        raise ValueError("accurate short throws did not survive the final passes")
     if plan.espn25_named_previews:
         receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)
         if (receipt["result"]["espn25_named_previews"] != "applied"
                     or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
             raise ValueError("named previews did not survive the final resource passes")
-        receipt["result"]["era_ball"] = _core_module("nfl2k5_era_ball").image_status(target)
-        if receipt["result"]["era_ball"] != "applied":
+        _ball = _core_module("nfl2k5_era_ball")
+        receipt["result"]["era_ball"] = _ball.image_status(target) if _ball.enabled() else "off"
+        if receipt["result"]["era_ball"] != ("applied" if _ball.enabled() else "off"):
             raise ValueError("the era ball did not survive the final resource passes")
+        if not _ball.enabled() and _ball.image_status(target) != "retail":
+            raise ValueError("the era ball is off but the ball scene is not the user's own")
     if is_image:
         from .nfl2k5_disc_extents import validate_image
         receipt["disc_extents"] = validate_image(target)

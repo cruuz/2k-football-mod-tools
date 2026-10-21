@@ -281,7 +281,7 @@ def route_end_depth(chain: Sequence[codec.Node], start_z: float) -> float | None
     """Depth (cm) where a receiver's route finishes, or None when the chain has no route.
 
     Upfield legs add their downfield component; lateral legs (4/5) and chips (8)
-    keep depth; comebacks (7/11) give back 4 ft. Kind 9 is a pass block (or a
+    keep depth; comebacks (7/11) give back 4 ft; kind 10 ends 1 yd behind the line. Kind 9 is a pass block (or a
     screen release judged separately) and returns None.
     """
     z, seen = start_z, False
@@ -292,7 +292,9 @@ def route_end_depth(chain: Sequence[codec.Node], start_z: float) -> float | None
         seen = True
         if kind == 9:
             return None
-        if kind in (0, 10):
+        if kind == 10:
+            z = -codec.YD_CM        # native endpoint of kind 10: one yard behind the line (b777 sc1, route initializer 0x229AE0)
+        elif kind == 0:
             z += dist
         elif kind in codec.ROUTE_BREAK_DEGREES:
             z += dist * math.cos(math.radians(codec.ROUTE_BREAK_DEGREES[kind]))

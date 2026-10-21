@@ -79,6 +79,12 @@ PRESET_CAPTIONS = {
 }
 BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
 PRESET_NOTE = "Review the selected changes below. Unavailable or already-installed changes are listed here."
+# Discord, 10/16 (tinpanalley): the Modern preset "doesn't produce a disc with any mods installed".
+# These presets are gameplay and franchise options, which are easy to miss in play.
+# The SOFTDRINK 2K28 pack (edited rosters, uniforms, stadium art, moments) comes from Share.
+PRESET_SCOPE_NOTE = ("These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28 "
+                     "pack (its edited rosters, uniforms, stadium art and moments). For that disc, use Share, "
+                     "Install SOFTDRINK 2K28.")
 
 # Lab scope from BETA75_WAVE_2026-09-21.md and the Beta 76 release draft.
 # Earlier lab observations do not certify later revisions or Xbox play.
@@ -218,11 +224,15 @@ ANNIVERSARY_OPTIONS = (
 )
 # b776-ai2: the CPU AI options, each its own toggle, off in every preset.
 from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
+from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
+# b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
+from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
+CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -231,7 +241,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("play_art_routes", "Play art: full-length routes",
                   "Draws each route's last segment at its real length in the play-call art, like Madden: go routes run up "
                   "the panel, drags cross the formation, flats and outs reach the sideline. Retail cuts that segment to "
-                  "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."))
+                  "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
+                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT))
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
@@ -468,6 +479,11 @@ class BuildPanel(QWidget):
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
         pr.addWidget(self.preset_note)
+        self.preset_scope_note = QLabel(PRESET_SCOPE_NOTE)
+        self.preset_scope_note.setObjectName("throwMuted")
+        self.preset_scope_note.setWordWrap(True)
+        self.preset_scope_note.setAccessibleName("What the presets do not include")
+        pr.addWidget(self.preset_scope_note)
         root.addWidget(presets)
 
         # The disc, the copy and the button come BEFORE the long option list, so the one

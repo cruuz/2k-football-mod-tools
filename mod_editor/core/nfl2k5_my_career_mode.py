@@ -240,6 +240,8 @@ def _encode_menu(source):
 
 
 def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=None):
+    # letter_grades/grade_bands are accepted for older callers. Since lg3 the blob is the same either way: the
+    # Upgrades line and prospect tier labels are editing/creation text and stay numeric (Noah, 2026-10-20).
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
     out = bytearray(assembly.CODE)
@@ -267,11 +269,6 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
             text_pool.extend((value + "\0").encode("ascii"))
             return
         content = (value + "\0").encode("utf-16le")
-        if letter_grades:
-            from . import nfl2k5_letter_grades_attributes as grades
-            for label, text, rating in grades.CAREER_PROSPECTS:
-                if name == label:
-                    content = grades.prospect_bytes(text, rating, grade_bands or grades.lg.DEFAULT_BANDS)
         at = reserve(name, len(content))
         out[at:at + len(content)] = content
 
@@ -302,8 +299,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_upgrade_text", "Upgrades"), ("m3_prev_text", "Previous attribute"),
         ("m3_next_text", "Next attribute"), ("m3_buy_text", "Buy one point"),
         ("m3_back_text", "Back"),
-        ("m3_upgrade_format", "%s: %R. Cap %R. Cost %u XP. Balance %u XP." if letter_grades
-         else "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
+        # lg3 (Noah 10/20): buying a point edits an attribute, so it stays numeric with letter grades on.
+        ("m3_upgrade_format", "%s: %u. Cap %u. Cost %u XP. Balance %u XP."),
         ("m3_calendar_format", "Week %u. %u/%u/%u at %02u:%02u"),
         ("m3_pick_format", "Round %u, pick %u"),
         ("m3_confirm_text", "Buy one attribute point?"),

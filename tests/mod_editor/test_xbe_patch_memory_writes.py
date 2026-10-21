@@ -85,7 +85,6 @@ class SectionTableTests(unittest.TestCase):
         self.assertFalse(image.section(0x1AC260).writable)
 
 
-@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 def ro_section_executable_by_design(payload) -> bool:
     """b773 sp2/ro1/tr1: named code spills in the allocator directory page make the shared general read-only section
     executable (never writable). Without a spill it stays plain read-only."""
@@ -94,6 +93,10 @@ def ro_section_executable_by_design(payload) -> bool:
                for a in space.layout(payload)["allocations"])
 
 
+# b777-ci2: this decorator had slipped onto ro_section_executable_by_design() when i4 (4ca7caec5) inserted that helper
+# above the class, so PatchWriteTests and its three subclasses ran without the retail XBE and errored in setUpClass on
+# every hosted CI runner. It belongs on the class.
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
 

@@ -1,16 +1,29 @@
-"""All player rating displays on the existing F4 grade scale (lg2).
+"""All player rating displays on the existing F4 grade scale (lg2), except editing screens (lg3).
 
-Fixed presentation edits only. The 91 descriptor kind bytes cover both complete
-attribute column sets, nine position-dependent columns, 26 Create/Edit controls,
-and the in-game substitution overall. Seven format pointers cover the player
+Fixed presentation edits only. The 65 descriptor kind bytes cover both complete
+attribute column sets (roster lists and transaction lists), nine position-dependent
+columns and the in-game substitution overall. Seven format pointers cover the player
 card, depth panel, weekly prep/matchups, common overlay, and fully scouted player.
 The F4b stub now selects %R for every Previous/Current row; numeric differences
-remain differences. MyCareer formats its attribute and cap with %R, leaving XP
-numeric. No getter, comparator, control callback or player record changes.
+remain differences. No getter, comparator, control callback or player record changes.
 
-No allocation growth. The two existing executable owners are resealed after
-changing a progression branch displacement and MyCareer format/menu text.
-All new sites and their surrounding descriptors/instructions are pinned.
+lg3 (Noah, 2026-10-20): "when you're editing a player's attributes, it should be
+numbers. But when you're looking in any other window, then it converts to letters."
+So the screens where the player changes a value stay numeric:
+
+* the 26 attribute controls of the native player editor (``EDIT_CONTROLS``,
+  descriptors 0x5639F0..0x564B20). One shared table drives Create Player, Edit
+  Player (Rosters), Franchise Edit Player (Player Contracts, 346730) and the
+  MyCareer Create Player hand-off (mode_creation_done in the same editor). These
+  descriptors must stay retail; an image whose controls carry the grade kind
+  (an lg2 build) is foreign and needs a rebuild from the original executable;
+* the MyCareer Upgrades line ("Speed: 94. Cap 99. Cost 20 XP. ...") where XP buys
+  one point, and the MyCareer prospect tier labels ("Prospect: 1st Day (74)") chosen
+  while creating MyPlayer: ``nfl2k5_my_career_mode`` writes them numeric in either
+  install order and this module no longer rewrites them.
+
+No allocation growth. The progression owner is resealed after changing one
+branch displacement. All sites and their surrounding descriptors/instructions are pinned.
 Offline evidence does not establish live navigation or rendering coverage.
 """
 from __future__ import annotations
@@ -84,6 +97,21 @@ COLUMNS = (
     ('transaction_25', 0x0057edd8, '9a499fca8fccc589068c0b9c56ac37f1ca1d123758c30125a57108966c0541eb'),
     ('transaction_26', 0x0057ee88, 'f38d37cdbbf36c9ed4b3bbc88ab9effcbe880c1d319764d1670535ea929ed925'),
     ('transaction_27', 0x0057ef38, 'ae1b636f385abeff4588e7040729693a9028d16454a5a2abc6e41134abb5c436'),
+    ('key_0', 0x0053cc48, '919826844c014fb40314ba43a5faf2c9a710ae15118b3f8ef99cdba60c1f420a'),
+    ('key_1', 0x0053ccf8, '585361517e61c010bf6f911140d09d5777ee5ce2d1fa4f15c0a972d8af2632f4'),
+    ('key_2', 0x0053cda8, '53210a430c6895e1031c66d0924b601701b14ff7b9d8d8b47f90d13b39d427c0'),
+    ('key_3', 0x0053ce58, 'b9f3ce56eccc6ffdb0e71011382eac05eee21045c862ae843054120910cf9381'),
+    ('key_4', 0x0053cf08, '36eba6785a9e23cb9f2ad88daf7c1031c8541361e9c850521a97ebef979da560'),
+    ('select_0', 0x0055ae60, '1ed7946032eb22934b90aa92a9e74f53319f35528c0a747a05aa34b7247881cc'),
+    ('select_1', 0x0055af10, '8956e614e7e4ffc38dd673fb30b9886d61a1c1e3f1964a321aa5710bdb1b9f7e'),
+    ('select_2', 0x0055afc0, '0620e7d62b973a80ee76b9bef30fad0f248eaa0e448a353c857c33224f203b5d'),
+    ('select_3', 0x0055b070, 'fa5edefa0cfa4644fbdd96b029ed0f491e3c6dc7466b9e6c32eb6b4a9c354568'),
+    ('substitution_0', 0x00515928, 'd2a072b471745fdf2672eb7054c14e4bed8a3cbcc4edbb108521277d5dd30d8b'),
+)
+
+# lg3: the native player editor's 26 attribute controls stay numeric (Create Player, Edit Player,
+# Franchise Edit Player, MyCareer Create Player). Same fields as COLUMNS; guarded as retail, never edited.
+EDIT_CONTROLS = (
     ('edit_0', 0x005639f0, '2eff5720a5564b6f2410cd5e5372ed8b04b589e7c0cc8868648910c6180eafcf'),
     ('edit_1', 0x00563aa0, '603f9bac0870707fcfcf79113b1732eb63d2ca1f92abaae7ec19fb804835188e'),
     ('edit_2', 0x00563b50, 'ecf21b0d63f5f1d5d089727c66db4def4fc1c0079d326b5514d66112311d784f'),
@@ -110,16 +138,6 @@ COLUMNS = (
     ('edit_23', 0x005649c0, 'ae2952e08c72f16c7e66b9412f831b28a28961de8dc993b501dd0e1cc03dc716'),
     ('edit_24', 0x00564a70, '5b379f324979cd80d48fb4478df8e02f9f7d50444a7ed95cc71b1735cbc8fc1e'),
     ('edit_25', 0x00564b20, '53f6d263007f95dcd193095d345e7779c033fcf78149d7e967173401fe1eb3bc'),
-    ('key_0', 0x0053cc48, '919826844c014fb40314ba43a5faf2c9a710ae15118b3f8ef99cdba60c1f420a'),
-    ('key_1', 0x0053ccf8, '585361517e61c010bf6f911140d09d5777ee5ce2d1fa4f15c0a972d8af2632f4'),
-    ('key_2', 0x0053cda8, '53210a430c6895e1031c66d0924b601701b14ff7b9d8d8b47f90d13b39d427c0'),
-    ('key_3', 0x0053ce58, 'b9f3ce56eccc6ffdb0e71011382eac05eee21045c862ae843054120910cf9381'),
-    ('key_4', 0x0053cf08, '36eba6785a9e23cb9f2ad88daf7c1031c8541361e9c850521a97ebef979da560'),
-    ('select_0', 0x0055ae60, '1ed7946032eb22934b90aa92a9e74f53319f35528c0a747a05aa34b7247881cc'),
-    ('select_1', 0x0055af10, '8956e614e7e4ffc38dd673fb30b9886d61a1c1e3f1964a321aa5710bdb1b9f7e'),
-    ('select_2', 0x0055afc0, '0620e7d62b973a80ee76b9bef30fad0f248eaa0e448a353c857c33224f203b5d'),
-    ('select_3', 0x0055b070, 'fa5edefa0cfa4644fbdd96b029ed0f491e3c6dc7466b9e6c32eb6b4a9c354568'),
-    ('substitution_0', 0x00515928, 'd2a072b471745fdf2672eb7054c14e4bed8a3cbcc4edbb108521277d5dd30d8b'),
 )
 
 # label, immediate VA, original format VA, SHA-256 of opcode + immediate + 10 context bytes.
@@ -133,20 +151,8 @@ LITERALS = (
     ('scouting_attributes', 0x0035ecc7, 0x00eb5b0c, '03caa2dd5d648166697bc220bcc645b15c55c10d9a2aea27ba6319fe3d986553'),
 )
 
+# lg3: the MyCareer Upgrades line and prospect tier labels are editing/creation text and stay numeric.
 CAREER_NUMERIC = "%s: %u. Cap %u. Cost %u XP. Balance %u XP."
-CAREER_GRADES = "%s: %R. Cap %R. Cost %u XP. Balance %u XP."
-CAREER_PROSPECTS = (
-    ("m3_prospect_1", "Prospect: 1st Day (74)", 74),
-    ("m3_prospect_2", "Prospect: 2nd Day (70)", 70),
-    ("m3_prospect_3", "Prospect: 3rd Day (64)", 64),
-    ("m3_prospect_4", "Prospect: Undrafted (59)", 59),
-)
-
-
-def prospect_bytes(text, rating, bands=lg.DEFAULT_BANDS):
-    size = len((text + "\0").encode("utf-16le"))
-    value = text.rsplit(" (", 1)[0] + " " + lg.grade_for(rating, bands)
-    return (value + "\0").encode("utf-16le").ljust(size, b"\0")
 
 
 def _require(ok, message):
@@ -183,17 +189,6 @@ def sites(payload):
     _require(allocation is not None, "install the progression owner first")
     # jnz +5 -> jnz +0: either branch now reaches mov edx, %R. Flags/registers unchanged.
     out.append(("progression_all_attributes", allocation["va"] + 8, b"\x05", b"\x00"))
-    from . import nfl2k5_my_career as career
-    from . import nfl2k5_my_career_mode as mode
-    if mode.recognized(payload):
-        code, data = career.allocations(payload)
-        _, labels = mode.code_for(code["va"], data["va"])
-        base = labels["m3_upgrade_format"]
-        for i, (old, new) in enumerate(zip(CAREER_NUMERIC, CAREER_GRADES)):
-            if old != new:
-                out.append((f"mycareer_rating_{i}", base + i * 2, old.encode("utf-16le"), new.encode("utf-16le")))
-        for label, text, rating in CAREER_PROSPECTS:
-            out.append((label, labels[label], (text + "\0").encode("utf-16le"), prospect_bytes(text, rating, bands)))
     return out
 
 
@@ -204,6 +199,10 @@ def check_guards(payload):
         raw = bytearray(image.read(va, 0xB0))
         _require(bytes(raw[:4]) in (lg.RETAIL_FLAGS, lg.GRADE_FLAGS), f"foreign {name} flags")
         raw[:4] = lg.RETAIL_FLAGS
+        _require(hashlib.sha256(raw).hexdigest() == digest, f"foreign {name} descriptor")
+    for name, va, digest in EDIT_CONTROLS:
+        raw = image.read(va, 0xB0)
+        _require(raw[:4] == lg.RETAIL_FLAGS, f"{name} is graded; editing controls stay numeric (rebuild from the original)")
         _require(hashlib.sha256(raw).hexdigest() == digest, f"foreign {name} descriptor")
     for name, va, old, digest in LITERALS:
         raw = bytearray(image.read(va - 1, 15))
@@ -249,4 +248,5 @@ def apply(payload):
     return result, {**receipt, "owner": OWNER, "already_applied": False,
                     "changed_bytes": sum(a != b for a, b in zip(payload, result)),
                     "columns": len(COLUMNS), "format_sites": len(LITERALS),
+                    "numeric_edit_controls": len(EDIT_CONTROLS), "mycareer_text_numeric": True,
                     "gameplay_values_changed": False}

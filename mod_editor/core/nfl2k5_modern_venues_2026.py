@@ -1302,6 +1302,15 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
     if scene == "field" and plan.get("midfield_scale_xz"):
         receipt["midfield_position_ranges"] = scale_existing_midfield(edited, rec, prefix, plan["midfield_scale_xz"])
         receipt["midfield_scale_xz"] = list(plan["midfield_scale_xz"])
+    if scene == "field":
+        # b777 ar1: the midfield logo sits on the 50-yard line and the centre line (retail quads were off by up to 1.55 m)
+        from . import nfl2k5_midfield_centre as midfield_centre
+        logo_row = midfield_centre.logo_row(rows, rows_by_material(rec))
+        if logo_row is not None:
+            texture = read_texture(edited, rec, logo_row)
+            moved, receipt["midfield_centre"] = midfield_centre.recentre(edited, rec, bytes(edited), texture)
+            if moved:
+                receipt["midfield_centre"]["position_ranges"] = [list(r) for r in moved]
     if turf_donor is not None:
         receipt["endzone_background"] = "cleaned same-variant color_premipped; source texture unchanged"
     return bytes(edited), receipt

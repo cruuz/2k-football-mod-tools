@@ -210,6 +210,18 @@ def _field_chunk(bundle):
     raise ValueError('venue resource lacks its native field scene')
 
 
+def _centre_midfield(out,rec,rows,materials):
+    """b777 ar1: put the midfield logo on the 50-yard line and the centre line. Returns the float ranges moved, as
+    (offset, size) pairs for _seal_field's protection audit (empty for a field whose logo is already within a texel)."""
+    from . import nfl2k5_midfield_centre as midfield_centre
+    from . import nfl2k5_modern_venues_2026 as mv
+    row=midfield_centre.logo_row(rows,materials)
+    if row is None:return [],None
+    texture=mv.read_texture(out,rec,row)
+    moved,receipt=midfield_centre.recentre(out,rec,bytes(out),texture)
+    return list(moved),receipt
+
+
 def _wordmark(bundle,team=None):
     """The user's retail wordmark or full strip, separated from its background.
 
@@ -336,9 +348,12 @@ def _field(template,row,wordmarks=None,old_shield=None,marks=None):
     flank_textures,extra,flanks=super_bowl_fields.apply_field(out,rec,decoded,row['row'],marks)
     if flank_textures:
         textures=textures+[t for t in flank_textures if t not in textures]
-    span,detail=_seal_field(template,chunk,rec,decoded,out,textures,extra)
+    centred,centre_receipt=_centre_midfield(out,rec,rows,materials)
+    span,detail=_seal_field(template,chunk,rec,decoded,out,textures,list(extra)+centred)
     if flanks:
         detail['super_bowl_flanks']=flanks
+    if centre_receipt is not None:
+        detail['midfield_centre']=centre_receipt
     return span,detail
 
 
@@ -385,8 +400,11 @@ def _retail_playoff_field(source):
         r=rows[materials[key]]
         mm.write_p8(out,rec['system_bytes'],r,np.zeros((r['height'],r['width'],4),dtype='uint8'),256)
         indices.append(materials[key])
-    span,detail=_seal_field(source,chunk,rec,decoded,out,indices)
+    centred,centre_receipt=_centre_midfield(out,rec,rows,materials)
+    span,detail=_seal_field(source,chunk,rec,decoded,out,indices,centred)
     detail['retail_field_reused_except_championship_stamps']=True
+    if centre_receipt is not None:
+        detail['midfield_centre']=centre_receipt
     return span,detail
 
 

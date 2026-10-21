@@ -374,7 +374,9 @@ def route_end_depth_yd(ctx: FormationContext, slot: int, chain: Chain) -> float 
         seen = True
         if kind == 9:
             return None
-        if kind in (0, 10):
+        if kind == 10:
+            z = -1.0      # native endpoint of kind 10: one yard behind the line, not "straight on" (b777 sc1)
+        elif kind == 0:
             z += dist
         elif kind in codec.ROUTE_BREAK_DEGREES:
             z += dist * math.cos(math.radians(codec.ROUTE_BREAK_DEGREES[kind]))

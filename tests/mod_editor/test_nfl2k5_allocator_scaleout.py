@@ -24,6 +24,7 @@ from mod_editor.core.nfl2k5_cave_manifest import Recorder
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
+from mod_editor.core import nfl2k5_team_logo_swap as team_logo_swap
 
 # e2: the complete live union left 192 RX and 648 RO bytes; b77-v1b: the period goalposts owner (176 RX, 32 RO) takes most of
 # that, leaving 16 RX and 552 RO. Fill the RX reservation exactly and leave enough RO for a sealed synthetic constant.
@@ -33,8 +34,13 @@ from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 # b77-v1b + i1: the period goalposts owner (176 RX, 32 RO) is a TAIL_OWNER: its code sits at the top of the legacy RX tail; 16 RX and 304 RO remain in the run.
 # b775-ct1: the classic teams' helpers take 240 of those RO bytes (a late owner, executable read-only page); 64 remain.
 # b776-sm1: the chronological entry helper takes 48 more (288): 16 remain, so the synthetic constant is 16 bytes.
-LARGE = (("synthetic_scaleout", "code", 16, 16),
-         ("synthetic_scaleout", "read_only", 16, 16))
+# b777-ci2: the allocator directory holds 96 entries, the boot logo included, so 95 caller requests at most. The dormant union
+# is 94 requests since b775 (moment context, classic teams), which leaves ONE free entry: the synthetic owner is therefore a
+# single code request (it was a code + read_only pair, 97 entries with the logo, 'allocation request count exceeds 96').
+# The read-only replay/foreign checks it carried now use the union's 64-byte team-logo table (a reservation-only owner here),
+# and the 16 read-only bytes the pair used to fill stay free, as the documented-union table below already says.
+LARGE = (("synthetic_scaleout", "code", 16, 16),)
+RO_OWNER, RO_SIZE = team_logo_swap.OWNER, team_logo_swap.REQUESTS[0][2]
 
 
 class PlannerTests(unittest.TestCase):
@@ -49,7 +55,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 0])  # b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
+                         [0, 0, 16])  # b777-ci2: the synthetic owner is one code request now, so the union's 16 free read-only bytes stay free; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -234,10 +240,10 @@ class SyntheticTests(unittest.TestCase):
     def test_sealed_code_ro_replay_and_changed_request_refusal(self):
         code = b'\x90' * LARGE[0][2]
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', code)
-        grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * LARGE[1][2])
+        grown, _ = space.install_read_only(grown, RO_OWNER, b'R' * RO_SIZE)
         self.assertEqual(space.status(grown), 'applied')
         self.assertEqual(space.install_code(grown, 'synthetic_scaleout', code)[0], grown)
-        self.assertEqual(space.install_read_only(grown, 'synthetic_scaleout', b'R' * LARGE[1][2])[0], grown)
+        self.assertEqual(space.install_read_only(grown, RO_OWNER, b'R' * RO_SIZE)[0], grown)
         self.assertEqual(space.apply(grown, reversed(REQUESTS + LARGE))[0], grown)
         self.assertEqual(space.apply(grown)[0], grown)
         with self.assertRaisesRegex(ValueError, 'differ'):
@@ -246,14 +252,14 @@ class SyntheticTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'rebuild'):
             space.apply(legacy, LEGACY_REQUESTS, scaleout=True)
         with self.assertRaisesRegex(ValueError, 'foreign'):
-            space.install_read_only(grown, 'synthetic_scaleout', b'Z' * LARGE[1][2])
+            space.install_read_only(grown, RO_OWNER, b'Z' * RO_SIZE)
         with self.assertRaisesRegex(ValueError, 'exact'):
             space.install_code(grown, 'synthetic_scaleout', code[:-1])
 
     def test_directory_code_survives_other_owner_writes_and_detects_corruption(self):
         code = b'\x90'*511 + b'\xc3'
         grown, _ = space.install_code(self.grown, space.DIRECTORY_CODE_OWNER, code)
-        grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R'*LARGE[1][2])
+        grown, _ = space.install_read_only(grown, RO_OWNER, b'R'*RO_SIZE)
         grown, _ = space.install_code(grown, 'synthetic_scaleout', b'\x90'*LARGE[0][2])
         self.assertEqual(space.status(grown), 'applied')
         row = next(a for a in space.layout(grown)['allocations'] if a['owner'] == space.DIRECTORY_CODE_OWNER)

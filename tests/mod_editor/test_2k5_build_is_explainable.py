@@ -255,7 +255,8 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                             apply_finish=lambda target: {"state": "other_uniform"},
                                                             apply_seattle=lambda target: {"state": "other_uniform"},
                                                             apply_overlaps=lambda target: {"state": "other_uniform"},
-                                                            apply_chiefs=lambda target: {"state": "other_uniform"})}
+                                                            apply_chiefs=lambda target: {"state": "other_uniform"},
+                                                            apply_swooshes=lambda target: {"state": "other_uniform"})}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"

@@ -48,10 +48,11 @@ from mod_editor.core import nfl2k5_play_library as lib  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_inspector as insp  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_lint as lint  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_pack as packs  # noqa: E402
+from mod_editor.core import nfl2k5_route_reversal as rr  # noqa: E402
 from pb.v2 import build as v2  # noqa: E402
 
 TREE = ROOT / "pb" / "research" / "madden27_team_tree.json"
-VERSION = "3.0.0"
+VERSION = "4.0.0"
 YD = codec.YD_CM
 
 # ---------------------------------------------------------------------------
@@ -380,6 +381,12 @@ class Checker:
             err = str(exc)
         if err:
             return False, "validator: " + err
+        # b777 sc1: no receiver or back may be sent back toward his own goal line (route kinds 9 / 10 end behind the
+        # line); a record shared into a sister formation is refused where its start spots would make it reverse
+        ctx = spec.context()
+        for p in ctx.players:
+            if p.slot != design.primary and design.chains[p.slot] and rr.reversals(p.z, design.chains[p.slot]):
+                return False, f"route reversal in slot {p.slot}"
         pos = [tuple(p) for p in spec.positions_cm()]
         codes = list(spec.codes())
         flats, repaired = lib.forward_back_flats(design.chains, pos, codes)
@@ -487,17 +494,13 @@ def alignment_signature(spec, design) -> tuple:
 
 
 def screen_blockers(ctx, design) -> None:
-    """Receivers who are not the screen target block downfield (release, then block: retail kind 10) instead of
-    running clear-out verticals."""
-    if "screen" not in design.tags:
-        return
-    for p in ctx.players:
-        if p.slot == design.primary or p.kind not in (oc.WR, oc.TE):
-            continue
-        ch = design.chains[p.slot] or []
-        kinds = tuple(int(n[1][0]) for n in ch if n[0] == 0x12)
-        if kinds in PLAIN_VERTICAL or kinds in POST_LIKE:
-            design.chains[p.slot] = oc.route_chain("Stem Block", 6 if abs(p.x) < 10 else 9)
+    """Receivers who are not the screen target block downfield instead of running clear-out verticals.
+
+    b777 sc1: the b776 version gave them ``stem + kind 10`` ("Stem Block"), but the native endpoint of kind 10 is one
+    yard BEHIND the line, so a receiver on the line ran 6-9 yd upfield and then back (nfl2k5_route_reversal.py).  They
+    now release and stalk (retail receiver run block); any other chain that would reverse is repaired too."""
+    rr.decoys_to_blockers(oc, ctx, design, PLAIN_VERTICAL, POST_LIKE)
+    rr.repair_design(oc, ctx, design)
 
 
 def make_cand(spec, design, family, weight, must="") -> Cand:
@@ -698,6 +701,7 @@ class Selector:
         self.lanes = defaultdict(set)
         self.asigs = set()
         self.verts = 0
+        self.mesh = 0
         passes = sum(v for k, v in (quota or {}).items() if k not in ("run",))
         self.verts_cap = max(2, int(0.08 * passes))
         self.routes = Counter()
@@ -747,6 +751,8 @@ class Selector:
             s = 0.0                           # no two records with the same route-by-alignment picture
         if record and c.verts and self.verts >= self.verts_cap:
             s = 0.0                           # four-verticals family: about 8% of the book's passes at most
+        if record and is_mesh(c) and self.mesh >= MESH_RECORDS_MAX:
+            s = 0.0                           # b777: mesh concepts capped low (Noah 10/20)
         return s
 
     def take(self, c: Cand):
@@ -754,6 +760,7 @@ class Selector:
         if c.asig:
             self.asigs.add(c.asig)
         self.verts += c.verts
+        self.mesh += is_mesh(c)
         self.routes.update(c.routes)
         self.kinds.update(c.kinds)
         self.concepts[c.concept] += 1
@@ -770,9 +777,14 @@ def choose_formations(info, prof: Profile, plan_n: int, rng: random.Random) -> l
     pool = [n for n in oc.FORMATIONS if era in om.ERA.get(n, ("2020s", "2010s")) and oc.FORMATIONS[n].personnel in have
             and n not in ("Empty", "Singleback Spread", "Singleback Trips Open", "Split Backs Twins")]
     chosen = [n for n in MUST_FORMATIONS if n in pool]
+    def slot_bad(n):
+        return bool(slot_rule_violations(oc.FORMATIONS[n]))
+
+    def hard_full():
+        return sum(1 for n in chosen if slot_bad(n)) >= SLOT_RULE_HARD_MAX
     for s in prof.signature:
         for n in pool:
-            if n == s and n not in chosen:
+            if n == s and n not in chosen and not (slot_bad(n) and hard_full()):
                 chosen.append(n)
     # at least three pistol sets (Noah: Pistol is its own group) and one of each modern gun family
     for group in (("Pistol Bunch TE", "Pistol Y Off Trips", "Pistol Strong", "Pistol Deuce Close", "Pistol Ace",
@@ -781,13 +793,154 @@ def choose_formations(info, prof: Profile, plan_n: int, rng: random.Random) -> l
         rng.shuffle(opts)
         opts.sort(key=lambda n: -formation_weight(prof, n))
         need = 3 + (1 if prof.fam_w["pistol"] > 1.2 else 0) + (1 if prof.fam_w["pistol"] > 2.0 else 0)
-        chosen += opts[:max(0, need - sum(1 for n in chosen if oc.FORMATIONS[n].align == "pistol"))]
+        for n in opts[:max(0, need - sum(1 for n in chosen if oc.FORMATIONS[n].align == "pistol"))]:
+            if not (slot_bad(n) and hard_full()):
+                chosen.append(n)
     rest = [n for n in pool if n not in chosen]
+    # b777 slot rule: formations that move an outside receiver into the slot are rare (the must-haves count first)
     while len(chosen) < plan_n and rest:
-        ws = [formation_weight(prof, n) * (0.55 if _too_close(n, chosen) else 1.0) for n in rest]
+        bad_n = sum(1 for n in chosen if slot_bad(n))
+        ws = [formation_weight(prof, n) * (0.55 if _too_close(n, chosen) else 1.0)
+              * ((0.0 if bad_n >= SLOT_RULE_MAX_FORMATIONS else 0.1) if slot_bad(n) else 1.0) for n in rest]
+        if not any(ws):
+            break
         i = rng.choices(range(len(rest)), ws)[0]
         chosen.append(rest.pop(i))
     return chosen[:plan_n]
+
+
+# ---------------------------------------------------------------------------
+# b777 pb4: slot rule, role-preserving sharing, near-duplicate guard, volume
+# ---------------------------------------------------------------------------
+
+# Noah 10/20: "The slot receiver should be in the slot like all the time. Very rarely should a formation move him
+# outside."  Formations that stand an outside receiver (X = WR1, Z = WR2) in a slot alignment, or the slot receiver
+# (WR3+) outside, are kept to a few per book with short menus.
+SLOT_RULE_MAX_FORMATIONS = 3      # the random fill stops adding them here
+SLOT_RULE_HARD_MAX = 4            # team signature / pistol picks may take one more (two of them are must-haves)
+SLOT_RULE_MENU_CAP = 9
+# Noah 10/20: "triple the amount of plays".  Records are capped by the format (270 per book, retail already 264), so
+# the volume comes from menu links: a record listed in more sister formations (each a different alignment, so a
+# different play on the field), up to 36 links per formation (retail itself runs 36- and 26-33-link menus).
+LINK_TARGET = 30
+MENU_MAX = 36
+SHARE_CAP_B777 = {"run": 12, "quick": 9, "dropback": 9, "pa": 9, "deep": 5, "screen": 3}
+OWN_TARGET = {1: 12, 2: 7, 3: 5}   # own records per formation by number of same-personnel sets
+OWN_TARGET_MANY = 4
+LIMITED_SHARE = 2            # mesh and four-verticals records: at most this many menus each
+MESH_RECORDS_MAX = 3         # mesh concepts per book (Noah: "all mesh concepts and vertical routes")
+NEAR_DUP_MAX_YD = 2.0        # a shared record needs a route runner (or a back on a run) moved at least this far
+ROLE_CHANGES_MAX = 1
+MERGE_INSIDE = True           # slot and inline receivers are one "inside" class (an inside route stays inside)
+NEAR_DUP_SUM_YD = 4.0        # ... and the skill players moved this much in total, against every menu it is in
+
+
+def _ctx(spec):
+    return spec.context()
+
+
+def receiver_roles(spec: oc.FormationSpec) -> dict:
+    """slot -> ('wr', ordinal) for receivers in the depth-roles convention (X = 0, Z = 1, inner = 2 ...)."""
+    codes = spec.codes()
+    ctx = _ctx(spec)
+    wr = [p for p in ctx.players if p.kind == oc.WR]
+    return {p.slot: (codes[p.slot] >> 5) for p in wr}
+
+
+def slot_rule_violations(spec: oc.FormationSpec) -> list[str]:
+    """Outside receivers (WR ordinal 0/1) inside another receiver on their side or within 7 yd of the ball, and slot
+    receivers (ordinal 2+) on the outside while an outside receiver stands inside."""
+    ctx = _ctx(spec)
+    roles = receiver_roles(spec)
+    eligible = [p for p in ctx.players if p.kind in (oc.WR, oc.TE) and not (p.z <= -2.5 and abs(p.x) < 3.5)]
+    out = []
+    inside_outer = False
+    for p in ctx.players:
+        if p.slot not in roles:
+            continue
+        same = [q for q in eligible if (q.x < 0) == (p.x < 0)]
+        outermost = abs(p.x) >= max(abs(q.x) for q in same) - 0.01
+        if roles[p.slot] < 2 and (not outermost or abs(p.x) < 7.0):
+            out.append(f"WR{roles[p.slot] + 1} inside at {p.x:+.1f}")
+            inside_outer = True
+    for p in ctx.players:
+        if p.slot in roles and roles[p.slot] >= 2 and inside_outer:
+            same = [q for q in eligible if (q.x < 0) == (p.x < 0)]
+            if abs(p.x) >= max(abs(q.x) for q in same) - 0.01 and abs(p.x) >= 12:
+                out.append(f"WR{roles[p.slot] + 1} outside at {p.x:+.1f}")
+    return out
+
+
+def _runner_slots(design) -> set:
+    out = set()
+    for s, ch in enumerate(design.chains):
+        kinds = [int(n[1][0]) for n in (ch or []) if n[0] == 0x12]
+        if kinds and not all(k in (9, 10) for k in kinds):
+            out.add(s)
+    return out
+
+
+def _side_rank(ctx, p) -> str:
+    """Alignment class of a skill player: back, outside (outermost on his side, 7+ yd), inline (on the line inside
+    6.5 yd) or slot.  Route kinds are relative to the player's side (out = toward his sideline), so a record keeps
+    its meaning on either side; what must not change is who runs the outside, slot and inline routes."""
+    if p.z <= -2.5 and abs(p.x) < 3.5:
+        return "back"
+    same = [q for q in ctx.players if q.kind in (oc.WR, oc.TE, oc.HB, oc.FB) and (q.x < 0) == (p.x < 0)
+            and not (q.z <= -2.5 and abs(q.x) < 3.5)]
+    if abs(p.x) >= max(abs(q.x) for q in same) - 0.01 and abs(p.x) >= 7.0:
+        return "outside"
+    if MERGE_INSIDE:
+        return "inside"
+    if abs(p.x) < 6.5 and p.z > -0.5:
+        return "inline"
+    return "slot"
+
+
+def role_compatible(c: "Cand", spec: oc.FormationSpec) -> bool:
+    """A shared record keeps every route runner on the same side, in the same inside-out order and the same depth class
+    (a slot route stays with the slot), and a run keeps its backfield (the handoff and lead paths are the same)."""
+    src = oc.FORMATIONS[c.fname]
+    if src.name == spec.name:
+        return True
+    a, b = _ctx(src), _ctx(spec)
+    if c.design.play_type in ("pass", "pa_pass"):
+        changed = 0
+        for s in _runner_slots(c.design):
+            pa, pb_ = a.players[s], b.players[s]
+            ca, cb = _side_rank(a, pa), _side_rank(b, pb_)
+            if ca == cb:
+                continue
+            if pa.kind == oc.QB or "back" in (ca, cb) or s == c.design.primary:
+                return False
+            changed += 1
+        # one non-featured route may change alignment class (the native route check then refuses collisions,
+        # stacked landmarks and routes out of bounds in the new formation)
+        return changed <= ROLE_CHANGES_MAX
+    backs_a = {p.slot: (p.x, p.z) for p in a.players if p.z <= -2.5 and p.kind != oc.QB}
+    backs_b = {p.slot: (p.x, p.z) for p in b.players if p.z <= -2.5 and p.kind != oc.QB}
+    if set(backs_a) != set(backs_b):
+        return False
+    return all(abs(backs_a[s][0] - backs_b[s][0]) <= 2.0 and abs(backs_a[s][1] - backs_b[s][1]) <= 2.0 for s in backs_a)
+
+
+def distinct_enough(c: "Cand", spec: oc.FormationSpec, others: list) -> bool:
+    """Not the same play on the field: against every formation already listing the record, some route runner (a skill
+    player for a run) stands at least NEAR_DUP_MAX_YD elsewhere and the skill players moved NEAR_DUP_SUM_YD in total."""
+    b = _ctx(spec)
+    runners = _runner_slots(c.design) if c.design.play_type in ("pass", "pa_pass") else \
+        {p.slot for p in b.players if p.kind in (oc.WR, oc.TE, oc.HB, oc.FB)}
+    skills = {p.slot for p in b.players if p.kind in (oc.WR, oc.TE, oc.HB, oc.FB)}
+    for g in others:
+        a = _ctx(oc.FORMATIONS[g])
+        d = {s: abs(a.players[s].x - b.players[s].x) + abs(a.players[s].z - b.players[s].z) for s in skills}
+        if max((d[s] for s in runners if s in d), default=0.0) < NEAR_DUP_MAX_YD or sum(d.values()) < NEAR_DUP_SUM_YD:
+            return False
+    return True
+
+
+def is_mesh(c: "Cand") -> bool:
+    return "Mesh" in c.design.name or "Mesh" in (c.concept or "") or "Mesh" in (c.scheme or "")
 
 
 def _too_close(name: str, chosen: list[str]) -> bool:
@@ -813,7 +966,7 @@ def group_key(fname: str) -> str:
 
 def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None = None, checker: Checker | None = None,
                league_routes: Counter | None = None, league_concepts: Counter | None = None, menu_target: int = 12,
-               menu_max: int = 18):
+               menu_max: int = MENU_MAX, link_target: int = LINK_TARGET, share_cap: dict | None = None):
     prof = team_profile(team, era)
     rng = random.Random(prof.seed)
     info = v2.BookInfo(retail, team)
@@ -836,11 +989,26 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         for f in extra:
             if len(forms) >= cap["formations"]:
                 break
-            if f not in forms and group_key(f) in plan.index:
+            if f not in forms and group_key(f) in plan.index and not (
+                    slot_rule_violations(oc.FORMATIONS[f])
+                    and sum(1 for g in forms if slot_rule_violations(oc.FORMATIONS[g])) >= SLOT_RULE_HARD_MAX):
                 forms.append(f)
     # candidates
     cands = {f: candidates(info, prof, f, checker, random.Random(prof.seed ^ stable_hash(f))) for f in forms}
     budget = cap["plays"]
+    share_cap = share_cap or SHARE_CAP_B777
+    slot_bad = {f for f in forms if slot_rule_violations(oc.FORMATIONS[f])}
+    fmax = {f: (SLOT_RULE_MENU_CAP if f in slot_bad else menu_max) for f in forms}
+    ftarget = {f: min(fmax[f], link_target) for f in forms}
+
+    def share_ok(c, f, cap_extra=0):
+        spec = oc.FORMATIONS[f]
+        limit = LIMITED_SHARE if (c.verts or is_mesh(c)) else share_cap.get(BOOK_FAMILY[c.family], 3) + cap_extra
+        if links[c.key] >= limit:
+            return False
+        if not same_alignment_ok(c, spec) or not role_compatible(c, spec):
+            return False
+        return distinct_enough(c, spec, [g for g in forms if any(m.key == c.key for m in menus[g])])
     sel = Selector(prof, league_routes or Counter(), league_concepts or Counter(), book_quota(prof, budget))
     chosen: dict = OrderedDict()           # key -> Cand (record)
     menus: dict = {f: [] for f in forms}
@@ -935,7 +1103,8 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
     # greedy fill: each step serves the formation furthest below its own-record target; a set with no sister
     # formation (same personnel) cannot borrow plays, so it needs more of its own
     sisters = Counter(oc.FORMATIONS[f].personnel for f in forms)
-    own_target = {f: {1: menu_target, 2: 7, 3: 5}.get(sisters[oc.FORMATIONS[f].personnel], 4) for f in forms}
+    # b777: sets that cannot borrow (few sisters) get more own records, crowded personnel shares them instead
+    own_target = {f: OWN_TARGET.get(sisters[oc.FORMATIONS[f].personnel], OWN_TARGET_MANY) for f in forms}
     scale = (budget - len(chosen)) / max(1, sum(own_target.values()))
     if scale > 1:
         own_target = {f: max(1, round(v * scale)) for f, v in own_target.items()}
@@ -944,7 +1113,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         own[f] = sum(1 for m in menus[f])
     stuck = set()
     while len(chosen) < budget:
-        open_forms = [f for f in forms if f not in stuck and len(menus[f]) < menu_max]
+        open_forms = [f for f in forms if f not in stuck and len(menus[f]) < fmax[f]]
         if not open_forms:
             break
         f = max(open_forms, key=lambda f: (own_target[f] - own[f], rng.random()))
@@ -968,21 +1137,18 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         for m in menus[f]:
             links[m.key] += 1
     shared = 0
-    for _round in range(menu_target):
+    for _round in range(max(ftarget.values())):
         added_any = False
         for f in sorted(forms, key=lambda f: len(menus[f])):
             spec = oc.FORMATIONS[f]
-            if len(menus[f]) >= menu_target:
+            if len(menus[f]) >= ftarget[f]:
                 continue
             mix = MENU_MIX[spec.tag]
             options = []
             for key, c in chosen.items():
                 if key[0] != spec.personnel or any(m.key == key for m in menus[f]) or c.must == "tush":
                     continue
-                cap_links = SHARE_CAP.get(BOOK_FAMILY[c.family], 3)
-                if links[key] >= cap_links:
-                    continue
-                if not same_alignment_ok(c, spec):
+                if not share_ok(c, f):
                     continue
                 if any(m.design.name == c.design.name or m.concept == c.concept for m in menus[f]):
                     continue
@@ -1005,16 +1171,14 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
     # every menu a multiple of three links: a short last page repeats its last play on the empty buttons
     # (job pb2: Noah's three Bubble Screens).  Repair by sharing a sister record, dropping a shared link, adding or
     # dropping an own record; the record count is then refilled in steps that keep every menu a multiple of 3.
-    def share_options(f, cap_extra=1):
+    def share_options(f, cap_extra=1, limit=5):
         spec = oc.FORMATIONS[f]
         mix = MENU_MIX[spec.tag]
         out = []
         for key, c in chosen.items():
             if key[0] != spec.personnel or any(m.key == key for m in menus[f]) or c.must == "tush":
                 continue
-            if links[key] >= SHARE_CAP.get(BOOK_FAMILY[c.family], 3) + cap_extra:
-                continue
-            if not same_alignment_ok(c, spec):
+            if not share_ok(c, f, cap_extra):
                 continue
             if any(m.design.name == c.design.name for m in menus[f]):
                 continue
@@ -1022,7 +1186,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
             if score > 0:                     # zero = refused (third screen, repeated screen type)
                 out.append((score / (1 + links[key]), c))
         out.sort(key=lambda t: -t[0])
-        return [c for _s, c in out if checker.ok(info, spec, c.design)[0]][:5]
+        return [c for _s, c in out if checker.ok(info, spec, c.design)[0]][:limit]
 
     def own_options(f):
         mix = MENU_MIX[oc.FORMATIONS[f].tag]
@@ -1051,7 +1215,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
 
     def add_shared(f, cap_extra=1):
         nonlocal shared
-        if len(menus[f]) >= menu_max:
+        if len(menus[f]) >= fmax[f]:
             return False
         opt = share_options(f, cap_extra)
         if not opt:
@@ -1060,7 +1224,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         return True
 
     def add_own(f):
-        if len(chosen) >= budget or len(menus[f]) >= menu_max:
+        if len(chosen) >= budget or len(menus[f]) >= fmax[f]:
             return False
         opt = own_options(f)
         if not opt:
@@ -1093,7 +1257,7 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         n_own = 3 if free >= 3 else free
         grew = False
         for f in sorted(forms, key=lambda f: len(menus[f])):
-            if len(menus[f]) + 3 > menu_max:
+            if len(menus[f]) + 3 > fmax[f]:
                 continue
             opts = own_options(f)
             if len(opts) < n_own:
@@ -1129,6 +1293,28 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
             swapped = True
             break
         if not swapped:
+            break
+    # b777 volume pass: every formation below its link target takes shared records three at a time (a whole page),
+    # role-compatible, distinct on the field and native-route checked in the new formation
+    for _it in range(400):
+        grew = False
+        for f in sorted(forms, key=lambda f: len(menus[f])):
+            if len(menus[f]) + 3 > ftarget[f]:
+                continue
+            page = []
+            for extra in (0, 2):
+                for c in share_options(f, extra, limit=14):
+                    screens = sum(1 for m in menus[f] + page if m.screen_type)
+                    if len(page) < 3 and all(c.key != o.key and c.concept != o.concept for o in page) \
+                            and not any(m.concept == c.concept for m in menus[f]) \
+                            and not (c.screen_type and screens >= 2):     # pb2's menu rule across the whole page
+                        page.append(c)
+            if len(page) < 3:
+                continue
+            for c in page:
+                menus[f].append(c); links[c.key] += 1; shared += 1
+            grew = True
+        if not grew:
             break
     for f in forms:
         if len(menus[f]) % 3:

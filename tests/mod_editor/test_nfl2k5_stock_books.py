@@ -174,8 +174,6 @@ if HAVE_UNICORN:
             LiveCPU.select(self, index)
 
 
-@unittest.skipUnless(HAVE_UNICORN, 'Unicorn required for native stock-book execution')
-@unittest.skipUnless(SOURCE.is_file(), 'private USA source required')
 def retail_one_pool(outer, raw):
     """The One-pool positions pass on one retail historic resource, exactly as the build applies it (b776-de2: the sourced
     retail 3-4 team-seasons take the 3-4 rule, chosen by outer entry)."""
@@ -187,6 +185,10 @@ def retail_one_pool(outer, raw):
     return raw[:32] + bytes(body)
 
 
+# b777-ci2: these two skips sat on retail_one_pool() above (a helper, where they did nothing for the class) and the class
+# errored in setUpClass on every runner without the retail disc.
+@unittest.skipUnless(HAVE_UNICORN, 'Unicorn required for native stock-book execution')
+@unittest.skipUnless(SOURCE.is_file(), 'private USA source required')
 class NativeStockBooks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

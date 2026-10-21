@@ -328,14 +328,15 @@ def main():
     p.add_argument('--retail', type=Path, required=True)
     p.add_argument('--receipt', type=Path, required=True)
     a = parser.parse_args()
-    if a.command == 'prepare':
-        prepare(a.disc, a.retail, a.out)
-    elif a.command == 'apply':
-        apply(a.disc_copy, a.plan, a.receipt)
-    elif a.command == 'scope':
-        scope(a.before, a.after, a.receipt)
-    else:
-        studio(a.disc, a.retail, a.receipt)
+    with ball.forced(True):  # b777 ar1: the shipped era ball switch is off; this repair is the era ball's own tool
+        if a.command == 'prepare':
+            prepare(a.disc, a.retail, a.out)
+        elif a.command == 'apply':
+            apply(a.disc_copy, a.plan, a.receipt)
+        elif a.command == 'scope':
+            scope(a.before, a.after, a.receipt)
+        else:
+            studio(a.disc, a.retail, a.receipt)
 
 
 if __name__ == '__main__':

@@ -5,9 +5,12 @@ letter grades", on his "2K Player Grade System" scale: 95+ A+, 90-94 A, 85-89 B+
 65-69 D+, 60-64 D, 55-59 F+, 50-54 F, 0-49 F- (eleven grades; there is no A-, B-, C- or D-).
 
 The current default also installs ``nfl2k5_letter_grades_attributes`` (lg2):
-all individual attributes, Create/Edit controls, scouting, progression, MyCareer
-and substitution displays. ``all_ratings=False`` preserves the historical F4/F4b
-output for pinned repair tools. Studio values remain numeric.
+all individual attributes in lists, cards, depth charts, scouting, progression,
+MyCareer views and substitution displays. Screens that edit a rating stay numeric
+(lg3, Noah 2026-10-20): Create Player, Edit Player, Franchise Edit Player, the
+MyCareer Create Player hand-off, MyCareer Upgrades and its prospect tier labels.
+``all_ratings=False`` preserves the historical F4/F4b output for pinned repair
+tools. Studio values remain numeric.
 
 Historical F4 component (all in ``default.xbe``; display only)
 ---------------------------------------------------
@@ -83,8 +86,9 @@ HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Show player attributes, overall and team ratings "
     "as letter grades on Noah's 2K scale (95+ A+, 90-94 A, "
     "85-89 B+, 80-84 B, 75-79 C+, 70-74 C, 65-69 D+, 60-64 D, 55-59 F+, 50-54 F, 0-49 F-): roster, trade, free "
-    "agent and contract lists, player cards, depth charts, scouting, progression, Create/Edit Player, MyCareer "
-    "and substitution panels. Lists still sort numerically. In-game controls still change one point at a time. "
+    "agent and contract lists, player cards, depth charts, scouting, progression, MyCareer views "
+    "and substitution panels. Screens where you edit ratings (Create Player, Edit Player, MyCareer creation "
+    "and Upgrades) keep numbers. Lists still sort numerically. "
     "The Studio keeps numeric ratings. Off in the Basic preset, which keeps the 2004 numbers.")
 BUILD_CAPTION = UI_LABEL
 

@@ -128,11 +128,22 @@ class Details(QWidget):
 # Known refusals a first-timer meets, and the one thing to do about each.  The matching is on
 # the backend's own words; nothing here changes what is refused.
 _FIX_HINTS: tuple[tuple[str, str], ...] = (
+    # Opening a disc fills the Studio's own private game copy, which lives in the user's
+    # profile, not beside the disc image. The message names the folder and its drive.
+    ("private copy of the game's art", "Fix: free up room on the drive named above, then open the disc again."),
     ("already exists", "Fix: choose a new filename."),
     ("must not be the source", "Fix: choose a different output file."),
     ("target must not be the source", "Fix: choose a different output file."),
     ("neither retail nor this patch", "Fix: start from a disc this patch recognises, or turn that change off."),
     ("free space", "Fix: free up room where the copy is being written, or choose another folder."),
+    # The operating system's own words when a drive fills mid-write (POSIX errno 28 and
+    # Windows ERROR_DISK_FULL). They name no drive, so say which one to look at.
+    ("No space left on device",
+     "Fix: a drive is full. Free up room on the drive you are writing to, and on the drive that holds your user profile "
+     "(C: on Windows), where the Studio keeps its private game copy, then try again."),
+    ("not enough space on the disk",
+     "Fix: a drive is full. Free up room on the drive you are writing to, and on the drive that holds your user profile "
+     "(C: on Windows), where the Studio keeps its private game copy, then try again."),
     ("inside OneDrive", "Fix: choose a folder OneDrive does not sync, such as a new folder directly on your C: drive."),
     # The Studio's own .studio-build-* folder is named for the user by what the
     # file in it was for, never by its random temporary path, so the hint is

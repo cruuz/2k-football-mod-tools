@@ -159,7 +159,11 @@ class RetailField(unittest.TestCase):
         with historic.Source(SOURCE) as source:template=source.get('s25dd.iff')
         compiled,receipt=fields._retail_playoff_field(template)
         self.assertTrue(receipt['retail_field_reused_except_championship_stamps'])
-        self.assertTrue(receipt['geometry_and_descriptors_preserved'])
+        # b777 ar1: the retail s25 midfield quad sat 3 texels off the 50 and the centre line; the only geometry that moves is
+        # that quad's eight floats (x and z of four vertices)
+        self.assertEqual(receipt['midfield_centre']['state'],'moved')
+        self.assertFalse(receipt['geometry_and_descriptors_preserved'])
+        self.assertEqual(len(receipt['flank_ranges']),8)
         tx=metlife._tools()[0];rec,decoded=metlife._scene(compiled,tx.parse_chunks(compiled)[0])
         _,old_rec,old=fields._field_chunk(template)
         materials=modern.rows_by_material(rec);rows=modern.p8_rows(rec)

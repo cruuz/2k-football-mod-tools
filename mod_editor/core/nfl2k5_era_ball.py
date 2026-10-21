@@ -10,6 +10,10 @@ in the last 1,344 bytes of texture 1's pixel chain, freed by giving the normal m
 scene keeps its size and wrapper and is refit into its existing compressed span; nothing else in outer 3 changes.
 Texture 1's three-mip format word is the signature the runtime selector requires before it touches anything.
 
+b777 ar1: the whole feature is OFF by default (manifest "enabled": false). Noah asked for the football to look as it
+did before (the retail ball, no authored logo, no extra leather grain), so the build skips the ball scene edit and the
+moment-venue owner carries no selector; flip the switch to bring it back.
+
 Runtime (installed inside the moment-venue owner, see nfl2k5_moment_venues): at 0x950CC, after the ball scene is
 found, texture 0's palette pointer is set to palette B in Anniversary mode (mode 8) for a row whose season is before
 MODERN_FROM_SEASON, and to palette A otherwise, so every game re-asserts the choice and normal games keep the
@@ -72,6 +76,32 @@ def art():
     require(rgba.shape == (SIZE, SIZE, 4) and set(np.unique(rgba[..., 3])) <= {0, 255},
             "era ball art must be 256 x 256 with a binary mark mask")
     return rgba
+
+
+_FORCED = []
+
+
+class forced:
+    """``with forced(True):`` runs a block as if the manifest switch had that value (the b773 repair tool and tests
+    need the ball on while the shipped switch is off). Nests; never touches the manifest file."""
+
+    def __init__(self, value=True):
+        self.value = bool(value)
+
+    def __enter__(self):
+        _FORCED.append(self.value)
+        return self
+
+    def __exit__(self, *exc):
+        _FORCED.pop()
+
+
+def enabled():
+    """True only when the manifest switches the era ball on. b777 ar1: it is off, so every game keeps the user's ball
+    and the build neither edits the ball scene nor installs the selector hook."""
+    if _FORCED:
+        return _FORCED[-1]
+    return manifest().get("enabled") is True
 
 
 def old_ball_rows():

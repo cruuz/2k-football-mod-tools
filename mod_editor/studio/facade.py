@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import copy
+import errno
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
@@ -170,6 +171,49 @@ def _with_audio_annotation(
         predicted_payload_bytes=row.predicted_payload_bytes,
         content_origin=row.content_origin,
         metadata=metadata,
+    )
+
+
+#: Roughly what opening a retail disc stores in the Studio's private game copy.
+_GAME_INDEX_GIB = 6
+
+
+def _is_disk_full(exc: BaseException) -> bool:
+    """True for the operating system's "no space left" refusal on any platform.
+
+    Windows reports ERROR_DISK_FULL (112) or ERROR_HANDLE_DISK_FULL (39), which
+    Python maps to ENOSPC; both are checked so a bare winerror still matches.
+    """
+
+    return isinstance(exc, OSError) and (
+        exc.errno == errno.ENOSPC or getattr(exc, "winerror", None) in (39, 112))
+
+
+def _disk_full_message(cache_root: object) -> str:
+    """Say which drive filled up, how much it has and what the Studio needs there.
+
+    Discord, 10/12: a tester with 1.5 TB free on his disc's drive got only "out of
+    space" while opening the disc, because the Studio keeps its private game copy
+    in his user profile (C: on Windows), not beside the disc image.
+    """
+
+    where = ""
+    free_text = ""
+    if cache_root is not None:
+        try:
+            probe = Path(os.fspath(cache_root)).expanduser()
+            while not probe.exists() and probe.parent != probe:
+                probe = probe.parent
+            free = shutil.disk_usage(probe).free
+            free_text = f", which has only {free / 1024 ** 3:.1f} GiB free"
+            where = f" in {Path(os.fspath(cache_root)).expanduser()}"
+        except (OSError, TypeError, ValueError):
+            where = ""
+    return (
+        "Not enough free space to open this disc. 2K5 Mod Studio keeps a private copy "
+        f"of the game's art (about {_GAME_INDEX_GIB} GiB){where}{free_text}. "
+        "That folder belongs to the Studio (it is in your user profile by default), so the free "
+        "space beside your disc image does not help. Free up room on that drive and open the disc again."
     )
 
 
@@ -1231,7 +1275,13 @@ class Nfl2k5StudioFacade:
             attach(self.visual_catalog)
 
     def load_source(self, source_xiso: Path, progress: ProgressSink) -> object:
-        cache = self.source_cache.index(source_xiso, progress)
+        try:
+            cache = self.source_cache.index(source_xiso, progress)
+        except OSError as exc:
+            if _is_disk_full(exc):
+                raise ValidationError(_disk_full_message(
+                    getattr(self.source_cache, "cache_root", None))) from exc
+            raise
         progress("Preparing the complete asset browser", 0, 1)
         universal_index = self._universal_index_factory(cache)
         session = self.session_factory(cache, self.uniform_catalog)

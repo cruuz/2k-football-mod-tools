@@ -75,7 +75,8 @@ class BuildIntegrationTests(unittest.TestCase):
                                                                    apply_finish=lambda target: {'state': 'retail'},
                                                                    apply_seattle=lambda target: {'state': 'retail'},
                                                             apply_overlaps=lambda target: {'state': 'retail'},
-                                                            apply_chiefs=lambda target: {'state': 'retail'})}
+                                                            apply_chiefs=lambda target: {'state': 'retail'},
+                                                            apply_swooshes=lambda target: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.

@@ -27,6 +27,24 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def _after_sw1(src, packages):
+    """b777-sw1's swoosh layer runs before this stage and rewrites three donor kits (23A0 23H0 30A0); the fixture
+    disc predates it. Pass the donors through sw1's own compiler, as the build does, before comparing with the pins
+    (a donor that already carries the layer compiles to no parts and is kept)."""
+    from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
+    doc = fixes.swooshes()
+    kits = {s: src.get(mk.selector_name(s)) for s in fixes.donor_kits(doc)}
+    out = dict(packages)
+    for selector in sorted(set(fixes.selectors(doc)) & set(packages)):
+        parts, receipt = fixes.compile_resource(selector, packages[selector], document=doc, kits=kits)
+        assert receipt["state"] == "applied", (selector, receipt["state"])
+        buf = bytearray(packages[selector])
+        for at, data in parts:
+            buf[at:at + len(data)] = data
+        out[selector] = bytes(buf)
+    return out
+
+
 class Data(unittest.TestCase):
     def test_document_validates_and_every_selection_is_wired(self):
         doc = mk.document()
@@ -150,6 +168,7 @@ class Disc(unittest.TestCase):
         cls.doc = mk.document()
         cls.src = hs.Source(DISC)
         cls.inputs = mk.read_inputs(cls.src, cls.doc)
+        cls.inputs["packages"] = _after_sw1(cls.src, cls.inputs["packages"])
 
     @classmethod
     def tearDownClass(cls):
@@ -284,6 +303,8 @@ class Disc(unittest.TestCase):
     def test_applied_overlay_reads_back_applied_and_refuses_a_second_install(self):
         packages, members, files, situ = mk.expected(self.doc, self.inputs)
         overlay = Overlay(self.src)
+        for selector, data in self.inputs["packages"].items():  # the build copy carries sw1's donors (_after_sw1)
+            overlay.put(name=mk.selector_name(selector), data=data)
         for a in hs.AGGREGATES:
             record, cdf = self.inputs["members"][a["name"]]
             record, cdf = hs.grow_aggregate(record, cdf, members[a["name"]])

@@ -32,6 +32,14 @@ textures, cleared shoulder (TV) digits for kits that have none, and the Unif fac
 Job ku1 (b776) redid the 2026 Chiefs kits in ``data/nfl2k5_kit_fixes_2026_ku1.json`` (``apply_chiefs``, after the
 pants hem). It adds ``palette_remap`` rows: the whole colour scheme moves in the palette (every shade and blend kept,
 indices unchanged) before the row's art operations paint the new bands and patch.
+
+Job sw1 (b777, Noah 10/20: "the Nike swoosh needs to be centered on the sleeve, not blocking or getting blocked by
+anything") moves the sleeve swoosh in ``data/nfl2k5_kit_fixes_2026_sw1.json`` (``apply_swooshes``, the last kit
+writer). One rule for every 2026 kit: on kits whose arm number sits on the sleeve, the swoosh is centred over the
+number just above it; on the others it stays at the shared place below the shoulder number; either way on one plain
+field, clear of the number, stripes, logos and holes. Its ``warp`` operation carries an existing swoosh (the
+Packers home sleeve's pixels on the user's disc, never a drawing of the mark) through a mesh measured on the player
+model onto the model's surface, across the shoulder cap of the torso texture where it must.
 """
 from __future__ import annotations
 
@@ -54,6 +62,7 @@ DATA_UF3 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_uf3
 DATA_SEA1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sea1.json"
 DATA_OV1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ov1.json"
 DATA_KU1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ku1.json"
+DATA_SW1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sw1.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
@@ -522,6 +531,144 @@ def retint(rgba, op):
     return out, hit
 
 
+def _cross(ax, ay, bx, by):
+    return ax * by - ay * bx
+
+
+def _alpha_line_weight(source, op):
+    """Per-texel weight 0..256 of a mark drawn on a plain field (``alpha_line``: field and mark colours), as stamp's
+    ``alpha_line``; texels below alpha 128 weigh nothing."""
+    f = np.array(hex_rgb(op["alpha_line"]["field"]), np.int64)
+    m = np.array(hex_rgb(op["alpha_line"]["mark"]), np.int64)
+    d = m - f
+    den = int((d * d).sum())
+    require(den > 0, "warp field and mark colours are the same")
+    num = ((source[..., :3].astype(np.int64) - f) * d).sum(axis=2)
+    return np.clip((num * 256 + den // 2) // den, 0, 256) * (source[..., 3] >= 128)
+
+
+def warp(rgba, op, source):
+    """sw1 (b777): place an existing mark through a mesh, so it follows the model's surface across a curved, rotated
+    UV layout (the sleeve swoosh moved onto the shoulder cap of the torso texture).
+
+    ``grid`` maps decal coordinates to the SOURCE texture: ``s`` and ``t`` (1/1000 of the decal box, ascending,
+    evenly spaced) and ``x``/``y`` (rows per t, columns per s; fixed-point UNIT per texel) are where each decal point
+    sits on the source. ``nodes`` give the decal axes ``a`` (across the mark) and ``b`` (up it), 1/1000, and per
+    node (row-major, ``b`` rows of ``a`` columns) its DESTINATION point ``dst`` (UNIT); ``use`` (a string of 0/1,
+    one per node) drops nodes off this UV island: each grid quad is two triangles, drawn when all three nodes are
+    used. ``mask`` ([y, x0, x1) rows) lists the only destination texels that may change. Each of the 4x4 samples per
+    texel takes the source texel under it (``sample`` "bilinear": between texel centres) as an ``alpha_line`` weight
+    (0..256), optionally sharpened (``gain`` [num, den] about the half weight), and ``color`` is laid down with it,
+    all in exact integer arithmetic."""
+    h, w = rgba.shape[:2]
+    sh, sw = source.shape[:2]
+    g = op["grid"]
+    gs = np.asarray(g["s"], np.int64)
+    gt = np.asarray(g["t"], np.int64)
+    gx = np.asarray(g["x"], np.int64)
+    gy = np.asarray(g["y"], np.int64)
+    require(len(gs) >= 2 and len(gt) >= 2 and gx.shape == (len(gt), len(gs)) == gy.shape, "warp grid shape")
+    ds, dt = int(gs[1] - gs[0]), int(gt[1] - gt[0])
+    require(ds > 0 and dt > 0 and (np.diff(gs) == ds).all() and (np.diff(gt) == dt).all(), "warp grid spacing")
+    n = op["nodes"]
+    na = np.asarray(n["a"], np.int64)
+    nb = np.asarray(n["b"], np.int64)
+    cols, rows_n = len(na), len(nb)
+    require(cols >= 2 and rows_n >= 2, "warp node axes")
+    dst = np.asarray(n["dst"], np.int64).reshape(rows_n, cols, 2)
+    ab = np.stack(np.broadcast_arrays(na[None, :], nb[:, None]), axis=-1)
+    use = np.asarray([int(c) for c in n["use"]], np.int64).reshape(rows_n, cols).astype(bool)
+    allow = np.zeros((h, w), bool)
+    for y, x0, x1 in op["mask"]:
+        require(0 <= y < h and 0 <= x0 < x1 <= w, "warp mask outside the texture")
+        allow[int(y), int(x0):int(x1)] = True
+    weight = _alpha_line_weight(source, op)
+    step = UNIT // SUPER
+    sub = np.arange(SUPER, dtype=np.int64) * step + step // 2
+    acc = np.zeros((h, w), np.int64)
+    taken = np.zeros((h * SUPER, w * SUPER), bool)
+    tris = []
+    for r in range(rows_n - 1):
+        for c in range(cols - 1):
+            q = [(r, c), (r, c + 1), (r + 1, c + 1), (r + 1, c)]
+            for tri in ((q[0], q[1], q[2]), (q[0], q[2], q[3])):
+                if all(use[i, j] for i, j in tri):
+                    tris.append(tri)
+    for tri in tris:
+        P = [dst[i, j] for i, j in tri]
+        A = [ab[i, j] for i, j in tri]
+        den = _cross(P[1][0] - P[0][0], P[1][1] - P[0][1], P[2][0] - P[0][0], P[2][1] - P[0][1])
+        if den == 0:
+            continue
+        if den < 0:
+            P = [P[0], P[2], P[1]]
+            A = [A[0], A[2], A[1]]
+            den = -den
+        xs = [p[0] for p in P]
+        ys = [p[1] for p in P]
+        x0 = max(int(min(xs)) // UNIT, 0)
+        x1 = min(-(-int(max(xs)) // UNIT), w)
+        y0 = max(int(min(ys)) // UNIT, 0)
+        y1 = min(-(-int(max(ys)) // UNIT), h)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        px = (np.arange(x0, x1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+        py = (np.arange(y0, y1, dtype=np.int64)[:, None] * UNIT + sub[None, :]).ravel()
+        X, Y = np.meshgrid(px, py)
+        e0 = _cross(P[2][0] - P[1][0], P[2][1] - P[1][1], X - P[1][0], Y - P[1][1])
+        e1 = _cross(P[0][0] - P[2][0], P[0][1] - P[2][1], X - P[2][0], Y - P[2][1])
+        e2 = den - e0 - e1
+        sx0, sy0 = x0 * SUPER, y0 * SUPER
+        inside = (e0 >= 0) & (e1 >= 0) & (e2 >= 0) & ~taken[sy0:sy0 + X.shape[0], sx0:sx0 + X.shape[1]]
+        inside &= np.repeat(np.repeat(allow[y0:y1, x0:x1], SUPER, axis=0), SUPER, axis=1)
+        if not inside.any():
+            continue
+        taken[sy0:sy0 + X.shape[0], sx0:sx0 + X.shape[1]] |= inside
+        a = (e0 * A[0][0] + e1 * A[1][0] + e2 * A[2][0]) // den
+        b = (e0 * A[0][1] + e1 * A[1][1] + e2 * A[2][1]) // den
+        # decal -> source through the grid (bilinear, clamped to the grid's span)
+        a = np.clip(a, gs[0], gs[-1])
+        b = np.clip(b, gt[0], gt[-1])
+        i = np.minimum((a - gs[0]) // ds, len(gs) - 2)
+        j = np.minimum((b - gt[0]) // dt, len(gt) - 2)
+        fa = a - gs[0] - i * ds
+        fb = b - gt[0] - j * dt
+        wa, wb = ds - fa, dt - fb
+        sx = (gx[j, i] * wa * wb + gx[j, i + 1] * fa * wb + gx[j + 1, i] * wa * fb + gx[j + 1, i + 1] * fa * fb) // (ds * dt)
+        sy = (gy[j, i] * wa * wb + gy[j, i + 1] * fa * wb + gy[j + 1, i] * wa * fb + gy[j + 1, i + 1] * fa * fb) // (ds * dt)
+        if op.get("sample") == "bilinear":
+            # bilinear source weight between texel centres
+            ux, uy = sx - UNIT // 2, sy - UNIT // 2
+            kx, ky = ux // UNIT, uy // UNIT
+            fx, fy = ux - kx * UNIT, uy - ky * UNIT
+
+            def at(xx, yy):
+                ok = (xx >= 0) & (xx < sw) & (yy >= 0) & (yy < sh)
+                return np.where(ok, weight[np.clip(yy, 0, sh - 1), np.clip(xx, 0, sw - 1)], 0)
+
+            wgt = (at(kx, ky) * (UNIT - fx) * (UNIT - fy) + at(kx + 1, ky) * fx * (UNIT - fy) +
+                   at(kx, ky + 1) * (UNIT - fx) * fy + at(kx + 1, ky + 1) * fx * fy) // (UNIT * UNIT)
+        else:
+            # the source texel under each sample (as stamp does): the 4x4 samples per texel do the filtering
+            kx, ky = sx // UNIT, sy // UNIT
+            ok = (kx >= 0) & (kx < sw) & (ky >= 0) & (ky < sh)
+            wgt = np.where(ok, weight[np.clip(ky, 0, sh - 1), np.clip(kx, 0, sw - 1)], 0)
+        if op.get("gain"):
+            # sharpen the resampled anti-aliasing: weight' = 128 + (weight - 128) * num // den, clamped (exact)
+            num, den = (int(v) for v in op["gain"])
+            wgt = np.clip(128 + ((wgt - 128) * num) // den, 0, 256)
+        wgt = np.where(inside, wgt, 0)
+        acc[y0:y1, x0:x1] += wgt.reshape(y1 - y0, SUPER, x1 - x0, SUPER).sum(axis=(1, 3))
+    full = SUPER * SUPER * 256
+    colour = np.array(hex_rgb(op["color"]), np.int64)
+    out = rgba.copy()
+    hit = acc > 0
+    base = rgba[..., :3].astype(np.int64)
+    blended = (base * (full - acc)[..., None] + colour[None, None, :] * acc[..., None] + full // 2) // full
+    out[..., :3][hit] = blended[hit].astype(np.uint8)
+    return out, hit
+
+
 def paint(rgba, ops, donors=None):
     """Apply the authored operations in order; returns the new level 0 and the changed scope."""
     out = rgba.copy()
@@ -593,6 +740,12 @@ def paint(rgba, ops, donors=None):
             source = rgba if donor == "self" else (donors or {}).get(key)
             require(source is not None, "stamp donor texture absent")
             out, _ = stamp(out, op, source)
+        elif kind == "warp":
+            donor = op.get("donor", "self")
+            key = donor if isinstance(donor, str) and ":" in donor else None if donor == "self" else int(donor)
+            source = rgba if donor == "self" else (donors or {}).get(key)
+            require(source is not None, "warp donor texture absent")
+            out, _ = warp(out, op, source)
         else:
             raise ValueError("2026 kit fixes: unknown art operation " + repr(kind))
     scope = np.any(out != rgba, axis=2)
@@ -1378,3 +1531,13 @@ def chiefs():
 def apply_chiefs(path, *, strict=False):
     """Studio uniform finish pass for ku1, after the pants hem (the last writer of these kits): pinned spans only."""
     return apply_to_image(path, strict=strict, document=chiefs())
+
+
+def swooshes():
+    """sw1 (b777): the sleeve swoosh centred on the sleeve, clear of numbers and art, on every 2026 kit."""
+    return spec(DATA_SW1)
+
+
+def apply_swooshes(path, *, strict=False):
+    """Studio uniform finish pass for sw1, after ku1 (the last writer of the kit textures): pinned spans only."""
+    return apply_to_image(path, strict=strict, document=swooshes())

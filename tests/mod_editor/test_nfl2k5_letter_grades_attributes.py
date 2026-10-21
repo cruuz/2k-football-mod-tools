@@ -1,5 +1,9 @@
 """lg2: real x86 formatting, controls, numeric sorting, compatibility and byte scope.
 
+lg3 (Noah, 2026-10-20): editing screens stay numeric. The native player editor's 26 attribute
+controls (Create Player, Edit Player, Franchise Edit Player, MyCareer Create Player) and the
+MyCareer Upgrades line and prospect tier labels keep numbers; every other rating display is graded.
+
 Unicorn supplies RAM. The column width leaf records text; no renderer is claimed.
 Progression's existing probe substitutes its getter and draw leaves explicitly.
 """
@@ -51,14 +55,22 @@ class AttributeGradesTests(unittest.TestCase):
 
     def test_all_rating_descriptors_are_covered_and_other_numbers_are_untouched(self):
         old, new = XbeImage(self.retail), XbeImage(self.patched)
-        self.assertEqual(len(attr.COLUMNS), 91)
+        self.assertEqual(len(attr.COLUMNS), 65)
+        self.assertEqual(len(attr.EDIT_CONTROLS), 26)
         for label, va, digest in attr.COLUMNS:
             self.assertEqual(hashlib.sha256(old.read(va, 0xb0)).hexdigest(), digest)
             self.assertEqual(new.read(va,4), lg.GRADE_FLAGS, label)
             self.assertEqual(new.read(va+4,0xac), old.read(va+4,0xac), label)
+        # lg3: the editor's attribute controls are byte-identical to retail (numeric kind 5).
+        for label, va, digest in attr.EDIT_CONTROLS:
+            self.assertEqual(hashlib.sha256(old.read(va, 0xb0)).hexdigest(), digest)
+            self.assertEqual(new.read(va, 0xb0), old.read(va, 0xb0), label)
+        self.assertEqual([va for _, va, _ in attr.EDIT_CONTROLS], [0x5639f0 + 0xb0 * i for i in range(26)])
+        self.assertFalse({va for _, va, _ in attr.EDIT_CONTROLS} & {va for _, va, _ in attr.COLUMNS})
         # Exhaustive class-5 descriptor audit, including dynamic headers that a string search misses.
         section = next(s for s in old.sections if s.name == '.rdata')
-        known = {va for _,va,_ in attr.COLUMNS} | {va for _,va in lg.PLAYER_COLUMNS + lg.TEAM_COLUMNS}
+        known = ({va for _,va,_ in attr.COLUMNS + attr.EDIT_CONTROLS}
+                 | {va for _,va in lg.PLAYER_COLUMNS + lg.TEAM_COLUMNS})
         remaining = []
         for va in range(section.start, section.start+section.raw_size-0xb0,4):
             flags,kind,getter=struct.unpack('<3I',old.read(va,12))
@@ -81,7 +93,15 @@ class AttributeGradesTests(unittest.TestCase):
                 m.call(0x173470,edx=cell,stop=0x1734a3)
                 self.assertEqual(observed[-1],lg.grade_for(rating),(label,rating))
                 self.assertEqual(m.get(cell+12),rating)
-        self.assertEqual(len(observed),2093)
+        self.assertEqual(len(observed),1495)
+        # lg3: the same real wrapper prints the plain number for every editor attribute control.
+        for label,va,_ in attr.EDIT_CONTROLS:
+            m.put(cell,va)
+            for rating in (0,49,50,94,95,99,100):
+                m.put(cell+12,rating)
+                m.call(0x173470,edx=cell,stop=0x1734a3)
+                self.assertEqual(observed[-1],str(rating),(label,rating))
+        self.assertEqual(len(observed),1495+26*7)
 
     def test_each_new_format_pointer_runs_real_swprintf_for_zero_to_100(self):
         m=Machine(self.patched,trace_writes=False)
@@ -96,7 +116,7 @@ class AttributeGradesTests(unittest.TestCase):
     def test_numeric_sort_distinguishes_equal_letter_grades(self):
         m=Machine(self.patched,trace_writes=False)
         a,b=m.ARENA+0x1000,m.ARENA+0x1100
-        for va in [va for _,va,_ in attr.COLUMNS]:
+        for va in [va for _,va,_ in attr.COLUMNS + attr.EDIT_CONTROLS]:
             m.put(a,va);m.put(b,va)
             for left,right in ((93,91),(91,93),(93,93),(49,0),(95,94)):
                 m.put(a+12,left);m.put(b+12,right)
@@ -106,8 +126,7 @@ class AttributeGradesTests(unittest.TestCase):
     def test_create_edit_callbacks_change_same_numeric_byte_underneath(self):
         before,after=Machine(self.legacy,trace_writes=False),Machine(self.patched,trace_writes=False)
         record=before.ARENA+0x1000
-        for label,va,_ in attr.COLUMNS:
-            if not label.startswith('edit_'): continue
+        for label,va,_ in attr.EDIT_CONTROLS:
             for rating in (0,49,50,94,95,99):
                 for callback_offset in (8,0x20,0x38):
                     snapshots=[]
@@ -122,7 +141,14 @@ class AttributeGradesTests(unittest.TestCase):
         after.call(after.get(0x5639f0+0x20))
         value=after.call(after.get(0x5639f0+8))
         self.assertEqual(value,95)
-        self.assertEqual(lg.grade_for(value),'A+')
+        # lg3: the Speed control itself is drawn by the real cell wrapper as the number, not A+.
+        shown=[]
+        after.leaf(0x49410,lambda:(shown.append(text_at(after,after.reg('EDX'))),after.ret(12)),
+                   reason='font width leaf records the actual formatted string')
+        cell=after.ARENA+0x3000
+        after.put(cell,0x5639f0);after.put(cell+12,value)
+        after.call(0x173470,edx=cell,stop=0x1734a3)
+        self.assertEqual(shown[-1],'95')
 
     def test_progression_every_row_is_graded_but_changes_stay_numeric(self):
         prev=[49+(i%51) for i in range(27)]
@@ -140,6 +166,11 @@ class AttributeGradesTests(unittest.TestCase):
         # An exact new site surrounded by old sites is mixed, not partially accepted.
         bad=bytearray(self.legacy);off=rdata.offset_of(bad,0x541288);bad[off:off+4]=lg.GRADE_FLAGS
         with self.assertRaises(ValueError): attr.apply(bytes(bad))
+        # lg3: an lg2-era image (graded editor controls) is foreign, never silently "applied".
+        for source in (self.legacy, self.patched):
+            bad=bytearray(source);off=rdata.offset_of(bad,0x564910);bad[off:off+4]=lg.GRADE_FLAGS
+            self.assertEqual(attr.status(bytes(bad)),'foreign')
+            with self.assertRaises(ValueError): attr.apply(bytes(bad))
 
     def test_gameplay_and_every_unowned_byte_are_identical(self):
         from tools.b77.lg2_repair import compare_xbe
@@ -152,27 +183,25 @@ class AttributeGradesTests(unittest.TestCase):
                         (0x343fd0,0xe00),(0x1739f0,0x240),(0x16f850,0x50)):
             self.assertEqual(old.read(va,size),new.read(va,size))
 
-    def test_mycareer_format_changes_only_rating_and_cap_tokens(self):
+    def test_mycareer_upgrade_and_prospect_text_stay_numeric(self):
+        # lg3: buying a point and picking a prospect tier are editing/creation screens.
         b,labels=mode.code_for(0x14e4850,0x14f0000)
-        a,labels2=mode.code_for(0x14e4850,0x14f0000,letter_grades=True)
+        a,labels2=mode.code_for(0x14e4850,0x14f0000,letter_grades=True,grade_bands=lg.DEFAULT_BANDS)
         self.assertEqual(labels,labels2)
-        self.assertEqual(len(b),len(a))
-        restored=bytearray(a)
-        base=labels['m3_upgrade_format']-0x14e4850
-        size=2*(len(attr.CAREER_NUMERIC)+1)
-        restored[base:base+size]=b[base:base+size]
-        for label,text,rating in attr.CAREER_PROSPECTS:
-            at=labels[label]-0x14e4850;size=2*(len(text)+1)
-            self.assertEqual(a[at:at+size],attr.prospect_bytes(text,rating))
-            restored[at:at+size]=b[at:at+size]
-        self.assertEqual(bytes(restored),b)
+        self.assertEqual(a,b)
+        def wtext(blob,label):
+            at=labels[label]-0x14e4850
+            return blob[at:at+256].decode('utf-16le','replace').split('\0')[0]
+        self.assertEqual(wtext(b,'m3_upgrade_format'),attr.CAREER_NUMERIC)
+        self.assertEqual([wtext(b,f'm3_prospect_{i}') for i in range(1,5)],
+                         ['Prospect: 1st Day (74)','Prospect: 2nd Day (70)','Prospect: 3rd Day (64)','Prospect: Undrafted (59)'])
         m=Machine(self.patched,trace_writes=False)
         fmt,dest,arg,name=[m.ARENA+0x1000*i for i in range(1,5)]
-        m.uc.mem_write(fmt,(attr.CAREER_GRADES+'\0').encode('utf-16le'))
+        m.uc.mem_write(fmt,(attr.CAREER_NUMERIC+'\0').encode('utf-16le'))
         m.uc.mem_write(name,'Speed\0'.encode('utf-16le'))
         m.uc.mem_write(arg,struct.pack('<5I',name,94,99,20,123))
         m.call(0x4a400,ecx=dest,edx=fmt,args=(arg,))
-        self.assertEqual(text_at(m,dest),'Speed: A. Cap A+. Cost 20 XP. Balance 123 XP.')
+        self.assertEqual(text_at(m,dest),'Speed: 94. Cap 99. Cost 20 XP. Balance 123 XP.')
 
     def test_low_trade_guidelines_have_no_numeric_rating_cutoff(self):
         image=XbeImage(self.patched)
@@ -188,9 +217,20 @@ class AttributeGradesTests(unittest.TestCase):
         self.assertEqual(a,b)
         self.assertEqual(mode.status(a),'applied')
         self.assertEqual(attr.status(a),'applied')
+        # lg3: in either order the installed MyCareer text is the numeric one.
+        code,data=mode.legacy.allocations(a)
+        numeric=mode.code_for(code['va'],data['va'])[0]
+        image=XbeImage(a)
+        self.assertEqual(image.read(code['va'],len(numeric)),numeric)
+        for va,_,_ in ((va,0,0) for _,va,_ in attr.EDIT_CONTROLS):
+            self.assertEqual(image.read(va,4),lg.RETAIL_FLAGS)
 
     def test_every_grade_fits_three_digit_rating_width_in_all_native_fonts(self):
-        with (ROOT/'reports/assets/nfl_main_menu_font_glyphs.tsv').open() as f:
+        glyphs=ROOT/'reports/assets/nfl_main_menu_font_glyphs.tsv'
+        if not glyphs.is_file():
+            # Developer-only evidence (gitignored, in neither beta-50 CI archive): lean and hosted checkouts do not have it.
+            self.skipTest('reports/assets/nfl_main_menu_font_glyphs.tsv (native menu font glyph advances) is absent from this checkout')
+        with glyphs.open() as f:
             rows=list(csv.DictReader(f,delimiter='\t'))
         table={(r['font'],r['character']):int(r['advance']) for r in rows}
         fonts=sorted({r['font'] for r in rows})

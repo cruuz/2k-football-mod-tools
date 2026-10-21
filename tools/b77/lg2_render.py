@@ -94,8 +94,8 @@ def main():
         m.call(0x4a400,ecx=dest,edx=labels['m3_upgrade_format'],args=(arg,))
         outputs.append(wstr(m,dest))
     evidence['mycareer']=dict(before=outputs[0],after=outputs[1],
-        prospects_before=[wstr(machines[0],labels[n]) for n,_,_ in attr.CAREER_PROSPECTS],
-        prospects_after=[wstr(machines[1],labels[n]) for n,_,_ in attr.CAREER_PROSPECTS])
+        prospects_before=[wstr(machines[0],labels[n]) for n in ('m3_prospect_1','m3_prospect_2','m3_prospect_3','m3_prospect_4')],
+        prospects_after=[wstr(machines[1],labels[n]) for n in ('m3_prospect_1','m3_prospect_2','m3_prospect_3','m3_prospect_4')])
     canvas=Image.new('RGBA',(1140,270),(22,24,30,255))
     for i,title in enumerate(('before','after')):
         fonts.draw(canvas,'font9','MYCAREER '+title.upper(),12+i*570,10)

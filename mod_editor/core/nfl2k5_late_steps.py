@@ -226,6 +226,7 @@ STEP_CODE: dict[str, dict] = {
             "mod_editor/core/nfl2k5_cave_oracle.py",
             "mod_editor/core/nfl2k5_late_steps.py",
             "mod_editor/core/nfl2k5_midfield_art.py",
+            "mod_editor/core/nfl2k5_midfield_centre.py",  # b777-ar1: the midfield logo centring
             "mod_editor/core/nfl2k5_model_fan_art.py",
             "mod_editor/core/nfl2k5_models.py",
             "mod_editor/core/nfl2k5_modern_color.py",
@@ -269,6 +270,7 @@ STEP_CODE: dict[str, dict] = {
             "mod_editor/core/nfl2k5_espn25_fields.py",
             "mod_editor/core/nfl2k5_historic_styles.py",
             "mod_editor/core/nfl2k5_late_steps.py",
+            "mod_editor/core/nfl2k5_midfield_centre.py",  # b777-ar1: the midfield logo centring
             "mod_editor/core/nfl2k5_models.py",
             "mod_editor/core/nfl2k5_modern_color.py",
             "mod_editor/core/nfl2k5_modern_metlife.py",
@@ -373,6 +375,7 @@ STEP_CODE: dict[str, dict] = {
             "mod_editor/core/nfl2k5_cave_oracle.py",
             "mod_editor/core/nfl2k5_late_steps.py",
             "mod_editor/core/nfl2k5_midfield_art.py",
+            "mod_editor/core/nfl2k5_midfield_centre.py",  # b777-ar1: the midfield logo centring
             "mod_editor/core/nfl2k5_models.py",
             "mod_editor/core/nfl2k5_modern_color.py",
             "mod_editor/core/nfl2k5_modern_metlife.py",

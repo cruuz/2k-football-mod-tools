@@ -44,7 +44,6 @@ class DirectoryGrowth(unittest.TestCase):
         self.assertEqual(struct.unpack_from('<I', result)[0], 182)
 
 
-@unittest.skipUnless(SOURCE.is_file(), 'private USA disc required')
 def _reclassified(outer, raw):
     from tools import nfl2k5_roster_reclassify as rc
     resource = rc.parse_resource(outer, 0, raw)
@@ -54,6 +53,8 @@ def _reclassified(outer, raw):
     return raw[:32] + bytes(body)
 
 
+# b777-ci2: this skip sat on _reclassified() above (a helper) and NamedProfile errored in setUpClass on every runner without the retail disc.
+@unittest.skipUnless(SOURCE.is_file(), 'private USA disc required')
 class NamedProfile(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
