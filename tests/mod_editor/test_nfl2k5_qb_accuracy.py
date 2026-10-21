@@ -58,8 +58,12 @@ class StaticTests(unittest.TestCase):
             self.assertIs(preset["qb_accuracy"], name == "softdrink_experimental", name)
         self.assertNotIn("/home/noah", (ROOT / "mod_editor/core/nfl2k5_qb_accuracy.py").read_text(encoding="utf-8"))
 
-    @unittest.skipUnless(shutil.which("as"), "GNU as is required to reproduce the byte template")
     def test_assembler_reproduces_shipped_bytes(self):
+        # Apple's assembler lacks GNU --32 and MinGW's emits COFF; the shipped byte template is the
+        # runtime input, so those hosts skip the reproduction instead of failing on it.
+        from _gnu_elf32_as import gnu_elf32_as
+        if not shutil.which("as") or not gnu_elf32_as():
+            self.skipTest("GNU as with ELF32 output is required for template reproduction")
         from nfl2k5_cpu_ai_assemble import template
         self.assertEqual((ROOT / "mod_editor/core/nfl2k5_qb_accuracy_code.py").read_text(encoding="utf-8"),
                          template("nfl2k5_qb_accuracy"))

@@ -126,8 +126,8 @@ class WiringTests(unittest.TestCase):
                 return {name: {k: v for k, v in values.items() if k != "indicator_names_folder"}
                         for name, values in presets.items()}
             self.assertEqual(without_folder(rehearsal.PRESETS), without_folder(mod_build.PRESETS))
-            self.assertTrue(rehearsal.PRESETS["softdrink_experimental"]["indicator_names_folder"]
-                            .endswith("data/nfl2k5_indicator_names"))
+            self.assertTrue(Path(rehearsal.PRESETS["softdrink_experimental"]["indicator_names_folder"])
+                            .as_posix().endswith("data/nfl2k5_indicator_names"))
             self.assertEqual(mod_build.PRESETS["softdrink_experimental"]["indicator_names_folder"],
                              str(mod_build.ROOT / "data/nfl2k5_indicator_names"))
         self.assertEqual(hashlib.sha256(SOURCE.read_bytes()).hexdigest(), before)

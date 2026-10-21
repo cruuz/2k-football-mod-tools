@@ -85,8 +85,13 @@ class AlphabetContract(unittest.TestCase):
     def test_generator_reproduces_the_shipped_files(self):
         with tempfile.TemporaryDirectory() as folder:
             alphabet.author(Path(folder))
-            for name in ('atlas.png', 'metrics.json'):
-                self.assertEqual((Path(folder)/name).read_bytes(), (FOLDER/name).read_bytes(), name)
+            self.assertEqual((Path(folder)/'metrics.json').read_bytes(), (FOLDER/'metrics.json').read_bytes())
+            # Pixels, not PNG bytes: the macOS and Windows Pillow wheels bundle a different zlib, so the same
+            # image compresses to different bytes there.
+            from PIL import Image
+            with Image.open(Path(folder)/'atlas.png') as made, Image.open(FOLDER/'atlas.png') as shipped:
+                self.assertEqual((made.mode, made.size), (shipped.mode, shipped.size))
+                self.assertEqual(made.tobytes(), shipped.tobytes(), 'atlas.png')
 
     def test_experimental_preset_uses_the_authored_bundle(self):
         from mod_editor.core import mod_build

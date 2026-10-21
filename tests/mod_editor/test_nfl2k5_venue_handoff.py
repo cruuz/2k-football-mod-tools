@@ -6,6 +6,7 @@ vr/reproduce.py also exercises the compilers against the retail archive.
 """
 from contextlib import ExitStack
 import importlib
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -159,7 +160,9 @@ class PipelineOrder(unittest.TestCase):
             self.archive.write(self.pins[n]["outer"] * 64 + 16, b"M" * 32)
             results.append((n, self.blob(n), {}))
         plan = dict(items=[dict(scene="stadium", key="banner_home_player")], base={}, manifest="m", digest="d")
-        with patch.object(mv, "load_art", return_value=dict(venues={"s01": plan})), \
+        # Serial: spawn-start workers (macOS, Windows) would import the unpatched painter.
+        with patch.dict(os.environ, NFL2K5_BUILD_WORKERS="1"), \
+                patch.object(mv, "load_art", return_value=dict(venues={"s01": plan})), \
                 patch.object(mv, "plan_venue", return_value=plan), patch.object(fans, "neutral_plan", return_value=plan), \
                 patch.object(fans, "paint_bundle", side_effect=lambda b, n, p: (b[:16] + b"F" * 32 + b[48:], {})):
             painted = fans.paint_results(results, {}, "art", dict(bundles=list(self.model_pins.values())))

@@ -296,7 +296,7 @@ class LabelStyleTests(unittest.TestCase):
         self.assertEqual(mod_build.apply_preset(mod_build.BuildPlan(source="retail.iso",target="out.iso"),"softdrink_advanced").indicator_names_style,"retail")
         self.assertIn("scorebug",__import__("mod_editor.core.nfl2k5_indicator_names",fromlist=["STYLES"]).STYLES)
         # The nm1 atlas stays in the bundle and the preset, one key away from the scorebug label.
-        self.assertTrue(plan.indicator_names_folder.endswith("data/nfl2k5_indicator_names"))
+        self.assertTrue(Path(plan.indicator_names_folder).as_posix().endswith("data/nfl2k5_indicator_names"))
         import dataclasses
         bare=mod_build.BuildPlan(source="a.iso",target="b.iso",indicator_names_folder=plan.indicator_names_folder)
         self.assertFalse(bare.wants_xbe_patch())  # an atlas folder alone no longer installs anything

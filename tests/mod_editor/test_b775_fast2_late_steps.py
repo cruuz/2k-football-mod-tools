@@ -264,8 +264,8 @@ class Cache(unittest.TestCase):
         (ROOT / "reports").mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=ROOT / "reports") as folder:
             relative = Path(folder).relative_to(ROOT)
-            (Path(folder) / "step.py").write_text("X = 1\n")
-            (Path(folder) / "table.json").write_text("{}\n")
+            rewrite(Path(folder) / "step.py", "X = 1\n")  # bytes, so Windows text mode adds no CR
+            rewrite(Path(folder) / "table.json", "{}\n")
             files = ((relative / "step.py").as_posix(),)
             data = ((relative / "table.json").as_posix(),)
             key = self.cache(code=files, data=data).key("in")

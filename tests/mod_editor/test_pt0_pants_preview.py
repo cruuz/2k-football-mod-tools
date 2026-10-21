@@ -106,7 +106,7 @@ class PantsPreviewTests(unittest.TestCase):
             for out in [ROOT/'preview', disc.parent/'preview', root, disc.parent, disc]:
                 with self.assertRaises(ValueError):
                     preview.validate_output(out, disc)
-            self.assertEqual(preview.validate_output(root/'preview', disc), root/'preview')
+            self.assertEqual(preview.validate_output(root/'preview', disc), (root/'preview').resolve())  # macOS /private/var, Windows 8.3 temp
             self.assertEqual(disc.read_bytes(), b'read-only source sentinel')
         image = preview.comparison([preview.Image.new('RGB', (640, 800))]*2, 'test', ['before', 'after'])
         self.assertEqual(image.size, (1280, 900))

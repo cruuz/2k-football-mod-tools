@@ -119,7 +119,7 @@ class DonorTransport(unittest.TestCase):
         spans = [fixture(prefix + str(48 + i)) for prefix in ("", "hn", "an") for i in range(10)]
         raw = b"".join(spans); chunks = numbers.digit_chunks(raw)
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()  # macOS temp lives under the /var -> /private/var symlink, which is refused
             for name in ("an48", "hn48"):
                 c = chunks[name]; span = raw[c.offset:c.end_offset]
                 (root / "digit.span").write_bytes(span)
