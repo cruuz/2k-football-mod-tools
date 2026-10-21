@@ -1,0 +1,177 @@
+{
+ "status": "PROVED OFFLINE",
+ "about": "Personnel-group name behind each defense pack formation's category_index on the book the pack was authored on (retail + the beta 77 v2 complete offense, fingerprint-checked by pb1). tools/b77/pb1_defense_rebase.py maps these names to the b776 offense compile, which numbers its groups differently.",
+ "teams": {
+  "ARZ": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "ATL": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "BAL": {
+   "10": "3-4",
+   "22": "Bear",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "BUF": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime",
+   "22": "3-3",
+   "21": "3-2"
+  },
+  "CAR": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "CHI": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "CIN": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "CLE": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "DAL": {
+   "22": "3-4",
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "DEN": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "DET": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "GB": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "HOU": {
+   "20": "3-4",
+   "21": "Bear",
+   "9": "Nickel",
+   "10": "Dime"
+  },
+  "IND": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "JAX": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "KC": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime"
+  },
+  "MIA": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "MIN": {
+   "19": "3-4",
+   "7": "4-3",
+   "8": "Nickel",
+   "9": "Dime"
+  },
+  "NE": {
+   "9": "3-4",
+   "21": "Bear",
+   "11": "Dime"
+  },
+  "NO": {
+   "8": "4-3",
+   "9": "Nickel",
+   "10": "Dime"
+  },
+  "NYG": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "NYJ": {
+   "8": "4-3",
+   "21": "3-4",
+   "9": "Nickel",
+   "10": "Dime"
+  },
+  "OAK": {
+   "21": "3-4",
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "PHI": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "PIT": {
+   "21": "3-4",
+   "22": "Bear",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "SD": {
+   "20": "3-4",
+   "21": "Bear",
+   "9": "Nickel",
+   "10": "Dime"
+  },
+  "SEA": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "SF": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "STL": {
+   "9": "4-3",
+   "10": "Nickel",
+   "11": "Dime"
+  },
+  "TB": {
+   "8": "4-3",
+   "9": "Nickel",
+   "10": "Dime"
+  },
+  "TEN": {
+   "10": "4-3",
+   "11": "Nickel",
+   "12": "Dime",
+   "23": "Dime Odd"
+  },
+  "WAS": {
+   "8": "4-3",
+   "9": "Nickel",
+   "10": "Dime"
+  }
+ }
+}

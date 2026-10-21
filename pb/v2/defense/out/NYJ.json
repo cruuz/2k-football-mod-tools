@@ -299,7 +299,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -315,16 +315,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -488,9 +488,9 @@
   },
   "base2": {
    "model": {
-    "C1": 0.246,
-    "C2": 0.385,
-    "C3": 0.369
+    "C1": 0.291,
+    "C2": 0.405,
+    "C3": 0.304
    },
    "target": {
     "2M": 0.021,
@@ -501,7 +501,7 @@
     "C4": 0.056,
     "C6": 0.038
    },
-   "blitz_model": 0.262,
+   "blitz_model": 0.215,
    "blitz_target": 0.279,
    "calls": 9
   },
@@ -1996,36 +1996,32 @@
    "donor": 220,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "NYJ",
-    "play": 220,
-    "name": "Cover 2 Soft"
+    "authored": "odd variant of BAL 2 Soft, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 4
   },
   {
    "play": 221,
    "appended": false,
-   "name": "Cover 1 Double Fire",
+   "name": "Cover 1 Mike Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
-   "band": 2,
+   "band": 3,
    "pressure": true,
    "roles": [
     "base2"
    ],
    "new_links": [],
-   "donor": 230,
-   "donor_name": "Double Hard 1 Odd",
+   "donor": 228,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "NYJ",
-    "play": 230,
-    "name": "Double Hard 1 Odd"
+    "authored": "odd variant of DAL Force Fire 1 Odd, edges rush [0, 5], zone blitz on ['base2']"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 14
   },
   {
    "play": 222,
@@ -2039,16 +2035,14 @@
     "base2"
    ],
    "new_links": [],
-   "donor": 226,
-   "donor_name": "Cover 2 Hard",
+   "donor": 220,
+   "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "NYJ",
-    "play": 226,
-    "name": "Cover 2 Hard"
+    "authored": "odd variant of BAL Double Hard 2, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 223,
@@ -2122,9 +2116,7 @@
    "donor": 222,
    "donor_name": "Cover 4",
    "source": {
-    "book": "NE",
-    "play": 209,
-    "name": "3 Strong"
+    "authored": "odd variant of BAL 3 Buzz, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2133,7 +2125,7 @@
   {
    "play": 227,
    "appended": false,
-   "name": "Fire 3 Double Weak",
+   "name": "Fire Zone 3 Corner",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 2,
@@ -2145,9 +2137,7 @@
    "donor": 222,
    "donor_name": "Cover 4",
    "source": {
-    "book": "HOU",
-    "play": 21,
-    "name": "Weak Crash 3"
+    "authored": "odd variant of HOU Weak Crash 3, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -2168,32 +2158,28 @@
    "donor": 222,
    "donor_name": "Cover 4",
    "source": {
-    "book": "BAL",
-    "play": 195,
-    "name": "Blue Cover 8"
+    "authored": "odd variant of HOU Weak Go 3, edges rush [0, 6]"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
    "authored_nodes": 16
   },
   {
    "play": 229,
    "appended": false,
-   "name": "Cover 1 Hole",
+   "name": "Cover 1 Man Off",
    "component": "coverage",
-   "concept": "Cover 1 Robber",
-   "band": 2,
-   "pressure": false,
+   "concept": "Cover 1",
+   "band": 1,
+   "pressure": true,
    "roles": [
     "base2"
    ],
    "new_links": [],
-   "donor": 221,
-   "donor_name": "Man Cover 2",
+   "donor": 228,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "BAL",
-    "play": 25,
-    "name": "Blast 1 Dog the Dig"
+    "authored": "fallback Cover 1 Robber -> Cover 1; odd variant of BAL Double Hard 1, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -2202,7 +2188,7 @@
   {
    "play": 230,
    "appended": false,
-   "name": "Sim 2-Deep Mike 2",
+   "name": "Sim 2-Deep Corner",
    "component": "coverage",
    "concept": "Cover 2 Sim",
    "band": 2,
@@ -2214,21 +2200,19 @@
    "donor": 220,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "BAL",
-    "play": 191,
-    "name": "Blaze Zone Blitz"
+    "authored": "odd variant of NE Double Fire Zone Blitz 2, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 20
   },
   {
    "play": 231,
    "appended": false,
-   "name": "Cover 2 Double Fire",
+   "name": "Cover 2 Mike Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
-   "band": 3,
+   "band": 2,
    "pressure": false,
    "roles": [
     "base2"
@@ -2237,33 +2221,31 @@
    "donor": 220,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "BAL",
-    "play": 46,
-    "name": "Double Hard 2"
+    "authored": "odd variant of BAL Blaze Zone Blitz, edges rush [0, 4, 5, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 18
   }
  ],
  "receipt": {
   "team": "NYJ",
   "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-  "offense_pack_sha256": "5cbd3597cd68923d242655a53422caa32fbce55d60b5691482ac20f72ffe3c99",
-  "source_fingerprint": "608bad5dcd51550817126bad15bc28a0f506b7bb5a47168c92c7336536ad3144",
-  "replacement_sha256": "b837a1b24d7bf55357a4980e02f8f15d14b7b4432b0fa1951570597f7320b31e",
-  "semantic_sha256": "a9db80adc49cdbcba4b585d7bfe26e7de356b32cbfbce3882ca9b3570ec58dc4",
+  "offense_pack_sha256": "b0b6c0079783a15d01ed0debcd8c8497675aa8104c3618be56f98ad47238a124",
+  "source_fingerprint": "8b1b35e3ac5ce5f61fe081962da215bfaa90e1ef91b604a4fa1129ee25cc1944",
+  "replacement_sha256": "de1dbaef00b6ef785b5c82bac38c5fa975f870e21d5a77c9d05db38ad1b6179c",
+  "semantic_sha256": "d060a95a158c4be4a5e0e38758403c3f21853b61ab72c405417adcc178dc5b75",
   "plays": 74,
   "formations": 5,
-  "nodes": 2457,
+  "nodes": 2868,
   "node_capacity": 3500,
-  "formation_count": 41,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.10529,
+  "band_loss": 0.12987,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
-  "pack_sha256": "c62a4c12422414d5fe6f69f2b5b73c72e7bcaedcec846b3c82cdd0c12cadce6f"
+  "pack_sha256": "e584cce667ef05fbe3509b4d88f6319e12fb629a54024dd8ab5321aa5889aa69"
  }
 }

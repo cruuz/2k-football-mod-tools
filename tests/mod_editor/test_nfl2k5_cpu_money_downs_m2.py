@@ -202,6 +202,11 @@ class Modern2PolicyTests(unittest.TestCase):
         self.assertEqual(patch.assembly.LABELS["level"], 1204)
         self.assertEqual(patch.assembly.LABELS["code_end"], 1248)
 
+    def test_v061_modern2_template_remains_exactly_recognizable(self):
+        self.assertEqual(hashlib.sha256(patch.assembly.CODE2_LEGACY).hexdigest(),
+                         "749f7cdc4ecda96540916595b6c19929a78eb031ae9ed076fc51d8c640499e03")
+        self.assertEqual(patch.decision(level="modern2", vip_playback=True), "retail")
+
 
 class Modern2OwnerTests(unittest.TestCase):
     """Real XBE bytes: sites, recognition, refusal, upgrade."""
@@ -287,9 +292,23 @@ class Modern2OwnerTests(unittest.TestCase):
         # sections: only the owner's code region, the allocator seals and the .text digest differ
         a, b = self.outputs["modern"], self.outputs["modern2"]
         changed = [i for i in range(len(a)) if a[i] != b[i]]
-        # 1884 bytes of the 2048-byte owner allocation, 19 bytes at the seven re-pointed sites (the hook at 0x20B180 keeps its
-        # target), and 124 bytes of derived seals (.text digest, two section digests, the directory page copy and its seal)
-        self.assertEqual(len(changed), 2027)
+        # VIP-aware revision: owner code/hooks plus the derived allocator seals
+        # and section digests. A fresh build and the bounded upgrade are identical.
+        self.assertEqual(len(changed), 2107)
+
+    def test_v061_modern2_upgrade_and_foreign_refusal(self):
+        allocated, _ = space.apply(self.retail, patch.REQUESTS, scaleout=True)
+        old, _ = patch.lever.apply(allocated, patch._adapter("modern2", legacy_modern2=True))
+        self.assertEqual(patch.status(old), "applied")
+        self.assertFalse(patch.read_settings(old)["vip_policy"])
+        upgraded, receipt = patch.apply(old, level="modern2")
+        self.assertEqual(upgraded, self.outputs["modern2"])
+        self.assertTrue(patch.read_settings(upgraded)["vip_policy"])
+        self.assertFalse(receipt["from_vip_policy"])
+        a = patch.lever.allocation(old, patch.OWNER, patch.CODE_SIZE)
+        damaged = repin_edit(old, a["va"] + 20, b"\x90")
+        with self.assertRaises(ValueError):
+            patch.upgrade_to_modern2(damaged)
 
     def test_upgrade_refuses_retail_foreign_and_mixed_inputs(self):
         with self.assertRaises(ValueError):
@@ -351,6 +370,41 @@ class Modern2NativeTests(unittest.TestCase):
         self.base.configure(**state)
         self.base.run(0x206DD0)
         return bool(self.base.uc.reg_read(x86.UC_X86_REG_EAX))
+
+    def test_only_matching_cpu_playback_vip_delegates_policy(self):
+        m = self.m
+        context = m.SOURCE + 0x1E000
+        try:
+            for home in (False, True):
+                for mode, match, expected in ((0, 1, 1), (1, 1, 1), (2, 0, 1), (2, 1, 0)):
+                    m.u32(0xBA04B0, context if home else 0)
+                    m.u32(0xBA04B4, 0 if home else context)
+                    m.u32(context + 0x38, mode)
+                    m.u32(context + 0x10, match)
+                    self.assertEqual(m.policy(home=home), expected, (home, mode, match))
+                # Selecting a human's learning VIP never changes CPU policy.
+                self.assertEqual(m.policy(home=home, cpu=False), 0)
+        finally:
+            m.u32(0xBA04B0, 0)
+            m.u32(0xBA04B4, 0)
+
+    def test_active_vip_keeps_native_mandatory_two_point_chart(self):
+        m = self.m
+        context = m.SOURCE + 0x1E000
+        m.u32(0xBA04B4, context)
+        m.u32(context + 0x38, 2)
+        m.u32(context + 0x10, 1)
+        try:
+            for margin, quarter, seconds in itertools.product((-10, -8, -5, -2, -1, 0, 1, 4, 5), (2, 4), (100, 400)):
+                state = dict(score_margin=margin, quarter=quarter, seconds=seconds)
+                m.configure(**state)
+                self.base.configure(**state)
+                m.run(0x206E70, ecx=m.OFF)
+                self.base.run(0x206E70, ecx=self.base.OFF)
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EAX), self.base.uc.reg_read(x86.UC_X86_REG_EAX), state)
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ECX), self.base.uc.reg_read(x86.UC_X86_REG_ECX))
+        finally:
+            m.u32(0xBA04B4, 0)
 
     def test_regulation_grid_matches_the_oracle(self):
         cells = mismatches = 0

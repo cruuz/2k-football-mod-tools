@@ -96,7 +96,7 @@ def prove(retail_path, disc_path=None):
     variants = {"retail": (retail, tt.CURVES["lobspeed"].retail),
                 "basic_realistic": (basic, tt.REALISTIC_LOBSPEED),
                 "old_20260903": (old, tt.HIGH_ARC_20260903_LOBSPEED),
-                "new_20261002": (new, tt.ARC_BY_DISTANCE_LOBSPEED)}
+                "current_arc_by_distance": (new, tt.ARC_BY_DISTANCE_LOBSPEED)}
     disc_evidence = None
     if disc_path:
         with disc_path.open("rb") as source:

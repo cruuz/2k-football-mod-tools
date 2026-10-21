@@ -11,6 +11,26 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-77.1: 2026-10-20
+
+2K5 is **v1.0-RC112** and APF is **0.1.0-alpha.108**. The pack is
+**SOFTDRINK 2K28 v0.6.1**. The [complete 2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md)
+records every change since beta-77, what was proved and how, and what is still open. The
+[APF changelog](docs/mod_editor/apf2k8_mod_studio_changelog.md) records the APF Situations panel fixes.
+
+- Ship the rebuilt playbooks (generator v4: about 1.76 times the original game's menu plays per book, no repeated plays, a slot rule, mesh and vertical caps, a defense-family gate) and the route-reversal check that fixed screen blockers running out and back.
+- Add the run blocking option (blocks hold longer on running plays, rating against rating) and the accurate short throws option (short and on-the-run accuracy by Pass Accuracy, quick outs and flats aimed on the receiver's path, screen passes that lead the back).
+- Fix the MyCareer depth chart blank starter and the freeze when it is selected, and let CPU clubs start a clearly better unlocked signing or rookie (3 or more overall points) over a locked 2026 starter, without double starters (depth locks revisions 3 and 4: an unlocked rank starter never also takes a vacated side starter row; user clubs unchanged; older discs upgrade in place, existing saves heal).
+- Fix the rare endless LOADING card: a lost-wakeup race in the original game's disc loader worker (`loader_wakeup_fix`, on in the SOFTDRINK presets).
+- Fix the tush push lag and goal line spacing (Goal Line Sneak and Tush Push backs spaced like the original game's sets), space formation art icons on the play-call screen so close backs no longer draw on one spot, and call the position Running Back (RB) instead of Halfback (HB) on screens and in play names (`rb_rename`, on in the SOFTDRINK presets).
+- Review fixes (three cloud ultrareviews, eight local passes, a Fable review): the Experimental preset button gives exactly the preset, the Linux `--setup` honours `MOD_STUDIO_PYTHON`, franchise upgrade fixes, a real fresh-build failure (Advanced + 25 more moments with MyCareer off) fixed, rebuild-over-earlier-disc refusals before any write, worker-pool and cancel fixes.
+- Show numbers again where you edit ratings (Create, Edit and Franchise Edit Player, MyCareer Create Player, MyCareer Upgrades and prospect labels); every other screen keeps letter grades.
+- Fix Situation mode's black stadium at every venue, and give Situation modern rules and kickoffs.
+- Turn the era ball off (retail ball everywhere), centre every painted field's midfield logo, fix two wall banner numbers, and centre the Nike swoosh on the sleeve of every 2026 kit.
+- Studio fixes from the Discord sweep: a Linux launcher at the top of the archive, readable launch-failure dialogs, a disk-full message that names the folder, a note that the presets are not the SOFTDRINK pack, and the APF Situations panel's sorting and edit stall.
+- Earlier in this release (October 10 to 19): CPU coach profiles, 2026 coaches, officials and fans, the franchise save upgrade, classic teams, Career Home, hair styles, Anniversary moment fixes, faster builds and many build and uniform fixes.
+- Not in this release: the MyCareer save name, releasing CPU depth locks at the new-season rollover, automatic promotions on the MyCareer club, three times the plays per book, and the Situation goalposts, shotgun weight and stock-book items.
+
 ## beta-77: 2026-10-09
 
 2K5 is **v1.0-RC111** and APF is **0.1.0-alpha.107**. The pack is

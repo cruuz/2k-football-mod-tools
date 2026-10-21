@@ -1,5 +1,14 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.108 - beta 77.1
+
+Thanks to Urianus for the Situations panel reports. Both fixes are in the Studio, not in the game, and are covered by tests that fail on the old source.
+
+- The Playcalling Situations panel's formation list sorts when you click a column heading: natural name order, the reverse on a second click, a sort indicator, and rows with no candidate kept last. Sorting happens inside the panel, so each row keeps its checkbox and multiplier controls.
+- Adjusting a weight or a multiplier no longer stalls the panel. With a situation patch installed, every staged edit used to parse the 324 KB patch twice just to compare it with the installed file (190 to 245 ms per edit). The comparison now uses the expected payload directly (about 12 ms). Export and install still validate the whole patch.
+- On Linux, a launch failure dialog shows its text again. The launcher passed raw text to zenity and kdialog, which read parts of a Python traceback such as `<module>` as markup and showed an empty box. The text is escaped now.
+- Not changed: "Preview Formation Weights doesn't update" was not reproduced (the preview does include pending edits and multipliers; it refreshes when Preview is pressed), and editing the base personnel set weights is still a missing feature.
+
 ## 0.1.0-alpha.107 - beta 77
 
 Version aligned with beta-77. No new APF gameplay features are included. Shared packaging and capability-count checks are refreshed for this release. Windows execution and hosted CI must pass before final release acceptance.

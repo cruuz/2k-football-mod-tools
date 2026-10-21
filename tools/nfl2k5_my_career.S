@@ -665,6 +665,16 @@ cpu_management:
  cmp DWORD PTR [esp], 0xc74db
  jb cpu_club
 cpu_menu:
+.ifdef MYCAREER_INLINE
+ /* nl1: Franchise Team Select (27B2E8, its two 13EC30 tail calls) opens
+  * the club's side. The launch (C73B0) seats MyPlayer's port there; with
+  * both sides closed, one stick push to the centre stranded the pad. The
+  * CPU club's side stays closed, as in retail Franchise. */
+ cmp DWORD PTR [esp], 0x27b2f4
+ je cpu_club
+ cmp DWORD PTR [esp], 0x27b306
+ je cpu_club
+.endif
  cmp DWORD PTR [esp], 0x13ebe0
  jb cpu_no
  cmp DWORD PTR [esp], 0x13ec70

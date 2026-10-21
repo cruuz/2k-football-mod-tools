@@ -65,7 +65,7 @@ class FrontendTests(unittest.TestCase):
                 self.assertEqual(m.top(), expected)
         self.assertEqual(m.get(m.state + 2680), 2)
 
-    def test_game_modes_input_draft_confirmation_cancel_and_only_explicit_exit(self):
+    def test_game_modes_input_draft_confirmation_cancel_and_b_or_quit_exit(self):
         with Machine(self.payload) as m:
             self.enter(m)
             before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
@@ -73,9 +73,13 @@ class FrontendTests(unittest.TestCase):
             m.select(0)
             self.assertEqual(m.get(mode.EXTRA_VA), 0)
             self.assertEqual(m.get(m.state + 2676), 0)
+            # mc2 (Noah 2026-10-16, "how do I even exit"): B on the entry
+            # screen is the same Quit to main menu as row 3, with nothing kept.
             m.frame(0x200)
-            self.assertEqual(m.top(), m.labels["entry_menu"])
+            self.assertEqual(m.top(), 0x515660)
             self.assertEqual(m.uc.mem_read(m.root, len(before)), before)
+            self.assertEqual(m.get(m.state + 2672), 0)
+            self.enter(m)
             m.select(3)
             self.assertEqual(m.top(), 0x515660)
             self.assertEqual(m.get(m.state + 2672), 0)
@@ -133,8 +137,13 @@ class FrontendTests(unittest.TestCase):
                 elif reason == "free_agents":
                     m.put(m.root + 0x38, 2500)
                 else:
-                    p = m.call(0xBFF50)
-                    m.put(m.get(m.root + 4) + 16, m.get(p + 16))
+                    # mc2 (D01): one contradictory free record is skipped for the
+                    # next clean one (test_nfl2k5_my_career_mc2). Refusal needs
+                    # every free record to share a name cell with a real player.
+                    pool, first = m.get(m.root + 4), m.get(m.get(m.root + 4) + 16)
+                    for i in range(m.get(m.root)):
+                        if m.uc.mem_read(pool + 84 * i + 8, 1)[0] & 5 == 1:
+                            m.put(pool + 84 * i + 16, first)
                 before = bytes(m.uc.mem_read(m.root, len(self.roster) - 64))
                 m.select(1)
                 self.assertEqual(m.top(), m.labels["entry_menu"])

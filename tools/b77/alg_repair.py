@@ -216,8 +216,11 @@ def old_target():
 
 
 def new_target():
-    """The pass 4 design target (the venue table's ``design``)."""
-    return ms.venue_target(PREFIX, LOOK, LIGHT)
+    """The pass 4 design target (the venue table's ``design``). Computed here, not through ``ms.venue_target``: since gr4
+    natural grass is uniform and ignores venue rows, while this repair is the historical pass 4 one."""
+    seen = ms.venues()[PREFIX]["design"]
+    base = ms.target_rgb(LOOK, seen["light"])
+    return tuple(t * (m / max(1e-6, b)) for t, m, b in zip(ms.target_rgb(LOOK, LIGHT), seen["rgb"], base))
 
 
 def _end_zone_follow(painted, rec, system, old_samples, old_mean, new_mean):

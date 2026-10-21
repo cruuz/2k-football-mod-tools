@@ -17,6 +17,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import struct
 
 from mod_editor.core import platform_compat
 import shutil
@@ -216,6 +217,7 @@ class BuildPlan:
     deep_zone_facing: bool = False        # deep-zone corners keep facing the QB on a slower drop; experimental, off in every preset
     deep_zone_bail: bool = False          # three-deep press start with a directional bail (ends at seven yards alone); experimental, off in every preset
     deep_zone_bail_calls: tuple = ()      # staged press-bail authoring calls (asset selector + formation/front/coverage indices); staging is not wired yet, must stay empty
+    coach_ai: bool = False  # bare plans stay neutral; the SOFTDRINK release preset enables this
     playbook_pair: bool = False           # separate offensive and defensive playbooks (pregame Options rows); composes with read option / QB spy since beta 66 (paired-root contract); experimental, off in every preset
     cpu_money_downs: str = "retail"      # CPU fourth downs, two-point tries and overtime: retail / modern / aggressive / modern2; experimental; Basic is retail, Advanced and Experimental use modern2 (b77 p9)
     coin_defer: bool = False
@@ -224,10 +226,14 @@ class BuildPlan:
     decided_clock_seconds: int = 60
     cpu_scrambles: str = "retail"
     historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
+    classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 24 classic teams; experimental
     kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
     espn25_named_previews: bool = False  # named previews, period field aliases and historic venue profile
+    # b773-sb2: optional folder of the user's own Super Bowl logos (super_bowl/<NUMERALS>.png, brands/<name>.png,
+    # teams/<CODE>.png) placed in the Super Bowl walls' slots; "" keeps the authored marks. Never in a preset.
+    super_bowl_user_art: str = ""
     espn25_more_moments: bool = False  # Anniversary collection with its own team-seasons; experimental, needs an image
     # b76-k1: 128 MB memory on stock xemu (K128, R1's late form: a 226-byte startup patch that teaches xemu's
     # Xbox kernel to manage 128 MB after the game built its arena; asleep at 64 MB and on any other kernel; needs
@@ -239,10 +245,16 @@ class BuildPlan:
     # offense / defense / overall; display only, lists still sort on the number, attributes stay numbers.
     # An allocator owner (late, after K128). Off in Basic (2004 numbers), on in Modern and Experimental.
     letter_grades: bool = False
+    # Modern displayed unit ratings; native simulation and AI formulas stay intact.
+    team_ratings: bool = False
     # b77-f5: Player Card honors page: the bumpers (Black/White) and triggers flip a Franchise Player Card to the award
     # history (MVP, OPOY, DPOY, ROY, Super Bowls, SB MVP, Pro Bowls, All-Pro, rushing titles, with years); the game adds
     # each season's winners itself. An allocator owner (late, after the letter grades). Off in Basic.
     honors_page: bool = False
+    # ui1 (Noah 10/17 test menu): with MyCareer, its Apartment becomes Career Home (five sections and Quit, a live
+    # MyPlayer panel in club colours; the old Apartment stays as "Classic Apartment"). On by default for the test disc;
+    # off keeps the Apartment exactly as before. It takes the extra section slot, so not with a jukebox music library.
+    my_career_home: bool = True
     # b77-f5: real award history for the players on the roster: "" = none, "builtin" = data/nfl2k5_honors_2026.json
     # (the 2026 rosters; every honor cited), or a path to an edited honors JSON or CSV. Disc images only; written into the
     # career-stat history after the career and TEAM history.
@@ -301,7 +313,7 @@ class BuildPlan:
     # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
     # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
     # PRACTICE-pb.iff (linemen parked at the sideline, a 4-second timer rusher); needs a disc image; unwitnessed
-    seven_on_seven: bool = False  # v2: Practice Type 7-On-7 with retail line spots, offensive pass sets, three idle defensive linemen and one end on a four-second delay; experimental, off in every preset
+    seven_on_seven: bool = False  # held until repaired; old opt-ins are ignored while the release gate is off
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
     # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
@@ -332,6 +344,9 @@ class BuildPlan:
     # same order; two pinned .text spans, 94 changed bytes with the section digest, no growth.
     xemu_display_list_fix: bool = False
     resource_load_guard: bool = False
+    loader_wakeup_fix: bool = False
+    # b777-rb2: Halfback/HB display text reads Running Back/RB (in-place UTF-16 strings, no codes or caves).
+    rb_rename: bool = False
     # b77-k1: First/Last Name keyboards also accept space, period, apostrophe and hyphen (data only, no code).
     name_keyboard: bool = False
     # penalties at NFL rates + a working Chop Block toggle: "" = off, "nfl" = the ESTIMATED first-cut profile
@@ -445,6 +460,54 @@ class BuildPlan:
     # gamedata.iff scenes refit in their retail spans plus three in-place executable operands (the upright lines and
     # the ball/upright collision top); scoring unchanged. EXPERIMENTAL / UNWITNESSED, off in every preset
     modern_goalposts: bool = False
+    # b77-co1: the 2026 head coaches: every club's coach model (cNN.iff chunk 0) refit in its retail span with his 2026
+    # sideline look (club colours, 2026 chest logo, unbranded headset) and his face from his official headshot, plus
+    # Dallas and Washington's Coach Matchup pictures (two free portrait slots and two coach-record photo ids).
+    # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_coaches: bool = False
+    # b775-hs1: hair styles: seven new hair models (long locs, short twists, long flowing hair, afro puff, braids, bun,
+    # mullet) and nine hair textures ADDED to the player models next to the retail dreads, plus a late executable owner
+    # that shows the one a player's roster hair style (record +0x0D, Studio field hair_style) asks for. Style 0 keeps
+    # every player exactly as retail. EXPERIMENTAL / UNWITNESSED: on only in the experimental preset
+    hair_styles: bool = False
+    # b776-ai2: CPU AI, two late executable owners installed after every other executable writer.
+    # nfl2k5_cpu_qb_reads: cpu_qb_zone_windows (the covered-window curve 0x50C51C: a defender who reaches the catch
+    # point with or before the ball now closes the window) and cpu_qb_recheck (the CPU QB only weighs receivers he read
+    # recently, stays on the one he picked and pulls the throw, at most twice a play, when that window closed).
+    # nfl2k5_db_ball_play: db_ball_play (a defender reacting to the throw runs at full speed to the stored catch point).
+    # EXPERIMENTAL / UNWITNESSED: off in every preset; a test recipe turns them on.
+    cpu_qb_zone_windows: bool = False
+    cpu_qb_recheck: bool = False
+    db_ball_play: bool = False
+    # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss
+    # distance: a miss on a throw under 40 yd shrinks with the passer's Pass Accuracy and falls behind the receiver as
+    # often as ahead (short drags/outs/slants/digs on the run were always overthrown and ignored the rating).
+    # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    qb_accuracy: bool = False
+    # b776-pa2: play art routes at their real length: the play-art filter no longer cuts a chain's last route segment
+    # (go, drag, flat, out, post/corner break) to 10 ft; it is drawn at its authored length, kept inside the play-call
+    # panel. Only how the art is drawn changes. A late executable owner. EXPERIMENTAL / UNWITNESSED in game
+    play_art_routes: bool = False
+    # b777-ol1: run blocking: on running plays a defender sheds a block after a rating-based delay (Run Blocking of the
+    # blocker against Run Coverage of the defender, 0.08-0.60 s instead of retail's 0.05 s for everyone), sheds far less
+    # often once a controlled carrier's run has declared, and wins the first contact a little less often. Pass
+    # protection keeps every retail byte. The last late executable owner (nfl2k5_run_blocking). EXPERIMENTAL: on in
+    # the Advanced and Experimental presets (Noah 10/20: "my offensive line just does not block very well").
+    run_blocking: bool = False
+    # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
+    # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
+    # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
+    # EXPERIMENTAL / UNWITNESSED; set per recipe (Noah 10/19: the Chiefs only)
+    team_number_scale: dict = field(default_factory=dict)
+    # b77-fr1: the 2026 fans of the crowd-reaction cutaways: every club's crowd texture sets (four archive families)
+    # refit in their retail spans with 2025-26 fan wear, the 2026 logos and new signs. EXPERIMENTAL / UNWITNESSED: on
+    # only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_fans: bool = False
+    # b77-rf1: the 2025-26 NFL officials: the referee scene (shirt, pants, a UV-only plan that retires the 2004
+    # front-chest number patch and moves the collar off the back-number swatch), the caps TSET and the seven number
+    # textures of gamedata.iff (HL drawn as DJ), refit in their retail spans. EXPERIMENTAL / UNWITNESSED: on only in
+    # the experimental preset (the SOFTDRINK 2K28 recipe's preset)
+    modern_officials: bool = False
     # opt-in data patch: real historic players in the 35 shared historic roster files of the 25 moments
     espn25_rosters: bool = False
     historic_rosters_2026: bool = False  # source-gated season roster work; incomplete data must refuse
@@ -472,6 +535,10 @@ class BuildPlan:
     scorebug_runtime: bool = False
     scorebug_watermark: str = "auto"  # NFL, switching to MNF only for franchise Monday night; mnf / off overrides
     scorebug_folder: str = ""      # optional repaintable ESPN scorebar artwork folder (docs/scorebug_template layout); blank = shipped art
+    indicator_names_folder: str = ""  # optional private indicator atlas; empty preserves the native FONT
+    # nl1: controlled-player name label: "retail" (default, the old indicator), "retail_persistent" (old look,
+    # stays on) or "scorebug" (nm1's label from indicator_names_folder). See nfl2k5_indicator_names.STYLES.
+    indicator_names_style: str = "retail"
     music_policy: str = "retail"
     music_unlock: bool = False
     music_userlist: bool = False
@@ -487,11 +554,11 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.letter_grades or self.honors_page
-                or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
+                or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
     def to_recipe(self) -> dict[str, Any]:
@@ -513,7 +580,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": False,
-        "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": False, "franchise_edit_player": False, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": False, "abilities_charge_stars_only": False, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -534,7 +601,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
-        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": True, "abilities_charge_stars_only": True, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -555,7 +622,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
         "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "trim_intro_videos": False, "franchise_autosave": True,
-        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
+        "screen_hooks": False, "coverage_trail": True, "franchise_edit_player": True, "cpu_money_downs": "retail", "accelerated_clock": False, "accelerated_clock_minimum_seconds": 20, "weekly_prep": False, "weekly_prep_cpu": False, "weekly_prep_remember": False, "coach_ai": False, "playbook_pair": False, "deep_zone_facing": False, "deep_zone_bail": False, "deep_zone_bail_calls": (), "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "abilities_lock_right_stick": False, "abilities_lock_special_moves": False, "abilities_lock_speedster": True, "abilities_right_stick_stars_only": True, "abilities_charge_stars_only": True, "abilities_button_moves_stars_only": False, "abilities_star_access": ("flicks_charge", "stick_charge", "full", "full"), "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
@@ -588,10 +655,65 @@ del _preset
 for _preset in PRESETS.values():
     _preset["modern_goalposts"] = False
 del _preset
+# b77-co1: the 2026 head coaches are experimental and unwitnessed: on only in the experimental preset, the one the
+# SOFTDRINK 2K28 recipe builds from (job's choice, recorded in the co1 report; Noah asked for them in the shortcut build).
+for _preset in PRESETS.values():
+    _preset["modern_coaches"] = False
+PRESETS["softdrink_experimental"]["modern_coaches"] = True
+del _preset
+# b775-hs1: hair styles are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
+# 2K28 recipe builds from (Noah 10/17: "Hairstyles ... This goes in his next test disc").
+for _preset in PRESETS.values():
+    _preset["hair_styles"] = False
+PRESETS["softdrink_experimental"]["hair_styles"] = True
+del _preset
+# b776-ai2: the CPU AI options are off in every preset (retail bytes); only a test recipe turns them on.
+for _preset in PRESETS.values():
+    _preset["cpu_qb_zone_windows"] = False
+    _preset["cpu_qb_recheck"] = False
+    _preset["db_ball_play"] = False
+# b777-qb3: QB accuracy is experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK 2K28
+# recipe builds from (Noah 10/20 asked for it in the next build).
+for _preset in PRESETS.values():
+    _preset["qb_accuracy"] = False
+PRESETS["softdrink_experimental"]["qb_accuracy"] = True
+# b776-pa2: full-length play art routes: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
+# from Experimental; Noah 10/18: "drags ... all the way across the screen ... go routes ... 20 plus yards").
+for _preset in PRESETS.values():
+    _preset["play_art_routes"] = False
+PRESETS["softdrink_advanced"]["play_art_routes"] = True
+PRESETS["softdrink_experimental"]["play_art_routes"] = True
+del _preset
+# b777-ol1: run blocking: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
+# Experimental; Noah 10/20 asked for better run blocking and more chunk runs); Basic keeps the retail bytes.
+for _preset in PRESETS.values():
+    _preset["run_blocking"] = False
+PRESETS["softdrink_advanced"]["run_blocking"] = True
+PRESETS["softdrink_experimental"]["run_blocking"] = True
+del _preset
+# b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
+# 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
+for _preset in PRESETS.values():
+    _preset["modern_fans"] = False
+PRESETS["softdrink_experimental"]["modern_fans"] = True
+del _preset
+# b77-rf1: the 2025-26 officials are experimental and unwitnessed: on only in the experimental preset, the one the
+# SOFTDRINK 2K28 recipe builds from (job's choice, recorded in the rf1 report; Noah: "the refs need updated").
+for _preset in PRESETS.values():
+    _preset["modern_officials"] = False
+PRESETS["softdrink_experimental"]["modern_officials"] = True
+del _preset
 # b76-h1: historic teams in Quick Game are off in basic and advanced (a 2004 game keeps its menus).
 for _preset in PRESETS.values():
     _preset["historic_teams_quick_game"] = False
     _preset["historic_rosters_2026"] = False
+del _preset
+# b775-ct1: classic teams (Noah 10/17: "add a few more classic teams ... with their proper stadium, uniforms, rosters,
+# depth charts", for his next test disc): on in the experimental preset, the one the SOFTDRINK 2K28 recipe builds from.
+# They only act where historic teams in Quick Game is on (the recipe turns that on).
+for _preset in PRESETS.values():
+    _preset["classic_teams"] = False
+PRESETS["softdrink_experimental"]["classic_teams"] = True
 del _preset
 # b76-vb3 E1: the return blocking rule is Noah's feel test; off in every preset.
 for _preset in PRESETS.values():
@@ -615,6 +737,9 @@ for _preset in PRESETS.values():
     _preset["k128_early"] = False
 del _preset
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
+for _preset in PRESETS:
+    PRESETS[_preset]["team_ratings"] = _preset in ("softdrink_advanced", "softdrink_experimental")
+
 PRESETS["softdrink_basic"]["letter_grades"] = False
 PRESETS["softdrink_advanced"]["letter_grades"] = True
 PRESETS["softdrink_experimental"]["letter_grades"] = True
@@ -632,6 +757,22 @@ PRESETS["softdrink_experimental"]["honors_page"] = True
 PRESETS["softdrink_basic"]["honors_history"] = ""
 PRESETS["softdrink_advanced"]["honors_history"] = "builtin"
 PRESETS["softdrink_experimental"]["honors_history"] = "builtin"
+# vt1: the SOFTDRINK release includes the 2026 coach profiles; the Build toggle remains editable.
+PRESETS["softdrink_experimental"]["coach_ai"] = True
+# i4: hu1 authored the alphabet consumed by nm1; resolve it inside each installed bundle.
+for _preset_values in PRESETS.values():
+    _preset_values["indicator_names_folder"] = ""
+    # nl1 (Noah, 2026-10-17: "let's go back to the old player name indicator"): every preset keeps the
+    # retail label. The nm1 label stays available as indicator_names_style "scorebug" (add, don't replace).
+    _preset_values["indicator_names_style"] = "retail"
+# b776-sm1 (Noah, 2026-10-18, after the b775 video: "R1 last names: go back to retail"): every preset, advanced and
+# experimental included, keeps the retail label. b775-int1 had put the SOFTDRINK presets on "retail_persistent", whose
+# CONTROL edit at 0x7604A labels only human-controlled players, so R1's show-names stopped drawing everyone else.
+# "retail_persistent" and "scorebug" stay selectable styles (add, don't replace).
+# (The loop above already sets "retail" for every preset; nothing below overrides it.)
+PRESETS["softdrink_experimental"]["indicator_names_folder"] = str(ROOT / "data/nfl2k5_indicator_names")
+# The private FONT occupies the appended sprite scene, which the runtime pass creates.
+PRESETS["softdrink_experimental"]["scorebug_runtime"] = True
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
                  "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
                  "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}
@@ -643,6 +784,9 @@ for _preset_values in PRESETS.values():
 # b76-u4: the 2026 venue art is in no preset; choosing a preset clears a chosen art folder.
 for _preset_values in PRESETS.values():
     _preset_values.setdefault("modern_venues_2026", "")
+# b773-sb2: the user's Super Bowl logos folder is in no preset either.
+for _preset_values in PRESETS.values():
+    _preset_values.setdefault("super_bowl_user_art", "")
 
 # b76-z2: the xemu display-list stability fix is on in all three presets. It changes no gameplay
 # and no picture: the GPU receives the same methods in the same order, only the place where
@@ -652,6 +796,11 @@ for _preset_values in PRESETS.values():
     _preset_values["xemu_display_list_fix"] = True
     # b76-dn: allocation failure is a skipped resource, not an asynchronous read into NULL.
     _preset_values["resource_load_guard"] = True
+    # b777-st1: the retail disc loader thread could suspend itself just after a read was posted and never wake
+    # (endless LOADING card). Its idle now waits 1 ms and re-checks instead; same states, same reads.
+    _preset_values["loader_wakeup_fix"] = True
+    # b777-rb2 (Noah 10/20: "rename halfback to running back (RB) everywhere"): display text only.
+    _preset_values["rb_rename"] = True
     # b77-k1: typing space, period, apostrophe and hyphen in player names changes no gameplay; it is a Create/Edit Player
     # fix that every build should carry (real rosters already hold all four).
     _preset_values["name_keyboard"] = True
@@ -705,6 +854,215 @@ def _kick_meter_available() -> bool:  # b76-km
     return module is not None and module.available()  # the pins, the art and the geometry must agree
 
 
+def _cpu_ai_preflight(plan: "BuildPlan", source: Path, progress) -> None:
+    """b776-ai2: refuse a source whose CPU AI sites are foreign or carry a different selection, before any write."""
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    if (plan.cpu_qb_zone_windows or plan.cpu_qb_recheck) and reads is None or plan.db_ball_play and ball is None:
+        raise ValueError("The CPU AI options are not available in this installation.")
+    progress("Checking the CPU passing and coverage code for the CPU AI options", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The CPU AI options cannot read default.xbe: {exc}") from exc
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        settings = reads.read_settings(payload)
+        wanted = (plan.cpu_qb_zone_windows, plan.cpu_qb_recheck)
+        if settings["status"] == "foreign" or (settings["status"] == "applied"
+                                               and (settings["zone_windows"], settings["recheck"]) != wanted):
+            raise ValueError("The CPU quarterback code in this source is not retail or this selection of the CPU QB "
+                             "options. Turn them off or rebuild from a supported USA source.")
+    if plan.db_ball_play and ball.status(payload) == "foreign":
+        raise ValueError("The pass-reaction code in this source is not retail or Defenders break on the thrown ball. "
+                         "Turn it off or rebuild from a supported USA source.")
+
+
+def _apply_cpu_ai(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b776-ai2: install the selected CPU AI owners on the built default.xbe and read them back."""
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    progress("CPU AI: quarterback reads and defenders playing the ball", 0, 0)
+    payload = _xbe_bytes(target)
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        payload, qb_receipt = reads.apply(payload, zone_windows=plan.cpu_qb_zone_windows, recheck=plan.cpu_qb_recheck)
+        receipt["steps"].append({"step": "cpu_qb_reads", **{k: v for k, v in qb_receipt.items() if k != "reservations"}})
+    if plan.db_ball_play:
+        payload, ball_receipt = ball.apply(payload)
+        receipt["steps"].append({"step": "db_ball_play", **{k: v for k, v in ball_receipt.items() if k != "reservations"}})
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload:
+        raise RuntimeError("CPU AI: the written default.xbe does not read back")
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+        settings = reads.read_settings(final)
+        if (settings["status"], settings.get("zone_windows"), settings.get("recheck")) != (
+                "applied", plan.cpu_qb_zone_windows, plan.cpu_qb_recheck):
+            raise RuntimeError("CPU QB reads: the output does not read back as the selected options")
+        receipt["result"]["cpu_qb_zone_windows"] = "applied" if plan.cpu_qb_zone_windows else "retail"
+        receipt["result"]["cpu_qb_recheck"] = "applied" if plan.cpu_qb_recheck else "retail"
+    if plan.db_ball_play:
+        if ball.status(final) != "applied":
+            raise RuntimeError("Defenders break on the thrown ball: the output does not read back as applied")
+        receipt["result"]["db_ball_play"] = "applied"
+
+
+def _qb_accuracy_preflight(source: Path, progress) -> None:
+    """b777-qb3: refuse a source whose pass accuracy routine is foreign, before any write."""
+    accuracy = _core_module("nfl2k5_qb_accuracy")
+    if accuracy is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Accurate short throws is not available in this installation.")
+    progress("Checking the pass accuracy code for accurate short throws", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Accurate short throws cannot read default.xbe: {exc}") from exc
+    if accuracy.status(payload) == "foreign":
+        raise ValueError("The pass accuracy code in this source is not retail or Accurate short throws. Turn it off or "
+                         "rebuild from a supported USA source.")
+
+
+def _run_blocking_preflight(source: Path, progress) -> None:
+    """fx1 (review pr68 nit): refuse a source whose run-blocking sites are foreign, before any write (as qb3 does)."""
+    module = _core_module("nfl2k5_run_blocking")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Run blocking is not available in this installation.")
+    progress("Checking the blocking code for run blocking", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Run blocking cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The blocking code in this source is not retail or Run blocking. Turn it off or "
+                         "build from your unmodified retail dump.")
+
+
+# fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
+_LATE_OWNER_OPTIONS = (
+    ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
+    ("nfl2k5_letter_grades_progress", "Letter grades", lambda p: p.letter_grades),
+    ("nfl2k5_honors", "Honors page", lambda p: p.honors_page),
+    ("nfl2k5_coach_ai", "Automatic coach AI", lambda p: p.coach_ai),
+    ("nfl2k5_moment_coaches", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
+    ("nfl2k5_moment_context", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
+    ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
+    ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
+    ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
+    ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck),
+    ("nfl2k5_db_ball_play", "Defender ball play", lambda p: p.db_ball_play),
+    ("nfl2k5_play_art_routes", "Play art: full-length routes", lambda p: p.play_art_routes),
+    ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
+    ("nfl2k5_run_blocking", "Run blocking", lambda p: p.run_blocking),
+    ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
+    ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
+)
+_REBUILD_HINT = " Build from your unmodified retail dump instead."
+
+
+def _rebuild_refusals(plan: "BuildPlan", source: Path, is_image: bool, progress) -> None:
+    """fx1 (reviews pr67 #4, pr68 #1-#3, #5): refuse, before any write, a source that an earlier Studio build made
+    when this release would only refuse it after every step had run. A retail dump never reaches a check: its
+    executable is not a sealed scale-out image."""
+    space = _core_module("nfl2k5_xbe_space")
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError):
+        return
+    if space is None or not space.is_scaleout(payload):
+        return
+    progress("Checking what an earlier build left on this disc", 0, 0)
+    if plan.letter_grades:
+        grades, attributes = _core_module("nfl2k5_letter_grades"), _core_module("nfl2k5_letter_grades_attributes")
+        if (grades is not None and attributes is not None and grades.status(payload) == "applied"
+                and attributes.status(payload) == "foreign"):
+            raise ValueError("This disc carries an older Letter grades revision (rating screens graded) that this "
+                             "release cannot update in place." + _REBUILD_HINT)
+    if plan.espn25_named_previews:
+        venues = _core_module("nfl2k5_moment_venues")
+        if venues is not None and venues.status(payload) in ("previous", "legacy"):
+            raise ValueError("This disc carries an older Historical Anniversary venue names revision." + _REBUILD_HINT)
+        ball = _core_module("nfl2k5_era_ball")
+        if is_image and ball is not None and not ball.enabled() and ball.image_status(source) != "retail":
+            raise ValueError("This disc was built with the era ball, which this release no longer installs and "
+                             "cannot take out again." + _REBUILD_HINT)
+    try:
+        _grown, _special, current = space._validate(payload)
+        taken = {(owner, kind) for owner, kind, _size, _align in current}
+        new, names = [], []
+        for owner, label, wanted in _LATE_OWNER_OPTIONS:
+            module = _core_module(owner)
+            if not wanted(plan) or module is None:
+                continue
+            rows = [r for r in getattr(module, "REQUESTS", ()) if r[0] == owner and (r[0], r[1]) not in taken]
+            if rows:
+                new.extend(rows)
+                taken.update((r[0], r[1]) for r in rows)
+                names.append(label)
+        if not new:
+            return
+        before = space._scale_allocations(current)
+        after = space._scale_allocations(space._requests(list(current) + new))
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return  # the owners' own checks report anything else, as before
+    moved = sorted({row["owner"] for row in before if row not in after and row["owner"] != space.DIRECTORY_OWNER})
+    if moved:
+        raise ValueError(f"This disc was built earlier without {', '.join(dict.fromkeys(names))}; adding it now "
+                         f"would move code an earlier build placed ({', '.join(moved)})." + _REBUILD_HINT)
+
+
+def _apply_qb_accuracy(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b777-qb3: install the QB accuracy owner, the last late allocator owner, and read it back."""
+    if not plan.qb_accuracy:
+        return
+    accuracy = _core_module("nfl2k5_qb_accuracy")
+    if accuracy is None:
+        raise RuntimeError("Accurate short throws needs nfl2k5_qb_accuracy.")
+    progress("Passing: accurate short throws and throws on the run", 0, 0)
+    payload, accuracy_receipt = accuracy.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or accuracy.status(final) != "applied":
+        raise RuntimeError("Accurate short throws: the output does not read back as applied")
+    receipt["steps"].append({"step": "qb_accuracy", **{k: v for k, v in accuracy_receipt.items() if k != "reservations"}})
+    receipt["result"]["qb_accuracy"] = "applied"
+
+
+def _apply_formation_art_spacing(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b777-tp1: the play-call formation art icon spacing owner (part of the play art option), the last late
+    allocator owner; only how the diagrams draw the icons changes."""
+    if not plan.play_art_routes:
+        return
+    module = _core_module("nfl2k5_formation_art_spacing")
+    if module is None:
+        raise RuntimeError("Play art icon spacing needs nfl2k5_formation_art_spacing.")
+    progress("Play art: spacing the formation icons", 0, 0)
+    payload, spacing_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Play art icon spacing: the output does not read back as applied")
+    receipt["steps"].append({"step": "formation_art_spacing", **{k: v for k, v in spacing_receipt.items()
+                                                                 if k not in ("reservations", "edits")}})
+    receipt["result"]["formation_art_spacing"] = "applied"
+
+
+def _hair_styles_available() -> bool:  # b775-hs1
+    module = _core_module("nfl2k5_hair_styles")
+    return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
+
+
+def _modern_coaches_available() -> bool:  # b77-co1
+    module = _core_module("nfl2k5_modern_coaches")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
+def _modern_fans_available() -> bool:  # b77-fr1
+    module = _core_module("nfl2k5_modern_fans")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
+def _modern_officials_available() -> bool:  # b77-rf1
+    module = _core_module("nfl2k5_modern_officials")
+    return module is not None and module.available()  # the pins and the shipped art must agree
+
+
 def _modern_goalposts_available() -> bool:  # b77-v1
     module = _core_module("nfl2k5_modern_goalposts")
     return module is not None and module.available()  # the shipped pins must load
@@ -748,12 +1106,23 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "espn_wipes_boards_2026": _espn_wipes_boards_available(official_marks_pack),  # b76-p2
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
+        "modern_coaches": _modern_coaches_available(),  # b77-co1
+        "hair_styles": _hair_styles_available(),  # b775-hs1
+        # b776-ai2: the CPU AI owners need only their modules and the allocator
+        **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
+           for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
+                               ("db_ball_play", "nfl2k5_db_ball_play"), ("qb_accuracy", "nfl2k5_qb_accuracy"))},
+        "team_number_scale": _core_module("nfl2k5_team_number_scale") is not None
+                             and _core_module("nfl2k5_xbe_space") is not None,  # b776-ns1
+        "modern_fans": _modern_fans_available(),  # b77-fr1
+        "modern_officials": _modern_officials_available(),  # b77-rf1
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
                                ("momentum_collisions", "nfl2k5_momentum"),
                                ("read_option_runtime", "nfl2k5_read_option_runtime"),
                                ("guardian_overlay", "nfl2k5_guardian_resources"),
                                ("my_career", "nfl2k5_my_career"),
+                               ("my_career_home", "nfl2k5_my_career_home"),
                                ("franchise_autosave", "nfl2k5_franchise_autosave"),
                                ("screen_hooks", "nfl2k5_screen_hooks"),
                                ("coverage_trail", "nfl2k5_coverage_trail"),
@@ -769,9 +1138,13 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("historic_stock_books", "nfl2k5_stock_books"),
                                ("espn25_era_rules", "nfl2k5_era_rules"),
                                ("k128_memory", "nfl2k5_k128"), ("k128_roster_heap", "nfl2k5_k128"), ("k128_early", "nfl2k5_k128"),
+                               ("team_ratings", "nfl2k5_team_ratings"),
+                               ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
+                               ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
+                               ("coach_ai", "nfl2k5_coach_ai"),
                                ("playbook_pair", "nfl2k5_playbook_pair"),
                                ("deep_zone_facing", "nfl2k5_deep_zone"), ("deep_zone_bail", "nfl2k5_deep_zone"),
                                ("reserves_16", "nfl2k5_roster_arena_image"),
@@ -830,6 +1203,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "the1wam_lineman_rating": _core_module("nfl2k5_lineman_rating") is not None,
         "xemu_display_list_fix": _core_module("nfl2k5_display_list_stability") is not None,
         "resource_load_guard": _core_module("nfl2k5_resource_load_guard") is not None,
+        "loader_wakeup_fix": _core_module("nfl2k5_loader_wakeup") is not None,
+        "rb_rename": _core_module("nfl2k5_rb_rename") is not None,
         "name_keyboard": _core_module("nfl2k5_name_keyboard") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
@@ -848,6 +1223,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "espn25_plan": _core_module("nfl2k5_espn25_scenarios") is not None,
         "espn25_rosters": _espn25_rosters_available(),
         "historic_rosters_2026": _core_module("nfl2k5_historic_rosters") is not None,
+        "classic_teams": _core_module("nfl2k5_classic_teams") is not None,  # b775-ct1
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -919,6 +1295,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "the1wam_lineman_rating": report.get("the1wam_lineman_rating", "unknown"),
         "xemu_display_list_fix": report.get("xemu_display_list_fix", "unknown"),
         "resource_load_guard": report.get("resource_load_guard", "unknown"),
+        "loader_wakeup_fix": report.get("loader_wakeup_fix", "unknown"),
+        "rb_rename": report.get("rb_rename", "unknown"),
         "name_keyboard": report.get("name_keyboard", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
@@ -933,11 +1311,11 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "modern_practice_field_team_logo": report.get("team_logo_swap", "unknown"),  # b76-pf P1: the executable's table
         **{key: report.get(key, "unknown") for key in
            ("momentum", "momentum_contact", "momentum_collisions", "momentum_settings",
-            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
+            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "coach_ai", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
-            "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "k128_settings", "letter_grades", "letter_grades_settings", "honors_page", "honors_page_settings",
+            "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "historic_stock_books", "espn25_named_previews", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "k128_settings", "letter_grades", "letter_grades_settings", "honors_page", "honors_page_settings", "my_career_home",
             "reserves_16", "created_teams_extra", "roster_arena_growth", "roster_arena_settings", "roster_arena_resource", "defensive_try", "zone_drop_cap", "zone_drop_settings", "all_stadiums", "coverage_slider", "scramble_tuning",
             "flatter_deep_ball", "chop_block_toggle", "chop_block_evidence",
             "music_shuffle", "music_shuffle_state", "practice_squad_screen", "abilities", "abilities_settings", "qb_spy", "calendar_engine")},
@@ -963,6 +1341,14 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "playbook_packs": "n/a",
         "depth_roles": "n/a",
     }
+    ratings = _core_module("nfl2k5_team_ratings")
+    out["team_ratings"] = ratings.status(_xbe_bytes(source)) if ratings is not None else "unavailable"
+    play_art = _core_module("nfl2k5_play_art_routes")  # b776-pa2
+    out["play_art_routes"] = play_art.status(_xbe_bytes(source)) if play_art is not None else "unavailable"
+    spacing = _core_module("nfl2k5_formation_art_spacing")  # b777-tp1
+    out["formation_art_spacing"] = spacing.status(_xbe_bytes(source)) if spacing is not None else "unavailable"
+    run_blocking = _core_module("nfl2k5_run_blocking")  # b777-ol1
+    out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -1116,6 +1502,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         seasons = _core_module("nfl2k5_historic_rosters")
         if seasons is not None:
             out["historic_rosters_2026"] = seasons.image_status(source)
+        classic = _core_module("nfl2k5_classic_teams")  # b775-ct1: the executable half (the files need the retail source)
+        if classic is not None:
+            try:
+                out["classic_teams"] = classic.xbe_status(rosters.read_xbe(source)) if rosters is not None else "foreign"
+            except Exception:  # noqa: BLE001
+                out["classic_teams"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -1427,6 +1819,77 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["modern_goalposts"] = goalposts.image_status(source)
         except (OSError, ValueError):
             out["modern_goalposts"] = "unknown"
+    # b775-hs1: hair styles (the two player scenes, nine hair textures in outer 3 and the executable owner)
+    hair = _core_module("nfl2k5_hair_styles")
+    if hair is None:
+        out["hair_styles"] = "unavailable"
+    elif not tt.is_disc_image(source):
+        out["hair_styles"] = "needs_image"
+    else:
+        try:
+            out["hair_styles"] = hair.image_status(source)
+        except (OSError, ValueError):
+            out["hair_styles"] = "unknown"
+    # b776-ai2: the CPU AI owners (executable only, so a bare default.xbe reads too)
+    reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    try:
+        xbe = _xbe_bytes(source) if reads is not None or ball is not None else b""
+    except (OSError, ValueError):
+        xbe = None
+    for key, module, read in (("cpu_qb_zone_windows", reads, lambda m, x: m.component_status(x, "zone_windows")),
+                              ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
+                              ("db_ball_play", ball, lambda m, x: m.status(x))):
+        out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
+    accuracy = _core_module("nfl2k5_qb_accuracy")  # b777-qb3
+    if accuracy is None:
+        out["qb_accuracy"] = "unavailable"
+    else:
+        try:
+            out["qb_accuracy"] = accuracy.status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["qb_accuracy"] = "unknown"
+    # b776-ns1: the per-kit jersey number size (the executable's table)
+    number_scale = _core_module("nfl2k5_team_number_scale")
+    if number_scale is None:
+        out["team_number_scale"] = "unavailable"
+    else:
+        try:
+            out["team_number_scale"] = number_scale.status(_xbe_bytes(source))
+        except (OSError, ValueError):
+            out["team_number_scale"] = "unknown"
+    # b77-co1: the 2026 head coaches (32 coach models, two portrait slots, two coach-record photo ids)
+    coaches = _core_module("nfl2k5_modern_coaches")
+    if coaches is None:
+        out["modern_coaches"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_coaches"] = "needs_image"
+    else:
+        try:
+            out["modern_coaches"] = coaches.image_status(source)
+        except (OSError, ValueError):
+            out["modern_coaches"] = "unknown"
+    # b77-fr1: the 2026 fans (the 32 clubs' crowd texture sets of the crowd-reaction cutaways)
+    fans = _core_module("nfl2k5_modern_fans")
+    if fans is None:
+        out["modern_fans"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_fans"] = "needs_image"
+    else:
+        try:
+            out["modern_fans"] = fans.image_status(source)
+        except (OSError, ValueError):
+            out["modern_fans"] = "unknown"
+    # b77-rf1: the 2025-26 officials (the referee scene, the caps and the number textures of gamedata.iff)
+    officials = _core_module("nfl2k5_modern_officials")
+    if officials is None:
+        out["modern_officials"] = "unavailable"
+    elif not (source.is_dir() or tt.is_disc_image(source)):
+        out["modern_officials"] = "needs_image"
+    else:
+        try:
+            out["modern_officials"] = officials.image_status(source)
+        except (OSError, ValueError):
+            out["modern_officials"] = "unknown"
     finish = _core_module("nfl2k5_helmet_finish")
     if finish is None:
         out["helmet_finish"] = "unavailable"
@@ -1445,29 +1908,35 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
 
 
 def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
-    """Refuse the build when any PLAY book on the image has a formation play menu the game cannot walk to its end
-    (``nfl2k5_playbook_inspector.menu_link_problems``: a play listed twice in one formation, which makes the play
-    call's list endless, a repeated selection group 0-2, an unreachable or out-of-range link). None when the
-    modules are not part of this build."""
+    """Refuse unsafe labels or formation menus in every PLAY book on the image.
+
+    Includes the native label slot and no-argument printf contract, duplicate
+    links that hang the list, selection groups and unreachable/out-of-range
+    links. Returns None when the modules are not part of this build.
+    """
     inspector = _core_module("nfl2k5_playbook_inspector")
     packs = _core_module("nfl2k5_playbook_pack")
-    if inspector is None or packs is None or not hasattr(inspector, "menu_link_problems"):
+    if inspector is None or packs is None or not hasattr(inspector, "playcall_ui_problems"):
         return None
-    progress("Checking every playbook's play menus", 0, 0)
+    progress("Checking every playbook's names and play menus", 0, 0)
     books, problems = 0, []
     with packs._outer_image().OuterImage(target) as archive:
         for entry in archive.entries_with_head(b"PLAY"):
             books += 1
+            raw = archive.read_entry(entry.index)
+            issues = inspector.playcall_ui_problems(raw)
+            if not issues:
+                issues = inspector.category_menu_problems(raw)
             problems += [f"book {entry.index}: {problem}"
-                         for problem in inspector.menu_link_problems(archive.read_entry(entry.index))]
+                         for problem in issues]
     if problems:
-        raise RuntimeError("A playbook on this build has a formation play menu the game cannot use, so picking that "
-                           "formation would hang the play call: " + "; ".join(problems[:4])
+        raise RuntimeError("A playbook on this build has unsafe play-call names or menus: " + "; ".join(problems[:4])
                            + (f"; and {len(problems) - 4} more" if len(problems) > 4 else ""))
     return {"books": books, "problems": 0}
 
 
 def _xbe_bytes(source: Path) -> bytes:
+    source = Path(source)  # fx1 (review pr67): BuildPlan.source is a str; a bare default.xbe raised AttributeError
     if tt.is_disc_image(source):
         fd = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
@@ -1486,12 +1955,12 @@ def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[
     if packs is None:
         raise RuntimeError("Native PLAY scoring requires the playbook archive reader")
     payload = _xbe_bytes(target)
-    rows = []
     with packs._outer_image().OuterImage(target) as archive:
-        for entry in archive.entries_with_head(b"PLAY"):
-            progress(f"Checking native play scoring: book {entry.index}", len(rows), 37)
-            row = scoring.require_safe(archive.read_entry(entry.index), payload)
-            rows.append({"entry": entry.index, **row})
+        books = [(entry.index, archive.read_entry(entry.index)) for entry in archive.entries_with_head(b"PLAY")]
+    # The books are scored in worker processes and consumed in book order (nfl2k5_play_scoring.require_safe_many).
+    rows = scoring.require_safe_many(
+        books, payload, progress=lambda index, done, total: progress(
+            f"Checking native play scoring: book {index}", done, 37))
     if not rows:
         raise RuntimeError("Native PLAY scoring found no books in the build")
     return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
@@ -1529,9 +1998,19 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
         target.write_bytes(payload)
 
 
-#: 7-on-7 v2 is available as an EXPERIMENTAL / UNWITNESSED disc-image opt-in.
-#: All presets leave it off; Noah must witness huddle break and repeated snaps.
-SEVEN_ON_SEVEN_RELEASED = True
+#: Held after the practice playtest: keep the implementation for future repair.
+#: Old recipes cannot opt in, and builds retire an already installed menu entry.
+SEVEN_ON_SEVEN_RELEASED = False
+
+
+def retire_seven_on_seven(target: Path) -> dict[str, Any]:
+    """Studio's fixed-size retirement pass, also usable on an extracted XBE."""
+    before = _xbe_bytes(target)
+    patched, removal = tt.seven_on_seven_patch.remove(before)
+    if patched != before:
+        _write_xbe_bytes(target, patched)
+    return {"step": "seven_on_seven_removed", **removal}
+
 
 IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
 
@@ -1623,6 +2102,7 @@ def _prepare_music_project(source, project, directory, progress, *, library_resu
 
 
 PLAYBOOK_OPTION_LABELS = {
+    "coach_ai": "Automatic 2026 CPU coach profiles (experimental)",
     "playbook_pair": "Separate offensive and defensive playbooks (experimental)",
     "read_option_runtime": "Read option mesh controls (experimental)",
     "qb_spy": "QB spy for zone, man and rush (experimental)",
@@ -1774,6 +2254,7 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
         if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
+        plan, coach_ai_skip = _coach_ai_decision(plan, progress)
         preflight_board_source(plan, progress)
         r62 = _validated_r62_plan_options(plan)
         from .image_use import check_image_destination, publish_image
@@ -1816,6 +2297,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             if project_result is not None:
                 receipt["steps"].insert(0, {"step": "shared_project", **asdict(project_result)})
                 receipt["source"] = str(source)
+            if coach_ai_skip is not None:
+                receipt["steps"].append(coach_ai_skip)
+                receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
             if plan.music_shuffle or plan.music_library:
                 library = _core_module("nfl2k5_music_banks")
                 expected = (plan.music_shuffle_selection or tt.music_playlist_patch.default_options()) if plan.music_shuffle else None
@@ -1854,6 +2338,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
             # b76-tf: the Modern surfaces receipt travels with the disc too (its status reads it)
             surfaces = _core_module("nfl2k5_modern_surfaces")
             surfaces_receipt = surfaces.read_receipt(directory / target.name) if surfaces is not None else None
+            greens = _core_module("nfl2k5_broadcast_greens")
+            greens_path = greens.receipt_path(directory / target.name) if greens is not None else None
+            greens_receipt = json.loads(greens_path.read_text()) if greens_path is not None and greens_path.exists() else None
             publish_image(directory / target.name, target, previous_target)
             if colour_receipt is not None:
                 colour._save_image_receipt(target, colour_receipt)
@@ -1869,6 +2356,11 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     surfaces.save_receipt(target, surfaces_receipt)
                 else:
                     surfaces.receipt_path(target).unlink(missing_ok=True)
+            if greens is not None:
+                if greens_receipt is not None:
+                    greens.save(greens.receipt_path(target), greens_receipt)
+                else:
+                    greens.receipt_path(target).unlink(missing_ok=True)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
@@ -1888,7 +2380,34 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
 
 def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
     """Run configuration and source preflights without creating a disc output (beta 66, job B)."""
-    return _build(plan, progress, _preflight_only=True)
+    plan, coach_ai_skip = _coach_ai_decision(plan, progress)
+    receipt = _build(plan, progress, _preflight_only=True)
+    if coach_ai_skip is not None and isinstance(receipt, dict):
+        receipt.setdefault("steps", []).append(coach_ai_skip)
+        receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
+    return receipt
+
+
+def _coach_ai_decision(plan, progress=None):
+    """b77 co3: decide, before any write, whether the automatic coach AI can run on the rosters this build ends with.
+
+    Its profiles need the 32 2026 head coaches (team, portrait and name; ``nfl2k5_coach_ai.plan_profiles``), which only
+    a disc or a roster-edits document that carries them has (the SOFTDRINK 2K28 pack does; a plain retail dump does
+    not). Without them the whole option is skipped, executable kernel and profiles alike (as if it were off; nothing
+    partial), and one plain line says so in the build log, the receipt's user notes and the Build summary. Returns
+    (plan, the receipt step for the skip or None)."""
+    if not plan.coach_ai or not tt.is_disc_image(plan.source):
+        return plan, None
+    readiness = tt.coach_ai_patch.roster_readiness(plan.source, roster_edits=plan.roster_edits or None)
+    if readiness["ready"]:
+        return plan, None
+    message = tt.coach_ai_patch.SKIP_MESSAGE
+    if progress is not None:
+        progress(message, 0, 0)
+    step = {"step": "coach_ai_resources", "status": "skipped", "requested": True, "applied": False,
+            "decided": "before any write", "checked": readiness["checked"],
+            "mismatches": readiness["mismatches"], "user_notes": [message]}
+    return replace(plan, coach_ai=False), step
 
 
 def _board_kit_options(plan):
@@ -2063,8 +2582,12 @@ def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
                "team_logo_swap", "period_goalposts"}
-    return {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
-            for key in tt.R62_RUNTIME_KEYS}
+    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+               for key in tt.R62_RUNTIME_KEYS}
+    # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
+    # the music library wins and MyCareer keeps its Classic Apartment.
+    options["my_career_home"] = bool(plan.my_career_home and not plan.music_library)
+    return options
 
 
 def _commentary_final_wanted(plan, loaded_espn25_plan):
@@ -2099,6 +2622,8 @@ def _team_logo_swap_wanted(plan, is_image):
 def _validated_r62_plan_options(plan):
     r62 = _r62_plan_options(plan)
     tt._validate_r62_options(**r62)
+    if plan.coach_ai:
+        r62["cpu_money_downs"] = "modern2"
     tt._validate_lever_flags(plan.season_cap)
     tt.senior_bowl_patch.Settings.from_dict(plan.senior_bowl_settings)
     if type(plan.senior_bowl_seed) is not int or not 0 <= plan.senior_bowl_seed <= 2147483647:
@@ -2141,6 +2666,11 @@ def _apply_roster_history(plan, target, receipt, progress):
         if records is None:
             raise RuntimeError("the roster records module is not available in this build")
         edits_document = records.read_edits(Path(plan.roster_edits))
+        # Dated refreshes own final membership and depth. Defer them until all
+        # historic imports, player tags and QB rating adjustments have run.
+        refresh_follows = "roster_refresh" in edits_document
+        if refresh_follows:
+            edits_document = {k: v for k, v in edits_document.items() if k != "roster_refresh"}
         modern_history = edits_document.get("franchise_history")
         from . import nfl2k5_free_agents
         if plan.season_2026 and plan.position_pools and nfl2k5_free_agents.is_pack_input(edits_document):
@@ -2157,7 +2687,8 @@ def _apply_roster_history(plan, target, receipt, progress):
         # must not write it back: tell the writer which scheme the disc it is landing on is on
         edits_receipt = records.apply(target, edits_document,
                                       progress=lambda msg: progress(msg, 0, 0),
-                                      scheme="one_pool" if plan.position_pools else None)
+                                      scheme="one_pool" if plan.position_pools else None,
+                                      refresh_follows=refresh_follows)
         receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
                                  "scheme": "one_pool" if plan.position_pools else "auto",
                                  **{k: v for k, v in edits_receipt.items() if k != "log"},
@@ -2188,9 +2719,102 @@ def _apply_roster_history(plan, target, receipt, progress):
         receipt["steps"].append({"step": "honors_history", **honors_receipt})
 
 
+def _apply_draft_pick_ownership(plan, target, receipt, progress):
+    if not plan.roster_edits:
+        return
+    document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
+    pick_plan = document.get("draft_pick_ownership")
+    if pick_plan is not None:
+        progress("Setting draft picks for new franchises", 0, 0)
+        pick_module = _core_module("nfl2k5_draft_picks")
+        xbe, pick_receipt = pick_module.apply(_xbe_bytes(target), pick_plan)
+        _write_xbe_bytes(target, xbe)
+        receipt["steps"].append({"step": "draft_pick_ownership", **pick_receipt})
+
+
+def _apply_hback_roles(plan, target, receipt, progress):
+    if not plan.roster_edits:
+        return
+    document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
+    roles = document.get("hback_roles")
+    if roles is not None:
+        progress("Setting team backfield role labels", 0, 0)
+        xbe, result = _core_module("nfl2k5_hback").apply(_xbe_bytes(target), roles)
+        _write_xbe_bytes(target, xbe)
+        receipt["steps"].append({"step": "hback_roles", **result})
+
+
+def _apply_team_ratings(plan, target, receipt, progress):
+    if not plan.team_ratings:
+        return
+    module = _core_module("nfl2k5_team_ratings")
+    if module is None:
+        raise RuntimeError("The team ratings module is not available in this build")
+    progress("Recalculating dynamic modern team ratings", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    receipt["steps"].append({"step": "team_ratings", **result})
+
+
+def _apply_play_art_routes(plan, target, receipt, progress):
+    """b776-pa2: the late play-art owner, after every other allocator owner (hair styles included)."""
+    if not plan.play_art_routes:
+        return
+    module = _core_module("nfl2k5_play_art_routes")
+    if module is None:
+        raise RuntimeError("The play art routes module is not available in this build")
+    progress("Drawing play art routes at their real length", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Play art routes: the executable does not read back as applied")
+    receipt["steps"].append({"step": "play_art_routes", **{k: v for k, v in result.items() if k != "edits"}})
+    receipt["result"]["play_art_routes"] = "applied"
+
+
+def _apply_run_blocking(plan, target, receipt, progress):
+    """b777-ol1: the run-blocking owner, the last allocator owner (after the per-kit jersey number size)."""
+    if not plan.run_blocking:
+        return
+    module = _core_module("nfl2k5_run_blocking")
+    if module is None:
+        raise RuntimeError("The run blocking module is not available in this build")
+    progress("Run blocking: blocks hold longer on running plays", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Run blocking: the executable does not read back as applied")
+    receipt["steps"].append({"step": "run_blocking", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["run_blocking"] = "applied"
+
+
+def _apply_roster_refresh(plan, target, receipt, progress):
+    if not plan.roster_edits:
+        return
+    records = _core_module("nfl2k5_roster_records")
+    document = records.read_edits(Path(plan.roster_edits))
+    if "roster_refresh" not in document:
+        return
+    if not plan.position_pools:
+        raise ValueError("Dated roster refresh requires modern position pools")
+    progress("Applying the dated roster refresh", 0, 0)
+    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    if plan.espn25_more_moments or plan.historic_teams_quick_game:
+        # b775 (Noah 10/17: both sides of a moment were the home team): the refresh's new players use vacant
+        # records; keep the two-team import floor, as the historic spare capacity does for the dated free agents.
+        directive["restore_import_floor"] = True
+    result = records.apply(target, directive, scheme="one_pool", progress=lambda msg: progress(msg, 0, 0))
+    receipt["steps"].append({"step": "roster_refresh", **result})
+
+
 @official.build_scope
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
+    seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
+    if seven_held:
+        progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
+        plan = replace(plan, seven_on_seven=False)
     blockers = validate_plan(plan)
     if blockers:
         raise ValueError("\n".join(blockers))
@@ -2259,6 +2883,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if type(plan.modern_venues_2026) is not str:
         raise ValueError("2026 venue art must be the folder of team venue art, or empty.")
     plan = replace(plan, modern_venues_2026=plan.modern_venues_2026.strip())
+    if type(plan.super_bowl_user_art) is not str:
+        raise ValueError("Your Super Bowl logos must be a folder, or empty.")
+    plan = replace(plan, super_bowl_user_art=plan.super_bowl_user_art.strip())
     if type(plan.modern_metlife_model) is not bool:
         raise ValueError("Modern MetLife model must be Off or On.")
     if type(plan.modern_helmets) is not bool:
@@ -2318,8 +2945,48 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("ESPN 2026 wipes and boards must be Off or On.")
     if type(plan.kick_meter_2026) is not bool:  # b76-km
         raise ValueError("Kick meter (2026 ESPN style) must be Off or On.")
+    if type(plan.indicator_names_folder) is not str:
+        raise ValueError("Indicator names folder must be a path or empty.")
+    if plan.indicator_names_style not in ("retail", "retail_persistent", "scorebug"):
+        raise ValueError("Player name label must be retail, retail_persistent or scorebug.")
+    if plan.indicator_names_style != "retail":
+        if not tt.is_disc_image(plan.source):
+            raise ValueError("The player name label styles need a disc image.")
+    if plan.indicator_names_style == "scorebug":
+        if not plan.indicator_names_folder:
+            raise ValueError("The scorebug player name label needs its indicator atlas folder.")
+        from . import nfl2k5_indicator_names as indicator_names
+        indicator_names.compile_font(plan.indicator_names_folder)
     if type(plan.modern_goalposts) is not bool:  # b77-v1
         raise ValueError("Modern goalposts must be Off or On.")
+    if type(plan.modern_coaches) is not bool:  # b77-co1
+        raise ValueError("2026 head coaches must be Off or On.")
+    if type(plan.hair_styles) is not bool:  # b775-hs1
+        raise ValueError("Hair styles must be Off or On.")
+    if type(plan.play_art_routes) is not bool:  # b776-pa2
+        raise ValueError("Full-length play art routes must be Off or On.")
+    if type(plan.run_blocking) is not bool:  # b777-ol1
+        raise ValueError("Run blocking must be Off or On.")
+    if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
+        raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
+                         "and the overlay pins their retail positions. Turn one of them off.")
+    for key, label in (("cpu_qb_zone_windows", "CPU QB respects zone defenders"),  # b776-ai2
+                       ("cpu_qb_recheck", "CPU QB re-checks his read before throwing"),
+                       ("db_ball_play", "Defenders break on the thrown ball"),
+                       ("qb_accuracy", "Accurate short throws and throws on the run")):  # b777-qb3
+        if type(getattr(plan, key)) is not bool:
+            raise ValueError(f"{label} must be Off or On.")
+    if type(plan.modern_fans) is not bool:  # b77-fr1
+        raise ValueError("2026 fans must be Off or On.")
+    if plan.team_number_scale:  # b776-ns1
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        if number_scale is None:
+            raise ValueError("The per-kit jersey number size needs nfl2k5_team_number_scale.")
+        plan.team_number_scale = number_scale.normalize(plan.team_number_scale)
+    elif not isinstance(plan.team_number_scale, dict):
+        raise ValueError("Jersey number sizes must be an object of kit: scale.")
+    if type(plan.modern_officials) is not bool:  # b77-rf1
+        raise ValueError("2025-26 officials must be Off or On.")
     if (plan.kick_meter_2026 and plan.hires_pack and isinstance(plan.hires_families, (tuple, list))
             and "scorebug" in plan.hires_families):
         # The Hi-res scorebug family re-lays gamedata.iff around a larger score_buga (chunk 53), which moves the
@@ -2344,6 +3011,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Choose Historic moment rosters or a saved ESPN Anniversary plan, not both")
     if type(plan.espn25_era_rules) is not bool:
         raise ValueError("espn25_era_rules must be boolean")
+    if type(plan.team_ratings) is not bool:
+        raise ValueError("team_ratings must be boolean")
+    if plan.team_ratings and not plan.position_pools:
+        pools = _core_module("nfl2k5_position_pools")
+        if pools is None or pools.status(_xbe_bytes(plan.source)) != "applied":
+            raise ValueError("Modern team ratings require modern position pools")
+    if type(plan.coach_ai) is not bool:
+        raise ValueError("coach_ai must be boolean")
+    if plan.coach_ai and not tt.is_disc_image(plan.source):
+        raise ValueError("Automatic coach AI needs a disc image so profiles can match the final playbooks")
     if plan.historic_stock_books and plan.playbook_pair:
         raise ValueError("Stock historical books cannot be combined with separate offensive and defensive book selections")
     if plan.espn25_era_rules and not (plan.espn25_more_moments and plan.dynamic_kickoff and plan.defensive_try and plan.overtime):
@@ -2401,10 +3078,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.hires_pack and not families:
         raise ValueError("Select at least one Hi-res family")
     plan = replace(plan, hires_families=families)
+    if plan.coach_ai:
+        plan = replace(plan, cpu_money_downs="modern2", xbe_space=True)
     legacy_disabled = momentum_on and plan.accel_ramp
     if momentum_on:
         plan = replace(plan, accel_ramp=False)
-    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
+    if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or plan.k128_memory or plan.letter_grades or plan.honors_page):
         plan = replace(plan, xbe_space=True)
@@ -2417,7 +3096,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.my_career and plan.my_career_setup:
         # Tiered prepared careers carry initial rank/side locks. Keep those
         # locks through native depth sorting; ordinary creation is unchanged.
-        import struct
         if struct.unpack_from("<I", r62["my_career_setup"], 212)[0]:
             plan = replace(plan, depth_locks=True)
     if type(plan.deep_zone_bail_calls) not in (tuple, list) or plan.deep_zone_bail_calls:
@@ -2438,6 +3116,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if target.exists() and not plan.overwrite:
         raise FileExistsError(f"{target} exists")
     receipt: dict[str, Any] = {"plan": plan.to_recipe(), "steps": [], "source": str(source), "target": str(target)}
+    receipt["seven_on_seven_opt_in_ignored"] = seven_held
     receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     is_image = tt.is_disc_image(source)
     if plan.playbook_packs and is_image:
@@ -2448,6 +3127,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     except (OSError, ValueError):
         # The selected writer owns malformed/missing executable refusal.
         installed_xbe = None
+    retire_seven = False
+    if not SEVEN_ON_SEVEN_RELEASED and installed_xbe is not None:
+        seven = tt.seven_on_seven_patch
+        # Recognize any installed span, then demand a complete, digest-valid
+        # installation before copying. This also refuses mixed old installs.
+        try:
+            retire_seven = any(installed_xbe[off:off + len(after)] == after
+                               for _label, off, _before, after in seven._located(installed_xbe))
+        except (ValueError, struct.error):
+            # As above, malformed executable refusal belongs to the selected
+            # writer; retirement must not mask unrelated plan preflight errors.
+            retire_seven = False
+        if retire_seven:
+            seven.remove(installed_xbe)
     if r62.get("anniversary_kickoff") is None:
         r62["anniversary_kickoff"] = _anniversary_kickoff_wanted(plan, is_image)
     if r62["anniversary_kickoff"]:
@@ -2541,6 +3234,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module.require_build_ready()
         _, roster_preview = module.apply(module.read_resources(source))
         receipt["espn25_rosters_preflight"] = roster_preview
+    if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
+        # b776-fs1: every moment face scan must read from this retail source and fit its unused head id.
+        scans_module = _core_module("nfl2k5_moment_scans")
+        if scans_module is None:
+            raise RuntimeError("The moment face scans module is unavailable in this build")
+        # b776-disc2: in a project build `source` is the project-built image (2026 faces already written), so read the
+        # user's retail game here, as the moment_scans step does.
+        scans_retail = source if _retail_source is None else _retail_source
+        planned = scans_module.plan(scans_retail, scans_retail, photos=frozenset())
+        receipt["moment_scans_preflight"] = {"spans": len(planned), "pairs": len(scans_module.load())}
     if plan.team_names_2026:
         names = _core_module("nfl2k5_team_names_2026")
         if names is None:
@@ -2586,6 +3289,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("star tags need a disc image (the roster records live in pack 0)")
     if plan.roster_edits and not is_image:
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
+    if plan.roster_edits and not plan.position_pools:
+        # fx1 (review pr67 #3): this refusal was only reached after every image writer had run
+        records = _core_module("nfl2k5_roster_records")
+        if records is not None and "roster_refresh" in records.read_edits(Path(plan.roster_edits)):
+            raise ValueError("Dated roster refresh requires modern position pools")
     loaded_espn25_plan = None
     if plan.espn25_plan:
         espn = _core_module("nfl2k5_espn25_scenarios")
@@ -2948,6 +3656,67 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"Modern goalposts cannot read the goalpost scenes: {exc}") from exc
         if goal_state not in ("retail", "applied"):
             raise ValueError("The goalpost, its shadow and the executable's goalpost sites are not the supported retail or already-modern set. Turn Modern goalposts off or rebuild from a supported USA source.")
+    if plan.team_number_scale:  # b776-ns1: the source executable's jersey-number block must be retail
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        try:
+            number_state = number_scale.status(_xbe_bytes(source))
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"The per-kit jersey number size cannot read the executable: {exc}") from exc
+        if number_state != "retail":
+            raise ValueError("The executable's jersey-number block is not the supported retail code (or already carries "
+                             "a number-size table). Clear the jersey number sizes or rebuild from a supported USA source.")
+    if plan.hair_styles:  # b775-hs1
+        hair = _core_module("nfl2k5_hair_styles")
+        if hair is None or not is_image:
+            raise ValueError("Hair styles need a disc image (the player models live in the archive packs).")
+        progress("Checking the player models for hair styles", 0, 0)
+        try:
+            hair_state = hair.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"Hair styles cannot read the player models: {exc}") from exc
+        if hair_state not in ("retail", "applied"):
+            raise ValueError("The player models, hair textures or the executable's hair hook are not the supported "
+                             "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:  # b776-ai2
+        _cpu_ai_preflight(plan, source, progress)
+    if plan.qb_accuracy:  # b777-qb3: the pass accuracy routine must be retail or this owner, before any write
+        _qb_accuracy_preflight(source, progress)
+    if plan.run_blocking:  # fx1: like qb3, before any write
+        _run_blocking_preflight(source, progress)
+    _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
+    if plan.modern_coaches:  # b77-co1
+        coaches = _core_module("nfl2k5_modern_coaches")
+        if coaches is None or not is_image:
+            raise ValueError("2026 head coaches need a disc image (the coach models live in the archive packs).")
+        progress("Checking the coach models", 0, 0)
+        try:
+            coach_state = coaches.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2026 head coaches cannot read the coach models: {exc}") from exc
+        if coach_state not in ("retail", "applied", "mixed"):
+            raise ValueError("A coach model or coach picture is not the supported retail or already-2026 bytes. Turn 2026 head coaches off or rebuild from a supported USA source.")
+    if plan.modern_fans:  # b77-fr1
+        fans = _core_module("nfl2k5_modern_fans")
+        if fans is None or not is_image:
+            raise ValueError("2026 fans need a disc image (the crowd texture sets live in the archive packs).")
+        progress("Checking the crowd texture sets", 0, 0)
+        try:
+            fan_state = fans.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2026 fans cannot read the crowd texture sets: {exc}") from exc
+        if fan_state not in ("retail", "applied", "mixed"):
+            raise ValueError("A crowd texture is not the supported retail or already-2026 bytes. Turn 2026 fans off or rebuild from a supported USA source.")
+    if plan.modern_officials:  # b77-rf1
+        officials = _core_module("nfl2k5_modern_officials")
+        if officials is None or not is_image:
+            raise ValueError("2025-26 officials need a disc image (the referee model lives in the archive packs).")
+        progress("Checking the officials", 0, 0)
+        try:
+            official_state = officials.image_status(source)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"2025-26 officials cannot read the referee model: {exc}") from exc
+        if official_state not in ("retail", "applied", "mixed"):
+            raise ValueError("The referee model, the caps or a number texture is not the supported retail or already-2025-26 bytes. Turn 2025-26 officials off or rebuild from a supported USA source.")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
     if plan.depth_chart_rows:
@@ -3046,11 +3815,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
-    if replace(plan, helmet_finish="glossy", weather_haze=False, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
+    if replace(plan, helmet_finish="glossy", weather_haze=False, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, indicator_names_folder="", indicator_names_style="retail", momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -3065,7 +3834,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "elbow_options": plan.elbow_options,
                                   "the1wam_lineman_rating": plan.the1wam_lineman_rating,
                                   "xemu_display_list_fix": plan.xemu_display_list_fix,
-                                  "resource_load_guard": plan.resource_load_guard, "name_keyboard": plan.name_keyboard,
+                                  "resource_load_guard": plan.resource_load_guard, "loader_wakeup_fix": plan.loader_wakeup_fix, "rb_rename": plan.rb_rename,
+                                  "name_keyboard": plan.name_keyboard,
                                   "flatter_deep_ball": plan.flatter_deep_ball, "chop_block_toggle": plan.chop_block_toggle,
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
                                   "kick_laces": plan.kick_laces, "punter_holder": plan.punter_holder, "franchise_practice": plan.franchise_practice, "practice_squad": plan.practice_squad,
@@ -3080,7 +3850,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["source_sha256"] = step.get("source_sha256")
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -3096,6 +3866,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             copy_image(source, target, progress, source_hasher)
             receipt["source_sha256"] = source_hasher.hexdigest()
         receipt["steps"].append({"step": "copy"})
+
+    if retire_seven:
+        progress("Removing unavailable 7-on-7 practice from the menu", 0, 0)
+        receipt["steps"].append(retire_seven_on_seven(target))
 
     # 3. presentation on the copy
     if plan.scorebug and not plan.scorebug_runtime:
@@ -3238,7 +4012,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 xbe, super_bowl_venue=season.SOFI_SB_VENUE if plan.modern_sofi else "s44_los_angeles")
             _write_xbe_bytes(target, xbe)
         elif state == "applied":
-            season_receipt = {"already_applied": True}
+            # Upgrade v0.6's missed annual-awards comparison even though its
+            # existing calendar and 18-week installation already validate.
+            xbe, awards_receipt = season.repair_awards_timing(xbe)
+            season_receipt = {"already_applied": True, "awards_timing": awards_receipt}
+            if not awards_receipt["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
         # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:
@@ -3379,6 +4158,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             os.replace(destination, target)
         receipt["steps"].append({"step": "music_project", "project": plan.music_project, **rec})
 
+    if plan.coach_ai:
+        progress("Compiling automatic CPU coach profiles for the final playbooks", 0, 0)
+        coach_receipt = tt.coach_ai_patch.apply_profiles_to_image(
+            target, progress=lambda message: progress(message, 0, 0))
+        receipt["steps"].append({"step": "coach_ai_resources", **coach_receipt})
+
     all_requests = tt._selected_space_requests(
         with_kickoff=plan.kickoff_relocated, runtime=plan.scorebug_runtime, momentum=plan.momentum,
         defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap, all_stadiums=plan.all_stadiums,
@@ -3422,7 +4207,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             extra_requests=tuple(row for row in all_requests if row[0] != tt.guardian_overlay_patch.OWNER))
         receipt["steps"].append({"step": "guardian_overlay", **rec})
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
-            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
+            or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page):
@@ -3587,10 +4372,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                              "roster scan; reclassify every selectable roster before building")
         xbe, filter_receipt = pools_final.apply(_xbe_bytes(target), roster_has_olb=False)
         _write_xbe_bytes(target, xbe)
+        overview_receipt = pools_final.apply_team_needs_image(target)
         receipt["steps"].append({"step": "position_pool_filters", "scan": scan,
                                  "compatibility_override": plan.position_pools_keep_olb,
-                                 "xbe": filter_receipt, "experimental": True, "witnessed": False})
+                                 "xbe": filter_receipt, "team_needs_overview": overview_receipt,
+                                 "experimental": True, "witnessed": False})
         olb_filtered = True
+    if plan.rb_rename and is_image:
+        # b777-rb2: the two screen scenes that keep their own HB label (Roster Breakdown, TRAINING RESULTS),
+        # same length in place, after the Team Needs overview rewrite above.
+        progress("Renaming HB to RB on the roster and training screens", 0, 0)
+        receipt["steps"].append({"step": "rb_rename_scenes", **_core_module("nfl2k5_rb_rename").apply_image(target)})
     if plan.modern_naming or plan.reserves_16 or plan.created_teams_extra or plan.crib_reclaim or olb_filtered:
         if plan.hires_pack:
             # Preserve the archive verifier's final scope; do not rerun fixed-offset inspectors.
@@ -3605,6 +4397,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module = _core_module("nfl2k5_espn25_rosters")
         historic_receipt = module.apply_to_image(target)
         receipt["steps"].append({"step": "espn25_rosters", **historic_receipt})
+        if historic_receipt.get("moment_scan_ids_in_use"):
+            # fx1 (review pr69 #2): this used to be a receipt key only. Say it in the build log and the receipt's
+            # user notes; the data is unchanged (a hard refusal would stop every non-2026 main roster).
+            note = ("Historic moment rosters: the main roster already uses head ids "
+                    + ", ".join(map(str, historic_receipt["moment_scan_ids_in_use"]))
+                    + ", so four moment players wear those players' heads. The SOFTDRINK 2026 roster leaves them free.")
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         receipt["result"]["espn25_rosters"] = module.image_status(target)
         if receipt["result"]["espn25_rosters"] != "applied":
             raise ValueError("the historic moment rosters failed their read-back on the copy")
@@ -3663,6 +4463,138 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["espn25_plan"] = espn.status(target, loaded_espn25_plan)
         if receipt["result"]["espn25_plan"] != "applied":
             raise ValueError("the ESPN Anniversary edits failed their read-back on the copy")
+    if is_image:
+        # b773-i4: the five Anniversary era kits (a5k trades NE 11, PHI 14, NO 6, BAL 1, PIT 4) composed from their
+        # donor kits as the v0.6 native repair did, after the roster labels and the historic spares (donors) exist.
+        # The Unc Bowl finish below starts from the composed PIT 22A4; a Studio build used to leave it retail.
+        era_kits = _core_module("nfl2k5_era_kits")
+        if era_kits is not None:
+            progress("Composing the Anniversary era kits", 0, 0)
+            era_receipt = era_kits.apply_to_image(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "Anniversary era kits"))
+            if era_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "era_kits", **era_receipt})
+        uniforms = _core_module("nfl2k5_unc_bowl_uniforms")
+        if uniforms is None:
+            raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
+        uniforms_receipt = uniforms.apply_to_image(target)
+        receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
+        # b772-ny1: finish the known NYG home art after the project's uniform
+        # layers. The native shoulder anNN textures use the plain jersey mips.
+        numbers = _core_module("nfl2k5_nyg_numbers")
+        if numbers is None:
+            raise RuntimeError("the Giants shoulder-number repair module is not available in this build")
+        number_receipt = numbers.apply_to_image(target)
+        if number_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "nyg_shoulder_numbers", **number_receipt})
+        # b772-uf1: the 2026 home/away kit art the in-game uniform review found wrong (sleeve stacks, chest bands,
+        # pants stripes, patches, helmet marks, Giants style 7 shoulder digits), pinned to the known kit spans.
+        kit_fixes = _core_module("nfl2k5_kit_fixes_2026")
+        if kit_fixes is None:
+            raise RuntimeError("the 2026 kit art repair module is not available in this build")
+        kit_receipt = kit_fixes.apply_to_image(target)
+        if kit_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026", **{k: v for k, v in kit_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in kit_receipt["kits"]]})
+        # b772-uf2: the 2026 alternate, throwback and Rivalries kit art the same review found wrong (second data file,
+        # same compiler), pinned to the known kit spans after the home/away pass.
+        alt_receipt = kit_fixes.apply_alternates(target)
+        if alt_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_alts",
+                                     **{k: v for k, v in alt_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in alt_receipt["kits"]]})
+        # b773-uf3: the uniform elements judged against the 2026 game highlights (the Washington helmet W, the Unc
+        # Bowl Steelers nameplates and arm numbers, ...), a third pinned layer after the alternates.
+        uf3_receipt = kit_fixes.apply_finish(target)
+        if uf3_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_uf3",
+                                     **{k: v for k, v in uf3_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in uf3_receipt["kits"]]})
+        # b773-sea1: the Seattle helmet (logo fragment off the crown stripe, the helmet back's lines whole) and the
+        # wolf-grey shoulder digits, a fourth pinned layer after uf3.
+        sea1_receipt = kit_fixes.apply_seattle(target)
+        if sea1_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_sea1",
+                                     **{k: v for k, v in sea1_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"} for kit in sea1_receipt["kits"]]})
+        overlap_receipt = kit_fixes.apply_overlaps(target)
+        if overlap_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_ov1",
+                                     **{k: v for k, v in overlap_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in overlap_receipt["kits"]]})
+        # b776-fn2: the 2026 Bears and Chiefs nameplate letters (retail letter structure read from the source disc, in
+        # the kit colours: the I, the W/M/N counters and the small c come back) and the redrawn 2026 Titans 7.
+        # The runtime package check lists the module, so a release cannot ship without it (as pants_hem below).
+        glyph_fixes = _core_module("nfl2k5_glyph_fixes_2026")
+        if glyph_fixes is not None:
+            glyph_receipt = glyph_fixes.apply_to_image(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "2026 nameplate letters"))
+            if glyph_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "glyph_fixes_2026",
+                                         **{k: v for k, v in glyph_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in glyph_receipt["kits"]]})
+        # b773-uf3: the 2026 Pittsburgh road miniature (schedule screens) with its Steelmark the right way up; only the
+        # exact known art changes, retail and user art are left alone.
+        uf3_icon = _core_module("nfl2k5_menu_icon_uf3")
+        if uf3_icon is not None:
+            icon_receipt = uf3_icon.apply_to_image(target)
+            if icon_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_icon_uf3", **icon_receipt})
+        # b773-hu1: Washington's Team Select helmet cards and schedule miniatures carry the 2026 helmet W uf3 drew in
+        # game; only the exact known card art changes, retail and user art are left alone.
+        helmet_w = _core_module("nfl2k5_menu_helmet_w2026")
+        if helmet_w is not None:
+            helmet_receipt = helmet_w.apply_to_image(target)
+            if helmet_receipt["written"] or helmet_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_helmet_w2026", **helmet_receipt})
+        # b776-ku1: the Chiefs Team Select cards and schedule miniatures in the 2026 red (palette only, pinned slots).
+        chiefs_menu = _core_module("nfl2k5_menu_chiefs_2026")
+        if chiefs_menu is not None:
+            menu_receipt = chiefs_menu.apply_to_image(target)
+            if menu_receipt["written"] or menu_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "menu_chiefs_2026", **menu_receipt})
+        # b773-pa1: the modern above-the-knee pants hem on every current-season kit (texture only: the pants, their
+        # bump map and the sideline player), compiled after the uf3 finish; throwbacks keep their era hem.
+        pants_hem = _core_module("nfl2k5_pants_hem_2026")
+        if pants_hem is not None:
+            hem_receipt = pants_hem.apply_to_image(target)
+            if hem_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "pants_hem_2026",
+                                         **{k: v for k, v in hem_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in hem_receipt["kits"]]})
+        # b776-ku1 (Noah 10/18): the 2026 Chiefs home and road kits redone to the current look (red that reads as
+        # Chiefs red through the in-game colour pipeline, Nike-era sleeve bands, socks, pants stripes, AFL patch,
+        # arm numbers on the shoulder tops); after the pants hem, the last writer of 13H0/13A0. Pinned spans only.
+        chiefs_receipt = kit_fixes.apply_chiefs(target)
+        if chiefs_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_ku1",
+                                     **{k: v for k, v in chiefs_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in chiefs_receipt["kits"]]})
+        # b777-sw1 (Noah 10/20): the sleeve swoosh centred on the sleeve on every 2026 kit, over the arm number where
+        # the number sits on the sleeve, clear of numbers, stripes and logos; the last kit writer. Pinned spans only.
+        swoosh_receipt = kit_fixes.apply_swooshes(target)
+        if swoosh_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_sw1",
+                                     **{k: v for k, v in swoosh_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in swoosh_receipt["kits"]]})
+        if plan.espn25_more_moments:
+            # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
+            # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
+            # only in the moments' team files so modern Team Select never offers them; then the 51 rows' selections.
+            moment_kits = _core_module("nfl2k5_moment_kits")
+            if moment_kits is None:
+                raise RuntimeError("the Anniversary moment kits module is not available in this build")
+            progress("Dressing the Anniversary teams in their game uniforms", 0, 0)
+            kits_receipt = moment_kits.apply_to_image(target)
+            receipt["steps"].append({"step": "moment_kits", **kits_receipt})
+            receipt["result"]["moment_kits"] = moment_kits.image_status(target)
+            if receipt["result"]["moment_kits"] != "applied":
+                raise ValueError("the Anniversary moment kits failed their read-back on the copy")
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
@@ -3674,6 +4606,36 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             progress("Raising every quarterback's Throw Power", 0, 0)
             qb_receipt = qb_module.apply_image(target, qb_directive, progress=lambda message: progress(message, 0, 0))
             receipt["steps"].append({"step": "qb_throw_power", **qb_receipt})
+    _apply_roster_refresh(plan, target, receipt, progress)
+    _apply_draft_pick_ownership(plan, target, receipt, progress)
+    _apply_hback_roles(plan, target, receipt, progress)
+    _apply_team_ratings(plan, target, receipt, progress)
+    if plan.classic_teams and plan.historic_teams_quick_game and is_image:
+        # b775-ct1: last of the executable and roster writers: it reads the season route, the historic styles' spares,
+        # the moment table, the final main roster (own faces, colleges) and appends its files after theirs.
+        classic = _core_module("nfl2k5_classic_teams")
+        if classic is None:
+            raise RuntimeError("the classic teams module is not available in this build")
+        progress("Adding the classic teams to Quick Game", 0, 0)
+        retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
+        classic_receipt = classic.apply_to_image(target, retail)
+        receipt["steps"].append({"step": "classic_teams", **classic_receipt})
+        receipt["result"]["classic_teams"] = classic.image_status(target, retail)
+        if receipt["result"]["classic_teams"] != "applied":
+            raise ValueError("the classic teams failed their read-back on the copy")
+    if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
+        # b776-fs1 (Noah 10/18): after every roster writer, the retail face scans the 2026 league overwrote are copied
+        # into unused head ids; the Anniversary and classic rosters above already point at them.
+        scans = _core_module("nfl2k5_moment_scans")
+        if scans is None:
+            raise RuntimeError("the moment face scans module is not available in this build")
+        progress("Copying retail face scans for the Anniversary and classic teams", 0, 0)
+        scans_source = require_step_source(source if _retail_source is None else _retail_source, "Moment face scans")
+        scans_receipt = scans.apply_to_image(target, scans_source)
+        receipt["steps"].append({"step": "moment_scans", **scans_receipt})
+        receipt["result"]["moment_scans"] = scans.image_status(target, scans_source)
+        if receipt["result"]["moment_scans"] != "applied":
+            raise ValueError("the moment face scans failed their read-back on the copy")
     if loaded_weather_plan is not None:
         weather = _core_module("nfl2k5_weather")
         progress("Applying saved stadium climate edits", 0, 0)
@@ -3925,6 +4887,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                                    team_logo=plan.modern_practice_field_team_logo)
         receipt["steps"].append({"step": "modern_practice_field", **practice_receipt})
         receipt["result"]["modern_practice_field"] = "applied"
+    stadium_shadow = _core_module("nfl2k5_stadium_shadow")
+    shadow_venues = sorted({p for key, venues in (stadium_shadow.OPTION_VENUES.items() if stadium_shadow else ())
+                            if getattr(plan, key, False) is True for p in venues})
+    if shadow_venues:
+        # b77 st1: after every stadium writer and before Modern playing surfaces: each modern stadium's afternoon field
+        # shadow is cast from the stadium its bundle now carries, under the retail venue's sun (a closed roof casts
+        # none, as retail's domes); the shadow texture's fixed span only, and Modern colour's and the 2026 venue art's
+        # receipts take the new bundle hashes.
+        progress("Stadium shadows", 0, 0)
+        shadow_receipt = stadium_shadow.apply_to_image(target, shadow_venues, progress=progress)
+        receipt["steps"].append({"step": "stadium_shadows", **shadow_receipt})
+        receipt["result"]["stadium_shadows"] = shadow_receipt["state"]
     if plan.modern_surfaces:
         # b76-tf: LAST of the stadium writers (after Modern colour, Arrowhead, MetLife and its model, the 2026 venue art,
         # SoFi and Highmark): repaints each home field's surface over whatever they left, refits every field in its
@@ -3940,6 +4914,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             normal_loans = venues.field_normal_loan_prefixes(plan.modern_venues_2026)
             if normal_loans:
                 surface_options["field_normal_loan_prefixes"] = normal_loans
+            # gr3: PIT's late midfield compresses the surfaced normal for its loan, so it takes the tiled art
+            midfield_loans = venues.midfield_normal_loan_prefixes(plan.modern_venues_2026)
+            if midfield_loans:
+                surface_options["tiled_normal_prefixes"] = midfield_loans
         surfaces_receipt = surfaces.apply_to_image(target, progress=progress, **surface_options)
         receipt["steps"].append({"step": "modern_surfaces", **surfaces_receipt})
         receipt["result"]["modern_surfaces"] = surfaces_receipt["state"]
@@ -3989,6 +4967,31 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         goal_receipt = goalposts.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_goalposts", **goal_receipt})
         receipt["result"]["modern_goalposts"] = goal_receipt["state"]
+    if plan.modern_coaches:  # b77-co1
+        # 32 fixed-span coach scenes (cNN.iff chunk 0), two raw portrait spans in Portrait.iff and two 16-bit coach-record
+        # photo ids in the main roster, found through the copy's own outer table after every relocating pass and every
+        # roster writer above (a roster whose Dallas or Washington coach names another picture keeps it).
+        coaches = _core_module("nfl2k5_modern_coaches")
+        progress("2026 head coaches", 0, 0)
+        coach_receipt = coaches.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_coaches", **coach_receipt})
+        receipt["result"]["modern_coaches"] = coach_receipt["state"]
+    if plan.modern_fans:  # b77-fr1
+        # the 32 clubs' crowd texture sets (four families of 85 outers, standalone TXTR chunks), fixed spans found
+        # through the copy's own outer and chunk tables after every relocating pass
+        fans = _core_module("nfl2k5_modern_fans")
+        progress("2026 fans", 0, 0)
+        fan_receipt = fans.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_fans", **fan_receipt})
+        receipt["result"]["modern_fans"] = fan_receipt["state"]
+    if plan.modern_officials:  # b77-rf1
+        # the referee scene, the caps TSET and the seven number TXTR chunks of gamedata.iff: fixed spans found by kind
+        # and name through the copy's own outer and chunk tables after every pass that re-lays gamedata.iff
+        officials = _core_module("nfl2k5_modern_officials")
+        progress("2025-26 officials", 0, 0)
+        official_receipt = officials.apply_to_image(target, progress=progress)
+        receipt["steps"].append({"step": "modern_officials", **official_receipt})
+        receipt["result"]["modern_officials"] = official_receipt["state"]
     if plan.modern_helmets:
         # b76-hm: after every relocating pass, the historic rosters, One-pool positions and the Guardian overlay (the
         # historic fix is field level, the player scenes commute with the overlay's shell B).
@@ -3997,6 +5000,31 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         helmets_receipt = helmets.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_helmets", **helmets_receipt})
         receipt["result"]["modern_helmets"] = helmets_receipt["status"]
+    if plan.hair_styles:
+        # b775-hs1: after Modern helmets (its in-place scene writes are judged under the hair growth) and after every
+        # executable writer: the two player scenes grow, nine hair textures are appended to outer 3 (pack 0 is
+        # rewritten at the end of the copy), then the late allocator owner and its hook go into default.xbe.
+        hair = _core_module("nfl2k5_hair_styles")
+        progress("Hair styles: player models and hair textures", 0, 0)
+        hair_receipt = hair.apply_to_image(target, progress=progress)
+        hair_xbe, hair_xbe_receipt = hair.apply(_xbe_bytes(target))
+        _write_xbe_bytes(target, hair_xbe)
+        # the 2026 assignments (data/nfl2k5_hair_styles_2026_roster_edits.json, sourced per player) go into the main
+        # roster here, after every roster writer, and only when it is the 2026 league roster they were made on
+        hair_roster = hair.apply_assignments(target)
+        if hair.image_status(target) != "applied":
+            raise RuntimeError("Hair styles: the output image does not read back as applied")
+        receipt["steps"].append({"step": "hair_styles", **{k: v for k, v in hair_receipt.items() if k != "scenes"},
+                                 "scenes": [{k: v for k, v in r.items() if k in ("key", "growth", "added_vertices")}
+                                            for r in hair_receipt.get("scenes", [])],
+                                 "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"},
+                                 "roster": hair_roster})
+        receipt["result"]["hair_styles"] = "applied"
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:
+        # b776-ai2: the CPU AI owners are the last executable writers. Their allocations are late owners placed after
+        # hair_styles (nfl2k5_xbe_space.LATE_OWNERS), so this step must follow it and nothing else moves.
+        _apply_cpu_ai(plan, target, receipt, progress)
+    _apply_play_art_routes(plan, target, receipt, progress)  # b776-pa2: the last allocator owner
     if _commentary_final_wanted(plan, loaded_espn25_plan):
         # b77-c2: the last roster writer has run (main roster, historic and Anniversary files, the user's Anniversary
         # edits, the historic helmets). The final commentary pass gives every other ROST resource the play-by-play
@@ -4008,6 +5036,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             progress("Final commentary pass: historic rosters and the double-zero cue", 0, 0)
             final_receipt = final.apply(target, progress=lambda message: progress(message, 0, 0))
             receipt["steps"].append({"step": "commentary_final", **final_receipt})
+    # Repair only the byte-pinned 2026 Denver miniature after project imports.
+    # Retail and custom art do not match the pin and remain untouched.
+    if is_image:
+        icons = _core_module("nfl2k5_menu_icon_orientation")
+        icon_receipt = icons.apply_to_image(target)
+        receipt["steps"].append({"step": "menu_icon_orientation", **icon_receipt})
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
@@ -4042,6 +5076,27 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+        if _core_module("nfl2k5_moment_kits").image_status(target) != "applied":
+            raise ValueError("the Anniversary moment kits did not survive the intro video pass on the copy")
+    if plan.espn25_more_moments:
+        progress("Restoring historical Anniversary coaches", 0, 51)
+        historical_coaches = _core_module("nfl2k5_moment_coaches")
+        coach_source = require_step_source(_retail_source or source, "Historical Anniversary coaches")
+        coach_receipt = historical_coaches.apply_to_image(target, coach_source)
+        receipt["steps"].append({"step": "moment_coaches", **coach_receipt})
+        receipt["result"]["moment_coaches"] = "applied"
+        # b775 mo2: the Super Bowl game type and the moment stats readers (the stats blocks rode in the coach SITU).
+        progress("Adding Super Bowl context and historical moment stats", 0, 0)
+        moment_context = _core_module("nfl2k5_moment_context")
+        context_receipt = moment_context.apply_to_image(target)
+        receipt["steps"].append({"step": "moment_context", **context_receipt})
+        receipt["result"]["moment_context"] = "applied"
+        # b776 sbc: the 17 Super Bowl moments open with the booth's "welcome to the Super Bowl" line.
+        progress("Adding the Super Bowl booth welcome to the Super Bowl moments", 0, 0)
+        moment_booth = _core_module("nfl2k5_moment_booth")
+        booth_receipt = moment_booth.apply_to_image(target)
+        receipt["steps"].append({"step": "moment_booth", **booth_receipt})
+        receipt["result"]["moment_booth"] = "applied"
     # Use the completed venue models and edited SITU, after all other resource passes.
     if plan.espn25_named_previews:
         progress("Building period Anniversary fields", 0, 51)
@@ -4049,9 +5104,80 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if field_pack is None:
             raise ValueError("the Anniversary field compiler is unavailable")
         field_receipt = field_pack.apply_fields_to_image(
-            target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n))
+            target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n),
+            user_art=plan.super_bowl_user_art or None, log=lambda line: progress(line, 0, 0))
         receipt["steps"].append({"step": "espn25_fields", **field_receipt})
         receipt["result"]["espn25_fields"] = "applied"
+        # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006. b777 ar1: the
+        # era ball is switched off in data/nfl2k5_era_ball/manifest.json (Noah: the football looks as it did before),
+        # so the ball scene stays the user's own and no selector is installed; the step runs again when it is on.
+        era_ball = _core_module("nfl2k5_era_ball")
+        if era_ball is None:
+            raise ValueError("the era ball compiler is unavailable")
+        if era_ball.enabled():
+            progress("Giving modern games the modern ball", 0, 0)
+            ball_receipt = era_ball.apply_to_image(target)
+            receipt["steps"].append({"step": "era_ball", **ball_receipt})
+            receipt["result"]["era_ball"] = ball_receipt["state"]
+        else:
+            receipt["steps"].append({"step": "era_ball", "state": "off", "reason": "switched off in the era ball manifest"})
+            receipt["result"]["era_ball"] = "off"
+    if plan.modern_surfaces:
+        # gr1: every field writer, including the period aliases, has finished.
+        # Palette RGB only, preserving painted assets and st1's lighting.
+        greens = _core_module("nfl2k5_broadcast_greens")
+        if greens is None:
+            raise ValueError("the Broadcast greens compiler is unavailable")
+        greens_receipt = greens.apply_to_image(
+            target, progress=progress, anniversary_receipt=field_receipt if plan.espn25_named_previews else None)
+        receipt["steps"].append({"step": "broadcast_greens", **greens_receipt})
+        receipt["result"]["broadcast_greens"] = greens_receipt["state"]
+    if plan.season_2026 and tt.is_disc_image(target):
+        # sb1: the announced Super Bowl hosts (LXII Atlanta, LXIII Las Vegas, LXIV Nashville) for franchise seasons 1
+        # to 3: new bundles copied from the finished host bundles after every field and colour pass, with Super Bowl
+        # fields; the neutral rows and the executable's season codes point at them.
+        hosts = _core_module("nfl2k5_super_bowl_hosts")
+        if hosts is None:
+            raise ValueError("the Super Bowl hosts step is unavailable")
+        progress("Super Bowl hosts for the franchise", 0, 0)
+        hosts_receipt = hosts.apply_to_image(target, user_art=plan.super_bowl_user_art or None, progress=progress,
+                                             xbe=_xbe_bytes(target))
+        executable = hosts_receipt.pop("executable", None)
+        if executable is not None:
+            _write_xbe_bytes(target, executable)
+        for line in hosts_receipt.get("log", ()):
+            progress(line, 0, 0)
+        receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
+        receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+    if plan.team_number_scale:
+        # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
+        # allocator owner and its hook after the jersey-number selector call (0x8F580).
+        number_scale = _core_module("nfl2k5_team_number_scale")
+        progress("Jersey numbers: per-kit size", 0, 0)
+        scaled_xbe, number_receipt = number_scale.apply(_xbe_bytes(target), plan.team_number_scale)
+        _write_xbe_bytes(target, scaled_xbe)
+        if number_scale.read_settings(_xbe_bytes(target)) != {"status": "applied", "scales": plan.team_number_scale}:
+            raise RuntimeError("Jersey number sizes: the output executable does not read back as applied")
+        receipt["steps"].append({"step": "team_number_scale", **{k: v for k, v in number_receipt.items()
+                                                                 if k not in ("edits", "code_install")},
+                                 "edits": number_receipt.get("edits", [])})
+        receipt["result"]["team_number_scale"] = number_receipt["scales"]
+    # b777 (int7 order, nfl2k5_xbe_space.LATE_OWNERS): after the per-kit jersey number size come ol1's run blocking,
+    # then qb3's QB accuracy, the last late allocator owner, so nothing else moves.
+    _apply_run_blocking(plan, target, receipt, progress)
+    _apply_qb_accuracy(plan, target, receipt, progress)
+    # b777-tp1: the formation art icon spacing (with play_art_routes) is the last late allocator owner
+    _apply_formation_art_spacing(plan, target, receipt, progress)
+    if plan.indicator_names_style != "retail":
+        # Final HUD writer: compresses the existing sprite scene losslessly and
+        # fits its private FONT in that same span, after all other HUD owners.
+        # retail_persistent writes only the two collector sites (native FONT).
+        from . import nfl2k5_indicator_names as indicator_names
+        progress("Installing the player name label", 0, 0)
+        names_receipt = indicator_names.apply_to_image(target, folder=plan.indicator_names_folder or None,
+                                                       style=plan.indicator_names_style)
+        receipt["steps"].append({"step": "indicator_names", **names_receipt})
+        receipt["result"]["indicator_names"] = names_receipt["state"]
     if tt.is_disc_image(target):
         # DESIGN: all growth writers have finished. Compact only this disposable
         # build copy, then run the publication gates through its new directory.
@@ -4071,12 +5197,27 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["historic_stock_books"] = _core_module("nfl2k5_stock_books").image_status(target, stock_bank)
         if receipt["result"]["historic_stock_books"] != "applied":
             raise ValueError("stock books did not survive the final resource passes")
+    if plan.team_number_scale and _core_module("nfl2k5_team_number_scale").read_settings(_xbe_bytes(target)) != {
+            "status": "applied", "scales": plan.team_number_scale}:  # b776-ns1
+        raise ValueError("the jersey number sizes did not survive the final passes")
+    if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
+        raise ValueError("run blocking did not survive the final passes")
+    if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3
+        raise ValueError("accurate short throws did not survive the final passes")
+    if plan.play_art_routes and _core_module("nfl2k5_formation_art_spacing").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.espn25_named_previews:
         receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)
         if (receipt["result"]["espn25_named_previews"] != "applied"
                     or _core_module("nfl2k5_moment_venues").status(_xbe_bytes(target)) != "applied"):
             raise ValueError("named previews did not survive the final resource passes")
+        _ball = _core_module("nfl2k5_era_ball")
+        receipt["result"]["era_ball"] = _ball.image_status(target) if _ball.enabled() else "off"
+        if receipt["result"]["era_ball"] != ("applied" if _ball.enabled() else "off"):
+            raise ValueError("the era ball did not survive the final resource passes")
+        if not _ball.enabled() and _ball.image_status(target) != "retail":
+            raise ValueError("the era ball is off but the ball scene is not the user's own")
     if is_image:
         from .nfl2k5_disc_extents import validate_image
         receipt["disc_extents"] = validate_image(target)

@@ -50,9 +50,12 @@ def inspect(payload, module):
     for name, va, before, after in sites:
         space._require(image.read(va, len(before)) == (after if settings is not None else before),
                        f"Mixed/foreign {module.OWNER} {name} hook")
+    # b776-ai2: a module may name verified neighbor hooks inside its guarded spans (the neighbor
+    # verifies its own complete bytes); they are restored to retail for the hash like its own sites.
+    neighbors = list(module.neighbor_sites(payload)) if hasattr(module, "neighbor_sites") else []
     for va, size, digest in module.GUARDS:
         blob = bytearray(image.read(va, size))
-        for _, hook, before, _ in sites:
+        for _, hook, before, _ in list(sites) + neighbors:
             if va <= hook and hook + len(before) <= va + size:
                 blob[hook-va:hook-va+len(before)] = before
         space._require(hashlib.sha256(blob).hexdigest() == digest,

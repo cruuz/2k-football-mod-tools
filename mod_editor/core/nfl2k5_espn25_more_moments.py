@@ -51,6 +51,7 @@ import struct
 import zlib
 
 from . import nfl2k5_espn25_more_moments_code as assembly
+from . import nfl2k5_front_schemes as front
 from . import nfl2k5_roster_records as rr
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -65,6 +66,11 @@ OWNER = "nfl2k5_espn25_more_moments"
 CODE_SIZE = 2560          # existing owner: 50 teams, 26 venues, texts, display helpers and 64-byte order map
 DATA_SIZE = 16            # the session dword for rows 33 to 51, then spare zero bytes (the layout does not grow)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
+def scan_slots():
+    from . import nfl2k5_moment_scans
+    return nfl2k5_moment_scans.slots()
+
+
 # beta 76.3 (25th Anniversary QC, Noah 10/2: "Player faces on stats after plays are totally wrong and random",
 # "you made Chris hogan black", "not seeing star player icons"). A team file's photo id keys the post-play portrait
 # and the live head; a template slot's own id showed another real person. A player now gets his own art or retail's
@@ -575,22 +581,90 @@ def _set_rel(body, field, target):
     struct.pack_into("<i", body, field, target - field + 1)
 
 
+def _clean_name(text):
+    return re.sub(r"[^a-z]", "", re.sub(r"\b(jr|sr|ii|iii|iv)\b\.?", "", text.casefold()))
+
+
+def _related(a, b):
+    """One name the start of the other: Mike / Michael, Porter / Porter Jr."""
+    a, b = _clean_name(a), _clean_name(b)
+    return bool(a) and bool(b) and (a.startswith(b) or b.startswith(a))
+
+
+class People(dict):
+    """{(first, last, birth year % 100): (pbp_id, photo_id)} of the finished main roster's rostered players, plus
+    ``find``: the same person when the spelling differs (fs1, Noah 10/18: Gregory / Greg Rousseau, Joey Porter Jr.).
+    A second tier takes the last name, birth date and a related first name; a third the first name, birth date and a
+    related last name. The dict keys alone are the strict tier."""
+
+    def __init__(self):
+        super().__init__()
+        self.by_last, self.by_first = {}, {}
+
+    def find(self, first, last, born):
+        hit = self.get((first.casefold(), last.casefold(), born.year % 100))
+        if hit:
+            return hit
+        for entry in self.by_last.get((last.casefold(), born.year % 100, born.month, born.day), ()):
+            if _related(entry[0], first):
+                return entry[2]
+        for entry in self.by_first.get((first.casefold(), born.year % 100, born.month, born.day), ()):
+            if _related(entry[0], last):
+                return entry[2]
+        return None
+
+
 def main_people(main_rost):
-    """{(first, last, birth year % 100): (pbp_id, photo_id)} for the retail 2004 roster's rostered players."""
+    """People for the retail or finished main roster: every named record, whatever its group. (fs1: the moment files
+    compile before the roster refresh, which can move a player from a team to the pool, e.g. Alec Pierce.)"""
     doc = rr.RosterDocument(main_rost[32:])
-    out = {}
+    out = People()
     for p in doc.players:
-        if p.group != "team":
+        if not (p.first + p.last).strip():
             continue
         v = p.record.values
         year = v["birth_year_low"] | (v["birth_year_high"] << 3)
-        out.setdefault((p.first.casefold(), p.last.casefold(), year % 100), (v["pbp_id"], v["photo_id"]))
+        value = (v["pbp_id"], v["photo_id"])
+        out.setdefault((p.first.casefold(), p.last.casefold(), year % 100), value)
+        out.by_last.setdefault((p.last.casefold(), year % 100, v["birth_month"], v["birth_day"]), []).append((p.first, p.last, value))
+        out.by_first.setdefault((p.first.casefold(), year % 100, v["birth_month"], v["birth_day"]), []).append((p.last, p.first, value))
     return out
 
 
-def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset()):
+class Photos(frozenset):
+    """Photo ids of the named main-roster records; ``holders`` = {photo id: {(first, last) casefolded}} so an id held
+    by the very person who wants it (a stock retail roster's Eli Manning) is not "taken"."""
+    holders = None
+
+
+def named_photos(main_doc):
+    """Photo ids of the main roster's named records. A blank placeholder record keeps a retail id by accident
+    (ids 2, 3, 7 and 12 on the SOFTDRINK roster): it shows nobody's face and does not make the id taken."""
+    holders = {}
+    for p in main_doc.players:
+        if (p.first + p.last).strip():
+            holders.setdefault(p.record.values["photo_id"], set()).add((p.first.casefold(), p.last.casefold()))
+    out = Photos(holders)
+    out.holders = holders
+    return out
+
+
+def photo_taken(main_photos, photo, first, last):
+    """True when a main-roster record other than this person holds the id."""
+    if photo not in main_photos:
+        return False
+    holders = getattr(main_photos, "holders", None)
+    return not (holders and (first.casefold(), last.casefold()) in holders.get(photo, ()))
+
+
+def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset(),
+                 missing_colleges=None, scans=None):
     """A one-team historic roster file for one team-season, from a retail historic file of the same franchise.
-    appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster uses."""
+    appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster's named
+    records use. scans: {retail face id: unused id holding a copy of that retail scan} (nfl2k5_moment_scans; None reads
+    the shipped table).
+    missing_colleges: None refuses a college the main table lacks. A list instead keeps the template's own college
+    for that player and records the name in it (classic teams: a user's roster may reuse a retail college slot)."""
     from . import nfl2k5_my_career_prospects as prospects
     require(template_raw[:4] == b"ROST" and struct.unpack_from("<I", template_raw, 4)[0] == len(template_raw) - 32,
             "template is not a one-team ROST resource")
@@ -636,15 +710,28 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
         v["hand"] = 0 if row["hand"] == "Left" else 1
         for rating in rr.RATING_BYTE_ORDER:
             v[rating] = int(row[rating])
-        # His own art or none: his current main-roster record (the same person), else his retail 2004 photo id while
-        # no current record uses it (its portrait and face are still his), else the no-photo range.
+        # His own art or none: his current main-roster record (the same person), else his retail 2004 face (the id
+        # itself while no current record uses it, else the copy of it in an unused id), else the no-photo range.
         look = appearance[index] if appearance else {}
         v["pbp_id"], v["photo_id"] = 9000 + int(row["jersey"]), NOPHOTO_BASE + index
-        hit = people.get((row["first"].casefold(), row["last"].casefold(), born.year % 100)) if people else None
+        hit = None
+        if people:
+            hit = people.find(row["first"], row["last"], born) if hasattr(people, "find") else \
+                people.get((row["first"].casefold(), row["last"].casefold(), born.year % 100))
+        retail = look.get("retail")
         if hit:
             v["pbp_id"], v["photo_id"] = hit
-        elif look.get("retail") and look["retail"]["photo"] not in main_photos:
-            v["photo_id"] = look["retail"]["photo"]
+        elif retail:
+            # fs1 (Noah 10/18): the scan the 2026 league overwrote lives in an unused id (nfl2k5_moment_scans).
+            if scans is None:
+                scans = scan_slots()
+            if photo_taken(main_photos, retail["photo"], row["first"], row["last"]):
+                if retail["photo"] in scans:
+                    require(scans[retail["photo"]] not in main_photos,
+                            f"{team['team_key']}: the main roster uses the moment scan id {scans[retail['photo']]}")
+                    v["photo_id"] = scans[retail["photo"]]
+            else:
+                v["photo_id"] = retail["photo"]
         # beta 77 (job c2): a matched person's play-by-play id is a copy of his main-roster record. That record held the
         # retired "double zero" cue (9100) before beta 76.5, and a number call is that roster's current jersey, not this
         # season's. Resolve it the way the final roster pass does: recorded names stay, 0/9100/9101/unrecorded become the
@@ -661,7 +748,9 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
                 v["dreads"] = look.get("dreads", 0)
         v["star_tag"] = int(prospects.native_overall(record) >= STAR_MIN_OVERALL)
         college = row.get("college", "")
-        if college:
+        if college and missing_colleges is not None and college not in colleges:
+            missing_colleges.append(college)
+        elif college:
             require(colleges.count(college) == 1,
                     f"college must resolve exactly once in the main table: {college!r}")
             v["college_pointer"] = colleges.index(college)
@@ -996,6 +1085,11 @@ def guard_digests(payload):
 def _recognize(payload, data, *, legacy=False):
     from . import nfl2k5_moment_venues as historical_venues
     payload = historical_venues.underlying(payload)
+    from . import nfl2k5_moment_coaches as historical_coaches
+    payload = historical_coaches.underlying(payload)
+    # b775 mo2: the moment context copies the row's stats block at 0x20CC05, inside the guarded select handler.
+    from . import nfl2k5_moment_context as moment_context
+    payload = moment_context.underlying(payload, ("select",))
     layout = space.layout(payload)
     image = XbeImage(payload)
     entries = table_entries(data) if data is not None else []
@@ -1221,7 +1315,7 @@ def compile_files(main, templates, data, *, one_pool=False):
     it is for all 75 retail historic files."""
     main_doc = rr.RosterDocument(main[32:])
     colleges = main_doc.colleges
-    main_photos = frozenset(p.record.values["photo_id"] for p in main_doc.players)
+    main_photos = named_photos(main_doc)
     people = main_people(main)
     looks = getattr(data, "appearance", None) or {}
     out = {}
@@ -1230,7 +1324,8 @@ def compile_files(main, templates, data, *, one_pool=False):
         raw = compile_team(templates[key], data.teams[key], data.rosters[key], colleges, identity, people,
                            appearance=looks.get(key), main_photos=main_photos)
         if one_pool:
-            raw = _one_pool(raw)
+            t = data.teams[key]
+            raw = _one_pool(raw, front.mapping_scheme("moments", key, t["abbreviation"], t["season"]))
         if n == len(entries) - 1:
             raw = pad_to_sector(raw)
         out[filename] = raw
@@ -1246,11 +1341,19 @@ def pad_to_sector(raw):
     return bytes(out)
 
 
-def _one_pool(raw):
-    """The One-pool positions build's historic 4-3 rule, as the pools option applies it to the retail 75."""
+def _one_pool(raw, scheme="4-3"):
+    """The One-pool positions build's historic 4-3 rule, as the pools option applies it to the retail 75.
+
+    ``scheme="3-4"`` (b776-de1, ``nfl2k5_front_schemes.mapping_scheme``) is for a team-season that really ran a 3-4
+    and is played by a book that asks the pools for roles: its outside backers are EDGE and its ends are interior
+    (an end of 265 lb or less is an edge rusher the data labelled DE and joins the EDGE pool), with three LBs kept.
+    """
     from tools import nfl2k5_roster_reclassify as rc
     resource = rc.parse_resource(0, 0, raw)
-    moves, _ = rc.plan_resource(resource, {})
+    three_four = scheme == "3-4"
+    moves, _ = rc.plan_resource(resource, {}, historic_scheme=scheme,
+                                historic_min_lb=rc.MIN_LB_FOR_EVEN_BOOKS if three_four else 0,
+                                historic_light_end=rc.LIGHT_END_POUNDS if three_four else 0)
     body = bytearray(resource.body)
     rc.apply_moves(body, moves)
     return raw[:32] + bytes(body)

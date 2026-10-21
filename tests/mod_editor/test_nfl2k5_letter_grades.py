@@ -35,6 +35,11 @@ from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 
+# Keep the historical F4/F4b byte pins covered. lg2's default is tested separately.
+def legacy_apply(payload, **options):
+    return lg.apply(payload, all_ratings=False, **options)
+
+
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_CS = importlib.util.find_spec("capstone") is not None
 V05_DISC = Path(os.environ.get("NFL2K5_V05_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.5 (2026-10-06).xiso.iso"))
@@ -62,6 +67,19 @@ def _fbits(value: float) -> int:
 
 
 # ---------------------------------------------------------------------------------------------------------
+
+def _pread(fd: int, length: int, offset: int) -> bytes:
+    """Positional read that also works on Windows CPython (no os.pread there): seek, then read to length."""
+    os.lseek(fd, offset, os.SEEK_SET)
+    chunks, left = [], length
+    while left:
+        chunk = os.read(fd, left)
+        if not chunk:
+            break
+        chunks.append(chunk)
+        left -= len(chunk)
+    return b"".join(chunks)
+
 class ScaleTests(unittest.TestCase):
     def test_the_default_bands_are_noahs_scale_exactly(self) -> None:
         self.assertEqual(lg.DEFAULT_BANDS, ((95, "A+"), (90, "A"), (85, "B+"), (80, "B"), (75, "C+"), (70, "C"),
@@ -180,17 +198,29 @@ class AllocatorTests(unittest.TestCase):
         # which the native repairs append after F4 and so never exist without it
         later = space.LATE_OWNERS[space.LATE_OWNERS.index(lg.OWNER):]
         without = tuple(r for r in union if r[0] not in later)
-        self.assertEqual(len(union) - len(without), 7)   # b77-f5b: + the honors owner's code and data rows (late owner, last)
+        self.assertEqual(len(union) - len(without), 18)  # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: + the classic teams read-only helpers.
         plan_with, plan_without = space.plan(union), space.plan(without)
         key = lambda a: (a["owner"], a["kind"])           # noqa: E731
         old = {key(a): a for a in space._scale_allocations(without)}
         new = {key(a): a for a in space._scale_allocations(union)}
         for k, row in old.items():
-            self.assertEqual(new[k], row, f"{k} moved")
+            if k[0] == space.DIRECTORY_OWNER:
+                self.assertEqual(row['size'], 4096)
+                self.assertEqual(new[k]['size'], 1104)
+                self.assertEqual((row['raw'], row['va']), (new[k]['raw'], new[k]['va']))
+            else:
+                self.assertEqual(new[k], row, f"{k} moved")
         added = sorted(k for k in new if k not in old)
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
-                                        ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data")]))
+                                        ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
+                                        ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
+                                        ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data"),
+                                        ("nfl2k5_moment_context", "data"),  # b775 mo2
+                                        ("nfl2k5_classic_teams", "read_only"),  # b775-ct1
+                                        ("nfl2k5_human_tap_burst_spill", "code"),
+                                        ("nfl2k5_draft_picks_spill", "code"), ("nfl2k5_hback_spill", "code"),
+                                        ("nfl2k5_team_ratings_spill", "code"), ("nfl2k5_team_ratings_spill", "read_only")]))
         # after K128 in its region, contiguous with it
         k128, mine = new[("nfl2k5_k128", "code")], new[(lg.OWNER, "code")]
         self.assertEqual(mine["va"], k128["va"] + k128["size"])
@@ -214,7 +244,7 @@ class AllocatorTests(unittest.TestCase):
         from mod_editor.gui import beta62_options
         self.assertIn("letter_grades", beta62_options.KEYS)
         row = [r for r in beta62_options.OPTIONS if r[0] == "letter_grades"][0]
-        self.assertEqual(row[1], "Letter grades in Franchise")
+        self.assertEqual(row[1], "Letter grades for all player ratings")
         self.assertIn("95+ A+", row[2])
         self.assertIn("letter_grades", __import__("mod_editor.core.nfl2k5_build_settings", fromlist=["x"]).FEATURE_KEYS)
 
@@ -315,19 +345,19 @@ class RetailNativeTests(unittest.TestCase):
             cls.retail = _retail()
         except unittest.SkipTest as exc:
             raise unittest.SkipTest(str(exc))
-        cls.patched, cls.receipt = lg.apply(cls.retail)
+        cls.patched, cls.receipt = legacy_apply(cls.retail)
 
     def test_status_apply_and_replay(self) -> None:
         self.assertEqual(lg.status(self.retail), "retail")
         self.assertEqual(lg.status(self.patched), "applied")
         self.assertEqual(lg.read_settings(self.patched)["bands"][0], {"minimum": 95, "label": "A+"})
-        again, receipt = lg.apply(self.patched)
+        again, receipt = legacy_apply(self.patched)
         self.assertEqual(again, self.patched)
         self.assertTrue(receipt["already_applied"])
         self.assertEqual(len(self.receipt["sites"]), 28)
         self.assertEqual(self.receipt["owner_bytes"], 400)
         with self.assertRaises(lg.LetterGradesError):
-            lg.apply(self.patched, bands=((90, "A"), (None, "F")))
+            legacy_apply(self.patched, bands=((90, "A"), (None, "F")))
 
     def test_foreign_and_mixed_installations_are_refused(self) -> None:
         for label, va, before, after in lg.sites(0x14DA000, 0x1507000):
@@ -336,7 +366,7 @@ class RetailNativeTests(unittest.TestCase):
             broken[off] ^= 0x01
             self.assertEqual(lg.status(bytes(broken)), "foreign", label)
             with self.assertRaises(ValueError):
-                lg.apply(bytes(broken))
+                legacy_apply(bytes(broken))
         # a retail executable with one site already patched is mixed, not retail
         off = rdata.offset_of(self.retail, 0x31F71E)
         mixed = bytearray(self.retail)
@@ -350,7 +380,7 @@ class RetailNativeTests(unittest.TestCase):
 
     def test_a_custom_band_table_installs_and_reads_back(self) -> None:
         bands = ((90, "G"), (70, "OK"), (None, "X"))
-        patched, _ = lg.apply(self.retail, bands=bands)
+        patched, _ = legacy_apply(self.retail, bands=bands)
         self.assertEqual(lg.status(patched), "applied")
         self.assertEqual(lg.normalize_bands([(r["minimum"], r["label"]) for r in lg.read_settings(patched)["bands"]]), bands)
 
@@ -367,8 +397,8 @@ class RetailNativeTests(unittest.TestCase):
         self.assertEqual(sorted((r["owner"], r["kind"]) for r in after if r["owner"] == lg.OWNER),
                          [(lg.OWNER, "code"), (lg.OWNER, "read_only")])
         # the new owner then installs, and the result equals a build that asked for both owners at once
-        installed, _ = lg.apply(grown)
-        direct, _ = lg.apply(space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)[0])
+        installed, _ = legacy_apply(grown)
+        direct, _ = legacy_apply(space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)[0])
         self.assertEqual(installed, direct)
         # refusals: an owner that is not late, a second append, a legacy (not sealed) image
         with self.assertRaises(ValueError):
@@ -383,13 +413,13 @@ class RetailNativeTests(unittest.TestCase):
     def test_the_owner_installs_in_either_order_with_k128(self) -> None:
         from mod_editor.core import nfl2k5_k128 as k128
         union, _ = space.apply(self.retail, k128.REQUESTS + lg.REQUESTS, scaleout=True)
-        a, _ = lg.apply(k128.apply(union)[0])
-        b, _ = k128.apply(lg.apply(union)[0])
+        a, _ = legacy_apply(k128.apply(union)[0])
+        b, _ = k128.apply(legacy_apply(union)[0])
         self.assertEqual(a, b)
         self.assertEqual((lg.status(a), k128.status(a)), ("applied", "applied"))
         # K128 alone, then the late append on its installed image, ends the same as the union build
         only, _ = k128.apply(self.retail)
-        appended, _ = lg.apply(only)
+        appended, _ = legacy_apply(only)
         self.assertEqual(appended, a)
 
 
@@ -401,7 +431,7 @@ class PrintfAndFormatterTests(unittest.TestCase):
             cls.retail = _retail()
         except unittest.SkipTest as exc:
             raise unittest.SkipTest(str(exc))
-        cls.patched, _ = lg.apply(cls.retail)
+        cls.patched, _ = legacy_apply(cls.retail)
         from tests.nfl2k5_supersim_draft_fixture import Machine
         cls.m = Machine(cls.patched, trace_writes=False)
         cls.m0 = Machine(cls.retail, trace_writes=False)
@@ -490,13 +520,15 @@ class StudioBuildTests(unittest.TestCase):
             source.write_bytes(image)
             plan = mod_build.BuildPlan(str(source), str(target), letter_grades=True, throw=False, catch_slider=False,
                                        draft_ai=False, returner_fix=False, realistic_flight=False)
-            with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch("mod_editor.core.nfl2k5_menu_icon_orientation.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 receipt = mod_build.build(plan)
             self.assertIn("xbe_space", [step.get("step") for step in receipt["steps"]])
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 offset, length = tt.image_xbe_extent(fd, os.fstat(fd).st_size)
-                built = os.pread(fd, length, offset)
+                built = _pread(fd, length, offset)
             finally:
                 os.close(fd)
         self.assertEqual(lg.status(built), "applied")
@@ -507,12 +539,14 @@ class StudioBuildTests(unittest.TestCase):
             source.write_bytes(image)
             plan = mod_build.BuildPlan(str(source), str(target), letter_grades=False, throw=False, catch_slider=False,
                                        draft_ai=False, returner_fix=False, realistic_flight=False)
-            with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch("mod_editor.core.nfl2k5_menu_icon_orientation.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 mod_build.build(plan)
             fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 offset, length = tt.image_xbe_extent(fd, os.fstat(fd).st_size)
-                plain = os.pread(fd, length, offset)
+                plain = _pread(fd, length, offset)
             finally:
                 os.close(fd)
         self.assertEqual(plain, retail)
@@ -529,7 +563,7 @@ def _v05_xbe():
         size = os.fstat(fd).st_size
         entries, _ = xc.parse_xdvdfs(fd, size)
         entry = next(e for e in entries.values() if e.path.strip("/") == "default.xbe")
-        data = os.pread(fd, entry.size, entry.base_offset + entry.sector * 0x800)
+        data = _pread(fd, entry.size, entry.base_offset + entry.sector * 0x800)
     finally:
         os.close(fd)
     if hashlib.sha256(data).hexdigest() != V05_XBE_SHA256:

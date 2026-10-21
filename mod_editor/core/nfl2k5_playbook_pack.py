@@ -48,6 +48,7 @@ dependable modern read remain EXPERIMENTAL / UNWITNESSED.
 from __future__ import annotations
 
 import hashlib
+from collections import OrderedDict
 import json
 import re
 from dataclasses import dataclass, field, replace as _dc_replace
@@ -106,7 +107,10 @@ BUDGET_LIMITS: Mapping[str, int] = {
 SIGNATURE_CLASS: Mapping[str, str] = {
     "pass": "pass", "pa_pass": "pass", "run": "run", "draw": "run", "qb_run": "run", "flea": "pass",
 }
-PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense", "flea")
+#: b776 pb1: ``direct_snap`` (the centre snaps to a back, retail "H Direct Snap"; the QB chain is a decoy)
+#: and ``special`` (a complete-offense addition linked into a retained special-teams formation, e.g. a
+#: fake field goal cloned from the retail FG Pass) are complete-offense play types.
+PLAY_TYPES = ("pass", "pa_pass", "run", "sneak", "keeper", "reverse", "defense", "flea", "direct_snap", "special")
 
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
@@ -592,6 +596,10 @@ def _name(value: object, label: str) -> str:
         )
     if any(ord(ch) < 0x20 or ord(ch) > 0x7E for ch in text):
         raise PlaybookPackError(f"{label}: “{text}” may use printable ASCII only.")
+    from .nfl2k5_playbook_inspector import playcall_name_problems
+    problems = playcall_name_problems(text)
+    if problems:
+        raise PlaybookPackError(f"{label}: " + "; ".join(problems))
     return text
 
 
@@ -1065,6 +1073,15 @@ def check_pack(
         if family != 0:
             notes.append(f"play “{p.id}” is family {family} (not offence); the QB rule does not apply")
             continue
+        if p.play_type == "special":
+            # b776 pb1: a special-teams addition keeps its retail donor's exact header (validate_structure)
+            notes.append(f"play “{p.id}” is a special-teams addition with its donor's header")
+            continue
+        if p.play_type == "direct_snap":
+            if lib.play_class_label(flags) != "run":
+                errors.append(f"play “{p.id}”: a direct snap needs a run header")
+            notes.append(f"play “{p.id}” is a direct snap: the QB chain is a decoy, the class is run")
+            continue
         qb_chain = p.assignments[0]
         if p.option_intent and p.option_intent['preset'] == lib.OPTION_PRESETS[2]:
             if lib.play_class_label(flags) != 'pass':
@@ -1138,13 +1155,13 @@ def check_pack(
                 "donor-header rule cannot be checked offline"
             )
             continue
-        if p.donor.flags & lib.PLAY_FLAG_SPECIAL:
+        if p.donor.flags & lib.PLAY_FLAG_SPECIAL and p.play_type != "special":
             errors.append(
                 f"play “{p.id}”: donor {p.donor.index} (“{p.donor.name}”) is a special "
                 "(Take Knee / Spike / Hail Mary); reference_play_for never picks one"
             )
         qb_chain = p.assignments[0]
-        if qb_chain is None:
+        if qb_chain is None or p.play_type in ("special", "direct_snap"):
             continue
         authored = SIGNATURE_CLASS.get(lib.qb_signature(qb_chain))
         donor_class = SIGNATURE_CLASS.get(p.donor.signature)
@@ -1353,7 +1370,7 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
     if pack.schema == OFFENSE_SCHEMA:
         from .nfl2k5_complete_offense import compile_offense
         compiled = compile_offense(resource, pack, asset_id=asset_id)
-        return _score_compiled(compiled, xbe)
+        return _score_compiled(compiled, xbe, resource)
 
     if len(resource) != RESOURCE_SIZE:
         raise PlaybookPackError(
@@ -1373,11 +1390,33 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
         if pack.formations or any(p.replace_index is None for p in pack.plays):
             raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     formation_rows, play_rows, link_rows = pack_requests(pack, asset_id, book)
-    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe)
+    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe, resource)
 
 
-def _score_compiled(compiled, xbe):
+def _score_compiled(compiled, xbe, source):
+    from dataclasses import replace
+    from .nfl2k5_formation_play_writer import compact_unused_categories, _difference_ranges
     from .nfl2k5_play_scoring import require_safe
+    replacement, categories = compact_unused_categories(compiled.replacement, trim_name_tail=True)
+    if replacement != compiled.replacement:
+        spans = _difference_ranges(source, replacement)
+        digest = hashlib.sha256(replacement).hexdigest()
+        compiled = replace(compiled, replacement=replacement, replacement_sha256=digest,
+                           changed_ranges=tuple(spans), changed_byte_count=sum(b-a for a, b in spans),
+                           parsed_replacement=parse_playbook_resource(replacement, asset_id=compiled.asset_id))
+        compiled.report.update(replacement_sha256=digest, category_menus=categories,
+                               changed_ranges=[list(s) for s in spans])
+        for row in compiled.report.get('authored_formations', []):
+            row['category_index'] = categories['index_map'][row['category_index']]
+        for row in compiled.report.get('defense_menus', []):
+            if 'formation_index' in row:
+                row.update(lib.defense_personnel(compiled.parsed_replacement,
+                                                 replacement[RESOURCE_HEADER_SIZE:],
+                                                 row['formation_index']))
+    from .nfl2k5_playbook_inspector import playcall_ui_problems
+    problems = playcall_ui_problems(compiled.replacement)
+    if problems:
+        raise PlaybookPackError("Compiled play-call UI is unsafe: " + "; ".join(problems[:3]))
     compiled.report['native_scoring'] = require_safe(compiled.replacement, xbe)
     return compiled
 
@@ -2044,6 +2083,146 @@ def _outer_image():
     return importlib.import_module("nfl2k5_playbook_position_recode")
 
 
+#: Install steps already compiled in this process.  A full Studio build
+#: compiles every pack twice with identical inputs: the "every playbook pack
+#: together" preview on the source disc, then the install on the built copy,
+#: whose books and executable are still the retail ones at that point.  The
+#: key is every input of the step, so a hit is the same computation.
+_COMPILED_INSTALL_STEPS: "OrderedDict[tuple, tuple]" = OrderedDict()
+_COMPILED_INSTALL_STEP_LIMIT = 160
+
+
+def install_step_key(before: bytes, pack: PlaybookPack, team: str, xbe) -> tuple:
+    """Every input of one install step's compile (frozen dataclass repr is complete)."""
+    return (team, hashlib.sha256(before).hexdigest(),
+            hashlib.sha256(repr(pack).encode("utf-8")).hexdigest(),
+            None if xbe is None else hashlib.sha256(bytes(xbe)).hexdigest())
+
+
+def _memo_enabled() -> bool:
+    import os
+    return os.environ.get("NFL2K5_DISABLE_COMPILE_CACHE") != "1"
+
+
+def _remember_install_step(key: tuple, compiled) -> None:
+    import copy
+    _COMPILED_INSTALL_STEPS[key] = copy.deepcopy(compiled)
+    _COMPILED_INSTALL_STEPS.move_to_end(key)
+    while len(_COMPILED_INSTALL_STEPS) > _COMPILED_INSTALL_STEP_LIMIT:
+        _COMPILED_INSTALL_STEPS.popitem(last=False)
+
+
+def _compile_install_step(before: bytes, pack: PlaybookPack, team: str, xbe):
+    """``apply_pack_to_resource`` for one install step, remembered by its inputs."""
+    import copy
+
+    key = install_step_key(before, pack, team, xbe) if _memo_enabled() else None
+    if key is not None:
+        remembered = _COMPILED_INSTALL_STEPS.get(key)
+        if remembered is not None:
+            _COMPILED_INSTALL_STEPS.move_to_end(key)
+            return copy.deepcopy(remembered)
+    compiled = apply_pack_to_resource(before, pack, asset_id=f"book:{team}", xbe=xbe)
+    if key is not None:
+        _remember_install_step(key, compiled)
+    return compiled
+
+
+def _warm_worker_count(chains: int) -> int:
+    import os
+    configured = os.environ.get("NFL2K5_BUILD_WORKERS", "").strip()
+    try:
+        workers = int(configured) if configured else (os.cpu_count() or 1) - 1
+    except ValueError:
+        workers = (os.cpu_count() or 1) - 1
+    if os.name == "nt":
+        workers = min(workers, 61)
+    return max(1, min(workers, chains))
+
+
+def prewarm_install_steps(archive: Any, packs: Sequence[tuple[str, PlaybookPack]],
+                          book_entries: Mapping[str, int], xbe,
+                          progress: Callable[[str], None] | None = None) -> int:
+    """Compile every book's chain of packs in parallel and remember the steps.
+
+    Only the memo is touched: ``apply_packs_to_archive`` still parses,
+    retargets, checks and writes every step itself, in order, and recompiles
+    anything this did not produce. Returns the number of steps remembered.
+    """
+    import os
+    import pickle
+    import subprocess
+    import sys
+    import time
+
+    if not _memo_enabled() or getattr(sys, "frozen", False) or xbe is None:
+        return 0
+    originals: dict[int, bytes] = {}
+    chains: dict[int, list[tuple[PlaybookPack, str]]] = {}
+    for _, pack in packs:
+        for team in pack.book.resolved_targets():
+            index = book_entries.get(team)
+            if index is None or index >= len(archive.entries) \
+                    or archive.entries[index].size != RESOURCE_SIZE:
+                return 0  # the installer refuses it, in its own words
+            if index not in originals:
+                originals[index] = archive.read_entry(index)
+            chains.setdefault(index, []).append((pack, team))
+    if len(chains) < 2:
+        return 0
+    first = [install_step_key(originals[index], steps[0][0], steps[0][1], xbe)
+             for index, steps in chains.items()
+             if steps[0][1] == steps[0][0].book.team]
+    if first and all(key in _COMPILED_INSTALL_STEPS for key in first):
+        return 0  # already compiled in this process (the preview did it)
+    workers = _warm_worker_count(len(chains))
+    if workers < 2:
+        return 0
+    try:
+        request = pickle.dumps({"chains": [(originals[index], steps) for index, steps in chains.items()],
+                                "xbe": bytes(xbe), "workers": workers},
+                               protocol=pickle.HIGHEST_PROTOCOL)
+    except Exception:  # noqa: BLE001 - a pack that cannot travel compiles serially
+        return 0
+    helper = Path(__file__).resolve().parents[2] / "tools" / "nfl2k5_playbook_warm.py"
+    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+    try:
+        process = subprocess.Popen([sys.executable, str(helper)], stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                   creationflags=flags)
+    except OSError:
+        return 0
+    started = time.monotonic()
+    output = None
+    try:
+        payload = request
+        while output is None:
+            try:
+                output, _ = process.communicate(payload, timeout=2.0)
+            except subprocess.TimeoutExpired:
+                payload = None
+                if progress is not None:
+                    # Also the cancel point: a cancelled build raises here.
+                    progress(f"Compiling {len(chains)} playbooks in parallel "
+                             f"({int(time.monotonic() - started)} s)")
+    except BaseException:
+        process.kill()
+        process.wait()
+        raise
+    if process.returncode != 0:
+        return 0
+    try:
+        results = pickle.loads(output)
+    except Exception:  # noqa: BLE001 - a broken helper only costs the warm-up
+        return 0
+    remembered = 0
+    for chain in results:
+        for key, compiled in chain:
+            _remember_install_step(key, compiled)
+            remembered += 1
+    return remembered
+
+
 def apply_packs_to_archive(
     archive: Any,
     packs: Sequence[tuple[str, PlaybookPack]],
@@ -2061,6 +2240,14 @@ def apply_packs_to_archive(
     say = progress or (lambda _m: None)
     if book_entries is None:
         book_entries = _outer_image().BOOK_ENTRIES
+    warm_xbe = xbe
+    if warm_xbe is None and hasattr(archive, 'path'):
+        try:
+            from .nfl2k5_play_scoring import executable_bytes
+            warm_xbe = executable_bytes(archive.path)
+        except Exception:  # noqa: BLE001 - the installer reads it itself below
+            warm_xbe = None
+    prewarm_install_steps(archive, packs, book_entries, warm_xbe, progress)
     applied: list[dict[str, Any]] = []
     pending: dict[int, bytes] = {}
     originals: dict[int, bytes] = {}
@@ -2089,7 +2276,7 @@ def apply_packs_to_archive(
             if xbe is None and hasattr(archive, 'path'):
                 from .nfl2k5_play_scoring import executable_bytes
                 xbe = executable_bytes(archive.path)
-            compiled = apply_pack_to_resource(before, use, asset_id=f"book:{team}", xbe=xbe)
+            compiled = _compile_install_step(before, use, team, xbe)
             if compiled.replacement[:RESOURCE_HEADER_SIZE] != before[:RESOURCE_HEADER_SIZE]:
                 raise PlaybookPackError(f"{team}: the PLAY resource wrapper changed")
             pending[index] = compiled.replacement

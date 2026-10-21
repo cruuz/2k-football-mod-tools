@@ -1,0 +1,322 @@
+{
+ "schema": "nfl2k5_menu_helmet_w2026/v1",
+ "source": "hu1 (b773): Washington's Team Select helmet cards and schedule miniatures re-rendered with the 2026 helmet W uf3 drew in game (four solid gold strokes, thin burgundy splits, no outline)",
+ "model": {
+  "units": "texels of the club W at the 256 logo size, origin at the W's top-left",
+  "construction": "each stroke is the club W's stroke interior grown by the outline width (mitred, cut at the W's top and bottom lines); each is overlapped by the next one",
+  "outline": 9.0,
+  "size": [
+   233.074,
+   127.0
+  ],
+  "gold": "#FFB612",
+  "exposure": 750,
+  "strokes": [
+   [
+    [
+     69.89,
+     0.062
+    ],
+    [
+     84.883,
+     45.943
+    ],
+    [
+     58.228,
+     127.0
+    ],
+    [
+     51.743,
+     127.0
+    ],
+    [
+     21.985,
+     35.751
+    ],
+    [
+     0.0,
+     0.062
+    ]
+   ],
+   [
+    [
+     98.276,
+     0.0
+    ],
+    [
+     124.106,
+     78.7
+    ],
+    [
+     107.994,
+     126.938
+    ],
+    [
+     48.744,
+     126.938
+    ],
+    [
+     89.931,
+     0.0
+    ]
+   ],
+   [
+    [
+     148.115,
+     0.062
+    ],
+    [
+     165.72,
+     53.285
+    ],
+    [
+     142.486,
+     127.0
+    ],
+    [
+     129.35,
+     127.0
+    ],
+    [
+     88.858,
+     0.063
+    ]
+   ],
+   [
+    [
+     191.573,
+     126.938
+    ],
+    [
+     132.822,
+     126.938
+    ],
+    [
+     165.928,
+     23.246
+    ],
+    [
+     158.092,
+     0.062
+    ],
+    [
+     233.074,
+     0.062
+    ]
+   ]
+  ]
+ },
+ "gap": "texels between a back stroke and the stroke in front: 1.7% of the W's width, at least 0.9",
+ "targets": [
+  {
+   "aggregate": "logos",
+   "member": "helm_h29_0",
+   "size": [
+    256,
+    256
+   ],
+   "box": [
+    87,
+    53,
+    204,
+    130
+   ],
+   "strap": true,
+   "transform": [
+    0.479253,
+    -0.03516,
+    89.363396,
+    0.025218,
+    0.529514,
+    55.542979
+   ],
+   "gap": 1.9,
+   "before_sha256": "67ab69f9f896f83cf4774cb905e4e8934cb65262a63985dc4ff50ab9ab129c9a",
+   "after_sha256": "db4de9fc9c13e495edac8af359533d80d2f0a6fdc823031c125a483400d2e53f"
+  },
+  {
+   "aggregate": "logos",
+   "member": "helm_a29_0",
+   "size": [
+    256,
+    256
+   ],
+   "box": [
+    52,
+    54,
+    170,
+    130
+   ],
+   "strap": true,
+   "transform": [
+    0.485901,
+    0.034945,
+    54.110178,
+    -0.02412,
+    0.530094,
+    61.789041
+   ],
+   "gap": 1.93,
+   "before_sha256": "da328eb86a9ffddb2ccd907a9db8576178921a7e4999e119f9d9e6adc9ab647d",
+   "after_sha256": "6de1f0db98d396ff787bb1fbea9b5d631f0281ded3342d65ee3834179d4b2f6b"
+  },
+  {
+   "aggregate": "logos",
+   "member": "unif_h29_0",
+   "size": [
+    256,
+    256
+   ],
+   "box": [
+    35,
+    176,
+    111,
+    226
+   ],
+   "strap": true,
+   "transform": [
+    0.30319,
+    0.023345,
+    37.600252,
+    -0.016485,
+    0.334194,
+    181.91857
+   ],
+   "gap": 1.2,
+   "before_sha256": "7f733147fbb8759be478f7e29bb980bbec29c9d65e9ebebd0270ef5954460af6",
+   "after_sha256": "551b641ab5cd250134f552dd0f30c5bee2f3af2008e7b95071c3eb2d5d96740d"
+  },
+  {
+   "aggregate": "logos",
+   "member": "unif_a29_0",
+   "size": [
+    256,
+    256
+   ],
+   "box": [
+    34,
+    175,
+    111,
+    226
+   ],
+   "strap": true,
+   "transform": [
+    0.306089,
+    0.030622,
+    36.729122,
+    -0.015332,
+    0.338078,
+    181.31859
+   ],
+   "gap": 1.21,
+   "before_sha256": "4aa80fd71fcc28097e95554734ed142925e403729bed39646a2bf3c88da51cb4",
+   "after_sha256": "e0f5452bb4e74c7f7a52e188181993c0eb805d83c56c7fce7cc78765551d34d9"
+  },
+  {
+   "aggregate": "logos128",
+   "member": "helm_h29_0",
+   "size": [
+    128,
+    128
+   ],
+   "box": [
+    42,
+    25,
+    103,
+    66
+   ],
+   "strap": true,
+   "transform": [
+    0.239455,
+    -0.016656,
+    44.683496,
+    0.0126,
+    0.265237,
+    27.636997
+   ],
+   "gap": 0.95,
+   "before_sha256": "37130542c02dd7441476be84d147e86933a8a195bd441e64a94ef1e690b1bc85",
+   "after_sha256": "e6c76dc79db978e60ee5fc8cf6bc87d878aa271e31f3b72ccef6e3ceb80df7b2"
+  },
+  {
+   "aggregate": "logos128",
+   "member": "helm_a29_0",
+   "size": [
+    128,
+    128
+   ],
+   "box": [
+    24,
+    26,
+    86,
+    66
+   ],
+   "strap": true,
+   "transform": [
+    0.246153,
+    0.021123,
+    26.45052,
+    -0.009639,
+    0.266616,
+    30.499898
+   ],
+   "gap": 0.98,
+   "before_sha256": "96e6957e2a4c6c4f6891af28576391bca96b44308dc0c45fab7290962b97e99e",
+   "after_sha256": "929f9b768378d45baab14406118904e5a9cc8c47a01e6455d2e3601ba9fbc645"
+  },
+  {
+   "aggregate": "mini",
+   "member": "mini_h29_0",
+   "size": [
+    64,
+    64
+   ],
+   "box": [
+    30,
+    9,
+    64,
+    36
+   ],
+   "strap": false,
+   "transform": [
+    0.113466,
+    -0.033764,
+    32.669515,
+    0.023125,
+    0.128711,
+    11.325165,
+    -0.000215,
+    -2.2e-05
+   ],
+   "gap": 0.9,
+   "before_sha256": "ed2ed499605adbcd2f0707eb3d4c403c316edfea4704ae41e167f6c03bd2b585",
+   "after_sha256": "6d259357f9a155d9c9f25ce157227cc081f024b32354925202735f5a59562316"
+  },
+  {
+   "aggregate": "mini",
+   "member": "mini_a29_0",
+   "size": [
+    64,
+    64
+   ],
+   "box": [
+    0,
+    8,
+    34,
+    36
+   ],
+   "strap": false,
+   "transform": [
+    0.125369,
+    0.03461,
+    2.229063,
+    -0.028891,
+    0.137589,
+    17.70925
+   ],
+   "gap": 0.9,
+   "before_sha256": "b9bd39ab89daaec7433d9e53eccc8bc80fb65d1fc47a9a938bbcdb0718c7b6a8",
+   "after_sha256": "35018e71c2048a72cd42f27b48b741cf67850685dcc06c049b8fffb271d810a6"
+  }
+ ]
+}

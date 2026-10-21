@@ -120,6 +120,12 @@ def refresh(output):
         start, end = int(row['start'], 0), int(row['end'], 0)
         if start < space.CODE_VA:
             kept.append(row)
+        elif row['owner'] == 'nfl2k5_my_career_home':
+            # b775-int1 (ui1): the extra section slot's alternative occupant; its fixed slot is inherited as recorded.
+            from mod_editor.core import nfl2k5_my_career_home as home
+            if not home.VA <= start < end <= home.VA + home.SIZE:
+                raise ValueError(f'Career Home span outside its extra section slot: {row}')
+            kept.append(row)
         elif row['owner'] != space.OWNER and not any(
                 a['owner'] == row['owner'] and a['va'] <= start < end <= a['va']+a['size'] for a in old):
             raise ValueError(f'unrecognized inherited grown reservation: {row}')

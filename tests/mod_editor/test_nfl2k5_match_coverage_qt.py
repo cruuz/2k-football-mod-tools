@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 for path in (ROOT, ROOT / 'tools'):
     sys.path.insert(0, str(path))
 
-from tests.mod_editor.test_nfl2k5_match_coverage import resources, SEED
+from tests.mod_editor.test_nfl2k5_match_coverage import resources, SEED, EXTRACT
 from mod_editor.core import nfl2k5_playbook_pack as pk
 from mod_editor.core import nfl2k5_playbook_inspector as insp
 from mod_editor.core import nfl2k5_match_coverage as match
@@ -29,6 +29,7 @@ class MatchQtTests(unittest.TestCase):
             raise unittest.SkipTest('PyQt5 is absent; offscreen match UI acceptance requires it')
         cls.app = QApplication.instance() or QApplication([])
         cls.resources = resources()
+        cls.xbe = (EXTRACT / 'default.xbe').read_bytes()
         cls.books = {t: insp.parse_playbook_resource(r, asset_id='book:' + t) for t, r in cls.resources.items()}
 
     def test_info_search_documents_native_census_and_missing_modern_keys(self):
@@ -78,12 +79,12 @@ class MatchQtTests(unittest.TestCase):
                 return ('BAL', 'OAK')
             def preview_playbook_pack(self, pack, team, _progress):
                 raw = owner.resources[team]
-                return pk.preview_pack(pack, team, owner.books[team], raw[32:], resource=raw)
+                return pk.preview_pack(pack, team, owner.books[team], raw[32:], resource=raw, xbe=owner.xbe)
             def install_playbook_pack(self, pack, teams, _progress):
                 team = teams[0]
                 preview = self.preview_playbook_pack(pack, team, _progress)
                 self.installed = preview.pack
-                self.compiled = pk.apply_pack_to_resource(owner.resources[team], preview.pack)
+                self.compiled = pk.apply_pack_to_resource(owner.resources[team], preview.pack, xbe=owner.xbe)
                 return self.compiled
         host = Host()
         dialog = PlaybookPackInstallDialog(host, SEED)

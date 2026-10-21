@@ -31,6 +31,26 @@ LEGACY_PROFILE_SHA256 = "db5ee784c18f00af8ba842dc26dac33f863ec537a336fa578f7db22
 ROOT = Path(__file__).resolve().parents[2]
 
 
+# b777-sm2: the b776 core (its profile getter also matched the Situation mode, game mode 8 with flag 0xE6014C = 1), kept
+# only so an installed b776 body is recognised and replaced in place.
+B776_CORE = dict(
+    code=bytes.fromhex(
+    "31c0833d80ffe500087515a15818bf0083f8337309c1e0050500000000c331c0c3833dc402e60005"
+    "7c450fb6481783f901742a83f90275198b1528fce5008b128b0d68fce5002b117902f7da83fa0673"
+    "21e8fcffffff0f94c00fb6c0c38b0d28fce5008b1568fce5008b093b0a750331c0c3b801000000c3"
+    "8b4010a3b002e6008b0d8c02e60085c97403894110833d0000000000752dc7050000000001000000"
+    "c605a802e600008b0d8402e60085c97412b00481f920fce500740200c00805a802e600c38b0d28fc"
+    "e5008b1568fce5008b093b0a749cf6401604749380781702728d8b0d8002e60085c974838b51088b"
+    "128b098b49083b110f8c74ffffffe96cffffffc7050800000000000000f64016207458833db402e6"
+    "0002754f85d2744b8b4a388b49088b490c8b5218d94238d84904d81d6c010000dfe0f6c4057a2cd9"
+    "4238d84904d81d70010000dfe0f6c4417519d94104d80d6c010000d91d04000000c7050800000001"
+    "000000c300e00ec500e08ec5"
+    ),
+    relocations=((25, 1, 'profiles', 0), (82, 2, 'native_ot_check', 0), (143, 1, 'state', 0), (152, 1, 'state', 0), (261, 1, 'state', 0), (308, 1, 'code', 0), (327, 1, 'code', 0), (343, 1, 'code', 0), (349, 1, 'state', 0), (355, 1, 'state', 0)),
+    labels={'both': 81, 'clock_done': 195, 'clock_no_object': 141, 'clock_pending': 189, 'fair_25': 364, 'fair_catch': 259, 'fair_done': 363, 'fair_goal': 368, 'magnitude': 76, 'not_over': 111, 'ot_check': 33, 'ot_clock': 120, 'ot_expiry': 196, 'over': 114, 'profile': 0, 'profile_done': 32, 'profile_none': 30, 'sudden_death': 93},
+)
+
+
 def require(ok, message):
     if not ok:
         raise ValueError(message)
@@ -53,7 +73,7 @@ def profiles():
     return bytes(out)
 
 
-def specs():
+def specs(revision=2):
     """name, VA, span, dispatch. Every span ends on an instruction boundary."""
     from . import nfl2k5_kick_rules as kr, nfl2k5_overtime as ot
     from . import nfl2k5_coin_defer as coin, nfl2k5_decided_clock as clock
@@ -82,6 +102,10 @@ def specs():
              ("penalty_finish", 0xB156C, 5, "penalty_finish")]
     rows += [("coin_" + n, va, len(raw), "coin_" + n) for n, va, raw, _op in coin.HOOKS]
     rows += [("clock_" + n, va, len(raw), "clock_" + n) for n, va, raw, _op in clock.HOOKS]
+    if revision >= 2:
+        # Classify the successful try before score notifications, drive history
+        # and live points consume it. A run/pass PAT before 1994 is one point.
+        rows += [("try_event", 0x22DFF0, 7, "try_event")]
     return rows
 
 
@@ -106,22 +130,25 @@ def imm(value):
     return struct.pack("<I", value & 0xFFFFFFFF).hex()
 
 
-JUMPS = {"regular_tie", "no_ot", "try_points", "def_interception", "def_recovery", "def_blocked",
+JUMPS = {"regular_tie", "no_ot", "try_points", "try_event", "def_interception", "def_recovery", "def_blocked",
          "try_ai", "fair_catch", "fair_spot", "penalty_finish", "coin_choose", "coin_winner_result", "clock_huddle"}
 
 
-def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
+def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE, revision=2, situation=True):
+    """``situation=False`` rebuilds the b776 body (its getter also served the Situation mode); recognition only."""
+    core_code, core_relocations, core_labels = ((assembly.CODE, assembly.RELOCATIONS, assembly.LABELS) if situation else
+        (B776_CORE["code"], B776_CORE["relocations"], B776_CORE["labels"]))
     from . import nfl2k5_overtime as ot, nfl2k5_coin_defer as coin, nfl2k5_kick_rules as kr
     va, state = owned["code"]["va"], owned["data"]["va"]
     symbols = dict(code=va, profiles=owned["read_only"]["va"] + PROFILES, state=state, native_ot_check=ot.cave_labels()["ot_check"])
-    core = bytearray(assembly.CODE)
+    core = bytearray(core_code)
     if profile_data is not None:
         # The sealed v0.4 table used 50 profiles and sixteen-byte displaced slots.
         require(len(profile_data) == 1600 and hashlib.sha256(profile_data).hexdigest() == LEGACY_PROFILE_SHA256,
                 "foreign legacy era profiles")
         limit = core.index(bytes.fromhex("83f833")) + 2
         core[limit] = 50
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    for offset, kind, symbol, value in core_relocations:
         target = symbols[symbol] + value + struct.unpack_from("<i", core, offset)[0]
         if kind == 2:
             target -= va + offset
@@ -129,12 +156,12 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
     require(len(core) < WRAPPERS, "era core budget")
     a = _Asm(va + WRAPPERS)
     edits = []
-    for ordinal, (name, site, size, dispatch) in enumerate(specs()):
+    for ordinal, (name, site, size, dispatch) in enumerate(specs(revision)):
         before = saved[ordinal]
         require(len(before) == size, "era displaced span size")
         a.label(name)
         a.b("9c60")
-        a.call(va + assembly.LABELS["profile"])
+        a.call(va + core_labels["profile"])
         # Game init always clears our OT latch, including Quick Game after a moment.
         if dispatch == "ot_init":
             a.b("c705" + imm(state) + "00000000c705" + imm(state + 8) + "00000000")
@@ -164,7 +191,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
                            "pat_audible": kr.AUDIBLE_TARGET_VA}[dispatch])
         elif dispatch in ("ot_pred", "ot_expiry"):
             helper = "ot_check" if dispatch == "ot_pred" else "ot_expiry"
-            a.call(va + assembly.LABELS[helper])
+            a.call(va + core_labels[helper])
             a.b("85c0")
             a.j32("0f85", name + "_yes")
             a.b("619d")
@@ -177,7 +204,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
                 a.b("a1c402e600")
             a.b("39c0c3")
         elif dispatch == "ot_clock":
-            a.call(va + assembly.LABELS["ot_clock"])
+            a.call(va + core_labels["ot_clock"])
             a.b("619d")
             a.jmp_abs(ot.FN_KICK_SETUP)
         elif dispatch == "regular_tie":
@@ -203,7 +230,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
             a.b("619d33c0c3")  # prefer the one-point kick; a human can still run/pass for one
         elif dispatch == "fair_catch":
             a.b("8b54241c")  # original EAX is the receiver
-            a.call(va + assembly.LABELS["fair_catch"])
+            a.call(va + core_labels["fair_catch"])
         elif dispatch == "fair_spot":
             a.b("833d" + imm(state + 8) + "00")
             a.j32("0f84", name + "_forward")
@@ -213,6 +240,11 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
             a.b("f6401601")
             a.j32("0f85", name + "_forward")
             a.b("619d8300018b4938")
+            a.jmp_abs(site + size)
+        elif dispatch == "try_event":
+            a.b("f6401601")
+            a.j32("0f85", name + "_forward")
+            a.b("619dc7407404000000")
             a.jmp_abs(site + size)
         elif dispatch.startswith("def_"):
             a.b("f6401602")
@@ -264,7 +296,7 @@ def code_for(owned, saved, *, profile_data=None, saved_stride=SAVED_STRIDE):
         require(len(raw) <= saved_stride, "era displaced instruction budget")
         constants.extend(raw.ljust(saved_stride, b"\0"))
     require(len(constants) <= RO_SIZE, "era saved-site budget")
-    for name, site, size, dispatch in specs():
+    for name, site, size, dispatch in specs(revision):
         opcode = b"\xe9" if dispatch in JUMPS else b"\xe8"
         after = (opcode + struct.pack("<i", va + WRAPPERS + a.labels[name] - site - 5)).ljust(size, b"\x90")
         edits.append((site, after))
@@ -304,6 +336,27 @@ def underlying_view(payload):
     return _underlying_view(bytes(payload))
 
 
+def _installed_definition(image, owned):
+    """Recognize the exact shipped wrapper or its successor before unwrapping."""
+    body = image.read(owned["code"]["va"], CODE_SIZE)
+    constants = image.read(owned["read_only"]["va"], RO_SIZE)
+    limit = B776_CORE["code"].index(bytes.fromhex("83f833")) + 2   # the v0.4 bodies carry the b776 core layout
+    legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
+    saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
+    for situation in (True, False):
+        for revision in (2, 1):
+            if legacy and revision != 1:
+                continue
+            saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
+                     for i, (_n, _va, size, _d) in enumerate(specs(revision))]
+            expected, expected_ro, edits = code_for(owned, saved, profile_data=constants[:1600] if legacy else None,
+                                                    saved_stride=stride, revision=revision, situation=situation)
+            if body == expected and constants == expected_ro:
+                # b777-sm2: a body without the Situation test reports as revision 1, so apply() reinstalls it in place.
+                return saved, edits, revision if situation else 1
+    raise ValueError("foreign era rules code, profiles or displaced-site table")
+
+
 @lru_cache(maxsize=2)
 def _underlying_view(payload):
     """Restore only verified era-owned sites for the underlying owners' recognizers."""
@@ -322,14 +375,7 @@ def _underlying_view(payload):
     if body == b"\xcc" * CODE_SIZE:
         require(constants == bytes(RO_SIZE), "foreign dormant era constants")
         return payload
-    limit = assembly.CODE.index(bytes.fromhex("83f833")) + 2
-    legacy = body[limit] == 50 and hashlib.sha256(constants[:1600]).hexdigest() == LEGACY_PROFILE_SHA256
-    saved_at, stride = (1600, 16) if legacy else (SAVED, SAVED_STRIDE)
-    saved = [constants[saved_at + i * stride:saved_at + i * stride + size]
-             for i, (_n, _va, size, _d) in enumerate(specs())]
-    expected, expected_ro, edits = code_for(owned, saved, profile_data=constants[:1600] if legacy else None,
-                                            saved_stride=stride)
-    require(body == expected and constants == expected_ro, "foreign era rules code, profiles or displaced-site table")
+    saved, edits, _revision = _installed_definition(image, owned)
     states = {"underlying" if image.read(site, len(raw)) == raw else
               "applied" if image.read(site, len(after)) == after else "foreign"
               for (site, after), raw in zip(edits, saved)}
@@ -385,6 +431,8 @@ def _prerequisites(payload):
         require(hashlib.sha256(raw).hexdigest() == guard["sha256"],
                 "foreign era dependency at " + hex(guard["va"]))
     for name, site, size, dispatch in specs():
+        if dispatch == "try_event":
+            require(image.read(site, size) == bytes.fromhex("c7407405000000"), "foreign era try event setter")
         if dispatch in ("regular_tie", "no_ot", "try_points", "try_ai", "fair_catch", "fair_spot", "penalty_finish"):
             require(image.read(site, size).hex() == pins[name], "foreign era live site " + name)
         if dispatch in ("def_interception", "def_recovery", "def_blocked"):
@@ -401,8 +449,9 @@ def status(payload):
                 image = XbeImage(payload)
                 body = image.read(owned["code"]["va"], CODE_SIZE)
                 if body != b"\xcc" * CODE_SIZE:
-                    for i, (_name, site, size, _dispatch) in enumerate(specs()):
-                        require(image.read(site, size) == image.read(owned["read_only"]["va"] + SAVED + i * SAVED_STRIDE, size),
+                    saved, edits, _revision = _installed_definition(image, owned)
+                    for (site, _after), raw in zip(edits, saved):
+                        require(image.read(site, len(raw)) == raw,
                                 "foreign disabled era hook")
             return "retail"
         _prerequisites(base)
@@ -420,7 +469,8 @@ def apply(payload, *, enabled=True):
     if before == "applied":
         image = XbeImage(payload)
         owned = places(payload)
-        if image.read(owned["read_only"]["va"], SAVED) == profiles():
+        _saved, _edits, revision = _installed_definition(image, owned)
+        if revision == 2 and image.read(owned["read_only"]["va"], SAVED) == profiles():
             return payload, dict(status="already_applied", owner=OWNER, changed_bytes=0)
         # Restore only validated era sites, then install the expanded table in the same allocation.
         payload = underlying_view(payload)

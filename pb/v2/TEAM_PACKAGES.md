@@ -1,3 +1,37 @@
+# SOFTDRINK offense v3 (b776 job pb1): how the books are built now
+
+`pb/v2/build.py` delegates to `pb/v2/generator.py` (v3); `--legacy` still runs the v2 path described below.
+v3 builds every book from the modern catalog `mod_editor/core/nfl2k5_offense_modern.py` (registered into the
+engine, so the Studio wizard shows it): retail-sourced routes (every retail route-segment pattern used 7+ times),
+114 formations (Madden 27's most used sets by name and alignment, CFB Wing T, full house, Pistol, Gun Wildcat,
+13 personnel, the Pony two-back package), retail-template runs, combo pass calls and the must-haves (QB Sneak,
+Tush Push in Goal Line Sneak, an under-centre QB Keep, a direct snap, the PAT fake field goal "Fake FG End Zone"
+linked into the retained Field Goal formation).
+
+What a team gets is set by data, not by a hand menu:
+
+| input | where | effect |
+|---|---|---|
+| Madden 27 family and personnel shares | `pb/research/madden27_team_tree.json` | formation family weights (gun, pistol, singleback, two-back under centre), personnel weights, signature sets |
+| 2025 tendencies | `pb/v2/teams/<TEAM>.json` `tendencies`, `family`, `depth_step` | run-scheme weights (wide zone, power, west coast...), pass-family weights, play-action rate, pistol rate |
+| team plays | `signature` and named `menus` entries | up to 8 kept when their formation is in the book |
+| era profile | `generator.ERA_PROFILES` | `--era 2010s` reweights families (more under centre / I-form / 21) and filters the catalog by `nfl2k5_offense_modern.ERA` |
+| CPU personnel design | `pb/v2/fit_cpu.py` search, run per team | formation ratings and group ownership fitted to `pb/research/situational_2025.json` |
+
+Rules v3 enforces: every play passes the retail validator, the playbook linter without repairs and the native route
+initializer check (no collisions or stacked landmarks); menus are pages of three distinct plays (9-18); at most two
+screens and one of each screen type per menu; Pistol 11-personnel sets own the "Pistol" play-call group; the book
+fills its free records (50 formations / 270 plays, leaving the defense pack's appends and one record for the PAT
+fake); play names fit the name pool before the coach_ai tail (0x13000). After a rebuild run, in order:
+
+```
+python3 pb/v2/generator.py --image RETAIL.iso --xbe default.xbe --workers 4 --write
+python3 tools/b77/pb1_defense_rebase.py --disc RETAIL.iso --apply      # defense content unchanged
+python3 pb/v2/pins.py --image RETAIL.iso --xbe default.xbe --write     # screen timing D pins
+python3 pb/v2/verify3.py --image RETAIL.iso --xbe default.xbe --books /tmp/v3books
+python3 pb/v2/variety.py /tmp/v3books ; python3 pb/v2/book_art.py /tmp/v3books/KC.play --out KC.png
+```
+
 # How to add a team package (SOFTDRINK offense v2)
 
 Every team book = the shared core (`pb/v2/core.json`) + one team package (`pb/v2/teams/<TEAM>.json`).

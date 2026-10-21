@@ -4,15 +4,15 @@
   "team": "TB",
   "name": "NFL 2K28 TB Defense v2",
   "author": "SOFTDRINK / Claude Opus 5.5 (p48d)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC0-1.0",
   "notes": "DESIGN: Todd Bowles (Bowles / Arians pressure); 2025 baseline TB. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "cde2377c42d794ea14ef154943b5a44ac470e63f8b505cb63e5dc720b03796f8",
+  "book_fingerprint": "0c35a6bd14136a5c50659fcb4d7d53b619106702d36afa468d6d86749d44e586",
   "donor_formation_count": 49,
-  "donor_play_count": 253,
-  "donor_node_count": 1802
+  "donor_play_count": 262,
+  "donor_node_count": 2236
  },
  "budget": {
   "formations": 50,
@@ -39,7 +39,7 @@
     [-255, 0],
     [275, 457],
     [-40, 457],
-    [-610, 91],
+    [-455, 320],
     [640, 1188],
     [-640, 1097],
     [1371, 365],
@@ -59,13 +59,13 @@
    "replace_index": 35,
    "replace_name": "Bear",
    "slot_positions": [
-    [200, 0],
+    [365, 0],
     [-365, 0],
     [0, 0],
     [-200, 0],
-    [460, 91],
+    [330, 274],
     [0, 411],
-    [-600, 91],
+    [-430, 274],
     [0, 1097],
     [-300, 411],
     [1371, 152],
@@ -1490,7 +1490,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [0, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
@@ -1528,7 +1528,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 8, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
@@ -1566,7 +1566,7 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
@@ -2152,7 +2152,7 @@
    }
   },
   {
-   "id": "n253",
+   "id": "n262",
    "custom_name": "Speed Rush",
    "play_type": "defense",
    "concept": "Front: Speed Rush",
@@ -2190,7 +2190,7 @@
    }
   },
   {
-   "id": "n254",
+   "id": "n263",
    "custom_name": "Dime Twist",
    "play_type": "defense",
    "concept": "Front: Dime Twist",
@@ -2228,7 +2228,7 @@
    }
   },
   {
-   "id": "n255",
+   "id": "n264",
    "custom_name": "Mug Wide",
    "play_type": "defense",
    "concept": "Front: Mug Wide",
@@ -2266,7 +2266,7 @@
    }
   },
   {
-   "id": "n256",
+   "id": "n265",
    "custom_name": "Mug Contain",
    "play_type": "defense",
    "concept": "Front: Mug Contain",
@@ -2304,7 +2304,7 @@
    }
   },
   {
-   "id": "n257",
+   "id": "n266",
    "custom_name": "Mug Zero",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
@@ -2342,7 +2342,7 @@
    }
   },
   {
-   "id": "n258",
+   "id": "n267",
    "custom_name": "Mug Fire 3",
    "play_type": "defense",
    "concept": "Fire Zone 3",
@@ -2380,10 +2380,10 @@
    }
   },
   {
-   "id": "n259",
+   "id": "n268",
    "custom_name": "Mug Sim 3",
    "play_type": "defense",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "donor": {
     "index": 9,
     "name": "Cover 3",
@@ -2397,7 +2397,7 @@
    "link_group": null,
    "assignments": [
     [[27, [0, 0, 0, 0, 0, 0]], [13, [1280.1599999999999, 548.64, 8, 7, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.1599999999999, 548.64, 8, 7, 6, 0, 0]]],
+    null,
     null,
     null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
@@ -2418,7 +2418,7 @@
    }
   },
   {
-   "id": "n260",
+   "id": "n269",
    "custom_name": "Mug Bail 3",
    "play_type": "defense",
    "concept": "Cover 3 Sky",

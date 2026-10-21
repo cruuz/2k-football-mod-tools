@@ -22,7 +22,8 @@ HEADERS = {"quick": 0x0400220E, "dropback": 0x0000620E, "pa": 0x0020640E, "pa_ro
            "run_toss": 0x0200840E, "draw": 0x0000860E, "qb_sneak": 0x0400880E, "qb_draw": 0x0000860E,
            "reverse": 0x0000940E, "flea": 0x0600340E}
 SIGNATURES = {"pass": {"pass"}, "pa_pass": {"pa_pass"}, "run": {"run", "draw"}, "sneak": {"qb_run"},
-              "keeper": {"qb_run"}, "reverse": {"run"}, "flea": {"flea"}}
+              "keeper": {"qb_run"}, "reverse": {"run"}, "flea": {"flea"},
+              "direct_snap": {"other"}}       # b776 pb1: the centre snaps to a back; the QB chain is a decoy
 
 
 def validate(flags, chains):
@@ -111,7 +112,8 @@ class FormationTests(unittest.TestCase):
 
     def test_personnel_spread_covers_heavy_base_spread_and_empty(self):
         groups = {spec.personnel for spec in oc.FORMATIONS.values()}
-        self.assertEqual(groups, {"23", "22", "21", "12", "11", "20", "10", "01", "00"})
+        # b776 pb1 adds 13 personnel (TE TE TE WR HB) and Pony (HB2 HB and three receivers)
+        self.assertEqual(groups, {"23", "22", "21", "12", "11", "20", "10", "01", "00", "13", "P2"})
         for personnel in ("23", "22", "21", "12", "11", "10", "00"):
             with self.subTest(personnel=personnel):
                 self.assertTrue(any(s.personnel == personnel and s.align == "uc" for s in oc.FORMATIONS.values()),
@@ -124,9 +126,15 @@ class FormationTests(unittest.TestCase):
             xs = {code: spec.skills[i][0] for i, code in enumerate(codes)}
             if 9 in xs and 41 in xs and 73 in xs:
                 with self.subTest(formation=name):
-                    self.assertLess(xs[9], 0)
-                    self.assertGreater(xs[41], 0)
-                    self.assertLess(abs(xs[73]), max(abs(xs[9]), abs(xs[41])))
+                    one_side = all(v > 0 for v in xs.values() if v) or all(v < 0 for v in xs.values() if v)
+                    wr_x = [xs[c] for c in (9, 41, 73)]
+                    if not (all(v > 0 for v in wr_x) or all(v < 0 for v in wr_x)):
+                        # b776 pb1: trips/bunch sets with every receiver on one side (the tight end alone opposite)
+                        # cannot put X left and Z right; WR3 is still the innermost receiver
+                        self.assertLess(xs[9], 0)
+                        self.assertGreater(xs[41], 0)
+                    del one_side
+                    self.assertLessEqual(abs(xs[73]), max(abs(xs[9]), abs(xs[41])))
 
 
 class ConceptTests(unittest.TestCase):
@@ -283,7 +291,10 @@ class FormationRatingTests(unittest.TestCase):
                 packs.PackFormation.from_json({**doc, "situation": bad}, 0)
 
     def test_every_catalog_formation_has_an_ordered_rating(self):
-        ratings = self.core["formation_ratings"]
+        # b776 pb1: the v3 generator starts every set from its catalog rating (FormationSpec.situation) and fits
+        # them per team; the v2 core keeps its own for the sets it knew
+        ratings = {name: tuple(spec.situation) for name, spec in oc.FORMATIONS.items()}
+        ratings.update(self.core["formation_ratings"])
         self.assertEqual(set(ratings), set(oc.FORMATIONS))
         for name, (short, medium, long_) in ratings.items():
             self.assertTrue(all(0 <= v <= 7 for v in (short, medium, long_)), name)

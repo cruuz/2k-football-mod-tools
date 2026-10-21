@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 for path in (ROOT, ROOT / "tests", ROOT / "tools"):
     sys.path.insert(0, str(path))
 from mod_editor.core import nfl2k5_espn25_rosters as e  # noqa: E402
+from mod_editor.core import nfl2k5_front_schemes as front  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from tests.mod_editor.test_nfl2k5_espn25_rosters import RETAIL  # noqa: E402
 try:
@@ -161,6 +162,8 @@ class OnePoolTests(unittest.TestCase):
         puts exactly those three first, so the reclassify does not change who plays linebacker."""
         for t in self.manifest["resources"]:
             outer = t["outer"]
+            if outer in front.retail_three_four_entries():
+                continue                      # the sourced 3-4 team-seasons: see the next test
             with self.subTest(file=t["filename"]):
                 before = rr.RosterDocument(self.applied[outer][32:])
                 after = rr.RosterDocument(reclassified(outer, self.applied[outer])[0][32:])
@@ -172,6 +175,33 @@ class OnePoolTests(unittest.TestCase):
                 pooled = sorted((p for p in after.players if p.record.position_name == "ILB"),
                                 key=lambda p: p.record.values["depth_rank"])
                 self.assertEqual({(p.first, p.last) for p in pooled[:3]}, retail_trio)
+
+
+    def test_sourced_three_four_files_field_their_outside_backers_at_edge(self):
+        """b776-de2: a retail file that really ran a 3-4 takes the 3-4 rule.  Its outside backers are the EDGE pool
+        (rank 0 and side 0 first), its ends join the interior pool behind the nose tackle, and the LB pool holds the
+        inside backers (a third is kept when the roster is short of them)."""
+        three_four = front.retail_three_four_entries()
+        self.assertTrue(three_four)
+        for t in self.manifest["resources"]:
+            outer = t["outer"]
+            if outer not in three_four:
+                continue
+            with self.subTest(file=t["filename"], key=three_four[outer]):
+                before = rr.RosterDocument(self.applied[outer][32:])
+                after = rr.RosterDocument(reclassified(outer, self.applied[outer])[0][32:])
+                def starters(doc, name, key):
+                    return {(p.first, p.last) for p in doc.players
+                            if p.record.position_name == name and p.record.values[key] == 0}
+                outside = starters(before, "OLB", "depth_rank") | starters(before, "OLB", "depth_side")
+                edge = sorted((p for p in after.players if p.record.position_name == "DE"
+                               and p.record.values["depth_rank"] < 2), key=lambda p: p.record.values["depth_rank"])
+                self.assertEqual({(p.first, p.last) for p in edge}, outside)
+                nose = starters(before, "DT", "depth_rank")
+                interior = [p for p in after.players if p.record.position_name == "DT" and p.record.values["depth_rank"] == 0]
+                self.assertEqual({(p.first, p.last) for p in interior}, nose)
+                self.assertGreaterEqual(sum(p.record.position_name == "ILB" and p.record.values["depth_rank"] < 3
+                                            for p in after.players), 3)
 
 
 class NativeTwentyFiveMomentsTests(unittest.TestCase):

@@ -18,7 +18,8 @@ order, bits 13-15 = side order):
 * players on no team (free agents, the draft/FA pool): OLB -> LB, nothing else; their rank bits
   are left alone.  The 68 secondary-pool records (the class generator's templates) stay as they
   are: they are keyed per enum and the generator never frees an enum-10 slot once none exists.
-* historic resources (75 x 53 players, no label pair, no 3-4 book): the 4-3 rule.
+* historic resources (75 x 53 players, no label pair, no 3-4 book): the 4-3 rule, except the sourced retail 3-4
+  team-seasons of ``data/nfl2k5_front_schemes.json`` (group ``retail``, b776-de2), which take the 3-4 rule.
 
 Re-rank, per team, per new pool, so the recoded categories field the retail starters: the merged
 order starts with the retail starters of each source position in the order the new codes expect,
@@ -78,6 +79,8 @@ FRONT_ENUMS = (ENUM_OLB, ENUM_ILB, ENUM_DT, ENUM_DE)
 POOL_LABEL = {ENUM_ILB: "LB", ENUM_DT: "DT", ENUM_DE: "EDGE", ENUM_OLB: "OLB"}
 PLAYER_POSITION = 0x35
 PLAYER_ORDER_WORD = 0x28
+PLAYER_WEIGHT = 0x2A
+WEIGHT_BASE = 150
 RANK_SHIFT, SIDE_SHIFT, ORDER_MASK = 10, 13, 0x7
 ROW_CAP = 7
 TEAM_KIND_NFL = 0
@@ -98,8 +101,11 @@ DUAL_BOOKS = ("DAL", "MIN", "NYJ", "OAK", "GEN", "WCO", "reference")
 
 # sha256 over the record areas of all 76 retail ROST resources, in outer-entry order
 RETAIL_RECORD_SHA256 = "2ccb45c529bd7ac95b1a9b3ef99fa4c88db75e47cc35e0915de72f46a6bb164a"
-# the same after the default pass (historic included, no scheme overrides)
-APPLIED_RECORD_SHA256 = "74bc420124f9a9c7010e1b02601eb587066af8867132255476505b4b1c0f5dee"
+# the same after the default pass (historic included, no scheme overrides).  b776-de2: the 17 sourced retail 3-4
+# team-seasons (data/nfl2k5_front_schemes.json, group "retail") take the 3-4 rule; every other historic file keeps the 4-3 rule.
+APPLIED_RECORD_SHA256 = "a44457a99d3d8d5957b6183df6786d218e74aae540bed8388d2f9fcbc25a5b13"
+# the default pass before b776-de2 (the 4-3 rule on all 75 historic files): a disc built that way still reads "applied"
+LEGACY_APPLIED_RECORD_SHA256 = ("74bc420124f9a9c7010e1b02601eb587066af8867132255476505b4b1c0f5dee",)
 
 
 class ReclassifyError(ValueError):
@@ -128,6 +134,7 @@ class Player:
     word: int                   # +0x28 (u16)
     name: str
     teams: list[int] = field(default_factory=list)
+    weight: int = 0             # pounds: byte +0x2A plus 150
 
     @property
     def rank(self) -> int:
@@ -191,7 +198,7 @@ def parse_resource(entry_index: int, virtual_offset: int, raw: bytes) -> Resourc
             _, first = nr.string_pointer(body, off + 0x10, "first name")
             _, last = nr.string_pointer(body, off + 0x14, "last name")
             players[off] = Player(off, body[off + PLAYER_POSITION], struct.unpack_from("<H", body, off + PLAYER_ORDER_WORD)[0],
-                                  f"{first or ''} {last or ''}".strip())
+                                  f"{first or ''} {last or ''}".strip(), weight=body[off + PLAYER_WEIGHT] + WEIGHT_BASE)
     labels = tables["team_labels"]
     label_abbrs: list[str | None] = []
     for i in range(int(labels["count"])):
@@ -355,8 +362,19 @@ def pool_plan(scheme: str) -> dict[int, tuple[list[int], list[tuple[int, str]]]]
             ENUM_ILB: ([ENUM_ILB, ENUM_OLB], [(0, "rank"), (1, "rank"), (1, "side")])}
 
 
-def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) -> list[Move]:
-    """Moves for one team; players already ``claimed`` by an earlier team keep their fields."""
+MIN_LB_FOR_EVEN_BOOKS = 3        # the even fronts' MIKE / WILL / SAM
+LIGHT_END_POUNDS = 265           # a 3-4 "end" this light is an outside backer the data labelled DE (a 4-3 edge rusher)
+
+
+def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int], *, min_lb: int = 0,
+              light_end: int = 0) -> list[Move]:
+    """Moves for one team; players already ``claimed`` by an earlier team keep their fields.
+
+    ``min_lb`` (3-4 only, b776-de1): a 3-4 roster keeps its outside backers as EDGE, so its LB pool is only the inside
+    backers. A four-down book asks that pool for three starters; when the roster has fewer, the lowest-ranked outside
+    backers beyond the first three join the LB pool instead (never below three EDGE), so an LB slot is never filled
+    from another pool.
+    """
 
     moves: list[Move] = []
     by_position: dict[int, list[Player]] = {e: [] for e in FRONT_ENUMS}
@@ -364,8 +382,23 @@ def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) ->
         p = resource.players[off]
         if p.position in by_position:
             by_position[p.position].append(p)
+    if scheme == "3-4" and light_end:
+        light = [p for p in by_position[ENUM_DE] if 0 < p.weight <= light_end]
+        by_position[ENUM_DE] = [p for p in by_position[ENUM_DE] if p not in light]
+        by_position[ENUM_OLB] = by_position[ENUM_OLB] + light
+    topped_up: list[Player] = []
+    if scheme == "3-4" and min_lb:
+        need = min_lb - len(by_position[ENUM_ILB])
+        spare = len(by_position[ENUM_OLB]) - 3
+        if need > 0 and spare > 0:
+            outside = merged_order([by_position[ENUM_OLB]], [(0, "rank"), (0, "side")])
+            topped_up = outside[len(outside) - min(need, spare):]
     for new_enum, (sources, starters) in pool_plan(scheme).items():
         groups = [by_position[e] for e in sources]
+        if topped_up and new_enum == ENUM_DE:
+            groups = [[p for p in groups[0] if p not in topped_up]]
+        elif topped_up and new_enum == ENUM_ILB:
+            groups = [groups[0], topped_up]
         order = merged_order(groups, starters)
         for index, p in enumerate(order):
             rank = min(index, ROW_CAP)
@@ -379,15 +412,41 @@ def plan_team(resource: Resource, team: Team, scheme: str, claimed: set[int]) ->
     return moves
 
 
+def retail_three_four() -> dict[int, str]:
+    """{outer entry: key} of the retail historic ROST files that really ran a 3-4 (``nfl2k5_front_schemes``, b776-de2)."""
+
+    root = str(_HERE.parent)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    from mod_editor.core import nfl2k5_front_schemes as front
+    return front.retail_three_four_entries()
+
+
 def plan_resource(resource: Resource, schemes: Mapping[str, str], *, three_four: Sequence[str] = (),
-                  four_three: Sequence[str] = ()) -> tuple[list[Move], dict[int, str]]:
+                  four_three: Sequence[str] = (), historic_scheme: str | None = None,
+                  historic_min_lb: int = 0, historic_light_end: int = 0) -> tuple[list[Move], dict[int, str]]:
+    """``historic_scheme`` (b776-de1) is the rule a one-team historic / classic / moment file takes. A team-season that
+    really ran a 3-4 (``nfl2k5_front_schemes``) takes ``"3-4"`` so its outside backers are EDGE and its ends are
+    interior, with ``historic_min_lb`` keeping three LBs; any other keeps ``"4-3"``.  Left at ``None`` (b776-de2) a
+    retail historic file chooses by its outer entry: the sourced retail 3-4 team-seasons get the 3-4 rule with three LBs
+    kept, every other retail file the 4-3 rule, exactly as before.  The light-end move (``LIGHT_END_POUNDS``) is for
+    modern rosters whose generic labels hide edge rushers; a retail file's ends are the 3-4 ends the disc says they are
+    and its outside backers are its edge rushers, so no end is promoted."""
+
+    if historic_scheme is None:
+        historic_scheme = "4-3"
+        if resource.label != "roster" and resource.entry in retail_three_four():
+            historic_scheme, historic_min_lb, historic_light_end = "3-4", MIN_LB_FOR_EVEN_BOOKS, 0
+    _require(historic_scheme in ("4-3", "3-4"), f"unknown historic scheme {historic_scheme!r}")
     claimed: set[int] = set()
     moves: list[Move] = []
     team_schemes: dict[int, str] = {}
     for team in resource.teams:
-        scheme = team_scheme(team, schemes, three_four, four_three) if resource.label == "roster" else "4-3"
+        scheme = team_scheme(team, schemes, three_four, four_three) if resource.label == "roster" else historic_scheme
         team_schemes[team.index] = scheme
-        moves.extend(plan_team(resource, team, scheme, claimed))
+        historic = resource.label != "roster"
+        moves.extend(plan_team(resource, team, scheme, claimed, min_lb=historic_min_lb if historic else 0,
+                               light_end=historic_light_end if historic else 0))
     secondary = int(resource.tables["secondary_players"]["offset"])
     secondary_end = int(resource.tables["secondary_players"]["end"])
     for p in resource.players.values():
@@ -445,7 +504,8 @@ def status(path: Path | str, *, historic: bool = True) -> dict[str, object]:
     digest = record_digest(resources)
     main = resources[0]
     nfl_olb = sum(1 for t in main.teams if t.kind == TEAM_KIND_NFL for off in t.roster if main.players[off].position == ENUM_OLB)
-    state = ("retail" if digest == RETAIL_RECORD_SHA256 else "applied" if digest == APPLIED_RECORD_SHA256
+    state = ("retail" if digest == RETAIL_RECORD_SHA256
+             else "applied" if digest == APPLIED_RECORD_SHA256 or digest in LEGACY_APPLIED_RECORD_SHA256
              else "applied-custom" if nfl_olb == 0 else "foreign")
     return {"status": state, "record_sha256": digest, "nfl_olb_players": nfl_olb, "resources": len(resources)}
 

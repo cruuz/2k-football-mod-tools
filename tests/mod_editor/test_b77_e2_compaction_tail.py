@@ -483,7 +483,8 @@ class TheWholeBuildNeverGoesQuietAfterTheLastMove(unittest.TestCase):
             source, output = Path(folder, "source.iso"), Path(folder, "out.iso")
             synthetic_disc(source)
             events = []
-            with mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
+            with mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
+                 mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                 receipt = mod_build.build(mod_build.BuildPlan(str(source), str(output)),
                                           lambda label, done=0, total=0: events.append((label, done, total)))
         self.assertGreater(receipt["disc_compaction"]["bytes_saved"], 0)

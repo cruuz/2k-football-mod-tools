@@ -25,7 +25,8 @@ class ContractTests(unittest.TestCase):
         from mod_editor.core import mod_build
         self.assertFalse(mod_build.BuildPlan(source="unused", target="unused").scorebug_runtime)
         for name, preset in mod_build.PRESETS.items():
-            self.assertFalse(preset.get("scorebug_runtime", False), name)
+            # b773 nm1/i4: only the Experimental preset installs the sprite scorebug (the private indicator-name FONT lives in its appended scene)
+            self.assertEqual(preset.get("scorebug_runtime", False), name == "softdrink_experimental", name)
 
     @unittest.skipUnless(HAVE_IMAGES, "Pillow and numpy required for authored atlas")
     def test_authored_capitals_and_neutral_timeout_variants_are_portable(self):

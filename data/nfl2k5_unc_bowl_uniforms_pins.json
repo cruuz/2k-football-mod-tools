@@ -1,0 +1,107 @@
+{
+  "schema": "nfl2k5_unc_bowl_uniforms/v1",
+  "source": "SOFTDRINK 2K28 v0.6 2026-10-09",
+  "resources": {
+    "06H5.IFF": {
+      "size": 1544464,
+      "spans": [
+        {
+          "offset": 78944,
+          "length": 85552,
+          "label": "chunk_2",
+          "before_sha256": "514a7a1606548833eff555d537aa2756c05dc9516819f88cd196998b68f77ec7",
+          "after_sha256": "60c52ffb181ed7ec21969d8ecf386e8f991052a8da25b7ad97c173e5f338d756"
+        },
+        {
+          "offset": 478656,
+          "length": 784,
+          "label": "chunk_23",
+          "before_sha256": "624e981a9644bcb71670bfbeb60df14c990a345de6a8386150d608da5c288ccb",
+          "after_sha256": "196707181daf25f786d1ef3913952105686f209bfe789747991ae17508cc6475"
+        },
+        {
+          "offset": 479440,
+          "length": 624,
+          "label": "chunk_24",
+          "before_sha256": "cf465894207f1c63ddef9f1062c896d9a29bde8beba7241bdd16be4d44eced97",
+          "after_sha256": "15b7eca66517e55ea08c3d18997318769a98928301507790a4dd684e988f3c81"
+        },
+        {
+          "offset": 480064,
+          "length": 1024,
+          "label": "chunk_25",
+          "before_sha256": "5ff0891c9cf9500571c09c3290e37a3e177894a863e358cd6825ee43215a1ddb",
+          "after_sha256": "1258fa0b2573365feb9e5a2d7516d2ba7767b271aacb317bb3215d46fc99407c"
+        },
+        {
+          "offset": 481088,
+          "length": 1056,
+          "label": "chunk_26",
+          "before_sha256": "e4f8d94ebfbeae13d6ca3a80faf9ef32dc80d7a17f58c5398762dcf9f1b46db2",
+          "after_sha256": "7559c8c639e432c0d161255c0e6aed8e92aa1c87b4b651e01fba4eda69d4b5b3"
+        },
+        {
+          "offset": 482144,
+          "length": 1040,
+          "label": "chunk_27",
+          "before_sha256": "1104567ceb084bd0ca04ae50e7c30d8d4a45bbbfc691506c63ebcb1c57c21e3c",
+          "after_sha256": "94f034a280194af3bdf24c0caad228336e647a6687b2f77a394f7a552b7336d9"
+        },
+        {
+          "offset": 483184,
+          "length": 976,
+          "label": "chunk_28",
+          "before_sha256": "6d8b126cd547423e4fa2799e337dd7effe823ec783428a60b0070c4de93c69fa",
+          "after_sha256": "a9d0dede623e15af88b22f71bb77e785a1708481ef81a51d358a5c4227cae85d"
+        },
+        {
+          "offset": 484160,
+          "length": 944,
+          "label": "chunk_29",
+          "before_sha256": "0d1071f4da01258761ab566c9275b7d0ea305743464b72c152b925ea913c7862",
+          "after_sha256": "af11473353784b0a02ca279b6add058437a205c41592ef12bd2bdd8a2fd3a3b5"
+        },
+        {
+          "offset": 485104,
+          "length": 896,
+          "label": "chunk_30",
+          "before_sha256": "16c44090752392207f4ac48f02eb0df50823e2bd7167282f7b1134b587414b36",
+          "after_sha256": "4f8615fb5a5bc05c6aa89cb6877b4fe79d823df41c5118bb0a34dc97d3dfb65b"
+        },
+        {
+          "offset": 486000,
+          "length": 1008,
+          "label": "chunk_31",
+          "before_sha256": "bcbe1e5d2d587426da321a9836cac0e9c3e9f51a653dc9e4b6b5c525d45f629e",
+          "after_sha256": "ceb373ee7a3d5c44dcb3564cf2d00c64dc3d891671ff0c421872bde202563c4c"
+        },
+        {
+          "offset": 487008,
+          "length": 944,
+          "label": "chunk_32",
+          "before_sha256": "ff90100cb3d42e22f58e658c44d499a1b7b8e5fce058f0181c1bec536402fcfc",
+          "after_sha256": "c6f6c68ef06f2f771602878cd08194e12f2732ed629fb1046b519be3a8d008b6"
+        },
+        {
+          "offset": 1513584,
+          "length": 26352,
+          "label": "chunk_51",
+          "before_sha256": "378a26c9c4ed0d94031884096ae736bc7e09cdfe2fc5a1cf42d8b4476586ff77",
+          "after_sha256": "aceb4e3e89b929a2a58ec700ba94a7d0f5e67330b531d14c39f127e691840fdd"
+        }
+      ]
+    },
+    "22A4.IFF": {
+      "size": 1433312,
+      "spans": [
+        {
+          "offset": 313328,
+          "length": 137008,
+          "label": "jersey_digits_repack_13_43",
+          "before_sha256": "ddf172952457ae138e7d8468550e0d8814bddd0352f6a280cc8c89a87755a5f3",
+          "after_sha256": "31f5b6be715636eff14c3a30ecf656ea493899300ab83078d47e8d4d0ab13e23"
+        }
+      ]
+    }
+  }
+}

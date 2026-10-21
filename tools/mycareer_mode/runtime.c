@@ -44,7 +44,7 @@ static NI void settings_labels(void) {
 }
 static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
 extern const u8 menu_template[];
-extern const u8 text_template[], text_bytes[];
+extern const u8 text_template[], text_bytes[], text2_template[], text2_bytes[];
 static NI void unpack_menu(const u8 *p,u8 *dst) {
     const u8 *q; u32 i;
     while((i=*p++)) {
@@ -57,6 +57,8 @@ static NI void unpack_menu(const u8 *p,u8 *dst) {
 static NI void init_menus(void) {
     u32 i;
     for(i=0;i<(u32)text_bytes;i++) ((u16 *)(state+1408))[i]=text_template[i];
+    /* mc2: second ASCII pool in unused M3 RW (+2160..+2699). */
+    for(i=0;i<(u32)text2_bytes;i++) ((u16 *)(m3+2160))[i]=text2_template[i];
     unpack_menu(menu_template,state+200);
     unpack_menu(m3_menu_template,m3+256);
     settings_labels();
@@ -327,6 +329,14 @@ u32 FC mode_ff_ready(u32 manager) {
             body=W((u8 *)body,0x38);
             if(mode_human((u8 *)body)) {
                 S(2740)=body;
+                /* The completed CPU call leaves every offensive actor's
+                 * "arrived at line" bit set. Native reselection only clears
+                 * a prefix of the actor list, so the remaining old bits can
+                 * satisfy 1FEB20 while their new streamed clips still run.
+                 * Retire that readiness before entering a new play call. */
+                for(u8 *p=(u8 *)G(0xE60268);p;p=(u8 *)W(p,0x30))
+                    if(!W(p,0x48) && W(p,0x38)==G(0xE60280))
+                        W((u8 *)W(p,0x10),0x8c)&=~0x01000000U;
                 W((u8 *)W((u8 *)body,12),36)&=~8U;
                 CALL0(0xacb90);
                 CALL0(0x9fbe0);
@@ -386,7 +396,7 @@ u32 FC m3_creation_route(u32 manager);
 extern const u16 watch_text[], fixture_text[];
 u32 mode_next_fixture(void);
 extern const u16 draft_notice[], refusal_notice[];
-extern void FC native_new_player(u32 manager);
+extern void FC native_new_player(u32 manager,u8 *p);
 extern void FC mode_autosave(u32 manager,u32 descriptor);
 static NI u32 owner(u32 manager) { return manager && S(2672)==manager && W((u8 *)manager,0x100)<32; }
 static NI void notice(u32 manager,const u16 *text) { CALL2(0x14e520,manager,(u32)text); }
@@ -476,31 +486,47 @@ void FC mode_undrafted(u32 manager) {
 void FC mode_load(u32 manager) {
     if(owner(manager)) CALL2(0x6e390,manager,0x508df0);
 }
-void FC mode_create(u32 manager) {
-    u8 *p,*t; u32 i,j,n,first;
-    if(!owner(manager) || S(2676)) return;
-    if(!ROOT || W(ROOT,0x38)>=2500 || W(ROOT,0x18)>128) goto refuse;
-    p=(u8 *)CALL0(0xbff50);
-    if(!p || !player_bounds(p) || p[0x28]==0xee) goto refuse;
+/* mc2 (D01): native BFF50 returns only the FIRST free record; when that one
+ * was contradictory, creation refused with "Roster is full." although other
+ * free records were clean. Take the first free record (same flag test as
+ * BFF50) that passes every check below, in the same order as BFF50. */
+/* 1 clean, 0 skip this record, -1 refuse: an invalid grown/foreign team
+ * block is league-wide, so no other record is tried. */
+static NI u32 slot_clean(u8 *p) {
+    u8 *t; u32 i,j,n,first;
+    if(p[0x28]==0xee) return 0;
     first=W(p,16)-(u32)ROOT;
-    if(first<0x70 || first+68>G(0xB72808) || W(p,20)!=W(p,16)+34) goto refuse;
+    if(first<0x70 || first+68>G(0xB72808) || W(p,20)!=W(p,16)+34) return 0;
     /* Reject contradictory free/owned slots before the native initializer. */
     for(i=0;i<W(ROOT,0x18);i++) {
         t=(u8 *)(W(ROOT,0x1c)+i*500);
         if(t[0x19b]==2) {
-            if(mode_grown_member(t,(u32)p)) goto refuse;
+            if((j=mode_grown_member(t,(u32)p))) return j==(u32)-1?j:0;
         } else {
-            if(t[0x19b]>1) goto refuse;
-            for(j=0;j<65;j++) if(W(t,j*4)==(u32)p) goto refuse;
+            if(t[0x19b]>1) return -1;
+            for(j=0;j<65;j++) if(W(t,j*4)==(u32)p) return 0;
         }
     }
-    for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) goto refuse;
+    for(i=0;i<W(ROOT,0x38);i++) if(W((u8 *)W(ROOT,0x3c),4*i)==(u32)p) return 0;
     n=W(ROOT,0); t=(u8 *)W(ROOT,4);
-    for(i=0;i<n;i++,t+=84) if(t!=p && (W(t,16)==W(p,16) || W(t,20)==W(p,20))) goto refuse;
+    for(i=0;i<n;i++,t+=84) if(t!=p && (W(t,16)==W(p,16) || W(t,20)==W(p,20))) return 0;
+    return 1;
+}
+void FC mode_create(u32 manager) {
+    u8 *p; u32 i,r;
+    if(!owner(manager) || S(2676)) return;
+    if(!ROOT || W(ROOT,0x38)>=2500 || W(ROOT,0x18)>128 || W(ROOT,0)>4096) goto refuse;
+    for(i=0,p=(u8 *)W(ROOT,4);i<W(ROOT,0);i++,p+=84)
+        if((p[8]&5)==1 && (r=slot_clean(p))) {
+            if(r==1) goto found;
+            break;
+        }
+    goto refuse;
+found:
     move_bytes(state+3312,p,84); move_bytes(state+3396,(u8 *)W(p,16),68);
     S(3464)=W((u8 *)W(ROOT,0x3c),4*W(ROOT,0x38));
     S(2676)=(u32)p; S(2680)=1;
-    native_new_player(manager);
+    native_new_player(manager,p);
     /* A rookie's birth year. The native default is January 1, 1979 (0xC0A80).
      * The first season is the season owner's own immediate (0x247AC7: 2004
      * retail, 2026); the draft path creates in the next one (M(0)==2 only at
@@ -547,10 +573,28 @@ u32 mode_cap_ratings(void) {
     if(S(2680)!=1 || !p || (u32)p!=G(0xCB8B14) || p[0x35]<17) return 0;
     G(0xCB8B98)=0; return 1;
 }
+/* mc2: the controller that drives the MyCareer menus owns MyPlayer. The
+ * native menu input loop (F3970) records each input's port in its context
+ * (+0x594). Zero (port 1) was assumed, so a pad in another port had no
+ * control in Practice or in games (Noah, 2026-10-16: PAUSED - CONTROLLER
+ * PORT 2). Only a connected port 1..4 is accepted; it is saved as before. */
+static NI void claim_port(u32 manager) {
+    u32 port=W((u8 *)W((u8 *)manager,0x10c),0x594);
+    if(port<4 && CALL2(0x709b0,port,0)) S(32)=port;
+}
+void FC mode_quit(u32 manager);
 void FC mode_event(u32 manager,u32 event) {
     u32 top;
     if(!owner(manager)) return;
     top=W((u8 *)manager,8*W((u8 *)manager,0x100));
+    /* mc2: B (native event 10, descriptor flag 0x10) on the entry screen
+     * and the Apartment is Quit to main menu, with the native confirmation
+     * once a league exists. +0xA84 cancels the native pop either way. */
+    if(event==10 && (top==(u32)apartment || top==(u32)entry_menu)) {
+        W((u8 *)W((u8 *)manager,0x10c),0xa84)=1;
+        mode_quit(manager);
+        return;
+    }
     if(event==3 && top!=(u32)club_menu) init_menus();
     if(event==3 && top==(u32)entry_menu && (S(2680)==1 || S(2680)==2)) rollback();
     if(event==3 && top==(u32)apartment) { resolve_team(); settle(); }
@@ -623,7 +667,6 @@ void FC mode_draw(u32 manager) {
      * This pass supplies only the two extra pieces of career information. */
     if(d==apartment) text(footer(),0,320,432,0);
     if(d==team_menu) text((const u16 *)W(team(S(2684)),0x104),0,320,380,1);
-    if(d==m3_progress_menu) text(m3_progress_note,0,320,404,0);
     if(d==m3_prep_menu) text(m3_prep_note,0,320,404,0);
     if(d==m3_settings_menu) text(m3_settings_note,0,320,404,0);
     if(d==m3_draft_menu) {
@@ -810,6 +853,7 @@ void FC mode_play(u32 manager) {
     u32 slot;
     extern const u16 advance_notice[];
     if(!hub(manager) || !primary()) return;
+    claim_port(manager);
     start_player();
     if(S(56)>=32) return;
     slot=mode_next_fixture();
@@ -834,8 +878,29 @@ void FC mode_sim_appearance(u32 manager) {
     if(W((u8 *)manager,8*W((u8 *)manager,0x100))==0x51b908)
         S(2708)=1;
 }
+/* mc2: Play next game row. A backup (non-zero in both native depth
+ * chains of byte 41, as start_player writes them) is told before kickoff
+ * and chooses: Yes starts MyPlayer (the Start MyPlayer row), No runs
+ * Supersim to his snaps (the Sim to next appearance row), B stays home.
+ * 14E440 returns the chosen button's value: 2 Yes, 3 No. */
+extern const u16 m3_bench_text[];
+void FC mode_play_row(u32 manager) {
+    u8 *p; u32 answer;
+    if(!hub(manager) || !(p=(u8 *)primary())) return;
+    /* start_player (also run by mode_play) may re-rank him first. */
+    if((p[41]&0x1c) && (p[41]&0xe0)) start_player();
+    if(S(24)==3 && (p[41]&0x1c) && (p[41]&0xe0)) {
+        answer=((u32 (FC *)(u32,const u16 *,u32,u32,u32,u32,u32,u32))0x14e440)
+            (0xe3c040,m3_bench_text,0x504324,0,manager,0,-1,0);
+        if(answer==3) { mode_sim_appearance(manager); return; }
+        if(answer!=2) return;
+        mode_start(manager);
+    }
+    mode_play(manager);
+}
 void FC mode_practice(u32 manager) {
     if(hub(manager) && primary()) {
+        claim_port(manager);
         start_player();
         CALL2(0x6e390,manager,(u32)practice_menu);
     }
@@ -920,7 +985,15 @@ void mode_load_error(void) {
  * stack of the context they are given. LEAGUE_MENU was empty, so the prior
  * season was about 100 s of black with only the native sim ticker (Noah,
  * 2026-09-23). This draw-only entry has no rows and no hook table; the
- * native dispatcher calls +8 with ECX context and EDX event. */
+ * native dispatcher calls +8 with ECX context and EDX event.
+ * mc4 (Noah, 2026-10-18: "it goes black and then it pops up with the screen
+ * behind it each week"): every week is one update frame of the real progress
+ * menu, and the manager drew that menu natively between the league's own
+ * (black) frames. While M(0)==1 the progress menu's handler (mode_handler in
+ * runtime.S) now answers draw event 7 with this same function and draws no
+ * native menu (event 8, the native caption, draws nothing). The progress note
+ * the real menu used to carry at y=404 is gone with it: the native menu only
+ * shows again after a failed prior season, where that line was misleading. */
 extern const u16 m3_progress_text[];
 void FC m3_sim_draw(u32 context,u32 event) {
     (void)context;
@@ -1017,6 +1090,18 @@ void FC m3_begin_draft(u32 manager) {
     if(G(0xE576A4)==5) CALL2(0x6e2e0,manager,(u32)m3_draft_menu);
     else notice(manager,draft_notice);
 }
+/* nl1 (Noah, 2026-10-17: "a little pop-up, like 'You were drafted by the
+ * Cowboys'"): one native notice after the draft places MyPlayer, with the
+ * club's full name (city +0x138 and nickname +0x104 of its team record).
+ * The notice keeps the text pointer for its modal loop, so the text lives
+ * in this frame, not in the two buffers the Apartment draw rewrites. */
+extern const u16 m3_drafted_format[];
+static NI void drafted(u32 manager) {
+    u16 text[80]; u32 args[2]; u8 *t=(u8 *)S(2588);
+    if(!t || !(args[0]=W(t,0x138)) || !(args[1]=W(t,0x104))) return;
+    ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)((u8 *)text,80,m3_drafted_format,args);
+    notice(manager,text);
+}
 void FC m3_draft_tick(u32 manager) {
     u32 option;
     if(!owner(manager) || !inline_active() || !primary() || G(0xE576A4)!=5) return;
@@ -1032,6 +1117,7 @@ void FC m3_draft_tick(u32 manager) {
         if(S(24)==3) {
             CALL1(0x13ec90,S(2588)); start_player();
             CALL2(0x6e2e0,manager,(u32)apartment);
+            drafted(manager);
         } else if(S(24)==4) {
             S(2680)=2; S(2684)=0;
             CALL2(0x6e2e0,manager,(u32)team_menu);

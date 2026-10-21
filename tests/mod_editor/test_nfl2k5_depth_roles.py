@@ -414,7 +414,7 @@ class RetailDepthRolesTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_playbook_pack as packs
         pack = packs.load_pack(ROOT / "data/playbooks/modern_gun_core.2k5book")
         raw = self.raws["308"]
-        compiled = packs.apply_pack_to_resource(raw, pack, asset_id="book:ATL")
+        compiled = packs.apply_pack_to_resource(raw, pack, asset_id="book:ATL", xbe=XBE.read_bytes())
         archive = MemoryArchive([compiled.replacement])
         receipt = d.apply_to_archive(archive, allow_custom=True)
         self.assertTrue(receipt["gate_ok"])

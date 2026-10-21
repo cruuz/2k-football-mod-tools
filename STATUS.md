@@ -1,4 +1,8 @@
-# 2K5 Mod Studio: v1.0 RC111 Release Status
+# 2K5 Mod Studio: v1.0 RC112 Release Status
+
+## Beta 77.1 (RC112 / APF alpha.108, 2026-10-20)
+
+Beta 77.1 pairs RC112 with SOFTDRINK 2K28 v0.6.1. It ships the rebuilt playbooks, run blocking and short-throw accuracy options, the MyCareer depth chart freeze fix and depth locks revision 4 (better CPU signings start, no double starters), the endless LOADING card fix, the tush push and goal line spacing fix, formation art icon spacing, the Running Back (RB) rename, the review fixes, number ratings on the editing screens, the Situation mode stadium fix, the retail football, centred midfield logos and sleeve swooshes, the October 10 to 19 test-wave work and the Discord editor fixes. Noah played the b775 and b776 test discs; the release disc itself was checked by offline, headless and release-gate tests, not by a player. The MyCareer save name is not in this release.
 
 ## Beta 77 (RC111 / APF alpha.107, 2026-10-09)
 

@@ -265,9 +265,11 @@ class ThrowTuningPanel(QWidget):
         layout.addWidget(self.realistic_check)
         self.arc_by_distance_check = QCheckBox("Arc by distance: realistic deep flight with extra touch")
         self.arc_by_distance_check.setToolTip(
-            "Every throw up to 40 yards keeps the retail speeds. At 45/60/80 yards, modeled hang is "
-            "2.57/3.20/3.81 seconds and apex is 8.9/13.7/19.5 yards. The ceiling still applies. "
-            "Writing a copy upgrades either older high-arc profile. Discs and SOFTDRINK patches made "
+            "Every throw up to 40 yards keeps the retail speeds and no deep lob flies slower than retail. "
+            "At 45/60/80 yards, modeled hang is 2.25/2.93/3.81 seconds and apex is 6.8/11.5/19.5 yards, "
+            "so the target lead stays inside the arm's ceiling. The ceiling still applies. "
+            "Writing a copy upgrades any older profile (high arc, or the beta 76.2 touch band whose deep "
+            "balls landed short of receivers in stride). Discs and SOFTDRINK patches made "
             "before beta 76.2 with this option keep punt-height deep balls until rebuilt or reinstalled "
             "from an updated patch."
         )

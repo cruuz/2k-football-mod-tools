@@ -187,6 +187,7 @@ class RetailTests(unittest.TestCase):
                      mock.patch.object(mod_build.tt,'_check_installed_runtime_settings'), \
                      mock.patch.object(mod_build.tt,'_naming_source_preflight'), \
                      mock.patch.object(mod_build.tt,'_grown_status_fields',return_value={}), \
+                     mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
                      mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
                     receipt=mod_build.build(p)
                     self.assertEqual(receipt['intro_video_payload_bytes_freed'],4*4096)
@@ -223,6 +224,7 @@ class RetailTests(unittest.TestCase):
              mock.patch.object(mod_build.tt,'_check_installed_runtime_settings'), \
              mock.patch.object(mod_build.tt,'_naming_source_preflight'), \
              mock.patch.object(mod_build.tt,'_grown_status_fields',return_value={}), \
+             mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}), \
              mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}):
             receipt = mod_build.build(p)
         steps = [s['step'] for s in receipt['steps']]

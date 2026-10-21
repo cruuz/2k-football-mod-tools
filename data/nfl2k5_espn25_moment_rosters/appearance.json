@@ -1,0 +1,7851 @@
+{
+ "schema": 1,
+ "about": "Per-slot head decisions for the 35 retail-moment rosters (tools/b77/fs1_scans_plan.py). keep = the retail record is untouched; retail = the person's own retail record (photo id, whole skin value, face, dreads); relocate = the same, the head id being the unused one of nfl2k5_moment_scans; generic = no scan exists and the slot held another person's head, so it takes the no-photo id (7100 + slot).",
+ "files": {
+  "h-00-1975-cardinals-3.iff": [
+   {
+    "name": "Derek Kennard",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Radecic",
+    "mode": "keep"
+   },
+   {
+    "name": "Carl Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "Cedric Mack",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Sims",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Holloway",
+    "mode": "keep"
+   },
+   {
+    "name": "Travis Curtis",
+    "mode": "keep"
+   },
+   {
+    "name": "Freddie Joe Nunn",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Greer",
+    "mode": "keep"
+   },
+   {
+    "name": "David Galloway",
+    "mode": "keep"
+   },
+   {
+    "name": "Rod Saddler",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Dulin",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Clasby",
+    "mode": "keep"
+   },
+   {
+    "name": "Colin Scotts",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Garalczyk",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Alvord",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Duda",
+    "mode": "keep"
+   },
+   {
+    "name": "Earl Ferrell",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Wolfley",
+    "mode": "keep"
+   },
+   {
+    "name": "Lonnie Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Peat",
+    "mode": "keep"
+   },
+   {
+    "name": "Lance Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Bostic",
+    "mode": "keep"
+   },
+   {
+    "name": "Stump Mitchell",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick McAdoo",
+    "mode": "keep"
+   },
+   {
+    "name": "Broderick Sargent",
+    "mode": "keep"
+   },
+   {
+    "name": "Vai Sikahema",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Goodman",
+    "mode": "keep"
+   },
+   {
+    "name": "Niko Noga",
+    "mode": "keep"
+   },
+   {
+    "name": "E.J. Junior",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Noga",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Gallery",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Bell",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Baker",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Cater",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Horne",
+    "mode": "keep"
+   },
+   {
+    "name": "Neil Lomax",
+    "mode": "keep"
+   },
+   {
+    "name": "Shawn Halloran",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Mayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Luis Sharpe",
+    "mode": "keep"
+   },
+   {
+    "name": "Tootie Robbins",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Welter",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Awalt",
+    "mode": "keep"
+   },
+   {
+    "name": "Jay Novacek",
+    "mode": "keep"
+   },
+   {
+    "name": "J.T. Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Roy Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Troy Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Adrian McBride",
+    "mode": "keep"
+   }
+  ],
+  "h-03-1990-bills-2.iff": [
+   {
+    "name": "Kent Hull",
+    "mode": "keep"
+   },
+   {
+    "name": "Adam Lingner",
+    "mode": "keep"
+   },
+   {
+    "name": "Kirby Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Nate Odomes",
+    "mode": "keep"
+   },
+   {
+    "name": "David Pool",
+    "mode": "keep"
+   },
+   {
+    "name": "James Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Hale",
+    "mode": "keep"
+   },
+   {
+    "name": "Richard Carey",
+    "mode": "keep"
+   },
+   {
+    "name": "Leon Seals",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Hunter",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Lodish",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Pike",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Baldinger",
+    "mode": "keep"
+   },
+   {
+    "name": "Jamie Mueller",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Kelso",
+    "mode": "keep"
+   },
+   {
+    "name": "John Hagy",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Hicks",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Ritcher",
+    "mode": "keep"
+   },
+   {
+    "name": "John Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Glenn Parker",
+    "mode": "keep"
+   },
+   {
+    "name": "Thurman Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Kenneth Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Carwell Gardner",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Kinnebrew",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Shane Conlan",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Bentley",
+    "mode": "keep"
+   },
+   {
+    "name": "Carlton Bailey",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Norwood",
+    "mode": "keep"
+   },
+   {
+    "name": "Cornelius Bennett",
+    "mode": "keep"
+   },
+   {
+    "name": "Darryl Talley",
+    "mode": "keep"
+   },
+   {
+    "name": "Marvcus Patton",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Tuten",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Kelly",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Reich",
+    "mode": "keep"
+   },
+   {
+    "name": "Gale Gilbert",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Drane",
+    "mode": "keep"
+   },
+   {
+    "name": "Kim Phillips",
+    "mode": "keep"
+   },
+   {
+    "name": "Will Wolford",
+    "mode": "keep"
+   },
+   {
+    "name": "Howard Ballard",
+    "mode": "keep"
+   },
+   {
+    "name": "Mitch Frerotte",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith McKeller",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Metzelaars",
+    "mode": "keep"
+   },
+   {
+    "name": "Butch Rolle",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "James Lofton",
+    "mode": "keep"
+   },
+   {
+    "name": "Andre Reed",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Beebe",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Tasker",
+    "mode": "keep"
+   }
+  ],
+  "h-06-1988-bengals-1.iff": [
+   {
+    "name": "Bruce Kozerski",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Walter",
+    "mode": "keep"
+   },
+   {
+    "name": "Lewis Billups",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Barney Bussey",
+    "mode": "keep"
+   },
+   {
+    "name": "Rickey Dixon",
+    "mode": "keep"
+   },
+   {
+    "name": "Daryl Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Skow",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Buck",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim Krumrie",
+    "mode": "keep"
+   },
+   {
+    "name": "Skip McClendon",
+    "mode": "keep"
+   },
+   {
+    "name": "David Grant",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Maxey",
+    "mode": "keep"
+   },
+   {
+    "name": "Ickey Woods",
+    "mode": "keep"
+   },
+   {
+    "name": "Solomon Wilcots",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Horton",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Reimers",
+    "mode": "keep"
+   },
+   {
+    "name": "Max Montoya",
+    "mode": "keep"
+   },
+   {
+    "name": "David Douglas",
+    "mode": "keep"
+   },
+   {
+    "name": "James Brooks",
+    "mode": "keep"
+   },
+   {
+    "name": "Stanley Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Stanford Jennings",
+    "mode": "keep"
+   },
+   {
+    "name": "Marc Logan",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Carl Zander",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Kelly",
+    "mode": "keep"
+   },
+   {
+    "name": "Leo Barker",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Brady",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Breech",
+    "mode": "keep"
+   },
+   {
+    "name": "Leon White",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Emanuel King",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Romer",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Fulhage",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Boomer Esiason",
+    "mode": "keep"
+   },
+   {
+    "name": "Turk Schonert",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Norseth",
+    "mode": "keep"
+   },
+   {
+    "name": "David Fulcher",
+    "mode": "keep"
+   },
+   {
+    "name": "Ellis Dillahunt",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Munoz",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Blados",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Rodney Holman",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Riggs",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Kattus",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Jeffries",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim McGee",
+    "mode": "keep"
+   },
+   {
+    "name": "Ira Hillary",
+    "mode": "keep"
+   },
+   {
+    "name": "Cris Collinsworth",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Martin",
+    "mode": "keep"
+   }
+  ],
+  "h-07-1971-cowboys-4.iff": [
+   {
+    "name": "Mike Connelly",
+    "mode": "keep"
+   },
+   {
+    "name": "Malcolm Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Manders",
+    "mode": "keep"
+   },
+   {
+    "name": "Cornell Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Phil Clark",
+    "mode": "keep"
+   },
+   {
+    "name": "Dick Daniels",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Livingston",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Townes",
+    "mode": "keep"
+   },
+   {
+    "name": "George Andrie",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Stephens",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Cole",
+    "mode": "keep"
+   },
+   {
+    "name": "Andy Stynchula",
+    "mode": "keep"
+   },
+   {
+    "name": "Jethro Pugh",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Lilly",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron East",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Perkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Walt Garrison",
+    "mode": "keep"
+   },
+   {
+    "name": "Mel Renfro",
+    "mode": "keep"
+   },
+   {
+    "name": "Obert Logan",
+    "mode": "keep"
+   },
+   {
+    "name": "John Niland",
+    "mode": "keep"
+   },
+   {
+    "name": "Leon Donohue",
+    "mode": "keep"
+   },
+   {
+    "name": "John Wilbur",
+    "mode": "keep"
+   },
+   {
+    "name": "Blaine Nye",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Reeves",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Baynham",
+    "mode": "keep"
+   },
+   {
+    "name": "Les Shy",
+    "mode": "keep"
+   },
+   {
+    "name": "A.D. Whitfield",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Roy Jordan",
+    "mode": "keep"
+   },
+   {
+    "name": "Harold Hays",
+    "mode": "keep"
+   },
+   {
+    "name": "D.D. Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Danny Villanueva",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Clark",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Howley",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Simmons",
+    "mode": "keep"
+   },
+   {
+    "name": "Harold Deters",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Meredith",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Morton",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerry Rhome",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Gaechter",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Liscio",
+    "mode": "keep"
+   },
+   {
+    "name": "Ralph Neely",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Boeke",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Sandeman",
+    "mode": "keep"
+   },
+   {
+    "name": "Pettis Norman",
+    "mode": "keep"
+   },
+   {
+    "name": "Rayfield Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Ditka",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Lance Rentzel",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Clarke",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Gent",
+    "mode": "keep"
+   },
+   {
+    "name": "Sims Stokes",
+    "mode": "keep"
+   }
+  ],
+  "h-07-1977-cowboys-3.iff": [
+   {
+    "name": "John Fitzgerald",
+    "mode": "keep"
+   },
+   {
+    "name": "Benny Barnes",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Kyle",
+    "mode": "keep"
+   },
+   {
+    "name": "Wade Manning",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Hurt",
+    "mode": "keep"
+   },
+   {
+    "name": "Dextor Clinkscale",
+    "mode": "keep"
+   },
+   {
+    "name": "John Dutton",
+    "mode": "keep"
+   },
+   {
+    "name": "Harvey Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Stalls",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Bethea",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Cole",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy White",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Thornton",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Newhouse",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Mitchell",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Waters",
+    "mode": "keep"
+   },
+   {
+    "name": "Herbert Scott",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Rafferty",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Shaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Springs",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Dorsett",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Laidlaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Preston Pearson",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Brinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Breunig",
+    "mode": "keep"
+   },
+   {
+    "name": "Thomas Henderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Rafael Septien",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Hegman",
+    "mode": "keep"
+   },
+   {
+    "name": "D.D. Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Guy Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Huther",
+    "mode": "keep"
+   },
+   {
+    "name": "Danny White",
+    "mode": "keep"
+   },
+   {
+    "name": "Roger Staubach",
+    "mode": "keep"
+   },
+   {
+    "name": "Glenn Carano",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Hogeboom",
+    "mode": "keep"
+   },
+   {
+    "name": "Brad Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Dennis Thurman",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Hughes",
+    "mode": "keep"
+   },
+   {
+    "name": "Pat Donovan",
+    "mode": "keep"
+   },
+   {
+    "name": "Rayfield Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Cooper",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Joe DuPree",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Cosbie",
+    "mode": "keep"
+   },
+   {
+    "name": "Jackie Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Drew Pearson",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Jay Saldi",
+    "mode": "keep"
+   },
+   {
+    "name": "Butch Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Golden Richards",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Steele",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Donley",
+    "mode": "keep"
+   }
+  ],
+  "h-08-1986-broncos-1.iff": [
+   {
+    "name": "Bill Bryan",
+    "mode": "keep"
+   },
+   {
+    "name": "Louis Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Harden",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Robbins",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Lilly",
+    "mode": "keep"
+   },
+   {
+    "name": "Daniel Hunter",
+    "mode": "keep"
+   },
+   {
+    "name": "Andre Townsend",
+    "mode": "keep"
+   },
+   {
+    "name": "Rulon Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Freddie Gilbert",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Kragen",
+    "mode": "keep"
+   },
+   {
+    "name": "Simon Fletcher",
+    "mode": "keep"
+   },
+   {
+    "name": "Rubin Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Colorito",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerald Willhite",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Foley",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Bishop",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Cooper",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Howard",
+    "mode": "keep"
+   },
+   {
+    "name": "Winford Hood",
+    "mode": "keep"
+   },
+   {
+    "name": "Sammy Winder",
+    "mode": "keep"
+   },
+   {
+    "name": "Gene Lang",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Sewell",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Bell",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Boddie",
+    "mode": "keep"
+   },
+   {
+    "name": "Karl Mecklenburg",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Hunley",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Karlis",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Norman",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Ryan",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Dennison",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Woodard",
+    "mode": "keep"
+   },
+   {
+    "name": "Darren Comeaux",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Weil",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Horan",
+    "mode": "keep"
+   },
+   {
+    "name": "John Elway",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Kubiak",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Stankavage",
+    "mode": "keep"
+   },
+   {
+    "name": "Dennis Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Haynes",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Studdard",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Lanier",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Remsberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Freeman",
+    "mode": "keep"
+   },
+   {
+    "name": "Joey Hackett",
+    "mode": "keep"
+   },
+   {
+    "name": "Orson Mobley",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Kay",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Micho",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Watson",
+    "mode": "keep"
+   },
+   {
+    "name": "Vance Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Clint Sampson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Jackson",
+    "mode": "keep"
+   }
+  ],
+  "h-08-1998-broncos-0.iff": [
+   {
+    "name": "Tom Nalen",
+    "mode": "keep"
+   },
+   {
+    "name": "Jamie Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Crockett",
+    "mode": "keep"
+   },
+   {
+    "name": "Darrien Gordon",
+    "mode": "keep"
+   },
+   {
+    "name": "Dedrick Dodge",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim McKyer",
+    "mode": "generic"
+   },
+   {
+    "name": "Tony Veland",
+    "mode": "keep"
+   },
+   {
+    "name": "Neil Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Alfred Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Dean Perry",
+    "mode": "keep"
+   },
+   {
+    "name": "Harald Hasselbach",
+    "mode": "keep"
+   },
+   {
+    "name": "David Richie",
+    "mode": "keep"
+   },
+   {
+    "name": "Ernest Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Traylor",
+    "mode": "retail",
+    "retail": {
+     "photo": 502,
+     "skin": 19,
+     "face": 5,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Maa Tanuvasa",
+    "mode": "generic"
+   },
+   {
+    "name": "Trevor Pryce",
+    "mode": "retail",
+    "retail": {
+     "photo": 501,
+     "skin": 11,
+     "face": 10,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Mike Lodish",
+    "mode": "keep"
+   },
+   {
+    "name": "Howard Griffith",
+    "mode": "keep"
+   },
+   {
+    "name": "Vaughn Hebron",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Atwater",
+    "mode": "keep"
+   },
+   {
+    "name": "Darrius Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Schlereth",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Habib",
+    "mode": "keep"
+   },
+   {
+    "name": "David Diaz-Infante",
+    "mode": "keep"
+   },
+   {
+    "name": "Terrell Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Derek Loville",
+    "mode": "keep"
+   },
+   {
+    "name": "Detron Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Lynn",
+    "mode": "keep"
+   },
+   {
+    "name": "Allen Aldridge",
+    "mode": "keep"
+   },
+   {
+    "name": "Glenn Cadrez",
+    "mode": "generic"
+   },
+   {
+    "name": "Keith Burns",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Elam",
+    "mode": "keep"
+   },
+   {
+    "name": "John Mobley",
+    "mode": "retail",
+    "retail": {
+     "photo": 511,
+     "skin": 3,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Bill Romanowski",
+    "mode": "generic"
+   },
+   {
+    "name": "Steve Russ",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Rouen",
+    "mode": "keep"
+   },
+   {
+    "name": "John Elway",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Bubby Brister",
+    "mode": "generic"
+   },
+   {
+    "name": "Tyrone Braxton",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Hilliard",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Zimmerman",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Harry Swayne",
+    "mode": "keep"
+   },
+   {
+    "name": "Shannon Sharpe",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwayne Carswell",
+    "mode": "keep"
+   },
+   {
+    "name": "Byron Chamberlain",
+    "mode": "retail",
+    "retail": {
+     "photo": 533,
+     "skin": 13,
+     "face": 10,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Ed McCaffrey",
+    "mode": "generic"
+   },
+   {
+    "name": "Rod Smith",
+    "mode": "retail",
+    "retail": {
+     "photo": 534,
+     "skin": 4,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Willie Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Patrick Jeffers",
+    "mode": "keep"
+   },
+   {
+    "name": "Flipper Anderson",
+    "mode": "generic"
+   },
+   {
+    "name": "David Gamble",
+    "mode": "keep"
+   }
+  ],
+  "h-10-1966-packers-3.iff": [
+   {
+    "name": "Ken Bowman",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Hyland",
+    "mode": "keep"
+   },
+   {
+    "name": "Herb Adderley",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Jeter",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Hart",
+    "mode": "keep"
+   },
+   {
+    "name": "John Rowser",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Hathcock",
+    "mode": "keep"
+   },
+   {
+    "name": "Gordon Rule",
+    "mode": "keep"
+   },
+   {
+    "name": "Hank Gremminger",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Matthews",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Lionel Aldridge",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Kostelnik",
+    "mode": "keep"
+   },
+   {
+    "name": "Henry Jordan",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Weatherwax",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Leon Crenshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Mercein",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Wood",
+    "mode": "keep"
+   },
+   {
+    "name": "Ervin Hunt",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerry Norton",
+    "mode": "keep"
+   },
+   {
+    "name": "Gale Gillingham",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerry Kramer",
+    "mode": "keep"
+   },
+   {
+    "name": "Fuzzy Thurston",
+    "mode": "keep"
+   },
+   {
+    "name": "Donny Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Grabowski",
+    "mode": "keep"
+   },
+   {
+    "name": "Elijah Pitts",
+    "mode": "keep"
+   },
+   {
+    "name": "Ben Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Nitschke",
+    "mode": "keep"
+   },
+   {
+    "name": "Tommy Crutcher",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Chandler",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Roy Caffey",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Flanigan",
+    "mode": "keep"
+   },
+   {
+    "name": "Errol Mann",
+    "mode": "keep"
+   },
+   {
+    "name": "Bart Starr",
+    "mode": "keep"
+   },
+   {
+    "name": "Zeke Bratkowski",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Jesse Whittenton",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Skoronski",
+    "mode": "keep"
+   },
+   {
+    "name": "Forrest Gregg",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Dick Himes",
+    "mode": "keep"
+   },
+   {
+    "name": "Marv Fleming",
+    "mode": "keep"
+   },
+   {
+    "name": "Allen Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Dick Capp",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Boyd Dowler",
+    "mode": "keep"
+   },
+   {
+    "name": "Carroll Dale",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Long",
+    "mode": "keep"
+   },
+   {
+    "name": "Max McGee",
+    "mode": "keep"
+   },
+   {
+    "name": "Claudis James",
+    "mode": "keep"
+   },
+   {
+    "name": "Bucky Pope",
+    "mode": "keep"
+   }
+  ],
+  "h-10-1996-packers-2.iff": [
+   {
+    "name": "Frank Winters",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Dellenbach",
+    "mode": "keep"
+   },
+   {
+    "name": "Tyrone Williams",
+    "mode": "retail",
+    "retail": {
+     "photo": 607,
+     "skin": 3,
+     "face": 3,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Doug Evans",
+    "mode": "retail",
+    "retail": {
+     "photo": 240,
+     "skin": 2,
+     "face": 5,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Roderick Mullen",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Newsome",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Darkins",
+    "mode": "generic"
+   },
+   {
+    "name": "Reggie White",
+    "mode": "keep"
+   },
+   {
+    "name": "Gabe Wilkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith McKenzie",
+    "mode": "keep"
+   },
+   {
+    "name": "Darius Holland",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Frase",
+    "mode": "keep"
+   },
+   {
+    "name": "Santana Dotson",
+    "mode": "generic"
+   },
+   {
+    "name": "Gilbert Brown",
+    "mode": "retail",
+    "retail": {
+     "photo": 623,
+     "skin": 18,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Bob Kuberski",
+    "mode": "keep"
+   },
+   {
+    "name": "Jermaine Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "William Henderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Travis Jervey",
+    "mode": "keep"
+   },
+   {
+    "name": "Eugene Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Prior",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Adam Timmerman",
+    "mode": "keep"
+   },
+   {
+    "name": "Marco Rivera",
+    "mode": "keep"
+   },
+   {
+    "name": "Dorsey Levens",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Hayden",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Kinder",
+    "mode": "keep"
+   },
+   {
+    "name": "Bernardo Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Simmons",
+    "mode": "keep"
+   },
+   {
+    "name": "Ryan Longwell",
+    "mode": "retail",
+    "retail": {
+     "photo": 631,
+     "skin": 16,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Seth Joyner",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Lamont Hollinquest",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Hentrich",
+    "mode": "keep"
+   },
+   {
+    "name": "Brett Favre",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Bono",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Pederson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim McMahon",
+    "mode": "keep"
+   },
+   {
+    "name": "LeRoy Butler",
+    "mode": "keep"
+   },
+   {
+    "name": "Darren Sharper",
+    "mode": "retail",
+    "retail": {
+     "photo": 608,
+     "skin": 2,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Ross Verba",
+    "mode": "keep"
+   },
+   {
+    "name": "Earl Dotson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Wilkerson",
+    "mode": "keep"
+   },
+   {
+    "name": "John Michels",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Chmura",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Thomason",
+    "mode": "keep"
+   },
+   {
+    "name": "Tyrone Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Brooks",
+    "mode": "generic"
+   },
+   {
+    "name": "Antonio Freeman",
+    "mode": "retail",
+    "retail": {
+     "photo": 658,
+     "skin": 3,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Derrick Mayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Schroeder",
+    "mode": "retail",
+    "retail": {
+     "photo": 660,
+     "skin": 0,
+     "face": 4,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Terry Mickens",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Beebe",
+    "mode": "keep"
+   },
+   {
+    "name": "Roell Preston",
+    "mode": "keep"
+   }
+  ],
+  "h-10-2004-packers-0.iff": [
+   {
+    "name": "Mike Flanagan",
+    "mode": "keep"
+   },
+   {
+    "name": "Rob Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Brennan Curtin",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike McKenzie",
+    "mode": "retail",
+    "retail": {
+     "photo": 2087,
+     "skin": 2,
+     "face": 2,
+     "dreads": 1
+    }
+   },
+   {
+    "name": "Al Harris",
+    "mode": "retail",
+    "retail": {
+     "photo": 1276,
+     "skin": 12,
+     "face": 3,
+     "dreads": 1
+    }
+   },
+   {
+    "name": "Curtis Fuller",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Hawthorne",
+    "mode": "keep"
+   },
+   {
+    "name": "Derek Combs",
+    "mode": "generic"
+   },
+   {
+    "name": "Aaron Kampman",
+    "mode": "generic"
+   },
+   {
+    "name": "Kabeer Gbaja-Biamila",
+    "mode": "retail",
+    "retail": {
+     "photo": 2609,
+     "skin": 12,
+     "face": 10,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Chukie Nwokorie",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Johnson",
+    "mode": "retail",
+    "retail": {
+     "photo": 1042,
+     "skin": 20,
+     "face": 12,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Larry Smith",
+    "mode": "generic"
+   },
+   {
+    "name": "Cletidus Hunt",
+    "mode": "generic"
+   },
+   {
+    "name": "Grady Jackson",
+    "mode": "retail",
+    "retail": {
+     "photo": 1226,
+     "skin": 21,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Rod Walker",
+    "mode": "generic"
+   },
+   {
+    "name": "Gilbert Brown",
+    "mode": "retail",
+    "retail": {
+     "photo": 623,
+     "skin": 18,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Kenny Peterson",
+    "mode": "keep"
+   },
+   {
+    "name": "William Henderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Luchey",
+    "mode": "keep"
+   },
+   {
+    "name": "Darren Sharper",
+    "mode": "keep"
+   },
+   {
+    "name": "Bhawoh Jue",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Wahle",
+    "mode": "keep"
+   },
+   {
+    "name": "Marco Rivera",
+    "mode": "keep"
+   },
+   {
+    "name": "Grey Ruegamer",
+    "mode": "keep"
+   },
+   {
+    "name": "Ahman Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Najeh Davenport",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Fisher",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Barnett",
+    "mode": "keep"
+   },
+   {
+    "name": "Torrance Marshall",
+    "mode": "keep"
+   },
+   {
+    "name": "Ryan Longwell",
+    "mode": "keep"
+   },
+   {
+    "name": "Hannibal Navies",
+    "mode": "generic"
+   },
+   {
+    "name": "Na'il Diggs",
+    "mode": "retail",
+    "retail": {
+     "photo": 2684,
+     "skin": 2,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Paris Lenon",
+    "mode": "keep"
+   },
+   {
+    "name": "Josh Bidwell",
+    "mode": "keep"
+   },
+   {
+    "name": "Brett Favre",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Pederson",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Nall",
+    "mode": "keep"
+   },
+   {
+    "name": "Marques Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Antuan Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Erwin Swiney",
+    "mode": "keep"
+   },
+   {
+    "name": "Chad Clifton",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Tauscher",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Barry",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcus Spriggs",
+    "mode": "keep"
+   },
+   {
+    "name": "Bubba Franks",
+    "mode": "keep"
+   },
+   {
+    "name": "David Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Wesley Walls",
+    "mode": "retail",
+    "retail": {
+     "photo": 290,
+     "skin": 8,
+     "face": 14,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Donald Driver",
+    "mode": "retail",
+    "retail": {
+     "photo": 1893,
+     "skin": 3,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Robert Ferguson",
+    "mode": "generic"
+   },
+   {
+    "name": "Javon Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Antonio Chatman",
+    "mode": "generic"
+   },
+   {
+    "name": "Antonio Freeman",
+    "mode": "retail",
+    "retail": {
+     "photo": 658,
+     "skin": 3,
+     "face": 1,
+     "dreads": 0
+    }
+   }
+  ],
+  "h-11-1970-colts-5.iff": [
+   {
+    "name": "Jay Leeuwenburg",
+    "mode": "keep"
+   },
+   {
+    "name": "Bradford Banta",
+    "mode": "keep"
+   },
+   {
+    "name": "Carlton Gray",
+    "mode": "keep"
+   },
+   {
+    "name": "Damon Watts",
+    "mode": "keep"
+   },
+   {
+    "name": "Dedric Mathis",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray McElroy",
+    "mode": "keep"
+   },
+   {
+    "name": "Albert Fontenot",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Bennett",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Footman",
+    "mode": "keep"
+   },
+   {
+    "name": "Bertrand Berry",
+    "mode": "relocate",
+    "retail": {
+     "photo": 680,
+     "skin": 4,
+     "face": 12,
+     "dreads": 0
+    },
+    "match": "last+birthdate"
+   },
+   {
+    "name": "Tony McCoy",
+    "mode": "keep"
+   },
+   {
+    "name": "Ellis Johnson",
+    "mode": "relocate",
+    "retail": {
+     "photo": 686,
+     "skin": 20,
+     "face": 13,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Bernard Whittington",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Zack Crockett",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Hetherington",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Belser",
+    "mode": "keep"
+   },
+   {
+    "name": "Monty Montgomery",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Widell",
+    "mode": "keep"
+   },
+   {
+    "name": "Tarik Glenn",
+    "mode": "keep"
+   },
+   {
+    "name": "Kipp Vickers",
+    "mode": "keep"
+   },
+   {
+    "name": "Marshall Faulk",
+    "mode": "retail",
+    "retail": {
+     "photo": 710,
+     "skin": 5,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Lamont Warren",
+    "mode": "keep"
+   },
+   {
+    "name": "Clif Groce",
+    "mode": "keep"
+   },
+   {
+    "name": "Roosevelt Potts",
+    "mode": "keep"
+   },
+   {
+    "name": "Leon Neal",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Grant",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Morrison",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Von der Ahe",
+    "mode": "keep"
+   },
+   {
+    "name": "Sammie Burroughs",
+    "mode": "keep"
+   },
+   {
+    "name": "Cary Blanchard",
+    "mode": "keep"
+   },
+   {
+    "name": "Elijah Alexander",
+    "mode": "keep"
+   },
+   {
+    "name": "Quentin Coryatt",
+    "mode": "keep"
+   },
+   {
+    "name": "Phillip Ward",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Gardocki",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Harbaugh",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Justin",
+    "mode": "keep"
+   },
+   {
+    "name": "Kelly Holcomb",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Blackmon",
+    "mode": "keep"
+   },
+   {
+    "name": "David Tate",
+    "mode": "keep"
+   },
+   {
+    "name": "Rico Clark",
+    "mode": "keep"
+   },
+   {
+    "name": "Adam Meadows",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Mandarich",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Mathews",
+    "mode": "keep"
+   },
+   {
+    "name": "Eugene Chung",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Dilger",
+    "mode": "retail",
+    "retail": {
+     "photo": 721,
+     "skin": 0,
+     "face": 8,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Marcus Pollard",
+    "mode": "retail",
+    "retail": {
+     "photo": 722,
+     "skin": 19,
+     "face": 8,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Scott Slutzker",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Bailey",
+    "mode": "keep"
+   },
+   {
+    "name": "Marvin Harrison",
+    "mode": "retail",
+    "retail": {
+     "photo": 725,
+     "skin": 3,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Sean Dawkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Stablein",
+    "mode": "keep"
+   },
+   {
+    "name": "Nate Jacquet",
+    "mode": "keep"
+   }
+  ],
+  "h-13-1969-chiefs-4.iff": [
+   {
+    "name": "Jack Rudnay",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Oriard",
+    "mode": "keep"
+   },
+   {
+    "name": "E.J. Holub",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Marsalis",
+    "mode": "keep"
+   },
+   {
+    "name": "Emmitt Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Ceasar Belser",
+    "mode": "keep"
+   },
+   {
+    "name": "David Hadley",
+    "mode": "keep"
+   },
+   {
+    "name": "Nate Allen",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Marshall",
+    "mode": "keep"
+   },
+   {
+    "name": "Marvin Upshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Aaron Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Curley Culp",
+    "mode": "keep"
+   },
+   {
+    "name": "Buck Buchanan",
+    "mode": "keep"
+   },
+   {
+    "name": "Wilbur Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Lothamer",
+    "mode": "keep"
+   },
+   {
+    "name": "Wendell Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren McVea",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Sensibaugh",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Budde",
+    "mode": "keep"
+   },
+   {
+    "name": "Mo Moorman",
+    "mode": "keep"
+   },
+   {
+    "name": "George Daney",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Podolak",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Otis",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Adamle",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Kinney",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Lanier",
+    "mode": "keep"
+   },
+   {
+    "name": "Jan Stenerud",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Bell",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Lynch",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Stein",
+    "mode": "keep"
+   },
+   {
+    "name": "Clyde Werner",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Best",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Palewicz",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerrel Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim McCann",
+    "mode": "keep"
+   },
+   {
+    "name": "Len Dawson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Livingston",
+    "mode": "keep"
+   },
+   {
+    "name": "John Huarte",
+    "mode": "keep"
+   },
+   {
+    "name": "Dean Carlson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Kearney",
+    "mode": "keep"
+   },
+   {
+    "name": "Kerry Reardon",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Tyrer",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Sid Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Morris Stroud",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Frazier",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Cannon",
+    "mode": "keep"
+   },
+   {
+    "name": "Elmo Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Otis Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Dennis Homan",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Jankowski",
+    "mode": "keep"
+   }
+  ],
+  "h-13-1993-chiefs-2.iff": [
+   {
+    "name": "Tim Grunhard",
+    "mode": "keep"
+   },
+   {
+    "name": "Albert Lewis",
+    "mode": "generic"
+   },
+   {
+    "name": "Kevin Ross",
+    "mode": "keep"
+   },
+   {
+    "name": "Dale Carter",
+    "mode": "retail",
+    "retail": {
+     "photo": 800,
+     "skin": 4,
+     "face": 3,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Doug Terry",
+    "mode": "keep"
+   },
+   {
+    "name": "Tahaun Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Porter",
+    "mode": "keep"
+   },
+   {
+    "name": "J.C. Pearson",
+    "mode": "keep"
+   },
+   {
+    "name": "Neil Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Griffin",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Saleaumua",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Maas",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Phillips",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Evans",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Sims",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Mincy",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Szott",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Lutz",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Valerio",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Baab",
+    "mode": "keep"
+   },
+   {
+    "name": "Barry Word",
+    "mode": "keep"
+   },
+   {
+    "name": "Christian Okoye",
+    "mode": "keep"
+   },
+   {
+    "name": "Kimble Anders",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd McNair",
+    "mode": "keep"
+   },
+   {
+    "name": "Harvey Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Tracy Simien",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Lonnie Marts",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Lowery",
+    "mode": "keep"
+   },
+   {
+    "name": "Ervin Randle",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Percy Snow",
+    "mode": "keep"
+   },
+   {
+    "name": "Bryan Barker",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Krieg",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Vlasic",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Blundin",
+    "mode": "keep"
+   },
+   {
+    "name": "Martin Bayless",
+    "mode": "keep"
+   },
+   {
+    "name": "Bennie Thompson",
+    "mode": "keep"
+   },
+   {
+    "name": "John Alt",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Baldinger",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick Graham",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Dohring",
+    "mode": "keep"
+   },
+   {
+    "name": "Jonathan Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Cash",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Dyal",
+    "mode": "keep"
+   },
+   {
+    "name": "J.J. Birden",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim Barnett",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Hargain",
+    "mode": "keep"
+   },
+   {
+    "name": "Emile Harry",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Smith",
+    "mode": "keep"
+   }
+  ],
+  "h-14-1972-dolphins-4.iff": [
+   {
+    "name": "Bob DeMarco",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Langer",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim Foley",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Lloyd Mumphord",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Babb",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Riley",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Stanfill",
+    "mode": "keep"
+   },
+   {
+    "name": "Vern Den Herder",
+    "mode": "keep"
+   },
+   {
+    "name": "John Richardson",
+    "mode": "keep"
+   },
+   {
+    "name": "Manny Fernandez",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Heinz",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Dunaway",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Cornish",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Csonka",
+    "mode": "keep"
+   },
+   {
+    "name": "Mercury Morris",
+    "mode": "keep"
+   },
+   {
+    "name": "Jake Scott",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Petrella",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Kuechenberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Little",
+    "mode": "keep"
+   },
+   {
+    "name": "Maxie Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Mass",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Kiick",
+    "mode": "keep"
+   },
+   {
+    "name": "Hubert Ginn",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Leigh",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Cole",
+    "mode": "keep"
+   },
+   {
+    "name": "Barry Pryor",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Buoniconti",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Kolen",
+    "mode": "keep"
+   },
+   {
+    "name": "Garo Yepremian",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Swift",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Matheson",
+    "mode": "keep"
+   },
+   {
+    "name": "Dale Farley",
+    "mode": "keep"
+   },
+   {
+    "name": "Jesse Powell",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Seiple",
+    "mode": "keep"
+   },
+   {
+    "name": "Karl Kremser",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Griese",
+    "mode": "keep"
+   },
+   {
+    "name": "George Mira",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Lothridge",
+    "mode": "keep"
+   },
+   {
+    "name": "Dick Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Crusan",
+    "mode": "keep"
+   },
+   {
+    "name": "Norm Evans",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Jenkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Marv Fleming",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Mandich",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Warfield",
+    "mode": "keep"
+   },
+   {
+    "name": "Howard Twilley",
+    "mode": "keep"
+   },
+   {
+    "name": "Karl Noonan",
+    "mode": "keep"
+   },
+   {
+    "name": "Otto Stowe",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Richardson",
+    "mode": "keep"
+   },
+   {
+    "name": "Marlin Briscoe",
+    "mode": "keep"
+   }
+  ],
+  "h-14-1984-dolphins-3.iff": [
+   {
+    "name": "Mark Dennard",
+    "mode": "keep"
+   },
+   {
+    "name": "Fulton Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerald Small",
+    "mode": "keep"
+   },
+   {
+    "name": "Don McNeal",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Ray",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Betters",
+    "mode": "keep"
+   },
+   {
+    "name": "Vern Den Herder",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Poole",
+    "mode": "keep"
+   },
+   {
+    "name": "Kim Bokamper",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Baumhower",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Barnett",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Fultz",
+    "mode": "keep"
+   },
+   {
+    "name": "Andra Franklin",
+    "mode": "keep"
+   },
+   {
+    "name": "Lyle Blackwood",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Bessillieu",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Kuechenberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Newman",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Toews",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Nathan",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Woody Bennett",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Howell",
+    "mode": "keep"
+   },
+   {
+    "name": "Tommy Vigorito",
+    "mode": "keep"
+   },
+   {
+    "name": "Earnest Rhone",
+    "mode": "keep"
+   },
+   {
+    "name": "A.J. Duhe",
+    "mode": "keep"
+   },
+   {
+    "name": "Ralph Ortega",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Potter",
+    "mode": "keep"
+   },
+   {
+    "name": "Uwe von Schamann",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Brudzinski",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Gordon",
+    "mode": "keep"
+   },
+   {
+    "name": "Rodell Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Shull",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Bowser",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Orosz",
+    "mode": "keep"
+   },
+   {
+    "name": "David Woodley",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Strock",
+    "mode": "keep"
+   },
+   {
+    "name": "Glenn Blackwood",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Kozlowski",
+    "mode": "keep"
+   },
+   {
+    "name": "Jon Giesler",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Laakso",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Stephenson",
+    "mode": "keep"
+   },
+   {
+    "name": "Cleveland Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Ronnie Lee",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Hardy",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Rose",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Andre Tillman",
+    "mode": "keep"
+   },
+   {
+    "name": "Nat Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Jimmy Cefalo",
+    "mode": "keep"
+   },
+   {
+    "name": "Duriel Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Elmer Bailey",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Duper",
+    "mode": "keep"
+   }
+  ],
+  "h-16-2001-patriots-0.iff": [
+   {
+    "name": "Damien Woody",
+    "mode": "keep"
+   },
+   {
+    "name": "Grey Ruegamer",
+    "mode": "keep"
+   },
+   {
+    "name": "Ty Law",
+    "mode": "keep"
+   },
+   {
+    "name": "Otis Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Stevens",
+    "mode": "keep"
+   },
+   {
+    "name": "Terrance Shaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Je'Rod Cherry",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Hamilton",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Pleasant",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie McGinest",
+    "mode": "retail",
+    "retail": {
+     "photo": 983,
+     "skin": 19,
+     "face": 12,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "David Nugent",
+    "mode": "keep"
+   },
+   {
+    "name": "Riddick Parker",
+    "mode": "keep"
+   },
+   {
+    "name": "Brandon Mitchell",
+    "mode": "keep"
+   },
+   {
+    "name": "Richard Seymour",
+    "mode": "keep"
+   },
+   {
+    "name": "Jace Sayler",
+    "mode": "generic"
+   },
+   {
+    "name": "Marc Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Tebucky Jones",
+    "mode": "retail",
+    "retail": {
+     "photo": 976,
+     "skin": 19,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Terrell Buckley",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Compton",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Andruzzi",
+    "mode": "keep"
+   },
+   {
+    "name": "Lonie Paxton",
+    "mode": "keep"
+   },
+   {
+    "name": "Antowain Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Faulk",
+    "mode": "keep"
+   },
+   {
+    "name": "Patrick Pass",
+    "mode": "generic"
+   },
+   {
+    "name": "J.R. Redmond",
+    "mode": "retail",
+    "retail": {
+     "photo": 2724,
+     "skin": 3,
+     "face": 2,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Tedy Bruschi",
+    "mode": "keep"
+   },
+   {
+    "name": "Bryan Cox",
+    "mode": "keep"
+   },
+   {
+    "name": "Ted Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Izzo",
+    "mode": "keep"
+   },
+   {
+    "name": "Adam Vinatieri",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Vrabel",
+    "mode": "keep"
+   },
+   {
+    "name": "Roman Phifer",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Chatham",
+    "mode": "keep"
+   },
+   {
+    "name": "Hakim Akbar",
+    "mode": "keep"
+   },
+   {
+    "name": "Marty Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Walter",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Brady",
+    "mode": "keep"
+   },
+   {
+    "name": "Drew Bledsoe",
+    "mode": "keep"
+   },
+   {
+    "name": "Lawyer Milloy",
+    "mode": "retail",
+    "retail": {
+     "photo": 975,
+     "skin": 3,
+     "face": 4,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Antwan Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Light",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Randall",
+    "mode": "keep"
+   },
+   {
+    "name": "Grant Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Kenyatta Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Jermaine Wiggins",
+    "mode": "keep"
+   },
+   {
+    "name": "Rod Rutledge",
+    "mode": "keep"
+   },
+   {
+    "name": "Troy Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "David Patten",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Johnson",
+    "mode": "generic"
+   },
+   {
+    "name": "Terry Glenn",
+    "mode": "retail",
+    "retail": {
+     "photo": 1024,
+     "skin": 2,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Bert Emanuel",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Coleman",
+    "mode": "keep"
+   }
+  ],
+  "h-17-1991-saints-4.iff": [
+   {
+    "name": "Jim Pietrzak",
+    "mode": "keep"
+   },
+   {
+    "name": "John Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "James Marshall",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Waymer",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Ray",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Chapman",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Spivey",
+    "mode": "keep"
+   },
+   {
+    "name": "Elois Grooms",
+    "mode": "keep"
+   },
+   {
+    "name": "Tommy Hart",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Reese",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Fultz",
+    "mode": "keep"
+   },
+   {
+    "name": "Derland Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Barry Bennett",
+    "mode": "keep"
+   },
+   {
+    "name": "Elex Price",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Myers",
+    "mode": "keep"
+   },
+   {
+    "name": "Guido Merkens",
+    "mode": "keep"
+   },
+   {
+    "name": "Emanuel Zanders",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Sturt",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Coombs",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Lafary",
+    "mode": "keep"
+   },
+   {
+    "name": "Jimmy Rogers",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Galbreath",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Muncie",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Strachan",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Collins",
+    "mode": "keep"
+   },
+   {
+    "name": "George Rogers",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Federspiel",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Evans",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Kovach",
+    "mode": "keep"
+   },
+   {
+    "name": "Benny Ricardo",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Bordelon",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Mathis",
+    "mode": "keep"
+   },
+   {
+    "name": "Stan Holloway",
+    "mode": "keep"
+   },
+   {
+    "name": "Russell Erxleben",
+    "mode": "keep"
+   },
+   {
+    "name": "Archie Manning",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Scott",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Burns",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Schwartz",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "J.T. Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Stan Brock",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Woods",
+    "mode": "keep"
+   },
+   {
+    "name": "Henry Childs",
+    "mode": "keep"
+   },
+   {
+    "name": "Brooks Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Hardy",
+    "mode": "keep"
+   },
+   {
+    "name": "Hoby Brenner",
+    "mode": "keep"
+   },
+   {
+    "name": "Wes Chandler",
+    "mode": "keep"
+   },
+   {
+    "name": "Ike Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Mauti",
+    "mode": "keep"
+   },
+   {
+    "name": "Gordon Banks",
+    "mode": "keep"
+   },
+   {
+    "name": "Tinker Owens",
+    "mode": "keep"
+   }
+  ],
+  "h-18-1990-giants-2.iff": [
+   {
+    "name": "Bart Oates",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Collins",
+    "mode": "keep"
+   },
+   {
+    "name": "Everson Walls",
+    "mode": "keep"
+   },
+   {
+    "name": "Reyna Thompson",
+    "mode": "keep"
+   },
+   {
+    "name": "Perry Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Roger Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "John Washington",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Marshall",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Fox",
+    "mode": "keep"
+   },
+   {
+    "name": "Erik Howard",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Dorsey",
+    "mode": "keep"
+   },
+   {
+    "name": "Kent Wells",
+    "mode": "keep"
+   },
+   {
+    "name": "Maurice Carthon",
+    "mode": "keep"
+   },
+   {
+    "name": "Myron Guyton",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Duerson",
+    "mode": "keep"
+   },
+   {
+    "name": "William Roberts",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Kratch",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Damian Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ottis Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Lewis Tillman",
+    "mode": "keep"
+   },
+   {
+    "name": "Rodney Hampton",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Meggett",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Rouson",
+    "mode": "keep"
+   },
+   {
+    "name": "Pepper Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve DeOssie",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry McGrew",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Reasons",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Bahr",
+    "mode": "keep"
+   },
+   {
+    "name": "Carl Banks",
+    "mode": "keep"
+   },
+   {
+    "name": "Lawrence Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnie Cooks",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Abrams",
+    "mode": "keep"
+   },
+   {
+    "name": "Sean Landeta",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Hostetler",
+    "mode": "keep"
+   },
+   {
+    "name": "Phil Simms",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Whitmore",
+    "mode": "keep"
+   },
+   {
+    "name": "Jumbo Elliott",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Riesenberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Rehder",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Jay Butler",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Bavaro",
+    "mode": "keep"
+   },
+   {
+    "name": "Howard Cross",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Mrosko",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Ingram",
+    "mode": "keep"
+   },
+   {
+    "name": "Stephen Baker",
+    "mode": "keep"
+   },
+   {
+    "name": "Odessa Turner",
+    "mode": "keep"
+   },
+   {
+    "name": "Lionel Manuel",
+    "mode": "keep"
+   },
+   {
+    "name": "Troy Kyles",
+    "mode": "keep"
+   },
+   {
+    "name": "Stacy Robinson",
+    "mode": "keep"
+   }
+  ],
+  "h-18-2003-giants-0.iff": [
+   {
+    "name": "Chris Bober",
+    "mode": "keep"
+   },
+   {
+    "name": "Omar Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Will Allen",
+    "mode": "keep"
+   },
+   {
+    "name": "Will Peterson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Sehorn",
+    "mode": "retail",
+    "retail": {
+     "photo": 1102,
+     "skin": 0,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Ralph Brown",
+    "mode": "generic"
+   },
+   {
+    "name": "Reggie Stephens",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Strahan",
+    "mode": "keep"
+   },
+   {
+    "name": "Kenny Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Cornelius Griffin",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Ferrara",
+    "mode": "keep"
+   },
+   {
+    "name": "Lance Legree",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Hamilton",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Stackhouse",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Dayne",
+    "mode": "retail",
+    "retail": {
+     "photo": 2723,
+     "skin": 4,
+     "face": 12,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Omar Stoutmire",
+    "mode": "keep"
+   },
+   {
+    "name": "DeWayne Patmon",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Seubert",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Whittle",
+    "mode": "keep"
+   },
+   {
+    "name": "Tam Hopkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Tiki Barber",
+    "mode": "keep"
+   },
+   {
+    "name": "Damon Washington",
+    "mode": "generic"
+   },
+   {
+    "name": "Delvin Joyce",
+    "mode": "keep"
+   },
+   {
+    "name": "Sean Bennett",
+    "mode": "keep"
+   },
+   {
+    "name": "Micheal Barrow",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Greisen",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Bryant",
+    "mode": "keep"
+   },
+   {
+    "name": "Brandon Short",
+    "mode": "keep"
+   },
+   {
+    "name": "Dhani Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Wesly Mallard",
+    "mode": "keep"
+   },
+   {
+    "name": "Quincy Monk",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Allen",
+    "mode": "keep"
+   },
+   {
+    "name": "Kerry Collins",
+    "mode": "keep"
+   },
+   {
+    "name": "Jesse Palmer",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Garrett",
+    "mode": "keep"
+   },
+   {
+    "name": "Shaun Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnnie Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Luke Petitgout",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Rosenthal",
+    "mode": "keep"
+   },
+   {
+    "name": "Dusty Zeigler",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeremy Shockey",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Campbell",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcellus Rivers",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan O'Leary",
+    "mode": "keep"
+   },
+   {
+    "name": "Amani Toomer",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Dixon",
+    "mode": "keep"
+   },
+   {
+    "name": "Ike Hilliard",
+    "mode": "relocate",
+    "retail": {
+     "photo": 1146,
+     "skin": 3,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Daryl Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Derek Dorris",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim Carter",
+    "mode": "keep"
+   }
+  ],
+  "h-19-1968-jets-4.iff": [
+   {
+    "name": "John Schmitt",
+    "mode": "keep"
+   },
+   {
+    "name": "John Matlock",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Waskiewicz",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Sample",
+    "mode": "keep"
+   },
+   {
+    "name": "Cornell Gordon",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Beverly",
+    "mode": "keep"
+   },
+   {
+    "name": "Earl Christy",
+    "mode": "keep"
+   },
+   {
+    "name": "John Dockery",
+    "mode": "keep"
+   },
+   {
+    "name": "Cecil Leonard",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerry Philbin",
+    "mode": "keep"
+   },
+   {
+    "name": "Verlon Biggs",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Thompson",
+    "mode": "keep"
+   },
+   {
+    "name": "Karl Henke",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Rochester",
+    "mode": "keep"
+   },
+   {
+    "name": "John Elliott",
+    "mode": "keep"
+   },
+   {
+    "name": "Raymond Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Carl McAdams",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Bert Wilder",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Snell",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Baird",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike D'Amato",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Talamini",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Herman",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Rasmussen",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Mathis",
+    "mode": "keep"
+   },
+   {
+    "name": "Emerson Boozer",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Smolinski",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Joe",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee White",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Atkinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Turner",
+    "mode": "keep"
+   },
+   {
+    "name": "Ralph Baker",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Grantham",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Stromberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Crane",
+    "mode": "keep"
+   },
+   {
+    "name": "Curley Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Namath",
+    "mode": "keep"
+   },
+   {
+    "name": "Babe Parilli",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Woodall",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Hudson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Richards",
+    "mode": "keep"
+   },
+   {
+    "name": "Winston Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Walton",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Richardson",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Lammons",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Stewart",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Arthur",
+    "mode": "keep"
+   },
+   {
+    "name": "George Sauer",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Maynard",
+    "mode": "keep"
+   },
+   {
+    "name": "Bake Turner",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Rademacher",
+    "mode": "keep"
+   },
+   {
+    "name": "Harvey Nairn",
+    "mode": "keep"
+   }
+  ],
+  "h-20-1967-raiders-1.iff": [
+   {
+    "name": "Jim Otto",
+    "mode": "keep"
+   },
+   {
+    "name": "George Atkinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Kent McCloughan",
+    "mode": "keep"
+   },
+   {
+    "name": "Howie Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Ike Lassiter",
+    "mode": "keep"
+   },
+   {
+    "name": "Ben Davidson",
+    "mode": "keep"
+   },
+   {
+    "name": "Alphonse Dotson",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Birdwell",
+    "mode": "keep"
+   },
+   {
+    "name": "Carleton Oats",
+    "mode": "keep"
+   },
+   {
+    "name": "Karl Rubke",
+    "mode": "keep"
+   },
+   {
+    "name": "Hewritt Dixon",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Grayson",
+    "mode": "keep"
+   },
+   {
+    "name": "Gene Upshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Harvey",
+    "mode": "keep"
+   },
+   {
+    "name": "Wayne Hawkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Banaszak",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Roger Hagberg",
+    "mode": "keep"
+   },
+   {
+    "name": "Preston Ridlehuber",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Todd",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Conners",
+    "mode": "keep"
+   },
+   {
+    "name": "Duane Benson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Budness",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Ogas",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Mercer",
+    "mode": "keep"
+   },
+   {
+    "name": "Chip Oliver",
+    "mode": "keep"
+   },
+   {
+    "name": "Gus Otto",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerry Hopkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Fairband",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Laskey",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Eischeid",
+    "mode": "keep"
+   },
+   {
+    "name": "Daryle Lamonica",
+    "mode": "keep"
+   },
+   {
+    "name": "George Blanda",
+    "mode": "keep"
+   },
+   {
+    "name": "Cotton Davidson",
+    "mode": "keep"
+   },
+   {
+    "name": "Rodger Bird",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Powers",
+    "mode": "keep"
+   },
+   {
+    "name": "Nemiah Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Svihus",
+    "mode": "keep"
+   },
+   {
+    "name": "Harry Schuh",
+    "mode": "keep"
+   },
+   {
+    "name": "Art Shell",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Kruse",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Cannon",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Kocourek",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Herock",
+    "mode": "keep"
+   },
+   {
+    "name": "Lloyd Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Wells",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Biletnikoff",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Miller",
+    "mode": "keep"
+   },
+   {
+    "name": "Eldridge Dickey",
+    "mode": "keep"
+   },
+   {
+    "name": "John Roderick",
+    "mode": "keep"
+   },
+   {
+    "name": "John Eason",
+    "mode": "keep"
+   },
+   {
+    "name": "Drew Buie",
+    "mode": "keep"
+   }
+  ],
+  "h-20-1976-raiders-0.iff": [
+   {
+    "name": "Jim Otto",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Dalby",
+    "mode": "keep"
+   },
+   {
+    "name": "Skip Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Nemiah Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Jimmy Warren",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Prout",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Phillips",
+    "mode": "keep"
+   },
+   {
+    "name": "Bubba Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Horace Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Otis Sistrunk",
+    "mode": "keep"
+   },
+   {
+    "name": "Art Thoms",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Cline",
+    "mode": "keep"
+   },
+   {
+    "name": "Marv Hubbard",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Tatum",
+    "mode": "keep"
+   },
+   {
+    "name": "Gene Upshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "George Buehler",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Medlin",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Banaszak",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark van Eeghen",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Hudson",
+    "mode": "keep"
+   },
+   {
+    "name": "Harold Hart",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Queen",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Conners",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Weaver",
+    "mode": "keep"
+   },
+   {
+    "name": "George Jakowenko",
+    "mode": "keep"
+   },
+   {
+    "name": "Errol Mann",
+    "mode": "keep"
+   },
+   {
+    "name": "Phil Villapiano",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerald Irons",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Dennery",
+    "mode": "keep"
+   },
+   {
+    "name": "Monte Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Carroll",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Hall",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Guy",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Stabler",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Lawrence",
+    "mode": "keep"
+   },
+   {
+    "name": "George Blanda",
+    "mode": "keep"
+   },
+   {
+    "name": "George Atkinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Art Shell",
+    "mode": "keep"
+   },
+   {
+    "name": "John Vella",
+    "mode": "keep"
+   },
+   {
+    "name": "Henry Lawrence",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Casper",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Bankston",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Biletnikoff",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Branch",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Pitts",
+    "mode": "keep"
+   },
+   {
+    "name": "Morris Bradshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Siani",
+    "mode": "keep"
+   }
+  ],
+  "h-20-1983-raiders-0.iff": [
+   {
+    "name": "Dave Dalby",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Romano",
+    "mode": "keep"
+   },
+   {
+    "name": "Lester Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Ted Watts",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Haynes",
+    "mode": "keep"
+   },
+   {
+    "name": "James Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Kenny Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Odis McKinney",
+    "mode": "keep"
+   },
+   {
+    "name": "Irvin Phillips",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Bessillieu",
+    "mode": "keep"
+   },
+   {
+    "name": "Howie Long",
+    "mode": "keep"
+   },
+   {
+    "name": "Lyle Alzado",
+    "mode": "keep"
+   },
+   {
+    "name": "Archie Reese",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Townsend",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Kinlaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Pickel",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Stalls",
+    "mode": "keep"
+   },
+   {
+    "name": "Kenny King",
+    "mode": "keep"
+   },
+   {
+    "name": "Vann McElroy",
+    "mode": "keep"
+   },
+   {
+    "name": "Charley Hannah",
+    "mode": "keep"
+   },
+   {
+    "name": "Mickey Marvin",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Sylvester",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Mosebar",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Hawkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcus Allen",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Pruitt",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Berns",
+    "mode": "keep"
+   },
+   {
+    "name": "Chester Willis",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Millen",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Nelson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Squirek",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Bahr",
+    "mode": "keep"
+   },
+   {
+    "name": "Ted Hendricks",
+    "mode": "keep"
+   },
+   {
+    "name": "Rod Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Darryl Byrd",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Guy",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Plunkett",
+    "mode": "keep"
+   },
+   {
+    "name": "Marc Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "David Humm",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Henry Lawrence",
+    "mode": "keep"
+   },
+   {
+    "name": "Shelby Jordan",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Muransky",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Christensen",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick Jensen",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Hasselbeck",
+    "mode": "keep"
+   },
+   {
+    "name": "Malcolm Barnwell",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Branch",
+    "mode": "keep"
+   },
+   {
+    "name": "Calvin Muhammad",
+    "mode": "keep"
+   },
+   {
+    "name": "Dokie Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Cleo Montgomery",
+    "mode": "keep"
+   }
+  ],
+  "h-21-2004-eagles-0.iff": [
+   {
+    "name": "Hank Fraley",
+    "mode": "keep"
+   },
+   {
+    "name": "Alonzo Ephraim",
+    "mode": "keep"
+   },
+   {
+    "name": "Sheldon Brown",
+    "mode": "generic"
+   },
+   {
+    "name": "Bobby Taylor",
+    "mode": "retail",
+    "retail": {
+     "photo": 1275,
+     "skin": 1,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Troy Vincent",
+    "mode": "retail",
+    "retail": {
+     "photo": 1272,
+     "skin": 4,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Lito Sheppard",
+    "mode": "keep"
+   },
+   {
+    "name": "Daryon Brutley",
+    "mode": "keep"
+   },
+   {
+    "name": "Brandon Whiting",
+    "mode": "keep"
+   },
+   {
+    "name": "N.D. Kalu",
+    "mode": "keep"
+   },
+   {
+    "name": "Jerome McDougle",
+    "mode": "keep"
+   },
+   {
+    "name": "Marco Coleman",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Flanigan",
+    "mode": "keep"
+   },
+   {
+    "name": "Corey Simon",
+    "mode": "keep"
+   },
+   {
+    "name": "Darwin Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Rayburn",
+    "mode": "keep"
+   },
+   {
+    "name": "Hollis Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Jon Ritchie",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Dawkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Clinton Hart",
+    "mode": "keep"
+   },
+   {
+    "name": "Roderick Hood",
+    "mode": "keep"
+   },
+   {
+    "name": "John Welbourn",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobbie Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Jermane Mayberry",
+    "mode": "keep"
+   },
+   {
+    "name": "Duce Staley",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Westbrook",
+    "mode": "retail",
+    "retail": {
+     "photo": 3742,
+     "skin": 13,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Correll Buckhalter",
+    "mode": "keep"
+   },
+   {
+    "name": "Reno Mahe",
+    "mode": "generic"
+   },
+   {
+    "name": "Mark Simoneau",
+    "mode": "keep"
+   },
+   {
+    "name": "Carlos Emmons",
+    "mode": "relocate",
+    "retail": {
+     "photo": 1357,
+     "skin": 3,
+     "face": 4,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "David Akers",
+    "mode": "keep"
+   },
+   {
+    "name": "Nate Wayne",
+    "mode": "keep"
+   },
+   {
+    "name": "Ike Reese",
+    "mode": "keep"
+   },
+   {
+    "name": "Justin Ena",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Adams",
+    "mode": "keep"
+   },
+   {
+    "name": "Dirk Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Donovan McNabb",
+    "mode": "keep"
+   },
+   {
+    "name": "Koy Detmer",
+    "mode": "keep"
+   },
+   {
+    "name": "A.J. Feeley",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Quintin Mikell",
+    "mode": "keep"
+   },
+   {
+    "name": "Tra Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Jon Runyan",
+    "mode": "keep"
+   },
+   {
+    "name": "Artis Hicks",
+    "mode": "keep"
+   },
+   {
+    "name": "Chad Lewis",
+    "mode": "retail",
+    "retail": {
+     "photo": 1443,
+     "skin": 16,
+     "face": 12,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "L.J. Smith",
+    "mode": "generic"
+   },
+   {
+    "name": "Kori Dickerson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Thomason",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Pinkston",
+    "mode": "keep"
+   },
+   {
+    "name": "James Thrash",
+    "mode": "keep"
+   },
+   {
+    "name": "Freddie Mitchell",
+    "mode": "keep"
+   },
+   {
+    "name": "Sean Morey",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy McMullen",
+    "mode": "keep"
+   }
+  ],
+  "h-22-1975-steelers-1.iff": [
+   {
+    "name": "Ray Mansfield",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Clack",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Maples",
+    "mode": "keep"
+   },
+   {
+    "name": "John Rowser",
+    "mode": "keep"
+   },
+   {
+    "name": "Mel Blount",
+    "mode": "keep"
+   },
+   {
+    "name": "John Dockery",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Beatty",
+    "mode": "keep"
+   },
+   {
+    "name": "Dennis Meyer",
+    "mode": "keep"
+   },
+   {
+    "name": "L.C. Greenwood",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight White",
+    "mode": "keep"
+   },
+   {
+    "name": "Ernie Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Greene",
+    "mode": "keep"
+   },
+   {
+    "name": "Ben McGee",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Hanneman",
+    "mode": "keep"
+   },
+   {
+    "name": "John Fuqua",
+    "mode": "keep"
+   },
+   {
+    "name": "Preston Pearson",
+    "mode": "keep"
+   },
+   {
+    "name": "Glen Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Calland",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Van Dyke",
+    "mode": "keep"
+   },
+   {
+    "name": "Mel Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Franco Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Rocky Bleier",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Bankston",
+    "mode": "keep"
+   },
+   {
+    "name": "Henry Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "George Webster",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Stenger",
+    "mode": "keep"
+   },
+   {
+    "name": "Roy Gerela",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Ham",
+    "mode": "keep"
+   },
+   {
+    "name": "Andy Russell",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Bradley",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Winfrey",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Walden",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Bradshaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Hanratty",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Gilliam",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Leahy",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Wagner",
+    "mode": "keep"
+   },
+   {
+    "name": "Ralph Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jon Kolb",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerry Mullins",
+    "mode": "keep"
+   },
+   {
+    "name": "Gordon Gravelle",
+    "mode": "keep"
+   },
+   {
+    "name": "John Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "John McMakin",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Adams",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Shanklin",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Barry Pearson",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Dicus",
+    "mode": "keep"
+   }
+  ],
+  "h-23-1999-rams-2.iff": [
+   {
+    "name": "Mike Gruttadauria",
+    "mode": "keep"
+   },
+   {
+    "name": "Ryan Tucker",
+    "mode": "keep"
+   },
+   {
+    "name": "Cameron Spikes",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Lyght",
+    "mode": "keep"
+   },
+   {
+    "name": "Dexter McCleon",
+    "mode": "keep"
+   },
+   {
+    "name": "Devin Bush Sr.",
+    "mode": "keep"
+   },
+   {
+    "name": "Dre' Bly",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Coady",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "Grant Wistrom",
+    "mode": "keep"
+   },
+   {
+    "name": "Jay Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Agnew",
+    "mode": "keep"
+   },
+   {
+    "name": "D'Marco Farr",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Zgonina",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Little",
+    "mode": "retail",
+    "retail": {
+     "photo": 1420,
+     "skin": 2,
+     "face": 1,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Gaylon Hyder",
+    "mode": "keep"
+   },
+   {
+    "name": "Robert Holcombe",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Lyle",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Nutten",
+    "mode": "keep"
+   },
+   {
+    "name": "Adam Timmerman",
+    "mode": "keep"
+   },
+   {
+    "name": "Andy McCollum",
+    "mode": "keep"
+   },
+   {
+    "name": "Marshall Faulk",
+    "mode": "keep"
+   },
+   {
+    "name": "James Hodgins",
+    "mode": "keep"
+   },
+   {
+    "name": "Justin Watson",
+    "mode": "keep"
+   },
+   {
+    "name": "Amp Lee",
+    "mode": "keep"
+   },
+   {
+    "name": "London Fletcher",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Clemons",
+    "mode": "retail",
+    "retail": {
+     "photo": 1418,
+     "skin": 20,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Lorenzo Styles",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Morton",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Wilkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Collins",
+    "mode": "generic"
+   },
+   {
+    "name": "Troy Pelshak",
+    "mode": "keep"
+   },
+   {
+    "name": "Chad Kelsay",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Horan",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Tuten",
+    "mode": "keep"
+   },
+   {
+    "name": "Kurt Warner",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Justin",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Germaine",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Jenkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Taje Allen",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Carpenter",
+    "mode": "keep"
+   },
+   {
+    "name": "Orlando Pace",
+    "mode": "retail",
+    "retail": {
+     "photo": 1436,
+     "skin": 10,
+     "face": 11,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Fred Miller",
+    "mode": "generic"
+   },
+   {
+    "name": "Roland Williams",
+    "mode": "generic"
+   },
+   {
+    "name": "Jeff Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Chad Lewis",
+    "mode": "retail",
+    "retail": {
+     "photo": 1443,
+     "skin": 16,
+     "face": 12,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Isaac Bruce",
+    "mode": "keep"
+   },
+   {
+    "name": "Torry Holt",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Proehl",
+    "mode": "generic"
+   },
+   {
+    "name": "Az-Zahir Hakim",
+    "mode": "retail",
+    "retail": {
+     "photo": 1447,
+     "skin": 3,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Tony Horne",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Thomas",
+    "mode": "keep"
+   }
+  ],
+  "h-24-1980-chargers-4.iff": [
+   {
+    "name": "Don Macek",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Rush",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Buchanon",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Duncan",
+    "mode": "keep"
+   },
+   {
+    "name": "Allan Ellis",
+    "mode": "keep"
+   },
+   {
+    "name": "Wyatt Henderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Irvin Phillips",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Beaudoin",
+    "mode": "keep"
+   },
+   {
+    "name": "Leroy Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "John Woodcock",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Reese",
+    "mode": "keep"
+   },
+   {
+    "name": "Wilbur Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Louie Kelcher",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Dean",
+    "mode": "keep"
+   },
+   {
+    "name": "John Cappelletti",
+    "mode": "keep"
+   },
+   {
+    "name": "Glen Edwards",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Gregor",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Wilkerson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed White",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Muncie",
+    "mode": "keep"
+   },
+   {
+    "name": "James Brooks",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Hank Bauer",
+    "mode": "keep"
+   },
+   {
+    "name": "Booker Russell",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Woods",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Jodat",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Horn",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Thrift",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Laslavic",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Preston",
+    "mode": "keep"
+   },
+   {
+    "name": "Rolf Benirschke",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Wood",
+    "mode": "keep"
+   },
+   {
+    "name": "Linden King",
+    "mode": "keep"
+   },
+   {
+    "name": "Woodrow Lowe",
+    "mode": "keep"
+   },
+   {
+    "name": "Carlos Bradley",
+    "mode": "keep"
+   },
+   {
+    "name": "George Roberts",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Fouts",
+    "mode": "keep"
+   },
+   {
+    "name": "Ed Luther",
+    "mode": "keep"
+   },
+   {
+    "name": "James Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Shaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Billy Shields",
+    "mode": "keep"
+   },
+   {
+    "name": "Russ Washington",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Claphan",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Loewen",
+    "mode": "keep"
+   },
+   {
+    "name": "Kellen Winslow",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Sievers",
+    "mode": "keep"
+   },
+   {
+    "name": "Wes Chandler",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Joiner",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Scales",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Smith",
+    "mode": "keep"
+   }
+  ],
+  "h-25-1981-49ers-3.iff": [
+   {
+    "name": "Fred Quillan",
+    "mode": "keep"
+   },
+   {
+    "name": "Ronnie Lott",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Lynn Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "Saladin Martin",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Gervais",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Churchman",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Stuckey",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwaine Board",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Kugler",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Dean",
+    "mode": "keep"
+   },
+   {
+    "name": "Archie Reese",
+    "mode": "keep"
+   },
+   {
+    "name": "Lawrence Pillers",
+    "mode": "keep"
+   },
+   {
+    "name": "John Harty",
+    "mode": "keep"
+   },
+   {
+    "name": "Earl Cooper",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Hicks",
+    "mode": "keep"
+   },
+   {
+    "name": "John Ayers",
+    "mode": "keep"
+   },
+   {
+    "name": "Randy Cross",
+    "mode": "keep"
+   },
+   {
+    "name": "Walt Downing",
+    "mode": "keep"
+   },
+   {
+    "name": "John Choma",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Patton",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Walt Easley",
+    "mode": "keep"
+   },
+   {
+    "name": "Amos Lawrence",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Hofer",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Ring",
+    "mode": "keep"
+   },
+   {
+    "name": "Lenvil Elliott",
+    "mode": "keep"
+   },
+   {
+    "name": "Arrington Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Jack Reynolds",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Puki",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Bunz",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Leopold",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Looney",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Wersching",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Bahr",
+    "mode": "keep"
+   },
+   {
+    "name": "Willie Harper",
+    "mode": "keep"
+   },
+   {
+    "name": "Keena Turner",
+    "mode": "keep"
+   },
+   {
+    "name": "Milt McColl",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Tautolo",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Miller",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Montana",
+    "mode": "keep"
+   },
+   {
+    "name": "Guy Benjamin",
+    "mode": "keep"
+   },
+   {
+    "name": "Carlton Williamson",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Audick",
+    "mode": "keep"
+   },
+   {
+    "name": "Keith Fahnhorst",
+    "mode": "keep"
+   },
+   {
+    "name": "Allan Kennedy",
+    "mode": "keep"
+   },
+   {
+    "name": "Charle Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Eason Ramson",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Peets",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwight Clark",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Shumann",
+    "mode": "keep"
+   },
+   {
+    "name": "Freddie Solomon",
+    "mode": "keep"
+   }
+  ],
+  "h-25-1989-49ers-3.iff": [
+   {
+    "name": "Randy Cross",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim McKyer",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Griffin",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Holmoe",
+    "mode": "keep"
+   },
+   {
+    "name": "Chet Brooks",
+    "mode": "keep"
+   },
+   {
+    "name": "Darryl Pollard",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Roberts",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Fagan",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Kugler",
+    "mode": "keep"
+   },
+   {
+    "name": "Danny Stubbs",
+    "mode": "keep"
+   },
+   {
+    "name": "Dwaine Board",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Lilly",
+    "mode": "keep"
+   },
+   {
+    "name": "Pierce Holt",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Stover",
+    "mode": "keep"
+   },
+   {
+    "name": "Tom Rathman",
+    "mode": "keep"
+   },
+   {
+    "name": "Ronnie Lott",
+    "mode": "keep"
+   },
+   {
+    "name": "Jesse Sapolu",
+    "mode": "keep"
+   },
+   {
+    "name": "Guy McIntyre",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Collie",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Bregel",
+    "mode": "keep"
+   },
+   {
+    "name": "Roger Craig",
+    "mode": "keep"
+   },
+   {
+    "name": "Harry Sydney",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug DuBose",
+    "mode": "keep"
+   },
+   {
+    "name": "Terrence Flagler",
+    "mode": "keep"
+   },
+   {
+    "name": "Del Rodgers",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Fahnhorst",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Walter",
+    "mode": "keep"
+   },
+   {
+    "name": "Riki Ellison",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Kennedy",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Cofer",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Haley",
+    "mode": "keep"
+   },
+   {
+    "name": "Keena Turner",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Romanowski",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Hadley",
+    "mode": "keep"
+   },
+   {
+    "name": "Barry Helton",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Montana",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Young",
+    "mode": "keep"
+   },
+   {
+    "name": "John Paye",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Fuller",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Cox",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Wallace",
+    "mode": "keep"
+   },
+   {
+    "name": "Harris Barton",
+    "mode": "keep"
+   },
+   {
+    "name": "Bubba Paris",
+    "mode": "keep"
+   },
+   {
+    "name": "Chuck Thomas",
+    "mode": "keep"
+   },
+   {
+    "name": "John Frank",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Heller",
+    "mode": "generic"
+   },
+   {
+    "name": "Brent Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "John Taylor",
+    "mode": "generic"
+   },
+   {
+    "name": "Jerry Rice",
+    "mode": "retail",
+    "retail": {
+     "photo": 1560,
+     "skin": 5,
+     "face": 0,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Mike Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "Wes Chandler",
+    "mode": "keep"
+   }
+  ],
+  "h-25-2003-49ers-0.iff": [
+   {
+    "name": "Jeremy Newberry",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Willig",
+    "mode": "keep"
+   },
+   {
+    "name": "Ben Lynch",
+    "mode": "keep"
+   },
+   {
+    "name": "Ahmed Plummer",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Rumph",
+    "mode": "retail",
+    "retail": {
+     "photo": 3694,
+     "skin": 3,
+     "face": 2,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Jason Webster",
+    "mode": "generic"
+   },
+   {
+    "name": "John Keith",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Chike Okeafor",
+    "mode": "keep"
+   },
+   {
+    "name": "Andre Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "John Engelberger",
+    "mode": "keep"
+   },
+   {
+    "name": "Sean Moran",
+    "mode": "keep"
+   },
+   {
+    "name": "Bryant Young",
+    "mode": "keep"
+   },
+   {
+    "name": "Dana Stubblefield",
+    "mode": "keep"
+   },
+   {
+    "name": "Jim Flanigan",
+    "mode": "keep"
+   },
+   {
+    "name": "Josh Shaw",
+    "mode": "keep"
+   },
+   {
+    "name": "Garrett Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Beasley",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevan Barlow",
+    "mode": "retail",
+    "retail": {
+     "photo": 3011,
+     "skin": 3,
+     "face": 8,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Zack Bronson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ronnie Heard",
+    "mode": "keep"
+   },
+   {
+    "name": "Jimmy Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Heitmann",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Stone",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Fiore",
+    "mode": "keep"
+   },
+   {
+    "name": "Garrison Hearst",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Smith",
+    "mode": "generic"
+   },
+   {
+    "name": "Jamal Robertson",
+    "mode": "keep"
+   },
+   {
+    "name": "Derek Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Jamie Winborn",
+    "mode": "keep"
+   },
+   {
+    "name": "Brandon Moore",
+    "mode": "keep"
+   },
+   {
+    "name": "Quincy Stewart",
+    "mode": "keep"
+   },
+   {
+    "name": "Jose Cortez",
+    "mode": "keep"
+   },
+   {
+    "name": "Julian Peterson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Ulbrich",
+    "mode": "keep"
+   },
+   {
+    "name": "Cornelius Anthony",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Baker",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Garcia",
+    "mode": "keep"
+   },
+   {
+    "name": "Tim Rattay",
+    "mode": "keep"
+   },
+   {
+    "name": "Brandon Doman",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Parrish",
+    "mode": "keep"
+   },
+   {
+    "name": "Rashad Holman",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick Deese",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Gragg",
+    "mode": "keep"
+   },
+   {
+    "name": "Kyle Kosier",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Justin Swift",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Anelli",
+    "mode": "keep"
+   },
+   {
+    "name": "Terrell Owens",
+    "mode": "keep"
+   },
+   {
+    "name": "Tai Streets",
+    "mode": "retail",
+    "retail": {
+     "photo": 2081,
+     "skin": 2,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "J.J. Stokes",
+    "mode": "retail",
+    "retail": {
+     "photo": 1562,
+     "skin": 3,
+     "face": 3,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Cedrick Wilson",
+    "mode": "keep"
+   },
+   {
+    "name": "James Jordan",
+    "mode": "keep"
+   }
+  ],
+  "h-27-1979-buccaneers-3.iff": [
+   {
+    "name": "Randy Grimes",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Turk",
+    "mode": "keep"
+   },
+   {
+    "name": "Ricky Reynolds",
+    "mode": "keep"
+   },
+   {
+    "name": "Rod Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Tripoli",
+    "mode": "keep"
+   },
+   {
+    "name": "Ivory Curry",
+    "mode": "keep"
+   },
+   {
+    "name": "John Cannon",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Holmes",
+    "mode": "keep"
+   },
+   {
+    "name": "Harry Swayne",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Clark",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Stensrud",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred Nordgren",
+    "mode": "keep"
+   },
+   {
+    "name": "Roy Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Curt Jarvis",
+    "mode": "keep"
+   },
+   {
+    "name": "James Wilder",
+    "mode": "keep"
+   },
+   {
+    "name": "Adrian Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Woods",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Isom",
+    "mode": "keep"
+   },
+   {
+    "name": "George Yarno",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Mallory",
+    "mode": "keep"
+   },
+   {
+    "name": "Marvin Powell",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Cliff Austin",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Land",
+    "mode": "keep"
+   },
+   {
+    "name": "Harold Ricks",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Howard",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Ervin Randle",
+    "mode": "keep"
+   },
+   {
+    "name": "Donald Igwebuike",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Washington",
+    "mode": "keep"
+   },
+   {
+    "name": "Winston Moss",
+    "mode": "keep"
+   },
+   {
+    "name": "Jackie Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Gant",
+    "mode": "keep"
+   },
+   {
+    "name": "Fred McCallister",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Garcia",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve DeBerg",
+    "mode": "keep"
+   },
+   {
+    "name": "Vinny Testaverde",
+    "mode": "retail",
+    "retail": {
+     "photo": 1192,
+     "skin": 16,
+     "face": 5,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "John Reaves",
+    "mode": "keep"
+   },
+   {
+    "name": "Bobby Kemp",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcus Quinn",
+    "mode": "keep"
+   },
+   {
+    "name": "Rob Taylor",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Heller",
+    "mode": "keep"
+   },
+   {
+    "name": "J.D. Maarleveld",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Calvin Magee",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Holloway",
+    "mode": "keep"
+   },
+   {
+    "name": "Ron Hall",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerald Carter",
+    "mode": "keep"
+   },
+   {
+    "name": "Phil Freeman",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Carrier",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Streater",
+    "mode": "keep"
+   },
+   {
+    "name": "Herkie Walls",
+    "mode": "keep"
+   }
+  ],
+  "h-28-1979-oilers-2.iff": [
+   {
+    "name": "Bruce Matthews",
+    "mode": "keep"
+   },
+   {
+    "name": "Cris Dishman",
+    "mode": "keep"
+   },
+   {
+    "name": "Richard Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Darryll Lewis",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Dumas",
+    "mode": "keep"
+   },
+   {
+    "name": "William Fuller",
+    "mode": "keep"
+   },
+   {
+    "name": "Sean Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Lee Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Childress",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Alm",
+    "mode": "keep"
+   },
+   {
+    "name": "Glenn Montgomery",
+    "mode": "keep"
+   },
+   {
+    "name": "Allen Pinkett",
+    "mode": "keep"
+   },
+   {
+    "name": "Victor Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Bo Orlando",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Munchak",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Dawson",
+    "mode": "keep"
+   },
+   {
+    "name": "John Flannery",
+    "mode": "keep"
+   },
+   {
+    "name": "Erik Norgard",
+    "mode": "keep"
+   },
+   {
+    "name": "Lorenzo White",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Jordan",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Rozier",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Smith",
+    "mode": "keep"
+   },
+   {
+    "name": "Eric Fairs",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Kozak",
+    "mode": "keep"
+   },
+   {
+    "name": "Eugene Seale",
+    "mode": "keep"
+   },
+   {
+    "name": "Ian Howfield",
+    "mode": "keep"
+   },
+   {
+    "name": "Lamar Lathon",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Meads",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Graf",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Montgomery",
+    "mode": "keep"
+   },
+   {
+    "name": "Warren Moon",
+    "mode": "keep"
+   },
+   {
+    "name": "Cody Carlson",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Slack",
+    "mode": "keep"
+   },
+   {
+    "name": "Bubba McDowell",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcus Robertson",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Maggs",
+    "mode": "keep"
+   },
+   {
+    "name": "David Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Donnalley",
+    "mode": "keep"
+   },
+   {
+    "name": "Dean Steinkuhler",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Mrosko",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Verhulst",
+    "mode": "keep"
+   },
+   {
+    "name": "John Henry Mills",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Duncan",
+    "mode": "keep"
+   },
+   {
+    "name": "Ernest Givins",
+    "mode": "keep"
+   },
+   {
+    "name": "Drew Hill",
+    "mode": "keep"
+   },
+   {
+    "name": "Haywood Jeffires",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Pat Coleman",
+    "mode": "keep"
+   },
+   {
+    "name": "Leonard Harris",
+    "mode": "keep"
+   }
+  ],
+  "h-28-1999-titans-0.iff": [
+   {
+    "name": "Kevin Long",
+    "mode": "keep"
+   },
+   {
+    "name": "Zach Piller",
+    "mode": "keep"
+   },
+   {
+    "name": "Denard Walker",
+    "mode": "retail",
+    "retail": {
+     "photo": 1680,
+     "skin": 3,
+     "face": 3,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Samari Rolle",
+    "mode": "retail",
+    "retail": {
+     "photo": 1684,
+     "skin": 4,
+     "face": 3,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Perry Phenix",
+    "mode": "keep"
+   },
+   {
+    "name": "Dainon Sidney",
+    "mode": "keep"
+   },
+   {
+    "name": "Jevon Kearse",
+    "mode": "retail",
+    "retail": {
+     "photo": 1961,
+     "skin": 5,
+     "face": 8,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Kenny Holmes",
+    "mode": "generic"
+   },
+   {
+    "name": "Henry Ford",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Jones",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Salave'a",
+    "mode": "keep"
+   },
+   {
+    "name": "Josh Evans",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Fisk",
+    "mode": "keep"
+   },
+   {
+    "name": "John Thornton",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Frederick",
+    "mode": "keep"
+   },
+   {
+    "name": "Lorenzo Neal",
+    "mode": "retail",
+    "retail": {
+     "photo": 1661,
+     "skin": 1,
+     "face": 6,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Anthony Dorsett",
+    "mode": "keep"
+   },
+   {
+    "name": "Marcus Robertson",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Matthews",
+    "mode": "keep"
+   },
+   {
+    "name": "Benji Olson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Layman",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie George",
+    "mode": "keep"
+   },
+   {
+    "name": "Rodney Thomas",
+    "mode": "generic"
+   },
+   {
+    "name": "Spencer George",
+    "mode": "keep"
+   },
+   {
+    "name": "Barron Wortham",
+    "mode": "keep"
+   },
+   {
+    "name": "Doug Colman",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Killens",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Favors",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Del Greco",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Robinson",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Bowden",
+    "mode": "keep"
+   },
+   {
+    "name": "Phil Glover",
+    "mode": "keep"
+   },
+   {
+    "name": "Craig Hentrich",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve McNair",
+    "mode": "keep"
+   },
+   {
+    "name": "Neil O'Donnell",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Daft",
+    "mode": "keep"
+   },
+   {
+    "name": "Blaine Bishop",
+    "mode": "keep"
+   },
+   {
+    "name": "Donald Mitchell",
+    "mode": "keep"
+   },
+   {
+    "name": "Steve Jackson",
+    "mode": "keep"
+   },
+   {
+    "name": "Brad Hopkins",
+    "mode": "keep"
+   },
+   {
+    "name": "Jon Runyan",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Sanderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Jason Mathews",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Wycheck",
+    "mode": "keep"
+   },
+   {
+    "name": "Jackie Harris",
+    "mode": "keep"
+   },
+   {
+    "name": "Michael Roan",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Isaac Byrd",
+    "mode": "generic"
+   },
+   {
+    "name": "Kevin Dyson",
+    "mode": "retail",
+    "retail": {
+     "photo": 1728,
+     "skin": 4,
+     "face": 13,
+     "dreads": 1
+    }
+   },
+   {
+    "name": "Yancey Thigpen",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Sanders",
+    "mode": "keep"
+   },
+   {
+    "name": "Derrick Mason",
+    "mode": "retail",
+    "retail": {
+     "photo": 1727,
+     "skin": 4,
+     "face": 4,
+     "dreads": 0
+    }
+   },
+   {
+    "name": "Joey Kent",
+    "mode": "keep"
+   }
+  ],
+  "h-29-1982-redskins-2.iff": [
+   {
+    "name": "Jeff Bostic",
+    "mode": "keep"
+   },
+   {
+    "name": "Darrell Green",
+    "mode": "keep"
+   },
+   {
+    "name": "Vernon Dean",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Coffey",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Washington",
+    "mode": "keep"
+   },
+   {
+    "name": "Greg Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Carpenter",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Nelms",
+    "mode": "keep"
+   },
+   {
+    "name": "Todd Liebenstein",
+    "mode": "keep"
+   },
+   {
+    "name": "Dexter Manley",
+    "mode": "keep"
+   },
+   {
+    "name": "Charles Mann",
+    "mode": "keep"
+   },
+   {
+    "name": "Tony McGee",
+    "mode": "keep"
+   },
+   {
+    "name": "Mat Mendenhall",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Butz",
+    "mode": "keep"
+   },
+   {
+    "name": "Darryl Grant",
+    "mode": "keep"
+   },
+   {
+    "name": "Perry Brooks",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Washington",
+    "mode": "keep"
+   },
+   {
+    "name": "Nick Giaquinto",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Murphy",
+    "mode": "keep"
+   },
+   {
+    "name": "Russ Grimm",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark May",
+    "mode": "keep"
+   },
+   {
+    "name": "Ken Huff",
+    "mode": "keep"
+   },
+   {
+    "name": "Bruce Kimball",
+    "mode": "keep"
+   },
+   {
+    "name": "John Riggins",
+    "mode": "keep"
+   },
+   {
+    "name": "Otis Wonsley",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Evans",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Harmon",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Neal Olkewicz",
+    "mode": "keep"
+   },
+   {
+    "name": "Pete Cronan",
+    "mode": "keep"
+   },
+   {
+    "name": "Stuart Anderson",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Kubin",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Moseley",
+    "mode": "keep"
+   },
+   {
+    "name": "Mel Kaufman",
+    "mode": "keep"
+   },
+   {
+    "name": "Rich Milot",
+    "mode": "keep"
+   },
+   {
+    "name": "Monte Coleman",
+    "mode": "keep"
+   },
+   {
+    "name": "Quentin Lowry",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Hayes",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Theismann",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Holly",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Jordan",
+    "mode": "keep"
+   },
+   {
+    "name": "Joe Jacoby",
+    "mode": "keep"
+   },
+   {
+    "name": "George Starke",
+    "mode": "keep"
+   },
+   {
+    "name": "Roy Simmons",
+    "mode": "keep"
+   },
+   {
+    "name": "Don Warren",
+    "mode": "keep"
+   },
+   {
+    "name": "Rick Walker",
+    "mode": "keep"
+   },
+   {
+    "name": "Clint Didier",
+    "mode": "keep"
+   },
+   {
+    "name": "John Sawyer",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Charlie Brown",
+    "mode": "keep"
+   },
+   {
+    "name": "Alvin Garrett",
+    "mode": "keep"
+   },
+   {
+    "name": "Art Monk",
+    "mode": "keep"
+   },
+   {
+    "name": "Virgil Seay",
+    "mode": "keep"
+   }
+  ],
+  "h-30-1986-browns-1.iff": [
+   {
+    "name": "Mike Baab",
+    "mode": "keep"
+   },
+   {
+    "name": "Larry Williams",
+    "mode": "keep"
+   },
+   {
+    "name": "Frank Minnifield",
+    "mode": "keep"
+   },
+   {
+    "name": "Hanford Dixon",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Harper",
+    "mode": "keep"
+   },
+   {
+    "name": "Al Gross",
+    "mode": "keep"
+   },
+   {
+    "name": "D.D. Hoggard",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Camp",
+    "mode": "keep"
+   },
+   {
+    "name": "Carl Hairston",
+    "mode": "keep"
+   },
+   {
+    "name": "Ralph Malone",
+    "mode": "keep"
+   },
+   {
+    "name": "Bob Golic",
+    "mode": "keep"
+   },
+   {
+    "name": "Sam Clancy",
+    "mode": "keep"
+   },
+   {
+    "name": "Dave Puzzuoli",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Rusinek",
+    "mode": "keep"
+   },
+   {
+    "name": "Kevin Mack",
+    "mode": "keep"
+   },
+   {
+    "name": "Chris Rockins",
+    "mode": "keep"
+   },
+   {
+    "name": "Felix Wright",
+    "mode": "keep"
+   },
+   {
+    "name": "Rickey Bolden",
+    "mode": "keep"
+   },
+   {
+    "name": "Dan Fike",
+    "mode": "keep"
+   },
+   {
+    "name": "George Lilja",
+    "mode": "keep"
+   },
+   {
+    "name": "Earnest Byner",
+    "mode": "keep"
+   },
+   {
+    "name": "Curtis Dickey",
+    "mode": "keep"
+   },
+   {
+    "name": "Herman Fontenot",
+    "mode": "keep"
+   },
+   {
+    "name": "Major Everett",
+    "mode": "keep"
+   },
+   {
+    "name": "Johnny Davis",
+    "mode": "keep"
+   },
+   {
+    "name": "Eddie Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Anthony Griggs",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Johnson",
+    "mode": "keep"
+   },
+   {
+    "name": "Matt Bahr",
+    "mode": "keep"
+   },
+   {
+    "name": "Mark Moseley",
+    "mode": "keep"
+   },
+   {
+    "name": "Chip Banks",
+    "mode": "keep"
+   },
+   {
+    "name": "Clay Matthews",
+    "mode": "keep"
+   },
+   {
+    "name": "Brad Van Pelt",
+    "mode": "keep"
+   },
+   {
+    "name": "Scott Nicolas",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Gossett",
+    "mode": "keep"
+   },
+   {
+    "name": "Bernie Kosar",
+    "mode": "keep"
+   },
+   {
+    "name": "Mike Pagel",
+    "mode": "keep"
+   },
+   {
+    "name": "Gary Danielson",
+    "mode": "keep"
+   },
+   {
+    "name": "Ray Ellis",
+    "mode": "keep"
+   },
+   {
+    "name": "Paul Farren",
+    "mode": "keep"
+   },
+   {
+    "name": "Cody Risien",
+    "mode": "keep"
+   },
+   {
+    "name": "Bill Contz",
+    "mode": "keep"
+   },
+   {
+    "name": "Jeff Wiska",
+    "mode": "keep"
+   },
+   {
+    "name": "Ozzie Newsome",
+    "mode": "keep"
+   },
+   {
+    "name": "Travis Tucker",
+    "mode": "keep"
+   },
+   {
+    "name": "Harry Holt",
+    "mode": "keep"
+   },
+   {
+    "name": "Webster Slaughter",
+    "mode": "keep"
+   },
+   {
+    "name": "Reggie Langhorne",
+    "mode": "keep"
+   },
+   {
+    "name": "Terry Greer",
+    "mode": "keep"
+   },
+   {
+    "name": "Brian Brennan",
+    "mode": "keep"
+   },
+   {
+    "name": "Gerald McNeil",
+    "mode": "keep"
+   },
+   {
+    "name": "Clarence Weathers",
+    "mode": "keep"
+   },
+   {
+    "name": "Clayton Beauford",
+    "mode": "keep"
+   }
+  ]
+ }
+}

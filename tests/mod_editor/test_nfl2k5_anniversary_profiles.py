@@ -44,6 +44,16 @@ class DirectoryGrowth(unittest.TestCase):
         self.assertEqual(struct.unpack_from('<I', result)[0], 182)
 
 
+def _reclassified(outer, raw):
+    from tools import nfl2k5_roster_reclassify as rc
+    resource = rc.parse_resource(outer, 0, raw)
+    moves, _ = rc.plan_resource(resource, {})
+    body = bytearray(resource.body)
+    rc.apply_moves(body, moves)
+    return raw[:32] + bytes(body)
+
+
+# b777-ci2: this skip sat on _reclassified() above (a helper) and NamedProfile errored in setUpClass on every runner without the retail disc.
 @unittest.skipUnless(SOURCE.is_file(), 'private USA disc required')
 class NamedProfile(unittest.TestCase):
     @classmethod
@@ -107,7 +117,9 @@ class NamedProfile(unittest.TestCase):
         for target in manifest['resources']:
             raw = applied[target['outer']]
             for one_pool in (False, True):
-                before = mm._one_pool(raw) if one_pool else raw
+                # b776-int2: the One-pool reclassify by outer entry (de2: the 17 sourced retail 3-4 team-seasons take the
+                # 3-4 rule there), exactly as the ONE_POOL_PINS are derived.
+                before = _reclassified(target['outer'], raw) if one_pool else raw
                 after = hs.with_spare(before, er.HISTORIC_SPARES[target['code']])
                 self.assertEqual(er.resource_status(after, target),
                                  'one_pool_applied' if one_pool else 'applied')

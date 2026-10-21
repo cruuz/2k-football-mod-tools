@@ -21,6 +21,7 @@ from typing import Mapping
 from . import nfl2k5_edge_rename as edge
 from . import nfl2k5_modern_positions as modern
 from . import nfl2k5_position_pools as pools
+from . import nfl2k5_rb_rename as rb
 from . import nfl2k5_depth_chart_storage as storage
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 from .nfl2k5_draft_ai import _Asm
@@ -236,6 +237,10 @@ def _table_is_known(payload: bytes, applied: bool) -> None:
             edge._slot_record(*text) for text in edge.SLOT_RECORD_ALTERNATIVES.get(label, ()))
         if records[i][:64] in accepted:
             records[i] = modern.slot_text(abbrev, long_name) + records[i][64:]
+    # b777-rb2: the RB rename's offense slot 1 text (RB / RUNNING BACK) is a coordinated label edit.
+    i = rb.SLOT_UNIT * 11 + rb.SLOT_INDEX
+    if records[i][:64] == rb.slot_record_text(False):
+        records[i] = rb.slot_record_text(True) + records[i][64:]
     _require(modern.pool_profile(payload) is not None, "mixed position-pool records")
     for _label, unit, slot, before, after in pools.POOL_RECORDS:
         i = unit * 11 + slot

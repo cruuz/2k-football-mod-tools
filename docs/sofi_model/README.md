@@ -65,8 +65,9 @@ play.
 The executable picks a franchise's Super Bowl venue by the season index; the first season plays in row s40 (retail
 "Super Bowl 2005", Jacksonville). Super Bowl LXI is at SoFi Stadium on 2027-02-14, so with the option on the s40 row
 reads "Super Bowl LXI" with "SoFi Stadium" as its display name, Inglewood, CA, roofed, on turf and with SoFi's
-climate, and its nine bundles carry the same model: the LXI mark at midfield and on the screen and ribbons, the current
-NFL shield on both 25-yard lines, one intro camera (the aerial over Rivers Lake). The executable's venue codes are
+climate, and its nine bundles carry the same model: the current NFL shield at midfield and the LXI mark on both
+25-yard lines (sb1, 2026-10-17: the layout of every Super Bowl field since XXXVIII), the LXI mark on the screen and
+ribbons, one intro camera (the aerial over Rivers Lake). The executable's venue codes are
 untouched.
 
 The LXI mark is the NFL's own reveal image as @NFL posted it on X on 2026-02-09

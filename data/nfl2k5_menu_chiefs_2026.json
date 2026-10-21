@@ -1,0 +1,70 @@
+{
+ "schema": "nfl2k5_menu_chiefs_2026/v1",
+ "source": "ku1 (b776): the Chiefs Team Select cards and schedule miniatures were rendered from the old raspberry red #E31837; their red palette entries move toward the 2026 club red",
+ "rule": {
+  "red_over_green": 40,
+  "red_over_blue": 20,
+  "pull": [
+   2,
+   5
+  ]
+ },
+ "targets": [
+  {
+   "aggregate": "logos",
+   "member": "unif_h13_0",
+   "before_sha256": "4b574953aaea846a9fa9ba042e43e6dc9f8f279d6cea4aa89fd929c7509d3eda",
+   "after_sha256": "9bb2ccec6d643dda805aa0af165a44525074d759c8829443df3a49d01a662769",
+   "palette_entries_moved": 114
+  },
+  {
+   "aggregate": "logos",
+   "member": "unif_a13_0",
+   "before_sha256": "2697db5a36bf38ac18950adcc92e083d4c07db8e1f9f21549870cc40f7d27899",
+   "after_sha256": "14499736d4e7ea34fd962d9a9054740493ec3b97cfeda4b3859d3e5cdc82235a",
+   "palette_entries_moved": 65
+  },
+  {
+   "aggregate": "logos",
+   "member": "helm_h13_0",
+   "before_sha256": "a829cfeca699cf07fcb00875e63da7d40ad00de69056a383a4f729620f178048",
+   "after_sha256": "2426b670d6f996ff8053c4183bf66e8b02c85d9562e966ef13edbbba25c9bba8",
+   "palette_entries_moved": 79
+  },
+  {
+   "aggregate": "logos",
+   "member": "helm_a13_0",
+   "before_sha256": "37cf6f25c322061d7142ce9c69ffd4e75feb928d126e10fade057bfaee32ee36",
+   "after_sha256": "9b2feee867208ee1744289acc1f2466ed404b940e7687a5147ebf86593f099d6",
+   "palette_entries_moved": 72
+  },
+  {
+   "aggregate": "logos128",
+   "member": "helm_h13_0",
+   "before_sha256": "8276ecc560a88be575e9dfbf27c6291b1b5ece374a119f21edaecd8dc844b689",
+   "after_sha256": "6c7169a4aaf0e5121c6e00da6c1ffee2431e697480ff306e50fa05015e89a7fc",
+   "palette_entries_moved": 85
+  },
+  {
+   "aggregate": "logos128",
+   "member": "helm_a13_0",
+   "before_sha256": "1e3817c0933896a42d62a933228d700345c20a71088a35ff98ba1302c24e989a",
+   "after_sha256": "159f5ef0676b3b3727ec613f788bc6fb947a499c39bd041955f1f688d90e5a1b",
+   "palette_entries_moved": 75
+  },
+  {
+   "aggregate": "mini",
+   "member": "mini_h13_0",
+   "before_sha256": "047fbb1be90ef3a4dfe5dfe96c96ed0863420bfbca9a46ad48681a9b696bb518",
+   "after_sha256": "50f0a24aaea81bd76a530a3d43f7323514dfcb75827c0b34119f2a52565eebde",
+   "palette_entries_moved": 87
+  },
+  {
+   "aggregate": "mini",
+   "member": "mini_a13_0",
+   "before_sha256": "a090752000cf86bfd3ea7317564a7b308710ee408740a122d9e9d8e38f46153e",
+   "after_sha256": "5d841bae0fe7fb5a60946a92e386e1cd4d6bcb2bc53200615bf3c0c3ac077b15",
+   "palette_entries_moved": 85
+  }
+ ]
+}

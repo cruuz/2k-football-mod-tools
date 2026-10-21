@@ -223,6 +223,13 @@ class OptimalPathTests(unittest.TestCase):
                          'Reviewed helper is Linux x86-64; other platforms use the bounded Python encoder')
     def test_worktree_optimal_helper_is_executable_and_executed(self):
         helper = lz._optimal_helper()
+        if helper is None:
+            # b777-ci2: the product refuses a group- or world-writable helper on purpose. A checkout made under umask 0002
+            # (most Linux desktops) leaves the tracked executable at 775, so only that environment case is skipped; a
+            # wrong size, hash or missing executable bit still fails below.
+            path = lz.TOOLS / "nfl2k5_equipment_optimal"
+            if path.is_file() and path.stat().st_mode & 0o022:
+                self.skipTest(f"{path} is group/world-writable (umask 0002 checkout): chmod go-w to exercise the native helper")
         self.assertIsNotNone(helper)
         self.assertTrue(os.access(helper, os.X_OK))
         with patch.object(lz.subprocess, 'run', wraps=lz.subprocess.run) as run:

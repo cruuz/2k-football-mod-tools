@@ -704,8 +704,12 @@ class ArcByDistanceTests(unittest.TestCase):
         for yards in (2, 6, 8, 10, 12.5, 15, 20, 25, 30, 35, 38, 40):
             self.assertAlmostEqual(tt.interpolate(profile, yards), tt.interpolate(retail, yards), places=6, msg=yards)
         speed = dict(profile)
-        self.assertEqual(profile[5:], ((45.0, 17.5), (60.0, 18.75), (80.0, 21.0)))
-        self.assertAlmostEqual(tt.interpolate(profile, 52.0), 18.0833333333)
+        self.assertEqual(profile[5:], ((45.0, 20.0), (60.0, 20.5), (80.0, 21.0)))
+        self.assertAlmostEqual(tt.interpolate(profile, 52.0), 20.2333333333)
+        # b77 db1: no deep lob flies slower than retail's 20 yd/s, so the target lead never
+        # reaches farther than retail's (the 76.2 band led mid arms past their ceiling).
+        for yards in range(40, 81):
+            self.assertGreaterEqual(tt.interpolate(profile, yards), tt.interpolate(retail, yards), yards)
         self.assertEqual(tt.interpolate(profile, 80.0), 21.0)
         self.assertEqual(tt.interpolate(profile, 10.0), 12.0)              # the point the five-point table lost
         # it fills the certificate slot exactly and never overlaps the widescreen cave
@@ -757,6 +761,33 @@ class ArcByDistanceTests(unittest.TestCase):
         report = tt.read_xbe(self.source)
         self.assertTrue(report["settings"].arc_by_distance)
         target = self.work / "upgraded.xbe"
+        tt.write_xbe_copy(self.source, target, settings=report["settings"])
+        self.assertEqual(tt.read_arc_table(target.read_bytes())["state"], "applied")
+
+    def test_touch_band_from_beta_76_2_reads_as_legacy_and_upgrades_in_place(self) -> None:
+        # The table every disc from beta 76.2 to the v0.6.1 test disc carries (b77 db1).
+        payload, _ = tt.apply_arc_table(self.source.read_bytes())
+        buf = bytearray(payload)
+        off = tt.ARC_TABLE_VA - IMAGE_BASE
+        buf[off:off + tt.ARC_TABLE_CURVE.size] = tt.ARC_TABLE_CURVE.encode(tt.TOUCH_BAND_20261002_LOBSPEED)
+        old = bytes(buf)
+        self.assertEqual(tt.TOUCH_BAND_20261002_LOBSPEED[5:], ((45.0, 17.5), (60.0, 18.75), (80.0, 21.0)))
+        self.assertEqual(tt.arc_table_status(old), "legacy_high_arc")
+        read = tt.read_arc_table(old)
+        self.assertEqual(read["label"], "arc by distance (2026-10-02 touch band)")
+        self.assertEqual(read["points"], tt.TOUCH_BAND_20261002_LOBSPEED)
+        self.assertTrue(read["upgrade_required"])
+        new, receipt = tt.apply_arc_table(old)
+        self.assertEqual(tt.read_arc_table(new)["points"], tt.ARC_BY_DISTANCE_LOBSPEED)
+        self.assertEqual(tt.revert_arc_table(new, receipt), old)
+        changed = {i for i, (a, b) in enumerate(zip(old, new)) if a != b}
+        # Only the three deep knots' speeds change; the reader operands and every byte through 40 yd stay.
+        self.assertTrue(changed)
+        self.assertTrue(changed <= set(range(off + 4 + 5 * 8, off + tt.ARC_TABLE_CURVE.size)))
+        self.source.write_bytes(old)
+        report = tt.read_xbe(self.source)
+        self.assertTrue(report["settings"].arc_by_distance)
+        target = self.work / "touch-band-upgraded.xbe"
         tt.write_xbe_copy(self.source, target, settings=report["settings"])
         self.assertEqual(tt.read_arc_table(target.read_bytes())["state"], "applied")
 

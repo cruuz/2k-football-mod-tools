@@ -83,6 +83,16 @@
       "sha256": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc"
     },
     {
+      "row": 2,
+      "key": "lettering",
+      "file": "row02/lettering.png",
+      "size": [
+        768,
+        104
+      ],
+      "sha256": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed"
+    },
+    {
       "row": 3,
       "key": "endzone_N",
       "file": "row03/endzone_N.png",
@@ -201,6 +211,16 @@
         128
       ],
       "sha256": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc"
+    },
+    {
+      "row": 5,
+      "key": "lettering",
+      "file": "row05/lettering.png",
+      "size": [
+        768,
+        104
+      ],
+      "sha256": "0aac0ba56ad51c2107386e06a8fc727527be93eff31e5662505834d89a6d28ed"
     },
     {
       "row": 6,
@@ -401,6 +421,16 @@
         128
       ],
       "sha256": "e1cabc0d8e1e6da0ae3da0f7505ad25fa945baae636baeb0bd3465bf7c5a60dc"
+    },
+    {
+      "row": 10,
+      "key": "lettering",
+      "file": "row10/lettering.png",
+      "size": [
+        768,
+        104
+      ],
+      "sha256": "7baf59cda0fde5793f976ff484008341da764cc8dfac96c26e875c44d2d731e2"
     },
     {
       "row": 11,

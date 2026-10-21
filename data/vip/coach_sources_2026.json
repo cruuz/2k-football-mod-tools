@@ -1,0 +1,1050 @@
+[
+  {
+    "team": "ARI",
+    "coach": "Mike LaFleur",
+    "native_book_index": 7,
+    "archive_book": "ARZ",
+    "profile_name": "ARI LaFleur",
+    "offense_history": [
+      {
+        "team": "ARI",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "NYJ",
+        "first_season": 2021,
+        "last_season": 2022,
+        "role": "OC"
+      },
+      {
+        "team": "LAR",
+        "first_season": 2023,
+        "last_season": 2025,
+        "role": "OC_under_McVay"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "ARI",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "ATL",
+    "coach": "Kevin Stefanski",
+    "native_book_index": 14,
+    "archive_book": "ATL",
+    "profile_name": "ATL KStefans",
+    "offense_history": [
+      {
+        "team": "CLE",
+        "first_season": 2020,
+        "last_season": 2025,
+        "role": "HC"
+      },
+      {
+        "team": "ATL",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "CLE",
+        "first_season": 2020,
+        "last_season": 2025,
+        "role": "HC"
+      },
+      {
+        "team": "ATL",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.wect.com/2026/01/18/atlanta-falcons-hire-kevin-stefanski-new-head-coach",
+      "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "BAL",
+    "coach": "Jesse Minter",
+    "native_book_index": 24,
+    "archive_book": "BAL",
+    "profile_name": "BAL Minter",
+    "offense_history": [
+      {
+        "team": "BAL",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "BAL",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "LAC",
+        "first_season": 2024,
+        "last_season": 2025,
+        "role": "DC"
+      }
+    ],
+    "sources": [
+      "https://www.baltimoreravens.com/news/jesse-minter-hired-ravens-head-coach-chargers-defensive-coordinator"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "BUF",
+    "coach": "Joe Brady",
+    "native_book_index": 3,
+    "archive_book": "BUF",
+    "profile_name": "BUF Brady",
+    "offense_history": [
+      {
+        "team": "BUF",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "CAR",
+        "first_season": 2020,
+        "last_season": 2021,
+        "role": "OC",
+        "last_date": "2021-12-04"
+      },
+      {
+        "team": "BUF",
+        "first_season": 2023,
+        "last_season": 2025,
+        "role": "OC",
+        "first_date": "2023-11-14"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "BUF",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.buffalobills.com/news/joe-brady-agrees-to-terms-to-be-the-next-buffalo-bills-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "CAR",
+    "coach": "Dave Canales",
+    "native_book_index": 20,
+    "archive_book": "CAR",
+    "profile_name": "CAR Canales",
+    "offense_history": [
+      {
+        "team": "CAR",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "CAR",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.panthers.com/news/panthers-agree-to-terms-with-dave-canales-to-become-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "CHI",
+    "coach": "Ben Johnson",
+    "native_book_index": 1,
+    "archive_book": "CHI",
+    "profile_name": "CHI Johnson",
+    "offense_history": [
+      {
+        "team": "CHI",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "CHI",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.chicagobears.com/news/bears-hire-ben-johnson-as-head-coach-2025"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "CIN",
+    "coach": "Zac Taylor",
+    "native_book_index": 2,
+    "archive_book": "CIN",
+    "profile_name": "CIN Taylor",
+    "offense_history": [
+      {
+        "team": "CIN",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "CIN",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.bengals.com/news/zac-taylor-named-10th-bengals-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "CLE",
+    "coach": "Todd Monken",
+    "native_book_index": 5,
+    "archive_book": "CLE",
+    "profile_name": "CLE Monken",
+    "offense_history": [
+      {
+        "team": "CLE",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "BAL",
+        "first_season": 2023,
+        "last_season": 2025,
+        "role": "OC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "CLE",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.clevelandbrowns.com/news/todd-monken-named-browns-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "DAL",
+    "coach": "Brian Schottenheimer",
+    "native_book_index": 11,
+    "archive_book": "DAL",
+    "profile_name": "DAL BSchotte",
+    "offense_history": [
+      {
+        "team": "DAL",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "DAL",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.dallascowboys.com/news/brian-schottenheimer-officially-named-newest-cowboys-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "DEN",
+    "coach": "Sean Payton",
+    "native_book_index": 4,
+    "archive_book": "DEN",
+    "profile_name": "DEN Payton",
+    "offense_history": [
+      {
+        "team": "NO",
+        "first_season": 2020,
+        "last_season": 2021,
+        "role": "HC"
+      },
+      {
+        "team": "DEN",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "NO",
+        "first_season": 2020,
+        "last_season": 2021,
+        "role": "HC"
+      },
+      {
+        "team": "DEN",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.denverbroncos.com/news/broncos-name-sean-payton-as-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "DET",
+    "coach": "Dan Campbell",
+    "native_book_index": 18,
+    "archive_book": "DET",
+    "profile_name": "DET Campbell",
+    "offense_history": [
+      {
+        "team": "DET",
+        "first_season": 2021,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "DET",
+        "first_season": 2021,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.detroitlions.com/news/lions-agree-to-terms-with-dan-campbell-to-become-team-s-new-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "GB",
+    "coach": "Matt LaFleur",
+    "native_book_index": 19,
+    "archive_book": "GB",
+    "profile_name": "GB LaFleur",
+    "offense_history": [
+      {
+        "team": "GB",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "GB",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.packers.com/news/matt-lafleur-named-green-bay-s-15th-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "HOU",
+    "coach": "DeMeco Ryans",
+    "native_book_index": 29,
+    "archive_book": "HOU",
+    "profile_name": "HOU Ryans",
+    "offense_history": [
+      {
+        "team": "HOU",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "HOU",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.houstontexans.com/news/houston-texans-hire-demeco-ryans-as-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "IND",
+    "coach": "Shane Steichen",
+    "native_book_index": 10,
+    "archive_book": "IND",
+    "profile_name": "IND Steichen",
+    "offense_history": [
+      {
+        "team": "IND",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "IND",
+        "first_season": 2023,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.colts.com/news/shane-steichen-head-coach-eagles-offensive-coordinator-jalen-hurts-philip-rivers"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "JAX",
+    "coach": "Liam Coen",
+    "native_book_index": 16,
+    "archive_book": "JAX",
+    "profile_name": "JAX Coen",
+    "offense_history": [
+      {
+        "team": "JAX",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "JAX",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.jaguars.com/news/k000151-jacksonville-jaguars-agree-to-terms-with-liam-coen-to-become-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "KC",
+    "coach": "Andy Reid",
+    "native_book_index": 9,
+    "archive_book": "KC",
+    "profile_name": "KC Reid",
+    "offense_history": [
+      {
+        "team": "KC",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "KC",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.nfl.com/news/story/0ap1000000121923/article/andy-reid-kansas-city-chiefs-make-it-official"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "LAC",
+    "coach": "Jim Harbaugh",
+    "native_book_index": 8,
+    "archive_book": "SD",
+    "profile_name": "LAC Harbaugh",
+    "offense_history": [
+      {
+        "team": "LAC",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "LAC",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.chargers.com/news/chargers-name-jim-harbaugh-michigan-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "LAR",
+    "coach": "Sean McVay",
+    "native_book_index": 23,
+    "archive_book": "STL",
+    "profile_name": "LAR McVay",
+    "offense_history": [
+      {
+        "team": "LAR",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "LAR",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.nfl.com/news/story/0ap3000000773406/article/los-angeles-rams-name-sean-mcvay-new-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "LV",
+    "coach": "Klint Kubiak",
+    "native_book_index": 22,
+    "archive_book": "OAK",
+    "profile_name": "LV Kubiak",
+    "offense_history": [
+      {
+        "team": "LV",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "MIN",
+        "first_season": 2021,
+        "last_season": 2021,
+        "role": "OC"
+      },
+      {
+        "team": "NO",
+        "first_season": 2024,
+        "last_season": 2024,
+        "role": "OC"
+      },
+      {
+        "team": "SEA",
+        "first_season": 2025,
+        "last_season": 2025,
+        "role": "OC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "LV",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.nfl.com/news/klint-kubiak-confirms-he-s-headed-to-raiders-as-hc-after-seahawks-super-bowl-win"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "MIA",
+    "coach": "Jeff Hafley",
+    "native_book_index": 12,
+    "archive_book": "MIA",
+    "profile_name": "MIA Hafley",
+    "offense_history": [
+      {
+        "team": "MIA",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "MIA",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      },
+      {
+        "team": "GB",
+        "first_season": 2024,
+        "last_season": 2025,
+        "role": "DC"
+      }
+    ],
+    "sources": [
+      "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": true
+  },
+  {
+    "team": "MIN",
+    "coach": "Kevin O'Connell",
+    "native_book_index": 31,
+    "archive_book": "MIN",
+    "profile_name": "MIN OConnell",
+    "offense_history": [
+      {
+        "team": "MIN",
+        "first_season": 2022,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "MIN",
+        "first_season": 2022,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.vikings.com/news/kevin-oconnell-head-coach-announcement"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "NE",
+    "coach": "Mike Vrabel",
+    "native_book_index": 21,
+    "archive_book": "NE",
+    "profile_name": "NE Vrabel",
+    "offense_history": [
+      {
+        "team": "TEN",
+        "first_season": 2020,
+        "last_season": 2023,
+        "role": "HC"
+      },
+      {
+        "team": "NE",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "TEN",
+        "first_season": 2020,
+        "last_season": 2023,
+        "role": "HC"
+      },
+      {
+        "team": "NE",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.patriots.com/news/patriots-hall-of-famer-mike-vrabel-returns-to-new-england-as-our-16th-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "NO",
+    "coach": "Kellen Moore",
+    "native_book_index": 26,
+    "archive_book": "NO",
+    "profile_name": "NO Moore",
+    "offense_history": [
+      {
+        "team": "NO",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "NO",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.neworleanssaints.com/news/kellen-moore-new-orleans-saints-head-coach-search-philadelphia-eagles-offensive-coordinator"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "NYG",
+    "coach": "John Harbaugh",
+    "native_book_index": 15,
+    "archive_book": "NYG",
+    "profile_name": "NYG Harbaugh",
+    "offense_history": [
+      {
+        "team": "BAL",
+        "first_season": 2020,
+        "last_season": 2025,
+        "role": "HC"
+      },
+      {
+        "team": "NYG",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "BAL",
+        "first_season": 2020,
+        "last_season": 2025,
+        "role": "HC"
+      },
+      {
+        "team": "NYG",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.nbcnews.com/sports/football/new-york-giants-hire-john-harbaugh-coach-baltimore-ravens-firing-rcna254610",
+      "https://www.giants.com/news/john-harbaugh-hired-head-coach-new-york-giants-nfl"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "NYJ",
+    "coach": "Aaron Glenn",
+    "native_book_index": 17,
+    "archive_book": "NYJ",
+    "profile_name": "NYJ Glenn",
+    "offense_history": [
+      {
+        "team": "NYJ",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "NYJ",
+        "first_season": 2025,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.newyorkjets.com/news/jets-hire-aaron-glenn-head-coach-01-22-2025"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "PHI",
+    "coach": "Nick Sirianni",
+    "native_book_index": 13,
+    "archive_book": "PHI",
+    "profile_name": "PHI Sirianni",
+    "offense_history": [
+      {
+        "team": "PHI",
+        "first_season": 2021,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "PHI",
+        "first_season": 2021,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.philadelphiaeagles.com/news/eagles-announce-nick-sirianni-as-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "PIT",
+    "coach": "Mike McCarthy",
+    "native_book_index": 28,
+    "archive_book": "PIT",
+    "profile_name": "PIT McCarthy",
+    "offense_history": [
+      {
+        "team": "DAL",
+        "first_season": 2020,
+        "last_season": 2024,
+        "role": "HC"
+      },
+      {
+        "team": "PIT",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "DAL",
+        "first_season": 2020,
+        "last_season": 2024,
+        "role": "HC"
+      },
+      {
+        "team": "PIT",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.steelers.com/news/labriola-on-why-it-was-mike-mccarthy"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "SEA",
+    "coach": "Mike Macdonald",
+    "native_book_index": 27,
+    "archive_book": "SEA",
+    "profile_name": "SEA MMacdona",
+    "offense_history": [
+      {
+        "team": "SEA",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "SEA",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.seahawks.com/news/mike-macdonald-named-head-coach-of-the-seattle-seahawks"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "SF",
+    "coach": "Kyle Shanahan",
+    "native_book_index": 0,
+    "archive_book": "SF",
+    "profile_name": "SF Shanahan",
+    "offense_history": [
+      {
+        "team": "SF",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "SF",
+        "first_season": 2020,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.49ers.com/news/article-2/Kyle-Shanahan-Named-Head-Coach-of-the-San-Francisco-49ers/4f4c2e57-f237-4481-9483-3472833db519"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "TB",
+    "coach": "Todd Bowles",
+    "native_book_index": 6,
+    "archive_book": "TB",
+    "profile_name": "TB Bowles",
+    "offense_history": [
+      {
+        "team": "TB",
+        "first_season": 2022,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "TB",
+        "first_season": 2022,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.buccaneers.com/news/bucs-bruce-arians-new-role-todd-bowles-named-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "TEN",
+    "coach": "Robert Saleh",
+    "native_book_index": 30,
+    "archive_book": "TEN",
+    "profile_name": "TEN Saleh",
+    "offense_history": [
+      {
+        "team": "NYJ",
+        "first_season": 2021,
+        "last_season": 2024,
+        "role": "HC",
+        "last_date": "2024-10-07"
+      },
+      {
+        "team": "TEN",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "NYJ",
+        "first_season": 2021,
+        "last_season": 2024,
+        "role": "HC",
+        "last_date": "2024-10-07"
+      },
+      {
+        "team": "TEN",
+        "first_season": 2026,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.tennesseetitans.com/news/it-s-official-titans-hire-robert-saleh-as-team-s-new-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  },
+  {
+    "team": "WAS",
+    "coach": "Dan Quinn",
+    "native_book_index": 25,
+    "archive_book": "WAS",
+    "profile_name": "WAS Quinn",
+    "offense_history": [
+      {
+        "team": "ATL",
+        "first_season": 2020,
+        "last_season": 2020,
+        "role": "HC",
+        "last_date": "2020-10-11"
+      },
+      {
+        "team": "WAS",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "defense_history": [
+      {
+        "team": "ATL",
+        "first_season": 2020,
+        "last_season": 2020,
+        "role": "HC",
+        "last_date": "2020-10-11"
+      },
+      {
+        "team": "WAS",
+        "first_season": 2024,
+        "last_season": 2026,
+        "role": "HC"
+      }
+    ],
+    "sources": [
+      "https://www.commanders.com/news/dan-quinn-named-washington-commanders-31st-head-coach"
+    ],
+    "attribution": "Observed team offense in HC/OC seasons; not necessarily personal playcalling",
+    "limited_hc_history": false
+  }
+]

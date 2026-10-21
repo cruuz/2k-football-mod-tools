@@ -20,7 +20,8 @@
    "reveal_gallery": "https://www.tennesseetitans.com/photos/titans-new-look-vibes",
    "digits_0_4_5": "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-2-vs-philadelphia-eagles",
    "all_digit_game_control": "https://www.tennesseetitans.com/photos/gameday-photos-2026-week-1-vs-new-york-jets",
-   "method": "Ten per-digit source crops and measured traces retained in u1/fonts_followup/TEN. Coordinates regularized to parallel straight stems/counters; folded0 reconstructed from its visible octagonal perimeter and rectangular counter with consistent bowl proportions. Flat1/2/6, clear3, perspective4/5, partially occluded7 and sheared8/9 controls explicitly documented. No exact proprietary-font identity claimed."
+   "method": "Ten per-digit source crops and measured traces retained in u1/fonts_followup/TEN. Coordinates regularized to parallel straight stems/counters; folded0 reconstructed from its visible octagonal perimeter and rectangular counter with consistent bowl proportions. Flat1/2/6, clear3, perspective4/5, partially occluded7 and sheared8/9 controls explicitly documented. No exact proprietary-font identity claimed.",
+   "seven_fn2": "b776 fn2 (2026-10-18): the 7 is redrawn from the clearest club photographs, week 2 vs PHI #37 (home, flat) and #79 (tunnel), https://www.tennesseetitans.com/photos/gameday-photos-2026-week-2-vs-philadelphia-eagles: a constant-width slanted stem (about 21 of 60 units) that continues straight from the bar's right edge, the top-left serif, and a block foot jutting about 10 units left and 5 right. The u1 form (traced from a partially occluded photo) narrowed the stem to 11 units under the bar with a 9-unit inward step on the right and a left-shifted foot, which Noah saw in game as 'skinny, then a jut'. Measured approximations, no exact proprietary-font identity claimed."
   }
  },
  "palette": {
@@ -807,51 +808,47 @@
         ],
         [
          60,
-         35
+         32.7
+        ],
+        [
+         45.3,
+         80
         ],
         [
          51,
-         35
-        ],
-        [
-         34,
          80
         ],
         [
-         43,
-         80
-        ],
-        [
-         43,
+         51,
          100
         ],
         [
-         3,
+         14,
          100
         ],
         [
-         3,
+         14,
          80
         ],
         [
-         12,
+         24.3,
          80
         ],
         [
-         49,
-         21
+         42,
+         23
         ],
         [
-         21,
-         21
+         19,
+         23
         ],
         [
-         21,
-         31
+         19,
+         33
         ],
         [
          0,
-         31
+         33
         ]
        ]
       ],
@@ -1880,51 +1877,47 @@
         ],
         [
          60,
-         35
+         32.7
+        ],
+        [
+         45.3,
+         80
         ],
         [
          51,
-         35
-        ],
-        [
-         34,
          80
         ],
         [
-         43,
-         80
-        ],
-        [
-         43,
+         51,
          100
         ],
         [
-         3,
+         14,
          100
         ],
         [
-         3,
+         14,
          80
         ],
         [
-         12,
+         24.3,
          80
         ],
         [
-         49,
-         21
+         42,
+         23
         ],
         [
-         21,
-         21
+         19,
+         23
         ],
         [
-         21,
-         31
+         19,
+         33
         ],
         [
          0,
-         31
+         33
         ]
        ]
       ],
@@ -2874,51 +2867,47 @@
         ],
         [
          60,
-         35
+         32.7
+        ],
+        [
+         45.3,
+         80
         ],
         [
          51,
-         35
-        ],
-        [
-         34,
          80
         ],
         [
-         43,
-         80
-        ],
-        [
-         43,
+         51,
          100
         ],
         [
-         3,
+         14,
          100
         ],
         [
-         3,
+         14,
          80
         ],
         [
-         12,
+         24.3,
          80
         ],
         [
-         49,
-         21
+         42,
+         23
         ],
         [
-         21,
-         21
+         19,
+         23
         ],
         [
-         21,
-         31
+         19,
+         33
         ],
         [
          0,
-         31
+         33
         ]
        ]
       ],
@@ -3967,51 +3956,47 @@
         ],
         [
          60,
-         35
+         32.7
+        ],
+        [
+         45.3,
+         80
         ],
         [
          51,
-         35
-        ],
-        [
-         34,
          80
         ],
         [
-         43,
-         80
-        ],
-        [
-         43,
+         51,
          100
         ],
         [
-         3,
+         14,
          100
         ],
         [
-         3,
+         14,
          80
         ],
         [
-         12,
+         24.3,
          80
         ],
         [
-         49,
-         21
+         42,
+         23
         ],
         [
-         21,
-         21
+         19,
+         23
         ],
         [
-         21,
-         31
+         19,
+         33
         ],
         [
          0,
-         31
+         33
         ]
        ]
       ],
@@ -4418,7 +4403,7 @@
       "bg": "white",
       "items": [
        {
-        "text": "#6 CARNELL\nTATE",
+        "text": "#14 CARNELL\nTATE",
         "colour": "red",
         "center": [
          64,

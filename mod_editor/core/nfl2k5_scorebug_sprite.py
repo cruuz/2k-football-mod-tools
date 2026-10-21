@@ -61,10 +61,17 @@ def display_box(hud,widescreen=False):
     return (x0*sx,(y0-16)*sy,x1*sx,(y1-16)*sy)
 
 def placed_box(row,widescreen=False):
-    """A static layer's box for the display; 'top-right' pins slide to the drawable edge."""
+    """Pin to the picture edge using the authored fractional right margin.
+
+    The sprite owner gives its camera the full picture clip at 16:9. The
+    ordinary contracted HUD edge is not the picture edge (N26).
+    """
     box=list(row['box'])
     if row.get('pin')=='top-right':
-        width=box[2]-box[0];right=drawable_right(widescreen)-PIN_MARGIN;box[0],box[2]=right-width,right
+        width=box[2]-box[0]
+        display_width=DISPLAY[bool(widescreen)]['size'][0]
+        right=960+display_width/2-(1920-box[2])*display_width/1920
+        box[0],box[2]=right-width,right
     return box
 SOURCES = ('home score', 'away score', 'home timeouts', 'away timeouts', 'quarter', 'clock', 'play clock', 'down and distance',
            # Beta 76 s15: the Franchise records the owner counts at setup, their navy tabs (one token per text
@@ -537,6 +544,8 @@ def pack_status(pack,folder=None,widescreen=None,watermark=None):
         if scene.digest(table)!=art.RUNTIME_PINS['index']:return 'foreign'
         if grown:
             start=art.HUD_START+art.HUD_SIZE;have=bytes(pack[start:start+added])
+            from .nfl2k5_indicator_names import canonical_hud
+            have=canonical_hud(have)
             modes=(False,True) if widescreen is None else (bool(widescreen),)
             if not any(have==appendix(pack,folder,w,mark)[0] for w in modes for mark in (WATERMARK_MODES if watermark is None else (watermark,))) or any(pack[start+added:outer.align_up(start+added)]):return 'foreign'
         return 'applied' if grown else 'retail'
@@ -735,6 +744,10 @@ def gamedata_status(read,size,folder=None,widescreen=None,watermark=None):
             require(at>=art.HUD_START,'Sprite sources lie inside the HUD outer.')
             return read(count,at-art.HUD_START)
         view=art.PackView(art.HUD_START+size,shifted);have=bytes(read(added,art.HUD_SIZE))
+        # nm1 owns the private indicator FONT packed into the last scene's
+        # existing span. Compare the losslessly recovered scene for this owner.
+        from .nfl2k5_indicator_names import canonical_hud
+        have=canonical_hud(have)
         modes=(False,True) if widescreen is None else (bool(widescreen),)
         marks=WATERMARK_MODES if watermark is None else (watermark,)
         return 'applied' if any(have==appendix(view,folder,w,m)[0] for w in modes for m in marks) else 'foreign'

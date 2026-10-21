@@ -1,136 +1,136 @@
 {
  "schema": "b77.p48d.offense-pins.v1",
- "league_manifest_sha256": "8b6b7569bcb3a77058e1e86eea8bede995a9a5f625c8bbe85493ceec64820c38",
- "offense_digest": "be4c7180ea2e2b344b639e21dfa02260aa2b097cb6e38bd3f63552a948e1a172",
+ "league_manifest_sha256": "ed440b27c4a67fad2819419abcd12ae793797878346713f7a54fa791c3a7ab82",
+ "offense_digest": "62b0a787c9c7258eaef62d9f00383712efd847a635ff30f7bcad710e565d0e70",
  "teams": {
   "ARZ": {
    "pack": "data/playbooks/softdrink_arz_modern.2k5book",
-   "sha256": "2264ead8e00c5f9985acdca590c11c5a8037f4b12d70133feae321bdd32b02ab"
+   "sha256": "05ba4e52e8251931ae8822887c91c22a0ea292421f2b686bf97b1401021a3587"
   },
   "ATL": {
    "pack": "data/playbooks/softdrink_atl_modern.2k5book",
-   "sha256": "34cc7c6c30338e65d66c61b402733bf22fd93451a1820b69d92e78e5ee831bf5"
+   "sha256": "44d8eafae7871451010737616ecc64933d0507e374a944f48675a874333473e9"
   },
   "BAL": {
    "pack": "data/playbooks/softdrink_bal_modern.2k5book",
-   "sha256": "fbbccc7cac6540cf27a5e3f2702e3c547b1c6445f626254ab513c8fdca2cf6ce"
+   "sha256": "777ffce34dd91f13101f2d20b8366978154dd53e274c155a6ae989a507d47605"
   },
   "BUF": {
    "pack": "data/playbooks/softdrink_buf_modern.2k5book",
-   "sha256": "8df5b45705a0d41ad6ba0a5fd1b91211fbda8cf8e43274de606470213daa2c50"
+   "sha256": "9a3cbd0fcac41ca8ec6a9c8e4799715e307e44563847028da32599b76131095b"
   },
   "CAR": {
    "pack": "data/playbooks/softdrink_car_modern.2k5book",
-   "sha256": "4177fcf63e1636ecfd5353062e56129cea207412dd5745f44164593e648d288f"
+   "sha256": "ab240eb7697f13c1114870caafd51f9b041b99350fc1487d69157d61eb6fd8cf"
   },
   "CHI": {
    "pack": "data/playbooks/softdrink_chi_modern.2k5book",
-   "sha256": "d778290293958b6ef7549b9815fbc56fa1494f9b6a0e67f6b58751d640f1eb9b"
+   "sha256": "35cb22b9d1f954f50ba07cfa47708fed5080826f18687cfbfec888793b1764fe"
   },
   "CIN": {
    "pack": "data/playbooks/softdrink_cin_modern.2k5book",
-   "sha256": "d577f4e11e19f64f0d26dc472df5fe4e3d702694eb5c4e02ef0e239742d60df5"
+   "sha256": "57d70c69df70ed0782898682246c469dccbee2c26508b181285a73d58537f29e"
   },
   "CLE": {
    "pack": "data/playbooks/softdrink_cle_modern.2k5book",
-   "sha256": "014489ff277de7c04986abf9f03209a66c64965127a08dc6f09fc3924afc7552"
+   "sha256": "6719aa82a45d78729dd0ec1cf9b0d5ff2a08202761ad39350521186d0e4ff334"
   },
   "DAL": {
    "pack": "data/playbooks/softdrink_dal_modern.2k5book",
-   "sha256": "d213cbff6b52a14d3ce6a584f767fc9a40184c02b4375bf03d9e28f69c93faf6"
+   "sha256": "282cd12e660cc1070fb7a7c6978356ef1985d597ea4718f4e903d8318c822e83"
   },
   "DEN": {
    "pack": "data/playbooks/softdrink_den_modern.2k5book",
-   "sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663"
+   "sha256": "aa28a0572a443c806a1f9e93dae7e4edb93475ed2d21447f22f6cd3951c674ed"
   },
   "DET": {
    "pack": "data/playbooks/softdrink_det_modern.2k5book",
-   "sha256": "079df6e53e7553bd7dac3f2761cdf48d605c588e5986855672944a24c4e84d75"
+   "sha256": "fd7df37f6819a60c3afb8ecd304036366abeb0b651c01d3dec35a3f8adbbeaf7"
   },
   "GB": {
    "pack": "data/playbooks/softdrink_gb_modern.2k5book",
-   "sha256": "f7fd678f9c613c8486d87ac1b2c1bbf74d548d84e6ab02df3a52b6660a31a7d0"
+   "sha256": "fc1c7ec51b889c6a4ca53b694fb16184c9367956716373e474447a988fb0f3cd"
   },
   "HOU": {
    "pack": "data/playbooks/softdrink_hou_modern.2k5book",
-   "sha256": "fba36fc3938afb712d7b27e7b5fefd2a1bb78d78e4dda391d602db702fe85202"
+   "sha256": "fdbf1515a16d6c3edbc55cfa551478b3f07fba9364c714ac14a5f24e5eeb07ec"
   },
   "IND": {
    "pack": "data/playbooks/softdrink_ind_modern.2k5book",
-   "sha256": "7d4229ea711de97a9a7b71c0826177ff62aa973ab76db169dd561517a4f7011a"
+   "sha256": "82f32ce282ccfbfc751e1fa1e55992a705f2b04569ca521d836c8d37e8eac32f"
   },
   "JAX": {
    "pack": "data/playbooks/softdrink_jax_modern.2k5book",
-   "sha256": "6c2f9245a413423b4908bc0abc10602df311a9d2924023169025b46d60c6158a"
+   "sha256": "b006d6be4f3387f1f5eda6fee26247f56de2c3cb02fc0c9f26f46428cc7739e1"
   },
   "KC": {
    "pack": "data/playbooks/softdrink_kc_modern.2k5book",
-   "sha256": "abd6973f230e633e2db283e1aca15c8c15999f6cb573e88fe02772876e224827"
+   "sha256": "8be705fe03d2908a7135e97678588fd1fbac4bad893812956bc9cad009b95718"
   },
   "MIA": {
    "pack": "data/playbooks/softdrink_mia_modern.2k5book",
-   "sha256": "13991509bdcb25d3f3ec84bf23c750f71fbc32df7fc6320789039b5576c65b8d"
+   "sha256": "83355228229937d42469fe31125ce7b59864f6a595b1aa0b5508d508630278f7"
   },
   "MIN": {
    "pack": "data/playbooks/softdrink_min_modern.2k5book",
-   "sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17"
+   "sha256": "849306d3f0d7bf0e0c8239518a97e2775dc19b1c15798936d3a1839bf4f6f59a"
   },
   "NE": {
    "pack": "data/playbooks/softdrink_ne_modern.2k5book",
-   "sha256": "7fc382cb6ef22fca85f73208548beff9705d4ad0c22849aec10cb4fc00e0e585"
+   "sha256": "8af20bf516a3ab57b9353ce5102dd60fbd586bb40b1198195c5dd9726665d46f"
   },
   "NO": {
    "pack": "data/playbooks/softdrink_no_modern.2k5book",
-   "sha256": "ca64223909dd68b5a09595cf0e8a51d7c833c0638312c27d7f87c30f529f7349"
+   "sha256": "c97cea7942fb86e0c700ef73d65c30ea196d461dd4aa9c181695a4b1dd67d504"
   },
   "NYG": {
    "pack": "data/playbooks/softdrink_giants_modern.2k5book",
-   "sha256": "5fe5244c54f83405fecc81ca7cd2f022c8522e162b414c305d4c26a084345621"
+   "sha256": "75c25af0a78bc75ffe163af8c6c98faca8f9ffcbf3cbe929a25f272a3724e1de"
   },
   "NYJ": {
    "pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-   "sha256": "5cbd3597cd68923d242655a53422caa32fbce55d60b5691482ac20f72ffe3c99"
+   "sha256": "b0b6c0079783a15d01ed0debcd8c8497675aa8104c3618be56f98ad47238a124"
   },
   "OAK": {
    "pack": "data/playbooks/softdrink_oak_modern.2k5book",
-   "sha256": "84d5401ecb5f3843083654333b1badc46cd05cf3d475f097925e4961428e0b7d"
+   "sha256": "62e3de5d9a14e006e0e639ab4ae693359c248e069385182f84c5a9223613ee8a"
   },
   "PHI": {
    "pack": "data/playbooks/softdrink_phi_modern.2k5book",
-   "sha256": "d61766e467351379c85f22e9ed33f7101d2fc5e3d9c08d3d288bdddf56694d10"
+   "sha256": "bd7643b2917b07e1b1fa759ff87fb118ea8afbdecf33e2de2cf1a95bc191f21d"
   },
   "PIT": {
    "pack": "data/playbooks/softdrink_pit_modern.2k5book",
-   "sha256": "4e321c1fcd7fe7dc41d45922040bb8217813b08c7139dc400d8ce21ed9071168"
+   "sha256": "51579d60a21a108078d484a79d2136c23d4f4c71a71756a9a96b85d2591c45a1"
   },
   "SD": {
    "pack": "data/playbooks/softdrink_sd_modern.2k5book",
-   "sha256": "a6416f1e57f44192c91adc5f1c97bddc2f62dd097e40703dce97b232494d8cbe"
+   "sha256": "aa0a88f84bcccb033d8c6c5f8e3e05599caaa15166d0174cd64b9c4883e81b06"
   },
   "SEA": {
    "pack": "data/playbooks/softdrink_sea_modern.2k5book",
-   "sha256": "2dd4da49f7a050370c0a591002257e2582fb50a34f66ffc23c79e16d50b39157"
+   "sha256": "931c354b632ab19857aa4e0aca03065abd368d5bc0cf3151fe003197747fabeb"
   },
   "SF": {
    "pack": "data/playbooks/softdrink_sf_modern.2k5book",
-   "sha256": "645a595b9c3554a4aebd4d8c5bd7a06c19b3ce658c1d08bc7263fe02e1cba650"
+   "sha256": "d7f80390bc3cefdb85c1701e32d6dadb85da540f522841392a8b03f8f0b961de"
   },
   "STL": {
    "pack": "data/playbooks/softdrink_stl_modern.2k5book",
-   "sha256": "ce87d2237e4336cfe3994079129c68b0af192921aeee72988ac4174247862061"
+   "sha256": "98d57e66ed873ea56d8766e3493380d7f577be1ce540e610ec8a20bf183a2b67"
   },
   "TB": {
    "pack": "data/playbooks/softdrink_tb_modern.2k5book",
-   "sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1"
+   "sha256": "bb15eb9f7cdd309e2071799300d66f0bfd56a3eb94eb284c4b5826620479d89a"
   },
   "TEN": {
    "pack": "data/playbooks/softdrink_ten_modern.2k5book",
-   "sha256": "40d928443b74679d4ed0adc5ad3ed6068e207c9918b13046664f2c950c04d844"
+   "sha256": "3c765887b993df5fd5dfca84bc596e5973b3356b88335940550b2e77655dcd90"
   },
   "WAS": {
    "pack": "data/playbooks/softdrink_was_modern.2k5book",
-   "sha256": "1d40430724f102559c0a9b22d06c39dead2346530fe7a4e60690d5495b533733"
+   "sha256": "91c7837f02838e6beb90d9f1f873f77d7d93b7e690af76d19c7fd914939a9b25"
   }
  },
- "generated_at_head": "b92dc6e776b0b203fbd61b001fe075b659bb3d54"
+ "generated_at_head": "53003a4f3c4a021fe42c5dedd1d4c786b47550fa"
 }

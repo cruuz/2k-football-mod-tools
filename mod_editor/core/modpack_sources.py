@@ -13,6 +13,40 @@ from . import modpack as m, modpack_files as f
 TOKEN = "@pack/"
 
 
+def compose_project(document):
+    """Resolve layered digit art by native target, with the last layer winning.
+
+    The importer accepts aliases such as jersey and jersey_digit. Comparing
+    author dictionaries instead of normalized selectors let both layers into
+    v0.6. Keep each winning edit whole and in its original order, so every
+    selection of the resulting edits has at most one writer for each digit.
+    Frozen originals are retained separately for provenance.
+    """
+    from tools.nfl_live_numbers_nameplate_targets import normalize_selector
+
+    edits = document.get("edits", [])
+    winners = {}
+    for index, edit in enumerate(edits):
+        if edit.get("kind") == "live_number_nameplate":
+            key = normalize_selector(edit["asset_code"], edit["side"], edit["variant"],
+                                     edit["family"], edit["digit"])
+            winners[key] = index
+    result = []
+    for index, edit in enumerate(edits):
+        if edit.get("kind") == "live_number_nameplate":
+            code, side, variant, family, digit = normalize_selector(
+                edit["asset_code"], edit["side"], edit["variant"], edit["family"], edit["digit"])
+            if winners[(code, side, variant, family, digit)] != index:
+                continue
+            # Product edit families use the short names, including the quality
+            # fallback path for tiny digit slots.
+            family = {"jersey_digit": "jersey", "helmet_digit": "helmet",
+                      "arm_digit": "arm", "nameplate_atlas": "nameplate"}[family]
+            edit = dict(edit, asset_code=code, side=side, family=family)
+        result.append(edit)
+    return dict(document, edits=result)
+
+
 def prepare(recipe_path, work, *, stack=None, marks_pack=None):
     """Capture effective overrides and every referenced league PNG, preserving originals."""
     recipe_path, work = f._path(recipe_path), f._output_path(work)
@@ -86,7 +120,7 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None):
     roster = frozen.get("roster_edits", {})
     if isinstance(roster, dict) and roster.get("sha256") and roster.get("path") == effective.get("roster_edits"):
         m._require(m.hash_file(roster["path"]) == roster["sha256"], "Frozen roster SHA-256 differs")
-    project = relocate(json.loads(original_project))
+    project = compose_project(relocate(json.loads(original_project)))
     work.mkdir(parents=True, exist_ok=True)
     portable_project = f._path(work / "league-project.json")
     with f._transaction(portable_project, (recipe_path, project_path, *assets.values()), overwrite=True) as part:
@@ -124,7 +158,7 @@ def materialize(recipe, directory):
     m._require(recipe.get("schema") == "softdrink_sources/v1", "Pack has no portable Studio sources")
     root = f._path(m.platform_compat.absolute_path(f._output_path(directory)))
     local = resolve(recipe, root)
-    project = resolve(json.loads(Path(local["project"]).read_text(encoding="utf-8")), root)
+    project = compose_project(resolve(json.loads(Path(local["project"]).read_text(encoding="utf-8")), root))
     project_path = f._contained_path(root, "SOFTDRINK-league-project.json")
     recipe_path = f._contained_path(root, "SOFTDRINK-build-recipe.json")
     m._require(not project_path.exists() and not recipe_path.exists(), "Choose a new source folder to preserve your edits")

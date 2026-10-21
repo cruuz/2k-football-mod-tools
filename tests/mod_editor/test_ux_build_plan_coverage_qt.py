@@ -95,6 +95,11 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
             "modern_color_settings",  # the Colour & lighting page (strength and the 55 controls) beside the modern colour check box
             "scorebug_watermark",  # the ESPN watermark combo beside the sprite scorebug check box (build_panel_qt.py:899)
+            "super_bowl_user_art",  # b773-sb2: the Your Super Bowl logos folder field beside the official marks pack
+            "indicator_names_folder",  # b773-nm1: the private indicator atlas folder comes from the Studio preset or the project file, with no Build tab control
+            "my_career_home",  # b775-ui1: Career Home rides with MyCareer (default on); preset/project/recipe key, no Build tab control
+            "indicator_names_style",  # b775-nl1: the player name label style (retail default) comes from the Studio preset or the project file, like the atlas folder
+            "team_number_scale",  # b776-ns1: per-kit jersey number sizes are a recipe/project key only (coordinator: no Build tab control yet)
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
@@ -135,17 +140,25 @@ class BuildPlanCoverageTests(unittest.TestCase):
             panel.uniform_choice_mode.setCurrentIndex(1)
             self.assertEqual(panel.plan().uniform_choice, "rule")
 
-    def test_seven_on_seven_is_reachable_defaults_off_and_stays_unwitnessed(self) -> None:
-        """v2 (beta 63): the row is available for a supported image, off by default, badged unwitnessed."""
+    def test_seven_on_seven_is_hidden_until_repaired(self) -> None:
+        """N12: presets cannot expose the held practice option."""
         panel = self.panel
-        self.assertTrue(mod_build.SEVEN_ON_SEVEN_RELEASED)
-        self.assertFalse(panel.seven_on_seven_check.isHidden())
+        self.assertFalse(mod_build.SEVEN_ON_SEVEN_RELEASED)
+        self.assertTrue(panel.seven_on_seven_check.parentWidget().isHidden())
+        self.assertIn("unavailable until repaired", panel.seven_on_seven_check.text().lower())
         self.assertFalse(panel.seven_on_seven_check.isChecked())
         self.assertFalse(panel.plan().seven_on_seven)
         for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
             self.assertFalse(mod_build.PRESETS[name]["seven_on_seven"], name)
-        # the coverage panel holds a bare synthetic XBE: a disc-only option reports "Full disc required" there
-        self.assertEqual(panel._badges["seven_on_seven"].text(), "Full disc required")
+            panel.apply_preset(name)
+            self.assertTrue(panel.seven_on_seven_check.parentWidget().isHidden())
+            self.assertFalse(panel.plan().seven_on_seven)
+        panel.restore_project_build_settings({"seven_on_seven": True})
+        self.assertFalse(panel.plan().seven_on_seven)
+        # Even a stale programmatic checkbox value cannot reach a new plan.
+        panel.seven_on_seven_check.setChecked(True)
+        self.assertFalse(panel.plan().seven_on_seven)
+        self.assertEqual(panel._badges["seven_on_seven"].text(), "Not available in this release")
         self.assertFalse(panel.seven_on_seven_check.isEnabled())
 
     def test_a_ticked_option_with_a_missing_required_file_names_the_file(self) -> None:

@@ -176,6 +176,7 @@ from dataclasses import dataclass
 import hashlib
 import struct
 from typing import Mapping, Sequence
+from pathlib import Path
 
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 from .nfl2k5_draft_ai import _Asm
@@ -994,6 +995,86 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
                      "rating_tables": {name: rating_table_rows(patched, name) for name in RATING_TABLES},
                      "filter_rows": filter_rows(patched),
                      "retail_olb_identity": retail_olb_identity(patched)}
+
+
+def team_needs_scene_edits() -> tuple[tuple[int, bytes, bytes, str], ...]:
+    """Owned offsets in the raw team_needs MRKS body, not the position picker.
+
+    The 0x90-byte text records bind by hash to 0x319C20's enum callbacks.
+    Keep EDGE=16 and LB=11. Remove both parts of the retired enum-10 row.
+    Its old label storage and ILB's storage together hold EDGE: and LB:.
+    """
+    word = lambda value: struct.pack("<I", value)
+    rows = [
+        (0x171E, "ILB:\0OLB:\0".encode("utf-16le"), "EDGE:\0LB:\0".encode("utf-16le"), "modern_labels"),
+        # EDGE: is wider than DE:. The final column has room to move its
+        # count right without changing the label, row or callback identity.
+        (0x360, word(0x42200000), word(0x42800000), "edge_count_x"),
+        (0x434, word(0x16FC - 0x434 + 1), word(0x171E - 0x434 + 1), "edge_label_pointer"),
+        (0xB84, word(0x171E - 0xB84 + 1), word(0x172A - 0xB84 + 1), "lb_label_pointer"),
+        # Static labels must retain a valid UTF-16 pointer: the native copier
+        # at 0x30AE0 dereferences it even when the displayed string is empty.
+        (0xC14, word(0x1728 - 0xC14 + 1), word(0x1730 - 0xC14 + 1), "hide_olb_label"),
+    ]
+    # Native 0x151540 locates the ID at text-record +0x80. The OLB
+    # count ID is at 0x9D0, so its matrix begins at 0x950.
+    for axis in (0x00, 0x14, 0x28):
+        rows.append((0x950 + axis, word(0x3F800000), word(0), f"hide_olb_count_scale_{axis:x}"))
+    # Close the gap in the LB / TE / FB column. Native record +0x44
+    # is its Y position; label and count move together.
+    for record, old, new, label in (
+        (0x9E0, 0x426F6897, 0x42236897, "te_count"),
+        (0xC20, 0x426F6897, 0x42236897, "te_label"),
+        (0xA70, 0x429DB44C, 0x426F6897, "fb_count"),
+        (0xCB0, 0x429DB44C, 0x426F6897, "fb_label"),
+    ):
+        rows.append((record + 0x44, word(old), word(new), label + "_y"))
+    return tuple(sorted(rows))
+
+
+def apply_team_needs_scene(span: bytes) -> tuple[bytes, dict]:
+    """Modernize the overview inside its existing allocation; refuse layout drift."""
+    _require(len(span) == 21024 and struct.unpack_from("<8I", span, 0)[1:] ==
+             (20992, 20992, 0, 0, 0, 0, 0) and span[:4] == b"MRKS",
+             "unexpected Team Needs MRKS wrapper")
+    body = span[32:]
+    _require(body[0x4FE2:0x4FF8] == "team_needs\0".encode("utf-16le"),
+             "unexpected Team Needs scene name")
+    for at, identity in ((0x430, 0xAC689FAF), (0x940, 0x6FCA5DA8), (0x9D0, 0x44E70E6B)):
+        # DE label, LB count, OLB count. These are the native binding identities.
+        _require(struct.unpack_from("<I", body, at)[0] == identity,
+                 f"Team Needs text identity drift at {at:#x}")
+    states = [body[at:at + len(old)] for at, old, _new, _label in team_needs_scene_edits()]
+    old_state = all(value == row[1] for value, row in zip(states, team_needs_scene_edits()))
+    new_state = all(value == row[2] for value, row in zip(states, team_needs_scene_edits()))
+    _require(old_state or new_state, "foreign or partially patched Team Needs overview")
+    out, edits = bytearray(span), []
+    for at, old, new, label in team_needs_scene_edits():
+        offset = at + 32
+        out[offset:offset + len(new)] = new
+        edits.append(dict(offset=offset, length=len(new), label=label,
+                          before_sha256=hashlib.sha256(old).hexdigest(),
+                          after_sha256=hashlib.sha256(new).hexdigest()))
+    return bytes(out), dict(already_applied=new_state, edits=edits, visible_pools=16,
+                           edge_enum=16, lb_enum=11, olb_label_and_count_hidden=True)
+
+
+def apply_team_needs_image(path) -> dict:
+    """Disc half of the final EDGE-only roster pass, after archive relocation."""
+    from . import nfl2k5_bump_texture_writer as bump
+    from nfl_txtr import parse_chunks
+    with bump._Image.open(Path(path), writable=True) as image:
+        index = bump._parsed_index(image)
+        entry = index.entries[9]
+        _require(entry.name_id == 3649596148, "Team Needs outer resource identity drift")
+        raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
+        chunk = parse_chunks(raw)[7]
+        fixed, receipt = apply_team_needs_scene(raw[chunk.offset:chunk.end_offset])
+        image.write_segments(index.sub_extents(entry, chunk.offset, len(fixed)), fixed)
+        _require(image.read_segments(index.sub_extents(entry, chunk.offset, len(fixed))) == fixed,
+                 "Team Needs read-back differs")
+        return dict(receipt, outer_index=9, chunk=7, resource_offset=chunk.offset,
+                    runtime_witnessed=False)
 
 
 __all__ = [

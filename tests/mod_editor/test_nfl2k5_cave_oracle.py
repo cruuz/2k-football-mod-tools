@@ -314,6 +314,34 @@ class CaveOracleTests(unittest.TestCase):
         with self.assertRaisesRegex(OracleError, "unattributed"):
             recorder.finish(put(p, TEXT + 0x80, b"\xc3"))
 
+    def test_indicator_recorder_reserves_complete_verified_sites_even_on_replay(self):
+        from types import ModuleType
+        module = ModuleType("mod_editor.core.nfl2k5_indicator_names")
+        # Synthetic native sites include unchanged bytes and an entirely
+        # unchanged site. A diff alone cannot reserve either complete range.
+        before = synthetic()
+        edits = ((TEXT + 0x80, b"\xcc" * 4, b"\xcc\x90\x90\xcc", "binding"),
+                 (TEXT + 0x90, b"\xcc" * 3, b"\xcc" * 3, "control"),
+                 (TEXT + 0xa0, b"\xcc" * 5, b"\x90" * 5, "selector"))
+        module.code_edits = lambda: edits
+        after = before
+        for va, _old, code, _label in edits:
+            after = put(after, va, code)
+        for original in (before, after):
+            recorder = Recorder(original)
+            recorder.observe(module, "apply_xbe", original, after, {"code": []})
+            declared = {(int(r["start"], 0), r["size"]) for r in recorder.spans
+                        if r["basis"].startswith("declared edit:")}
+            self.assertEqual(declared, {(va, len(code)) for va, _, code, _ in edits})
+
+    def test_indicator_recorder_refuses_unverified_declared_code(self):
+        from types import ModuleType
+        module = ModuleType("mod_editor.core.nfl2k5_indicator_names")
+        module.code_edits = lambda: ((TEXT + 0x80, b"\xcc" * 4, b"\x90" * 4, "binding"),)
+        before = synthetic()
+        with self.assertRaisesRegex(OracleError, "declared site differs"):
+            Recorder(before).observe(module, "apply_xbe", before, before, {"code": []})
+
     def test_cli_json_and_twenty_largest_summary_without_mutating_input(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)

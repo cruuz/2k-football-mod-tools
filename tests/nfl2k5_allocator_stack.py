@@ -51,6 +51,8 @@ from mod_editor.core import nfl2k5_team_logo_swap as team_logo_swap
 from mod_editor.core import nfl2k5_k128 as k128
 from mod_editor.core import nfl2k5_letter_grades as letter_grades  # b77-f4
 from mod_editor.core import nfl2k5_period_goalposts as period  # b77-v1b
+from mod_editor.core import nfl2k5_moment_coaches as moment_coaches
+from mod_editor.core import nfl2k5_coach_ai as coach_ai
 from mod_editor.core import nfl2k5_honors as honors  # b77-f5
 
 
@@ -88,6 +90,14 @@ REQUESTS += k128.REQUESTS  # b76-k1
 REQUESTS += letter_grades.REQUESTS  # b77-f4
 REQUESTS += period.REQUESTS  # b77-v1b
 REQUESTS += honors.REQUESTS  # b77-f5
+REQUESTS += coach_ai.REQUESTS  # vp2: installed after VIP-aware Modern 2 in its composition suite
+from mod_editor.core import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
+from mod_editor.core import nfl2k5_team_ratings as team_ratings
+REQUESTS += moment_coaches.REQUESTS + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS
+from mod_editor.core import nfl2k5_moment_context as moment_context  # b775 mo2
+REQUESTS += moment_context.REQUESTS
+from mod_editor.core import nfl2k5_classic_teams as classic_teams  # b775-ct1
+REQUESTS += classic_teams.REQUESTS
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -210,6 +220,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     for span in manifest.document["spans"]:
         start, end = int(span["start"], 0), int(span["end"], 0)
         if start < space.CODE_VA or span["owner"] == space.OWNER:
+            spans.append(span)
+            continue
+        if span["owner"] == "nfl2k5_my_career_home":
+            # b775-int1 (ui1): Career Home is the extra section slot's alternative occupant (the union keeps the music
+            # library there). Its fixed slot never moves with the request union; keep spans that lie inside it.
+            from mod_editor.core import nfl2k5_my_career_home as home
+            if not home.VA <= start < end <= home.VA + home.SIZE:
+                raise AssertionError("Career Home span outside its extra section slot")
             spans.append(span)
             continue
         matches = [a for a in old if a["owner"] == span["owner"] and

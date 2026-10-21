@@ -17,6 +17,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
+from mod_editor.core import nfl2k5_abilities_runtime as abilities_patch  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
 
@@ -198,6 +199,111 @@ class PresetButtonTests(unittest.TestCase):
             self.assertIn("experimental", panel.preset_note.text())
             panel.deleteLater()
             self.app.processEvents()
+
+    def test_preset_clears_a_leftover_move_lock_instead_of_refusing_the_build(self) -> None:
+        """N35: a lock ticked before a preset used to survive it, so charge-stars-only made Make my disc refuse."""
+
+        panel = BuildPanel()
+        try:
+            panel.abilities_lock_checks["abilities_lock_right_stick"].setChecked(True)
+            panel.abilities_lock_checks["abilities_lock_special_moves"].setChecked(True)
+            panel.apply_preset("softdrink_advanced")   # the SOFTDRINK presets clear both locks and turn charge stars-only on
+            plan = panel.plan()
+            self.assertFalse(plan.abilities_lock_right_stick)
+            self.assertFalse(plan.abilities_lock_special_moves)
+            self.assertTrue(plan.abilities_charge_stars_only)
+            self.assertTrue(plan.abilities_lock_speedster)   # the separate Speedster lock keeps its preset value
+            self.assertEqual(mod_build.validate_plan(plan), [])
+            # the runtime that produces the user's refusal accepts the plan's settings unchanged
+            abilities_patch.code_for(
+                0x14DA000, abilities_off_week=plan.abilities_off_week,
+                lock_right_stick=plan.abilities_lock_right_stick,
+                lock_special_moves=plan.abilities_lock_special_moves,
+                lock_speedster=plan.abilities_lock_speedster,
+                right_stick_stars_only=plan.abilities_right_stick_stars_only,
+                button_moves_stars_only=plan.abilities_button_moves_stars_only,
+                charge_stars_only=plan.abilities_charge_stars_only,
+                star_access=plan.abilities_star_access)
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
+class PresetPlanEqualsPresetTests(unittest.TestCase):
+    """fx1: a GUI preset gives exactly mod_build.PRESETS[name], key for key (the Experimental preset used to tick
+    historic teams in Quick Game through the classic teams cascade)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_every_preset_on_an_all_retail_source_is_the_preset_plan(self) -> None:
+        import dataclasses
+        from mod_editor.gui.build_panel_qt import ANNIVERSARY_DEPENDENCIES
+        fields = {field.name for field in dataclasses.fields(mod_build.BuildPlan)}
+        for name, values in mod_build.PRESETS.items():
+            with self.subTest(preset=name):
+                panel = BuildPanel()
+                try:
+                    state = {key: "retail" for key in panel._boxes()}
+                    state.update(path="retail.iso", container="xiso", throw=None)
+                    panel.apply_state(state)
+                    panel.historic_teams_quick_game_check.setChecked(True)   # a leftover choice the preset must clear
+                    panel.apply_preset(name)
+                    plan = panel.plan()
+                    for key, want in values.items():
+                        self.assertIn(key, fields)
+                        got = getattr(plan, key)
+                        if got == want:
+                            continue
+                        parents = ANNIVERSARY_DEPENDENCIES.get(key, ())
+                        if want is True and any(values.get(parent) is False for parent in parents):
+                            # a child whose parent the preset leaves off: mod_build needs both, so it never acts
+                            self.assertIs(got, False, key)
+                        elif key == "xbe_space" and values.get("scorebug_runtime"):
+                            # the GUI ticks the space with the scorebug runtime; _apply_all takes either flag the same way
+                            self.assertIs(got, True)
+                        elif key == "indicator_names_folder" and values.get("indicator_names_style") == "retail":
+                            # the folder is read only for a non-retail label style
+                            self.assertEqual(plan.indicator_names_style, "retail")
+                        else:
+                            self.fail(f"{name}: {key} is {got!r}, the preset says {want!r}")
+                    self.assertFalse(plan.historic_teams_quick_game)   # b76-h1: every preset keeps the 2004 menus
+                    self.assertNotIn(" requires: ", panel.blocker())   # no dependency refusal after a preset
+                finally:
+                    panel.deleteLater()
+                    self.app.processEvents()
+
+    def test_older_depth_locks_are_an_upgrade_not_a_disabled_box(self) -> None:
+        """fx1 (review pr68 #4): revision 1/2 locks read "legacy"; the box was disabled with no badge or listing."""
+        panel = BuildPanel()
+        try:
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path="b776.iso", container="xiso", throw=None, depth_locks="legacy")
+            panel.apply_state(state)
+            self.assertTrue(panel.depth_locks_check.isEnabled())
+            self.assertFalse(panel.depth_locks_check.isChecked())
+            self.assertEqual(panel._badges["depth_locks"].text(), "Needs update")
+            self.assertIn("depth locks: older revision (needs update)", panel.source_status.text())
+            panel.depth_locks_check.setChecked(True)
+            self.assertTrue(panel.plan().depth_locks)
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
+    def test_preset_hands_the_rosters_page_its_lock_values(self) -> None:
+        panel = BuildPanel()
+        try:
+            seen = []
+            panel.abilities_locks_changed.connect(seen.append)
+            panel.abilities_lock_checks["abilities_lock_right_stick"].setChecked(True)
+            seen.clear()
+            panel.apply_preset("softdrink_advanced")
+            self.assertEqual(len(seen), 1)
+            self.assertEqual(seen[-1], panel.abilities_lock_settings())
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
 
 class IntegrationBuildTests(unittest.TestCase):
     @classmethod

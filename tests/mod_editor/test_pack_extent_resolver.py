@@ -155,6 +155,10 @@ class PackExtentResolverTests(unittest.TestCase):
             def simple_status(_xbe: bytes) -> str:
                 return "applied"
 
+            @staticmethod
+            def repair_awards_timing(xbe: bytes) -> tuple[bytes, dict]:  # b771 v1i: already repaired, nothing written
+                return xbe, {"already_applied": True}
+
         class Schedule:
             @staticmethod
             def encode_schedule(_doc):
@@ -200,6 +204,11 @@ class PackExtentResolverTests(unittest.TestCase):
             # This directory-address fixture has random pack bytes, not PLAY
             # books. The scoring gate has its own real/synthetic archive tests.
             mock.patch.object(mod_build, "_check_playbook_scoring", return_value={"synthetic": True}),
+            mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}),
+            # b775-int1: sb1's franchise Super Bowl hosts step (season_2026 on a disc image) reads the real ROST; this
+            # fixture has random pack bytes, so stub it like the other late image steps.
+            mock.patch("mod_editor.core.nfl2k5_super_bowl_hosts.apply_to_image",
+                       return_value={"state": "synthetic", "executable": None, "log": []}),
             # Keep the output at its original sectors to isolate the schedule
             # writer. Compaction's separate tests prove the final file move.
             mock.patch("mod_editor.core.xdvdfs_compact.finish_private",

@@ -26,7 +26,9 @@ class BuildIntegrationTests(unittest.TestCase):
             self.assertEqual(selected.scorebug, name == 'softdrink_experimental')
             # Beta 62: the runtime scorebug (logos, live events) is off in every preset until the
             # community freeze report is resolved; the static bar still rides Experimental.
-            self.assertFalse(selected.scorebug_runtime)
+            # b773 nm1/i4: the Experimental preset (and only it) installs the sprite scorebug, because the private
+            # indicator-name FONT occupies its appended sprite scene (the SOFTDRINK recipe already overrides it on).
+            self.assertEqual(selected.scorebug_runtime, name == 'softdrink_experimental')
             self.assertEqual(build.BuildPlan('source', 'target', **selected.to_recipe()).to_recipe(), selected.to_recipe())
 
     def test_library_metadata_is_a_selected_content_transaction(self):
@@ -62,7 +64,19 @@ class BuildIntegrationTests(unittest.TestCase):
                     self.assertIsNone(expected)  # no shuffle selected: the library-only validation
                     return {'status': 'validated', 'expected': None}
                 modules = {'nfl2k5_music_banks':SimpleNamespace(plan=plan,rebuild=rebuild,revalidate_playlist=revalidate_playlist),
-                           'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime)}
+                           'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime),
+                           'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True}),
+                           'nfl2k5_menu_icon_orientation':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
+                           'nfl2k5_menu_icon_uf3':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
+                           # b772 ny1/uf1/uf2: the uniform block's pinned kit repairs; a synthetic image matches none
+                           'nfl2k5_nyg_numbers':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'}),
+                           'nfl2k5_kit_fixes_2026':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'},
+                                                                   apply_alternates=lambda target: {'state': 'retail'},
+                                                                   apply_finish=lambda target: {'state': 'retail'},
+                                                                   apply_seattle=lambda target: {'state': 'retail'},
+                                                            apply_overlaps=lambda target: {'state': 'retail'},
+                                                            apply_chiefs=lambda target: {'state': 'retail'},
+                                                            apply_swooshes=lambda target: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.
@@ -81,7 +95,7 @@ class BuildIntegrationTests(unittest.TestCase):
                     else:
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
-                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library'])
+                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','menu_icon_orientation'])
                         # macOS temp paths resolve under /private/var: compare resolved paths.
                         self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])

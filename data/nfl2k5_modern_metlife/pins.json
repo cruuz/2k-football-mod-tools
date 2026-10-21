@@ -2,7 +2,7 @@
  "schema": "nfl2k5_modern_metlife_pins/v1",
  "venue": "MetLife Stadium (Giants s18, Jets s19)",
  "art": {
-  "art/s18/field/center_logo.png": "cc4455387902ee27b8fce049a53e8c245dafc20d17ad5e7aec8dde07be7c43ba",
+  "art/s18/field/center_logo.png": "6b573f24ab695d8a927b332a802abe4b2a06827cd507d218493ff7d40622a224",
   "art/s18/field/endzone_N_L.png": "3c78e0515f6a870ddd6fa580fe0abe19b007b7b7791598113be2e755465e7d71",
   "art/s18/field/endzone_N_M.png": "dec8ba6885f917b41d35468e10a3479fda6bf123c7deee0cbbcc753aa5610368",
   "art/s18/field/endzone_N_R.png": "263204da9f59364152b61c3c1d554d32d0bdeaedd49f5f710d8099742601c943",
@@ -40,14 +40,14 @@
    "name_id": 2794413904,
    "size": 1573376,
    "retail_sha256": "ae901ca8001d4be6a4e1c36a5a534bfb375d1a05854fda1bae133257942e2eee",
-   "applied_sha256": "d0772688282fc3c68db216f8d77e2c00c06d1fd0d842e2b5af38a59390acaeb6",
+   "applied_sha256": "ea58ef04b2e5242b10c435b1ce4c2734eb00dae707b5bd15cb236542d09cc5fd",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125344,
      "retail": "18db207f966232f4f9e065495a765072f88d8aa3d2938c2cea59e7672373aa41",
-     "applied": "3c25d94bbb09f6e3387844bde7458fda622620df564fe3c3daa4126dd80f8b12",
+     "applied": "1d3872149a06936932b5a119d7aa18ac76a7c9c726295237e0a6e38bbf09c5b7",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -116,14 +116,14 @@
    "name_id": 2352983807,
    "size": 1553728,
    "retail_sha256": "fa61be23b5fb4c52e5e7b58388b5f8e3773cf9dee0c008b244a6a55466c13d1d",
-   "applied_sha256": "58d34fcab41d5830a25e14fe9943b5d80ea85fed5ebe62f577b51620d3e92613",
+   "applied_sha256": "0628de654b98659271ccb5982810a624dbcad639f2be6d9b1d624a04d45a6cd9",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114064,
      "retail": "4263ae80837dbf231e975cfdb36644e8fa3879885b514355d15f24d384b61ce9",
-     "applied": "c34e090c7fcac92c29cf89853c588eef7395b661a82bfd957680662e5e0c5d50",
+     "applied": "66b70ea930eff94abe461329b9695bdd8c19e70a2cf01bbe54333a557a4056ae",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -192,15 +192,15 @@
    "name_id": 1677575617,
    "size": 1545504,
    "retail_sha256": "9c02c7712c84bead9cee486c41ac26dc275084f2f0f64a27e9ecd08e9d4aa1e5",
-   "applied_sha256": "da068f3c07bd17cfeb09e414da745783dbccacb8e92829f66b02a002e377e352",
+   "applied_sha256": "18d99f7cbe6aed03bd9ad30c779c6343db0f026448882e8f26fc535010d7cedf",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97824,
      "retail": "225f96a49f9a04a1d8eb58bf50a79e35ec84511673d637274e7d04332df0d72f",
-     "applied": "77986d1123b3a90eba8323138227847eda3ba7ad93b114adab195a8eabead173",
-     "encoder": "optimal",
+     "applied": "433fadc6e6b74c4211b87889cb4cf0c5e5e1ecd9c8b045fe592606a56c35e101",
+     "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -268,14 +268,14 @@
    "name_id": 1043081280,
    "size": 1547424,
    "retail_sha256": "820336c6248899ccac35a4e63bcc7893768cfe49db4102f6b2293479600fa4d1",
-   "applied_sha256": "7c54ddbc4ac63921d1c65f4ce73e871736bc1548251ca7525e357cb0edf2e318",
+   "applied_sha256": "970a6fba49b78a2231c89a9c59c0ca200e47fc106932d29d049121e4403b7b93",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125424,
      "retail": "656e4c136cba8c1bf47a3f2940ba4c54b302ed646d82beaa074bc93291640d07",
-     "applied": "10238b1a99c5dbe5f7bfb15517eb9d446e7342697fb7c572e567cea09fddf38e",
+     "applied": "845692bcf0adca55a97f37d31585bc40606738231ca7fa1c1d7690808187cb9f",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -344,15 +344,15 @@
    "name_id": 345823727,
    "size": 1543760,
    "retail_sha256": "0a2c3fcd025bd92079197d409b081e7bef055ae2cf2b29935e3e2b08af72f2a9",
-   "applied_sha256": "218650e200f5bf02a7330e1029acb1565830a75b08d731fdf2b82d30540d2b93",
+   "applied_sha256": "3624e05d52185bd03556605badb1b10f65fb6021be5bdba463372e797db33752",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114144,
      "retail": "5048f2b301ec6ec6d85a045de92709e65b62f6ed968b2291dcd2e2246d59a589",
-     "applied": "329a930437d2ac258caf7cd503c8864dfba2a441aaa9c26b96aa769bec509458",
-     "encoder": "greedy",
+     "applied": "793624e7b561a834d7281193e5ed11673b9011bbf0218f604474b5a58baba32c",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -420,16 +420,16 @@
    "name_id": 4217287377,
    "size": 1538720,
    "retail_sha256": "6582f883170e15aa8b22f4516efcf9a66bb454e2d2a7b222b04ac97e7db672f2",
-   "applied_sha256": "82dc02f3014b69e44c724044bb7623c81b229401734b2579d130fd432b68a7c5",
+   "applied_sha256": "44ae53bcbac6d3ff7c3382f0e83c4bd1914c9013bfb2afaa63cf3b1a3d06fb75",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97872,
      "retail": "0ec48f8bc41313ae68a4dc2c21741b3af2fbb87c5a5fc6cfee84ecef95f3e9a1",
-     "applied": "1b0429c40b42fc4df5f8d026b970fa91af359b87215b038f693cd98b93149dde",
-     "encoder": "optimal",
-     "padding_bytes": 1,
+     "applied": "a09f126c9f0cf8faeb46b39ec17b3ceae2d1e005503475926d4f2238b46a8cad",
+     "encoder": "greedy",
+     "padding_bytes": 0,
      "patches": [
       "center_logo"
      ],
@@ -496,15 +496,15 @@
    "name_id": 1287173937,
    "size": 1527440,
    "retail_sha256": "32aef45cf3fdc436e9fd2819271d9e2964ccd3850300ce6a793ce3f601f6a744",
-   "applied_sha256": "193c06c433185456eabb447752719787bca2b5852af272977e8066d817064874",
+   "applied_sha256": "16c28ae85ba69d833c2bcd1f763f5bbf90367fd3022230892b365ae933a9980c",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125344,
      "retail": "b3336fc548b44256832c9dbc3dd8dd59f49230a599c807e39df9911b75595c30",
-     "applied": "1dbe68381260b3786e8879aa813023e38cf9316d8367957ea7d4f51f8d67848e",
-     "encoder": "greedy",
+     "applied": "73663b6ccac6ae50a809ae8ae92b2303b1a2bddef057ca7304498c927ee4f86b",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -524,9 +524,9 @@
      "offset": 365728,
      "size": 1071344,
      "retail": "7a8170ec6df98082a4d880414e938a7c08cd43225c1f29932215c85f2c322281",
-     "applied": "79c0fe9355cd0e5536b8d492725d2db8e5229c951513060c024e252ce9722925",
+     "applied": "3e667736a1d1198eb5c36f6490bdf6335a8195f0e510a5c3db5b7d606d892a08",
      "encoder": "greedy",
-     "padding_bytes": 0,
+     "padding_bytes": 12,
      "patches": [
       "banner01",
       "banner02",
@@ -572,15 +572,15 @@
    "name_id": 1711818398,
    "size": 1537552,
    "retail_sha256": "450569dad28918b34184c70e3b5e626986d867aae258654e782167ba055b0a71",
-   "applied_sha256": "f1d8488b56c215f268fe0541e7b93c44ba0f251916779b12b469203ed236cc99",
+   "applied_sha256": "4f5c2be93dd00ee5b5666cd4078877fd2f7b8c9371c0a1a83c64b2871f56c99e",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114064,
      "retail": "87d3f11de448c7e90dcee472c7469adee7f57347ebb85f8bc9e2a09676af33ff",
-     "applied": "ff8cfd2832cd8d338f270d0d54293bbe0a70a57fe7fe1f8f5ac370974c7d7766",
-     "encoder": "greedy",
+     "applied": "c7567bb684e25104be693c825791e921a37978ebb714423d8baa790ba0b33dbb",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -648,15 +648,15 @@
    "name_id": 2311728544,
    "size": 1528000,
    "retail_sha256": "251128e124380551b45b2ac5d6169a338fb4173b17afb22f81b4eb86bbce9610",
-   "applied_sha256": "eb4870f384dd0ed562ecef63dad8d622e61b83fe0adb5e015824458d1d822852",
+   "applied_sha256": "381d118b836233ded0aa6f399f757a9797d0f8f534cdd04a21ca97bd43718f5e",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97808,
      "retail": "5eaec4ef675007834104404319ac5307e9377f4ef7dcac77db05c76068ba41f7",
-     "applied": "76bc9325f251f406bf488c1e9386aede9d55e23dd0dcaf641f59555b345bb180",
-     "encoder": "optimal",
+     "applied": "9f7e968d31c0227f356757a0fe8832365c856a65bcf56cb59acdee0b2ebcea9b",
+     "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -676,8 +676,8 @@
      "offset": 336848,
      "size": 1085952,
      "retail": "aa672882309b70ddc5049419d9cbef217f5dbd8258495181c1d585530be1ecf3",
-     "applied": "7982f298e5a14de2a4e8217eca32ca81c610565680b2956a879e3ce72ffd7794",
-     "encoder": "greedy",
+     "applied": "fc9aae37d2d8beb2216758f40eeb131bb3eb44feeaf588c12da7ac6cc39f1778",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "banner01",
@@ -1186,7 +1186,7 @@
    "name_id": 3518453319,
    "size": 1607536,
    "retail_sha256": "40de2a89406db65487eb3a4ee87109aca404b55e8517f981bd3f97215436932c",
-   "applied_sha256": "c88085ce2fa38a82a6bbf7047f506093076889d806008e29dfd7a480c95b023d",
+   "applied_sha256": "7bb1263bbe8ed3727bba178019dd6ddb11ae58848605fadedc9b9cc10ea831b4",
    "sites": [
     {
      "kind": "field",
@@ -1214,9 +1214,9 @@
      "offset": 378560,
      "size": 1147648,
      "retail": "d82c48ff6c4dd5817969d552078bb92b15d44bb14f1264cfcd8c5f1a6cae8b48",
-     "applied": "dfc0af57a8a779845a42e50afc61904ce11d7cd5fe8545f3ff291c71f5d115fb",
+     "applied": "1f10d39777fa7317f19b35e542e7ae05b1661e7f304c9cbbadc5716f912eca89",
      "encoder": "greedy",
-     "padding_bytes": 0,
+     "padding_bytes": 15,
      "patches": [
       "banner01",
       "banner02",
@@ -1263,7 +1263,7 @@
    "name_id": 4211582952,
    "size": 1628624,
    "retail_sha256": "16d96284ac958174bafc55b699705bbe1425bdaa4dacc70f3c859c5beeae4bf4",
-   "applied_sha256": "ccd18a387fd94a214ce5140fa7cc78393839854584d1a447f84751d8b0b70fa1",
+   "applied_sha256": "2a1aa6afaf5eb344019e24668f6307c3c657590cb0dc08c55a1c34cb06911b4d",
    "sites": [
     {
      "kind": "field",
@@ -1291,8 +1291,8 @@
      "offset": 378944,
      "size": 1157776,
      "retail": "5c9017250ebdfcbf0ffe48f9c1d0783c1425982f1ca5519990de64292c6ce38b",
-     "applied": "0bf8e67cbab9d19e61f3376ed816d3a29402116970de69ef72b5f24de33a97db",
-     "encoder": "greedy",
+     "applied": "a7aa61e4dd9b70dc3006df24f5965f439711b5a4de1eae6e51f73d5c2b479489",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "banner01",
@@ -1340,15 +1340,15 @@
    "name_id": 348507350,
    "size": 1631040,
    "retail_sha256": "8f227fca73f457d79175851645c0e248d594f31cb7975ac91f03f81525dbda86",
-   "applied_sha256": "6b23ce234000257f660dfcadc091c9940959f1db267186b84acb4989925b8a41",
+   "applied_sha256": "4296bb45dab138c0b1f28663b0d12a8a7a27dc102c68bc0d3b4b08b1a2df8a69",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 116144,
      "retail": "1a97cf865a11f1696f0ffe4adf81d37d42e2e12247fb16683caf65741db20440",
-     "applied": "bc3b87e459719ebb78f5f53aa709fe876c132ff2b173974e6348462d313f2c0c",
-     "encoder": "greedy",
+     "applied": "2e58f7e442a50a3de498dc6211251c78026234f608fc3ec2b42facd622d6feb2",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "center_logo"

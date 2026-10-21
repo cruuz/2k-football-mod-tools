@@ -1,0 +1,3040 @@
+{
+ "schema": "nfl2k5_classic_teams_honours/v1",
+ "about": "Sourced season honours of the classic teams' players and the overall floors they set (tools/nfl2k5_classic_teams_honours.py). Floors are on the game's native overall.",
+ "rules": {
+  "MVP": 95,
+  "OPOY": 93,
+  "DPOY": 93,
+  "AP1": 90,
+  "LEADER": 90,
+  "AP2": 87,
+  "PB": 84
+ },
+ "model_level": {
+  "MVP": "AP1",
+  "OPOY": "AP1",
+  "DPOY": "AP1",
+  "AP1": "AP1",
+  "LEADER": "AP1",
+  "AP2": "AP2",
+  "PB": "PB"
+ },
+ "sources": {
+  "allpro_2005": {
+   "title": "2005 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2005_All-Pro_Team&oldid=1365801931",
+   "sha256": "e53cfec498f2ca83f8e1e973ca76c5f6003825ce21ce70411866318908f49d24"
+  },
+  "allpro_2006": {
+   "title": "2006 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2006_All-Pro_Team&oldid=1355753615",
+   "sha256": "a51d130b0752690efa55a3c612a1cfbbe2c166cdf8ffe8f14901ca69fff528ca"
+  },
+  "allpro_2010": {
+   "title": "2010 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2010_All-Pro_Team&oldid=1365852029",
+   "sha256": "48ea6fab2011bfe9ef00e57bbcac4c1513699e49ae06d0301db36f945e30436c"
+  },
+  "allpro_2011": {
+   "title": "2011 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2011_All-Pro_Team&oldid=1355782233",
+   "sha256": "698b894217acfe9c65b3c3babd28a3fcda86c37aa3aa22339f5645482b1eeb58"
+  },
+  "allpro_2013": {
+   "title": "2013 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2013_All-Pro_Team&oldid=1365872775",
+   "sha256": "7ad6bfc713f1fe15fbafddaf7f286ed45c6fa214e490f8ab00530513bd75e6a2"
+  },
+  "allpro_2014": {
+   "title": "2014 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2014_All-Pro_Team&oldid=1365880786",
+   "sha256": "3fd8d6846b6ace2dae0718b08c91747fca733f7c54188e1b85b9d7c0b3e01430"
+  },
+  "allpro_2015": {
+   "title": "2015 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2015_All-Pro_Team&oldid=1365882548",
+   "sha256": "f2c61a01b3e4ac2ea3b72f070cd32be80f8131014ef556cb47a73051fc67e810"
+  },
+  "allpro_2016": {
+   "title": "2016 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2016_All-Pro_Team&oldid=1365896928",
+   "sha256": "ff69524c5a873ba796b73935522ed0d11c2afc75e9b5069886b6497112799532"
+  },
+  "allpro_2017": {
+   "title": "2017 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2017_All-Pro_Team&oldid=1355877219",
+   "sha256": "c35a9e2253c30a6c0ae8679986657ea51c9dbd19b820b4590703132892b2acd6"
+  },
+  "allpro_2018": {
+   "title": "2018 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2018_All-Pro_Team&oldid=1378101433",
+   "sha256": "f0b82718118d2cb9866773181386bc4c69c8b549311a2d86602daa2826a91978"
+  },
+  "allpro_2019": {
+   "title": "2019 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2019_All-Pro_Team&oldid=1355881242",
+   "sha256": "17bee4a1b361d1620d1aac069cd376a1cdd8425ffffe9794b721a5613d9009df"
+  },
+  "allpro_2020": {
+   "title": "2020 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2020_All-Pro_Team&oldid=1365947817",
+   "sha256": "70d9293a8ee6347616dfb38c2574e88b8d6ffda3dbc6cf5746e3d1163dcdf6d3"
+  },
+  "allpro_2022": {
+   "title": "2022 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2022_All-Pro_Team&oldid=1355887133",
+   "sha256": "5daa81613aa60666ab2f6a166e92c5fe376f0159c232fbb259f1f784923c57ca"
+  },
+  "allpro_2024": {
+   "title": "2024 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2024_All-Pro_Team&oldid=1358523027",
+   "sha256": "86297cc899f673ae9d804e76a09d1e9c40926b2c39159cecacd13925600d2363"
+  },
+  "allpro_2025": {
+   "title": "2025 All-Pro Team",
+   "url": "https://en.wikipedia.org/w/index.php?title=2025_All-Pro_Team&oldid=1378101534",
+   "sha256": "8a7d975b686c8b6eb5ef8548fecdba0fdb8707c71ca735d250400d60b6badfb4"
+  },
+  "mvp": {
+   "title": "AP NFL Most Valuable Player",
+   "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Most_Valuable_Player&oldid=1376867134",
+   "sha256": "f4751b025145a585e9e7a195d8d42264561a53a24c58abc4aa72945618c67c2f"
+  },
+  "opoy": {
+   "title": "AP NFL Offensive Player of the Year",
+   "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Offensive_Player_of_the_Year&oldid=1352673809",
+   "sha256": "9787e2846d3b869b2653b0f0e99f0913fe33cc55321984766db0a180992f83cc"
+  },
+  "probowl_2005": {
+   "title": "2006 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2006_Pro_Bowl&oldid=1378291603",
+   "sha256": "66bda1d899bb39c21d263e6902570ddd007b87d8f7bd2e9d9280ff390a401123"
+  },
+  "probowl_2006": {
+   "title": "2007 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2007_Pro_Bowl&oldid=1341513366",
+   "sha256": "abfbae4b2378fc7ee0258a180f7eefee451199fed7738a56bc92098cff313d4c"
+  },
+  "probowl_2010": {
+   "title": "2011 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2011_Pro_Bowl&oldid=1369248723",
+   "sha256": "4a99cb6ed55277d116998d5e21acefda448728fdc518f9a3adbc75029267b27b"
+  },
+  "probowl_2011": {
+   "title": "2012 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2012_Pro_Bowl&oldid=1341513654",
+   "sha256": "d66353974fba8f7edd882ae68e33ebd5f837d7c5bb893f099a00816d3cd3d836"
+  },
+  "probowl_2013": {
+   "title": "2014 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2014_Pro_Bowl&oldid=1341682180",
+   "sha256": "ff6ab02bec238158387a15e4451e7617c5987dd75c4f383417468d9cc4d3ddc6"
+  },
+  "probowl_2014": {
+   "title": "2015 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2015_Pro_Bowl&oldid=1375436577",
+   "sha256": "6f63314884b5004fd78f938ce73c7e76147fb7443139567f01c188e738ac8754"
+  },
+  "probowl_2015": {
+   "title": "2016 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2016_Pro_Bowl&oldid=1371677922",
+   "sha256": "6ed7d4d0eb52857caa8bf125179dcb4614d7a2491aa0ce4ff4e5038297ab8a42"
+  },
+  "probowl_2016": {
+   "title": "2017 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2017_Pro_Bowl&oldid=1341513758",
+   "sha256": "b05a1c865d3d18ef6fe5c3da27e675c9e0b59fc428477cd52f12eb4ace5b53b2"
+  },
+  "probowl_2017": {
+   "title": "2018 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2018_Pro_Bowl&oldid=1341513779",
+   "sha256": "616f53c68f06f9a63b7dae6219f0e2cccfc398a8e23a94ce12b0c6de2d739936"
+  },
+  "probowl_2018": {
+   "title": "2019 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2019_Pro_Bowl&oldid=1378101475",
+   "sha256": "a017aacd42b2c0b577dd2be646f1f1e3ad8fb02d50c05cf760a40e78b5d4567d"
+  },
+  "probowl_2019": {
+   "title": "2020 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2020_Pro_Bowl&oldid=1341513816",
+   "sha256": "86614585fa950861727048c9bc32c82f774c6b9fa654eb4483518945e352cdc6"
+  },
+  "probowl_2020": {
+   "title": "2021 Pro Bowl",
+   "url": "https://en.wikipedia.org/w/index.php?title=2021_Pro_Bowl&oldid=1374788640",
+   "sha256": "66567dd280369824f94a432d52c1f763fb3226ec5703ce816344f5d56de6eff0"
+  },
+  "probowl_2022": {
+   "title": "2023 Pro Bowl Games",
+   "url": "https://en.wikipedia.org/w/index.php?title=2023_Pro_Bowl_Games&oldid=1371725902",
+   "sha256": "50f864726341f77591b1c5d171fdf3538b6f050081e02769cbc450e05708bc7d"
+  },
+  "probowl_2024": {
+   "title": "2025 Pro Bowl Games",
+   "url": "https://en.wikipedia.org/w/index.php?title=2025_Pro_Bowl_Games&oldid=1341513932",
+   "sha256": "9ed4ca5bca299e3218e147bc2be10da297645eac32fdab8d2071fe0b3d6cf7f3"
+  },
+  "probowl_2025": {
+   "title": "2026 Pro Bowl Games",
+   "url": "https://en.wikipedia.org/w/index.php?title=2026_Pro_Bowl_Games&oldid=1378060126",
+   "sha256": "b18deb8bc8943f70ccc2a0df592ea6af8c050a0a3bda1d5ec251a74252bf6f60"
+  },
+  "nflverse_stats_2005": {
+   "title": "nflverse player stats 2005 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2005.csv.gz",
+   "sha256": "b03d17073dcb78ced93c434a4a261c5ffed9cb2b3d68b5fcfc350292976ec181"
+  },
+  "nflverse_stats_2006": {
+   "title": "nflverse player stats 2006 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2006.csv.gz",
+   "sha256": "f84bfd238de74f8e9dec719e7313c9cd284f7c2fb28623a3dabc97508b454cc8"
+  },
+  "nflverse_stats_2008": {
+   "title": "nflverse player stats 2008 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2008.csv.gz",
+   "sha256": "4b380176f9126968d90e1dc0e5bf04e140ea52c27e8c79de303c07c35d0a4e5c"
+  },
+  "nflverse_stats_2010": {
+   "title": "nflverse player stats 2010 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2010.csv.gz",
+   "sha256": "96bce437803c4b3abb2a455c6a64b0bb00d17114663d2e37cfd2a7b645e35927"
+  },
+  "nflverse_stats_2011": {
+   "title": "nflverse player stats 2011 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2011.csv.gz",
+   "sha256": "c9100e0cf84807481441fcbe1f070383ce348c17995f30e257640a7184323293"
+  },
+  "nflverse_stats_2013": {
+   "title": "nflverse player stats 2013 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2013.csv.gz",
+   "sha256": "1c01ca009b4cca054ba240b0739cf2ead52553f028d64cc8e688acaff053826a"
+  },
+  "nflverse_stats_2014": {
+   "title": "nflverse player stats 2014 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2014.csv.gz",
+   "sha256": "87d3199d2e477dceee40ca168fb752b2601ff9d411aef937a668a1ace00a8f1d"
+  },
+  "nflverse_stats_2015": {
+   "title": "nflverse player stats 2015 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2015.csv.gz",
+   "sha256": "f39671f73b02114803a2a44ba5b93c48cf6dfac758d9b06de20e49deb81c1078"
+  },
+  "nflverse_stats_2016": {
+   "title": "nflverse player stats 2016 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2016.csv.gz",
+   "sha256": "803287fcfeaa74cdda9f4f88639e766efb6260201229e22c5a09a990e2a67b9c"
+  },
+  "nflverse_stats_2017": {
+   "title": "nflverse player stats 2017 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2017.csv.gz",
+   "sha256": "9e9ed6a343ad1c39b62d327b671289c03a7da90c9afec1a525fa0e5722b22939"
+  },
+  "nflverse_stats_2018": {
+   "title": "nflverse player stats 2018 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2018.csv.gz",
+   "sha256": "e3087d947492c0864456bb69c89f049bd0236a069c9ab2f1719d7d206429f4bf"
+  },
+  "nflverse_stats_2019": {
+   "title": "nflverse player stats 2019 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2019.csv.gz",
+   "sha256": "d92744540e6787edea1f74601812393d392cfae03e6a32fd34774597f08669d5"
+  },
+  "nflverse_stats_2020": {
+   "title": "nflverse player stats 2020 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2020.csv.gz",
+   "sha256": "d01539064c15e3d913901992b963ba104241a139f59ff8fd757c4a92771d916b"
+  },
+  "nflverse_stats_2022": {
+   "title": "nflverse player stats 2022 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2022.csv.gz",
+   "sha256": "0c9a276bed8a1b56be9bba2f62d5c818a337d015909c760b0415cb1a2240f777"
+  },
+  "nflverse_stats_2024": {
+   "title": "nflverse player stats 2024 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2024.csv.gz",
+   "sha256": "748baeff5c36ebd5fccbce228f4087f9ab092f2560a3d9f1afb71d12bf8951c0"
+  },
+  "nflverse_stats_2025": {
+   "title": "nflverse player stats 2025 (regular season)",
+   "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2025.csv.gz",
+   "sha256": "fdef6a98e9de7200aaf062d20d2a35831096d7424f43bbfad5d1881e00d3a9d8"
+  }
+ },
+ "players": [
+  {
+   "team": "bears_2006",
+   "index": 19,
+   "name": "Ruben Brown",
+   "position": "G",
+   "gsis_id": "00-0002041",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|74}} [[Ruben Brown]], [[Chicago Bears|Chicago]]{{Ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "bears_2006",
+   "index": 22,
+   "name": "Olin Kreutz",
+   "position": "C",
+   "gsis_id": "00-0009472",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Olin Kreutz]], [[Chicago Bears]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|57}} [[Olin Kreutz]], [[Chicago Bears|Chicago]]{{Ref label|injury|b|b}}<br/>{{Small|78}} [[Matt Birk]], [[Minnesota Vikings|Minnesota]]{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "bears_2006",
+   "index": 28,
+   "name": "Tommie Harris",
+   "position": "DT",
+   "gsis_id": "00-0022837",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|91}} [[Tommie Harris]], [[Chicago Bears|Chicago]]{{Ref label|injury|b|b}}<br/>{{Small|93}} [[Kevin Williams (defensive tackle)|Kevin Williams]], [[Minnesota Vikings|Minnesota]]<br/>{{Small|77}} [[Kris Jenkins]], [[Carolina Panthers|Carolina]]{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "bears_2006",
+   "index": 33,
+   "name": "Lance Briggs",
+   "position": "OLB",
+   "gsis_id": "00-0022128",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2006",
+     "line": "| Lance Briggs, Chicago Bears (AP-2) <BR> [[DeMarcus Ware]], [[Dallas Cowboys]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|55}} [[Lance Briggs]], [[Chicago Bears|Chicago]]{{Ref label|injury|b|b}}<br/>{{Small|94}} [[DeMarcus Ware]], [[Dallas Cowboys|Dallas]]<br/>{{Small|59}} [[Julian Peterson]], [[Seattle Seahawks|Seattle]]{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "bears_2006",
+   "index": 36,
+   "name": "Brian Urlacher",
+   "position": "ILB",
+   "gsis_id": "00-0019456",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Brian Urlacher]], Chicago Bears (AP, PFWA, SN) <BR> [[Zach Thomas]], Miami Dolphins (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|54}} [[Brian Urlacher]], [[Chicago Bears|Chicago]]{{Ref label|injury|b|b}}<br/>{{Small|51}} [[Lofa Tatupu]], [[Seattle Seahawks|Seattle]]{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "bears_2006",
+   "index": 38,
+   "name": "Brendon Ayanbadejo",
+   "position": "ILB",
+   "gsis_id": "00-0000551",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|94}} [[Brendon Ayanbadejo]], [[Chicago Bears|Chicago]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "bears_2006",
+   "index": 43,
+   "name": "Devin Hester",
+   "position": "CB",
+   "gsis_id": "00-0024272",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Devin Hester]], Chicago Bears (AP) <BR> [[Justin Miller (American football)|Justin Miller]], New York Jets (PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|23}} [[Devin Hester]], [[Chicago Bears|Chicago]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "bears_2006",
+   "index": 51,
+   "name": "Robbie Gould",
+   "position": "K",
+   "gsis_id": "00-0023252",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Robbie Gould]], Chicago Bears (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|&nbsp;&nbsp;9}} [[Robbie Gould]], [[Chicago Bears|Chicago]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "broncos_2015",
+   "index": 33,
+   "name": "Von Miller",
+   "position": "OLB",
+   "gsis_id": "00-0027940",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Von Miller]], [[2015 Denver Broncos season|Denver]] (AP, PFWA, SN)<br />[[Khalil Mack]], [[2015 Oakland Raiders season|Oakland]] (AP-t, PFWA)<br />[[Thomas Davis Sr.]], [[2015 Carolina Panthers season|Carolina]] (AP-t)<br />[[Justin Houston]], [[2015 Kansas City Chiefs season|Kansas City]] (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|58| Von Miller | ([[Denver Broncos]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "broncos_2015",
+   "index": 34,
+   "name": "DeMarcus Ware",
+   "position": "OLB",
+   "gsis_id": "00-0023445",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|94| DeMarcus Ware | ([[Denver Broncos]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "broncos_2015",
+   "index": 42,
+   "name": "Aqib Talib",
+   "position": "CB",
+   "gsis_id": "00-0026160",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|21| Aqib Talib | ([[Denver Broncos]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "broncos_2015",
+   "index": 43,
+   "name": "Chris Harris",
+   "position": "CB",
+   "gsis_id": "00-0028224",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2015",
+     "line": "|[[Richard Sherman (American football)|Richard Sherman]], [[2015 Seattle Seahawks season|Seattle]] (AP-2)<br /> [[Chris Harris, Jr.]], [[2015 Denver Broncos season|Denver]] (AP-2t) <br /> [[Marcus Peters]], [[2015 Kansas City Chiefs season|Kansas City]] (AP-2t)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|25| Chris Harris, Jr. | ([[Denver Broncos]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "browns_2017",
+   "index": 39,
+   "name": "Joe Schobert",
+   "position": "ILB",
+   "gsis_id": "00-0033125",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|53}} '''[[Joe Schobert]]''', [[Cleveland Browns|Cleveland]]{{ref label|replacement|a|a}}<ref name=\"Schobert\">{{cite web |url=http://profootballtalk.nbcsports.com/2018/01/16/joe-schobert-added-to-afc-pro-bowl-team/ |title=Joe Schobert added to AFC Pro Bowl team |date=January 16, 2018 |website=ProFootballTalk.NBCSports.com |access-date=January 16, 2018}}</ref>"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "browns_2020",
+   "index": 2,
+   "name": "Nick Chubb",
+   "position": "HB",
+   "gsis_id": "00-0034791",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2020",
+     "line": "|{{small|24}} [[Nick Chubb]], [[Cleveland Browns|Cleveland]]<br>{{small|28}} [[Josh Jacobs]], [[Las Vegas Raiders|Las Vegas]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "browns_2020",
+   "index": 16,
+   "name": "Jack Conklin",
+   "position": "T",
+   "gsis_id": "00-0033057",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2020",
+     "line": "|[[Jack Conklin]], [[2020 Cleveland Browns season|Cleveland]] (AP)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "browns_2020",
+   "index": 19,
+   "name": "Joel Bitonio",
+   "position": "G",
+   "gsis_id": "00-0031426",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2020",
+     "line": "|[[Joel Bitonio]], [[2020 Cleveland Browns season|Cleveland]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2020",
+     "line": "|{{small|75}} [[Joel Bitonio]], [[Cleveland Browns|Cleveland]]<br>{{small|56}} [[Quenton Nelson]], [[Indianapolis Colts|Indianapolis]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "browns_2020",
+   "index": 20,
+   "name": "Wyatt Teller",
+   "position": "G",
+   "gsis_id": "00-0034399",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2020",
+     "line": "|[[Wyatt Teller]], [[2020 Cleveland Browns season|Cleveland]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "browns_2020",
+   "index": 25,
+   "name": "Myles Garrett",
+   "position": "DE",
+   "gsis_id": "00-0033868",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2020",
+     "line": "|[[T. J. Watt]], [[2020 Pittsburgh Steelers season|Pittsburgh]] (AP)<br>[[Myles Garrett]], [[2020 Cleveland Browns season|Cleveland]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2020",
+     "line": "|{{small|97}} [[Joey Bosa]], [[Los Angeles Chargers|LA Chargers]]<br>{{small|95}} [[Myles Garrett]], [[Cleveland Browns|Cleveland]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "buccaneers_2020",
+   "index": 32,
+   "name": "Jason Pierre-Paul",
+   "position": "OLB",
+   "gsis_id": "00-0027867",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2020",
+     "line": "|{{small|90}} [[Jason Pierre-Paul]], [[Tampa Bay Buccaneers|Tampa Bay]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "buccaneers_2020",
+   "index": 36,
+   "name": "Devin White",
+   "position": "ILB",
+   "gsis_id": "00-0035707",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2020",
+     "line": "|[[Devin White]], [[2020 Tampa Bay Buccaneers season|Tampa Bay]] (AP-2)<br>[[Roquan Smith]], [[2020 Chicago Bears season|Chicago]] (AP-2)<br>[[Demario Davis]], [[2020 New Orleans Saints season|New Orleans]] (AP-2t)<br>[[Lavonte David]], [[2020 Tampa Bay Buccaneers season|Tampa Bay]] (AP-2t)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "buccaneers_2020",
+   "index": 37,
+   "name": "Lavonte David",
+   "position": "ILB",
+   "gsis_id": "00-0029562",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2020",
+     "line": "|[[Devin White]], [[2020 Tampa Bay Buccaneers season|Tampa Bay]] (AP-2)<br>[[Roquan Smith]], [[2020 Chicago Bears season|Chicago]] (AP-2)<br>[[Demario Davis]], [[2020 New Orleans Saints season|New Orleans]] (AP-2t)<br>[[Lavonte David]], [[2020 Tampa Bay Buccaneers season|Tampa Bay]] (AP-2t)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 0,
+   "name": "Philip Rivers",
+   "position": "QB",
+   "gsis_id": "00-0022942",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|&nbsp;&nbsp;9}} [[Carson Palmer]], [[Cincinnati Bengals|Cincinnati]]<br/>{{Small|17}} [[Philip Rivers]], [[San Diego Chargers|San Diego]]{{Ref label|injury|b|b}}<br/>{{Small|10}} [[Vince Young]], [[Tennessee Titans|Tennessee]]{{Ref label|replacement|a|a}}{{Ref label|alternate|e|e}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 3,
+   "name": "LaDainian Tomlinson",
+   "position": "HB",
+   "gsis_id": "00-0020536",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[LaDainian Tomlinson]], [[San Diego Chargers]] (AP, PFWA, SN) <BR> [[Larry Johnson (running back)|Larry Johnson]], [[Kansas City Chiefs]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|21}} [[LaDainian Tomlinson]], [[San Diego Chargers|San Diego]]"
+    },
+    {
+     "honour": "MVP",
+     "source": "mvp",
+     "line": "! scope=\"row\"|{{sortname|LaDainian|Tomlinson}}"
+    },
+    {
+     "honour": "OPOY",
+     "source": "opoy",
+     "line": "!scope=\"row\"|{{sortname|LaDainian|Tomlinson}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2006",
+     "line": "led the NFL in rushing yards: 1815 (rushing_yards)"
+    }
+   ],
+   "floor": 95,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 5,
+   "name": "Lorenzo Neal",
+   "position": "FB",
+   "gsis_id": "00-0011958",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Lorenzo Neal]], San Diego Chargers (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|41}} [[Lorenzo Neal]], [[San Diego Chargers|San Diego]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 12,
+   "name": "Kassim Osgood",
+   "position": "WR",
+   "gsis_id": "00-0021570",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|81}} [[Kassim Osgood]], [[San Diego Chargers|San Diego]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 13,
+   "name": "Antonio Gates",
+   "position": "TE",
+   "gsis_id": "00-0021547",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Antonio Gates]], San Diego Chargers (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|85}} [[Antonio Gates]], [[San Diego Chargers|San Diego]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 16,
+   "name": "Marcus McNeill",
+   "position": "T",
+   "gsis_id": "00-0024265",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|71}} [[Willie Anderson (offensive tackle)|Willie Anderson]], [[Cincinnati Bengals|Cincinnati]]{{Ref label|injury|b|b}}<br/>{{Small|75}} [[Jonathan Ogden]], [[Baltimore Ravens|Baltimore]]{{Ref label|injury|b|b}}<br/>{{Small|78}} [[Tarik Glenn]], [[Indianapolis Colts|Indianapolis]]{{Ref label|starter|c|c}}<br/>{{Small|73}} [[Marcus McNeill]], [[San Diego Chargers|San Diego]]{{Ref label|replacement|a|a}}{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 23,
+   "name": "Nick Hardwick",
+   "position": "C",
+   "gsis_id": "00-0022804",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|61}} [[Nick Hardwick (American football)|Nick Hardwick]], [[San Diego Chargers|San Diego]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 25,
+   "name": "David Binn",
+   "position": "C",
+   "gsis_id": "00-0001255",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|50}} [[David Binn]], [[San Diego Chargers|San Diego]]{{Ref label|need|d|d}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 30,
+   "name": "Jamal Williams",
+   "position": "DT",
+   "gsis_id": "00-0017813",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Jamal Williams]], San Diego Chargers (AP, PFWA, SN) <BR> [[Kevin Williams (defensive tackle)|Kevin Williams]], Minnesota Vikings (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|93}} [[Richard Seymour]], [[New England Patriots|New England]]{{Ref label|injury|b|b}}<br/>{{Small|76}} [[Jamal Williams]], [[San Diego Chargers|San Diego]]<br/>{{Small|98}} [[Casey Hampton]], [[Pittsburgh Steelers|Pittsburgh]]{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 34,
+   "name": "Shawne Merriman",
+   "position": "OLB",
+   "gsis_id": "00-0023446",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Adalius Thomas]], Baltimore Ravens (AP, PFWA) <BR> [[Shawne Merriman]], San Diego Chargers (AP, PFWA, SN) <BR> [[Lance Briggs]], Chicago Bears (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|96}} [[Adalius Thomas]], [[Baltimore Ravens|Baltimore]]<br/>{{Small|56}} [[Shawne Merriman]], [[San Diego Chargers|San Diego]]"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2006",
+     "line": "led the NFL in sacks: 16.5 (def_sacks)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chargers_2006",
+   "index": 51,
+   "name": "Nate Kaeding",
+   "position": "K",
+   "gsis_id": "00-0022737",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2006",
+     "line": "|[[Nate Kaeding]], San Diego Chargers (AP-2t) <br> [[Matt Stover]], Baltimore Ravens (AP-2t)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|10}} [[Nate Kaeding]], [[San Diego Chargers|San Diego]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 0,
+   "name": "Patrick Mahomes",
+   "position": "QB",
+   "gsis_id": "00-0033873",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2022",
+     "line": "| [[Patrick Mahomes]], [[2022 Kansas City Chiefs season|Kansas City]] (AP, PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|15}} [[Patrick Mahomes]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    },
+    {
+     "honour": "MVP",
+     "source": "mvp",
+     "line": "! scope=\"row\"|{{sortname|Patrick|Mahomes}} {{small|(2)}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2022",
+     "line": "led the NFL in passing yards: 5250 (passing_yards)"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2022",
+     "line": "led the NFL in passing touchdowns: 41 (passing_tds)"
+    }
+   ],
+   "floor": 95,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 13,
+   "name": "Travis Kelce",
+   "position": "TE",
+   "gsis_id": "00-0030506",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2022",
+     "line": "| [[Travis Kelce]], [[2022 Kansas City Chiefs season|Kansas City]] (AP, PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|87}} [[Travis Kelce]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 16,
+   "name": "Orlando Brown",
+   "position": "T",
+   "gsis_id": "00-0034752",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|57}} [[Orlando Brown (American football, born 1996)|Orlando Brown Jr.]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 21,
+   "name": "Joe Thuney",
+   "position": "G",
+   "gsis_id": "00-0032391",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2022",
+     "line": "| [[Joe Thuney]], [[2022 Kansas City Chiefs season|Kansas City]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|62}} [[Joe Thuney]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 24,
+   "name": "Creed Humphrey",
+   "position": "C",
+   "gsis_id": "00-0036623",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2022",
+     "line": "| [[Creed Humphrey]], [[2022 Kansas City Chiefs season|Kansas City]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|52}} [[Creed Humphrey]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 32,
+   "name": "Chris Jones",
+   "position": "DT",
+   "gsis_id": "00-0032762",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2022",
+     "line": "| [[Chris Jones (defensive tackle, born 1994)|Chris Jones]], [[2022 Kansas City Chiefs season|Kansas City]] (AP, PFWA)<br>[[Quinnen Williams]], [[2022 New York Jets season|New York Jets]] (AP, PFWA)<br>[[Jeffery Simmons]], [[2022 Tennessee Titans season|Tennessee]] (TSN)<br>[[Aaron Donald]], [[2022 Los Angeles Rams season|Los Angeles Rams]] (TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|95}} [[Chris Jones (defensive tackle, born 1994)|Chris Jones]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}<br>{{Small|95}} '''[[Quinnen Williams]]''', [[2022 New York Jets season|NY Jets]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "chiefs_2022",
+   "index": 52,
+   "name": "Tommy Townsend",
+   "position": "P",
+   "gsis_id": "00-0035889",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2022",
+     "line": "| [[Tommy Townsend]], [[2022 Kansas City Chiefs season|Kansas City]] (AP, PFWA)<br>[[Ryan Stonehouse]], [[2022 Tennessee Titans season|Tennessee]] (TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|5}} [[Tommy Townsend]], [[2022 Kansas City Chiefs season|Kansas City]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "colts_2006",
+   "index": 0,
+   "name": "Peyton Manning",
+   "position": "QB",
+   "gsis_id": "00-0010346",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2006",
+     "line": "|[[Peyton Manning]], [[Indianapolis Colts]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|18}} [[Peyton Manning]], [[Indianapolis Colts|Indianapolis]]"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2006",
+     "line": "led the NFL in passing touchdowns: 31 (passing_tds)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "colts_2006",
+   "index": 7,
+   "name": "Marvin Harrison",
+   "position": "WR",
+   "gsis_id": "00-0007024",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2006",
+     "line": "| [[Marvin Harrison]], Indianapolis Colts (AP, PFWA, SN) <BR> [[Chad Johnson]], [[Cincinnati Bengals]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|88}} [[Marvin Harrison]], [[Indianapolis Colts|Indianapolis]]<br/>{{Small|87}} [[Reggie Wayne]], [[Indianapolis Colts|Indianapolis]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "colts_2006",
+   "index": 8,
+   "name": "Reggie Wayne",
+   "position": "WR",
+   "gsis_id": "00-0020498",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|88}} [[Marvin Harrison]], [[Indianapolis Colts|Indianapolis]]<br/>{{Small|87}} [[Reggie Wayne]], [[Indianapolis Colts|Indianapolis]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "colts_2006",
+   "index": 15,
+   "name": "Tarik Glenn",
+   "position": "T",
+   "gsis_id": "00-0006042",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|71}} [[Willie Anderson (offensive tackle)|Willie Anderson]], [[Cincinnati Bengals|Cincinnati]]{{Ref label|injury|b|b}}<br/>{{Small|75}} [[Jonathan Ogden]], [[Baltimore Ravens|Baltimore]]{{Ref label|injury|b|b}}<br/>{{Small|78}} [[Tarik Glenn]], [[Indianapolis Colts|Indianapolis]]{{Ref label|starter|c|c}}<br/>{{Small|73}} [[Marcus McNeill]], [[San Diego Chargers|San Diego]]{{Ref label|replacement|a|a}}{{Ref label|starter|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "colts_2006",
+   "index": 21,
+   "name": "Jeff Saturday",
+   "position": "C",
+   "gsis_id": "00-0014375",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2006",
+     "line": "|[[Jeff Saturday]], Indianapolis Colts (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2006",
+     "line": "|{{Small|63}} [[Jeff Saturday]], [[Indianapolis Colts|Indianapolis]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "colts_2014",
+   "index": 0,
+   "name": "Andrew Luck",
+   "position": "QB",
+   "gsis_id": "00-0029668",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|12| Andrew Luck |([[Indianapolis Colts]])}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2014",
+     "line": "led the NFL in passing touchdowns: 40 (passing_tds)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "colts_2014",
+   "index": 36,
+   "name": "D'Qwell Jackson",
+   "position": "ILB",
+   "gsis_id": "00-0024249",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|52| D'Qwell Jackson |([[Indianapolis Colts]])}} {{ref label|replacement|a|a}}<ref>{{cite web | title=Colts Linebacker D'Qwell Jackson Named to the Pro Bowl |work= SB Nation | url=http://www.stampedeblue.com/2015/1/20/7857665/colts-linebacker-dqwell-jackson-named-to-the-pro-bowl|date=January 20, 2015 |access-date=January 20, 2015}}</ref>"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "colts_2014",
+   "index": 41,
+   "name": "Vontae Davis",
+   "position": "CB",
+   "gsis_id": "00-0027001",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|21| Vontae Davis | ([[Indianapolis Colts]])}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "colts_2014",
+   "index": 49,
+   "name": "Mike Adams",
+   "position": "SS",
+   "gsis_id": "00-0022247",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|29| Mike Adams |d=safety|([[Indianapolis Colts]])}} {{ref label|replacement|a|a}}<ref>{{cite web | title=Colts Safety Mike Adams Named to the Pro Bowl | work=SB Nation | url=http://www.stampedeblue.com/2015/1/20/7856823/colts-safety-mike-adams-named-to-the-pro-bowl |date=January 20, 2015 |access-date=January 20, 2015}}</ref>"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "colts_2014",
+   "index": 51,
+   "name": "Adam Vinatieri",
+   "position": "K",
+   "gsis_id": "00-0016919",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2014",
+     "line": "|[[Adam Vinatieri]], [[2014 Indianapolis Colts season|Indianapolis]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|&nbsp;4| Adam Vinatieri |([[Indianapolis Colts]])}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "colts_2014",
+   "index": 52,
+   "name": "Pat McAfee",
+   "position": "P",
+   "gsis_id": "00-0027145",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2014",
+     "line": "|[[Pat McAfee]], [[2014 Indianapolis Colts season|Indianapolis]] (AP, PFWA)<br />[[Kevin Huber]], [[2014 Cincinnati Bengals season|Cincinnati]] (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2014",
+     "line": "* {{NFLplayer|&nbsp;1| Pat McAfee |([[Indianapolis Colts]])}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 0,
+   "name": "Carson Wentz",
+   "position": "QB",
+   "gsis_id": "00-0032950",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2017",
+     "line": "|[[Carson Wentz]], [[2017 Philadelphia Eagles season|Philadelphia]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|11}} [[Carson Wentz]], [[Philadelphia Eagles|Philadelphia]]{{ref label|injury|b|b}}{{ref label|Super bowl|d|d}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 14,
+   "name": "Zach Ertz",
+   "position": "TE",
+   "gsis_id": "00-0030061",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|86}} [[Zach Ertz]], [[Philadelphia Eagles|Philadelphia]]{{ref label|Super bowl|d|d}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 18,
+   "name": "Lane Johnson",
+   "position": "T",
+   "gsis_id": "00-0030561",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2017",
+     "line": "|[[Lane Johnson]], [[2017 Philadelphia Eagles season|Philadelphia]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|65}} [[Lane Johnson]], [[Philadelphia Eagles|Philadelphia]]{{ref label|Super bowl|d|d}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 22,
+   "name": "Brandon Brooks",
+   "position": "G",
+   "gsis_id": "00-0029679",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|70}} [[Zack Martin]], [[Dallas Cowboys|Dallas]]{{ref label|injury|b|b}}<ref name=\"GanoTurner\"/><br>{{small|79}} [[Brandon Brooks (American football)|Brandon Brooks]], [[Philadelphia Eagles|Philadelphia]]{{ref label|Super bowl|d|d}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 24,
+   "name": "Jason Kelce",
+   "position": "C",
+   "gsis_id": "00-0028129",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2017",
+     "line": "|[[Jason Kelce]], [[2017 Philadelphia Eagles season|Philadelphia]] (AP, PFWA)<br>[[Alex Mack]], [[2017 Atlanta Falcons season|Atlanta]] (SN)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 30,
+   "name": "Fletcher Cox",
+   "position": "DT",
+   "gsis_id": "00-0029653",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2017",
+     "line": "|[[Fletcher Cox]], [[2017 Philadelphia Eagles season|Philadelphia]] (AP-2)<br>[[Calais Campbell]], [[2017 Jacksonville Jaguars season|Jacksonville]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|91}} [[Fletcher Cox]], [[Philadelphia Eagles|Philadelphia]]{{ref label|Super bowl|d|d}}<br>{{small|99}} [[Aaron Donald]], [[Los Angeles Rams|LA Rams]]{{ref label|injury|b|b}}<ref name=\"Daniels\"/>"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "eagles_2017",
+   "index": 49,
+   "name": "Malcolm Jenkins",
+   "position": "SS",
+   "gsis_id": "00-0026990",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2017",
+     "line": "|{{small|27}} [[Malcolm Jenkins]], [[Philadelphia Eagles|Philadelphia]]{{ref label|Super bowl|d|d}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 3,
+   "name": "Saquon Barkley",
+   "position": "HB",
+   "gsis_id": "00-0034844",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Saquon Barkley]], [[2024 Philadelphia Eagles season|Philadelphia]] (AP, PFWA, TSN)<br>[[Derrick Henry]], [[2024 Baltimore Ravens season|Baltimore]] (PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|26}} [[Saquon Barkley]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    },
+    {
+     "honour": "OPOY",
+     "source": "opoy",
+     "line": "!scope=\"row\"|{{sortname|Saquon|Barkley}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2024",
+     "line": "led the NFL in rushing yards: 2005 (rushing_yards)"
+    }
+   ],
+   "floor": 93,
+   "model_level": "AP1"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 16,
+   "name": "Jordan Mailata",
+   "position": "T",
+   "gsis_id": "00-0034429",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2024",
+     "line": "| [[Jordan Mailata]], [[2024 Philadelphia Eagles season|Philadelphia]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 17,
+   "name": "Lane Johnson",
+   "position": "T",
+   "gsis_id": "00-0030561",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2024",
+     "line": "| [[Lane Johnson]], [[2024 Philadelphia Eagles season|Philadelphia]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|58}} [[Penei Sewell]], [[2024 Detroit Lions season|Detroit]]{{ref label|injury|b|b}} <br />{{Small|65}} [[Lane Johnson]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 21,
+   "name": "Landon Dickerson",
+   "position": "G",
+   "gsis_id": "00-0037002",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|69}} [[Landon Dickerson]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}} <br />{{Small|73}} '''[[Tyler Smith (American football)|Tyler Smith]]''', [[2024 Dallas Cowboys season|Dallas]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 24,
+   "name": "Cam Jurgens",
+   "position": "C",
+   "gsis_id": "00-0038112",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|51}} [[Cam Jurgens]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 32,
+   "name": "Jalen Carter",
+   "position": "DT",
+   "gsis_id": "00-0038386",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2024",
+     "line": "| [[Zach Allen]], [[2024 Denver Broncos season|Denver]] (AP-2)<br>[[Jalen Carter]], [[2024 Philadelphia Eagles season|Philadelphia]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|97}} '''[[Dexter Lawrence]]''', [[2024 New York Giants season|NY Giants]]<br />{{Small|98}} [[Jalen Carter]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "eagles_2024",
+   "index": 37,
+   "name": "Zack Baun",
+   "position": "OLB",
+   "gsis_id": "00-0036418",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Zack Baun]], [[2024 Philadelphia Eagles season|Philadelphia]] (AP)<br>[[Fred Warner (American football)|Fred Warner]], [[2024 San Francisco 49ers season|San Francisco]] (AP, PFWA, TSN)<br>[[Roquan Smith]], [[2024 Baltimore Ravens season|Baltimore]] (AP, TSN)<br>[[T. J. Watt]], [[2024 Pittsburgh Steelers season|Pittsburgh]] (TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|53}} [[Zack Baun]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "giants_2016",
+   "index": 6,
+   "name": "Odell Beckham",
+   "position": "WR",
+   "gsis_id": "00-0031235",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2016",
+     "line": "|[[Mike Evans (wide receiver)|Mike Evans]], [[2016 Tampa Bay Buccaneers season|Tampa Bay]] (AP-2)<br /> [[Odell Beckham Jr.]], [[2016 New York Giants season|New York Giants]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2016",
+     "line": "|{{small|11}} [[Julio Jones]], [[Atlanta Falcons|Atlanta]]{{ref label|Super Bowl|d|d}}<ref name=\"BryantJones\"/><br>{{small|13}} '''[[Odell Beckham Jr.]]''', [[New York Giants|NY Giants]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "giants_2016",
+   "index": 11,
+   "name": "Dwayne Harris",
+   "position": "WR",
+   "gsis_id": "00-0028114",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2016",
+     "line": "|{{small|17}} '''[[Dwayne Harris]]''', [[New York Giants|NY Giants]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "giants_2016",
+   "index": 25,
+   "name": "Olivier Vernon",
+   "position": "DE",
+   "gsis_id": "00-0029693",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2016",
+     "line": "|[[Brandon Graham]], [[2016 Philadelphia Eagles season|Philadelphia]] (AP-2) <br />[[Jadeveon Clowney]], [[2016 Houston Texans season|Houston]] (AP-2) <br />[[Cameron Wake]], [[2016 Miami Dolphins season|Miami]] (AP-2t) <br />[[Olivier Vernon]], [[2016 New York Giants season|New York Giants]] (AP-2t)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "giants_2016",
+   "index": 30,
+   "name": "Damon Harrison",
+   "position": "DT",
+   "gsis_id": "00-0029040",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2016",
+     "line": "|[[Aaron Donald]], [[2016 Los Angeles Rams season|Los Angeles Rams]] (AP, PFWA, SN)<br />[[Damon Harrison]], [[2016 New York Giants season|New York Giants]] (AP, PFWA)<br /> [[Geno Atkins]], [[Cincinnati Bengals]] (SN)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "giants_2016",
+   "index": 41,
+   "name": "Dominique Rodgers-C.",
+   "position": "CB",
+   "gsis_id": "00-0026156",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2016",
+     "line": "|[[Dominique Rodgers-Cromartie]], [[2016 New York Giants season|New York Giants]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "giants_2016",
+   "index": 42,
+   "name": "Janoris Jenkins",
+   "position": "CB",
+   "gsis_id": "00-0029681",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2016",
+     "line": "|[[Janoris Jenkins]], [[2016 New York Giants season|New York Giants]] (AP-2)<br />[[Casey Hayward]], [[2016 San Diego Chargers season|San Diego]] (AP-2t)<br />[[Malcolm Butler]], [[2016 New England Patriots season|New England]] (AP-2t)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2016",
+     "line": "|{{small|20}} '''[[Janoris Jenkins]]''', [[New York Giants|NY Giants]]<br>{{small|21}} '''[[Patrick Peterson]]''', [[Arizona Cardinals|Arizona]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "giants_2016",
+   "index": 50,
+   "name": "Landon Collins",
+   "position": "SS",
+   "gsis_id": "00-0032262",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2016",
+     "line": "|[[Eric Berry]], [[2016 Kansas City Chiefs season|Kansas City]] (AP, PFWA, SN)<br />[[Landon Collins]], [[2016 New York Giants season|New York Giants]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2016",
+     "line": "|{{small|21}} '''[[Landon Collins]]''', [[New York Giants|NY Giants]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "giants_2022",
+   "index": 2,
+   "name": "Saquon Barkley",
+   "position": "HB",
+   "gsis_id": "00-0034844",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|26}} '''[[Saquon Barkley]]''', [[2022 New York Giants season|NY Giants]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "giants_2022",
+   "index": 15,
+   "name": "Andrew Thomas",
+   "position": "T",
+   "gsis_id": "00-0036386",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2022",
+     "line": "| [[Andrew Thomas (American football)|Andrew Thomas]], [[2022 New York Giants season|New York Giants]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "giants_2022",
+   "index": 28,
+   "name": "Dexter Lawrence",
+   "position": "DT",
+   "gsis_id": "00-0035683",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2022",
+     "line": "| [[Jeffery Simmons]], [[2022 Tennessee Titans season|Tennessee]] (AP-2)<br>[[Dexter Lawrence]], [[2022 New York Giants season|New York Giants]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2022",
+     "line": "|{{Small|97}} '''[[Dexter Lawrence]]''', [[2022 New York Giants season|NY Giants]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "lions_2024",
+   "index": 0,
+   "name": "Jared Goff",
+   "position": "QB",
+   "gsis_id": "00-0033106",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|16}} '''[[Jared Goff]]''', [[2024 Detroit Lions season|Detroit]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "lions_2024",
+   "index": 2,
+   "name": "Jahmyr Gibbs",
+   "position": "HB",
+   "gsis_id": "00-0039139",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|26}} '''[[Jahmyr Gibbs]]''', [[2024 Detroit Lions season|Detroit]]<br />{{Small|8}} '''[[Josh Jacobs]]''', [[2024 Green Bay Packers season|Green Bay]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "lions_2024",
+   "index": 6,
+   "name": "Amon-Ra St. Brown",
+   "position": "WR",
+   "gsis_id": "00-0036963",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Ja'Marr Chase]], [[2024 Cincinnati Bengals season|Cincinnati]] (AP, PFWA, TSN)<br>[[Justin Jefferson]], [[2024 Minnesota Vikings season|Minnesota]] (AP, PFWA, TSN)<br>[[Amon-Ra St. Brown]], [[2024 Detroit Lions season|Detroit]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|18}} '''[[Justin Jefferson]]''', [[2024 Minnesota Vikings season|Minnesota]]<br />{{Small|14}} [[Amon-Ra St. Brown]], [[2024 Detroit Lions season|Detroit]]{{ref label|injury|b|b}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "lions_2024",
+   "index": 9,
+   "name": "Kalif Raymond",
+   "position": "WR",
+   "gsis_id": "00-0032464",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2024",
+     "line": "| [[Kalif Raymond]], [[2024 Detroit Lions season|Detroit]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "lions_2024",
+   "index": 14,
+   "name": "Taylor Decker",
+   "position": "T",
+   "gsis_id": "00-0032381",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|68}} '''[[Taylor Decker]]''', [[2024 Detroit Lions season|Detroit]]{{ref label|replacement|a|a}}<br />{{Small|75}} '''[[Brian O'Neill (American football)|Brian O'Neill]]''', [[2024 Minnesota Vikings season|Minnesota]]{{ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "lions_2024",
+   "index": 15,
+   "name": "Penei Sewell",
+   "position": "T",
+   "gsis_id": "00-0036880",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Penei Sewell]], [[2024 Detroit Lions season|Detroit]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|58}} [[Penei Sewell]], [[2024 Detroit Lions season|Detroit]]{{ref label|injury|b|b}} <br />{{Small|65}} [[Lane Johnson]], [[2024 Philadelphia Eagles season|Philadelphia]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "lions_2024",
+   "index": 22,
+   "name": "Frank Ragnow",
+   "position": "C",
+   "gsis_id": "00-0034345",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2024",
+     "line": "| [[Frank Ragnow]], [[2024 Detroit Lions season|Detroit]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|77}} '''[[Frank Ragnow]]''', [[2024 Detroit Lions season|Detroit]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "lions_2024",
+   "index": 49,
+   "name": "Kerby Joseph",
+   "position": "FS",
+   "gsis_id": "00-0037667",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Kerby Joseph]], [[2024 Detroit Lions season|Detroit]] (AP, PFWA)<br>[[Xavier McKinney]], [[2024 Green Bay Packers season|Green Bay]] (AP, PFWA, TSN)<br>[[Brian Branch]], [[2024 Detroit Lions season|Detroit]] (TSN-t)<br>[[Kyle Hamilton]], [[2024 Baltimore Ravens season|Baltimore]] (TSN-t)"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2024",
+     "line": "led the NFL in interceptions: 9 (def_interceptions)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "lions_2024",
+   "index": 50,
+   "name": "Brian Branch",
+   "position": "SS",
+   "gsis_id": "00-0039141",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|32}} '''[[Brian Branch]]''', [[2024 Detroit Lions season|Detroit]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "lions_2024",
+   "index": 52,
+   "name": "Jack Fox",
+   "position": "P",
+   "gsis_id": "00-0035156",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2024",
+     "line": "| [[Jack Fox (American football)|Jack Fox]], [[2024 Detroit Lions season|Detroit]] (AP, PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2024",
+     "line": "|{{Small|3}} '''[[Jack Fox (American football)|Jack Fox]]''', [[2024 Detroit Lions season|Detroit]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "packers_2010",
+   "index": 9,
+   "name": "Greg Jennings",
+   "position": "WR",
+   "gsis_id": "00-0024267",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|10}} [[DeSean Jackson]], [[Philadelphia Eagles|Philadelphia]]{{Ref label|injury|b|b}}<br />{{Small|85}} [[Greg Jennings]], [[Green Bay Packers|Green Bay]]{{Ref label|Super Bowl|e|e}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2010",
+   "index": 10,
+   "name": "Donald Driver",
+   "position": "WR",
+   "gsis_id": "00-0004541",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|80}} [[Donald Driver]], [[Green Bay Packers|Green Bay]]{{Ref label|replacement|a|a}}{{Ref label|Super Bowl|e|e}}<br />'''{{Small|11}} [[Larry Fitzgerald]], [[Arizona Cardinals|Arizona]]{{ref label|replacement|a|a}}'''<br />'''{{Small|19}} [[Miles Austin]], [[Dallas Cowboys|Dallas]]{{ref label|replacement|a|a}}'''"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2010",
+   "index": 17,
+   "name": "Chad Clifton",
+   "position": "T",
+   "gsis_id": "00-0019702",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|76}} [[Chad Clifton]], [[Green Bay Packers|Green Bay]]{{Ref label|Super Bowl|e|e}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2010",
+   "index": 33,
+   "name": "Clay Matthews",
+   "position": "OLB",
+   "gsis_id": "00-0027002",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2010",
+     "line": "|[[James Harrison (American football)|James Harrison]], [[2010 Pittsburgh Steelers season|Pittsburgh Steelers]] (AP, SN, PFWA)<br>[[Clay Matthews III]], [[2010 Green Bay Packers season|Green Bay Packers]] (AP, SN, PFWA)<br>[[Cameron Wake]], [[2010 Miami Dolphins season|Miami Dolphins]] (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|52}} [[Clay Matthews III|Clay Matthews]], [[Green Bay Packers|Green Bay]]{{Ref label|Super Bowl|e|e}}<br />'''{{Small|94}} [[DeMarcus Ware]], [[Dallas Cowboys|Dallas]]'''"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "packers_2010",
+   "index": 41,
+   "name": "Charles Woodson",
+   "position": "CB",
+   "gsis_id": "00-0018227",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2010",
+     "line": "|Devin McCourty, New England Patriots (AP-2)<br/> [[Charles Woodson]], [[2010 Green Bay Packers season|Green Bay Packers]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|22}} [[Asante Samuel]], [[Philadelphia Eagles|Philadelphia]]{{Ref label|injury|b|b}}<br />{{Small|21}} [[Charles Woodson]], [[Green Bay Packers|Green Bay]]{{Ref label|Super Bowl|e|e}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "packers_2010",
+   "index": 42,
+   "name": "Tramon Williams",
+   "position": "CB",
+   "gsis_id": "00-0024061",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|38}} [[Tramon Williams]], [[Green Bay Packers|Green Bay]]{{Ref label|replacement|a|a}}{{Ref label|Super Bowl|e|e}}<br />'''{{Small|26}} [[Antoine Winfield Sr.|Antoine Winfield]], [[Minnesota Vikings|Minnesota]]{{Ref label|replacement|a|a}}'''<br />'''{{Small|20}} [[Brent Grimes]], [[Atlanta Falcons|Atlanta]]{{Ref label|replacement|a|a}}{{Ref label|starter|c|c}}'''"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2010",
+   "index": 47,
+   "name": "Nick Collins",
+   "position": "FS",
+   "gsis_id": "00-0023486",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2010",
+     "line": "|[[Darren Sharper]], [[2010 New Orleans Saints season|New Orleans Saints]] (AP-2)<br/> [[Michael Griffin (American football)|Michael Griffin]], [[2010 Tennessee Titans season|Tennessee Titans]] (AP-2t)<br/> [[Michael Huff]], [[2010 Oakland Raiders season|Oakland Raiders]] (AP-2t)<br/> [[Chris Harris (safety)|Chris Harris]], [[2010 Chicago Bears season|Chicago Bears]] (AP-2t)<br/> [[Quintin Mikell]], [[2010 Philadelphia Eagles season|Philadelphia Eagles]] (AP-2t)<br/> [[Malcolm Jenkins]], [[2010 New Orleans Saints season|New Orleans Saints]] (AP-2t)<br/> [[Eric Weddle]], [[2010 San Diego Chargers season|San Diego Chargers]] (AP-2t)<br/> [[Antrel Rolle]], [[2010 New York Giants season|New York Giants]] (AP-2t)<br/> [[Nick Collins]], [[2010 Green Bay Packers season|Green Bay Packers]] (AP-2t)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2010",
+     "line": "|{{Small|36}} [[Nick Collins]], [[Green Bay Packers|Green Bay]]{{Ref label|Super Bowl|e|e}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "packers_2011",
+   "index": 0,
+   "name": "Aaron Rodgers",
+   "position": "QB",
+   "gsis_id": "00-0023459",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2011",
+     "line": "|[[Aaron Rodgers]], [[2011 Green Bay Packers season|Green Bay Packers]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|12}} '''[[Aaron Rodgers]]''', [[Green Bay Packers|Green Bay]]"
+    },
+    {
+     "honour": "MVP",
+     "source": "mvp",
+     "line": "! scope=\"row\"|{{sortname|Aaron|Rodgers}}"
+    }
+   ],
+   "floor": 95,
+   "model_level": "AP1"
+  },
+  {
+   "team": "packers_2011",
+   "index": 6,
+   "name": "John Kuhn",
+   "position": "FB",
+   "gsis_id": "00-0022999",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2011",
+     "line": "|[[John Kuhn]], [[2011 Green Bay Packers season|Green Bay Packers]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|30}} [[John Kuhn]], [[Green Bay Packers|Green Bay]]'''{{Ref label|injury|b|b}}'''"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "packers_2011",
+   "index": 7,
+   "name": "Greg Jennings",
+   "position": "WR",
+   "gsis_id": "00-0024267",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|89}} '''[[Steve Smith (wide receiver, born 1979)|Steve Smith]]''', [[Carolina Panthers|Carolina]]<br/>{{Small|85}} '''[[Greg Jennings]]''', [[Green Bay Packers|Green Bay]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2011",
+   "index": 24,
+   "name": "Scott Wells",
+   "position": "C",
+   "gsis_id": "00-0022832",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|63}} '''[[Scott Wells (American football)|Scott Wells]]''', [[Green Bay Packers|Green Bay]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2011",
+   "index": 32,
+   "name": "Clay Matthews",
+   "position": "OLB",
+   "gsis_id": "00-0027002",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|94}}  '''[[DeMarcus Ware]]''', [[Dallas Cowboys|Dallas]]<br>{{Small|52}} '''[[Clay Matthews III|Clay Matthews]]''', [[Green Bay Packers|Green Bay]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "packers_2011",
+   "index": 42,
+   "name": "Charles Woodson",
+   "position": "CB",
+   "gsis_id": "00-0018227",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2011",
+     "line": "|[[Charles Woodson]], [[2011 Green Bay Packers season|Green Bay Packers]] (AP, PFWA)<br/> [[Darrelle Revis]], [[2011 New York Jets season|New York Jets]] (AP, SN)<br/> Johnathan Joseph, Houston Texans (PFWA)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2011",
+     "line": "|{{Small|21}}  '''[[Charles Woodson]]''', [[Green Bay Packers|Green Bay]]<br>{{Small|22}} [[Carlos Rogers (American football)|Carlos Rogers]], [[San Francisco 49ers|San Francisco]]'''{{Ref label|injury|b|b}}'''"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2011",
+     "line": "led the NFL in interceptions: 7 (def_interceptions)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 0,
+   "name": "Cam Newton",
+   "position": "QB",
+   "gsis_id": "00-0027939",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Cam Newton]], [[2015 Carolina Panthers season|Carolina]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|&nbsp;1| Cam Newton | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    },
+    {
+     "honour": "MVP",
+     "source": "mvp",
+     "line": "! scope=\"row\"|{{sortname|Cam|Newton}}"
+    },
+    {
+     "honour": "OPOY",
+     "source": "opoy",
+     "line": "!scope=\"row\"|{{sortname|Cam|Newton}}"
+    }
+   ],
+   "floor": 95,
+   "model_level": "AP1"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 3,
+   "name": "Jonathan Stewart",
+   "position": "HB",
+   "gsis_id": "00-0026153",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|28| Jonathan Stewart | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 7,
+   "name": "Mike Tolbert",
+   "position": "FB",
+   "gsis_id": "00-0026069",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Mike Tolbert]], [[2015 Carolina Panthers season|Carolina]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|35| Mike Tolbert | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 14,
+   "name": "Greg Olsen",
+   "position": "TE",
+   "gsis_id": "00-0025418",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2015",
+     "line": "|[[Greg Olsen (American football)|Greg Olsen]], [[2015 Carolina Panthers season|Carolina]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|88| Greg Olsen |d=American football | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 21,
+   "name": "Trai Turner",
+   "position": "G",
+   "gsis_id": "00-0031362",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|70| Trai Turner | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 23,
+   "name": "Ryan Kalil",
+   "position": "C",
+   "gsis_id": "00-0025446",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Ryan Kalil]], [[2015 Carolina Panthers season|Carolina]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|67| Ryan Kalil | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 32,
+   "name": "Kawann Short",
+   "position": "DT",
+   "gsis_id": "00-0030448",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2015",
+     "line": "| [[Kawann Short]], [[2015 Carolina Panthers season|Carolina]] (AP-2)<br />[[Fletcher Cox]], [[2015 Philadelphia Eagles season|Philadelphia]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|99| Kawann Short | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 35,
+   "name": "Thomas Davis",
+   "position": "OLB",
+   "gsis_id": "00-0023448",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|58| Thomas Davis |d=American football | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 38,
+   "name": "Luke Kuechly",
+   "position": "ILB",
+   "gsis_id": "00-0029248",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Luke Kuechly]], [[2015 Carolina Panthers season|Carolina]] (AP, PFWA, SN) <br /> [[NaVorro Bowman]], [[2015 San Francisco 49ers season|San Francisco]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|59| Luke Kuechly | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "panthers_2015",
+   "index": 42,
+   "name": "Josh Norman",
+   "position": "CB",
+   "gsis_id": "00-0029285",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2015",
+     "line": "|[[Josh Norman (cornerback)|Josh Norman]], [[2015 Carolina Panthers season|Carolina]] (AP, PFWA, SN) <br />[[Patrick Peterson]], [[2015 Arizona Cardinals season|Arizona]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2015",
+     "line": "* {{NFLplayer|24| Josh Norman |d=cornerback | ([[Carolina Panthers]])}}{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "patriots_2018",
+   "index": 0,
+   "name": "Tom Brady",
+   "position": "QB",
+   "gsis_id": "00-0019596",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2018",
+     "line": "|{{small|17}} [[Philip Rivers]], [[Los Angeles Chargers|LA Chargers]]{{ref label|injury|b|b}}<ref name=\"RiversLuck\">{{cite web|title=Andrew Luck Named To 2019 NFL Pro Bowl|url=https://www.colts.com/news/andrew-luck-named-to-2019-nfl-pro-bowl|author=Walker, Andrew|website=Colts.com|date=January 15, 2019}}</ref><br>{{small|12}} [[Tom Brady]], [[New England Patriots|New England]]{{ref label|Super Bowl|d|d}}<ref name=\"Watson\"/>"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "patriots_2018",
+   "index": 8,
+   "name": "Cordarrelle Patterson",
+   "position": "WR",
+   "gsis_id": "00-0030578",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2018",
+     "line": "|[[Cordarrelle Patterson]], [[2018 New England Patriots season|New England]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "patriots_2018",
+   "index": 41,
+   "name": "Stephon Gilmore",
+   "position": "CB",
+   "gsis_id": "00-0029542",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2018",
+     "line": "|[[Stephon Gilmore]], [[2018 New England Patriots season|New England]] (AP, PFWA)<br>[[Kyle Fuller]], [[2018 Chicago Bears season|Chicago]] (AP, PFWA, SN)<br>[[Patrick Peterson]], [[2018 Arizona Cardinals season|Arizona]] (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2018",
+     "line": "|{{small|24}} [[Stephon Gilmore]], [[New England Patriots|New England]]{{ref label|Super Bowl|d|d}}<ref name=\"HarrisJr\"/><br>{{small|21}} '''[[Denzel Ward]]''', [[Cleveland Browns|Cleveland]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 0,
+   "name": "Lamar Jackson",
+   "position": "QB",
+   "gsis_id": "00-0034796",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2019",
+     "line": "|[[Lamar Jackson]], [[2019 Baltimore Ravens season|Baltimore]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|8}} '''[[Lamar Jackson]]''', [[Baltimore Ravens|Baltimore]]"
+    },
+    {
+     "honour": "MVP",
+     "source": "mvp",
+     "line": "The AP has presented an award recognizing the NFL's top player since 1957. The award is voted upon by a panel of 50 sportswriters at the end of the [[regular season]], before the [[playoffs]], though the results are not announced to the public until the day before the [[Super Bowl]]. The sportswriters chosen regularly follow the NFL, and remain mostly consistent from year to year. They are chosen based on expertise and are independent of the league itself.<ref name=Insight/> Voters for the award have included [[Troy Aikman]] of [[Fox Sports]]; [[Cris Collinsworth]] and [[Tony Dungy]] of [[NBC Sports]]; and [[Herm Edwards]] of [[ESPN]].<ref name=Insight/> Only two players in the history of the award have won it unanimously: [[New England Patriots]]  quarterback [[Tom Brady]] in [[2010 NFL season|2010]] and [[Baltimore Ravens]] quarterback [[Lamar Jackson]] in [[2019 NFL season|2019]].<ref name=\"ESPNMVP\">{{cite web |last1=Jamison |first1=Hensley |title=Ravens QB Lamar Jackson unanimous pick for NFL MVP after historic season |url=https://www.espn.com/nfl/story/_/id/28614953/ravens-qb-lamar-jackson-unanimous-pick-nfl-mvp-historic-season |website=ESPN |date=February 2020 |access-date=2 February 2020 |archive-date=February 2, 2020 |archive-url=https://web.archive.org/web/20200202170347/https://www.espn.com/nfl/story/_/id/28614953/ravens-qb-lamar-jackson-unanimous-pick-nfl-mvp-historic-season |url-status=live }}</ref> [[Peyton Manning]], who played quarterback for the [[Indianapolis Colts]] and [[Denver Broncos]], holds the record for most career MVP awards, with five."
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2019",
+     "line": "led the NFL in passing touchdowns: 36 (passing_tds)"
+    }
+   ],
+   "floor": 95,
+   "model_level": "AP1"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 3,
+   "name": "Mark Ingram",
+   "position": "HB",
+   "gsis_id": "00-0027966",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|22}} '''[[Derrick Henry]]''', [[Tennessee Titans|Tennessee]]<br>{{small|21}} '''[[Mark Ingram II]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 6,
+   "name": "Patrick Ricard",
+   "position": "FB",
+   "gsis_id": "00-0033376",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|42}} '''[[Patrick Ricard (American football)|Patrick Ricard]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 16,
+   "name": "Mark Andrews",
+   "position": "TE",
+   "gsis_id": "00-0034753",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|89}} '''[[Mark Andrews (American football)|Mark Andrews]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 17,
+   "name": "Ronnie Stanley",
+   "position": "T",
+   "gsis_id": "00-0032965",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2019",
+     "line": "|[[Ronnie Stanley]], [[2019 Baltimore Ravens season|Baltimore]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|79}} '''[[Ronnie Stanley]]''', [[Baltimore Ravens|Baltimore]]<br>{{small|78}} '''[[Laremy Tunsil]]''', [[Houston Texans|Houston]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 18,
+   "name": "Orlando Brown",
+   "position": "T",
+   "gsis_id": "00-0034752",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|78}} '''[[Orlando Brown (American football, born 1996)|Orlando Brown Jr.]]''', [[Baltimore Ravens|Baltimore]]{{ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 21,
+   "name": "Marshal Yanda",
+   "position": "G",
+   "gsis_id": "00-0025473",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2019",
+     "line": "|[[Marshal Yanda]], [[2019 Baltimore Ravens season|Baltimore]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|73}} '''[[Marshal Yanda]]''', [[Baltimore Ravens|Baltimore]]<br>{{small|56}} '''[[Quenton Nelson]]''', [[Indianapolis Colts|Indianapolis]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 40,
+   "name": "Marlon Humphrey",
+   "position": "CB",
+   "gsis_id": "00-0033281",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|24}} [[Marcus Peters]], [[Baltimore Ravens|Baltimore]]{{ref label|injury|b|b}}<br>{{small|44}} '''[[Marlon Humphrey]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 41,
+   "name": "Marcus Peters",
+   "position": "CB",
+   "gsis_id": "00-0032165",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2019",
+     "line": "|[[Richard Sherman (American football)|Richard Sherman]], [[2019 San Francisco 49ers season|San Francisco]] (AP-2)<br>[[Marcus Peters]], [[2019 Baltimore Ravens season|Baltimore]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|24}} [[Marcus Peters]], [[Baltimore Ravens|Baltimore]]{{ref label|injury|b|b}}<br>{{small|44}} '''[[Marlon Humphrey]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 46,
+   "name": "Earl Thomas",
+   "position": "FS",
+   "gsis_id": "00-0027866",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|29}} '''[[Earl Thomas]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "ravens_2019",
+   "index": 51,
+   "name": "Justin Tucker",
+   "position": "K",
+   "gsis_id": "00-0029597",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2019",
+     "line": "|[[Justin Tucker]], [[2019 Baltimore Ravens season|Baltimore]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|9}} '''[[Justin Tucker]]''', [[Baltimore Ravens|Baltimore]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 0,
+   "name": "Russell Wilson",
+   "position": "QB",
+   "gsis_id": "00-0029263",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|&nbsp;3|Russell Wilson|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 2,
+   "name": "Marshawn Lynch",
+   "position": "HB",
+   "gsis_id": "00-0025399",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|24|Marshawn Lynch|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 24,
+   "name": "Max Unger",
+   "position": "C",
+   "gsis_id": "00-0027025",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|60|Max Unger|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 42,
+   "name": "Richard Sherman",
+   "position": "CB",
+   "gsis_id": "00-0028092",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2013",
+     "line": "|[[Patrick Peterson]], [[2013 Arizona Cardinals season|Arizona]] (AP, PFWA) <br>[[Richard Sherman (American football)|Richard Sherman]], [[2013 Seattle Seahawks season|Seattle]] (AP, PFWA, SN) <br>[[Joe Haden]], [[2013 Cleveland Browns season|Cleveland]] (SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|25|Richard Sherman|d=American football|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2013",
+     "line": "led the NFL in interceptions: 8 (def_interceptions)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 47,
+   "name": "Earl Thomas",
+   "position": "FS",
+   "gsis_id": "00-0027866",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2013",
+     "line": "|[[Eric Berry]], [[2013 Kansas City Chiefs season|Kansas City]] (AP, PFWA, SN) <br> [[Earl Thomas]], [[2013 Seattle Seahawks season|Seattle]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|29|Earl Thomas|d=defensive back|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "seahawks_2013",
+   "index": 49,
+   "name": "Kam Chancellor",
+   "position": "SS",
+   "gsis_id": "00-0027733",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2013",
+     "line": "|[[Jairus Byrd]], [[2013 Buffalo Bills season|Buffalo]] (AP-2) <br>[[Antrel Rolle]], [[2013 New York Giants season|New York Giants]] (AP-2t)<br>[[Devin McCourty]], [[2013 New England Patriots season|New England]] (AP-2t)<br>[[T. J. Ward]], [[2013 Cleveland Browns season|Cleveland]] (AP-2t)<br>[[Kam Chancellor]], [[2013 Seattle Seahawks season|Seattle]] (AP-2t)<br>[[Eric Weddle]], [[2013 San Diego Chargers season|San Diego]] (AP-2t)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2013",
+     "line": "* {{NFLplayer|31|Kam Chancellor|([[Seattle Seahawks]])}} {{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 0,
+   "name": "Sam Darnold",
+   "position": "QB",
+   "gsis_id": "00-0034869",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|14}} [[Sam Darnold]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}<br />{{Small|4}} [[Dak Prescott]], [[2025 Dallas Cowboys season|Dallas]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 7,
+   "name": "Jaxon Smith-Njigba",
+   "position": "WR",
+   "gsis_id": "00-0038543",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2025",
+     "line": "|[[Puka Nacua]], [[2025 Los Angeles Rams season|Los Angeles Rams]] (AP, PFWA, TSN)<br>[[Jaxon Smith-Njigba]], [[2025 Seattle Seahawks season|Seattle]] (AP, PFWA, TSN)<br>[[Ja\u2019Marr Chase]], [[2025 Cincinnati Bengals season|Cincinnati]] (AP)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|12}} [[Puka Nacua]], [[2025 Los Angeles Rams season|LA Rams]]<br />{{Small|11}} [[Jaxon Smith-Njigba]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}"
+    },
+    {
+     "honour": "OPOY",
+     "source": "opoy",
+     "line": "!scope=\"row\"|{{sortname|Jaxon|Smith-Njigba}}"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2025",
+     "line": "led the NFL in receiving yards: 1793 (receiving_yards)"
+    }
+   ],
+   "floor": 93,
+   "model_level": "AP1"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 9,
+   "name": "Rashid Shaheed",
+   "position": "WR",
+   "gsis_id": "00-0037545",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|22}} [[Rashid Shaheed]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 28,
+   "name": "Leonard Williams",
+   "position": "DE",
+   "gsis_id": "00-0031933",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2025",
+     "line": "|[[Leonard Williams]], [[2025 Seattle Seahawks season|Seattle]] (AP-2)<br>[[Cameron Heyward]], [[2025 Pittsburgh Steelers season|Pittsburgh]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|98}} [[Jalen Carter]], [[2025 Philadelphia Eagles season|Philadelphia]]<br />{{Small|99}} [[Leonard Williams]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 34,
+   "name": "DeMarcus Lawrence",
+   "position": "OLB",
+   "gsis_id": "00-0031411",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|0}} [[DeMarcus Lawrence]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 40,
+   "name": "Ernest Jones",
+   "position": "ILB",
+   "gsis_id": "00-0036994",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2025",
+     "line": "|[[Ernest Jones (linebacker)|Ernest Jones IV]], [[2025 Seattle Seahawks season|Seattle]] (AP-2)<br>[[Devin Lloyd]], [[2025 Jacksonville Jaguars season|Jacksonville]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 43,
+   "name": "Devon Witherspoon",
+   "position": "CB",
+   "gsis_id": "00-0039169",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2025",
+     "line": "|[[Devon Witherspoon]], [[2025 Seattle Seahawks season|Seattle]] (AP-2)<br>[[Patrick Surtain II]], [[2025 Denver Broncos season|Denver]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2025",
+     "line": "|{{Small|8}} [[Jaycee Horn]], [[2025 Carolina Panthers season|Carolina]]<br />{{Small|21}} [[Devon Witherspoon]], [[2025 Seattle Seahawks season|Seattle]]{{ref label|Super Bowl|c|c}}"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "seahawks_2025",
+   "index": 52,
+   "name": "Michael Dickson",
+   "position": "P",
+   "gsis_id": "00-0034160",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2025",
+     "line": "|[[Michael Dickson]], [[2025 Seattle Seahawks season|Seattle]] (AP-2)"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "steelers_2005",
+   "index": 21,
+   "name": "Alan Faneca",
+   "position": "G",
+   "gsis_id": "00-0005058",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2005",
+     "line": "| [[Alan Faneca]], [[Pittsburgh Steelers]] (AP, PFWA, TSN) <BR> [[Brian Waters]], Kansas City Chiefs (AP-t) <BR> [[Steve Hutchinson (American football)|Steve Hutchinson]], Seattle Seahawks (AP-t, PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2005",
+     "line": "|{{Small|66}} '''[[Alan Faneca]]''', [[Pittsburgh Steelers|Pittsburgh]]<br/>{{Small|68}} '''[[Will Shields]]''', [[Kansas City Chiefs|Kansas City]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "steelers_2005",
+   "index": 24,
+   "name": "Jeff Hartings",
+   "position": "C",
+   "gsis_id": "00-0007051",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2005",
+     "line": "|{{Small|64}} '''[[Jeff Hartings]]''', [[Pittsburgh Steelers|Pittsburgh]]"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "steelers_2005",
+   "index": 32,
+   "name": "Casey Hampton",
+   "position": "DT",
+   "gsis_id": "00-0020426",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2005",
+     "line": "|{{Small|98}} '''[[Casey Hampton]]''', [[Pittsburgh Steelers|Pittsburgh]]{{Ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "steelers_2005",
+   "index": 35,
+   "name": "Joey Porter",
+   "position": "OLB",
+   "gsis_id": "00-0013126",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2005",
+     "line": "| [[Joey Porter]], Pittsburgh Steelers (AP-2) <BR> Cato June, Indianapolis Colts (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2005",
+     "line": "|{{Small|55}} '''[[Joey Porter]]''', [[Pittsburgh Steelers|Pittsburgh]]"
+    }
+   ],
+   "floor": 87,
+   "model_level": "AP2"
+  },
+  {
+   "team": "steelers_2005",
+   "index": 49,
+   "name": "Troy Polamalu",
+   "position": "SS",
+   "gsis_id": "00-0022119",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2005",
+     "line": "| [[Bob Sanders]], Indianapolis Colts (AP) <BR>  [[Troy Polamalu]], Pittsburgh Steelers (AP, PFWA, TSN)<br />[[Darren Sharper]], [[Minnesota Vikings]] (PFWA, TSN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2005",
+     "line": "|{{Small|43}} '''[[Troy Polamalu]]''', [[Pittsburgh Steelers|Pittsburgh]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "titans_2019",
+   "index": 0,
+   "name": "Ryan Tannehill",
+   "position": "QB",
+   "gsis_id": "00-0029701",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|17}} '''[[Ryan Tannehill]]''', [[Tennessee Titans|Tennessee]]{{ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "titans_2019",
+   "index": 2,
+   "name": "Derrick Henry",
+   "position": "HB",
+   "gsis_id": "00-0032764",
+   "honours": [
+    {
+     "honour": "AP2",
+     "source": "allpro_2019",
+     "line": "|[[Derrick Henry]], [[2019 Tennessee Titans season|Tennessee]] (AP-2)"
+    },
+    {
+     "honour": "AP2",
+     "source": "allpro_2019",
+     "line": "|[[Derrick Henry]], [[2019 Tennessee Titans season|Tennessee]] (AP-2)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|22}} '''[[Derrick Henry]]''', [[Tennessee Titans|Tennessee]]<br>{{small|21}} '''[[Mark Ingram II]]''', [[Baltimore Ravens|Baltimore]]"
+    },
+    {
+     "honour": "LEADER",
+     "source": "nflverse_stats_2019",
+     "line": "led the NFL in rushing yards: 1540 (rushing_yards)"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  },
+  {
+   "team": "titans_2019",
+   "index": 23,
+   "name": "Jurrell Casey",
+   "position": "DE",
+   "gsis_id": "00-0028015",
+   "honours": [
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|99}} '''[[Jurrell Casey]]''', [[Tennessee Titans|Tennessee]]{{ref label|replacement|a|a}}"
+    }
+   ],
+   "floor": 84,
+   "model_level": "PB"
+  },
+  {
+   "team": "titans_2019",
+   "index": 52,
+   "name": "Brett Kern",
+   "position": "P",
+   "gsis_id": "00-0025825",
+   "honours": [
+    {
+     "honour": "AP1",
+     "source": "allpro_2019",
+     "line": "|[[Brett Kern]], [[2019 Tennessee Titans season|Tennessee]] (AP, PFWA, SN)"
+    },
+    {
+     "honour": "PB",
+     "source": "probowl_2019",
+     "line": "|{{small|6}} '''[[Brett Kern]]''', [[Tennessee Titans|Tennessee]]"
+    }
+   ],
+   "floor": 90,
+   "model_level": "AP1"
+  }
+ ]
+}

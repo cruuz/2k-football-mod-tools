@@ -29,6 +29,9 @@ from tests.mod_editor.test_nfl2k5_screen_archive import MemoryArchive
 from pb.defense.verify import IMAGE, OuterImage, BOOK_ENTRIES
 
 
+V3_SCREEN_VARIANTS=frozenset(('HB Slip Screen Wk','FB Screen','RB2 Screen'))
+
+
 @unittest.skipUnless(IMAGE.is_file(), f"private retail XISO absent: {IMAGE}")
 class Composition(unittest.TestCase):
     @classmethod
@@ -62,20 +65,30 @@ class Composition(unittest.TestCase):
     def test_declared_v2_screens_keep_pins_and_owner_idempotence(self):
         declarations={team:[p for p in off.plays if 'screen' in p.custom_name.casefold()]
                       for team,off,_,_ in self.rows}
-        self.assertEqual(sum(map(len,declarations.values())),91)
-        self.assertEqual({team for team,plays in declarations.items() if not plays},{'IND','NYG'})
+        # b777-ci2: 315, was 91. The v3 books (pb1, 37 of them with defense/extras) name many more plays 'screen' than the v2 books did.
+        # b777-int7: 322 with pb4's v4 books (ci2 wrote 315 against pb1's v3 books).
+        self.assertEqual(sum(map(len,declarations.values())),322)
+        # b777-ci2: no team lacks a screen now (IND and NYG had none in the v2 books; the v3 books give every team some).
+        self.assertEqual({team for team,plays in declarations.items() if not plays},set())
         for team,off,a,b in self.rows:
             with self.subTest(team=team):
                 # v2/pins.py replaces the v0.5 RB Slip-only certification.
                 # Level D recognizes the shipped signatures of the four v2
                 # screen concepts; their authored timing shapes differ.
                 declared=declarations[team]
-                self.assertTrue(all(concepts.CONCEPTS[p.concept].family=='screen' for p in declared))
-                expected={p.replace_index:p.custom_name for p in declared}
+                # b777-ci2: the v3 books (pb1) label three screen variants that are not registered concepts of their own;
+                # any other unregistered name, or a registered non-screen concept, still fails.
+                self.assertTrue(all((concepts.CONCEPTS[p.concept].family=='screen' if p.concept in concepts.CONCEPTS
+                                     else p.concept in V3_SCREEN_VARIANTS) for p in declared),
+                                [p.concept for p in declared])
+                # b777-ci2: v3 books also APPEND plays (replace_index None, index 255 and up); those are checked by name.
+                expected={p.replace_index:p.custom_name for p in declared if p.replace_index is not None}
+                appended=sorted(p.custom_name for p in declared if p.replace_index is None)
                 for c in (a,b):
                     book=c.parsed_replacement
-                    self.assertEqual({p.index:p.name for p in book.plays
-                                      if 'screen' in p.name.casefold()},expected)
+                    actual={p.index:p.name for p in book.plays if 'screen' in p.name.casefold()}
+                    self.assertEqual({i:n for i,n in actual.items() if i in expected},expected)
+                    self.assertEqual(sorted(n for i,n in actual.items() if i not in expected),appended)
                     identity=hashlib.sha256(book.book_name.encode()).hexdigest()
                     self.assertEqual(timing._signature(book),timing.COMPLETE_OFFENSE_D_PINS[identity])
                     actual,receipt=timing.apply(c.replacement,'D')

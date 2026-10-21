@@ -105,6 +105,12 @@ class IntegrationQtTests(unittest.TestCase):
                 if key == 'coin_defer':
                     self.assertIn('CPU winners only', caption)
                     self.assertIn('Human winners keep the retail menu', help)
+            elif key == 'letter_grades':
+                # b773 lg2: the option states its scale and its Studio behaviour directly, like the two above.
+                from mod_editor.core import nfl2k5_letter_grades as grades
+                self.assertEqual((caption, help), (grades.BUILD_CAPTION, grades.HELP_TEXT))
+                self.assertLessEqual(len(caption),60)
+                self.assertIn('UNWITNESSED', help);self.assertIn('Off in the Basic preset', help)
             else:
                 self.assertLessEqual(len(caption),60)
                 self.assertIn('Retail',help);self.assertIn('Patch',help)

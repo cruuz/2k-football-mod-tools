@@ -8,6 +8,7 @@ smoke test (site bytes pinned against the real default.xbe) runs only when the p
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
 import sys
 import unittest
@@ -26,7 +27,8 @@ HEADER_SIZE = 0xCC4
 TEXT_VA, TEXT_RAW, TEXT_SIZE = 0x11000, 0x1000, 0x3F0000
 RDATA_VA, RDATA_RAW, RDATA_SIZE = 0x4E3AE0, 0x3F1000, 0x40000
 DATA_VA, DATA_RAW, DATA_SIZE = 0xA69980, 0x431000, 0x70000
-RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
+RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
+                              "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 
 
 def _section_digest(payload: bytes, raw: int, raw_size: int) -> bytes:
@@ -59,6 +61,10 @@ def build_synthetic_xbe() -> bytes:
         for site in season.group_sites(group):
             off = _raw_offset(site.va)
             buf[off: off + site.size] = site.retail
+    # V1I is separate from the legacy calendar group's identity so shipped
+    # overlays remain recognizable, but its native branch is still guarded.
+    off = _raw_offset(season.AWARDS_WEEK_VA) - 2
+    buf[off:off + 9] = bytes.fromhex("83fd100f85ef000000")
     for index, (_va, raw, size) in SECTIONS.items():
         header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
         buf[header + 36: header + 56] = _section_digest(bytes(buf), raw, size)
@@ -164,13 +170,15 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(receipt["preseason_weeks"], 4)
         self.assertEqual(season.read_year(patched), 2026)
         self.assertEqual(receipt["sections_repinned"], [0, 12, 13])
-        self.assertEqual(len(receipt["edits"]), 17 + 2 + 143 + 13 + 3)
+        self.assertEqual(len(receipt["edits"]), 17 + 2 + 143 + 13 + 3 + 1)
+        self.assertEqual(patched[_raw_offset(season.AWARDS_WEEK_VA)], 17)
         self.assertFalse(receipt["runtime_verified"])
         for index, (_va, raw, size) in SECTIONS.items():
             header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
             self.assertEqual(patched[header + 36: header + 56], _section_digest(patched, raw, size))
         # only the sites and the three digests changed
         expected = set()
+        expected.add(_raw_offset(season.AWARDS_WEEK_VA))
         for group in season.GROUPS:
             for site in season.group_sites(group):
                 off = _raw_offset(site.va)

@@ -30,7 +30,7 @@ def repin(payload):
 class PureTests(unittest.TestCase):
     def test_strict_configuration_and_budget(self):
         self.assertLessEqual(patch.CODE_SIZE, 1536)
-        self.assertEqual([r[1] for r in patch.REQUESTS], ["code"])
+        self.assertEqual([r[1] for r in patch.REQUESTS], ["code", "code"])
         for bad in (-1, 18, True, False, 7.0, "7", [], {}):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 patch.code_for(0x14DA000, bad)
@@ -146,7 +146,7 @@ class ImageTests(unittest.TestCase):
         recorder.observe(patch, 'apply', allocated, result, receipt)
         spans = recorder.finish(result)
         for declared in patch.reservations(result):
-            self.assertTrue(any(s['owner'] == patch.OWNER and int(s['start'],0) <= int(declared['start'],0)
+            self.assertTrue(any(s['owner'] == declared['owner'] and int(s['start'],0) <= int(declared['start'],0)
                                 < int(declared['end'],0) <= int(s['end'],0) for s in spans), declared)
 
     def test_byte_scan_covers_every_direct_charge_consumer_and_no_interior_entry(self):

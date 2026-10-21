@@ -89,7 +89,10 @@ GUARDS = (
     (0x52bb68, 52, "5bb96ff84ea5d93b7235478be5feb79f88b05bcb93f80e51d30c90a5b6f83a25"),
     (0x4ed994, 8, "9b2756c8bf5c8853bb5a5c059dca323c92f4d993eebfe7c72fc118953772580b"),
     (0x3b340, 357, "e9f37641128addd1c414f2d2406560305b58477ab882917d5f315c1becd68cb4"),
-    (0x4d720, 416, "74976e8ab4a402917c22aec80c9fa36b7028546609e0a56507adee211fae23a5"),
+    # b777-st1: the old 416-byte pin also covered the disc loader worker (0x4D810..0x4D8C0), which the loader
+    # wake-up fix re-encodes. The pin now ends at the worker; the worker span is checked in _recognize below
+    # (retail or the wake-up fix, the same operations and states either way).
+    (0x4d720, 0xf0, "95bab4ac1dcb926523dde8bd5a3beb4caaa74845ddd6d785349d78be1bde9174"),
     (0x4b2a0, 81, "b5d4bbcdfba146e16697d982421dfaaadc743fd0e4e24e2fd855cff34b0a0af4"),
     (0x4d520, 268, "1134911b43c8abf692b1890fcfe05136d6a506526eeb52d9e63a447d769f1162"),
     (0x4c880, 95, "1903039f9287fe5d892a217833205f3dbb72425d4b9b3a2628413c2447f41247"),
@@ -220,6 +223,8 @@ def _recognize(payload):
                         "foreign Auto Save completion/save boundary")
                 raw[at-va:at-va+len(before)] = before
         require(hashlib.sha256(raw).hexdigest() == digest, f"foreign Auto Save prerequisite at {va:#x}")
+    from . import nfl2k5_loader_wakeup as loader_wakeup
+    require(loader_wakeup.status(payload) in ("retail", "applied"), "foreign disc loader worker (0x4D810)")
     return next(iter(states))
 
 

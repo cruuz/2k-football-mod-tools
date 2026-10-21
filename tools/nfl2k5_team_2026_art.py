@@ -570,6 +570,16 @@ def decorate(out: np.ndarray, spec: Spec, items: list, marks: Path | None, part:
             over(out, colour, cov)
 
     for item in items or ():
+        # Atlas-space exclusions remove an unwanted fragment of an imported mark
+        # without scaling or moving the rest of that mark (ov1: TB's old shield).
+        exclusions = []
+        for box in item.get("exclude_boxes", ()):
+            if len(box) != 4 or any(float(v) != int(v) for v in box):
+                raise ValueError("decoration exclusion must have four integer atlas coordinates")
+            x0, y0, x1, y1 = (int(v) * MASTER for v in box)
+            if not (0 <= x0 < x1 <= shape[1] and 0 <= y0 < y1 <= shape[0]):
+                raise ValueError("decoration exclusion outside the texture")
+            exclusions.append((x0, y0, x1, y1, out[y0:y1, x0:x1].copy()))
         colour = spec.colour(item["colour"]) if item.get("colour") else None
         shade = bool(item.get("shade"))
         if "rect" in item and item.get("fill") == "sides":
@@ -639,6 +649,8 @@ def decorate(out: np.ndarray, spec: Spec, items: list, marks: Path | None, part:
                 # ``height`` (retail px, optional): the box for textures whose texels are not square on the model
                 height = float(item["height"]) * MASTER if item.get("height") else width * logo.height / logo.width
                 _place_logo(out, logo, centre, width, height, rotate=False)
+        for x0, y0, x1, y1, previous in exclusions:
+            out[y0:y1, x0:x1] = previous
     return out
 
 

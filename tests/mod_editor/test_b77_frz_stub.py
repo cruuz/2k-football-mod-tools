@@ -37,6 +37,8 @@ class LiveTeamContractTests(unittest.TestCase):
         m.mem_write(va, code)
         m.mem_write(gun.RETAIL_WEIGHT_VA, gun.RETAIL_WEIGHT_BYTES)
         m.mem_write(gun.STATE_POINTER, struct.pack("<I", 0x3003000))
+        m.mem_write(gun.OFFENSE_TEAM_POINTER, struct.pack("<I", 0xE5FC20))
+        m.mem_write(gun.DEFENSE_TEAM_POINTER, struct.pack("<I", 0xE5FC60))
         m.mem_write(0x3003004, struct.pack("<I", 1))
         for team in (0xE5FC20, 0xE5FC60):
             m.mem_write(team + 0x110, struct.pack("<I", 0x31E18C8E))
@@ -114,8 +116,12 @@ class ShippedUpgradeTests(unittest.TestCase):
     def test_exact_legacy_upgrade_idempotence_tables_and_scope(self):
         from tools.b77 import frz_xbe_bisect as b
         self.assertEqual(stock.status(self.before), "needs_fix")
-        self.assertEqual(stock.status(self.after), "applied")
-        self.assertEqual(stock.apply(self.after)[0], self.after)
+        # X5 remains the exact FRZ4 diagnostic; the current owner additionally
+        # guards active-team identity and therefore offers a further upgrade.
+        self.assertEqual(stock.status(self.after), "needs_fix")
+        current = stock.apply(self.after)[0]
+        self.assertEqual(stock.status(current), "applied")
+        self.assertEqual(stock.apply(current)[0], current)
         payload = [row for row in self.receipt["ranges"] if row["kind"] == "payload"]
         self.assertEqual(len(payload), 1)
         self.assertEqual(payload[0]["size"], gun.STUB_SPACE)

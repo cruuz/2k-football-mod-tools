@@ -5,6 +5,12 @@ into three additional sections: 96 KiB RX, 80 KiB RW and 20 KiB RO (including
 one directory page). Existing owner VAs and raw offsets stay fixed. Requests
 are immutable and never grow an installed request set in place.
 Loader and gameplay behavior remain experimental and unwitnessed.
+
+The named tap-burst, draft-pick, H-back and display-rating slots occupy fixed
+parts of the allocator directory page, using at most 2992 bytes. The remaining metadata
+prefix has a strict size limit; inactive slots stay zero and allocator-owned.
+The existing read-only section becomes executable, never writable. Old owner
+names retain their original permissions, bytes and allocations.
 """
 from __future__ import annotations
 
@@ -133,9 +139,22 @@ def _code_bytes(payload, requests):
     return b"".join(payload[r["raw"]:r["raw"] + PAGE] for r in _regions(requests) if r["kind"] == "code")
 
 
+# ui1 (Career Home): the scale-out image's one optional extra section slot (the music
+# section's descriptor, name and file gap) can instead hold the MyCareer Career Home
+# extension (nfl2k5_my_career_home), told apart by its block magic. The two are mutually
+# exclusive. An image with neither keeps exactly the same bytes and 28 sections.
+HOME_SECTION_MAGIC = b"MCHOMEX1"
+EXTRA_SECTION_OWNERS = ("nfl2k5_music_metadata", "nfl2k5_my_career_home")
+
+
+def has_home_section(payload):
+    return (is_scaleout(payload) and struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1
+            and payload[FILE_SIZE:FILE_SIZE + 8] == HOME_SECTION_MAGIC)
+
+
 def has_music(payload):
     if is_scaleout(payload):
-        return struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1
+        return struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1 and not has_home_section(payload)
     count = struct.unpack_from("<I", payload, 0x11C)[0]
     return count in (COUNT + 3, COUNT + 4) and any(
         struct.unpack_from("<I", payload, TABLE + i * 56 + 4)[0] == DATA_VA + PAGE
@@ -386,7 +405,7 @@ def reservations(payload: bytes | None = None) -> list[dict]:
         for a in layout(payload)["allocations"]:
             result.append(dict(start=hex(a["va"]), end=hex(a["va"] + a["size"]), size=a["size"],
                                owner=a["owner"], basis="named " + a["kind"] + " allocation",
-                               **({"parent_owner": OWNER} if a["owner"] != "nfl2k5_music_metadata" else {})))
+                               **({"parent_owner": OWNER} if a["owner"] not in EXTRA_SECTION_OWNERS else {})))
     return result
 
 
@@ -473,10 +492,12 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     """Append late-placed owners to an installed, sealed v3 image (b77-f4: the native repair path).
 
     ``apply`` treats an installed request set as immutable. A *late* owner (``LATE_OWNERS``) is placed after every
-    other owner, so adding one cannot move an existing allocation; this function proves that (every old allocation
+    other owner, so adding one cannot move an existing feature allocation; this function proves that (every old feature allocation
     must be byte-for-byte the same row), checks the new rows sit in unreserved padding, and reseals the directory,
     the section descriptors and their digests. Anything else (an owner that is not late, a duplicate, a legacy-format
-    image, no room) refuses and leaves the payload untouched.
+    image, no room) refuses and leaves the payload untouched. The named
+    directory spills may shorten the allocator's own metadata reservation by
+    only their exact named slots of verified zero bytes. This exception never moves a feature.
     """
 
     _require(is_scaleout(payload), "a late owner can only be appended to a sealed scale-out image")
@@ -488,20 +509,33 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     _require(not any((o, k) in taken for o, k, _s, _a in new), "owner already allocated in this image")
     wanted = _requests(list(current) + new)
     before, after = _scale_allocations(current), _scale_allocations(wanted)
-    _require(all(row in after for row in before), "appending the owner would move an existing allocation")
-    added = [row for row in after if row not in before]
+    directory_tail = _directory_code_size(wanted) - _directory_code_size(current)
+    stable = before
+    if directory_tail:
+        old_directory = [r for r in before if r["owner"] == DIRECTORY_OWNER]
+        new_directory = [r for r in after if r["owner"] == DIRECTORY_OWNER]
+        _require(directory_tail > 0
+                 and sum(r["size"] for r in old_directory)-sum(r["size"] for r in new_directory) == directory_tail,
+                 "foreign directory tail reassignment")
+        stable = [r for r in before if r["owner"] != DIRECTORY_OWNER]
+    _require(all(row in after for row in stable), "appending the owner would move an existing allocation")
+    added = [row for row in after if row not in before and row["owner"] != DIRECTORY_OWNER]
     _require(added and all(row["owner"] in LATE_OWNERS for row in added), "unexpected allocation change")
     buf = bytearray(payload)
     for row in added:
         content = buf[row["raw"]:row["raw"] + row["size"]]
-        pad = b"\xcc" if row["kind"] == "code" else b"\0"
+        pad = b"\xcc" if row["kind"] == "code" and row["owner"] not in DIRECTORY_CODE_OWNERS else b"\0"
         _require(content == pad * row["size"], "the new owner's span is not unreserved padding")
+        if row["owner"] in DIRECTORY_CODE_OWNERS and row["kind"] == "code":
+            buf[row["raw"]:row["raw"] + row["size"]] = b"\xcc" * row["size"]
     _seal_scaleout(buf, wanted)
     result = bytes(buf)
     _require(status(result) == "applied", "appended allocation postcondition failed")
     _require(_read_scale_directory(result) == wanted, "appended allocation directory differs")
     return result, {"status": "applied", "changed_bytes": count_differing_bytes(payload, result),
-                    "allocations": added, "existing_allocations_unchanged": True}
+                    "allocations": added, "existing_allocations_unchanged": not directory_tail,
+                    "existing_feature_allocations_unchanged": True,
+                    "directory_tail_reassigned_bytes": directory_tail}
 
 
 def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = None) -> dict:
@@ -527,7 +561,8 @@ def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = No
     elif _needs_scaleout(dormant):
         # Beta-62 owners put the dormant union on the v3 page pools.
         children = _scale_allocations(dormant)
-        proof_regions = [r for r in _scale_regions() if r["kind"] != "read_only"]
+        proof_regions = [r for r in _scale_regions(dormant)
+                         if r["kind"] != "read_only" or r["flags"] & 4]
     else:
         children = _allocations(dormant)
         proof_regions = _regions([(a["owner"], a["kind"], a["size"], a["align"]) for a in children if a["kind"] != "read_only"])
@@ -606,6 +641,23 @@ DEBUG_COPY = SCALE_NAMES_END
 DEBUG_SHA256 = 'f0b03ce7d5f3562f7d91f4de5f6a8a5fe1f8d6d13de53bd5d98a53de92e2f424'
 DEBUG_POINTERS = ((332, 68040), (336, 68093), (340, 68004))
 DIRECTORY_OWNER = "nfl2k5_xbe_space_directory"
+# The named spill owns the last 512 bytes of the allocator's own metadata
+# page. Its presence reduces the compressed-directory budget and makes the
+# existing general RO section executable, still without write permission.
+# No feature address, section extent or executable file size changes.
+DIRECTORY_CODE_OWNER = "nfl2k5_human_tap_burst_spill"
+DIRECTORY_CODE_REQUEST = (DIRECTORY_CODE_OWNER, "code", 512, 16)
+# Fixed slots are counted backward from the page end. A missing slot stays
+# zero and belongs to the allocator directory, so any insertion order preserves
+# every existing feature address. Old ordinary-pool owner names stay valid.
+DIRECTORY_CODE_REQUESTS = (
+    DIRECTORY_CODE_REQUEST,
+    ("nfl2k5_draft_picks_spill", "code", 544, 16),
+    ("nfl2k5_hback_spill", "code", 1024, 16),
+    ("nfl2k5_team_ratings_spill", "code", 448, 16),
+    ("nfl2k5_team_ratings_spill", "read_only", 464, 16),
+)
+DIRECTORY_CODE_OWNERS = tuple(r[0] for r in DIRECTORY_CODE_REQUESTS)
 MAX_REQUESTS = 96
 MAX_REQUEST_BYTES = 96 * PAGE
 # M3 keeps the original MyCareer RW block and explicitly requests the final
@@ -620,16 +672,28 @@ LATE_OWNER = "nfl2k5_k128"
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
-               "nfl2k5_period_goalposts", "nfl2k5_honors")
+               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
+               "nfl2k5_draft_picks", "nfl2k5_hback",
+               "nfl2k5_moment_coaches", "nfl2k5_moment_context", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display",
+               "nfl2k5_classic_teams",  # b775-ct1: the classic teams' helpers, the last read-only bytes
+               "nfl2k5_hair_styles",  # b775-hs1: last, so it never moves another owner
+               "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play",  # b776-ai2: CPU QB reads, then defender ball play, after every b775 owner
+               "nfl2k5_play_art_routes",  # b776-pa2 (int2: after the two CPU AI owners; it never moves another owner)
+               "nfl2k5_team_number_scale",  # b776-ns1 (int2: after play art routes)
+               "nfl2k5_run_blocking",  # b777-ol1 (int7: after the jersey number sizes)
+               "nfl2k5_qb_accuracy",  # b777-qb3/qb4 (int7: after run blocking)
+               "nfl2k5_formation_art_spacing")  # b777-tp1: last, after QB accuracy; the build applies it last
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
 # Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
-TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"))
+TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"), ("nfl2k5_moment_coaches", "data"),
+               ("nfl2k5_moment_context", "data"))  # b775 mo2: 16 bytes under the coach records
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
-GAP_OWNERS = (("nfl2k5_honors", "code"),)
+GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
+              ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
@@ -671,7 +735,13 @@ def dormant_union():
     from . import nfl2k5_k128 as k128
     from . import nfl2k5_letter_grades as letter_grades  # b77-f4
     from . import nfl2k5_period_goalposts as period  # b77-v1b
+    from . import nfl2k5_coach_ai as coach_ai
+    from . import nfl2k5_moment_coaches as moment_coaches
+    from . import nfl2k5_moment_context as moment_context  # b775 mo2
+    from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
+    from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
+    from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -688,7 +758,11 @@ def dormant_union():
             + k128.REQUESTS
             + letter_grades.REQUESTS
             + period.REQUESTS
-            + honors.REQUESTS)
+            # Historical coaches remain last so installed owners retain their addresses.
+            # Fixed directory slots do not move any earlier owner.
+            + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
+            + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS
+            + classic_teams.REQUESTS)  # b775-ct1 after b775-mo2
 
 
 def is_scaleout(payload):
@@ -708,7 +782,7 @@ def _requests(requests):
                  "request must be (owner, kind, size, align)")
         owner, kind, size, align = request
         _require(isinstance(owner, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", owner), "invalid allocation owner")
-        _require(owner not in (OWNER, DIRECTORY_OWNER, "nfl2k5_music_metadata"), "reserved allocation owner")
+        _require(owner not in (OWNER, DIRECTORY_OWNER, *EXTRA_SECTION_OWNERS), "reserved allocation owner")
         _require(kind in ("code", "data", "read_only"), "kind must be code, data or read_only")
         _require(type(size) is int and 0 < size <= MAX_REQUEST_BYTES, "size exceeds allocation capacity")
         _require(type(align) is int and 0 < align <= PAGE and align & (align - 1) == 0,
@@ -743,7 +817,47 @@ def _allocations(requests):
     return _legacy_allocations(requests)
 
 
-def _scale_regions():
+def _directory_code_rows(requests):
+    requests = tuple(requests)
+    rows, offset = [], PAGE
+    for expected in DIRECTORY_CODE_REQUESTS:
+        owner, kind, size, align = expected
+        offset -= size
+        _require(all(tuple(r) in DIRECTORY_CODE_REQUESTS for r in requests if r[0] == owner),
+                 "foreign directory code reservation")
+        found = [tuple(r) for r in requests if tuple(r[:2]) == expected[:2]]
+        _require(not found or found == [expected], "foreign directory code reservation")
+        if found:
+            rows.append(dict(owner=owner, kind=kind, size=size, align=align,
+                             va=SCALE_DIRECTORY_VA+offset, raw=SCALE_DIRECTORY+offset,
+                             owner_offset=0))
+    return sorted(rows, key=lambda r: r["raw"])
+
+
+def _directory_code_size(requests):
+    return sum(r["size"] for r in _directory_code_rows(requests))
+
+
+def _directory_budget(requests):
+    return min((r["raw"]-SCALE_DIRECTORY for r in _directory_code_rows(requests)), default=PAGE)
+
+
+def _directory_metadata_rows(requests):
+    rows, cursor = [], 0
+    for code in _directory_code_rows(requests) + [dict(raw=SCALE_DIRECTORY+PAGE, size=0)]:
+        offset = code["raw"]-SCALE_DIRECTORY
+        if cursor < offset:
+            row = dict(owner=DIRECTORY_OWNER, kind="read_only", size=offset-cursor,
+                       align=16 if cursor else PAGE, va=SCALE_DIRECTORY_VA+cursor,
+                       raw=SCALE_DIRECTORY+cursor)
+            if cursor:
+                row["owner_offset"] = cursor
+            rows.append(row)
+        cursor = offset+code["size"]
+    return rows
+
+
+def _scale_regions(requests=()):
     result = [dict(kind=k, va=va, raw=raw, size=PAGE, flags=flags)
               for k, va, raw, flags in (("code", CODE_VA, CODE_RAW, 0x36),
                   ("data", DATA_VA, DATA_RAW, 3), ("code", CODE2_VA, CODE2_RAW, 0x36))]
@@ -752,6 +866,8 @@ def _scale_regions():
         result.append(dict(kind=kind, va=va, raw=raw, size=pages * PAGE,
                            flags={"code": 0x36, "data": 3, "read_only": 0x32}[kind]))
         raw += pages * PAGE
+    if _directory_code_size(requests):
+        result[-1]["flags"] = 0x36  # read-only executable, never writable
     return result
 
 
@@ -759,6 +875,9 @@ def _scale_allocations(requests):
     # This late arena owner must not displace shipped beta-62 allocations or
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
+    original_requests = tuple(requests)
+    _directory_code_size(requests)  # Validate every named slot before placement.
+    requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
     # sprite scorebug included, so adding it to a union moves no other owner's address.
     late = sorted((r for r in requests if r[0] in LATE_OWNERS), key=lambda r: (LATE_OWNERS.index(r[0]), r))
@@ -890,8 +1009,19 @@ def _scale_allocations(requests):
         _require(all(not (a["va"] < row["va"] + row["size"] and row["va"] < a["va"] + a["size"]) for a in out),
                  f"legacy RX tail owner {row['owner']} overlaps another owner")
     out.extend(tail_rows)
-    out.append(dict(owner=DIRECTORY_OWNER, kind="read_only", size=PAGE, align=PAGE,
-                    va=SCALE_DIRECTORY_VA, raw=SCALE_DIRECTORY))
+    # Reconstruct the fixed directory slots from the original normalized set.
+    directory_requests = [r for r in original_requests if r[0] in DIRECTORY_CODE_OWNERS]
+    out.extend(_directory_metadata_rows(directory_requests))
+    out.extend(_directory_code_rows(directory_requests))
+    # Check full reservations, including unused code padding and zero-filled
+    # runtime state. Checking emitted bytes alone cannot protect M3's buffers.
+    # Gap and tail placement must obey the same rule as sequential placement.
+    for coordinate in ("va", "raw"):
+        ordered = sorted(out, key=lambda row: row[coordinate])
+        for left, right in zip(ordered, ordered[1:]):
+            _require(left[coordinate] + left["size"] <= right[coordinate],
+                     f"{coordinate} reservation overlap: {left['owner']} {left['kind']} "
+                     f"and {right['owner']} {right['kind']}")
     return out
 
 
@@ -933,13 +1063,32 @@ def _scale_header_directory(block, payload):
     return result
 
 
-def _scale_seals(payload):
+def _scale_seals(payload, requests=None):
+    if requests is None:
+        requests = _scale_directory_requests(payload) if is_scaleout(payload) else ()
     code = b"".join(payload[r["raw"]:r["raw"] + r["size"]] for r in _scale_regions() if r["kind"] == "code")
+    size = PAGE-_directory_budget(requests)
+    if size:
+        code += payload[SCALE_DIRECTORY+PAGE-size:SCALE_DIRECTORY+PAGE]
     ro = payload[SCALE_DIRECTORY + PAGE:SCALE_FILE_SIZE]
     return {"code_sha256": _sha(code), "read_only_sha256": _sha(ro)}
 
 
-def _scale_directory(requests, seals):
+def _scale_directory(requests, seals, directory_code=None):
+    requests = _requests(requests)
+    budget = _directory_budget(requests)
+    code_size = PAGE-budget
+    if directory_code is None:
+        tail = bytearray(code_size)
+        for row in _directory_code_rows(requests):
+            at = row["raw"]-SCALE_DIRECTORY-budget
+            tail[at:at+row["size"]] = (b"\xcc" if row["kind"] == "code" else b"\0") * row["size"]
+        directory_code = bytes(tail)
+    _require(len(directory_code) == code_size, "directory code size differs")
+    for row in _directory_metadata_rows(requests)[1:]:
+        at = row["raw"]-SCALE_DIRECTORY-budget
+        _require(directory_code[at:at+row["size"]] == bytes(row["size"]),
+                 "foreign inactive directory slot")
     raw = json.dumps(dict(version=3, requests=_requests(requests)),
                      sort_keys=True, separators=(",", ":")).encode("ascii")
     _require(len(raw) <= 32768, "allocation directory document capacity exceeded")
@@ -948,21 +1097,23 @@ def _scale_directory(requests, seals):
     # eventual machine-code hash's compressibility.
     block = (b"XSDIR3\0\0" + struct.pack("<I", len(compressed))
              + bytes.fromhex(seals["code_sha256"]) + bytes.fromhex(seals["read_only_sha256"]) + compressed)
-    _require(len(block) <= PAGE, "allocation directory capacity exceeded")
-    return block.ljust(PAGE, b"\0")
+    _require(len(block) <= PAGE-code_size, "allocation directory capacity exceeded")
+    return block.ljust(PAGE-code_size, b"\0") + directory_code
 
 
 def _seal_scaleout(buf, requests):
-    block = _scale_directory(requests, _scale_seals(buf))
+    size = PAGE-_directory_budget(requests)
+    code = bytes(buf[SCALE_DIRECTORY+PAGE-size:SCALE_DIRECTORY+PAGE]) if size else b""
+    block = _scale_directory(requests, _scale_seals(buf, requests), code)
     buf[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE] = block
     buf[DIRECTORY:LIB_COPY] = _scale_header_directory(block, buf)
-    for index, region in enumerate(_scale_regions()):
+    for index, region in enumerate(_scale_regions(requests)):
         raw = region["raw"]
         at = META_START + index * 56
         buf[at:at + 56] = _scale_descriptor(index, region, _digest(buf[raw:raw + region["size"]]))
 
 
-def _read_scale_directory(payload):
+def _scale_directory_requests(payload):
     block = payload[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE]
     _require(block[:8] == b"XSDIR3\0\0", "foreign scale-out allocation directory")
     size = struct.unpack_from("<I", block, 8)[0]
@@ -973,8 +1124,15 @@ def _read_scale_directory(payload):
              "foreign compressed allocation directory")
     doc = json.loads(raw)
     _require(isinstance(doc, dict), "foreign allocation document")
-    requests = _requests(doc["requests"])
-    _require(block == _scale_directory(requests, _scale_seals(payload)), "foreign owner bytes/directory seal")
+    return _requests(doc["requests"])
+
+
+def _read_scale_directory(payload):
+    block = payload[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE]
+    requests = _scale_directory_requests(payload)
+    size = PAGE-_directory_budget(requests)
+    code = block[PAGE-size:] if size else b""
+    _require(block == _scale_directory(requests, _scale_seals(payload, requests), code), "foreign owner bytes/directory seal")
     _require(payload[DIRECTORY:LIB_COPY] == _scale_header_directory(block, payload), "foreign directory header seal/names/counters")
     return requests
 
@@ -997,7 +1155,8 @@ def validate_scale_structure(payload):
     _require(_sha(payload[META_COPY:NAMES]) == METADATA_SHA256, "foreign relocated names/counters")
     _require(payload[NAMES:DIRECTORY] == b".ASTRAc\0.ASTRAd\0" + bytes(8), "foreign retired allocator names/counters")
     _require(payload[SCALE_NAMES:SCALE_NAMES_END] == _scale_names(music=has_music(payload)), "foreign section names/counters")
-    for index, region in enumerate(_scale_regions()):
+    requests = _scale_directory_requests(payload)
+    for index, region in enumerate(_scale_regions(requests)):
         at = META_START + index * 56
         _require(payload[at:at + 56] == _scale_descriptor(index, region, payload[at + 36:at + 56]),
                  "foreign scale-out section geometry")
@@ -1010,7 +1169,7 @@ def _validate_scaleout(payload):
     requests = _read_scale_directory(payload)
     allocations = _scale_allocations(requests)
     expected = _scale_header_tail()
-    for index, region in enumerate(_scale_regions()):
+    for index, region in enumerate(_scale_regions(requests)):
         raw, size = region["raw"], region["size"]
         content = payload[raw:raw + size]
         if region["kind"] == "data":
@@ -1025,7 +1184,13 @@ def _validate_scaleout(payload):
             _require(all(owned or value == pad for owned, value in zip(mask, content)), "foreign unallocated page padding")
         expected[index * 56:(index + 1) * 56] = _scale_descriptor(index, region, _digest(content))
     from . import nfl2k5_music_storage as music
-    if count == SCALE_COUNT + 1:
+    if count == SCALE_COUNT + 1 and has_home_section(payload):
+        from . import nfl2k5_my_career_home as home
+        block = payload[music.RAW:music.RAW + music.CAPACITY]
+        home._block_content(block)
+        header, name, refs = scale_music_slots()
+        expected[header - META_START:header - META_START + 56] = home._descriptor(block)
+    elif count == SCALE_COUNT + 1:
         block = payload[music.RAW:music.RAW + music.CAPACITY]
         music._block_data(block)
         header, name, refs = scale_music_slots()
@@ -1069,6 +1234,9 @@ def _apply_scaleout(payload, requests):
     for region in _scale_regions():
         if region["kind"] == "code":
             buf[region["raw"]:region["raw"] + region["size"]] = b"\xcc" * region["size"]
+    for row in _directory_code_rows(requests):
+        if row["kind"] == "code":
+            buf[row["raw"]:row["raw"]+row["size"]] = b"\xcc" * row["size"]
     logo_site = next(a for a in allocations if a["owner"] == LOGO_REQUEST[0])
     buf[logo_site["raw"]:logo_site["raw"] + logo.LOGO_SIZE] = logo.RETAIL_LOGO
     struct.pack_into("<3I", buf, 0x104, 0x10000, PAGE, SCALE_IMAGE_SIZE)
@@ -1129,10 +1297,13 @@ def uninstall_read_only(payload: bytes, owner: str) -> tuple[bytes, dict]:
 
 def _capacity(regions, allocations, *, scaleout):
     result = {}
+    directory_code = sum(a["size"] for a in allocations
+                         if a["owner"] in DIRECTORY_CODE_OWNERS and a["kind"] == "code")
     for kind in ("code", "data", "read_only"):
         matching = [r for r in regions if r["kind"] == kind and not r.get("music")]
         capacity = sum(r["size"] for r in matching)
-        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] != "nfl2k5_music_metadata")
+        capacity += directory_code if kind == "code" else -directory_code if kind == "read_only" else 0
+        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] not in EXTRA_SECTION_OWNERS)
         free = capacity - used
         # Existing beta-61 tails remain owned, but are not offered to new owners.
         available = 0
@@ -1141,8 +1312,10 @@ def _capacity(regions, allocations, *, scaleout):
                 continue
             high = max([a["raw"] + a["size"] for a in allocations if r["raw"] <= a["raw"] < r["raw"] + r["size"]] or [r["raw"]])
             available += r["raw"] + r["size"] - high
-        result[kind] = dict(pages=capacity // PAGE, capacity_bytes=capacity, requested_bytes=used,
+        result[kind] = dict(pages=sum(r["size"] for r in matching) // PAGE, capacity_bytes=capacity, requested_bytes=used,
                             free_bytes=free, available_bytes=available)
+        if directory_code and kind in ("code", "read_only"):
+            result[kind]["shared_directory_code_bytes"] = directory_code
     return result
 
 
@@ -1164,13 +1337,19 @@ def _page_map(regions, allocations):
 
 def _scaleout_layout(payload):
     _, special_status, requests = _validate(payload)
-    regions, allocations = _scale_regions(), _scale_allocations(requests)
+    regions, allocations = _scale_regions(requests), _scale_allocations(requests)
     if has_music(payload):
         from . import nfl2k5_music_storage as music
         regions.append(dict(kind="read_only", va=music.VA, raw=music.RAW,
                             size=music.CAPACITY, flags=0x3A, music=True))
         allocations.append(dict(owner=music.OWNER, kind="read_only", va=music.VA, raw=music.RAW,
                                 size=music.CAPACITY, align=PAGE))
+    elif has_home_section(payload):
+        from . import nfl2k5_my_career_home as home
+        regions.append(dict(kind="code", va=home.VA, raw=home.RAW, size=home.SIZE, flags=home.FLAGS,
+                            music=True, home=True))
+        allocations.append(dict(owner=home.OWNER, kind="code", va=home.VA, raw=home.RAW, size=home.SIZE,
+                                align=PAGE))
     return dict(status="applied", version=3, special=special_status, file_size=len(payload),
                 image_size=SCALE_IMAGE_SIZE, headers_size=PAGE, regions=regions, allocations=allocations,
                 pages=_page_map(regions, allocations), capacity=_capacity(regions, allocations, scaleout=True))
@@ -1187,7 +1366,7 @@ def plan(requests=(), *, scaleout=True):
     normalized = _requests(requests)
     use_scaleout = scaleout or _needs_scaleout(normalized)
     allocations = _scale_allocations(normalized) if use_scaleout else _legacy_allocations(normalized)
-    regions = _scale_regions() if use_scaleout else _regions(normalized)
+    regions = _scale_regions(normalized) if use_scaleout else _regions(normalized)
     if use_scaleout:
         _scale_directory(normalized, dict(code_sha256="f" * 64, read_only_sha256="e" * 64))
     else:

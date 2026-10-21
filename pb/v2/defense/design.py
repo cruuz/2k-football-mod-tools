@@ -13,6 +13,13 @@ wide 5 (no TE) = 430, wide 9 = 560.
 Every alignment below is checked by mod_editor/core/nfl2k5_defense_lint.py: no two defenders closer than 1.7 yd, no
 standing defender inside the tackles within 2 yd of the ball unless the formation is a named pressure look (Mug).
 
+Odd fronts (b776 de2, Noah's rule: EDGE players rush on base calls and drop only on a designed zone blitz): the OLB-kind
+slots of a three-down formation are its edge rushers and stand on the edge in every formation.  Their coverage scripts are
+retail scripts turned by pb/v2/defense/okie.py (an edge that dropped into the flat now rushes, its zone goes to the nearest
+underneath defender); a call where one edge still covers must have a back blitzing in his place (DESIGNED), is capped at
+about 12 percent of a menu and is pinned at CPU band 3.  A record listed on several odd formations that disagree about
+which slot is the strong edge is throttled the same way, and a menu that is mostly such records gets exclusive calls.
+
 Adding or changing a team package (P6): edit that team's Scheme in SCHEMES below.
   * family: 'even' (four-down Over line) or 'odd' (Wide line on a 4-3 roster; Okie on a 3-4 roster).
   * mug: True gives the team an extra "Nickel Mug" formation (passing downs only) when its book has play room.
@@ -53,9 +60,11 @@ OVER = LineFamily('Over', {'WE': ('w5', WEAK), 'SE': ('5', STRONG), 'WT': ('1', 
                   'Four-down Over: strong 5-technique end, strong 3-technique, weak 1-technique shade, wide-5 weak end.')
 WIDE = LineFamily('Wide', {'WE': ('w9', WEAK), 'SE': ('7', STRONG), 'WT': ('3', WEAK), 'ST': ('4i', STRONG)},
                   'Four-down Wide (2-4-5 rush look with hands down): 7-technique strong end, strong 4i, weak 3, wide-9 '
-                  'weak end; the Sam walks up outside the tight end in base for a five-man line.')
-BEAR = LineFamily('Bear', {'WE': ('3', WEAK), 'SE': ('5', STRONG), 'WT': ('0', WEAK), 'ST': ('3', STRONG)},
-                  'Bear/46: both guards and the centre covered (3-0-3), strong 5-technique end, both edges walked up.')
+                  'weak end; the Sam stands off the ball outside the tight end (b776 de2: an outside backer is never the '
+                  'outermost man on the line, the ends are).')
+BEAR = LineFamily('Bear', {'WE': ('5', WEAK), 'SE': ('5', STRONG), 'WT': ('0', WEAK), 'ST': ('3', STRONG)},
+                  'Bear/46: both ends at 5-technique (the two outermost slots of the line, EDGE), nose over the centre, '
+                  'strong 3-technique tackle; the outside backers stand off the line behind them.')
 ODD = LineFamily('Okie', {'WE': ('4i', WEAK), 'SE': ('5', STRONG), 'N': ('0', STRONG)},
                  'Three-down Okie: weak 4i, 0-technique nose, strong 5-technique, standing edges outside both ends.')
 MUG = LineFamily('Mug', {'WE': ('w9', WEAK), 'SE': ('9', STRONG), 'WT': ('4i', WEAK), 'ST': ('4i', STRONG)},
@@ -92,7 +101,7 @@ def base_43(family: LineFamily, kinds) -> dict:
     pos = line(family, four_down_roles(kinds))
     will, mike, sam = 4, 5, 6            # retail: OLB2 (+x), MLB, OLB (-x)
     if family is WIDE:
-        pos[sam] = (t('9', STRONG) - 95, 91)     # walked up outside the tight end, standing edge
+        pos[sam] = (-455, 320)                   # stands off the ball outside the tight end, 3.5 yd (never on the line)
         pos[mike] = (-40, 457)
         pos[will] = (275, 457)
     else:
@@ -111,8 +120,8 @@ def bear(family: LineFamily, kinds) -> dict:
     lbs = linebackers(kinds)
     # Retail Bear slots: 4 = OLB2/OLB (weak or walk-up), 5 = MLB or MLB2, 6 = OLB/MLB (strong).
     edge_w, mike, edge_s = lbs[0], lbs[1], lbs[2]
-    pos[edge_s] = (t('9', STRONG) - 85, 91)     # Sam on the line outside the TE
-    pos[edge_w] = (t('w5', WEAK) + 30, 91)      # Jack/Will walked up outside the weak tackle
+    pos[edge_s] = (-430, 274)                   # Sam 3 yd off the ball over the TE (never on the line: the ends are the edge men)
+    pos[edge_w] = (330, 274)                    # Will 3 yd off the ball, outside the weak tackle's shoulder
     pos[mike] = (0, 411)
     pos[8] = (-300, 411)                        # strong safety down in the box (eighth man)
     pos[7] = (0, 1097)                          # free safety single high
@@ -157,13 +166,14 @@ def odd_roles(kinds):
 def odd_front(kinds, *, base: bool) -> dict:
     pos = line(ODD, odd_roles(kinds))
     pos[0] = (t('4i', WEAK) + 265, 91)          # weak edge, standing, outside the 4i (wide 5 spot)
-    ilbs = [s for s in range(4, 7) if kinds[s] in (MLB, OLB)]
-    if base:
-        # 3-4: slot 6 is the strong edge (OLB); slots 4/5 inside backers.
-        edge = 6 if kinds[6] in (MLB, OLB) else None
-        if edge is not None:
-            pos[edge] = (t('9', STRONG) - 65, 91)
-            ilbs = [s for s in ilbs if s != edge]
+    # b776 de2: every OLB-kind slot after slot 0 is the STRONG EDGE (the 3-4 base's slot 6, the HOU/NE/PIT/SD nickel and
+    # dime's slot 5, the 3-3's slot 4), and the position recode makes it an EDGE player.  It stands on the edge like the
+    # base's, not inside as a third inside backer (it used to: nickel/dime put it at 5 yd, -2 yd, which is where the
+    # drop-into-the-flat scripts wanted it and the opposite of Noah's rule).  Only MLB-kind slots are inside backers.
+    for s in range(4, 7):
+        if kinds[s] == OLB:
+            pos[s] = (t('9', STRONG) - 65, 91)
+    ilbs = [s for s in range(4, 7) if kinds[s] == MLB]
     if len(ilbs) >= 2:
         pos[ilbs[0]] = (183, 457)
         pos[ilbs[1]] = (-183, 457)
@@ -230,24 +240,24 @@ def odd_fronts() -> list[FrontCall]:
 
 def bear_fronts(full: bool = False) -> list[FrontCall]:
     calls = [
-        FrontCall('Bear Plug', 'bear', {'WE': (2, 11, 0), 'SE': (2, 3, 0), 'WT': (0, 8, 0), 'ST': (2, 5, 0)}, 0,
+        FrontCall('Bear Plug', 'bear', {'WE': (2, 13, 0), 'SE': (2, 3, 0), 'WT': (0, 8, 0), 'ST': (2, 5, 0)}, 0,
                   '3-0-3 attack the B gaps, nose holds the centre.'),
-        FrontCall('Bear Pinch', 'bear', {'WE': (2, 9, 0), 'SE': (2, 5, 0), 'WT': (2, 8, 0), 'ST': (2, 7, 0)}, 1,
+        FrontCall('Bear Pinch', 'bear', {'WE': (2, 11, 0), 'SE': (2, 5, 0), 'WT': (2, 8, 0), 'ST': (2, 7, 0)}, 1,
                   'Everyone inside, edges own the C gaps.'),
-        FrontCall('Bear Slant', 'bear', {'WE': (2, 9, 0), 'SE': (2, 1, 0), 'WT': (2, 7, 0), 'ST': (2, 3, 0)}, 1,
+        FrontCall('Bear Slant', 'bear', {'WE': (2, 11, 0), 'SE': (2, 1, 0), 'WT': (2, 7, 0), 'ST': (2, 3, 0)}, 1,
                   'Slant to the strength.'),
     ]
     if full:
         calls += [
-            FrontCall('Bear Base', 'bear', {'WE': (1, 11, 0), 'SE': (1, 3, 0), 'WT': (1, 8, 0), 'ST': (1, 5, 0)}, 1,
+            FrontCall('Bear Base', 'bear', {'WE': (1, 13, 0), 'SE': (1, 3, 0), 'WT': (1, 8, 0), 'ST': (1, 5, 0)}, 1,
                       'Read the B gaps, nose two-gaps.'),
-            FrontCall('Bear Slant Weak', 'bear', {'WE': (2, 13, 0), 'SE': (2, 5, 0), 'WT': (2, 9, 0), 'ST': (2, 7, 0)}, 2,
+            FrontCall('Bear Slant Weak', 'bear', {'WE': (2, 15, 0), 'SE': (2, 5, 0), 'WT': (2, 9, 0), 'ST': (2, 7, 0)}, 2,
                       'Slant away from the strength.'),
             FrontCall('Bear Contain', 'bear', {'WE': (3, 16, 0), 'SE': (3, 0, 0), 'WT': (2, 8, 0), 'ST': (2, 5, 0)}, 3,
                       'Contain lanes for the ends.'),
-            FrontCall('Bear Twist', 'bear', {'WE': (1, 8, 0.2), 'SE': (2, 3, 0), 'WT': (2, 11, 0), 'ST': (2, 5, 0)}, 2,
+            FrontCall('Bear Twist', 'bear', {'WE': (1, 10, 0.2), 'SE': (2, 3, 0), 'WT': (2, 11, 0), 'ST': (2, 5, 0)}, 2,
                       'Weak end loops behind the nose, nose slants to the weak B gap.'),
-            FrontCall('Bear Fire', 'bear', {'WE': (2, 11, 0), 'SE': (2, 3, 0), 'WT': (2, 9, 0), 'ST': (2, 7, 0)}, 2,
+            FrontCall('Bear Fire', 'bear', {'WE': (2, 13, 0), 'SE': (2, 3, 0), 'WT': (2, 9, 0), 'ST': (2, 7, 0)}, 2,
                       'All four penetrate their gaps.'),
         ]
     return calls

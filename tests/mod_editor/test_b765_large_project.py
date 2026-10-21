@@ -29,7 +29,8 @@ class CacheBookkeepingTests(unittest.TestCase):
             with mock.patch.object(Path, "glob", glob):
                 for index in range(1000):
                     cache.put(f"{index:064x}", (b"compiled bytes", {"index": index}))
-            self.assertEqual(scans, ["*.json"])
+            # One inventory scan; fx1 added its one stale .pending-* sweep to that same scan.
+            self.assertEqual(scans, ["*.json", ".pending-*"])
             self.assertEqual(cache._bytes, sum(path.stat().st_size for path in root.glob("*.json")))
             self.assertEqual(cache.get(f"{999:064x}"), (b"compiled bytes", {"index": 999}))
 

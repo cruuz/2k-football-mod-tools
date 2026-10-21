@@ -22,7 +22,9 @@ class Machine:
             self.uc.mem_write(section.start,payload[section.raw:section.raw+section.raw_size])
         for start,size in ((self.P,0x10000),(0x3100000,0x10000),(self.STOP,0x1000)):
             self.uc.mem_map(start,size)
-        self.labels = patch.code_for(patch.allocation(payload)['va'])[1]
+        from mod_editor.core import nfl2k5_xbe_space as space
+        owned = [a for a in space.layout(payload)['allocations'] if a['owner'] == patch.OWNER]
+        self.labels = patch.code_for(owned[0]['va'])[1] if owned else {}
         self.writes = []
         self.uc.hook_add(uc.UC_HOOK_MEM_WRITE, lambda u,a,address,size,value,data: self.writes.append((address,size)))
         # Only peripheral notifications and global-slider lookup are fixtures.
