@@ -1,7 +1,7 @@
 {
  "schema": "b77/a4_moment_playbook_eras/v2",
- "modern_first_season": 2005,
- "rule": "A side whose SITU season word is 2005 or later gets its franchise's current book; an older side keeps the preserved retail 2004 bank. The selector stays the one in nfl2k5_stock_books (62902). gun_weight replaces the retail 0.05 that 0x207EF0 gives every shotgun set beyond 10 yards of the goal line (nfl2k5_moment_gun_weight).",
+ "modern_first_season": 2010,
+ "rule": "A side whose SITU season word is 2010 or later gets its franchise's current book; an older side keeps the preserved retail 2004 bank. The selector stays the one in nfl2k5_stock_books (62902). gun_weight replaces the retail 0.05 that 0x207EF0 gives every shotgun set beyond 10 yards of the goal line (nfl2k5_moment_gun_weight).",
  "league_shotgun_pct": {
   "1999": {
    "plays": 32476,
@@ -147,7 +147,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
      "era": "classic",
-     "offense": "Season 1971 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1971 is before 2010: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -158,7 +158,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
      "era": "classic",
-     "offense": "Season 1966 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1966 is before 2010: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -179,7 +179,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-NYJ-pb.iff",
      "era": "classic",
-     "offense": "Season 1968 is before 2005: the preserved retail 2004 NYJ book (E2R-NYJ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1968 is before 2010: the preserved retail 2004 NYJ book (E2R-NYJ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -190,7 +190,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
      "era": "classic",
-     "offense": "Season 1967 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1967 is before 2010: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -211,7 +211,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
      "era": "classic",
-     "offense": "Season 1972 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1972 is before 2010: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -222,7 +222,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
      "era": "classic",
-     "offense": "Season 1969 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1969 is before 2010: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -243,7 +243,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
      "era": "classic",
-     "offense": "Season 1967 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1967 is before 2010: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -254,7 +254,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-PIT-pb.iff",
      "era": "classic",
-     "offense": "Season 1975 is before 2005: the preserved retail 2004 PIT book (E2R-PIT-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1975 is before 2010: the preserved retail 2004 PIT book (E2R-PIT-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -275,7 +275,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
      "era": "classic",
-     "offense": "Season 1972 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1972 is before 2010: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -286,7 +286,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
      "era": "classic",
-     "offense": "Season 1976 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1976 is before 2010: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -307,7 +307,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-WAS-pb.iff",
      "era": "classic",
-     "offense": "Season 1982 is before 2005: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1982 is before 2010: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -318,7 +318,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
      "era": "classic",
-     "offense": "Season 1977 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1977 is before 2010: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -339,7 +339,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-NO-pb.iff",
      "era": "classic",
-     "offense": "Season 1991 is before 2005: the preserved retail 2004 NO book (E2R-NO-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1991 is before 2010: the preserved retail 2004 NO book (E2R-NO-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -350,7 +350,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
      "era": "classic",
-     "offense": "Season 1981 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1981 is before 2010: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -371,7 +371,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-SD-pb.iff",
      "era": "classic",
-     "offense": "Season 1980 is before 2005: the preserved retail 2004 SD book (E2R-SD-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1980 is before 2010: the preserved retail 2004 SD book (E2R-SD-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -382,7 +382,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-MIA-pb.iff",
      "era": "classic",
-     "offense": "Season 1984 is before 2005: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1984 is before 2010: the preserved retail 2004 MIA book (E2R-MIA-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -403,7 +403,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DAL-pb.iff",
      "era": "classic",
-     "offense": "Season 1977 is before 2005: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1977 is before 2010: the preserved retail 2004 DAL book (E2R-DAL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -414,7 +414,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
      "era": "classic",
-     "offense": "Season 1981 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1981 is before 2010: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -435,7 +435,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
      "era": "classic",
-     "offense": "Season 1983 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1983 is before 2010: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -446,7 +446,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-WAS-pb.iff",
      "era": "classic",
-     "offense": "Season 1982 is before 2005: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1982 is before 2010: the preserved retail 2004 WAS book (E2R-WAS-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -467,7 +467,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1986 is before 2010: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -478,7 +478,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-CLE-pb.iff",
      "era": "classic",
-     "offense": "Season 1986 is before 2005: the preserved retail 2004 CLE book (E2R-CLE-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1986 is before 2010: the preserved retail 2004 CLE book (E2R-CLE-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -499,7 +499,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
      "era": "classic",
-     "offense": "Season 1989 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1989 is before 2010: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -510,7 +510,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-CIN-pb.iff",
      "era": "classic",
-     "offense": "Season 1988 is before 2005: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1988 is before 2010: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -531,7 +531,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-TB-pb.iff",
      "era": "classic",
-     "offense": "Season 1979 is before 2005: the preserved retail 2004 TB book (E2R-TB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1979 is before 2010: the preserved retail 2004 TB book (E2R-TB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -542,7 +542,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-ARZ-pb.iff",
      "era": "classic",
-     "offense": "Season 1975 is before 2005: the preserved retail 2004 ARZ book (E2R-ARZ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1975 is before 2010: the preserved retail 2004 ARZ book (E2R-ARZ-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -563,7 +563,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-CIN-pb.iff",
      "era": "classic",
-     "offense": "Season 1988 is before 2005: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1988 is before 2010: the preserved retail 2004 CIN book (E2R-CIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -574,7 +574,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
      "era": "classic",
-     "offense": "Season 1989 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1989 is before 2010: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -595,7 +595,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
      "era": "classic",
-     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1990 is before 2010: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -606,7 +606,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-NYG-pb.iff",
      "era": "classic",
-     "offense": "Season 1990 is before 2005: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1990 is before 2010: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -627,7 +627,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1979 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1979 is before 2010: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -638,7 +638,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1986 is before 2010: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -659,7 +659,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
      "era": "classic",
-     "offense": "Season 1993 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1993 is before 2010: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -670,7 +670,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1986 is before 2010: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -691,7 +691,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1979 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1979 is before 2010: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -702,7 +702,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
      "era": "classic",
-     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1990 is before 2010: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -723,7 +723,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1986 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1986 is before 2010: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -734,7 +734,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-KC-pb.iff",
      "era": "classic",
-     "offense": "Season 1993 is before 2005: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1993 is before 2010: the preserved retail 2004 KC book (E2R-KC-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -755,7 +755,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-IND-pb.iff",
      "era": "classic",
-     "offense": "Season 1970 is before 2005: the preserved retail 2004 IND book (E2R-IND-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1970 is before 2010: the preserved retail 2004 IND book (E2R-IND-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -766,7 +766,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
      "era": "classic",
-     "offense": "Season 1990 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1990 is before 2010: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -787,7 +787,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
      "era": "classic",
-     "offense": "Season 1996 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1996 is before 2010: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -798,7 +798,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-DEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1998 is before 2005: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1998 is before 2010: the preserved retail 2004 DEN book (E2R-DEN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -830,7 +830,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-STL-pb.iff",
      "era": "classic",
-     "offense": "Season 1999 is before 2005: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
+     "offense": "Season 1999 is before 2010: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -852,7 +852,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1999 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
+     "offense": "Season 1999 is before 2010: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -884,7 +884,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-STL-pb.iff",
      "era": "classic",
-     "offense": "Season 1999 is before 2005: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
+     "offense": "Season 1999 is before 2010: the preserved retail 2004 STL book (E2R-STL-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. STL 1999: 3.0% of snaps in shotgun (first down 1.8%, second 2.3%, third 6.7%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -906,7 +906,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
      "era": "classic",
-     "offense": "Season 2001 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
+     "offense": "Season 2001 is before 2010: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -938,7 +938,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-NYG-pb.iff",
      "era": "classic",
-     "offense": "Season 2003 is before 2005: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NYG 2003: 24.4% of snaps in shotgun (first down 14.1%, second 16.0%, third 54.4%), 1.3% no-huddle",
+     "offense": "Season 2003 is before 2010: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NYG 2003: 24.4% of snaps in shotgun (first down 14.1%, second 16.0%, third 54.4%), 1.3% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -960,7 +960,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-SF-pb.iff",
      "era": "classic",
-     "offense": "Season 2003 is before 2005: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. SF 2003: 10.0% of snaps in shotgun (first down 4.3%, second 6.0%, third 26.6%), 0.7% no-huddle",
+     "offense": "Season 2003 is before 2010: the preserved retail 2004 SF book (E2R-SF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. SF 2003: 10.0% of snaps in shotgun (first down 4.3%, second 6.0%, third 26.6%), 0.7% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -992,7 +992,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-GB-pb.iff",
      "era": "classic",
-     "offense": "Season 2004 is before 2005: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. GB 2004: 14.1% of snaps in shotgun (first down 8.4%, second 8.4%, third 36.4%), 0.1% no-huddle",
+     "offense": "Season 2004 is before 2010: the preserved retail 2004 GB book (E2R-GB-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. GB 2004: 14.1% of snaps in shotgun (first down 8.4%, second 8.4%, third 36.4%), 0.1% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -1014,7 +1014,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-PHI-pb.iff",
      "era": "classic",
-     "offense": "Season 2004 is before 2005: the preserved retail 2004 PHI book (E2R-PHI-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. PHI 2004: 6.7% of snaps in shotgun (first down 4.2%, second 4.0%, third 15.9%), 0.0% no-huddle",
+     "offense": "Season 2004 is before 2010: the preserved retail 2004 PHI book (E2R-PHI-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 13.2% (first down 7.6%) in 2004. PHI 2004: 6.7% of snaps in shotgun (first down 4.2%, second 4.0%, third 15.9%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -1035,7 +1035,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-ATL-pb.iff",
      "era": "classic",
-     "offense": "Season 1998 is before 2005: the preserved retail 2004 ATL book (E2R-ATL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1998 is before 2010: the preserved retail 2004 ATL book (E2R-ATL-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -1046,7 +1046,7 @@
      "category": 4,
      "book_choice": "preserved retail 2004 book E2R-MIN-pb.iff",
      "era": "classic",
-     "offense": "Season 1998 is before 2005: the preserved retail 2004 MIN book (E2R-MIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
+     "offense": "Season 1998 is before 2010: the preserved retail 2004 MIN book (E2R-MIN-pb.iff, a byte copy of the retail entry) is the period book; no nflverse play-by-play before 1999.",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -1062,8 +1062,8 @@
     "away": {
      "franchise_key": "NYG",
      "season": 2007,
-     "book_now": "franchise book NYG-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-NYG-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2007.csv.gz",
@@ -1076,16 +1076,16 @@
       "pass_pct": 57.0,
       "no_huddle_pct": 5.9
      },
-     "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2007 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 27.1% (first down 16.4%) in 2007. NYG 2007: 36.8% of snaps in shotgun (first down 25.2%, second 31.9%, third 67.4%), 5.9% no-huddle",
-     "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2007 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-NYG-pb.iff",
+     "era": "classic",
+     "offense": "Season 2007 is before 2010: the preserved retail 2004 NYG book (E2R-NYG-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 27.1% (first down 16.4%) in 2007. NYG 2007: 36.8% of snaps in shotgun (first down 25.2%, second 31.9%, third 67.4%), 5.9% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
      "franchise_key": "NE",
      "season": 2007,
-     "book_now": "franchise book NE-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-NE-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2007.csv.gz",
@@ -1098,32 +1098,13 @@
       "pass_pct": 60.6,
       "no_huddle_pct": 10.6
      },
-     "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2007 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 27.1% (first down 16.4%) in 2007. NE 2007: 50.6% of snaps in shotgun (first down 39.8%, second 51.9%, third 75.4%), 10.6% no-huddle",
-     "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2007 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
+     "era": "classic",
+     "offense": "Season 2007 is before 2010: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 27.1% (first down 16.4%) in 2007. NE 2007: 50.6% of snaps in shotgun (first down 39.8%, second 51.9%, third 75.4%), 10.6% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
-   "gun_weight": 0.6,
-   "fit": {
-    "book": "NE.play",
-    "book_sha256": "70d34163ba2df21f09fbe7a203c9773251c6ac57a7325b7f0f1698724c6ed89d",
-    "target": {
-     "first_down": 39.8,
-     "second_down": 51.9,
-     "third_down_real": 75.4
-    },
-    "retail_rule": {
-     "first_down": 17.9,
-     "second_down": 23.0,
-     "third_and_short_to_long": 52.4
-    },
-    "fitted": {
-     "first_down": 41.1,
-     "second_down": 49.0,
-     "third_and_short_to_long": 68.7
-    }
-   }
+   "gun_weight": 0.05
   },
   {
    "row": 28,
@@ -1135,8 +1116,8 @@
     "away": {
      "franchise_key": "PIT",
      "season": 2008,
-     "book_now": "franchise book PIT-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-PIT-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz",
@@ -1149,16 +1130,16 @@
       "pass_pct": 57.3,
       "no_huddle_pct": 4.9
      },
-     "book_choice": "franchise book PIT-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2008 is 2005 or later: the franchise's current PIT book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 32.3% (first down 20.4%) in 2008. PIT 2008: 30.5% of snaps in shotgun (first down 13.3%, second 20.5%, third 77.8%), 4.9% no-huddle",
-     "defense": "The same PIT book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2008 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-PIT-pb.iff",
+     "era": "classic",
+     "offense": "Season 2008 is before 2010: the preserved retail 2004 PIT book (E2R-PIT-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 32.3% (first down 20.4%) in 2008. PIT 2008: 30.5% of snaps in shotgun (first down 13.3%, second 20.5%, third 77.8%), 4.9% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
      "franchise_key": "ARZ",
      "season": 2008,
-     "book_now": "franchise book ARZ-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-ARZ-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2008.csv.gz",
@@ -1171,32 +1152,13 @@
       "pass_pct": 67.6,
       "no_huddle_pct": 8.8
      },
-     "book_choice": "franchise book ARZ-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2008 is 2005 or later: the franchise's current ARZ book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 32.3% (first down 20.4%) in 2008. ARZ 2008: 49.2% of snaps in shotgun (first down 36.6%, second 53.1%, third 72.0%), 8.8% no-huddle",
-     "defense": "The same ARZ book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2008 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-ARZ-pb.iff",
+     "era": "classic",
+     "offense": "Season 2008 is before 2010: the preserved retail 2004 ARZ book (E2R-ARZ-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 32.3% (first down 20.4%) in 2008. ARZ 2008: 49.2% of snaps in shotgun (first down 36.6%, second 53.1%, third 72.0%), 8.8% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
-   "gun_weight": 0.05,
-   "fit": {
-    "book": "ARZ.play",
-    "book_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
-    "target": {
-     "first_down": 36.6,
-     "second_down": 53.1,
-     "third_down_real": 72.0
-    },
-    "retail_rule": {
-     "first_down": 52.9,
-     "second_down": 55.9,
-     "third_and_short_to_long": 55.7
-    },
-    "fitted": {
-     "first_down": 52.9,
-     "second_down": 55.9,
-     "third_and_short_to_long": 55.7
-    }
-   }
+   "gun_weight": 0.05
   },
   {
    "row": 29,
@@ -1224,7 +1186,7 @@
      },
      "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2011 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NYG 2011: 45.7% of snaps in shotgun (first down 32.7%, second 36.7%, third 88.6%), 4.3% no-huddle",
+     "offense": "Season 2011 is 2010 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NYG 2011: 45.7% of snaps in shotgun (first down 32.7%, second 36.7%, third 88.6%), 4.3% no-huddle",
      "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1246,7 +1208,7 @@
      },
      "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2011 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NE 2011: 51.0% of snaps in shotgun (first down 41.8%, second 50.8%, third 75.9%), 22.8% no-huddle",
+     "offense": "Season 2011 is 2010 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NE 2011: 51.0% of snaps in shotgun (first down 41.8%, second 50.8%, third 75.9%), 22.8% no-huddle",
      "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1297,7 +1259,7 @@
      },
      "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2016 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. NE 2016: 54.0% of snaps in shotgun (first down 40.0%, second 52.9%, third 84.2%), 4.4% no-huddle",
+     "offense": "Season 2016 is 2010 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. NE 2016: 54.0% of snaps in shotgun (first down 40.0%, second 52.9%, third 84.2%), 4.4% no-huddle",
      "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2016 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1319,7 +1281,7 @@
      },
      "book_choice": "franchise book ATL-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2016 is 2005 or later: the franchise's current ATL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. ATL 2016: 40.5% of snaps in shotgun (first down 24.0%, second 39.3%, third 86.2%), 9.1% no-huddle",
+     "offense": "Season 2016 is 2010 or later: the franchise's current ATL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.5% (first down 52.2%) in 2016. ATL 2016: 40.5% of snaps in shotgun (first down 24.0%, second 39.3%, third 86.2%), 9.1% no-huddle",
      "defense": "The same ATL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2016 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1370,7 +1332,7 @@
      },
      "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2022 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
+     "offense": "Season 2022 is 2010 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
      "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1392,7 +1354,7 @@
      },
      "book_choice": "franchise book BUF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2022 is 2005 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. BUF 2022: 74.5% of snaps in shotgun (first down 68.2%, second 76.5%, third 86.4%), 9.8% no-huddle",
+     "offense": "Season 2022 is 2010 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. BUF 2022: 74.5% of snaps in shotgun (first down 68.2%, second 76.5%, third 86.4%), 9.8% no-huddle",
      "defense": "The same BUF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1443,7 +1405,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-BUF-pb.iff",
      "era": "classic",
-     "offense": "Season 1999 is before 2005: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. BUF 1999: 25.2% of snaps in shotgun (first down 13.9%, second 17.5%, third 59.0%), 0.1% no-huddle",
+     "offense": "Season 1999 is before 2010: the preserved retail 2004 BUF book (E2R-BUF-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. BUF 1999: 25.2% of snaps in shotgun (first down 13.9%, second 17.5%, third 59.0%), 0.1% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -1465,7 +1427,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-TEN-pb.iff",
      "era": "classic",
-     "offense": "Season 1999 is before 2005: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
+     "offense": "Season 1999 is before 2010: the preserved retail 2004 TEN book (E2R-TEN-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 12.1% (first down 6.0%) in 1999. TEN 1999: 21.0% of snaps in shotgun (first down 10.5%, second 14.1%, third 51.8%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -1497,7 +1459,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-OAK-pb.iff",
      "era": "classic",
-     "offense": "Season 2001 is before 2005: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. OAK 2001: 0.0% of snaps in shotgun (first down 0.0%, second 0.0%, third 0.0%), 0.0% no-huddle",
+     "offense": "Season 2001 is before 2010: the preserved retail 2004 OAK book (E2R-OAK-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. OAK 2001: 0.0% of snaps in shotgun (first down 0.0%, second 0.0%, third 0.0%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -1519,7 +1481,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
      "era": "classic",
-     "offense": "Season 2001 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
+     "offense": "Season 2001 is before 2010: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.0% (first down 7.6%) in 2001. NE 2001: 14.0% of snaps in shotgun (first down 10.3%, second 9.7%, third 27.6%), 0.0% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -1529,8 +1491,8 @@
    "row": 34,
    "title": "SUPER BOWL XXXVIII: FINALE",
    "date": "February 1, 2004",
-   "user_side": "away",
-   "cpu_side": "home",
+   "user_side": "home",
+   "cpu_side": "away",
    "sides": {
     "away": {
      "franchise_key": "CAR",
@@ -1551,7 +1513,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-CAR-pb.iff",
      "era": "classic",
-     "offense": "Season 2003 is before 2005: the preserved retail 2004 CAR book (E2R-CAR-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. CAR 2003: 3.2% of snaps in shotgun (first down 3.6%, second 3.1%, third 2.1%), 0.1% no-huddle",
+     "offense": "Season 2003 is before 2010: the preserved retail 2004 CAR book (E2R-CAR-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. CAR 2003: 3.2% of snaps in shotgun (first down 3.6%, second 3.1%, third 2.1%), 0.1% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
@@ -1573,7 +1535,7 @@
      },
      "book_choice": "preserved retail 2004 book E2R-NE-pb.iff",
      "era": "classic",
-     "offense": "Season 2003 is before 2005: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NE 2003: 12.9% of snaps in shotgun (first down 9.2%, second 9.7%, third 25.4%), 3.6% no-huddle",
+     "offense": "Season 2003 is before 2010: the preserved retail 2004 NE book (E2R-NE-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 14.3% (first down 7.7%) in 2003. NE 2003: 12.9% of snaps in shotgun (first down 9.2%, second 9.7%, third 25.4%), 3.6% no-huddle",
      "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
@@ -1589,8 +1551,8 @@
     "away": {
      "franchise_key": "NO",
      "season": 2009,
-     "book_now": "franchise book NO-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-NO-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2009.csv.gz",
@@ -1603,16 +1565,16 @@
       "pass_pct": 56.4,
       "no_huddle_pct": 0.5
      },
-     "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2009 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.0% (first down 23.3%) in 2009. NO 2009: 31.2% of snaps in shotgun (first down 19.4%, second 29.9%, third 63.1%), 0.5% no-huddle",
-     "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2009 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-NO-pb.iff",
+     "era": "classic",
+     "offense": "Season 2009 is before 2010: the preserved retail 2004 NO book (E2R-NO-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 37.0% (first down 23.3%) in 2009. NO 2009: 31.2% of snaps in shotgun (first down 19.4%, second 29.9%, third 63.1%), 0.5% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     },
     "home": {
      "franchise_key": "IND",
      "season": 2009,
-     "book_now": "franchise book IND-pb.iff",
-     "book_now_exit": "default",
+     "book_now": "classic: E2R-IND-pb.iff",
+     "book_now_exit": "stock_alias",
      "category": 4,
      "real": {
       "source": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2009.csv.gz",
@@ -1625,32 +1587,13 @@
       "pass_pct": 64.4,
       "no_huddle_pct": 8.9
      },
-     "book_choice": "franchise book IND-pb.iff (v2 offense, v2 defense)",
-     "era": "modern",
-     "offense": "Season 2009 is 2005 or later: the franchise's current IND book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.0% (first down 23.3%) in 2009. IND 2009: 50.3% of snaps in shotgun (first down 36.8%, second 55.3%, third 74.7%), 8.9% no-huddle",
-     "defense": "The same IND book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2009 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
+     "book_choice": "preserved retail 2004 book E2R-IND-pb.iff",
+     "era": "classic",
+     "offense": "Season 2009 is before 2010: the preserved retail 2004 IND book (E2R-IND-pb.iff, a byte copy of the retail entry) is the period book; league shotgun share 37.0% (first down 23.3%) in 2009. IND 2009: 50.3% of snaps in shotgun (first down 36.8%, second 55.3%, third 74.7%), 8.9% no-huddle",
+     "defense": "Same retail 2004 book: its own retail defense (base fronts and coverages of the 2004 game), kept as shipped."
     }
    },
-   "gun_weight": 0.05,
-   "fit": {
-    "book": "IND.play",
-    "book_sha256": "d54a6ea579aa5992e4d8231309ee4a015bc96f4902f403231b9cadc465c08647",
-    "target": {
-     "first_down": 36.8,
-     "second_down": 55.3,
-     "third_down_real": 74.7
-    },
-    "retail_rule": {
-     "first_down": 43.1,
-     "second_down": 55.1,
-     "third_and_short_to_long": 54.9
-    },
-    "fitted": {
-     "first_down": 43.1,
-     "second_down": 55.1,
-     "third_and_short_to_long": 54.9
-    }
-   }
+   "gun_weight": 0.05
   },
   {
    "row": 36,
@@ -1678,7 +1621,7 @@
      },
      "book_choice": "franchise book PHI-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2010 is 2005 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. PHI 2010: 51.0% of snaps in shotgun (first down 42.0%, second 51.7%, third 70.0%), 2.3% no-huddle",
+     "offense": "Season 2010 is 2010 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. PHI 2010: 51.0% of snaps in shotgun (first down 42.0%, second 51.7%, third 70.0%), 2.3% no-huddle",
      "defense": "The same PHI book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1700,7 +1643,7 @@
      },
      "book_choice": "franchise book NYG-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2010 is 2005 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NYG 2010: 38.4% of snaps in shotgun (first down 24.1%, second 31.0%, third 83.3%), 3.7% no-huddle",
+     "offense": "Season 2010 is 2010 or later: the franchise's current NYG book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NYG 2010: 38.4% of snaps in shotgun (first down 24.1%, second 31.0%, third 83.3%), 3.7% no-huddle",
      "defense": "The same NYG book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1751,7 +1694,7 @@
      },
      "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2010 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NO 2010: 39.2% of snaps in shotgun (first down 26.4%, second 35.3%, third 72.2%), 1.4% no-huddle",
+     "offense": "Season 2010 is 2010 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. NO 2010: 39.2% of snaps in shotgun (first down 26.4%, second 35.3%, third 72.2%), 1.4% no-huddle",
      "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1773,7 +1716,7 @@
      },
      "book_choice": "franchise book SEA-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2010 is 2005 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. SEA 2010: 38.8% of snaps in shotgun (first down 24.6%, second 33.8%, third 74.1%), 1.0% no-huddle",
+     "offense": "Season 2010 is 2010 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 37.9% (first down 24.6%) in 2010. SEA 2010: 38.8% of snaps in shotgun (first down 24.6%, second 33.8%, third 74.1%), 1.0% no-huddle",
      "defense": "The same SEA book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2010 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1824,7 +1767,7 @@
      },
      "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2011 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NO 2011: 37.4% of snaps in shotgun (first down 28.3%, second 33.2%, third 68.3%), 1.1% no-huddle",
+     "offense": "Season 2011 is 2010 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. NO 2011: 37.4% of snaps in shotgun (first down 28.3%, second 33.2%, third 68.3%), 1.1% no-huddle",
      "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1846,7 +1789,7 @@
      },
      "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2011 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. SF 2011: 27.4% of snaps in shotgun (first down 11.6%, second 17.9%, third 70.5%), 1.2% no-huddle",
+     "offense": "Season 2011 is 2010 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 40.6% (first down 27.4%) in 2011. SF 2011: 27.4% of snaps in shotgun (first down 11.6%, second 17.9%, third 70.5%), 1.2% no-huddle",
      "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2011 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1897,7 +1840,7 @@
      },
      "book_choice": "franchise book BAL-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2012 is 2005 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
+     "offense": "Season 2012 is 2010 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
      "defense": "The same BAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1919,7 +1862,7 @@
      },
      "book_choice": "franchise book DEN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2012 is 2005 or later: the franchise's current DEN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. DEN 2012: 57.2% of snaps in shotgun (first down 46.8%, second 56.8%, third 81.6%), 13.4% no-huddle",
+     "offense": "Season 2012 is 2010 or later: the franchise's current DEN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. DEN 2012: 57.2% of snaps in shotgun (first down 46.8%, second 56.8%, third 81.6%), 13.4% no-huddle",
      "defense": "The same DEN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -1970,7 +1913,7 @@
      },
      "book_choice": "franchise book BAL-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2012 is 2005 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
+     "offense": "Season 2012 is 2010 or later: the franchise's current BAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. BAL 2012: 40.9% of snaps in shotgun (first down 23.8%, second 34.3%, third 85.0%), 22.9% no-huddle",
      "defense": "The same BAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -1992,7 +1935,7 @@
      },
      "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2012 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. SF 2012: 37.9% of snaps in shotgun (first down 26.6%, second 33.9%, third 70.5%), 1.3% no-huddle",
+     "offense": "Season 2012 is 2010 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 47.5% (first down 33.6%) in 2012. SF 2012: 37.9% of snaps in shotgun (first down 26.6%, second 33.9%, third 70.5%), 1.3% no-huddle",
      "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2012 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2043,7 +1986,7 @@
      },
      "book_choice": "franchise book DAL-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2014 is 2005 or later: the franchise's current DAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. DAL 2014: 48.1% of snaps in shotgun (first down 27.5%, second 54.7%, third 82.9%), 3.9% no-huddle",
+     "offense": "Season 2014 is 2010 or later: the franchise's current DAL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. DAL 2014: 48.1% of snaps in shotgun (first down 27.5%, second 54.7%, third 82.9%), 3.9% no-huddle",
      "defense": "The same DAL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2065,7 +2008,7 @@
      },
      "book_choice": "franchise book GB-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2014 is 2005 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. GB 2014: 63.3% of snaps in shotgun (first down 52.2%, second 63.2%, third 89.4%), 31.7% no-huddle",
+     "offense": "Season 2014 is 2010 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. GB 2014: 63.3% of snaps in shotgun (first down 52.2%, second 63.2%, third 89.4%), 31.7% no-huddle",
      "defense": "The same GB book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2116,7 +2059,7 @@
      },
      "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2014 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. NE 2014: 47.4% of snaps in shotgun (first down 31.2%, second 48.5%, third 78.8%), 7.5% no-huddle",
+     "offense": "Season 2014 is 2010 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. NE 2014: 47.4% of snaps in shotgun (first down 31.2%, second 48.5%, third 78.8%), 7.5% no-huddle",
      "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2138,7 +2081,7 @@
      },
      "book_choice": "franchise book SEA-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2014 is 2005 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. SEA 2014: 68.8% of snaps in shotgun (first down 58.7%, second 69.3%, third 89.9%), 2.6% no-huddle",
+     "offense": "Season 2014 is 2010 or later: the franchise's current SEA book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 60.9% (first down 48.8%) in 2014. SEA 2014: 68.8% of snaps in shotgun (first down 58.7%, second 69.3%, third 89.9%), 2.6% no-huddle",
      "defense": "The same SEA book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2014 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2189,7 +2132,7 @@
      },
      "book_choice": "franchise book GB-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2015 is 2005 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. GB 2015: 73.0% of snaps in shotgun (first down 64.4%, second 73.9%, third 88.7%), 38.2% no-huddle",
+     "offense": "Season 2015 is 2010 or later: the franchise's current GB book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. GB 2015: 73.0% of snaps in shotgun (first down 64.4%, second 73.9%, third 88.7%), 38.2% no-huddle",
      "defense": "The same GB book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2015 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2211,7 +2154,7 @@
      },
      "book_choice": "franchise book DET-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2015 is 2005 or later: the franchise's current DET book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. DET 2015: 67.5% of snaps in shotgun (first down 56.7%, second 67.9%, third 90.7%), 6.4% no-huddle",
+     "offense": "Season 2015 is 2010 or later: the franchise's current DET book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 62.7% (first down 50.3%) in 2015. DET 2015: 67.5% of snaps in shotgun (first down 56.7%, second 67.9%, third 90.7%), 6.4% no-huddle",
      "defense": "The same DET book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2015 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2262,7 +2205,7 @@
      },
      "book_choice": "franchise book NO-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2017 is 2005 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NO 2017: 48.6% of snaps in shotgun (first down 30.6%, second 53.6%, third 84.1%), 1.7% no-huddle",
+     "offense": "Season 2017 is 2010 or later: the franchise's current NO book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NO 2017: 48.6% of snaps in shotgun (first down 30.6%, second 53.6%, third 84.1%), 1.7% no-huddle",
      "defense": "The same NO book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2284,7 +2227,7 @@
      },
      "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2017 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. MIN 2017: 53.1% of snaps in shotgun (first down 37.8%, second 51.1%, third 87.0%), 10.7% no-huddle",
+     "offense": "Season 2017 is 2010 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. MIN 2017: 53.1% of snaps in shotgun (first down 37.8%, second 51.1%, third 87.0%), 10.7% no-huddle",
      "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2335,7 +2278,7 @@
      },
      "book_choice": "franchise book PHI-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2017 is 2005 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. PHI 2017: 70.8% of snaps in shotgun (first down 64.4%, second 71.3%, third 84.7%), 8.3% no-huddle",
+     "offense": "Season 2017 is 2010 or later: the franchise's current PHI book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. PHI 2017: 70.8% of snaps in shotgun (first down 64.4%, second 71.3%, third 84.7%), 8.3% no-huddle",
      "defense": "The same PHI book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2357,7 +2300,7 @@
      },
      "book_choice": "franchise book NE-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2017 is 2005 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NE 2017: 51.7% of snaps in shotgun (first down 36.4%, second 53.0%, third 87.0%), 5.2% no-huddle",
+     "offense": "Season 2017 is 2010 or later: the franchise's current NE book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 59.6% (first down 44.9%) in 2017. NE 2017: 51.7% of snaps in shotgun (first down 36.4%, second 53.0%, third 87.0%), 5.2% no-huddle",
      "defense": "The same NE book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2017 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2408,7 +2351,7 @@
      },
      "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2019 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. SF 2019: 44.8% of snaps in shotgun (first down 27.5%, second 41.7%, third 85.9%), 3.7% no-huddle",
+     "offense": "Season 2019 is 2010 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. SF 2019: 44.8% of snaps in shotgun (first down 27.5%, second 41.7%, third 85.9%), 3.7% no-huddle",
      "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2019 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2430,7 +2373,7 @@
      },
      "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2019 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. KC 2019: 79.2% of snaps in shotgun (first down 71.5%, second 83.1%, third 91.7%), 0.8% no-huddle",
+     "offense": "Season 2019 is 2010 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 64.9% (first down 52.4%) in 2019. KC 2019: 79.2% of snaps in shotgun (first down 71.5%, second 83.1%, third 91.7%), 0.8% no-huddle",
      "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2019 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2481,7 +2424,7 @@
      },
      "book_choice": "franchise book BUF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2021 is 2005 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. BUF 2021: 73.6% of snaps in shotgun (first down 66.4%, second 74.8%, third 89.1%), 12.2% no-huddle",
+     "offense": "Season 2021 is 2010 or later: the franchise's current BUF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. BUF 2021: 73.6% of snaps in shotgun (first down 66.4%, second 74.8%, third 89.1%), 12.2% no-huddle",
      "defense": "The same BUF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2503,7 +2446,7 @@
      },
      "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2021 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. KC 2021: 80.4% of snaps in shotgun (first down 70.2%, second 91.1%, third 88.0%), 2.4% no-huddle",
+     "offense": "Season 2021 is 2010 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. KC 2021: 80.4% of snaps in shotgun (first down 70.2%, second 91.1%, third 88.0%), 2.4% no-huddle",
      "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2554,7 +2497,7 @@
      },
      "book_choice": "franchise book STL-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2021 is 2005 or later: the franchise's current STL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. STL 2021: 58.7% of snaps in shotgun (first down 43.9%, second 64.0%, third 86.0%), 17.6% no-huddle",
+     "offense": "Season 2021 is 2010 or later: the franchise's current STL book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. STL 2021: 58.7% of snaps in shotgun (first down 43.9%, second 64.0%, third 86.0%), 17.6% no-huddle",
      "defense": "The same STL book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2576,7 +2519,7 @@
      },
      "book_choice": "franchise book CIN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2021 is 2005 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. CIN 2021: 63.3% of snaps in shotgun (first down 48.9%, second 66.2%, third 88.8%), 4.9% no-huddle",
+     "offense": "Season 2021 is 2010 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 54.4%) in 2021. CIN 2021: 63.3% of snaps in shotgun (first down 48.9%, second 66.2%, third 88.8%), 4.9% no-huddle",
      "defense": "The same CIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2021 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2627,7 +2570,7 @@
      },
      "book_choice": "franchise book IND-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2022 is 2005 or later: the franchise's current IND book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. IND 2022: 76.6% of snaps in shotgun (first down 64.7%, second 81.8%, third 93.3%), 14.0% no-huddle",
+     "offense": "Season 2022 is 2010 or later: the franchise's current IND book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. IND 2022: 76.6% of snaps in shotgun (first down 64.7%, second 81.8%, third 93.3%), 14.0% no-huddle",
      "defense": "The same IND book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2649,7 +2592,7 @@
      },
      "book_choice": "franchise book MIN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2022 is 2005 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
+     "offense": "Season 2022 is 2010 or later: the franchise's current MIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 68.0% (first down 56.9%) in 2022. MIN 2022: 53.9% of snaps in shotgun (first down 34.9%, second 59.0%, third 87.0%), 16.1% no-huddle",
      "defense": "The same MIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2022 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2700,7 +2643,7 @@
      },
      "book_choice": "franchise book SF-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2023 is 2005 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. SF 2023: 61.8% of snaps in shotgun (first down 54.5%, second 60.2%, third 83.9%), 1.8% no-huddle",
+     "offense": "Season 2023 is 2010 or later: the franchise's current SF book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. SF 2023: 61.8% of snaps in shotgun (first down 54.5%, second 60.2%, third 83.9%), 1.8% no-huddle",
      "defense": "The same SF book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2023 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2722,7 +2665,7 @@
      },
      "book_choice": "franchise book KC-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2023 is 2005 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. KC 2023: 84.1% of snaps in shotgun (first down 77.2%, second 87.6%, third 95.7%), 3.0% no-huddle",
+     "offense": "Season 2023 is 2010 or later: the franchise's current KC book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 72.4% (first down 62.9%) in 2023. KC 2023: 84.1% of snaps in shotgun (first down 77.2%, second 87.6%, third 95.7%), 3.0% no-huddle",
      "defense": "The same KC book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2023 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },
@@ -2773,7 +2716,7 @@
      },
      "book_choice": "franchise book PIT-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2025 is 2005 or later: the franchise's current PIT book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. PIT 2025: 67.3% of snaps in shotgun (first down 51.7%, second 71.6%, third 92.3%), 11.8% no-huddle",
+     "offense": "Season 2025 is 2010 or later: the franchise's current PIT book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. PIT 2025: 67.3% of snaps in shotgun (first down 51.7%, second 71.6%, third 92.3%), 11.8% no-huddle",
      "defense": "The same PIT book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2025 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     },
     "home": {
@@ -2795,7 +2738,7 @@
      },
      "book_choice": "franchise book CIN-pb.iff (v2 offense, v2 defense)",
      "era": "modern",
-     "offense": "Season 2025 is 2005 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. CIN 2025: 82.3% of snaps in shotgun (first down 72.8%, second 87.2%, third 95.5%), 2.6% no-huddle",
+     "offense": "Season 2025 is 2010 or later: the franchise's current CIN book (p48o v2 offense, shotgun, trips, bunch and flea flicker included); league shotgun share 66.4% (first down 53.1%) in 2025. CIN 2025: 82.3% of snaps in shotgun (first down 72.8%, second 87.2%, third 95.5%), 2.6% no-huddle",
      "defense": "The same CIN book's p48d v2 defense. It follows the franchise's 2025 coordinator tendencies; the 2025 coordinator's base front and blitz rate are not modelled (listed as a limit in the report)."
     }
    },

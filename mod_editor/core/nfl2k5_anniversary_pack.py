@@ -194,13 +194,26 @@ def append_to_image(path, resources, *, situation=None):
     return receipt
 
 
-def apply_fields_to_image(path, retail_source, *, progress=None):
-    """Compile period aliases from the completed build and append them to it."""
+def apply_fields_to_image(path, retail_source, *, progress=None, user_art=None, log=None):
+    """Compile period aliases from the completed build and append them to it.
+
+    ``user_art`` is the optional folder of the user's own Super Bowl logos; ``log(line)`` receives the build-log
+    lines that say which Super Bowl wall slots were filled from it and which kept the authored marks."""
     from . import nfl2k5_espn25_fields as fields
     from . import nfl2k5_historic_styles as styles
     with styles.Source(path) as built, styles.Source(retail_source) as retail:
         situ, situ_receipt = fields.repair_situ(built.get(identity=mm.SITU_ID))
-        resources, art_receipt = fields.compile_assets(built.get, retail.get, situ, progress=progress)
+        resources, art_receipt = fields.compile_assets(built.get, retail.get, situ, progress=progress,
+                                                       user_art=user_art)
+    if log:
+        if user_art:
+            from . import platform_compat as io
+            found = io.io_path(io.absolute_path(user_art)).is_dir()
+            log(f"Super Bowl walls: your logos folder {user_art}" + ("" if found else " was not found"))
+        for line in art_receipt['super_bowl_walls']['log']:
+            log(line)
+        for line in art_receipt.get('super_bowl_fields', {}).get('log', ()):
+            log(line)
     receipt = append_to_image(path, resources, situation=situ)
     receipt.update(fields=art_receipt, situation=situ_receipt, situation_after_sha256=sha(situ))
     return receipt
@@ -208,6 +221,7 @@ def apply_fields_to_image(path, retail_source, *, progress=None):
 
 def verify_fields_on_image(path, receipt):
     """Check every installed alias and SITU after the builder's final relocation."""
+    from . import nfl2k5_espn25_fields as fields
     from . import nfl2k5_historic_styles as styles
     assets = receipt['fields']['assets']
     mm.require(len(assets) == 51 and len({row['alias'] for row in assets}) == 51,
@@ -219,4 +233,10 @@ def verify_fields_on_image(path, receipt):
             raw = built.get(row['alias'])
             mm.require(len(raw) == row['size'] and sha(raw) == row['after'],
                        'Anniversary field changed after compilation: ' + row['alias'])
-    return dict(status='applied', assets_verified=51, situation_verified=True)
+        # b775-fan2: a built alias is a copy of a finished venue; a later pass
+        # that changes that venue's fans must rebuild the aliases too.
+        drift = fields.crowd_drift(built.get, assets)
+        mm.require(not drift, 'Anniversary stadium crowd differs from its venue: ' +
+                   ', '.join(f"{d['alias']} vs {d['source']}" for d in drift))
+    return dict(status='applied', assets_verified=51, situation_verified=True,
+                crowd_rows_verified=sum(row.get('source_kind') == 'built' for row in assets))

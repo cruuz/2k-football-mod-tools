@@ -212,6 +212,23 @@ def _text_references(body: bytes) -> list[tuple[int, int]]:
     return refs
 
 
+def _shift(body: bytes) -> int:
+    """Bytes the restored spare capacity (``nfl2k5_spare_capacity``) moved the string pool and everything after the
+    secondary table: it inserts 140 blank primary records ahead of them. The manifest is pinned to the unshifted
+    layout, so every run and pointer target is read and written at that offset. 0 when the capacity is not restored
+    (or the body is not the fixed native main ROST)."""
+    from . import nfl2k5_spare_capacity as spare
+    try:
+        count = spare._decode(body).tables["primary"].count
+    except (ValueError, KeyError, TypeError, IndexError, struct.error, OverflowError):
+        return 0
+    # b775: the import floor (spare.restore_import_floor) may add up to MAX_FLOOR_RECORDS more blank records at the
+    # same insertion point; its reclaimed gap lies in the player-name pool, after every team-name run.
+    if spare.PRIMARY_AFTER <= count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS:
+        return (count - spare.PRIMARY_BEFORE) * 84
+    return 0
+
+
 def _layout_bytes(items: list[dict[str, Any]], size: int) -> bytes:
     out = bytearray(size)
     for item in items:
@@ -221,16 +238,16 @@ def _layout_bytes(items: list[dict[str, Any]], size: int) -> bytes:
     return bytes(out)
 
 
-def _targets(block: dict[str, Any], state: str) -> dict[str, int]:
-    return {field: block["start"] + item["offset"] for item in block[state] for field in item["fields"]}
+def _targets(block: dict[str, Any], state: str, shift: int = 0) -> dict[str, int]:
+    return {field: block["start"] + shift + item["offset"] for item in block[state] for field in item["fields"]}
 
 
-def _plan(data: dict[str, Any]) -> tuple[dict[str, int], dict[str, int], list[tuple[int, int, bytes, bytes]]]:
+def _plan(data: dict[str, Any], shift: int = 0) -> tuple[dict[str, int], dict[str, int], list[tuple[int, int, bytes, bytes]]]:
     retail_targets, written_targets, runs = {}, {}, []
     for block in data["blocks"]:
-        retail_targets.update(_targets(block, "retail"))
-        written_targets.update(_targets(block, "written"))
-        runs.append((block["start"], block["size"], _layout_bytes(block["retail"], block["size"]),
+        retail_targets.update(_targets(block, "retail", shift))
+        written_targets.update(_targets(block, "written", shift))
+        runs.append((block["start"] + shift, block["size"], _layout_bytes(block["retail"], block["size"]),
                      _layout_bytes(block["written"], block["size"])))
     _require(set(retail_targets) == set(data["pointers"]) == set(written_targets),
              "2026 team-name manifest pointer sets differ")
@@ -247,7 +264,7 @@ def _inspect(payload: bytes, data: dict[str, Any]) -> str:
     for pin in data["structure_pins"]:
         raw = bytes.fromhex(pin["hex"])
         _require(body[pin["offset"]:pin["offset"] + len(raw)] == raw, "foreign team or team-label table")
-    retail_targets, written_targets, runs = _plan(data)
+    retail_targets, written_targets, runs = _plan(data, _shift(body))
     pointers = data["pointers"]
     actual = {name: _relative(body, field) for name, field in pointers.items()}
     if actual == retail_targets:
@@ -279,7 +296,7 @@ def apply(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     """Validate every owned run and pointer before returning a modified private byte copy."""
     data = manifest()
     state = _inspect(payload, data)
-    retail_targets, written_targets, runs = _plan(data)
+    retail_targets, written_targets, runs = _plan(data, _shift(payload[32:]))
     out = bytearray(payload)
     for start, size, _retail_bytes, written_bytes in runs:
         out[32 + start:32 + start + size] = written_bytes

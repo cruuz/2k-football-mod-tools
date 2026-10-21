@@ -34,6 +34,7 @@ sys.dont_write_bytecode = True
 
 import library as L  # noqa: E402
 import design as D  # noqa: E402
+import okie  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_pack as pk  # noqa: E402
 from mod_editor.core import nfl2k5_play_library as lib  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_inspector as ip  # noqa: E402
@@ -41,7 +42,7 @@ from mod_editor.core import nfl2k5_play_codec as codec  # noqa: E402
 from mod_editor.core import nfl2k5_defense_lint as dlint  # noqa: E402
 
 OUT = HERE / 'out'
-VERSION = '2.0.0'
+VERSION = '2.0.1'
 AUTHOR = 'SOFTDRINK / Claude Opus 5.5 (p48d)'
 NEUTRAL_START = (0x1B, [0, 0, 0, 0, 0, 0])
 PRESSURE_BIT = 0x10000
@@ -265,6 +266,7 @@ class Slot:
     extra_links: set = field(default_factory=set)   # roles this record is newly linked into
     note: str = ''
     appended: bool = False
+    designed: tuple = ()            # odd roles on which an edge covers by design (a zone blitz or sim pressure)
 
 
 @dataclass
@@ -276,6 +278,7 @@ class Choice:
     spy_slots: tuple = ()
     note: str = ''
     base_flags: int | None = None
+    designed: tuple = ()
 
 
 def membership(book, body, roles: dict[str, Role]) -> dict[int, Slot]:
@@ -394,6 +397,46 @@ class RecordPool:
         return i
 
 
+def add_relief_records(slots: dict[int, Slot], roles: dict[str, Role], book, pool: RecordPool) -> dict:
+    """b776 de2.  One play record is listed on every formation menu that lists it, so a record shared by two odd
+    formations that disagree about which slots are the edge rushers cannot make both formations' edges rush (the 3-4
+    base's strong edge is slot 6, the nickel's is slot 5, and slot 6 there is the nickel back).  Those records are
+    throttled to band 3; a menu that is mostly such records (New England's whole book) is given exclusive calls so its
+    edges can rush on the calls the CPU actually makes: appended records while the book has play capacity and the
+    formation's menu table has room.  {role key: records added}."""
+    odd = {k: r for k, r in roles.items() if r.type_code == 4 and r.fi is not None}
+    if len(odd) < 2 or pool.capacity <= 0:
+        return {}
+    edges = {k: L.edge_slots(r.kinds, 'odd:') for k, r in odd.items()}
+    shared, exclusive = Counter(), Counter()
+    for sl in slots.values():
+        if sl.component != 'coverage' or not sl.roles or not all(r in odd for r in sl.roles):
+            continue
+        conflict = len({edges[r] for r in sl.roles}) > 1
+        for r in sl.roles:
+            (shared if conflict else exclusive)[r] += 1
+    need = {r: math.ceil(RELIEF_RATIO * shared[r]) - exclusive[r] for r in odd if shared[r]}
+    room = {r: pk.FORMATION_PLAY_LINKS - len(book.formations[odd[r].fi].play_links) for r in need}
+    want = {r: max(0, min(need[r], room[r])) for r in need}
+    added: dict[str, int] = {}
+    while pool.capacity > 0 and any(want.values()):
+        for r in sorted(want, key=lambda r: (-want[r], r)):
+            if want[r] <= 0 or pool.capacity <= 0:
+                continue
+            i = pool.take(r, 'coverage')
+            if i is None:
+                want[r] = 0
+                continue
+            want[r] -= 1
+            added[r] = added.get(r, 0) + 1
+    return added
+
+
+# Exclusive records a role wants per conflict record: with conflict records at band 3 (a weight of .125 against ~1.9 for
+# a free record) this keeps the conflict records at or under about 15 percent of the menu's calls.
+RELIEF_RATIO = 0.37
+
+
 def role_family_obj(role: Role, scheme: D.Scheme) -> D.LineFamily:
     return role_family(role, scheme)
 
@@ -445,6 +488,10 @@ class Library:
     def __init__(self, scripts: list[L.Script]):
         self.by_layout: dict[tuple, dict[str, list[L.Script]]] = defaultdict(lambda: defaultdict(list))
         self.own: dict[str, list[L.Script]] = defaultdict(list)
+        self.odd_sources: dict[str, L.Script] = {}      # unique retail three-down scripts (b776 de2: the Okie variants)
+        for sc in scripts:
+            if sc.type_code == 4 and sc.formation not in ('Prevent', 'Goalline'):
+                self.odd_sources.setdefault(sc.key, sc)
         self.popularity: Counter = Counter()
         books_with = defaultdict(set)
         for sc in scripts:
@@ -538,6 +585,152 @@ def valid_in_roles(script: L.Script, roles_in: set, roles: dict[str, Role]) -> b
     return True
 
 
+class OddState:
+    """Bookkeeping for the odd-front picks: DESIGNED calls (an edge covers while a back blitzes) per role against each
+    menu's budget, and one variant per retail script per book."""
+
+    def __init__(self, slots: dict[int, Slot], roles: dict[str, Role]):
+        count: Counter = Counter()
+        for sl in slots.values():
+            if sl.component == 'coverage':
+                for r in sl.roles:
+                    count[r] += 1
+        # A zone blitz on an exclusive record (an edge covers, a back blitzes) is a rare call: at most
+        # okie.DESIGNED_SHARE of a menu's records, each at band 2 or 3 (never the heavily called band 1).
+        self.budget = {r: max(1, round(okie.DESIGNED_SHARE * n)) for r, n in count.items()}
+        self.designed: Counter = Counter()
+        self.sources: set[str] = set()
+        self.cache: dict = {}
+        self.deferred: list = []
+
+
+def _role_cost(r: str) -> float:
+    return ROLE_WEIGHT.get(r, .3)
+
+
+def _rank_variant(v: okie.Variant, designed_roles, blitz: bool, home: Role, team: str, library: Library, slot_index: int):
+    # What a DESIGNED verdict costs: the edge covers on those formations, weighted by how much each formation is called.
+    cost = sum(_role_cost(r) for r in designed_roles)
+    sc = v.source
+    return (0 if (blitz and designed_roles) else 1 if (not designed_roles) else 2,   # blitz calls: DESIGNED first
+            cost,
+            0 if sc.formation == home.source_name and sc.codes == home.codes else 1,
+            0 if (sc.book == team and sc.play_index == slot_index) else 1 if sc.book == team else 2,
+            len(v.converted), -library.popularity[sc.key], sc.book, sc.play_index, v.key)
+
+
+def odd_variants_for(s: Slot, roles: dict[str, Role], library: Library, state: OddState, extra_sources=()):
+    """(variant, per-role verdicts) for every variant of every retail odd script on the formations that list ``s``."""
+    rin = [roles[r] for r in sorted(s.roles)]
+    sig = tuple((r.key, r.source_name, tuple(r.kinds)) for r in rin)
+    for sc in [*library.odd_sources.values(), *extra_sources]:
+        for v in okie.variants(sc):
+            hit = state.cache.get((v.key, sig))
+            if hit is None:
+                hit = state.cache[(v.key, sig)] = okie.judge(v.chains, rin, front_slots_of)
+            yield v, hit
+
+
+def pick_odd(s: Slot, ch: Choice, home: Role, roles: dict[str, Role], library: Library, team: str, book, body,
+             used: set, state: OddState, *, conflict: bool = False, any_family: bool = False) -> bool:
+    """Fill one odd-formation coverage record.  The record is listed on every formation menu that lists it, so its
+    chains are judged on each: BASE (no edge covers) everywhere is the goal.  Pass 1 (conflict=False) accepts only a
+    variant that is BASE on every formation with the same blitz-or-not shape on all of them, plus a budgeted zone blitz
+    on an exclusive record.  Pass 2 (conflict=True) takes what the sharing leaves: the cheapest variant of the same
+    coverage family by edge covers and forced blitzes, throttled to band 3.  Returns False when the record has to wait
+    for pass 2 (or has no candidate at all)."""
+    shared = len(s.roles) > 1
+    labels = [ch.concept, *FALLBACK_LABELS.get(ch.concept, ())]
+    families = {FAMILY_OF.get(lab) for lab in labels}
+    blitz_concept = ch.concept in BLITZ
+    for lab in (labels if not conflict else [None]):
+        blitz = (lab in BLITZ) if lab else blitz_concept
+        extras = []
+
+        def collect(extra_sources=()):
+            out = []
+            for v, hit in odd_variants_for(s, roles, library, state, extra_sources):
+                if v.key in used or (v.source.key in state.sources and not any(v.source is e for e in extra_sources)):
+                    continue
+                if hit is None:
+                    continue
+                vs = hit['verdicts']
+                if lab is not None:
+                    if vs[home.key][1].label != lab:
+                        continue
+                elif not any_family and FAMILY_OF.get(vs[home.key][1].label) not in families:
+                    continue
+                out.append((v, hit))
+            return out
+
+        cands = collect()
+        if not cands:
+            presets = [lab] if lab else labels
+            for pl in presets:
+                pre = preset_choice(pl, home, book, body)
+                if pre is None:
+                    continue
+                chains = pre.chains
+                st = L.structure(chains, home.kinds, front_slots_of(home), okie.role_layout(home))
+                extras = [L.Script(team, -1, pre.note, pre.base_flags or 0x00900445, home.source_name, home.codes, 4,
+                                   chains, st, L.chains_key(chains))]
+                cands = [(v, h) for v, h in collect(extras) if v.source is extras[0]]
+                if cands:
+                    break
+        if not cands:
+            continue
+        keep = []
+        for v, hit in cands:
+            verdicts = hit['verdicts']
+            designed_roles = tuple(r for r, (vd, _) in verdicts.items() if vd == 'designed')
+            bad_roles = tuple(r for r, (vd, _) in verdicts.items() if vd == 'bad')
+            if not conflict:
+                if bad_roles or (designed_roles and shared):
+                    continue
+                if designed_roles and (not blitz or any(state.designed[r] >= state.budget[r] for r in designed_roles)):
+                    continue
+                if not designed_roles and len({st.n_rush >= 5 for _, st in verdicts.values()}) > 1:
+                    continue     # a role would see a blitz where the others see a four-man rush: wait for pass 2
+            keep.append((v, hit, designed_roles, bad_roles))
+        if not keep:
+            continue
+        if conflict:
+            def cost(item):
+                v, hit, d, bad = item
+                total = 0.0
+                exact = False
+                for r, (vd, st) in hit['verdicts'].items():
+                    covers = len(st.edge_drops)
+                    total += _role_cost(r) * (4.0 * (covers if vd == 'bad' else .35 * covers)
+                                              + (1.0 if st.n_rush >= 5 and not blitz_concept else 0.0))
+                    exact = exact or st.label in labels
+                return (total, 0 if exact else 1, len(v.converted), -library.popularity[v.source.key],
+                        v.source.book, v.source.play_index, v.key)
+            v, hit, designed, bad = min(keep, key=cost)
+            throttled = tuple(sorted(set(designed) | set(bad) |
+                                     {r for r, (_, st) in hit['verdicts'].items() if st.n_rush >= 5 and not blitz_concept}))
+            lab = hit['verdicts'][home.key][1].label
+        else:
+            v, hit, designed, bad = min(keep, key=lambda it: _rank_variant(it[0], it[2], blitz, home, team, library, s.index))
+            throttled = designed
+        used.add(v.key)
+        if not any(v.source is e for e in extras):
+            state.sources.add(v.source.key)
+        if not conflict:
+            for r in designed:
+                state.designed[r] += 1
+        if lab != ch.concept:
+            ch.note = f'fallback {ch.concept} -> {lab}'
+        s.content = Choice(lab, chains=v.chains, base_flags=v.flags, designed=throttled,
+                           note=(ch.note + '; ' if ch.note else '') +
+                           f'odd variant of {v.source.book} {v.source.name}, edges rush {sorted(v.pattern)}'
+                           + (f', zone blitz on {sorted(designed)}' if designed else '')
+                           + (f', edge covers on {sorted(bad)} (shared record)' if bad else ''))
+        s.designed = throttled
+        return True
+    return False
+
+
 def pick_scripts(slots, roles, library: Library, team: str, book, body, targets_of=None):
     targets_of = targets_of or {}
     used: set[str] = set()
@@ -548,11 +741,16 @@ def pick_scripts(slots, roles, library: Library, team: str, book, body, targets_
     order = sorted((s for s in slots.values() if s.component == 'coverage' and isinstance(s.content, Choice)),
                    key=lambda s: (-len(s.roles), s.index))
     misses = []
+    odd_state = OddState(slots, roles)
     for s in order:
         ch: Choice = s.content
         if ch.note.startswith('mug:'):
             continue
         home = roles[home_role(s.roles)]
+        if home.type_code == 4 and all(roles[r].type_code == 4 for r in s.roles):
+            if not pick_odd(s, ch, home, roles, library, team, book, body, used, odd_state):
+                odd_state.deferred.append(s)
+            continue
         labels = [ch.concept, *FALLBACK_LABELS.get(ch.concept, ())]
         pick = None
         authored = None
@@ -604,6 +802,13 @@ def pick_scripts(slots, roles, library: Library, team: str, book, body, targets_
             continue
         used.add(pick.key)
         ch.script = pick
+    # Pass 2 (b776 de2): odd records whose formations disagree about which slots are the edges.
+    for s in odd_state.deferred:
+        ch = s.content
+        home = roles[home_role(s.roles)]
+        if not (pick_odd(s, ch, home, roles, library, team, book, body, used, odd_state, conflict=True)
+                or pick_odd(s, ch, home, roles, library, team, book, body, used, odd_state, conflict=True, any_family=True)):
+            misses.append((s.index, ch.concept, sorted(s.roles)))
     return misses
 
 
@@ -650,7 +855,7 @@ def _bail(chains, kinds) -> str:
 
 def name_options(label: str, st: L.Structure, kinds, xy, chains) -> list[str]:
     """Most specific first; the namer takes the first one not used yet in this book."""
-    extra = [s for s in st.rushers if s >= 4 or (s == 0 and kinds[0] in (D.MLB, D.OLB))]
+    extra = [s for s in st.rushers if (s >= 4 or (s == 0 and kinds[0] in (D.MLB, D.OLB))) and s not in st.edges]
     blitzers = [who(kinds, s, xy[s][0]) for s in extra]
     t = set(st.tags)
     press = _press(chains, kinds) if chains else ''
@@ -837,7 +1042,9 @@ def mug_variant(base_chains, kinds, role_kind: str, book, body, fi) -> list:
         chains[weak] = hook(weak, 5)
         chains[strong] = hook(strong, -5)
     if role_kind == 'sim':
-        for s, x in ((0, 14), (1, -14)):          # both ends drop to the flats (four rush: two backers + tackles)
+        # b776-int2 (Noah: an edge drops only on a designed call, never both): one end (slot 0) drops to its flat, the
+        # other keeps its rush from the base script (five rush: two backers, two tackles and one end).
+        for s, x in ((0, 14),):
             _, ch = lib.defense_slot_donor(book, body, fi, s, 0x0D) if _has_dl_drop(book, body, fi, s) else (None, None)
             if ch is None:
                 _, z = lib.defense_slot_donor(book, body, fi, 5, 0x0D)
@@ -864,17 +1071,20 @@ def _has_dl_drop(book, body, fi, slot) -> bool:
 # ---------------------------------------------------------------------------------------------------------------
 # Bands (DESIGN fit to the per-role targets under the native cubed lottery; PROVED OFFLINE score model)
 # ---------------------------------------------------------------------------------------------------------------
+# b776 de2: weight of the share of a menu's calls on which an edge covers (squared), against the coverage-share terms.
+EDGE_COVER_LOSS = 6.0
 ROLE_WEIGHT = {'nickel': 1.0, 'base': .7, 'dime': .6, 'base2': .3, 'bear': .4, 'mug': .4, 'nickel_odd': .4,
                'dime_odd': .3}
 
 
-def fit_bands(cov: list[Slot], targets: dict[str, dict[str, float]], concept_of, rushers_of=None) -> float:
+def fit_bands(cov: list[Slot], targets: dict[str, dict[str, float]], concept_of, rushers_of=None, edge_of=None) -> float:
     """Coordinate descent over CPU score bands 1..3 (never 4: x0.001 after the cube would silently delete a call, and
     variety is half of the brief).  Loss per menu: concept shares + 3x coverage-family shares + 4x blitz (5+ rushers)
     share."""
-    rushers_of = rushers_of or (lambda s: 0)
+    rushers_of = rushers_of or (lambda s, role=None: 0)
+    edge_of = edge_of or (lambda s, role=None: 0.0)
     for s in cov:
-        s.band = 3 if s.pressure else 2
+        s.band = 3 if (s.pressure or s.designed) else 2
     members_of = {role: [s for s in cov if role in s.roles] for role in targets}
     fam_t = {role: Counter() for role in targets}
     blitz_t = {}
@@ -893,17 +1103,20 @@ def fit_bands(cov: list[Slot], targets: dict[str, dict[str, float]], concept_of,
             z = sum(w.values())
             share, fam = Counter(), Counter()
             blitz = 0.0
+            cover = 0.0
             for s in members:
-                c = concept_of(s)
+                c = concept_of(s, role)
                 share[c] += w[s.index] / z
                 fam[FAMILY_OF.get(c, c)] += w[s.index] / z
-                if rushers_of(s) >= 5:
+                if rushers_of(s, role) >= 5:
                     blitz += w[s.index] / z
+                cover += edge_of(s, role) * w[s.index] / z
             keys = set(tgt) | set(share)
             fk = set(fam_t[role]) | set(fam)
             total += ROLE_WEIGHT.get(role, .3) * (sum((share[k] - tgt.get(k, 0)) ** 2 for k in keys)
                                                   + 3 * sum((fam[k] - fam_t[role].get(k, 0)) ** 2 for k in fk)
-                                                  + 4 * (blitz - blitz_t[role]) ** 2)
+                                                  + 4 * (blitz - blitz_t[role]) ** 2
+                                                  + EDGE_COVER_LOSS * cover ** 2)
         return total
 
     cur = loss()
@@ -911,7 +1124,7 @@ def fit_bands(cov: list[Slot], targets: dict[str, dict[str, float]], concept_of,
         improved = False
         for s in cov:
             best = (cur, s.band)
-            for b in (1, 2, 3):          # band 4 (x0.001 after the cube) would silently delete a call
+            for b in ((3,) if s.designed else (1, 2, 3)):     # band 4 (x0.001 after the cube) would silently delete a call; a zone blitz (an edge covers by design) is pinned at band 3
                 if b == s.band:
                     continue
                 old = s.band
@@ -971,7 +1184,9 @@ def plan_team(team: str, source: bytes, library: Library, profiles, rates_all) -
         # PROVED OFFLINE (0x2093F0, defensive branch): same-code personnel groups are drawn with equal weight and no
         # formation rating, so a Bear in its own code-13 group is a coin flip on every base-personnel snap.  When the
         # 4-3 group fields the same personnel, the Bear joins it (donor = the 4-3 record: its personnel words) and the
-        # formation ratings pick it on short yardage.
+        # formation ratings pick it on short yardage. The pack compiler MUST
+        # retire the now-unreferenced Bear category and remap category indices;
+        # leaving that root entry present causes the 0x17FEDB preview null read.
         host = next((roles[k] for k in ('base', 'base2') if k in roles and roles[k].type_code == 5
                      and roles[k].codes == bear.codes), None)
         if host is not None:
@@ -1004,6 +1219,7 @@ def plan_team(team: str, source: bytes, library: Library, profiles, rates_all) -
         s.pressure = bool(book.plays[s.index].flags_or_id & PRESSURE_BIT)
     pool = RecordPool(slots, book, roles)
     front_plan = assign_fronts(slots, roles, scheme, team, pool)
+    relief = add_relief_records(slots, roles, book, pool)
     # Mug pressure calls, carried by spare Bear-only records (also legal Bear calls: double-A pressure).
     mug_calls = []
     if 'mug' in roles:
@@ -1081,7 +1297,7 @@ def plan_team(team: str, source: bytes, library: Library, profiles, rates_all) -
                 break
     return dict(team=team, scheme=scheme, profile=profile, rates=rates, book=book, body=body, roles=roles,
                 slots=slots, targets=targets, front_plan=front_plan, misses=misses, need=need, spy=spy,
-                mug_note=mug_note, appended=list(pool.appended))
+                mug_note=mug_note, appended=list(pool.appended), relief=relief)
 
 
 RETAIL_XBE = Path('/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe')
@@ -1149,16 +1365,31 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
             label, concept = st.label, st.label
         rows[s.index] = dict(slot=s, donor=donor, chains=chains, home=home, label=label, concept=concept, st=st,
                              donor_flags=book.plays[donor].flags_or_id)
+        if s.component == 'coverage' and home.type_code == 4:
+            rows[s.index]['sts'] = {r: L.structure(full, roles[r].kinds, front_slots_of(roles[r]), okie.role_layout(roles[r]))
+                                    for r in s.roles if roles[r].type_code == 4}
         s.pressure = bool(rows[s.index]['donor_flags'] & PRESSURE_BIT)
     # 2. bands (coverages; fronts keep their call band)
     cov = [r['slot'] for r in rows.values() if r['slot'].component == 'coverage']
-    concept_of = lambda s: rows[s.index]['concept']
+    def concept_of(s, role=None):
+        # An odd record is listed on several formations; whether its edges rush decides its label there (b776 de2).
+        sts = rows[s.index].get('sts')
+        return sts[role].label if sts and role in sts else rows[s.index]['concept']
+
+    def edge_of(x, role=None):
+        sts = rows[x.index].get('sts')
+        return 1.0 if sts and role in sts and sts[role].edge_drops else 0.0
+
+    def rushers_of(x, role=None):
+        sts = rows[x.index].get('sts')
+        st = sts[role] if sts and role in sts else rows[x.index]['st']
+        return st.n_rush if st is not None else 0
     fit_targets = dict(plan['targets'])
     if 'mug' in roles:
         fit_targets['mug'] = coverage_targets(plan['rates'], 'mug', scheme)
     mug_calls = [x for x in cov if isinstance(x.content, Choice) and x.content.note.startswith('mug:')]
     loss = fit_bands([x for x in cov if x not in mug_calls], {k: v for k, v in fit_targets.items() if k != 'mug'},
-                     concept_of, lambda x: rows[x.index]['st'].n_rush if rows[x.index]['st'] is not None else 0)
+                     concept_of, rushers_of, edge_of)
     for x in mug_calls:
         # DESIGN: the Mug look exists to run these four calls; band 0 makes them about two thirds of the calls made
         # from the Mug formation (the nickel menu it inherits keeps the rest), and the formation itself is chosen
@@ -1174,10 +1405,9 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
         fam_m, fam_t = Counter(), Counter()
         blitz = 0.0
         for x in members:
-            c = concept_of(x)
+            c = concept_of(x, role)
             fam_m[FAMILY_OF.get(c, c)] += w[x.index] / z
-            st = rows[x.index]['st']
-            if st is not None and st.n_rush >= 5:
+            if rushers_of(x, role) >= 5:
                 blitz += w[x.index] / z
         for c, v in tgt.items():
             fam_t[FAMILY_OF.get(c, c)] += v
@@ -1259,6 +1489,8 @@ def compile_and_check(source: bytes, pack: pk.PlaybookPack, xbe: bytes):
     if not check.ok:
         raise ValueError(check.text())
     result = pk.apply_pack_to_resource(source, pack, xbe=xbe)
+    if ip.category_menu_problems(result.replacement):
+        raise ValueError('; '.join(ip.category_menu_problems(result.replacement)))
     lint = [f for f in dlint.lint_resource(result.replacement) if f.severity == 'error']
     return check, result, lint
 

@@ -404,14 +404,15 @@ class KickoffHookTests(_Images, unittest.TestCase):
         cls.build()
         cls.build_e1()
 
-    def compare(self, name, va, original, mode, e1=False, moment=0):
+    def compare(self, name, va, original, mode, e1=False, moment=0, situation=0):
         seed = sum(map(ord, name)) * 10 + mode
         gated = Machine(self.gated_e1 if e1 else self.gated)
-        historical = mode == 8 and moment != gate.MODERN_MOMENT
+        historical = mode == 8 and moment != gate.MODERN_MOMENT and not situation
         other = Machine(self.retail if historical else self.ungated)
         for m in (gated, other):
             _prime(m, mode, seed)
             m.put(gate.MOMENT_VA, moment)
+            m.put(gate.SITUATION_FLAG_VA, situation)
         if historical:
             end = (va + 5 + struct.unpack_from("<i", original, 1)[0]) if original[0] == 0xE9 else va + len(original)
         elif name == "block_target" and e1:
@@ -444,6 +445,14 @@ class KickoffHookTests(_Images, unittest.TestCase):
                 with self.subTest(hook=name, e1=e1):
                     self.compare(name, va, original, 8, e1, moment=50)
 
+    def test_situation_mode_keeps_every_dynamic_kickoff_path(self):
+        # b777-sm2: the Situation mode is mode 8 with the situation flag 1 and a stale row (0 = the Ice Bowl).
+        for e1 in (False, True):
+            for name, va, original in gate.kickoff_hooks():
+                for moment in (0, 14, 49):
+                    with self.subTest(hook=name, e1=e1, moment=moment):
+                        self.compare(name, va, original, 8, e1, moment=moment, situation=1)
+
 
 @unittest.skipUnless(HAVE_UC, "Unicorn required")
 class KickRulesTests(_Images, unittest.TestCase):
@@ -453,10 +462,11 @@ class KickRulesTests(_Images, unittest.TestCase):
     def setUpClass(cls):
         cls.build()
 
-    def spot(self, payload, va, mode, value=-1.0, *, moment=0):
+    def spot(self, payload, va, mode, value=-1.0, *, moment=0, situation=0):
         m = Machine(payload)
         _prime(m, mode, va)
         m.put(gate.MOMENT_VA, moment)
+        m.put(gate.SITUATION_FLAG_VA, situation)
         # fld1 then fchs gives ST0 = -1.0 (the kicking direction sign); run the site after it.
         pre = m.alloc(b"\xd9\xe8\xd9\xe0" + b"\xe9" + struct.pack("<i", va - (Machine.HEAP + 9)))
         result = m.run(pre, [va + 6], _regs(va, {}))
@@ -471,10 +481,11 @@ class KickRulesTests(_Images, unittest.TestCase):
                 assert_equivalent(self, self.spot(self.gated, va, 8), self.spot(self.retail, va, 8), esp, msg=label)
                 self.assertNotEqual(self.spot(self.gated, va, 8)[1]["st0"], self.spot(self.gated, va, 7)[1]["st0"])
 
-    def touchback(self, payload, mode, phase, *, moment=0):
+    def touchback(self, payload, mode, phase, *, moment=0, situation=0):
         m = Machine(payload)
         _prime(m, mode, phase)
         m.put(gate.MOMENT_VA, moment)
+        m.put(gate.SITUATION_FLAG_VA, situation)
         m.uc.mem_write(kick_rules.PHASE_GLOBAL, bytes((phase,)))
         va = kick_rules.TOUCHBACK_SITE_VA
         pre = m.alloc(b"\xd9\xe8" + b"\xe9" + struct.pack("<i", va - (Machine.HEAP + 7)))
@@ -491,6 +502,40 @@ class KickRulesTests(_Images, unittest.TestCase):
         self.assertNotEqual(self.touchback(self.gated, 8, 2)[1]["st0"], self.touchback(self.gated, 7, 2)[1]["st0"])
         # Outside a kickoff (phase 1, a safety kick) the 20 holds in both modes.
         self.assertEqual(self.touchback(self.gated, 8, 1)[1]["st0"], self.touchback(self.gated, 7, 1)[1]["st0"])
+
+    def test_situation_mode_uses_modern_spots_and_touchback(self):
+        # b777-sm2: whatever moment row the word holds, the Situation mode (flag 1) kicks like Quick Game.
+        esp = _regs(0, {})['esp']
+        for moment in (0, 14, 49, 50):
+            for _label, va, _kind in gate.kick_rule_sites():
+                assert_equivalent(self, self.spot(self.gated, va, 8, moment=moment, situation=1),
+                                  self.spot(self.ungated, va, 8, moment=moment, situation=1), esp)
+            for phase in (1, 2, 4):
+                assert_equivalent(self, self.touchback(self.gated, 8, phase, moment=moment, situation=1),
+                                  self.touchback(self.ungated, 8, phase, moment=moment, situation=1), esp)
+
+    def test_b776_test_is_recognised_and_upgraded_in_place(self):
+        code, _data = gate._owned(self.gated)
+        at = code["raw"] + gate.ERA_TEST_OFFSET
+        old = bytearray(self.gated)
+        old[at:at + 48] = gate.ERA_TEST_B776.ljust(48, b"\xcc")
+        space = gate.space
+        if space.is_scaleout(self.gated):
+            space._seal_scaleout(old, space._read_scale_directory(self.gated))
+        else:
+            requests = space._validate(self.gated)[2]
+            old[space.DIRECTORY:space._directory_end(requests)] = space._directory(requests, space._code_bytes(old, requests))
+        old = bytes(old)
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        buf = bytearray(old)
+        for section in _sections(buf):
+            buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+        old = bytes(buf)
+        self.assertEqual(gate.status(old), "applied")
+        upgraded, receipt = gate.apply(old, self.tables)
+        self.assertEqual(receipt["status"], "upgraded")
+        self.assertEqual(upgraded, self.gated)
+        self.assertEqual(gate.apply(upgraded, self.tables)[1]["status"], "already_applied")
 
     def test_unc_bowl_uses_modern_spots_and_touchback(self):
         esp = _regs(0, {})['esp']

@@ -202,7 +202,13 @@ class Cave(unittest.TestCase):
         allocations = space._scale_allocations(union + list(pg.REQUESTS))
         mine = [a for a in allocations if a["owner"] == pg.OWNER]
         self.assertEqual(sorted(a["kind"] for a in mine), ["code", "read_only"])
-        before = {(a["owner"], a["kind"], a["va"]) for a in space._scale_allocations(union)}
+        # b777-ci2: owners that LATE_OWNERS places AFTER this one (honors, coach AI, ... classic teams, hair styles, the
+        # b776 owners) were all added after it shipped: they only ever exist on images that already carry it, and the
+        # allocator places them behind it by design, so they have no pre-owner address to keep. Everything else must not
+        # move when this owner is added (classic teams' read-only block moved by this owner's 32 bytes and failed the
+        # old, unrestricted comparison from b775 on).
+        later = set(space.LATE_OWNERS[space.LATE_OWNERS.index(pg.OWNER) + 1:])
+        before = {(a["owner"], a["kind"], a["va"]) for a in space._scale_allocations(union) if a["owner"] not in later}
         self.assertEqual(before - {(a["owner"], a["kind"], a["va"]) for a in allocations}, set())
 
     def test_the_four_sites(self):

@@ -34,9 +34,10 @@ class ModernMomentBooks(unittest.TestCase):
         cls.current = books.apply(cls.retail)[0]
         allocated = space.apply(cls.retail, books.REQUESTS)[0]
         a = books.allocation(allocated)
-        for name, code in (('legacy', books.code_for(a['va'], modern_moments=False, legacy=True)),
-                           ('previous50', books.code_for(a['va'], moment_limit=50, legacy=True)),
-                           ('v05', books.code_for(a['va'], legacy=True))):      # b77-a4: the v0.5 body (40 byte alias rows)
+        old = dict(first_season=books.LEGACY_FIRST_SEASON, classic_ids=None)    # every body before b776
+        for name, code in (('legacy', books.code_for(a['va'], modern_moments=False, legacy=True, **old)),
+                           ('previous50', books.code_for(a['va'], moment_limit=50, legacy=True, **old)),
+                           ('v05', books.code_for(a['va'], legacy=True, **old))):      # b77-a4: the v0.5 body (40 byte alias rows)
             buf = bytearray(space.install_code(allocated, books.OWNER, code)[0])
             image = XbeImage(buf)
             at = image.offset(books.SITE, len(books.RETAIL))
@@ -44,6 +45,9 @@ class ModernMomentBooks(unittest.TestCase):
             for section in books._sections(buf):
                 buf[section.header_offset + 36:section.header_offset + 56] = books.section_digest(buf, section)
             setattr(cls, name, bytes(buf))
+        # b776-int2: the v0.6.1 .. b775 body (2005 cut, no classic-team check) with its shotgun weight sites, as those discs hold it
+        owned = books.allocation(cls.current)
+        cls.b775 = books._write_body(cls.current, owned, books.code_for(owned['va'], **old))
 
     def machine(self, payload=None):
         m = Machine(payload or self.current, trace_writes=False)
@@ -55,8 +59,9 @@ class ModernMomentBooks(unittest.TestCase):
         m.put(0xC8F0D8, books.MOMENT_COUNT)
         return m
 
-    def resolve(self, m, *, mode=8, ordinal=0, home=False, category=4, null_team=False):
+    def resolve(self, m, *, mode=8, ordinal=0, home=False, category=4, null_team=False, identity=0):
         a = m.ARENA
+        m.uc.mem_write(a + 0x118, struct.pack('<H', identity))
         m.put(0xE5FF80, mode)
         m.put(0xBF1858, ordinal)
         m.put(a + 0x128, category)
@@ -104,9 +109,10 @@ class ModernMomentBooks(unittest.TestCase):
 
     def test_side_specific_year_boundaries_and_non_anniversary_modes(self):
         m = self.machine()
-        for year in (0, 1999, 2004, 2005, 2022, 2030, 2031, 0xFFFFFFFF):
+        for year in (0, 1999, 2004, 2005, 2009, 2010, 2022, 2030, 2031, 0xFFFFFFFF):
             self.seasons(m, year, 1990)
-            self.assertEqual(self.resolve(m), 2005 <= year <= 2030)
+            self.assertEqual(self.resolve(m), books.MODERN_FIRST_SEASON <= year <= books.MODERN_LAST_SEASON)
+            self.assertEqual(books.MODERN_FIRST_SEASON, 2010)
             self.assertFalse(self.resolve(m, home=True))
         self.seasons(m, 1990, 2022)
         self.assertFalse(self.resolve(m))
@@ -114,6 +120,60 @@ class ModernMomentBooks(unittest.TestCase):
         for mode in (0, 1, 2, 3, 4, 7, 9):
             self.assertFalse(self.resolve(m, mode=mode, home=True, category=4))
             self.assertTrue(self.resolve(m, mode=mode, home=True, category=0))
+
+    def test_super_bowl_xlii_xliii_xliv_now_take_the_retail_bank_and_2010_on_the_current_book(self):
+        """b776-int2 (Noah: <= 2009 = retail era): rows 27, 28, 35 (2007, 2008, 2009) pick E2R on both sides; a 2010+ row keeps the
+        franchise's current book; the b775 body still sent them to the current book."""
+        rows = {r['row']: r for r in json.loads((Path(__file__).resolve().parents[2] /
+                                                'data/nfl2k5_era_rules.json').read_text())['mappings']}
+        m, old = self.machine(), self.machine(self.b775)
+        for row in (27, 28, 35):
+            self.assertIn(rows[row]['season'], (2007, 2008, 2009))
+            for machine in (m, old):
+                self.seasons(machine, rows[row]['season'], rows[row]['season'], row - 1)
+            for home in (False, True):
+                with self.subTest(row=row, home=home):
+                    self.assertFalse(self.resolve(m, ordinal=row - 1, home=home))
+                    self.assertTrue(self.resolve(old, ordinal=row - 1, home=home))
+        later = [r for r in rows.values() if r['season'] >= 2010]
+        self.assertTrue(later)
+        for r in later:
+            self.seasons(m, r['season'], r['season'], r['row'] - 1)
+            self.assertTrue(self.resolve(m, ordinal=r['row'] - 1, home=True))
+
+    def test_classic_teams_of_2010_on_take_the_current_book_outside_anniversary_mode(self):
+        """b776-int2 (Noah: classic teams get the 2020+ books): category 4 sides with a classic identity of 2010 or later go to the
+        default (current franchise book); 2005-2009 classic teams, retail historic teams and Anniversary team-seasons keep E2R.
+        The identity range is the classic teams' own data order."""
+        from mod_editor.core import nfl2k5_classic_teams as ct
+        data = ct.Data.load()
+        ids = {key: ct.FIRST_ID + n for n, key in enumerate(data.order())}
+        modern_ids = [i for key, i in ids.items() if data.teams[key]['season'] >= books.MODERN_FIRST_SEASON]
+        self.assertEqual(books.CLASSIC_MODERN_IDS, (min(modern_ids), max(modern_ids)))
+        self.assertEqual(sorted(modern_ids), list(range(min(modern_ids), max(modern_ids) + 1)))
+        self.assertEqual(max(modern_ids), ct.LAST_ID)
+        self.assertEqual((ids['seahawks_2013'], ids['giants_2016'], ids['giants_2022'], ids['steelers_2005']), (233, 237, 246, 226))
+        m = self.machine()
+        self.seasons(m, 1990, 1990)
+        for mode in (0, 1, 2, 3, 4, 7, 9):
+            for identity in (233, 237, 246, 231, 249):
+                with self.subTest(mode=mode, identity=identity):
+                    self.assertTrue(self.resolve(m, mode=mode, category=4, identity=identity))
+                    self.assertTrue(self.resolve(m, mode=mode, category=4, identity=identity, home=True))
+            for identity in (226, 230, 120, 170, 176, 190, 225, 250, 251, 0):
+                with self.subTest(mode=mode, identity=identity):
+                    self.assertFalse(self.resolve(m, mode=mode, category=4, identity=identity))   # E2R-BUF-pb.iff
+            # an ordinary (category 0) side is untouched by the identity
+            self.assertTrue(self.resolve(m, mode=mode, category=0, identity=120))
+        # Anniversary mode ignores the identity: the moment season decides
+        for identity in (233, 0):
+            self.seasons(m, 1990, 1990)
+            self.assertFalse(self.resolve(m, mode=8, identity=identity))
+            self.seasons(m, 2022, 2022)
+            self.assertTrue(self.resolve(m, mode=8, identity=identity))
+        # the b775 body sent every classic team to the bank
+        old = self.machine(self.b775)
+        self.assertFalse(self.resolve(old, mode=1, category=4, identity=233))
 
     def test_unloaded_bad_count_and_out_of_range_ordinal_keep_stock(self):
         m = self.machine()
@@ -133,7 +193,7 @@ class ModernMomentBooks(unittest.TestCase):
             self.assertTrue(self.resolve(m, null_team=True))
 
     def test_exact_upgrade_idempotence_and_foreign_code_refusal(self):
-        for previous in (self.legacy, self.previous50, self.v05):
+        for previous in (self.legacy, self.previous50, self.v05, self.b775):
             self.assertEqual(books.status(previous), 'needs_fix')
             fixed, receipt = books.apply(previous)
             self.assertEqual(fixed, self.current)

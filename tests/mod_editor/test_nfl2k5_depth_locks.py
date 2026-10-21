@@ -67,6 +67,32 @@ def composition(special, practice_level, locks_first):
     return data
 
 
+@lru_cache(maxsize=1)
+def V1_PATCHED_XBE():
+    """A revision-1 (b775/b776) install: rewrite revision 2's spans with the old bytes."""
+    data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
+    image = XbeImage(bytes(data))
+    for site in locks.sites("retail", 1):
+        off = image.offset(site.va, len(site.after))
+        data[off:off + len(site.after)] = site.after
+    for s in strength._sections(bytes(data)):
+        data[s.header_offset + 36:s.header_offset + 56] = strength.section_digest(bytes(data), s)
+    return bytes(data)
+
+
+@lru_cache(maxsize=1)
+def V2_PATCHED_XBE():
+    """A revision-2 install (the b777 release candidate before dl3)."""
+    data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
+    image = XbeImage(bytes(data))
+    for site in locks.sites("retail", 2):
+        off = image.offset(site.va, len(site.before))
+        data[off:off + len(site.after)] = site.after
+    for s in strength._sections(bytes(data)):
+        data[s.header_offset + 36:s.header_offset + 56] = strength.section_digest(bytes(data), s)
+    return bytes(data)
+
+
 class RecordTests(unittest.TestCase):
     @unittest.skipUnless(HAVE_DISASM, "Capstone required for call-site proof")
     def test_actual_bench_calls_match_compactor_return_pins(self):
@@ -158,7 +184,10 @@ class RecordTests(unittest.TestCase):
                  ("swap", locks.SWAP_VA, locks.PATCHED_SWAP),
                  ("kr", locks.KR_SET_VA, locks.PATCHED_KR_SET),
                  ("pr", locks.PR_SET_VA, locks.PATCHED_PR_SET),
-                 ("remove", locks.REMOVE_VA, locks.PATCHED_REMOVE))
+                 ("remove", locks.REMOVE_VA, locks.PATCHED_REMOVE),
+                 ("panel", locks.PANEL_VA, locks.PATCHED_PANEL),
+                 ("human", locks.HUMAN_VA, locks.PATCHED_HUMAN),
+                 ("sort", locks.SORT_VA, locks.PATCHED_SORT))
         with tempfile.TemporaryDirectory() as tmp:
             obj, elf = Path(tmp) / "depth.o", Path(tmp) / "depth.elf"
             subprocess.run(["as", "--32", str(ROOT / "docs/mod_editor/nfl2k5_depth_locks.S"), "-o", str(obj)], check=True, capture_output=True)
@@ -417,18 +446,30 @@ class ExecutionTests(unittest.TestCase):
         cls.patched = locks.apply(returners.apply(cls.retail)[0])[0]
 
     def test_full_weekly_sort_preserves_lesser_left_and_right_starters(self):
-        original = [record(rank=0, side=2, bits=1, score=.2), record(rank=1, side=0, bits=2, score=.9),
+        # Revision 3 (dl3): the rank-locked starter is within the 3-point margin
+        # of the rank-unlocked .9 player, so his lock (and row) holds.
+        original = [record(rank=0, side=2, bits=1, score=.89), record(rank=1, side=0, bits=2, score=.9),
                     record(rank=2, side=1, score=.6), record(position=13, rank=0, side=2, bits=3, score=.1),
                     record(position=13, rank=1, side=0, bits=3, score=.8), record(position=3, rank=0, side=0, score=.7)]
         cpu = CPU(self.patched)
         cpu.seed(original)
+        # Revision 2: a lock keeps its row unless that row would leave a hole. The
+        # two fully locked guards (side rows 2/0, the native two-player pattern)
+        # therefore seat at side rows 1/0; every other lock keeps its row.
+        expected = {}
+        for position in (13, 14):
+            group = [i for i, raw in enumerate(original) if raw[0x35] == position]
+            for chain, bit in ((0, 1), (1, 2)):
+                locked = [i for i in group if fields(original[i])[2] & bit]
+                starter = next((k for k, i in enumerate(locked) if chain and expected.get((i, 0), fields(original[i])[0]) == 0), None)
+                seats = locks.seat_rows([fields(original[i])[chain] for i in locked], len(group) - len(locked), starter)
+                expected.update({(i, chain): row for i, row in zip(locked, seats)})
+        self.assertEqual(expected[(3, 1)], 1)
+        self.assertEqual(expected[(0, 0)], 0)
         for _ in range(3):
             self.assertEqual(cpu.run(0x2BDCF0), STACK + 4)
-            for index in (0, 1, 3, 4):
-                before, after = fields(original[index]), fields(cpu.player(index))
-                for chain, bit in ((0, 1), (1, 2)):
-                    if before[2] & bit:
-                        self.assertEqual(after[chain], before[chain], (index, chain))
+            for (index, chain), row in expected.items():
+                self.assertEqual(fields(cpu.player(index))[chain], row, (index, chain))
             for position in (13, 14):
                 group = [fields(cpu.player(i)) for i, raw in enumerate(original) if raw[0x35] == position]
                 for chain in (0, 1):
@@ -447,12 +488,30 @@ class ExecutionTests(unittest.TestCase):
         cpu.human = True
         before = cpu.team(), [cpu.player(i) for i in range(2)]
         cpu.run(0x2BDCF0)
-        self.assertEqual((cpu.team(), [cpu.player(i) for i in range(2)]), before)
+        # Revision 2: a user club is not ratings-sorted, but it gets the screen
+        # compactor's pass: pointer order, locks and the dense rank chain stay,
+        # and the two unlocked players' duplicate side row 0 becomes rows 0/1.
+        self.assertEqual(cpu.team()[:8], before[0][:8])
+        self.assertEqual([fields(cpu.player(i)) for i in range(2)], [(0, 0, 1), (1, 1, 0)])
+        for i in range(2):
+            self.assertEqual(cpu.player(i)[:40] + cpu.player(i)[42:], before[1][i][:40] + before[1][i][42:])
+        compacted = cpu.team(), [cpu.player(i) for i in range(2)]
+        cpu.run(0x2BDCF0)
+        self.assertEqual((cpu.team(), [cpu.player(i) for i in range(2)]), compacted)
+        legacy = CPU(V1_PATCHED_XBE())
+        legacy.seed(raw)
+        legacy.human = True
+        legacy.run(0x2BDCF0)
+        self.assertEqual((legacy.team(), [legacy.player(i) for i in range(2)]), before)
         cpu.uc.mem_write(0xE60140, struct.pack("<I", 1))
         cpu.teams.append(TEAM + 500)
         cpu.uc.mem_write(TEAM + 500, bytes(500))
         self.assertEqual(cpu.run(0x2BDCF0), STACK + 4)
-        self.assertEqual(fields(cpu.player(0))[0], 0)
+        # CPU-managed: the .9 unlocked player is 3+ points better than the .1
+        # rank-locked one, so revision 3 releases that lock and he starts.
+        self.assertEqual(fields(cpu.player(1))[0], 0)
+        self.assertEqual(fields(cpu.player(0))[0], 1)
+        self.assertEqual(cpu.player(0)[0x52] & 3, 0)
         self.assertNotEqual(cpu.team()[:8], before[0][:8])
 
     def test_user_swap_locks_only_the_selected_chain_in_both_layouts(self):
@@ -584,7 +643,10 @@ class ExecutionTests(unittest.TestCase):
                             expected[0x34] = 1  # native disposable-copy side tag
                             self.assertEqual(bytes(cpu.uc.mem_read(reserves.PLAYER_COPIES[0] + i * 84, 84)), expected)
 
-    def test_compactor_reserves_holes_overflow_and_is_idempotent(self):
+    def test_compactor_seats_locks_without_holes_overflow_and_is_idempotent(self):
+        # Revision 2 (b777 mc5): a locked row is kept only while unlocked players
+        # can fill every row above it; otherwise the lock moves up, so a team
+        # never shows a blank row above its last player.
         for count in (0, 1, 2, 7, 8, 9, 54, 65):
             raw = [record(rank=min(i, 7), side=min(i, 7), bits=3 if i == 0 else 0) for i in range(count)]
             if raw:
@@ -593,7 +655,10 @@ class ExecutionTests(unittest.TestCase):
             cpu.seed(raw)
             self.assertEqual(cpu.run(locks.COMPACT_VA), STACK + 4)
             if raw:
-                self.assertEqual(fields(cpu.player(0)), (6, 5, 3))
+                self.assertEqual(fields(cpu.player(0)), (min(6, count - 1), min(5, count - 1), 3))
+                for chain in (0, 1):
+                    rows = sorted(fields(cpu.player(i))[chain] for i in range(count))
+                    self.assertEqual(rows, [min(i, 7) for i in range(count)], (count, chain))
             before = [cpu.player(i) for i in range(count)]
             cpu.run(locks.COMPACT_VA)
             self.assertEqual([cpu.player(i) for i in range(count)], before)
@@ -602,6 +667,230 @@ class ExecutionTests(unittest.TestCase):
                 normal = [r for r in rows if r < 7]
                 self.assertEqual(len(normal), len(set(normal)))
             self.assertTrue(all(max(fields(cpu.player(i))[:2]) <= 7 for i in range(count)))
+
+    def test_departed_locked_starter_leaves_no_blank_row(self):
+        # Noah 10/20 (MyCareer, TEN): every HB was locked (2026 refresh) and the
+        # rank-0 starter left; the survivors kept ranks 1/2/4, so row 0 was blank.
+        raw = [record(position=7, rank=1, side=0, bits=3), record(position=7, rank=4, side=4, bits=3),
+               record(position=7, rank=2, side=1, bits=11), record(position=8, rank=0, side=0)]
+        for data, rows in ((V1_PATCHED_XBE(), (None, 0, 2, None, 1)), (self.patched, (0, 2, 1, None, None))):
+            # (rows of the rank chain; the side chain is checked below)
+            cpu = CPU(data)
+            cpu.seed(raw)
+            self.assertEqual(cpu.run(locks.COMPACT_VA), STACK + 4)
+            got = []
+            for row in range(5):
+                from unicorn.x86_const import UC_X86_REG_EAX
+                cpu.run(0x242AE0, ecx=0, edx=TEAM, stack_args=(row, 7, 0))
+                player = cpu.uc.reg_read(UC_X86_REG_EAX)
+                got.append(None if not player else (player - PLAYERS) // 84)
+            self.assertEqual(tuple(got), rows)
+        # Spears starts the rank chain, so he is not also the side chain's
+        # starter (PWRB): Chestnut and Carter move up, Spears is seated last.
+        self.assertEqual([fields(cpu.player(i))[:2] for i in range(3)], [(0, 2), (2, 1), (1, 0)])
+        self.assertEqual([fields(cpu.player(i))[2] for i in range(4)], [3, 3, 11, 0])
+        before = [cpu.player(i) for i in range(4)]
+        cpu.run(locks.COMPACT_VA)
+        self.assertEqual([cpu.player(i) for i in range(4)], before)
+
+    def test_weekly_pass_closes_a_user_club_hole(self):
+        # A MyCareer club is user-controlled: the native weekly sort skipped it,
+        # so its hole stayed until someone opened the depth chart.
+        raw = [record(position=7, rank=1, side=0, bits=3, score=.9), record(position=7, rank=4, side=4, bits=3, score=.2),
+               record(position=7, rank=2, side=1, bits=3, score=.5)]
+        for data, expected in ((V1_PATCHED_XBE(), [(1, 0), (4, 4), (2, 1)]), (self.patched, [(0, 2), (2, 1), (1, 0)])):
+            cpu = CPU(data)
+            cpu.seed(raw)
+            cpu.human = True
+            self.assertEqual(cpu.run(0x2BDCF0), STACK + 4)
+            self.assertEqual([fields(cpu.player(i))[:2] for i in range(3)], expected)
+
+    def test_seating_matches_reference_model_on_random_locked_teams(self):
+        rng = random.Random(777)
+        for _ in range(40):
+            count = rng.choice((1, 2, 3, 5, 9, 20, 53))
+            raw = [record(position=rng.choice((3, 7, 14)), rank=rng.randrange(8), side=rng.randrange(8),
+                          bits=rng.choice((0, 1, 2, 3))) for _ in range(count)]
+            cpu = CPU(self.patched)
+            cpu.seed(raw)
+            cpu.run(locks.COMPACT_VA)
+            for position in (3, 7, 14):
+                group = [i for i, r in enumerate(raw) if r[0x35] == position]
+                for chain, bit in ((0, 1), (1, 2)):
+                    locked = [i for i in group if raw[i][0x52] & bit]
+                    starter = next((k for k, i in enumerate(locked) if chain and fields(cpu.player(i))[0] == 0), None)
+                    seats = locks.seat_rows([fields(raw[i])[chain] for i in locked], len(group) - len(locked), starter)
+                    self.assertEqual([fields(cpu.player(i))[chain] for i in locked], seats)
+                    rows = sorted(fields(cpu.player(i))[chain] for i in group)
+                    self.assertEqual(rows, [min(i, 7) for i in range(len(group))])
+                if len(group) > 1 and all(raw[i][0x52] & 2 for i in group):
+                    # The rank chain's starter never also starts the side chain.
+                    lead = next(i for i in group if fields(cpu.player(i))[0] == 0)
+                    self.assertGreaterEqual(fields(cpu.player(lead))[1], min(2, len(group) - 1))
+
+    def test_ratings_panel_empty_top_row_does_not_divide_by_zero(self):
+        # The freeze: FUN_00242E00 divides 10000 by the top row's ratings, which
+        # were never stored for an empty top row (#DE at 0x242E53).
+        from unicorn import UC_HOOK_INTR, UC_HOOK_CODE
+        from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EIP, UC_X86_REG_EAX
+        raw = [record(position=7, rank=1, side=0, bits=3), record(position=7, rank=2, side=1, bits=3)]
+        results = {}
+        for name, data in (("revision1", V1_PATCHED_XBE()), ("revision2", self.patched)):
+            cpu = CPU(data)
+            cpu.seed(raw)
+            u = cpu.uc
+            for va, value in ((0xC174B8, 0), (0xC17478, 1), (0xC17480, 0), (0xC1749C, TEAM),
+                              (0xC174C4, 0), (0xC174C8, 0), (0xC174CC, 0)):
+                u.mem_write(va, struct.pack("<I", value))
+            widget = STACK - 0x2000
+            u.mem_write(widget + 0x4C, struct.pack("<I", widget + 0x100))
+            faults = []
+            u.hook_add(UC_HOOK_INTR, lambda uc, intno, _d: (faults.append(intno), uc.emu_stop()))
+
+            def leaf(uc, address, _size, _data):
+                if address in (0x242D80, 0x2F010, 0xE6620):   # bar/text draw and rating leaves
+                    sp = uc.reg_read(UC_X86_REG_ESP)
+                    ret = struct.unpack("<I", uc.mem_read(sp, 4))[0]
+                    uc.reg_write(UC_X86_REG_EAX, 70)
+                    uc.reg_write(UC_X86_REG_ESP, sp + 4 + {0x242D80: 8, 0x2F010: 4, 0xE6620: 4}[address])
+                    uc.reg_write(UC_X86_REG_EIP, ret)
+            u.hook_add(UC_HOOK_CODE, leaf)
+            outcome = []
+            for row in (0, 1):
+                faults.clear()
+                try:
+                    cpu.run(0x242E00, ecx=row, edx=widget, stack_args=(0,))
+                    outcome.append("ok")
+                except AssertionError:
+                    outcome.append(("fault", tuple(faults), hex(u.reg_read(UC_X86_REG_EIP))))
+            results[name] = outcome
+        self.assertEqual(results["revision1"][1], ("fault", (0,), "0x242e53"))
+        self.assertEqual(results["revision2"], ["ok", "ok"])
+
+    def test_revision1_install_upgrades_in_place(self):
+        v1 = V1_PATCHED_XBE()
+        self.assertEqual(locks.status(v1), "legacy")
+        upgraded, receipt = locks.apply(v1)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], 1)
+        self.assertEqual({e["label"] for e in receipt["edits"]},
+                         {"compactor", "weekly_rank_stage", "screen_swap", "ratings_panel_guard",
+                          "user_club_compact", "weekly_sort_release"})
+        self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
+
+    def test_revision2_install_upgrades_in_place(self):
+        v2 = V2_PATCHED_XBE()
+        self.assertEqual(locks.read_any(v2)["status"], "legacy")
+        self.assertEqual(locks.read_any(v2)["revision"], 2)
+        upgraded, receipt = locks.apply(v2)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], 2)
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"compactor", "weekly_sort_release"})
+
+    # b777 dl3 (Noah 10/20: a better free-agent signing must start on a CPU club).
+    def _weekly(self, raw, data=None, human=False):
+        cpu = CPU(self.patched if data is None else data)
+        cpu.seed(raw)
+        cpu.human = human
+        self.assertEqual(cpu.run(0x2BDCF0, budget=2000000), STACK + 4)
+        return cpu
+
+    def test_clearly_better_unlocked_signing_displaces_a_locked_starter(self):
+        # Locked QB starter .80 and backup .70; an unlocked signing .86 (6 points better).
+        raw = [record(position=0, rank=0, side=0, bits=3, score=.80),
+               record(position=0, rank=1, side=1, bits=3, score=.70),
+               record(position=0, rank=7, side=7, bits=0, score=.86)]
+        cpu = self._weekly(raw)
+        got = [fields(cpu.player(i)) for i in range(3)]
+        self.assertEqual(got[2][0], 0)                      # the signing starts
+        self.assertEqual(got[0][0], 1)                      # the old starter is next
+        self.assertEqual(got[0][2] & 3, 0)                  # and his locks are released
+        self.assertEqual(got[1][0], 2)
+        again = [cpu.player(i) for i in range(3)]
+        cpu.run(0x2BDCF0, budget=2000000)
+        self.assertEqual([cpu.player(i) for i in range(3)], again)   # stays released and stable
+        # Revision 2 (the release candidate) kept the locked starter.
+        legacy = self._weekly(raw, V2_PATCHED_XBE())
+        self.assertEqual(fields(legacy.player(0))[0], 0)
+        self.assertEqual(fields(legacy.player(0))[2] & 3, 3)
+
+    def test_margin_keeps_the_locked_starter_against_a_slightly_better_signing(self):
+        for score in (.81, .825):
+            raw = [record(position=0, rank=0, side=0, bits=3, score=.80),
+                   record(position=0, rank=1, side=1, bits=3, score=.70),
+                   record(position=0, rank=7, side=7, bits=0, score=score)]
+            cpu = self._weekly(raw)
+            got = [fields(cpu.player(i)) for i in range(3)]
+            self.assertEqual(got[0][0], 0, score)
+            self.assertEqual(got[0][2] & 3, 3, score)
+            self.assertEqual(got[1][2] & 3, 0, score)   # the .70 backup is 3+ points below: released
+            self.assertNotEqual(got[2][0], 0, score)
+        # At the margin (3 points) the lock is released.
+        raw = [record(position=0, rank=0, side=0, bits=3, score=.75),
+               record(position=0, rank=7, side=7, bits=0, score=.75 + locks.MARGIN + 1e-4)]
+        cpu = self._weekly(raw)
+        self.assertEqual([fields(cpu.player(i))[:1] + (fields(cpu.player(i))[2] & 3,) for i in range(2)], [(1, 0), (0, 0)])
+
+    def test_returner_locks_survive_a_release(self):
+        raw = [record(position=7, rank=0, side=2, bits=3 | 4 | 16, score=.70),
+               record(position=7, rank=1, side=0, bits=3, score=.60),
+               record(position=7, rank=2, side=1, bits=3, score=.55),
+               record(position=7, rank=7, side=7, bits=0, score=.90)]
+        cpu = self._weekly(raw)
+        self.assertEqual(cpu.player(0)[0x52] & 0x1F, 4 | 16)
+        self.assertEqual(fields(cpu.player(3))[0], 0)
+        ids = cpu.returner_identities()
+        self.assertEqual((ids[0], ids[2]), (0, 0))
+
+    def test_unlocked_rank_starter_is_not_also_a_side_starter(self):
+        # Noah's save, BAL MLB: a better locked player sits at rank 3, so the
+        # unlocked rank-0 player (Wagner) was ordinal 1 and got side row 0 too:
+        # MIKE+WILL, refused by the exit check 0x243B50.
+        raw = [record(position=11, rank=3, side=3, bits=3, score=.820),
+               record(position=11, rank=0, side=0, bits=0, score=.776),
+               record(position=11, rank=1, side=2, bits=0, score=.646),
+               record(position=11, rank=2, side=1, bits=3, score=.633),
+               record(position=11, rank=4, side=4, bits=0, score=.094)]
+        for data in (V2_PATCHED_XBE(), self.patched):
+            cpu = self._weekly(raw, data)
+            got = [fields(cpu.player(i)) for i in range(5)]
+            starter = [g for g in got if g[0] == 0]
+            self.assertEqual(len(starter), 1)
+            ranks, sides = [g[0] for g in got], [g[1] for g in got]
+            self.assertEqual(len(set(ranks)), 5)
+            self.assertEqual(len(set(sides)), 5)
+            if data is self.patched:
+                self.assertNotIn(starter[0][1], (0, 1))
+            else:
+                self.assertIn(starter[0][1], (0, 1))   # the revision-2 double starter
+
+    def test_user_club_is_not_released(self):
+        raw = [record(position=0, rank=0, side=0, bits=3, score=.60),
+               record(position=0, rank=7, side=7, bits=0, score=.95)]
+        mine, old = self._weekly(raw, human=True), self._weekly(raw, V2_PATCHED_XBE(), human=True)
+        self.assertEqual([mine.player(i) for i in range(2)], [old.player(i) for i in range(2)])
+        self.assertEqual(mine.player(0)[0x52] & 3, 3)
+        self.assertEqual(fields(mine.player(0))[0], 0)
+
+    def test_sort_order_matches_the_native_sort_on_random_teams(self):
+        # The rewritten sort performs the same exchanges as retail: with no
+        # unlocked player nothing is released and the pointer order is equal.
+        rng = random.Random(3)
+        retail = locks.apply(returners.apply(self.retail)[0])[0]
+        image = bytearray(retail)
+        img = XbeImage(retail)
+        off = img.offset(locks.SORT_VA, len(locks.RETAIL_SORT))
+        image[off:off + len(locks.RETAIL_SORT)] = locks.RETAIL_SORT
+        for _ in range(25):
+            n = rng.randint(1, 30)
+            raw = [record(position=rng.randint(0, 3), rank=rng.randint(0, 7), side=rng.randint(0, 7),
+                          bits=3, score=rng.choice((.5, .6, .61, .7, rng.random()))) for _ in range(n)]
+            a, b = CPU(self.patched), CPU(bytes(image))
+            for c in (a, b):
+                c.seed(raw)
+                c.run(0x2BDCF0, budget=4000000)
+            self.assertEqual(a.team()[:n * 4], b.team()[:n * 4])
+            self.assertEqual([a.player(i) for i in range(n)], [b.player(i) for i in range(n)])
 
     def test_unlocked_compactor_matches_native_rank_side_on_random_valid_teams(self):
         rng = random.Random(58)
@@ -661,7 +950,9 @@ class ExecutionTests(unittest.TestCase):
                           side=min(i // 4, 7), score=(i + 1) / 66) for i in range(65)]
             for i, role in ((0, "kr1"), (1, "pr"), (64, "kr2")):
                 raw[i] = locks.set_lock(raw[i], role)
-            raw[2] = locks.set_lock(raw[2], "rank")
+            # Revision 3 (dl3) releases a rank lock 3+ points below an unlocked
+            # teammate; keep this lock within the margin of the best one (.9545).
+            raw[2] = locks.set_lock(record(position=13, score=.95), "rank")
             raw[3] = locks.set_lock(raw[3], "side")
             cpu.seed(raw)
             self.assertEqual(cpu.run(0x2BDCF0, budget=1000000), STACK + 4)

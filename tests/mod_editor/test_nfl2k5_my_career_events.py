@@ -224,19 +224,28 @@ class LedgerTests(unittest.TestCase):
 
 
 class HostBudgetTests(unittest.TestCase):
-    def test_b69_budget_native_sources_and_progression_caps_are_unchanged(self):
+    def test_b69_budget_reviewed_native_sources_and_progression_caps(self):
         import hashlib
         pins = {
             'tools/mycareer_mode/b69_budget.json':
                 '738619010952184b76b7a0bf5e811f352f353013119e7cd597c7d0c982d0dd73',
+            # mc2 reviewed native changes: menu-port ownership, B quit on the
+            # entry/Apartment, backup prompt, first clean free record (D01).
+            # nl1: the "You were drafted by the <city> <nickname>." notice.
+            # mc4: the progress menu draws what the prior-season sim frames draw (handler in runtime.S), and
+            # the progress note drawn on the native menu (runtime.c mode_draw) is gone.
             'tools/mycareer_mode/runtime.c':
-                '5e3085d95c38e3410d7c0b814a11549816aec9968ed61bb155d35d731c0dbf56',
+                '97af870c1bf4ea97a8317090b280ea19a14a05e1b3778c7acf529631269784fc',
             'tools/mycareer_mode/runtime.S':
-                '74de736757e59f742f965cdc1f64e98fa55e06e08f8fd7dc7b09e6994d20bf64',
+                '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
-                # refreshes this stale host pin; native code/budget pins stay fixed.
-                '96434e5fe8e686bfa72a475b30cd6aa213e4eb3c9bdfef477f645c29017528a9',
+                # refreshes this host pin. v1h also repairs the reviewed native C
+                # prefetch path; the budget, assembly and progression pins stay fixed.
+                # nl1: drafted-notice format in the M3 pool, Team Select side guard.
+                # ui1: Career Home Apartment descriptor words and the Upgrades back flag (Career Home variant only).
+                # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
+                'f5a9a3a2aad5dcbf05e609aabc790df42cb95c1c4da3e4d78071a4d9c6e1fc74',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

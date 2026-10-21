@@ -54,7 +54,7 @@ def hooks():
         rows[PLAYCALL_HOOK[0]] = PLAYCALL_HOOK[1:]
         rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
     return rows
-REVISION = 13  # pc: play-call roots, cards and preview above the bar; existing RX capacity
+REVISION = 14  # hd1: sprite camera retains full picture clip for the corner watermark
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -409,6 +409,14 @@ def code_for(code_va, data_va):
         a.b('58 9d')
         if name == 'update': a.b('ff742404')
         a.call(native)
+        if name == 'update':
+            # Only the SPR5 dispatch reaches here. The existing widescreen
+            # pixel-HUD stamp preserves the projection/glyph scale but keeps
+            # the full clip and cull bounds. Refresh after native update so
+            # camera rebuilds cannot leave the watermark clipped at x=630.
+            # Retail 4:3 does not consume this spare camera pad.
+            from . import nfl2k5_widescreen as wide
+            a.b('c705'+_u(0xa95530+wide.STAMP_OFFSET)+_u(wide.STAMP_PIXELS))
         _save(a)
         # sb: the update also passes FC9C0's frame time ([EBP+0x28] after _save) to the engine's timers.
         if name == 'update': a.b('ff7528')

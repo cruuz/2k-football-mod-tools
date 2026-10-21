@@ -34,6 +34,9 @@ class PresetPassTests(unittest.TestCase):
         # This hashing fixture has no PLAY archive.
         self.enterContext(mock.patch.object(mod_build, "_check_playbook_scoring",
                                              return_value={"synthetic": True}))
+        # This fixture has no native SITU or uniform packs.
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                                     return_value={"synthetic": True}))
 
     def digests(self):
         calls = []

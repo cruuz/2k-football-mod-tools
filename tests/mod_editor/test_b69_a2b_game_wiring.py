@@ -161,6 +161,9 @@ class CompactBuildTests(unittest.TestCase):
         xdvdfs_compact.finish_private(self.source)
         self.enterContext(patch.object(build, '_check_playbook_scoring',
                                        return_value={'synthetic': True}))
+        # This weather-only archive has no native SITU or uniform entries.
+        self.enterContext(patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image",
+                                return_value={"synthetic": True}))
         draft=weather.WeatherDraft(self.resource);draft.set_value(5,12,'temperature_f',15)
         self.document=draft.plan();self.plan_file=self.root/'climate.json'
         weather.write_json(self.plan_file,self.document)
@@ -194,7 +197,8 @@ class CompactBuildTests(unittest.TestCase):
             self.assertEqual(owner.status(result),'applied')
         tt.decided_clock_patch.verify(result,margin=25,seconds=90)
         self.assertTrue(receipt['plan']['depth_locks'])
-        self.assertEqual(receipt['steps'][-1]['step'],'weather_plan')
+        # b773-ic1: the Denver miniature check is the last image step of every build
+        self.assertEqual([row['step'] for row in receipt['steps']][-2:],['weather_plan','menu_icon_orientation'])
         weather.verify(weather.load_resource(target),self.document,before=self.resource)
         self.assertEqual(hashlib.sha256(self.source.read_bytes()).hexdigest(),original)
         repeat=self.root/'repeated.iso'
@@ -231,7 +235,8 @@ class CompactBuildTests(unittest.TestCase):
         target=self.root/'restored.iso'
         receipt=build.build(build.BuildPlan(str(self.source),str(target)))
         self.assertEqual(build._xbe_bytes(target),self.retail)
-        self.assertEqual(receipt['steps'][-1]['step'],'weather_haze')
+        self.assertEqual([row['step'] for row in receipt['steps']][-3:],
+                         ['weather_haze', 'unc_bowl_uniforms', 'menu_icon_orientation'])
         target.write_bytes(b'KEEP DESTINATION')
         with patch.object(weather,'apply_to_image',side_effect=OSError('simulated final write failure')):
             with self.assertRaises(OSError):build.build(build.BuildPlan(str(self.source),str(target),overwrite=True,weather_plan=str(self.plan_file)))

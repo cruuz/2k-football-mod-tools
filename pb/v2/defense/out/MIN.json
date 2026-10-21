@@ -110,8 +110,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -299,7 +299,7 @@
    "merged_into_category": 11,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -315,16 +315,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -539,12 +539,12 @@
  "modeled": {
   "base": {
    "model": {
-    "C0": 0.111,
-    "C1": 0.111,
+    "C0": 0.02,
+    "C1": 0.157,
     "C2": 0.333,
-    "C3": 0.222,
-    "C4": 0.111,
-    "C6": 0.111
+    "C3": 0.314,
+    "C4": 0.157,
+    "C6": 0.02
    },
    "target": {
     "2M": 0.025,
@@ -555,7 +555,7 @@
     "C4": 0.077,
     "C6": 0.056
    },
-   "blitz_model": 0.444,
+   "blitz_model": 0.333,
    "blitz_target": 0.392,
    "calls": 9
   },
@@ -642,7 +642,7 @@
     "C4": 0.021,
     "C6": 0.005
    },
-   "blitz_model": 0.599,
+   "blitz_model": 0.768,
    "blitz_target": 0.75,
    "calls": 15
   },
@@ -664,7 +664,7 @@
     "C4": 0.018,
     "C6": 0.016
    },
-   "blitz_model": 0.482,
+   "blitz_model": 0.633,
    "blitz_target": 0.75,
    "calls": 19
   }
@@ -1625,13 +1625,11 @@
    "donor": 186,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "MIN",
-    "play": 186,
-    "name": "Cover 2 Soft"
+    "authored": "odd variant of BAL 2 Soft, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 4
   },
   {
    "play": 187,
@@ -1639,7 +1637,7 @@
    "name": "Cover 0 Safety Off",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
-   "band": 2,
+   "band": 3,
    "pressure": true,
    "roles": [
     "base"
@@ -1648,9 +1646,7 @@
    "donor": 194,
    "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "BAL",
-    "play": 19,
-    "name": "Double Indian 0"
+    "authored": "odd variant of BAL Double Indian 0, edges rush [0], zone blitz on ['base']"
    },
    "rushers": 6,
    "spy_slots": [],
@@ -1659,7 +1655,7 @@
   {
    "play": 188,
    "appended": false,
-   "name": "Fire Zone 3 Double",
+   "name": "Fire Zone 3 Corner",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 2,
@@ -1671,9 +1667,7 @@
    "donor": 188,
    "donor_name": "Cover 4",
    "source": {
-    "book": "HOU",
-    "play": 21,
-    "name": "Weak Crash 3"
+    "authored": "odd variant of HOU Weak Crash 3, edges rush [0, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1739,30 +1733,28 @@
   {
    "play": 192,
    "appended": false,
-   "name": "Cover 1 Double Fire",
+   "name": "Cover 1 Man Off",
    "component": "coverage",
-   "concept": "Cover 1 Blitz",
+   "concept": "Cover 1",
    "band": 2,
    "pressure": true,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 196,
-   "donor_name": "Double Hard 1 Odd",
+   "donor": 194,
+   "donor_name": "Weak Fire 1 Odd",
    "source": {
-    "book": "MIN",
-    "play": 196,
-    "name": "Double Hard 1 Odd"
+    "authored": "fallback Cover 1 Blitz -> Cover 1; odd variant of BAL Double Hard 1, edges rush [0, 6]"
    },
-   "rushers": 5,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
   },
   {
    "play": 193,
    "appended": false,
-   "name": "Cover 2 Double Fire",
+   "name": "Cover 2 Mike Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 2,
@@ -1774,9 +1766,7 @@
    "donor": 186,
    "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "BAL",
-    "play": 46,
-    "name": "Double Hard 2"
+    "authored": "odd variant of BAL Double Hard 2, edges rush [0, 4, 6]"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1788,52 +1778,27 @@
    "name": "Cover 2 Hard",
    "component": "coverage",
    "concept": "Cover 2 Hard",
-   "band": 2,
+   "band": 3,
    "pressure": false,
    "roles": [
     "base"
    ],
    "new_links": [],
-   "donor": 192,
-   "donor_name": "Cover 2 Hard",
+   "donor": 186,
+   "donor_name": "Cover 2 Soft",
    "source": {
-    "book": "MIN",
-    "play": 192,
-    "name": "Cover 2 Hard"
+    "authored": "odd variant of DAL Cover 2 Hard, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 12
   },
   {
    "play": 195,
    "appended": false,
-   "name": "Cover 4 Drop",
+   "name": "Cover 4 Spot",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
-   "band": 2,
-   "pressure": false,
-   "roles": [
-    "base"
-   ],
-   "new_links": [],
-   "donor": 193,
-   "donor_name": "Cover 12 Odd",
-   "source": {
-    "book": "MIN",
-    "play": 193,
-    "name": "Cover 12 Odd"
-   },
-   "rushers": 3,
-   "spy_slots": [],
-   "authored_nodes": 0
-  },
-  {
-   "play": 196,
-   "appended": false,
-   "name": "Cover 6 Split 2",
-   "component": "coverage",
-   "concept": "Cover 6",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -1843,13 +1808,32 @@
    "donor": 188,
    "donor_name": "Cover 4",
    "source": {
-    "book": "MIN",
-    "play": 188,
-    "name": "Cover 4"
+    "authored": "odd variant of NE Blanket 4, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 16
+  },
+  {
+   "play": 196,
+   "appended": false,
+   "name": "Cover 6 Split 2",
+   "component": "coverage",
+   "concept": "Cover 6",
+   "band": 3,
+   "pressure": false,
+   "roles": [
+    "base"
+   ],
+   "new_links": [],
+   "donor": 188,
+   "donor_name": "Cover 4",
+   "source": {
+    "authored": "odd variant of DAL Cover 4, edges rush [0, 6]"
+   },
+   "rushers": 4,
+   "spy_slots": [],
+   "authored_nodes": 4
   },
   {
    "play": 197,
@@ -1866,9 +1850,7 @@
    "donor": 188,
    "donor_name": "Cover 4",
    "source": {
-    "book": "NE",
-    "play": 209,
-    "name": "3 Strong"
+    "authored": "odd variant of BAL 3 Buzz, edges rush [0, 6]"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1984,7 +1966,7 @@
    "appended": false,
    "name": "Mug Sim 3",
    "component": "coverage",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "band": 0,
    "pressure": false,
    "roles": [
@@ -1999,9 +1981,9 @@
    "source": {
     "authored": "mug:sim from CAR Cover 3"
    },
-   "rushers": 4,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 12
   },
   {
    "play": 206,
@@ -2099,7 +2081,7 @@
   {
    "play": 210,
    "appended": false,
-   "name": "Fire 3 Double Weak",
+   "name": "Fire Zone 3 Double",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 2,
@@ -2168,7 +2150,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Fire Zone Double Seam",
+   "name": "Fire 3 Double Weak",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 2,
@@ -2368,21 +2350,21 @@
  "receipt": {
   "team": "MIN",
   "offense_pack": "data/playbooks/softdrink_min_modern.2k5book",
-  "offense_pack_sha256": "25a76f5ce45ef16b427a7e46e58f13d2650a69c6ba1cc9322eb4dfab892a0a17",
-  "source_fingerprint": "29b163ddd2e3b3bddd0fcadcd1114e7fd3b076734d72e59c007ab8d48afda5b3",
-  "replacement_sha256": "94ace5791e0d99f5b21a2d96e880196fd09fbf3a993630d7923b3227df8d6c64",
-  "semantic_sha256": "dcc2bd1880561bcd15549a30f321eae526c4b9752ce1db0032b9e91238df4748",
+  "offense_pack_sha256": "7cb73d0ae364ff6239d71a34cbfb52651d5cbfa666a492e75eb7fea9ee6ce514",
+  "source_fingerprint": "002c603933b9176ba6846a983b084505b62e0d757ef662801933d36d0ca7018c",
+  "replacement_sha256": "a6302b00bfc618c2ae5854e87a6d052677e7482e368f0405708350cb1540111c",
+  "semantic_sha256": "0c4c4ac7cea19200b18c24cf5d3b7c0ca1df1e7c34eb2ba677b4b4cbeec73a46",
   "plays": 74,
   "formations": 6,
-  "nodes": 2248,
+  "nodes": 2735,
   "node_capacity": 3500,
-  "formation_count": 47,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.13594,
+  "band_loss": 0.21039,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_min_defense.2k5book",
-  "pack_sha256": "4c9bd667fd5d69fb5236cae3d1e3d9e4d5b86ffb659c57b5f0d3a81a4619bc9c"
+  "pack_sha256": "2aea8d4ad89294ed293e54a4b4ea6debd3e7eeef37c0bba1f095c02b92771037"
  }
 }

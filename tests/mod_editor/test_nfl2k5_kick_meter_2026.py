@@ -311,7 +311,10 @@ class DigitsFont(unittest.TestCase):
         appendix = b"A" * 160
         with mock.patch.object(sprite, "hud_espn_marks", lambda hud, **kw: {}), \
                 mock.patch.object(sprite, "probe_sizes", lambda folder=None: (0, len(appendix), 0)), \
-                mock.patch.object(sprite, "appendix", lambda *a, **kw: (appendix, {})):
+                mock.patch.object(sprite, "appendix", lambda *a, **kw: (appendix, {})), \
+                mock.patch("mod_editor.core.nfl2k5_indicator_names.canonical_hud", lambda have: have):
+            # b773 nm1: gamedata_status recovers the scene from the private indicator FONT first; the synthetic
+            # appendix here is not a scene, so that recovery is the identity.
             for body, want in ((hud, "retail"), (hud + chunk, "retail"), (hud + appendix, "applied"),
                                (hud + appendix + chunk, "applied"), (hud + appendix + chunk[:-1] + b"x", "foreign"),
                                (hud + chunk + appendix, "foreign")):

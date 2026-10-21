@@ -1,0 +1,174 @@
+{
+ "schema": "nfl2k5_front_schemes/v1",
+ "evidence": "INFERRED from public team histories (base defensive front of the named coordinator's scheme that season) and cross-checked against each roster's own heavy-end share by tests/mod_editor/test_nfl2k5_front_schemes.py; not witnessed in game. A team-season not listed keeps the historic 4-3 rule, which is what every build before b776 gave every historic file. The retail group cites its source per team-season in retail_sources (Pro Football Reference team pages list a Defensive Alignment).",
+ "about": "b776-de1 (Noah, 10/18 playtest: Kayvon Thibodeaux at middle linebacker and Leonard Williams at edge on the 22 Giants classic team). The generated rosters label players with retail positions (DE / DT / OLB / ILB). The One-pool build used to turn every one of them with the 4-3 rule (OLB to LB, DE to EDGE), which is wrong for a team-season that ran a 3-4: its pass-rushing outside linebackers became LBs and its heavy ends became EDGE. These lists name the team-seasons that ran a 3-4 so the 3-4 rule applies to them (OLB to EDGE, DE to the interior pool). See nfl2k5_front_schemes.mapping_scheme for when the rule is used (a pure 3-4 stock book keeps the retail slot meaning). b776-de2 added the retail group: the 75 retail historic ROST files (outer entries 113 to 187) are reclassified by tools/nfl2k5_roster_reclassify with the 4-3 rule unless their entry is in retail_entries, which are team-seasons whose base front is sourced as a 3-4 and whose franchise book (retail_books) asks the pools for roles.",
+ "three_four": {
+  "classic": {
+   "broncos_2015": "Wade Phillips 3-4",
+   "buccaneers_2020": "Todd Bowles 3-4",
+   "chargers_2006": "Wade Phillips 3-4",
+   "colts_2014": "Greg Manusky 3-4",
+   "giants_2022": "Wink Martindale 3-4",
+   "packers_2010": "Dom Capers 3-4",
+   "packers_2011": "Dom Capers 3-4",
+   "ravens_2019": "Wink Martindale 3-4 base",
+   "seahawks_2025": "Mike Macdonald odd-front base (three heavy ends on the roster)",
+   "steelers_2005": "Dick LeBeau 3-4",
+   "titans_2019": "Dean Pees 3-4"
+  },
+  "moments": {
+   "49ers_2011": "Vic Fangio 3-4",
+   "49ers_2012": "Vic Fangio 3-4",
+   "cardinals_2008": "Clancy Pendergast 3-4",
+   "packers_2014": "Dom Capers 3-4",
+   "packers_2015": "Dom Capers 3-4",
+   "patriots_2001": "Bill Belichick 3-4",
+   "patriots_2003": "Bill Belichick 3-4",
+   "patriots_2007": "Bill Belichick 3-4",
+   "rams_2021": "Raheem Morris 3-4",
+   "ravens_2012": "Dean Pees 3-4",
+   "steelers_2008": "Dick LeBeau 3-4",
+   "steelers_2025": "Teryl Austin 3-4",
+   "vikings_2022": "Ed Donatell 3-4"
+  },
+  "retail": {
+   "broncos_1977": "Joe Collier 3-4 (Orange Crush), full time from 1977",
+   "broncos_1986": "Joe Collier 3-4",
+   "bills_1990": "Walt Corey 3-4",
+   "browns_1986": "Dave Adolph 3-4",
+   "giants_1986": "Bill Belichick 3-4 (Big Blue Wrecking Crew)",
+   "giants_1990": "Bill Belichick 3-4",
+   "oilers_1979": "Ed Biles 3-4 (Bum Phillips)",
+   "raiders_1976": "John Madden switched to the 3-4 in 1976",
+   "raiders_1983": "Charlie Sumner 3-4",
+   "saints_1991": "Steve Sidwell 3-4 (Dome Patrol)",
+   "eagles_1980": "Marion Campbell 3-4",
+   "seahawks_1984": "Tom Catlin 3-4 (Chuck Knox)",
+   "dolphins_1984": "Chuck Studley 3-4",
+   "49ers_1989": "George Seifert 3-4",
+   "bengals_1981": "3-4",
+   "bengals_1988": "Dick LeBeau 3-4 (same coordinator and nose tackle Krumrie as the 1986 team)",
+   "panthers_1996": "Dom Capers and Vic Fangio 3-4"
+  }
+ },
+ "heavy_end_cross_check": {
+  "about": "Cross-check used by the unit test: share of a team's three top-depth DE rows at 280 lb or more. Every listed 3-4 team is at 1/3 or more; every UNLISTED team at 2/3 or more is named here as reviewed and left on the 4-3 rule.",
+  "reviewed_four_three": {
+   "classic": [],
+   "moments": {
+    "patriots_2011": "Belichick hybrid, 4-3 base that year",
+    "saints_2009": "Gregg Williams 4-3",
+    "saints_2011": "Gregg Williams 4-3",
+    "vikings_1998": "Foge Fazio 4-3"
+   }
+  }
+ },
+ "retail_entries": {
+  "broncos_1977": 128,
+  "broncos_1986": 129,
+  "bills_1990": 118,
+  "browns_1986": 187,
+  "giants_1986": 152,
+  "giants_1990": 153,
+  "oilers_1979": 181,
+  "raiders_1976": 158,
+  "raiders_1983": 159,
+  "saints_1991": 149,
+  "eagles_1980": 161,
+  "seahawks_1984": 175,
+  "dolphins_1984": 142,
+  "49ers_1989": 172,
+  "bengals_1981": 123,
+  "bengals_1988": 124,
+  "panthers_1996": 119
+ },
+ "retail_books": {
+  "broncos_1977": "DEN",
+  "broncos_1986": "DEN",
+  "bills_1990": "BUF",
+  "browns_1986": "CLE",
+  "giants_1986": "NYG",
+  "giants_1990": "NYG",
+  "oilers_1979": "TEN",
+  "raiders_1976": "OAK",
+  "raiders_1983": "OAK",
+  "saints_1991": "NO",
+  "eagles_1980": "PHI",
+  "seahawks_1984": "SEA",
+  "dolphins_1984": "MIA",
+  "49ers_1989": "SF",
+  "bengals_1981": "CIN",
+  "bengals_1988": "CIN",
+  "panthers_1996": "CAR"
+ },
+ "retail_sources": {
+  "broncos_1977": [
+   "https://en.wikipedia.org/wiki/Orange_Crush_Defense",
+   "https://www.denverbroncos.com/news/broncos-mourn-passing-of-legendary-dc-joe-collier"
+  ],
+  "broncos_1986": [
+   "https://www.denverbroncos.com/news/broncos-mourn-passing-of-legendary-dc-joe-collier",
+   "https://en.wikipedia.org/wiki/1986_Denver_Broncos_season (roster NT / ILB / OLB, no MLB)"
+  ],
+  "bills_1990": [
+   "https://www.pro-football-reference.com/teams/buf/1990_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "browns_1986": [
+   "https://ouatsports.com/1986-cleveland-browns-sports-history-articles/ (3-4 scheme, Hairston and Camp at end)",
+   "https://en.wikipedia.org/wiki/1986_Cleveland_Browns_season (roster NT / ILB / OLB)"
+  ],
+  "giants_1986": [
+   "https://en.wikipedia.org/wiki/Big_Blue_Wrecking_Crew",
+   "https://en.wikipedia.org/wiki/3%E2%80%934_defense"
+  ],
+  "giants_1990": [
+   "https://www.pro-football-reference.com/teams/nyg/1990_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "oilers_1979": [
+   "https://www.pro-football-reference.com/teams/oti/1979_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "raiders_1976": [
+   "https://en.wikipedia.org/wiki/3%E2%80%934_defense",
+   "https://www.si.com/nfl/raiders/the-black-hole-plus/raiders-dave-rowe"
+  ],
+  "raiders_1983": [
+   "https://www.pro-football-reference.com/teams/rai/1983_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "saints_1991": [
+   "https://www.pro-football-reference.com/teams/nor/1991_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "eagles_1980": [
+   "https://www.pro-football-reference.com/teams/phi/1980_travel.htm (Defensive Alignment: 3-4)",
+   "https://en.wikipedia.org/wiki/3%E2%80%934_defense (Super Bowl XV, both teams 3-4)"
+  ],
+  "seahawks_1984": [
+   "https://www.pro-football-reference.com/teams/sea/1984_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "dolphins_1984": [
+   "https://www.pro-football-reference.com/teams/mia/1984_travel.htm (Defensive Alignment: 3-4)",
+   "https://en.wikipedia.org/wiki/3%E2%80%934_defense (Dolphins full-time 3-4 from 1977)"
+  ],
+  "49ers_1989": [
+   "https://www.pro-football-reference.com/teams/sfo/1989_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "bengals_1981": [
+   "https://www.pro-football-reference.com/teams/cin/1981_travel.htm (Defensive Alignment: 3-4)"
+  ],
+  "bengals_1988": [
+   "https://www.pro-football-reference.com/teams/cin/1986_travel.htm (Defensive Alignment: 3-4 for 1986, LeBeau coordinator 1984 to 1991)",
+   "https://en.wikipedia.org/wiki/1988_Cincinnati_Bengals_season (roster NT / ILB / OLB)"
+  ],
+  "panthers_1996": [
+   "https://ouatsports.com/1996-carolina-panthers/ (3-4 scheme built around its linebackers)",
+   "https://en.wikipedia.org/wiki/1996_Carolina_Panthers_season (roster NT / ILB / OLB)"
+  ]
+ },
+ "retail_reviewed_left_four_three": {
+  "chiefs_1993": "de1 listed it; no source found that states the 1993 front, and Pro Football Reference lists the 1992 Chiefs (same coordinator) as 4-3. Left on the 4-3 rule.",
+  "chiefs_1969": "Pro Football Reference: Defensive Alignment 4-3.",
+  "rams_1979": "Pro Football Reference: Defensive Alignment 4-3 (Ray Malavasi, Bud Carson).",
+  "jets_1998": "Pro Football Reference: Defensive Alignment 4-3 (Parcells, Belichick).",
+  "49ers_1981": "Only a fan article says 3-4 (not explicit); left on the 4-3 rule until a source states it.",
+  "dolphins_1972": "The 53 defense: sources disagree whether the base was 4-3 or 3-4; left on the 4-3 rule."
+ }
+}

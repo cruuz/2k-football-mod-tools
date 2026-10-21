@@ -32,7 +32,7 @@ def compiled_reads():
     require_nfl_retail_packs(EXTRACT)
     with OuterImage(EXTRACT) as archive:
         raw = archive.read_entry(BOOK_ENTRIES['MIN'])
-    compiled = pack.apply_pack_to_resource(raw, pack.load_pack(ROOT / 'data/playbooks/softdrink_option.2k5book'))
+    compiled = pack.apply_pack_to_resource(raw, pack.load_pack(ROOT / 'data/playbooks/softdrink_option.2k5book'), xbe=XBE)
     return raw, compiled
 
 

@@ -10,7 +10,7 @@ from unittest.mock import patch
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QScrollArea
 from mod_editor.core import nfl2k5_modern_color as mc
 from mod_editor.gui.colour_lighting_qt import ColourLightingControls
 from mod_editor.gui.build_panel_qt import BuildPanel
@@ -50,6 +50,20 @@ class ColourControlsQtTests(unittest.TestCase):
         w.rows['turf.value_lift']['use'].setChecked(True)
         self.assertEqual(w.settings()['values']['turf.value_lift'], value)
         self.assertGreater(len(changed), 2)
+
+    def test_lever_pages_have_a_height_floor_and_scroll(self):
+        """N34: Build & Share sized this widget to its floor; with none the five-widget lever rows were a sliver."""
+
+        w = self.control()
+        self.assertGreater(w.minimumHeight(), 0, "the widget must demand height or the panel crushes it")
+        self.assertGreaterEqual(w.minimumHeight(), w.tabs.sizeHint().height())
+        self.assertEqual(w.tabs.count(), 5)
+        for i in range(w.tabs.count()):
+            scroll = w.tabs.widget(i)
+            self.assertIsInstance(scroll, QScrollArea, w.tabs.tabText(i))
+            self.assertTrue(scroll.widgetResizable())
+            self.assertIsNotNone(scroll.widget())
+        self.assertEqual(set(w.rows), set(mc.control_specs()))   # every lever stays reachable inside its tab
 
     def test_links_rigs_class_and_resets_retain_master_off(self):
         w = self.control()

@@ -65,6 +65,47 @@ class PolicyTests(unittest.TestCase):
                 self.assertFalse(result['handbacks'][0]['menu'])
                 print('\nB69_PLAYCALL_RECEIPT ' + json.dumps(result, sort_keys=True), flush=True)
 
+    def test_returning_call_retires_old_arrival_before_native_clip_prefetch(self):
+        from tests.nfl2k5_supersim_scheduler import Machine
+        # Supply a settled CPU formation. Only the menu renderer and the final
+        # asynchronous resource request are boundaries. The installed handoff,
+        # native arrival producer and native prefetch predicate all execute.
+        for policy in (0, 2):
+            with self.subTest(policy=policy), Machine(self.payload) as m:
+                m.setup()
+                m.put(m.state + 2736, policy)
+                m.put(m.state + 2708, 1)
+                offense, defense = 0xE5FC20, 0xE5FC60
+                m.put(offense + 4, m.actors[0])
+                for i, actor in enumerate(m.actors):
+                    m.put(actor + 0x38, offense if i < 11 else defense)
+                    m.put(actor + 0x34, m.actors[i + 1] if i < 10 else 0)
+                    m.put(m.get(actor + 0x10) + 0x8C, 0x09008300)
+                menus, prefetches = [], []
+                m.replace_stub(0xACB90, lambda: m.ret())
+                m.replace_stub(0x9FBE0, lambda: (menus.append(True), m.ret()))
+                m.replace_stub(0x1FE930, lambda: (prefetches.append(True), m.ret()))
+                self.assertEqual(m.call('mode_ff_ready', ecx=m.manager), 0)
+                self.assertEqual(bool(menus), policy == 0)
+                for i, actor in enumerate(m.actors):
+                    expected = 0x08008300 if policy == 0 and i < 11 else 0x09008300
+                    self.assertEqual(m.get(m.get(actor + 0x10) + 0x8C), expected)
+                if policy != 0:
+                    continue
+                choice = m.get(offense + 12)
+                m.put(choice + 36, m.get(choice + 36) | 2)
+                m.put(0xBF0E88, 1)
+                # Two actors arrive first while other streamed clips still run.
+                # Old code retained their old arrival bits and evicted clips.
+                for actor in m.actors[:2]:
+                    m.call(0x1FEB20, eax=actor)
+                m.call(0x1FF920)
+                self.assertEqual(prefetches, [])
+                for actor in m.actors[2:11]:
+                    m.call(0x1FEB20, eax=actor)
+                m.call(0x1FF920)
+                self.assertEqual(prefetches, [True])
+
 
 if __name__ == '__main__':
     unittest.main()

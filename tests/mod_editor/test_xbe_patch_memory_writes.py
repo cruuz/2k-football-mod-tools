@@ -85,6 +85,17 @@ class SectionTableTests(unittest.TestCase):
         self.assertFalse(image.section(0x1AC260).writable)
 
 
+def ro_section_executable_by_design(payload) -> bool:
+    """b773 sp2/ro1/tr1: named code spills in the allocator directory page make the shared general read-only section
+    executable (never writable). Without a spill it stays plain read-only."""
+    from mod_editor.core import nfl2k5_xbe_space as space
+    return any(a["owner"] in space.DIRECTORY_CODE_OWNERS and a["kind"] == "code"
+               for a in space.layout(payload)["allocations"])
+
+
+# b777-ci2: this decorator had slipped onto ro_section_executable_by_design() when i4 (4ca7caec5) inserted that helper
+# above the class, so PatchWriteTests and its three subclasses ran without the retail XBE and errored in setUpClass on
+# every hosted CI runner. It belongs on the class.
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class PatchWriteTests(unittest.TestCase):
     """Every absolute memory write in every patch's changed code targets writable memory."""
@@ -100,7 +111,7 @@ class PatchWriteTests(unittest.TestCase):
             for kind, row in places.items():
                 section = image.section(row['va'])
                 self.assertEqual(section.writable, kind == 'data')
-                self.assertEqual(section.executable, kind == 'code')
+                self.assertEqual(section.executable, kind == 'code' or (kind == 'read_only' and ro_section_executable_by_design(self.patched)))
             start = places['code']['va']
             writes = absolute_writes(self.patched, [(start, start+len(module.assembly.CODE))])
             self.assertTrue(all(w['target'] is None or w['writable'] for w in writes), writes)
@@ -161,7 +172,7 @@ class PatchWriteTests(unittest.TestCase):
         image = XbeImage(self.patched)
         self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
         self.assertFalse(image.section(row["va"]).writable)
-        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.section(row["va"]).executable, ro_section_executable_by_design(self.patched))
         self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
 
     def test_coverage_trail_owns_no_runtime_storage(self):

@@ -69,6 +69,7 @@ class CombinedBuildTests(unittest.TestCase):
         scoring = mock.patch.object(mod_build, '_check_playbook_scoring', return_value={'synthetic': True})
         scoring.start()
         self.addCleanup(scoring.stop)
+        self.enterContext(mock.patch("mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image", return_value={"synthetic": True}))
 
     def test_plain_project_build_publishes_identical_files_in_compact_disc(self):
         target = self.root / 'unchanged.iso'

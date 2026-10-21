@@ -1,0 +1,114 @@
+{
+ "schema": "b77_st1_pins/v1",
+ "input_disc": {
+  "name": "SOFTDRINK_2K28_v0.6.1-co2.xiso.iso",
+  "sha256": "d735215760ff08bceeff2a3860baccf0a84885422a4205e966154e948812103e"
+ },
+ "colour_settings_sha256": "11acc24b84c2d26678eb4fe0ef0d0c3ecacb8af509c9639a375bb8976d8f3490",
+ "bundles": [
+  {
+   "name": "s18ad.iff",
+   "outer_index": 3207,
+   "name_id": 1043081280,
+   "size": 1547424,
+   "input_sha256": "904410d8ac458aa62bfd5adabfa8c4d69cbd48e7e9f60df00f0a9d9ede20ab77",
+   "output_sha256": "81570f6e823f585005489fed1d7258d4eec8c662db9bd682ce42ce50559ceec0",
+   "spans": {
+    "shadow": {
+     "offset": 1472064,
+     "length": 4240,
+     "before_sha256": "5ffd036505facdab7cec0937362c9fa7d1a4f68001a37a971b326e6bc1d88a3e",
+     "after_sha256": "c61d39dd9b75cb8881617166d1b886f02933f15068612a1ec8b80925eca91286"
+    },
+    "field": {
+     "offset": 0,
+     "length": 125424,
+     "before_sha256": "7e873307c11007a5038c4e11436b4b3482b6d65f9c9aff7aa697039f8dd1d695",
+     "after_sha256": "9955f7569b0747ce77a42854947f4a271e5bf5d36b51c2bfb32c1e7861c4aed5"
+    }
+   },
+   "shadow_sun": [
+    -0.579228,
+    0.573576,
+    0.579228
+   ],
+   "field": {
+    "target": [
+     82.51,
+     102.62,
+     66.9
+    ],
+    "response": [
+     1.4744,
+     1.7017,
+     1.6134
+    ],
+    "map_mean": [
+     149.85,
+     187.83,
+     147.24
+    ],
+    "outside_mean": [
+     108.24,
+     151.14,
+     106.11
+    ],
+    "palette_cap": 256,
+    "pattern_detail": 2,
+    "refit": true
+   }
+  },
+  {
+   "name": "s19ad.iff",
+   "outer_index": 3208,
+   "name_id": 2737031478,
+   "size": 1628432,
+   "input_sha256": "815b56a88868a01636b8b34ab9708a924976bc5ccd1b4948cc67cc8ebcd090cd",
+   "output_sha256": "88e8c6200024cbbe260921bcf9bb287b15c4fddfcef97d4012e80ff18dc0ec75",
+   "spans": {
+    "shadow": {
+     "offset": 1553088,
+     "length": 4240,
+     "before_sha256": "5ffd036505facdab7cec0937362c9fa7d1a4f68001a37a971b326e6bc1d88a3e",
+     "after_sha256": "c61d39dd9b75cb8881617166d1b886f02933f15068612a1ec8b80925eca91286"
+    },
+    "field": {
+     "offset": 0,
+     "length": 138256,
+     "before_sha256": "cadeee719f0881cea9b6affe327abc3b7f1cc1136add38a5cdbebc4a26eab121",
+     "after_sha256": "084229572ef372ea066eb966f72cb478a4f5436b41716e173f1e9ba33399e7c3"
+    }
+   },
+   "shadow_sun": [
+    -0.579228,
+    0.573576,
+    0.579228
+   ],
+   "field": {
+    "target": [
+     82.51,
+     102.62,
+     66.9
+    ],
+    "response": [
+     1.4744,
+     1.7017,
+     1.6134
+    ],
+    "map_mean": [
+     149.85,
+     187.83,
+     147.24
+    ],
+    "outside_mean": [
+     108.24,
+     151.14,
+     106.11
+    ],
+    "palette_cap": 256,
+    "pattern_detail": 2,
+    "refit": true
+   }
+  }
+ ]
+}

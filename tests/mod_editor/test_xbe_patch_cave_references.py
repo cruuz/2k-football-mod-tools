@@ -41,6 +41,15 @@ def sections(xbe: bytes):
     return out
 
 
+def ro_section_executable_by_design(payload) -> bool:
+    """b773 sp2/ro1/tr1: the allocator directory page holds named code spills (tap burst, draft picks, H-back, team
+    ratings), which makes the shared general read-only section executable, never writable. Without a spill it stays
+    plain read-only."""
+    from mod_editor.core import nfl2k5_xbe_space as space
+    return any(a["owner"] in space.DIRECTORY_CODE_OWNERS and a["kind"] == "code"
+               for a in space.layout(payload)["allocations"])
+
+
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
     def test_beta69_rules_have_exclusive_live_hooks_and_owned_children(self):
@@ -97,7 +106,7 @@ class CaveReferenceTests(unittest.TestCase):
         image = XbeImage(self.patched)
         self.assertEqual((row["kind"], row["size"]), ("read_only", 704))
         self.assertFalse(image.section(row["va"]).writable)
-        self.assertFalse(image.section(row["va"]).executable)
+        self.assertEqual(image.section(row["va"]).executable, ro_section_executable_by_design(self.patched))
         self.assertEqual(image.read(row["va"], 704), edit.read_only_bytes())
         for _, va, before, _ in edit.sites(row["va"]):
             self.assertEqual(self.manifest.overlaps(va, va + len(before), exclude_owner=edit.OWNER), [])
@@ -682,6 +691,7 @@ class CaveReferenceTests(unittest.TestCase):
 
     def test_abilities_have_only_pinned_hooks_and_named_grown_code(self):
         from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_tap_burst as tap_burst
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         manifest = self.manifest
@@ -691,7 +701,12 @@ class CaveReferenceTests(unittest.TestCase):
         for record in abilities.reservations(self.patched):
             start, end = int(record["start"], 0), int(record["end"], 0)
             if start < space.CODE_VA:
-                self.assertLess(end - start, CAVE_MIN)
+                if (start, end) == (tap_burst.START, tap_burst.END):
+                    # b772-sp1: the ordinary tap-burst initializer is rewritten in place, same length, pinned before
+                    # and after (no cave and no new entry); every other retail-space record stays a short hook
+                    self.assertEqual(end - start, len(tap_burst.AFTER))
+                else:
+                    self.assertLess(end - start, CAVE_MIN)
                 self.assertEqual(manifest.overlaps(start, end, exclude_owner=abilities.OWNER), [])
                 self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
             else:
@@ -787,7 +802,7 @@ class CaveReferenceTests(unittest.TestCase):
                           if allocation['va'] <= va < allocation['va']+camera.CODE_SIZE}, {})
         descriptor = camera.allocation(self.patched, 'read_only')
         self.assertFalse(image.section(descriptor['va']).writable)
-        self.assertFalse(image.section(descriptor['va']).executable)
+        self.assertEqual(image.section(descriptor['va']).executable, ro_section_executable_by_design(self.patched))
         self.assertEqual(camera._read(self.patched, descriptor['va'], descriptor['size']),
                          camera.broadcast_records(allocation['va']))
         self.assertEqual(camera.status(self.patched), 'applied')

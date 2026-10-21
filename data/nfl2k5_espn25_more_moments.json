@@ -365,10 +365,10 @@
       "stadium_note": "Reliant Stadium, Houston: the real venue (the retail 'Reliant Stadium').",
       "away": "panthers_2003",
       "home": "patriots_2003",
-      "user_side": "away",
-      "possession": "away",
+      "user_side": "home",
+      "possession": "home",
       "score_now": {
-        "away": 22,
+        "away": 29,
         "home": 29
       },
       "final_score": {
@@ -376,12 +376,12 @@
         "home": 32
       },
       "quarter": 4,
-      "clock": "2:43",
+      "clock": "1:08",
       "down": 1,
       "distance": 10,
-      "ball_on": "CAR 20",
+      "ball_on": "NE 40",
       "timeouts": {
-        "away": 3,
+        "away": 2,
         "home": 3
       },
       "weather": "clear",
@@ -393,10 +393,10 @@
       },
       "sources": [
         "https://en.wikipedia.org/wiki/Super_Bowl_XXXVIII",
-        "nflverse play_by_play_2003: game_id 2003_21_CAR_NE, play_id 4078"
+        "nflverse play_by_play_2003: game_id 2003_21_CAR_NE, play_id 4297"
       ],
       "evidence": "situation read from nflverse play-by-play (PROVED OFFLINE from the source data)",
-      "notes": "The user plays Carolina's tying drive, a different finish from the retail VINATIERI STRIKES AGAIN. Night: kickoff 5:25 p.m. CST (the 2003 wall-clock field reads as local time)."
+      "notes": "The user leads Brady's final drive after Kasay's out-of-bounds kickoff, matching the intro and objective. Night: kickoff 5:25 p.m. CST (the 2003 wall-clock field reads as local time)."
     },
     {
       "id": "ambush",

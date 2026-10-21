@@ -1,0 +1,6701 @@
+{
+ "schema": "nfl2k5_super_bowl_walls/v2",
+ "held_rows": [
+  34
+ ],
+ "note": "Authored event surfaces (sb2): base art plus authored slot marks; the build puts the season's NFL shield in every shield slot and fills the other slots from the marks layer or the user's optional folder. Permanent venue signs keep their bytes. Row 34 is held unchanged.",
+ "rows": [
+  {
+   "row": 14,
+   "event": "XXIII",
+   "date": "1989-01-22",
+   "season": 1988,
+   "venue": "Joe Robbie Stadium",
+   "city": "MIAMI",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s14",
+   "teams": {
+    "away": "CIN",
+    "home": "SF"
+   },
+   "team_logos": {
+    "CIN": "authored",
+    "SF": "mod"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row14/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "12be081c47d957d9e1b999f3d1f2e6d2e4264b7633227f03e35eec61520a118d",
+     "layer": "row14/banner_corp.marks.png",
+     "layer_sha256": "04eb621210be1b05bc3ec2335cae3bd24af1403a8a173d0b27be6eb64f4c050f",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row14/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "4d0889e90867dc1d3fdf5c58c0f9c2de12fcc46cf32b15eb082040ffee04ed95",
+     "layer": "row14/banner_home_team.marks.png",
+     "layer_sha256": "f44460cf89535227a84c76f5f872a8985931ffa2c1b7a5023b0c26175772839e",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row14/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "509889b960e2b392bee7ec473adfc9b6701ccb6027e693c5f186dd2bda384b0b",
+     "layer": "row14/banner_away_team.marks.png",
+     "layer_sha256": "3ee5a825564aaaba339686db33282a3ef2ec9020504831575b5978a60c491026",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "authored_team_roundel"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row14/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "8c4664d974e222b3cfc223255ca9da3fbaed9d154f085cf6b2188ef211e38da4"
+    },
+    {
+     "material": "wall05",
+     "file": "row14/wall05.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "baed662ecd3e30c1d3fbfc452f511ebb7a403ab6a469683831bd6997c7bdee39",
+     "layer": "row14/wall05.marks.png",
+     "layer_sha256": "2f8f523d53aae71e7d635481fce287371754dab46a4d99a7aa3b3e0bb1c7a5a1",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        2,
+        5,
+        69,
+        57
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        5,
+        253,
+        56
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        69,
+        45,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        69,
+        252,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "wall08",
+     "file": "row14/wall08.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "42a01355ee7b40f70867b54a4a06551dc6db9fbe6ebbe0aa172dae9e9ce6ed75",
+     "layer": "row14/wall08.marks.png",
+     "layer_sha256": "4d85e727799ef23b1ccd5c61bdd0db71ff9f2496d23cb4d5e884ecb594c90892",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        2,
+        4,
+        54,
+        57
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "authored_team_roundel"
+      },
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        202,
+        4,
+        254,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        3,
+        77,
+        70,
+        112
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        187,
+        68,
+        254,
+        121
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "wall04",
+     "file": "row14/wall04.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "a91b88d4736bea263b3b6cf02d89e8ee02a2369c387cf31c426ef6f56899d3a4",
+     "layer": "row14/wall04.marks.png",
+     "layer_sha256": "511405ee4f65c398a81a9c3b9cb4e7ca630e4b33931f55c5254a1cbe5232483e",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        2,
+        5,
+        69,
+        57
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        5,
+        253,
+        56
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        69,
+        45,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        69,
+        252,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "wall07",
+     "file": "row14/wall07.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "f7420d5d70e654f6d42367a3f5e3e0c47061234fa67a5ab9931e22d166276a36",
+     "layer": "row14/wall07.marks.png",
+     "layer_sha256": "6cee4e227040c0e8abbd32cd445a1e337fea3b0f8cba4945569693624b9eb423",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        2,
+        4,
+        54,
+        57
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "authored_team_roundel"
+      },
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        202,
+        4,
+        254,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        3,
+        77,
+        70,
+        112
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "event",
+       "key": "XXIII",
+       "box": [
+        187,
+        68,
+        254,
+        121
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 15,
+   "event": "XXV",
+   "date": "1991-01-27",
+   "season": 1990,
+   "venue": "Tampa Stadium",
+   "city": "TAMPA",
+   "network": "ABC",
+   "source_kind": "retail",
+   "source_prefix": "s27",
+   "teams": {
+    "away": "BUF",
+    "home": "NYG"
+   },
+   "team_logos": {
+    "BUF": "mod",
+    "NYG": "authored"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row15/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "80251afd81500d18cc9ca1d57fdd9b132e7f2e5f462fa17dba21482fe6672fc2",
+     "layer": "row15/banner_corp.marks.png",
+     "layer_sha256": "0cd19c37224cfca32fafe33fed587a63c68bf9dde210eb74c2842ba09b4de73c",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXV",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "abc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XXV",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "abc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row15/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "7f6ae4e763561ea143945f4f416950732b9b017e97f411ade5a699d3003509e9",
+     "layer": "row15/banner_home_team.marks.png",
+     "layer_sha256": "f63afe40ab98c15d84f613fc98f971f03f13f2b76d9a3584a9ffcfadff699b0d",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "authored_team_roundel"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row15/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "7b30dad4d33777ccd41000ce1cff1ff3eff28117b797e1456522f331e9b8b502",
+     "layer": "row15/banner_away_team.marks.png",
+     "layer_sha256": "7555046cd19f6b46874e71f38605cfb3570f8ae09588648bcd37723aa3bd8a20",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "BUF",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row15/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "baca2aeccde2dc2a373ad0d16222e279baafc872520641c2b001fe71330530e1"
+    },
+    {
+     "material": "fieldwall",
+     "file": "row15/fieldwall.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "band",
+     "sha256": "156130322186f9e7615781f90e0b6e364b9125ae3568504dfc3c152cb2c28bd2",
+     "areas": [
+      [
+       0,
+       62,
+       128,
+       128
+      ]
+     ],
+     "layer": "row15/fieldwall.marks.png",
+     "layer_sha256": "d95e95685344def785a7859a3afa4b3e1f0236ff457dc6caae73949dce12638c",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXV",
+       "box": [
+        2,
+        76,
+        46,
+        110
+       ],
+       "surface": "band",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        105,
+        81,
+        125,
+        106
+       ],
+       "surface": "band",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "bigwallbanner2",
+     "file": "row15/bigwallbanner2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "b33d5c1ea2bbd517191874f067675d62b5885ed0e0e18c7a0a5dc8ff774655f8",
+     "areas": [
+      [
+       40,
+       0,
+       128,
+       128
+      ]
+     ],
+     "layer": "row15/bigwallbanner2.marks.png",
+     "layer_sha256": "e1f454ca292caae3196827980473fbba33a1762054627a4c9cfd784412595e56",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXV",
+       "box": [
+        47,
+        7,
+        121,
+        59
+       ],
+       "surface": "hang",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        69,
+        93,
+        99,
+        120
+       ],
+       "surface": "hang",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 21,
+   "event": "XXXII",
+   "date": "1998-01-25",
+   "season": 1997,
+   "venue": "Qualcomm Stadium",
+   "city": "SAN DIEGO",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s24",
+   "teams": {
+    "away": "GB",
+    "home": "DEN"
+   },
+   "team_logos": {
+    "GB": "mod",
+    "DEN": "mod"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row21/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "1d801e4088af046bbdb5b60c75546fe2790ea2052f88c64b411115d1729fa7f3",
+     "layer": "row21/banner_corp.marks.png",
+     "layer_sha256": "384efcfcfa237c93189b52dcd35da81284f4a6b21e651bd4b7ef4da392b04bd4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XXXII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row21/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "4969dbbedd39732a4f545423de81fa8eddc840c9aa2b0e5ca81c19d796f43ec7",
+     "layer": "row21/banner_home_team.marks.png",
+     "layer_sha256": "1ce3450a14e279e106041c6d890c0df519ba2e591a70a2ed6be2b2c8890ca01d",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "DEN",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row21/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "184f6da26f10d513ea04ffb004c7721613bd4c5e361a8b762d9a4166029c3e74",
+     "layer": "row21/banner_away_team.marks.png",
+     "layer_sha256": "d542203ab493f510b466151231e5baecb79511ee4713c1b76998911b19e8f3dc",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "GB",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row21/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "f6accbd98f8e14b66f2db0cae544e671bfb84ef4059bc670582a287746962106"
+    },
+    {
+     "material": "chargerlogo",
+     "file": "row21/chargerlogo.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "art",
+     "painter": "word_event+tile_logo",
+     "sha256": "4522c4cd6b3f7c5da6e922b2d9427583959ebc5f4277105176b45b4b78ca5426",
+     "areas": [
+      [
+       0,
+       0,
+       256,
+       64
+      ],
+      [
+       0,
+       149,
+       109,
+       256
+      ]
+     ],
+     "layer": "row21/chargerlogo.marks.png",
+     "layer_sha256": "5066d06751128641f5a175363dae4f08e9bc7f97d317da1c14681d10c63514f3",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXII",
+       "box": [
+        7,
+        160,
+        102,
+        245
+       ],
+       "surface": "tile_logo",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "chargerswall02",
+     "file": "row21/chargerswall02.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "b7d498a79c08f6091b7570d1394b5eb923c27db8f17d973f1f3ce45b06b1078b",
+     "layer": "row21/chargerswall02.marks.png",
+     "layer_sha256": "4b8f60cf0ff0b2712414d08b0dce4707ee8d449c0f9684f27d50de64bf57deb4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXII",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "chargerswall03",
+     "file": "row21/chargerswall03.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "1767a694066979d8cf97659bfc74b63aa8d31d737106fdbe658dd8be7fc88e54",
+     "layer": "row21/chargerswall03.marks.png",
+     "layer_sha256": "618bb4ae45d880d43e4946d4438bae90e482a581675f5af1b897b7b21e017af4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXII",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 22,
+   "event": "XXXIV",
+   "date": "2000-01-30",
+   "season": 1999,
+   "venue": "Georgia Dome",
+   "city": "ATLANTA",
+   "network": "ABC",
+   "source_kind": "retail",
+   "source_prefix": "s01",
+   "teams": {
+    "away": "STL",
+    "home": "TEN"
+   },
+   "team_logos": {
+    "STL": "authored",
+    "TEN": "mod"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row22/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "527ca20c14b76e9e1ae9b939daa72b375df01634c485e95517debd56cc223a07",
+     "layer": "row22/banner_corp.marks.png",
+     "layer_sha256": "6724f53bcd626e4c6666695e2d157658da9b8537938628126d98789d0c5eb99c",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "abc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "abc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row22/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "b674aa74e7a577a3f621f9a46592e18cc6683e36d08ec684dabb4a0398a27f30",
+     "layer": "row22/banner_home_team.marks.png",
+     "layer_sha256": "1254067b7cbdf99d567a17eb2efb698fdc358ee21a4aebeed9ff6e1f9e42c687",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "TEN",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row22/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "44950c979d8560da09adb7f84c11be60f3c2674ede54d557041b975af20e8c24",
+     "layer": "row22/banner_away_team.marks.png",
+     "layer_sha256": "e584224b264d2aa1deee187f6b547b4530beaa5f083efc22e6b5aad5c7369e62",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "STL",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_away",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "authored_team_roundel"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row22/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "69f26e0a33a2c480cf8ffcdd0b95f7aac0af08139d6e22711682597c85cc6afb"
+    },
+    {
+     "material": "falconswall01",
+     "file": "row22/falconswall01.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "opaque",
+     "painter": "bands3",
+     "sha256": "58ddba06f2baf8bb1e7177a08f3b54074195da4bcfab40f55a6394a8ec316e0b",
+     "layer": "row22/falconswall01.marks.png",
+     "layer_sha256": "74753dcd8b66b2e507d1daff71c921ca29b3e571785fd12b73b29102146ee2d0",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        2,
+        7,
+        89,
+        75
+       ],
+       "surface": "bands3",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        15,
+        253,
+        66
+       ],
+       "surface": "bands3",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        100,
+        45,
+        151
+       ],
+       "surface": "bands3",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        100,
+        252,
+        151
+       ],
+       "surface": "bands3",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "team",
+       "key": "STL",
+       "box": [
+        2,
+        184,
+        56,
+        238
+       ],
+       "surface": "bands3",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "authored_team_roundel"
+      },
+      {
+       "kind": "team",
+       "key": "TEN",
+       "box": [
+        200,
+        184,
+        254,
+        238
+       ],
+       "surface": "bands3",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "falconswall02",
+     "file": "row22/falconswall02.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "mark",
+     "sha256": "06ab142c3bad172a564f50931dd667c07af918ed7298107b0c41f79cd761cc8f",
+     "layer": "row22/falconswall02.marks.png",
+     "layer_sha256": "52997a2b81c866983ad306fffe2c6eee2e556d71e29a25a821e2a8462b99ef23",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        0,
+        0,
+        128,
+        128
+       ],
+       "surface": "mark",
+       "margin": 0.02,
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "falconswall05",
+     "file": "row22/falconswall05.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "f8f803149c4304fb44fb33080b6d851e181744139620777155a329ef4d8ccb7b",
+     "layer": "row22/falconswall05.marks.png",
+     "layer_sha256": "2ab346b6dd7335bcadfde0dd5d9ba40213f9b4d95d2918a29f22db151ddbf1a4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        6,
+        6,
+        122,
+        100
+       ],
+       "surface": "prow",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "logo",
+     "file": "row22/logo.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "flag",
+     "sha256": "ce29c1b2b461e8d762b9e818e1fbcca6a39a57c0ba3e71dd534e4167fe0d2b77",
+     "layer": "row22/logo.marks.png",
+     "layer_sha256": "1ff71488fae6b353b284ef367944fadc4aa403097bdd772057e2ebbd7855fb58",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXIV",
+       "box": [
+        15,
+        15,
+        113,
+        113
+       ],
+       "surface": "flag",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 23,
+   "event": "XXXVI",
+   "date": "2002-02-03",
+   "season": 2001,
+   "venue": "Louisiana Superdome",
+   "city": "NEW ORLEANS",
+   "network": "FOX",
+   "source_kind": "retail",
+   "source_prefix": "s17",
+   "teams": {
+    "away": "STL",
+    "home": "NE"
+   },
+   "team_logos": {
+    "STL": "authored",
+    "NE": "mod"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row23/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "6d41638c372ae3b4ed1f314a6dcd6c818c8179f7a7cc68d9390380fe909e1658",
+     "layer": "row23/banner_corp.marks.png",
+     "layer_sha256": "fe3c446d67ff61af93539ba35714b1917996baa8040ae441af2b29ec2b19078e",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row23/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "0334abf54cd20a2098afee16f287b0424fe0e660f801909966b00ed8bae111b8",
+     "layer": "row23/banner_home_team.marks.png",
+     "layer_sha256": "8158b45d6f03466284f918845c8848fd119a9e7394ef7c9c8bcb9fcf1b473350",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row23/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "9a51fad097f2076d8b95f449e8ed4cbc22187f69b41cd83cbfc425d20ffbfa23",
+     "layer": "row23/banner_away_team.marks.png",
+     "layer_sha256": "9e5b8636d8a0a64f5f7fd8ddf1dfe5e5c094a33e0202d3351587064976d5781a",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "STL",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "authored_team_roundel"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row23/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "3c56377ba94bdfd7a8e96762e91b9b15edd772ff1a74f3465addde626fe6f568"
+    },
+    {
+     "material": "swall1",
+     "file": "row23/swall1.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "ce9d2a5979a785dbda32210875f7006a3438dc5a8da58c421015130d72e99bbd",
+     "layer": "row23/swall1.marks.png",
+     "layer_sha256": "f3915d8ae3de6b8336c804f51bfbfc2189db92ea6e20604de0af715d87d09215",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "swall2",
+     "file": "row23/swall2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "53719cc4a01f40e6a6c4ef91a66e29624ade057f6b0d5fbe93679bad57653e0f",
+     "layer": "row23/swall2.marks.png",
+     "layer_sha256": "fab940e7710bf981be5144d39358b78a24ecd77060d8ad440cd78ba19cde8bc6",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert39",
+     "file": "row23/new_orleans3_lambert39.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "marquee",
+     "sha256": "db04494ffd09e55f9978a6d58cf1a82f1dc0d16846d879a600196226e884ec83",
+     "areas": [
+      [
+       0,
+       18,
+       128,
+       40
+      ]
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert17",
+     "file": "row23/new_orleans3_lambert17.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "407e42d500e148de24619c0d4eccd39d426b5d7ebd77415a972e22af14126e1b",
+     "layer": "row23/new_orleans3_lambert17.marks.png",
+     "layer_sha256": "949bb7ed89647dd6ed58e1af0d54e72c0c6c4e6b851bb6a8ca07b714e8b80446",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        6,
+        6,
+        122,
+        100
+       ],
+       "surface": "prow",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "swall3",
+     "file": "row23/swall3.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "hang_wide+word_event+shield_mark+mark",
+     "sha256": "dea072841486b343ebaf0107a06a28dd0796abdbc76cd62aab60f4c2c2d88c48",
+     "areas": [
+      [
+       0,
+       0,
+       128,
+       64
+      ],
+      [
+       0,
+       64,
+       128,
+       78
+      ],
+      [
+       0,
+       78,
+       64,
+       128
+      ],
+      [
+       64,
+       78,
+       128,
+       128
+      ]
+     ],
+     "layer": "row23/swall3.marks.png",
+     "layer_sha256": "4f521de2094eec3f93d62c60e8e88c3322378006befa1f679128bf08f14c40c8",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        38,
+        3,
+        90,
+        55
+       ],
+       "surface": "hang_wide",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        0,
+        78,
+        64,
+        128
+       ],
+       "surface": "shield_mark",
+       "margin": 0.04
+      },
+      {
+       "kind": "event",
+       "key": "XXXVI",
+       "box": [
+        64,
+        78,
+        128,
+        128
+       ],
+       "surface": "mark",
+       "margin": 0.02,
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 27,
+   "event": "XLII",
+   "date": "2008-02-03",
+   "season": 2007,
+   "venue": "University of Phoenix Stadium",
+   "city": "GLENDALE",
+   "network": "FOX",
+   "source_kind": "built",
+   "source_prefix": "s00",
+   "teams": {
+    "away": "NYG",
+    "home": "NE"
+   },
+   "team_logos": {
+    "NYG": "mod",
+    "NE": "mod"
+   },
+   "shield": "disc_period_shield",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row27/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "5e45cfa3a405a0e70d698c13a682f8263207514b6fe3bff9c9744febae33c015",
+     "layer": "row27/banner_corp.marks.png",
+     "layer_sha256": "f313333c84fd1fad9c767100ef5de0df54531b88807ea4af4752aeb1e3cddd61",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row27/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "e333be7d98407b349de474d215fe03e03380f5bf099b83c56b153effe484d3fc",
+     "layer": "row27/banner_home_team.marks.png",
+     "layer_sha256": "1c3c2691587d39caebd312d35ddb1a405426aee97da2092da0a614e169203e4c",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row27/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "05fee9a5212d6b16053d45bb103069b78cfddc8381736e9a04bd97e91c2d50dd",
+     "layer": "row27/banner_away_team.marks.png",
+     "layer_sha256": "59089106a930093123a621b24f34ab0a9b6d29151cc70f07a1547a0882e795b0",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row27/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "4ff70ea9d5c207acc7ba75e5a1eb9e33cdddb643801ca1cb563db46a69bf580c"
+    },
+    {
+     "material": "sf_wall",
+     "file": "row27/sf_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "98bea42df9418cea24addbfba85fb5d871d2a49944596d173da4d61bc443c8be",
+     "layer": "row27/sf_wall.marks.png",
+     "layer_sha256": "2f6e2254409e81344d1fbf9faed4df5da5de5a41243e0561535174168b62f838",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLII",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row27/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "c083a8e2deeacc40b537d1f37b80a63f6a83914ba1cb9d7b5675d4ff3f5ea6df",
+     "layer": "row27/LIGHT_sf_ribbon.marks.png",
+     "layer_sha256": "365b942ebb991f5ae1e5e7786272147fd8e391e9761328fd9c99a86a38195909",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_sf_board_wing",
+     "file": "row27/LIGHT_sf_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "ee41ac5162fc201e6b495a8062f6c313d18a696c64d9412f1363a4b142bed160",
+     "layer": "row27/LIGHT_sf_board_wing.marks.png",
+     "layer_sha256": "d5068a629c947e816caafe54c0d0f056129467ade5eb601ed5d7cb57f7fe6fcf",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        18,
+        6,
+        46,
+        38
+       ],
+       "surface": "wing",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "event",
+       "key": "XLII",
+       "box": [
+        4,
+        42,
+        60,
+        80
+       ],
+       "surface": "wing",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "sf_logo",
+     "file": "row27/sf_logo.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "uop_name",
+     "sha256": "d05a80fea7fcba685912ba78cdaff6178af715a833abbd378ceef97624c17558"
+    }
+   ]
+  },
+  {
+   "row": 28,
+   "event": "XLIII",
+   "date": "2009-02-01",
+   "season": 2008,
+   "venue": "Raymond James Stadium",
+   "city": "TAMPA",
+   "network": "NBC",
+   "source_kind": "retail",
+   "source_prefix": "s27",
+   "teams": {
+    "away": "PIT",
+    "home": "ARI"
+   },
+   "team_logos": {
+    "PIT": "mod",
+    "ARI": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row28/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "026c659981c046fe854a965669cce4ac3c6ccad53e4f96d9d2e6ed1b0f3bca80",
+     "layer": "row28/banner_corp.marks.png",
+     "layer_sha256": "7b254392c49d3a5cf105fe13ddc538335c81d04a62605a9794795512478fd384",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLIII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row28/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "fdf17c6727c0ba73f5b0e3aa1ba9d58e90db5982950577aae4f4153df450f6cd",
+     "layer": "row28/banner_home_team.marks.png",
+     "layer_sha256": "ea090c3ec6385521e1ed99dd33e6139b6d355e09b541788cd503e915b5992e7e",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "ARI",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row28/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "ea06fdeb707e5d928204ea947fe59afc6e628cbabf7e0a1f5739478b152975c7",
+     "layer": "row28/banner_away_team.marks.png",
+     "layer_sha256": "d372c4bcce84769a185e3921445f51c17f3a23c11880bf2dc5052af6ddd646dd",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "PIT",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row28/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "cc7c6f31531ec0a9450f55961a46f80317d94e1c565e827464fbfbbe2c85d276"
+    },
+    {
+     "material": "fieldwall",
+     "file": "row28/fieldwall.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "band",
+     "sha256": "46e4d38f2c68218e6ea87230e897cf0e0a101a1dabc3a77ce302b8e09547fc63",
+     "areas": [
+      [
+       0,
+       62,
+       128,
+       128
+      ]
+     ],
+     "layer": "row28/fieldwall.marks.png",
+     "layer_sha256": "aba5c23d49fd287fa9f7335986279da6dc75721f20e4da51c5afafd5b7d7d2e9",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIII",
+       "box": [
+        2,
+        76,
+        46,
+        110
+       ],
+       "surface": "band",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        105,
+        81,
+        125,
+        106
+       ],
+       "surface": "band",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "bigwallbanner2",
+     "file": "row28/bigwallbanner2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "93cc84283d73f6f8ff59b0e193796851841d52b027efd95e22de73af2e938433",
+     "areas": [
+      [
+       40,
+       0,
+       128,
+       128
+      ]
+     ],
+     "layer": "row28/bigwallbanner2.marks.png",
+     "layer_sha256": "9759a942ea17fe4fd5cd1f148dc7c79ffcb445747cf0d2bd12cbeca93bb23096",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIII",
+       "box": [
+        47,
+        7,
+        121,
+        59
+       ],
+       "surface": "hang",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        69,
+        93,
+        99,
+        120
+       ],
+       "surface": "hang",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 29,
+   "event": "XLVI",
+   "date": "2012-02-05",
+   "season": 2011,
+   "venue": "Lucas Oil Stadium",
+   "city": "INDIANAPOLIS",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s11",
+   "teams": {
+    "away": "NYG",
+    "home": "NE"
+   },
+   "team_logos": {
+    "NYG": "mod",
+    "NE": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row29/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "e568253b5b51284deb0dfaf17d804ab5bbc2b222a0432469306e452b6fbc0c68",
+     "layer": "row29/banner_corp.marks.png",
+     "layer_sha256": "26c1e5569c15a138865f7d4e4a04a652bad10a85d943b5781f55b8ca4d6f588b",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVI",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLVI",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row29/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "a7746673a50e226ac1a680e7c7d334e2da06f2cbf5766c5123a53013a09e21c5",
+     "layer": "row29/banner_home_team.marks.png",
+     "layer_sha256": "014fbfb38083270717a9d2a50d140041e5c2e144080805c045fbc723ebadfdd9",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        7,
+        6,
+        57,
+        56
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row29/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "e630e9b7a8219166225ea46f951e169fc2bd13ab82ed171dd2eb4abd587a17c0",
+     "layer": "row29/banner_away_team.marks.png",
+     "layer_sha256": "0a60b0b2c7ce300fa5b0ccaef1308066a645b6fc9504e2e6b73b9c91cd4567e3",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        7,
+        7,
+        58,
+        59
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row29/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "2b53ca2d1d9a2a06f2ddb71bef6f6544127ce245b79d682858eef9bc130176c2"
+    },
+    {
+     "material": "los_wall",
+     "file": "row29/los_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "8355abe93b1b5919b852966d2dd582d3ff18d9c11f8eef39732fe7b268762d04",
+     "layer": "row29/los_wall.marks.png",
+     "layer_sha256": "425bb71cd368201c6748c03d9c6fcc0e8048a343d9c28e8f63c647d1edb680d6",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVI",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_los_ribbon",
+     "file": "row29/LIGHT_los_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "58c076515df287a9f6cd7a34d8ebf0e806023cf97b6017985694e338a18177d8",
+     "layer": "row29/LIGHT_los_ribbon.marks.png",
+     "layer_sha256": "aed813b95b396363cbc464fee235a407739520b860a9730037ce87a3a428e133",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_los_board_wing",
+     "file": "row29/LIGHT_los_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "118805f5da7facffde803e49913c818cefcf98a9de0082612f82b144994955be",
+     "layer": "row29/LIGHT_los_board_wing.marks.png",
+     "layer_sha256": "0aaeb850c219d63efcb7762ad4eb678292d841d2054acaa0982460199ae30605",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        18,
+        6,
+        46,
+        38
+       ],
+       "surface": "wing",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "event",
+       "key": "XLVI",
+       "box": [
+        4,
+        42,
+        60,
+        80
+       ],
+       "surface": "wing",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "los_banners",
+     "file": "row29/los_banners.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "vbanners",
+     "sha256": "b0580911ccf3df8c03217e8cec9c1e5526afd73a1e1663dddd0615e7f779e584",
+     "layer": "row29/los_banners.marks.png",
+     "layer_sha256": "9424b5950316811ef2f49a501965fcb969639826cbf2147dae9cf2807e1b9650",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVI",
+       "box": [
+        3,
+        6,
+        29,
+        36
+       ],
+       "surface": "vbanners",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "team",
+       "key": "NYG",
+       "box": [
+        35,
+        8,
+        61,
+        34
+       ],
+       "surface": "vbanners",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        67,
+        8,
+        93,
+        34
+       ],
+       "surface": "vbanners",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        102,
+        8,
+        122,
+        32
+       ],
+       "surface": "vbanners",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 30,
+   "event": "LI",
+   "date": "2017-02-05",
+   "season": 2016,
+   "venue": "NRG Stadium",
+   "city": "HOUSTON",
+   "network": "FOX",
+   "source_kind": "retail",
+   "source_prefix": "s37",
+   "teams": {
+    "away": "NE",
+    "home": "ATL"
+   },
+   "team_logos": {
+    "NE": "mod",
+    "ATL": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row30/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "63c14a84415d9301d8684cffc8b918c343a45787ae9993034fe73d7e488c2d52",
+     "layer": "row30/banner_corp.marks.png",
+     "layer_sha256": "c98f67f76a88e06a58d167b3409565b67b6bf5250f2cbbc458bb65008f2a5126",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LI",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "LI",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row30/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "967d17cd21a935a1616f76b00cbaffbbea86701c6a5fda95d585d2eb7a94dc2d",
+     "layer": "row30/banner_home_team.marks.png",
+     "layer_sha256": "f4757e941764c4585b55e88a49951d1f7164a87048036431c0b6fa04a3f0d5ce",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "ATL",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row30/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "e333be7d98407b349de474d215fe03e03380f5bf099b83c56b153effe484d3fc",
+     "layer": "row30/banner_away_team.marks.png",
+     "layer_sha256": "1c3c2691587d39caebd312d35ddb1a405426aee97da2092da0a614e169203e4c",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row30/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "578a719007938af67bc1be9b583b2b05ed95d78fd15faa5677bd784d2293c1b4"
+    },
+    {
+     "material": "texanswall01",
+     "file": "row30/texanswall01.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "aeecae18b4ce3101e534431f0eb2d4234a1e10c85a97b611a3aab5fbaddaacdd",
+     "layer": "row30/texanswall01.marks.png",
+     "layer_sha256": "cbf208747d638146c720c1843c9afa718390ba7e2a5a08b579cb2100d47fec3e",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LI",
+       "box": [
+        2,
+        27,
+        89,
+        95
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        36,
+        253,
+        87
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        164,
+        45,
+        215
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        164,
+        252,
+        215
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "tunnelcover01",
+     "file": "row30/tunnelcover01.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "hang",
+     "sha256": "bc9e2586e2f37eaf52d32e1284a0532469eedb3870c1efc8ebf7a115faf02449",
+     "areas": [
+      [
+       0,
+       0,
+       82,
+       128
+      ]
+     ],
+     "layer": "row30/tunnelcover01.marks.png",
+     "layer_sha256": "efe9eb5833b378cfdff4b2611f2474d6539544c38b47b76d100b58f25f4833d1",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LI",
+       "box": [
+        6,
+        6,
+        76,
+        59
+       ],
+       "surface": "hang",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        26,
+        93,
+        56,
+        120
+       ],
+       "surface": "hang",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "stadium_name",
+     "file": "row30/stadium_name.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "nrg_name",
+     "sha256": "7561e4c515d8c3d2a1c7ef860e46c75c50cf6cad5c273cbddd5591103a6b1161"
+    }
+   ]
+  },
+  {
+   "row": 35,
+   "event": "XLIV",
+   "date": "2010-02-07",
+   "season": 2009,
+   "venue": "Sun Life Stadium",
+   "city": "SOUTH FLORIDA",
+   "network": "CBS",
+   "source_kind": "retail",
+   "source_prefix": "s14",
+   "teams": {
+    "away": "NO",
+    "home": "IND"
+   },
+   "team_logos": {
+    "NO": "mod",
+    "IND": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row35/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "8cd5e6658008415f6a4f3993c33677a3bdd7ac8f10f8967224c9752feb38a46c",
+     "layer": "row35/banner_corp.marks.png",
+     "layer_sha256": "67166906f5e35dc7e7b9e1b81f0db3183bde656aabe717f1a487fa40286c284b",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row35/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "859dea364e0ea253688d4c56647a3dcc38a6f5b05b508a744f0834f782bcd2d9",
+     "layer": "row35/banner_home_team.marks.png",
+     "layer_sha256": "a28e86ae7ba0fd03809692e5e4aa6b7fafd2f4fca7b6b46f3f4b914700555ff3",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "IND",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row35/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "3b7badee83f412e5d762ac645558f32dc3c1f226f5caab946c4d48c8cc2d921e",
+     "layer": "row35/banner_away_team.marks.png",
+     "layer_sha256": "2a81b88d9e5ea3937da15130698fd0fbfb56d57dd740a256cd7265c497efbea7",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NO",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row35/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "4bb5d2f58b1616e77ca2c0528250c9d217e9d993ddc04e13dd61b7bd0d8d6487"
+    },
+    {
+     "material": "wall05",
+     "file": "row35/wall05.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "e8ff2de5cafaa9d0614790d4c2a86326787148f8047da533fcd9eb722cdb40db",
+     "layer": "row35/wall05.marks.png",
+     "layer_sha256": "b39809887a6d6145ab9651ce2781ee04cc6bd92b5c9d864a3813082091fa2631",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        2,
+        5,
+        69,
+        57
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        5,
+        253,
+        56
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        69,
+        45,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        69,
+        252,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "wall08",
+     "file": "row35/wall08.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "abd1ca5f02c9c52f8037c0b57c90a473c9254bf8b0b94f88e955010211df41c0",
+     "layer": "row35/wall08.marks.png",
+     "layer_sha256": "bd5936d9148968e5a241536b629d48406794942c438b7fafc8cf8cfabef68224",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NO",
+       "box": [
+        2,
+        4,
+        54,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "IND",
+       "box": [
+        202,
+        4,
+        254,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        3,
+        77,
+        70,
+        112
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        187,
+        68,
+        254,
+        121
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "wall04",
+     "file": "row35/wall04.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "276fea8c96dcf60fb1435bd8912ee9615022bd2d875d3fcf225e7d5268cd683c",
+     "layer": "row35/wall04.marks.png",
+     "layer_sha256": "3197a64a4e3d41c939758fa0e629127437092435a6d851b7c3151489274a944d",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        2,
+        5,
+        69,
+        57
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        212,
+        5,
+        253,
+        56
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        69,
+        45,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        211,
+        69,
+        252,
+        120
+       ],
+       "surface": "bands2",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "wall07",
+     "file": "row35/wall07.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "bands2",
+     "sha256": "bbd49ab51277e04a430f3e6e8d79f044a8779fd777f74384c8034931a08508e1",
+     "layer": "row35/wall07.marks.png",
+     "layer_sha256": "37d850ffe6b893d321c29d6b4b4c00625cc726eebac87e84eb84cda4118e8f39",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NO",
+       "box": [
+        2,
+        4,
+        54,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "IND",
+       "box": [
+        202,
+        4,
+        254,
+        57
+       ],
+       "surface": "bands2",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "shade": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        3,
+        77,
+        70,
+        112
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "event",
+       "key": "XLIV",
+       "box": [
+        187,
+        68,
+        254,
+        121
+       ],
+       "surface": "bands2",
+       "shade": true,
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 40,
+   "event": "XLVII",
+   "date": "2013-02-03",
+   "season": 2012,
+   "venue": "Mercedes-Benz Superdome",
+   "city": "NEW ORLEANS",
+   "network": "CBS",
+   "source_kind": "retail",
+   "source_prefix": "s17",
+   "teams": {
+    "away": "BAL",
+    "home": "SF"
+   },
+   "team_logos": {
+    "BAL": "mod",
+    "SF": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row40/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "ce6d5df1fcc5e6d0114eb05225072f7ba668539eaebdb9c066f310f0d33fb4dc",
+     "layer": "row40/banner_corp.marks.png",
+     "layer_sha256": "e1caa0fb517345662ef4c55def0a731392429ff82f23135425ea8bb06545df8b",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row40/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "6376d432d7507006e846d3ab62c31f9fc89ee4a87b75296017eba916674a32f2",
+     "layer": "row40/banner_home_team.marks.png",
+     "layer_sha256": "f44460cf89535227a84c76f5f872a8985931ffa2c1b7a5023b0c26175772839e",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row40/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "7a693aeb97b299860505fdb90b11f253b15a34e2db7578aaa70119e695c55dc3",
+     "layer": "row40/banner_away_team.marks.png",
+     "layer_sha256": "2b144222b64028e579d1600d8239915ca2ef44f05781b9588d7100c0d092e734",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "BAL",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row40/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "5be970884f296c2fed8cd5366de3aae86e9565e36cd56e262b9df4ea5f3352ea"
+    },
+    {
+     "material": "swall1",
+     "file": "row40/swall1.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "16501f1baa227c4988efcca088fbc59efd6fc8c33426469a5027a8b1aa32a2b5",
+     "layer": "row40/swall1.marks.png",
+     "layer_sha256": "aa2c56e066ac053c207f9addf1eaa04bce6cda9ca4b9d1ae7c679e7e0fcdd989",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "swall2",
+     "file": "row40/swall2.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "pad",
+     "sha256": "a48fcb95373cafc78e771a45f6941fb948fae7597dbda7eb8c7bfce6a38605e4",
+     "layer": "row40/swall2.marks.png",
+     "layer_sha256": "7c1a4477be1433873789355a1235b503fabb3d0b1cb1ffe94a02829a5eb4f29c",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "pad",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        98,
+        90,
+        122,
+        122
+       ],
+       "surface": "pad",
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true
+      }
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert39",
+     "file": "row40/new_orleans3_lambert39.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "marquee",
+     "sha256": "acd6651962371a0794e770bc410aa01c150f3c3e6373b1a1824911847a4f6d7f",
+     "areas": [
+      [
+       0,
+       18,
+       128,
+       40
+      ]
+     ]
+    },
+    {
+     "material": "new_orleans3_lambert17",
+     "file": "row40/new_orleans3_lambert17.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "e7c598af95613235e5e237ef445992701cd537d713e49b66174c1967da635177",
+     "layer": "row40/new_orleans3_lambert17.marks.png",
+     "layer_sha256": "014e8d698a29c1f9e83cab6811c627937080f5902cfb0a6957c6ade6efe5c6cf",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        6,
+        6,
+        122,
+        100
+       ],
+       "surface": "prow",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "swall3",
+     "file": "row40/swall3.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "art",
+     "painter": "hang_wide+word_event+shield_mark+mark",
+     "sha256": "0f81fc7555a5705be006a0b7d2aba20e8edb56031814ea27ddab2e18e347ff59",
+     "areas": [
+      [
+       0,
+       0,
+       128,
+       64
+      ],
+      [
+       0,
+       64,
+       128,
+       78
+      ],
+      [
+       0,
+       78,
+       64,
+       128
+      ],
+      [
+       64,
+       78,
+       128,
+       128
+      ]
+     ],
+     "layer": "row40/swall3.marks.png",
+     "layer_sha256": "e059f09b564f15cf6747337190bd6737ed1f8c0e6ddbcec47a3ba86a17245fce",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        38,
+        3,
+        90,
+        55
+       ],
+       "surface": "hang_wide",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        0,
+        78,
+        64,
+        128
+       ],
+       "surface": "shield_mark",
+       "margin": 0.04
+      },
+      {
+       "kind": "event",
+       "key": "XLVII",
+       "box": [
+        64,
+        78,
+        128,
+        128
+       ],
+       "surface": "mark",
+       "margin": 0.02,
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 42,
+   "event": "XLIX",
+   "date": "2015-02-01",
+   "season": 2014,
+   "venue": "University of Phoenix Stadium",
+   "city": "ARIZONA",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s00",
+   "teams": {
+    "away": "NE",
+    "home": "SEA"
+   },
+   "team_logos": {
+    "NE": "mod",
+    "SEA": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row42/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "f6ed93155e60027bfa8a5144407b13504f6d2394850880f04b7c3c3ed799d003",
+     "layer": "row42/banner_corp.marks.png",
+     "layer_sha256": "dec55a75652c76143bf330adb8f9e6b5eb08e70911f635e0668d1760b51cdaab",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIX",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "XLIX",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row42/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "c9b5526d908fcefedf3735d7094174d0a82b5d7c005c0085f02fbc4dbd0f53c4",
+     "layer": "row42/banner_home_team.marks.png",
+     "layer_sha256": "14c7b5f8658f21d9fbeff4f96dcdf89ecd67ca0cca69b091c2d20dd74c31636a",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "SEA",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row42/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "e333be7d98407b349de474d215fe03e03380f5bf099b83c56b153effe484d3fc",
+     "layer": "row42/banner_away_team.marks.png",
+     "layer_sha256": "1c3c2691587d39caebd312d35ddb1a405426aee97da2092da0a614e169203e4c",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row42/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "3c9abb69855fbe4919fa9be9cfe2935aed8510ec9740b4311370c7dd1191ae00"
+    },
+    {
+     "material": "sf_wall",
+     "file": "row42/sf_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "39ba83fbe69104e38edd9b6c96861c7f9b36c456119bb4e2695bc88acd037108",
+     "layer": "row42/sf_wall.marks.png",
+     "layer_sha256": "80f9d2a7224308ad4cd0e34ffc2331af6acc5490ce163bda741babe82cde9ca4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "XLIX",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row42/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "0748c1a14702945244341a940558d6d2f241c25800c40ee1d359eb31b3b5a76f",
+     "layer": "row42/LIGHT_sf_ribbon.marks.png",
+     "layer_sha256": "7fa9787cf4efbcae2c044d12c9cdda20f667a74a372133809fac3e5d9c429b1c",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "SEA",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_sf_board_wing",
+     "file": "row42/LIGHT_sf_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "c326d76240832d1ce8a916fbeeb1342c70dc087786e85c20474ff0d9a11d85be",
+     "layer": "row42/LIGHT_sf_board_wing.marks.png",
+     "layer_sha256": "f97e800f3f0b13073aba78dfc6d41a252b4a26f71f9b5d3d9f9efb56be3a8e9e",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        18,
+        6,
+        46,
+        38
+       ],
+       "surface": "wing",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "event",
+       "key": "XLIX",
+       "box": [
+        4,
+        42,
+        60,
+        80
+       ],
+       "surface": "wing",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "sf_logo",
+     "file": "row42/sf_logo.png",
+     "size": [
+      128,
+      64
+     ],
+     "alpha": "art",
+     "painter": "uop_name",
+     "sha256": "d05a80fea7fcba685912ba78cdaff6178af715a833abbd378ceef97624c17558"
+    }
+   ]
+  },
+  {
+   "row": 45,
+   "event": "LII",
+   "date": "2018-02-04",
+   "season": 2017,
+   "venue": "U.S. Bank Stadium",
+   "city": "MINNEAPOLIS",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s15",
+   "teams": {
+    "away": "PHI",
+    "home": "NE"
+   },
+   "team_logos": {
+    "PHI": "mod",
+    "NE": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row45/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "bf1dbdb4646e6db556abf6748f50b3bdbb709f04cb03c26e7337d1a8df4fc46d",
+     "layer": "row45/banner_corp.marks.png",
+     "layer_sha256": "c738d1d595da1c8df2eb222a781e82c149fdc0e5d9f7b1186f1fa5e301b1fa5a",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row45/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "48f7260f29451d33049098a7ed93b2392b6688d54917ba60c0abc13581d87a9d",
+     "layer": "row45/banner_home_team.marks.png",
+     "layer_sha256": "8158b45d6f03466284f918845c8848fd119a9e7394ef7c9c8bcb9fcf1b473350",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row45/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "d6e3662ecb5578a2f01ca49c499beb34646694b5af95a8bcf9d4f2859291bcdd",
+     "layer": "row45/banner_away_team.marks.png",
+     "layer_sha256": "6ba3d008703ad953ba16ffb59e2e51018a44602032f6f96f912af3de35080fdc",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "PHI",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row45/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "084ccd88ec07060d19732581b33b4d5e256cd26b253e893c245d832a24ab21bc"
+    },
+    {
+     "material": "usb_wall",
+     "file": "row45/usb_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "5032dd349c6859593993730002859e66adeff28d6d832fd56c9172387293c5b4",
+     "layer": "row45/usb_wall.marks.png",
+     "layer_sha256": "3efc9d28e55c21d967de8de03fd1f2799d33772458b2b5753e09e10d89a7ed9e",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_usb_ribbon",
+     "file": "row45/LIGHT_usb_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "1c053e49effd0140c0964a3bfab9fa4e35c8a749bb98e9ea58d4aa52cfb15a59",
+     "layer": "row45/LIGHT_usb_ribbon.marks.png",
+     "layer_sha256": "41ec893fd3484eb7b0645613112e0bad92ded12ed6946cc29eb61737e1868e32",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "PHI",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_usb_board_wing",
+     "file": "row45/LIGHT_usb_board_wing.png",
+     "size": [
+      64,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "wing",
+     "sha256": "ea95af6044fb3653672764b55d0af7dcd439503dd89a6ff9f166b1a8a293e118",
+     "layer": "row45/LIGHT_usb_board_wing.marks.png",
+     "layer_sha256": "922bcfd989aeb72ea0d922c84d223d5ae2b3a2e489fc991516f5fa326627d0bb",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        18,
+        6,
+        46,
+        38
+       ],
+       "surface": "wing",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        4,
+        42,
+        60,
+        80
+       ],
+       "surface": "wing",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_usb_signs",
+     "file": "row45/LIGHT_usb_signs.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "signs4",
+     "sha256": "8c82cdd3652c8c92d5108101e56fb154a9190650c366b9d7c535a8249c064dac",
+     "layer": "row45/LIGHT_usb_signs.marks.png",
+     "layer_sha256": "4dc01e0afc5ddf50a7aca6245a4a77641c129b32873b48ebaafd890041f1d3bc",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        226,
+        2,
+        250,
+        30
+       ],
+       "surface": "signs4",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "team",
+       "key": "PHI",
+       "box": [
+        6,
+        35,
+        32,
+        61
+       ],
+       "surface": "signs4",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "NE",
+       "box": [
+        224,
+        35,
+        250,
+        61
+       ],
+       "surface": "signs4",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        10,
+        102,
+        46,
+        123
+       ],
+       "surface": "signs4",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        210,
+        98,
+        252,
+        126
+       ],
+       "surface": "signs4",
+       "authored": "authored_event_plate"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_usb_prow_display",
+     "file": "row45/LIGHT_usb_prow_display.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "prow",
+     "sha256": "38bb1620e209ec88d9388c6210fd81cdea8bbae7bfcf555df9f8c3194d3b18ad",
+     "layer": "row45/LIGHT_usb_prow_display.marks.png",
+     "layer_sha256": "6bd0ac0c1b563ea297407e9328bf80333381154cfb303c8e7d70effe09861f9a",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LII",
+       "box": [
+        6,
+        6,
+        122,
+        100
+       ],
+       "surface": "prow",
+       "authored": "authored_event_plate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 46,
+   "event": "LIV",
+   "date": "2020-02-02",
+   "season": 2019,
+   "venue": "Hard Rock Stadium",
+   "city": "MIAMI",
+   "network": "FOX",
+   "source_kind": "built",
+   "source_prefix": "s14",
+   "teams": {
+    "away": "SF",
+    "home": "KC"
+   },
+   "team_logos": {
+    "SF": "mod",
+    "KC": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row46/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "c991839431551490e6f411d17b983572844a51f04b8a7cd620da9812baf15be0",
+     "layer": "row46/banner_corp.marks.png",
+     "layer_sha256": "685fe708a8ec51bb07c513b8140cf7bf4ec16ee21d8638334555db41a6015ff4",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LIV",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "LIV",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row46/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "098748cf1df748fce9d2fa245389352653542cf0a1c859ff5c88553463b8c258",
+     "layer": "row46/banner_home_team.marks.png",
+     "layer_sha256": "70941733183f94e8d4fba1a4144dfcff78931465e3249ab2185fb93ea5345ef6",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "KC",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row46/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "6376d432d7507006e846d3ab62c31f9fc89ee4a87b75296017eba916674a32f2",
+     "layer": "row46/banner_away_team.marks.png",
+     "layer_sha256": "f44460cf89535227a84c76f5f872a8985931ffa2c1b7a5023b0c26175772839e",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row46/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "5790c9ac8324f48a151fc816844a1142c562fa4c44ff7ec46ba10e6b4cd63e47"
+    },
+    {
+     "material": "hr_wall",
+     "file": "row46/hr_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "7611c8f266d89d929c72b8d672febed668e63c33f7bad4a794c70705503b312c",
+     "layer": "row46/hr_wall.marks.png",
+     "layer_sha256": "5126886d3a7a9fd1f284a1128e7c081544614c20ee2d094ecd8b1550e14e4672",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LIV",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_hr_ribbon",
+     "file": "row46/LIGHT_hr_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "fe8de746b7f35b2bb32187ab51176e1035d4eb55d26710a306869926f6d2f51f",
+     "layer": "row46/LIGHT_hr_ribbon.marks.png",
+     "layer_sha256": "f8de0983ab3c2057995cb4bb981c618fd0159a08de6a191f51812d9674a28678",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "KC",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_hr_board_panel",
+     "file": "row46/LIGHT_hr_board_panel.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "panel",
+     "sha256": "ce278cad30c6a7f216846ff63c3f4512c4656bbe4e6d50e23b7f9335d223a1dd",
+     "layer": "row46/LIGHT_hr_board_panel.marks.png",
+     "layer_sha256": "9f1cd01a584f23b43801284e84a06483c52fe56a528080ab5d6949147acceb24",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LIV",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "panel",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        94,
+        26,
+        124
+       ],
+       "surface": "panel",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "fox",
+       "box": [
+        94,
+        100,
+        124,
+        118
+       ],
+       "surface": "panel",
+       "authored": "authored_network_type"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 48,
+   "event": "LVI",
+   "date": "2022-02-13",
+   "season": 2021,
+   "venue": "SoFi Stadium",
+   "city": "LOS ANGELES",
+   "network": "NBC",
+   "source_kind": "built",
+   "source_prefix": "s23",
+   "teams": {
+    "away": "LAR",
+    "home": "CIN"
+   },
+   "team_logos": {
+    "LAR": "mod",
+    "CIN": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row48/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "f2ff6975ba7345095af94b879102e40461a297ae8a95959948ba262903bbc739",
+     "layer": "row48/banner_corp.marks.png",
+     "layer_sha256": "e3abfe3da1f5475bed81aca438ef1ff207dd807f5c75ead8aa36bc4ded843945",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVI",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "LVI",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row48/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "0589b1534913c4359c6fecc30a97d95333bab0d30f39bfef9aa175285996c6f8",
+     "layer": "row48/banner_home_team.marks.png",
+     "layer_sha256": "481c25654dbfeb98d0fbb9b15fab8be0b04ef7ce89e58a34d6d485fe36b297e5",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row48/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "a3627c7cb4db4600bc67d141de031a70ad5dd5c8467c8164ab3d34a34164f981",
+     "layer": "row48/banner_away_team.marks.png",
+     "layer_sha256": "31a065c9e6a84f9d7bf42c2c4f4162cee2829881c197f6c5d40234e333406eee",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "LAR",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row48/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "795c8fbebaf0c0ebb1440f2578975a7e1831f75460c4c2b67e5b9854c92efa0a"
+    },
+    {
+     "material": "LIGHT_sf_ribbon",
+     "file": "row48/LIGHT_sf_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "33d561a3dcab01b635add0705eb1b4bfff2cf2b7df286c860ce44b20f1cfc50a",
+     "layer": "row48/LIGHT_sf_ribbon.marks.png",
+     "layer_sha256": "d84300fc6d36b7bd71bd33a9b9cf1243909c29839643cf2eed9951e4f6cd5cb7",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "nbc",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "LAR",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_sf_screen",
+     "file": "row48/LIGHT_sf_screen.png",
+     "size": [
+      512,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "screen",
+     "sha256": "5721488759e34af014331dccd641a2664b9638bf0cf5f7d32caade1336bb78af",
+     "layer": "row48/LIGHT_sf_screen.marks.png",
+     "layer_sha256": "75f2e73e1c9ca746a7d8b5ab8dfe35fdffa1c524a918701d5834fe8949c7b5e5",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVI",
+       "box": [
+        6,
+        4,
+        86,
+        60
+       ],
+       "surface": "screen",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "team",
+       "key": "LAR",
+       "box": [
+        246,
+        9,
+        282,
+        55
+       ],
+       "surface": "screen",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "CIN",
+       "box": [
+        360,
+        9,
+        396,
+        55
+       ],
+       "surface": "screen",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        474,
+        5,
+        506,
+        59
+       ],
+       "surface": "screen",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "row": 50,
+   "event": "LVIII",
+   "date": "2024-02-11",
+   "season": 2023,
+   "venue": "Allegiant Stadium",
+   "city": "LAS VEGAS",
+   "network": "CBS",
+   "source_kind": "built",
+   "source_prefix": "s20",
+   "teams": {
+    "away": "SF",
+    "home": "KC"
+   },
+   "team_logos": {
+    "SF": "mod",
+    "KC": "mod"
+   },
+   "shield": "mod_shield_2008",
+   "textures": [
+    {
+     "material": "banner_corp",
+     "file": "row50/banner_corp.png",
+     "size": [
+      256,
+      256
+     ],
+     "alpha": "source",
+     "painter": "corp",
+     "sha256": "cc29aa54c570d2fab869828d97014d23392fd6e66f14214bfe62ab78b4bfc27e",
+     "layer": "row50/banner_corp.marks.png",
+     "layer_sha256": "8889b6b8a4057f201a68ea286c1f3340b95bdf2d1c3f40d20be58040c5ee0e63",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVIII",
+       "box": [
+        10,
+        5,
+        118,
+        59
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        15,
+        76,
+        113,
+        116
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        71,
+        184,
+        122
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "event",
+       "key": "LVIII",
+       "box": [
+        133,
+        134,
+        188,
+        187
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        199,
+        140,
+        250,
+        181
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        15,
+        204,
+        113,
+        244
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        198,
+        184,
+        250
+       ],
+       "surface": "corp",
+       "shade": true
+      },
+      {
+       "kind": "brand",
+       "key": "espn",
+       "box": [
+        199,
+        204,
+        250,
+        245
+       ],
+       "surface": "corp",
+       "shade": true,
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_team",
+     "file": "row50/banner_home_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_home",
+     "sha256": "098748cf1df748fce9d2fa245389352653542cf0a1c859ff5c88553463b8c258",
+     "layer": "row50/banner_home_team.marks.png",
+     "layer_sha256": "70941733183f94e8d4fba1a4144dfcff78931465e3249ab2185fb93ea5345ef6",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "KC",
+       "box": [
+        6,
+        6,
+        56,
+        57
+       ],
+       "surface": "fans_home",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_away_team",
+     "file": "row50/banner_away_team.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "source",
+     "painter": "fans_away",
+     "sha256": "2ed5b8ff212ed864f23e2212cd65bef50022462756c9e214b94d04abd4d49cd7",
+     "layer": "row50/banner_away_team.marks.png",
+     "layer_sha256": "cac8a3f629a9a6db48050acbd04a76421ea3a369c4f37ad79ef6ac3c7c8e0837",
+     "slots": [
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        6,
+        6,
+        57,
+        58
+       ],
+       "surface": "fans_away",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shade": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "banner_home_player",
+     "file": "row50/banner_home_player.png",
+     "size": [
+      256,
+      128
+     ],
+     "alpha": "source",
+     "painter": "players",
+     "sha256": "4d5148feaf62b0574dc1709cc83806ba3bb4273ad4c38adbeb3e1d475982d2bc"
+    },
+    {
+     "material": "ag_wall",
+     "file": "row50/ag_wall.png",
+     "size": [
+      256,
+      32
+     ],
+     "alpha": "opaque",
+     "painter": "wall",
+     "sha256": "a756d9f98cd918dd7fc4f7c6de894c1041e2e46691d15b0e4afedb246213bb9a",
+     "layer": "row50/ag_wall.marks.png",
+     "layer_sha256": "1926a0eae0b58ca07ed2e1914bdf3c46f4f2730ed00ad4d745a3871fe685b4a3",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVIII",
+       "box": [
+        3,
+        3,
+        40,
+        30
+       ],
+       "surface": "wall",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        137,
+        3,
+        156,
+        30
+       ],
+       "surface": "wall",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_ag_ribbon",
+     "file": "row50/LIGHT_ag_ribbon.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "ribbon",
+     "sha256": "9f5ef110710424fe147336a651f5589da0e0b719851527b4f2fd67a7004f46a6",
+     "layer": "row50/LIGHT_ag_ribbon.marks.png",
+     "layer_sha256": "610f02e5455c6c0c1971b277e24dac0f3e10ddc266de450b33bf5405f82ad920",
+     "slots": [
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        3,
+        26,
+        30
+       ],
+       "surface": "ribbon",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        220,
+        6,
+        252,
+        27
+       ],
+       "surface": "ribbon",
+       "authored": "authored_network_type"
+      },
+      {
+       "kind": "team",
+       "key": "SF",
+       "box": [
+        5,
+        34,
+        33,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      },
+      {
+       "kind": "team",
+       "key": "KC",
+       "box": [
+        223,
+        34,
+        251,
+        62
+       ],
+       "surface": "ribbon",
+       "margin": 0.04,
+       "keyline": [
+        255,
+        255,
+        255
+       ],
+       "shadow": true,
+       "authored": "mod_team_logo"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_ag_board_panel",
+     "file": "row50/LIGHT_ag_board_panel.png",
+     "size": [
+      128,
+      128
+     ],
+     "alpha": "opaque",
+     "painter": "panel",
+     "sha256": "1e20189a56e136bc90443f594f4beb55b34e27e193574047b706278130987bb0",
+     "layer": "row50/LIGHT_ag_board_panel.marks.png",
+     "layer_sha256": "7312c1ce5e60ce9fd66d38bb7c03543a8189b7ee954868d659f867378bb4be70",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVIII",
+       "box": [
+        8,
+        8,
+        120,
+        86
+       ],
+       "surface": "panel",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        4,
+        94,
+        26,
+        124
+       ],
+       "surface": "panel",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "kind": "brand",
+       "key": "cbs",
+       "box": [
+        94,
+        100,
+        124,
+        118
+       ],
+       "surface": "panel",
+       "authored": "authored_network_type"
+      }
+     ]
+    },
+    {
+     "material": "LIGHT_ag_mesh",
+     "file": "row50/LIGHT_ag_mesh.png",
+     "size": [
+      256,
+      64
+     ],
+     "alpha": "opaque",
+     "painter": "mesh",
+     "sha256": "87abdd5ed81720adc0aeb7e6d23d64e09406101d5fee3f9af50f721c20bd8fa7",
+     "layer": "row50/LIGHT_ag_mesh.marks.png",
+     "layer_sha256": "0bb49e68ee9e0f823857d5c659d65b9c09a4ec2616c6bea2fe116551958393d5",
+     "slots": [
+      {
+       "kind": "event",
+       "key": "LVIII",
+       "box": [
+        6,
+        5,
+        86,
+        59
+       ],
+       "surface": "mesh",
+       "authored": "authored_event_plate"
+      },
+      {
+       "kind": "shield",
+       "key": "nfl",
+       "box": [
+        226,
+        8,
+        252,
+        56
+       ],
+       "surface": "mesh",
+       "keyline": [
+        255,
+        255,
+        255
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

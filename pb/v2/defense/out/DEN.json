@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 10,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -552,7 +552,7 @@
     "C4": 0.023,
     "C6": 0.016
    },
-   "blitz_model": 0.441,
+   "blitz_model": 0.616,
    "blitz_target": 0.645,
    "calls": 22
   }
@@ -2030,7 +2030,7 @@
    "appended": true,
    "name": "Mug Sim 3",
    "component": "coverage",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "band": 0,
    "pressure": false,
    "roles": [
@@ -2044,29 +2044,29 @@
    "source": {
     "authored": "mug:sim from CAR Cover 3"
    },
-   "rushers": 4,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 12
   }
  ],
  "receipt": {
   "team": "DEN",
   "offense_pack": "data/playbooks/softdrink_den_modern.2k5book",
-  "offense_pack_sha256": "8b95929e8aab0ff9dfdcc106a0aac3ce48875a15c9779e73bb544638737af663",
-  "source_fingerprint": "a5d0bbf4818573a5ff427b8ca9ddaa2594eeb1eef7125067a55c8531bd618622",
-  "replacement_sha256": "b0f952c76dc0ba326618a0fb41bd615cb8c48e1a0a7b1cfc052ab62b268ec72d",
-  "semantic_sha256": "042a1b30afa9421942815e8260f4d0509a1869ad23138170cb41008f8b47211a",
+  "offense_pack_sha256": "2b8984f084e3b3f393c024c86c342a5870bc2426f611b344dd1d91bc622c7185",
+  "source_fingerprint": "33b886cae7334a9cc1f4ef5b37eed16509bae11669ec667cd7722886ea2ffbb2",
+  "replacement_sha256": "90e746e555793898e95585c794f8d3d347b53ec9bc628702b4a4aee729f7455d",
+  "semantic_sha256": "850ce531968f98f839ee59cc80f9c91ccacd93f0484c72d02e4ace2320ec0038",
   "plays": 64,
   "formations": 5,
-  "nodes": 2222,
+  "nodes": 2634,
   "node_capacity": 3500,
-  "formation_count": 42,
+  "formation_count": 50,
   "play_count": 270,
   "misses": [],
   "band_loss": 0.09012,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_den_defense.2k5book",
-  "pack_sha256": "0b161f4ab00c88f267be6534acbe158d74692ef844bd888cbe0a5a7d44846347"
+  "pack_sha256": "af43469cbdc2d0732aa7eea253d5aaf801d1a612b923c87a66465e99c49e0d0d"
  }
 }

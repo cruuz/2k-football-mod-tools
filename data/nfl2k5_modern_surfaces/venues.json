@@ -309,6 +309,16 @@
       "note": "Modern MetLife paints the art; retail turf word 1 (grass): divots hidden",
       "prefix": "s18",
       "product": "FieldTurf CORE (2023), reinstalled after the 2026 World Cup final",
+      "response": {
+        "afternoon": {
+          "rgb": [
+            1.4744,
+            1.7017,
+            1.6134
+          ],
+          "source": "Beta 77 st1 (PROVED IN GAME, 2026-10-12): the afternoon field drew about 1.4 times its target. Lab run05 on the v0.6.1 disc (s18ad, xemu 1x, the play camera at the line of scrimmage): the sunlit turf drew (92.5, 135.5, 84.5) against the target (82.5, 102.6, 66.9); with the colour map halved on one side it drew (36.5, 57.5, 32.0), so on screen = A x map scale - C with A (112, 156, 105) and C (19.5, 20.5, 20.5). The map scale that lands the target is (0.911, 0.789, 0.832); this is the per-channel response the solver needs for that map under Modern colour's afternoon rig (candidate J settings): the inferred afternoon value 1.30 was 13 to 31 percent low."
+        }
+      },
       "sources": [
         "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
         "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",
@@ -332,6 +342,16 @@
       "note": "Modern MetLife paints the art; retail turf word 1 (grass): divots hidden",
       "prefix": "s19",
       "product": "FieldTurf CORE (2023), reinstalled after the 2026 World Cup final",
+      "response": {
+        "afternoon": {
+          "rgb": [
+            1.4744,
+            1.7017,
+            1.6134
+          ],
+          "source": "Beta 77 st1 (PROVED IN GAME, 2026-10-12): the afternoon field drew about 1.4 times its target. Lab run05 on the v0.6.1 disc (s18ad, xemu 1x, the play camera at the line of scrimmage): the sunlit turf drew (92.5, 135.5, 84.5) against the target (82.5, 102.6, 66.9); with the colour map halved on one side it drew (36.5, 57.5, 32.0), so on screen = A x map scale - C with A (112, 156, 105) and C (19.5, 20.5, 20.5). The map scale that lands the target is (0.911, 0.789, 0.832); this is the per-channel response the solver needs for that map under Modern colour's afternoon rig (candidate J settings): the inferred afternoon value 1.30 was 13 to 31 percent low."
+        }
+      },
       "sources": [
         "Wikipedia, List of current NFL stadiums (raw wikitext fetched 2026-09-25 08:24 UTC): https://en.wikipedia.org/wiki/List_of_current_NFL_stadiums",
         "FieldTurf, 'A New Season Begins with FieldTurf Remaining the Leading Choice in the NFL' (2025-09-05): https://fieldturf.com/en/articles/detail/nfl-2025/",

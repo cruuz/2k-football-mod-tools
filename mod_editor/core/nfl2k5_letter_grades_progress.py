@@ -70,10 +70,11 @@ def _require(condition, message):
         raise ProgressGradeError(message)
 
 
-def code_for(fmt_grade_va: int) -> bytes:
+def code_for(fmt_grade_va: int, *, all_ratings: bool = False) -> bytes:
     """The 16 owned bytes: the 15 byte stub for the given address of F4's ``%R`` literal."""
 
-    stub = (bytes.fromhex("baf092eb00" "85f6" "7505") + b"\xba" + struct.pack("<I", fmt_grade_va) + b"\xc3")
+    stub = (bytes.fromhex("baf092eb00" "85f6") + (b"\x75\x00" if all_ratings else b"\x75\x05")
+            + b"\xba" + struct.pack("<I", fmt_grade_va) + b"\xc3")
     assert len(stub) == 15
     return stub.ljust(CODE_SIZE, b"\xcc")
 
@@ -125,7 +126,8 @@ def _owned_state(payload: bytes):
         _require(rdata.status(payload, edits) == "retail", "progression sites changed with an empty allocation")
         _check_guards(image, edits)
         return "retail", found
-    _require(code == code_for(_fmt_grade_va(payload)), "foreign progression code")
+    fmt = _fmt_grade_va(payload)
+    _require(code in (code_for(fmt), code_for(fmt, all_ratings=True)), "foreign progression code")
     _require(rdata.status(payload, edits) == "applied", "mixed progression sites")
     _check_guards(image, edits)
     return "applied", found

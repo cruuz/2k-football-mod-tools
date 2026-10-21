@@ -75,18 +75,76 @@ class ArtTests(unittest.TestCase):
             self.assertTrue(np.all(bgra[:, :3] == (255, 128, 128)), kind)           # one flat normal
             self.assertEqual(bgra[:, 3].tolist(), list(range(256)))                  # alpha = the index
             mean = ms.DETAIL_ALPHA[kind]
+            want = ms.detail_rel(kind)
             spread = []
-            for lv in levels:
+            for k, lv in enumerate(levels):
                 a = lv.astype(np.float64)
                 self.assertAlmostEqual(float(a.mean()), mean, delta=0.5, msg=kind)   # the measured brightness kept
                 spread.append(float(a.std() / a.mean()))
-            self.assertTrue(0.06 < spread[0] < 0.1, (kind, spread))                   # blades up close, not gravel
-            self.assertLess(spread[1], 0.06, kind)                                    # tf-v3.1: a third of v3's
+                self.assertAlmostEqual(spread[-1], want[k], delta=0.03 * want[k] + 0.0005, msg=(kind, k, spread))
+            # tf-v4 at Noah's strengths: up close well under tf-v3's gravel (0.225 at mip 0), and the far mips the
+            # play camera samples (2 to 5) keep about twice tf-v3.1's grain
+            self.assertLess(spread[0], 0.11, kind)
+            self.assertLess(spread[0], ms.GRAVEL_REL / 2, kind)
             self.assertTrue(all(x > y for x, y in zip(spread, spread[1:])), (kind, spread))
-            self.assertLessEqual(spread[5], 0.011, kind)                              # the far field calm
+            for k in (2, 3, 4, 5):
+                self.assertGreater(spread[k], 1.25 * ms.DETAIL_REL_ANCHOR[kind][k], (kind, k, spread))
             a = levels[0].astype(np.float64) - levels[0].mean()
             lag3 = float((a * np.roll(a, 3, 1)).mean() / (a * a).mean())
             self.assertLess(abs(lag3), 0.2, kind)      # short-range: the per-triangle UV seams stay invisible
+
+    def test_every_level_keeps_its_structure_short_at_full_strength(self):
+        # gr2's lattice guard: each premipped level carries its own short clumps, never long strokes boxed down from
+        # mip 0 (a long structure draws E_detail's triangle lattice); lag-2 autocorrelation under 0.35 on both axes
+        import numpy as np
+        for kind in ms.DETAIL_ALPHA:
+            full = [ms.detail_art(kind, 1.0)[0]] + [list(t) for t in ms.detail_tile_art(kind, 1.0)[0]]
+            for levels in full:
+                for k, lv in enumerate(levels):
+                    if min(lv.shape) < 16:                 # an 8-texel tile level is too small to measure
+                        continue
+                    a = lv.astype(np.float64) - lv.mean()
+                    for axis in (0, 1):
+                        lag2 = float((a * np.roll(a, 2, axis)).mean() / (a * a).mean())
+                        self.assertLess(lag2, 0.35, (kind, k, axis))
+
+    def test_the_strength_runs_from_tf_v3_1_to_candidate_a(self):
+        self.assertEqual(ms.DETAIL_STRENGTH, {"synthetic": 0.15, "grass": 0.20})          # Noah, 2026-10-16
+        self.assertEqual(ms.detail_rel("fibre", 0.0), ms.DETAIL_REL_ANCHOR["fibre"])
+        self.assertEqual(ms.detail_rel("blade_bermuda", 1.0), ms.DETAIL_REL_FULL)
+        for kind, family in ms.DETAIL_FAMILY.items():
+            t = ms.DETAIL_STRENGTH[family]
+            for got, a, f in zip(ms.detail_rel(kind), ms.DETAIL_REL_ANCHOR[kind], ms.DETAIL_REL_FULL):
+                self.assertAlmostEqual(got, a + t * (f - a), places=12)
+            self.assertEqual(ms.strength_percent(kind, {family: 0.5}), 50)
+            self.assertEqual(ms.strength_percent(kind), round(100 * t))
+            levels, _ = ms.detail_art(kind, 0.0)
+            for k, lv in enumerate(levels):                                               # 0 % is tf-v3.1's calm
+                self.assertAlmostEqual(float(lv.std() / lv.mean()), ms.DETAIL_REL_ANCHOR[kind][k],
+                                       delta=0.0006 + 0.02 * ms.DETAIL_REL_ANCHOR[kind][k], msg=(kind, k))
+            full, _ = ms.detail_art(kind, 1.0)
+            self.assertTrue(all(a is b for a, b in zip(full, ms._full_detail_art(kind)[0])))   # 100 % = the PNG
+        # whole bytes per strength, the same on every call (integer scaling), and a different video per strength
+        self.assertEqual(ms.detail_video("fibre"), ms._detail_video.__wrapped__("fibre", False, 15))
+        self.assertNotEqual(ms.detail_video("fibre", strength=0.35), ms.detail_video("fibre"))
+        for bad in (-0.1, 1.5, 0.155, True, "0.2"):
+            with self.assertRaises(ms.ModernSurfacesError, msg=bad):
+                ms.strength_percent("fibre", bad)
+
+    def test_v0_6_1_normals_and_other_strengths_keep_reading_as_this_option(self):
+        # tf-v3.1's eight videos (v0.6 and v0.6.1) stay signatures; a receipt that chose another strength adds its own
+        legacy = {row for row in ms.LEGACY_DETAIL_SHA256.values()}
+        self.assertEqual(len(ms.LEGACY_DETAIL_SHA256), 24)
+        self.assertEqual(legacy, {(k, v) for k in ms.DETAIL_ALPHA for v in ("full", "tiled")})
+        self.assertEqual(ms.LEGACY_DETAIL_SHA256["54b17f691baed3947e9dd81494185623eb62c28798e26092ccab1474d06d6e80"],
+                         ("blade_bermuda", "full"))
+        known = ms._detail_by_hash()
+        self.assertEqual(known[hashlib.sha256(ms.detail_video("fibre")).hexdigest()], ("fibre", "full"))
+        other = hashlib.sha256(ms.detail_video("blade_bermuda", strength=0.35)).hexdigest()
+        self.assertNotIn(other, known)
+        receipt = dict(detail_strength={"grass": 0.35, "synthetic": 0.15})
+        self.assertEqual(ms._detail_by_hash_at(ms._receipt_strengths(receipt))[other], ("blade_bermuda", "full"))
+        self.assertIs(ms._receipt_strengths(dict(detail_strength=None)), None)
 
     def test_the_three_tiles_repeat_every_third_swizzled_block(self):
         import numpy as np
@@ -118,6 +176,39 @@ class ArtTests(unittest.TestCase):
             self.assertGreater(cols[:64].mean() - cols[64:].mean(), 0.05, look)
 
 
+class StripeTests(unittest.TestCase):
+    """gr4: the light and dark bands keep a share of their contrast, so no 5-yard strip reads lighter than the field."""
+
+    def test_band_tones_keep_the_contrast_share_and_the_field_mean(self):
+        import numpy as np
+        for look in ("grass_bermuda", "grass_bluegrass", "synthetic_fieldturf", "synthetic_helix"):
+            for key in ("map", "map_square"):
+                raw, soft = ms.pattern_art(look)[key], ms.pattern_level(look, key, 2)
+                w = raw.shape[1] // 2
+                gap = lambda p: p[:, :w].mean() - p[:, w:].mean()
+                self.assertAlmostEqual(gap(soft) / gap(raw), ms.STRIPE_CONTRAST, delta=1e-9, msg=(look, key))
+                self.assertAlmostEqual(float(soft.mean()), float(raw.mean()), delta=1e-9)
+                # the mottle inside each band is untouched
+                self.assertAlmostEqual(float(soft[:, :w].std()), float(raw[:, :w].std()), delta=1e-9)
+                self.assertAlmostEqual(float(soft[:, w:].std()), float(raw[:, w:].std()), delta=1e-9)
+        # the in-game light band is at most about 5 percent over the dark one (it was 11)
+        raw = ms.pattern_art("grass_bluegrass")["map"]
+        soft = ms.pattern_level("grass_bluegrass", "map", 2)
+        self.assertLess(soft[:, :64].mean() / soft[:, 64:].mean(), 1.05)
+        self.assertGreater(raw[:, :64].mean() / raw[:, 64:].mean(), 1.09)
+        # the outside grass has no bands and is returned as authored; the flat detail levels follow the same share
+        np.testing.assert_array_equal(ms.pattern_level("grass_bluegrass", "outside", 2), ms.pattern_art("grass_bluegrass")["outside"])
+        flat = ms.pattern_level("grass_bluegrass", "map", 1)
+        self.assertAlmostEqual(float(flat.max() - flat.min()) / 2,
+                               float(np.mean(np.abs(raw - 1.0))) * ms.STRIPE_CONTRAST, delta=1e-9)
+
+    def test_a_checker_pattern_is_left_as_it_is(self):
+        import numpy as np
+        raw = ms.pattern_art("grass_checker")["map"]
+        soft = ms.pattern_level("grass_checker", "map", 2)
+        self.assertLess(float(np.abs(soft - raw).max()), 0.01)
+
+
 class ColourTests(unittest.TestCase):
     def test_light_classes_follow_the_engine_rig_selection(self):
         self.assertEqual(ms.light_class("s13dd.iff", False), "day")
@@ -140,7 +231,8 @@ class ColourTests(unittest.TestCase):
 
     def _drawn_on_target(self, look, cls, rig, settings, mean, response):
         self.assertLessEqual(max(mean), ms.MAP_CEILING + 1e-6)
-        shown = [m * g * f * response for m, g, f in zip(mean, ms.rig_gain(rig, settings), ms.screen_factor(rig))]
+        resp = tuple(response) if isinstance(response, tuple) else (response,) * 3
+        shown = [m * g * f * r for m, g, f, r in zip(mean, ms.rig_gain(rig, settings), ms.screen_factor(rig), resp)]
         target = ms.target_rgb(look, cls)
         if max(mean) < ms.MAP_CEILING - 1e-6:
             for a, b in zip(shown, target):
@@ -149,16 +241,26 @@ class ColourTests(unittest.TestCase):
             self.assertAlmostEqual(_hsv(shown)[0], _hsv(target)[0], delta=6, msg=(look, cls))
 
     def test_the_game_response_tables_follow_the_lab(self):
+        ch = lambda v: tuple(v) if isinstance(v, tuple) else (v,) * 3
         for kind, table in ms.FIELD_RESPONSE.items():
             self.assertEqual(set(table), {"day", "afternoon", "night", "dome"}, kind)
-            self.assertTrue(table["night"] < table["afternoon"] < table["day"], kind)
+            for c in range(3):
+                self.assertTrue(ch(table["night"])[c] < ch(table["afternoon"])[c] < ch(table["day"])[c], (kind, c))
         for look in ms.LOOKS:
             for cls in ms.LIGHT_CLASSES:
-                self.assertGreater(ms.field_response(look, cls, "quad"), ms.field_response(look, cls, "grid"))
+                quad, grid = ch(ms.field_response(look, cls, "quad")), ch(ms.field_response(look, cls, "grid"))
+                self.assertTrue(all(q > g for q, g in zip(quad, grid)), (look, cls))
         # the lab: fibre and helix draw brighter over the model than the blades, and a quad 1.07 x a grid
-        self.assertGreater(ms.field_response("synthetic_fieldturf", "night"), ms.field_response("grass_bermuda", "night") + 0.1)
-        self.assertAlmostEqual(ms.field_response("grass_bluegrass", "day", "quad"), 1.16, delta=0.01)
+        self.assertGreater(ms.field_response("synthetic_fieldturf", "night"), max(ch(ms.field_response("grass_bermuda", "night"))) + 0.1)
+        for a, b in zip(ch(ms.field_response("grass_bluegrass", "day", "quad")), ch(ms.field_response("grass_bluegrass", "day"))):
+            self.assertAlmostEqual(a / b, 1.07, delta=1e-9)
         self.assertAlmostEqual(ms.field_response("synthetic_fieldturf", "night", "quad"), 1.25, delta=0.01)
+        # gr4: the blades are PER CHANNEL, measured on the b775 video: the model over-drew blue by about 17 percent and
+        # red by about 8 (Lambeau, EverBank by day; the XLII field under the night indoor rig)
+        day, night = ms.BLADE_RESPONSE["day"], ms.BLADE_RESPONSE["night"]
+        self.assertEqual(len(day), 3)
+        self.assertLess(day[2], day[1] - 0.1)
+        self.assertLess(night[2], night[1] - 0.08)
         for cls in ms.LIGHT_CLASSES:
             response = ms.apron_response(cls)
             self.assertTrue(all(1.8 < r < 2.3 for r in response), cls)
@@ -178,21 +280,57 @@ class ColourTests(unittest.TestCase):
                 self.assertAlmostEqual(_hsv(shown)[0], _hsv(target)[0], delta=2, msg=(look, cls))   # no lime apron
 
     def test_a_venue_with_its_own_broadcast_lands_on_it(self):
+        # turf: the look's targets are the broadcast medians, and a venue's own broadcast is met exactly. Natural grass
+        # is the exception since gr4: every grass venue lands on the XLII shade (see the uniform-grass test).
         measured = {p: row["broadcast"] for p, row in ms.venues().items() if row.get("broadcast")}
         self.assertGreaterEqual(len(measured), 12)
         for prefix, seen in measured.items():
+            self.assertIn("frames", seen["source"])
             look = ms.venue_look(prefix)
             aim = ms.venues()[prefix].get("design") or seen     # a design target replaces the measurement (Allegiant)
             got = ms.venue_target(prefix, look, aim["light"])
-            for a, b in zip(got, aim["rgb"]):
-                self.assertAlmostEqual(a, b, delta=0.01, msg=prefix)
-            self.assertIn("frames", seen["source"])
+            if ms.LOOKS[look]["family"] == "synthetic":
+                for a, b in zip(got, aim["rgb"]):
+                    self.assertAlmostEqual(a, b, delta=0.01, msg=prefix)
         self.assertEqual(ms.venue_target("s03", "grass_bluegrass", "day"), ms.target_rgb("grass_bluegrass", "day"))
+
+    def test_every_natural_grass_venue_lands_on_the_xlii_shade(self):
+        # gr4 (Noah 2026-10-18): one shade for all outdoor natural grass, whatever a venue's own broadcast or design row
+        # says (the rows stay in the table as evidence)
+        grass = [p for p, row in ms.venues().items() if row["surface"] == "grass"]
+        self.assertGreaterEqual(len(grass), 12)
+        for prefix in grass:
+            look = ms.venue_look(prefix)
+            self.assertTrue(ms.LOOKS[look].get("uniform"), prefix)
+            for cls in ("day", "afternoon", "night", "dome", "rain", "snow"):
+                self.assertEqual(tuple(ms.venue_target(prefix, look, cls)), tuple(ms.target_rgb(look, cls)), (prefix, cls))
+        # turf keeps its venue broadcast character
+        self.assertNotEqual(tuple(ms.venue_target("s18", "synthetic_fieldturf", "day")),
+                            tuple(ms.target_rgb("synthetic_fieldturf", "day")))
+
+    def test_grass_lands_on_the_xlii_shade_after_broadcast_greens(self):
+        # gr4: the on-screen targets, measured units, then authored before gr1's grass gain
+        from mod_editor.core import nfl2k5_broadcast_greens as greens
+        self.assertEqual(set(greens.GRASS_GAIN), {ms.GR1_GRASS_GAIN})            # gr1's grass gain is frozen: XLII unchanged
+        for cls, screen in ms.GRASS_SCREEN.items():
+            for look in ("grass_bermuda", "grass_bluegrass", "grass_checker"):
+                shown = [v * ms.GR1_GRASS_GAIN for v in ms.target_rgb(look, cls)]
+                for a, b in zip(shown, screen):
+                    self.assertAlmostEqual(a, b, delta=0.06, msg=(look, cls))
+            h, s, v = _hsv(screen)
+            self.assertTrue(84 <= h <= 91, (cls, h))                   # XLII is 86; the tf-v4 grass was 100
+            self.assertTrue(0.54 <= s <= 0.60, (cls, s))               # XLII 0.54..0.55 and Lambeau before gr4 0.60
+        # XLII's own shot is S 0.54 and V 0.23: the day target sits a little above it in value, not above 0.30
+        h, s, v = _hsv(ms.GRASS_SCREEN["day"])
+        self.assertTrue(0.24 < v < 0.30, v)
+        for look, row in ms.LOOKS.items():
+            if row["family"] == "synthetic":                       # turf targets are unchanged: the gain is in greens
+                self.assertNotIn("broadcast", row, look)
 
     def test_only_allegiant_has_a_design_target_and_it_is_darker_and_cooler_than_its_broadcast(self):
         import colorsys
         designed = {p: row["design"] for p, row in ms.venues().items() if row.get("design")}
-        self.assertEqual(sorted(designed), ["s20"])        # Beta 77 ALG pass 4; every other venue keeps its measurement
+        self.assertEqual(sorted(designed), ["s20"])        # Beta 77 ALG pass 4; the row stays as evidence
         seen, aim = ms.venues()["s20"]["broadcast"], designed["s20"]
         self.assertEqual((aim["light"], seen["light"]), ("dome", "dome"))
         luma = lambda c: 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
@@ -200,15 +338,12 @@ class ColourTests(unittest.TestCase):
         self.assertLess(luma(aim["rgb"]), luma(seen["rgb"]) * 0.92)
         self.assertGreater(hue(aim["rgb"]), hue(seen["rgb"]) + 2)
         self.assertLess(hue(aim["rgb"]), 100)               # a natural green, not a blue-green
-        # the other lights follow the same per-channel ratio to the look, and every other venue still follows its measurement
+        # gr4: Allegiant's grass is natural grass like every other, so it lands on the XLII shade, not on its design row
         look = ms.venue_look("s20")
-        for cls in ("day", "afternoon", "night"):
-            got = ms.venue_target("s20", look, cls)
-            want = [t * (m / b) for t, m, b in zip(ms.target_rgb(look, cls), aim["rgb"], ms.target_rgb(look, "dome"))]
-            for a, b in zip(got, want):
-                self.assertAlmostEqual(a, b, delta=0.01)
+        for cls in ("day", "afternoon", "night", "dome"):
+            self.assertEqual(tuple(ms.venue_target("s20", look, cls)), tuple(ms.target_rgb(look, cls)))
         for prefix, row in ms.venues().items():
-            if prefix == "s20":
+            if prefix == "s20" or row["surface"] == "grass":    # grass venues: see the uniform-grass test
                 continue
             look = ms.venue_look(prefix)
             for cls in ("day", "night", "dome"):
@@ -403,6 +538,68 @@ class RetailBundleTests(unittest.TestCase):
         self.assertEqual(span[:32], data[at:at + 32])
         dec, _ = tx.decode_chunk(span, chunk)
         self.assertEqual(dec[chunk.system_bytes:], ms.detail_video("helix", tiled=True))
+
+
+@unittest.skipUnless(PACKS.is_dir(), "retail extraction not available")
+class LoanVenueTests(unittest.TestCase):
+    """tf-v4 (gr3): the four venues whose detail normal lends allocation to the field take the TILED art, compressed
+    into exactly the loan the v0.6.1 disc carries, so every field span keeps its proven size."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        require_nfl_retail_packs(PACKS)
+        pins = {row["name"]: row for row in ms.pins()["bundles"]}
+        cls.normals = {}
+        with rr._outer_image()(PACKS) as archive:
+            for prefix in sorted(ms.LOAN_NORMAL_VENUES):
+                entry = archive.entries[pins[prefix + "dd.iff"]["outer"]]
+                data = archive.read(entry.virtual_offset, entry.size)
+                at, size = ms.bundle_sites(data)["normal"]
+                cls.normals[prefix] = bytes(data[at:at + size])
+
+    def test_every_loan_venue_holds_the_tiled_art_in_its_reviewed_loan(self):
+        from mod_editor.core import nfl2k5_midfield_art as mf
+        tx, HEADER = ms._tools()
+        self.assertEqual(set(mf.TILED_NORMAL_LOANS), set(ms.LOAN_NORMAL_VENUES))
+        stored = {"s09": 155280, "s22": 149664, "s29": 174192, "s30": 146880}      # the v0.6.1 disc's spans
+        for prefix, raw in self.normals.items():
+            kind = ms.LOOKS[ms.venue_look(prefix)]["detail"]
+            tiled, variant = ms.normal_span(raw, kind, variant="tiled")
+            self.assertEqual((variant, len(tiled)), ("tiled", len(raw)), prefix)
+            chunk = tx.parse_chunks(tiled)[0]
+            decoded, _ = tx.decode_chunk(tiled, chunk)
+            self.assertEqual(decoded[chunk.system_bytes:], ms.detail_video(kind, tiled=True), prefix)
+            self.assertTrue(ms.tiled_video(decoded[chunk.system_bytes:]))
+            self.assertEqual(mf.normal_loan(prefix, tiled), mf.TILED_NORMAL_LOANS[prefix])
+            self.assertIsNone(mf.normal_loan(prefix, ms.normal_span(raw, kind)[0]))   # the full art: the old route
+            compressed, loan = mf.compress_detail_normal(tiled, loan_bytes=mf.normal_loan(prefix, tiled))
+            self.assertEqual((loan["stored"], loan["scratch"], loan["alias_scratch"], loan["tiled"]),
+                             (stored[prefix], 0, 0, True), prefix)
+            self.assertEqual(len(compressed), HEADER.size + stored[prefix])
+            back, _ = tx.decode_chunk(compressed, tx.parse_chunks(compressed)[0])
+            self.assertEqual(back, decoded, prefix)
+            tx.check_vc_lz_native(compressed[HEADER.size:], stored[prefix], 0, decoded)
+            kept, kept_variant = ms.normal_span(compressed, kind, preserve_full=True)     # the final pass keeps it
+            self.assertEqual((kept, kept_variant), (compressed, "tiled"), prefix)
+
+    def test_only_loan_venues_take_a_tiled_raw_normal(self):
+        with self.assertRaisesRegex(ms.ModernSurfacesError, "not reviewed for s13"):
+            ms.surface_bundle(b"unparsed", "s13dd.iff", indoor=False, tiled_normal=True)
+        with self.assertRaisesRegex(ms.ModernSurfacesError, "unreviewed venue"):
+            ms.apply_to_image("/nonexistent.iso", tiled_normal_prefixes=("s13",))
+
+    def test_the_worker_passes_the_tiled_loan_and_the_strength(self):
+        from unittest import mock
+        with mock.patch.object(ms, "surface_bundle", return_value=(b"after", {})) as writer:
+            ms._job(("s22dd.iff", b"before", False, None, None, False, False, True))
+            writer.assert_called_once_with(b"before", "s22dd.iff", indoor=False, colour_settings=None,
+                                           overrides=None, tiled_normal=True)
+        with mock.patch.object(ms, "surface_bundle", return_value=(b"after", {})) as writer:
+            ms._job(("s13dd.iff", b"before", False, None, None, False, False, False, {"grass": 0.35}))
+            writer.assert_called_once_with(b"before", "s13dd.iff", indoor=False, colour_settings=None,
+                                           overrides=None, detail_strength={"grass": 0.35})
 
 
 class ReleaseTests(unittest.TestCase):

@@ -151,7 +151,8 @@ def check_entries(test, entries, expected, order, *, named_venues, era, books):
             if era:
                 test.assertAlmostEqual(entry["era_kickoff"], (50 - want["era"]["kickoff_yard"]) * 91.44, places=2)
             if books:
-                modern = {side: 2005 <= want[side][1] <= 2030 for side in ("away", "home")}
+                from mod_editor.core import nfl2k5_stock_books as books   # b776-int2: the era cut moved to 2010
+                modern = {side: books.MODERN_FIRST_SEASON <= want[side][1] <= books.MODERN_LAST_SEASON for side in ("away", "home")}
                 test.assertEqual(entry["book_modern"], modern)
 
 

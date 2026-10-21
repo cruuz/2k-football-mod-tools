@@ -1,0 +1,270 @@
+{
+  "evidence": "EXPERIMENTAL / UNWITNESSED: sourced nflverse rosters, depth charts and statistics through the m2 ratings model; no lab run, not played by Noah",
+  "schema": 1,
+  "teams": {
+    "bears_2006": {
+      "abbreviation": "CHI",
+      "asset_code": "05",
+      "city": "Chicago",
+      "nickname": "Bears",
+      "retail_same_season": null,
+      "season": 2006,
+      "selector": "bears",
+      "template": "h-05-1985-bears-1.iff",
+      "why": "NFC champions (Hester)"
+    },
+    "broncos_2015": {
+      "abbreviation": "DEN",
+      "asset_code": "08",
+      "city": "Denver",
+      "nickname": "Broncos",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "broncos",
+      "template": "h-08-1998-broncos-0.iff",
+      "why": "Super Bowl 50 champions"
+    },
+    "browns_2017": {
+      "abbreviation": "CLE",
+      "asset_code": "30",
+      "city": "Cleveland",
+      "nickname": "Browns",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "browns",
+      "template": "h-30-1986-browns-1.iff",
+      "why": "Noah: 0-16 lowlight"
+    },
+    "browns_2020": {
+      "abbreviation": "CLE",
+      "asset_code": "30",
+      "city": "Cleveland",
+      "nickname": "Browns",
+      "retail_same_season": null,
+      "season": 2020,
+      "selector": "browns",
+      "template": "h-30-1986-browns-1.iff",
+      "why": "Noah: OBJ/Landry/Baker; week 4 at Dallas, the last game with Beckham and Chubb both healthy"
+    },
+    "buccaneers_2020": {
+      "abbreviation": "TB",
+      "asset_code": "27",
+      "city": "Tampa Bay",
+      "nickname": "Buccaneers",
+      "retail_same_season": null,
+      "season": 2020,
+      "selector": "buccaneers",
+      "template": "h-27-2002-buccaneers-0.iff",
+      "why": "Noah: Brady Super Bowl LV team"
+    },
+    "chargers_2006": {
+      "abbreviation": "SD",
+      "asset_code": "24",
+      "city": "San Diego",
+      "nickname": "Chargers",
+      "retail_same_season": null,
+      "season": 2006,
+      "selector": "chargers",
+      "template": "h-24-1994-chargers-0.iff",
+      "why": "Noah: Rivers' best Chargers team (14-2)"
+    },
+    "chiefs_2022": {
+      "abbreviation": "KC",
+      "asset_code": "13",
+      "city": "Kansas City",
+      "nickname": "Chiefs",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "chiefs",
+      "template": "h-13-1993-chiefs-2.iff",
+      "why": "Super Bowl LVII champions"
+    },
+    "colts_2006": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2006,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff",
+      "why": "Super Bowl XLI champions"
+    },
+    "colts_2014": {
+      "abbreviation": "IND",
+      "asset_code": "11",
+      "city": "Indianapolis",
+      "nickname": "Colts",
+      "retail_same_season": null,
+      "season": 2014,
+      "selector": "colts",
+      "template": "h-11-1970-colts-5.iff",
+      "why": "Noah: Luck's best Colts team (11-5, AFC Championship Game)"
+    },
+    "eagles_2017": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2017,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff",
+      "why": "Noah: 2017 Eagles with Wentz AND Foles; week 13, before Wentz's week 14 injury"
+    },
+    "eagles_2024": {
+      "abbreviation": "PHI",
+      "asset_code": "21",
+      "city": "Philadelphia",
+      "nickname": "Eagles",
+      "retail_same_season": null,
+      "season": 2024,
+      "selector": "eagles",
+      "template": "h-21-2004-eagles-0.iff",
+      "why": "Super Bowl LIX champions; week 15, Hurts' last full game before his week 16 concussion (week 18 starters rested)"
+    },
+    "giants_2016": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2016,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff",
+      "why": "Noah: 2016 playoff team; week 16 (week 17 was a resting finale)"
+    },
+    "giants_2022": {
+      "abbreviation": "NYG",
+      "asset_code": "18",
+      "city": "New York",
+      "nickname": "Giants",
+      "retail_same_season": null,
+      "season": 2022,
+      "selector": "giants",
+      "template": "h-18-2003-giants-0.iff",
+      "why": "Noah: 2022 playoff team; week 17 clincher (week 18 starters rested)"
+    },
+    "lions_2008": {
+      "abbreviation": "DET",
+      "asset_code": "09",
+      "city": "Detroit",
+      "nickname": "Lions",
+      "retail_same_season": null,
+      "season": 2008,
+      "selector": "lions",
+      "template": "h-09-1991-lions-3.iff",
+      "why": "Noah: 0-16 lowlight"
+    },
+    "lions_2024": {
+      "abbreviation": "DET",
+      "asset_code": "09",
+      "city": "Detroit",
+      "nickname": "Lions",
+      "retail_same_season": null,
+      "season": 2024,
+      "selector": "lions",
+      "template": "h-09-1991-lions-3.iff",
+      "why": "15-2, NFC first seed"
+    },
+    "packers_2010": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2010,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff",
+      "why": "Super Bowl XLV champions"
+    },
+    "packers_2011": {
+      "abbreviation": "GB",
+      "asset_code": "10",
+      "city": "Green Bay",
+      "nickname": "Packers",
+      "retail_same_season": null,
+      "season": 2011,
+      "selector": "packers",
+      "template": "h-10-2004-packers-0.iff",
+      "why": "15-1; week 16 (Rodgers rested in week 17)"
+    },
+    "panthers_2015": {
+      "abbreviation": "CAR",
+      "asset_code": "04",
+      "city": "Carolina",
+      "nickname": "Panthers",
+      "retail_same_season": null,
+      "season": 2015,
+      "selector": "panthers",
+      "template": "h-04-2003-panthers-0.iff",
+      "why": "15-1, Newton MVP, NFC champions"
+    },
+    "patriots_2018": {
+      "abbreviation": "NE",
+      "asset_code": "16",
+      "city": "New England",
+      "nickname": "Patriots",
+      "retail_same_season": null,
+      "season": 2018,
+      "selector": "patriots",
+      "template": "h-16-2003-patriots-0.iff",
+      "why": "Super Bowl LIII champions"
+    },
+    "ravens_2019": {
+      "abbreviation": "BAL",
+      "asset_code": "02",
+      "city": "Baltimore",
+      "nickname": "Ravens",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "ravens",
+      "template": "h-02-2000-ravens-0.iff",
+      "why": "14-2, Jackson MVP; week 16 (starters rested in week 17)"
+    },
+    "seahawks_2013": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2013,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff",
+      "why": "Super Bowl XLVIII champions (Legion of Boom)"
+    },
+    "seahawks_2025": {
+      "abbreviation": "SEA",
+      "asset_code": "26",
+      "city": "Seattle",
+      "nickname": "Seahawks",
+      "retail_same_season": null,
+      "season": 2025,
+      "selector": "seahawks",
+      "template": "h-26-1999-seahawks-1.iff",
+      "why": "Super Bowl LX champions (29-13 over NE)"
+    },
+    "steelers_2005": {
+      "abbreviation": "PIT",
+      "asset_code": "22",
+      "city": "Pittsburgh",
+      "nickname": "Steelers",
+      "retail_same_season": null,
+      "season": 2005,
+      "selector": "steelers",
+      "template": "h-22-1995-steelers-0.iff",
+      "why": "Super Bowl XL champions"
+    },
+    "titans_2019": {
+      "abbreviation": "TEN",
+      "asset_code": "28",
+      "city": "Tennessee",
+      "nickname": "Titans",
+      "retail_same_season": null,
+      "season": 2019,
+      "selector": "titans",
+      "template": "h-28-1999-titans-0.iff",
+      "why": "Noah: peak Tannehill/Henry/A.J. Brown; 2019 = AFC Championship Game run (2020 is the swap)"
+    }
+  }
+}

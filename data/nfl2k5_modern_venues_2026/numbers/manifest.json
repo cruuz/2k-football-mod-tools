@@ -1,0 +1,23 @@
+{
+  "schema": "nfl2k5_modern_venue_numbers/v1",
+  "generator": "tools/b77/fa1_field_art.py numbers-block",
+  "venues": {
+    "s06": "CIN",
+    "s11": "IND",
+    "s15": "MIN",
+    "s28": "TEN"
+  },
+  "items": [
+    {
+      "scene": "field",
+      "material": "numbers",
+      "layer": "full",
+      "size": [
+        256,
+        256
+      ],
+      "file": "block.png",
+      "sha256": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718"
+    }
+  ]
+}

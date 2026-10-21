@@ -11,7 +11,8 @@ from pathlib import Path
 import struct
 
 
-def prove_chunk(data,chunk,xbe):
+def prove_chunk(data,chunk,xbe,*,instruction_limit=20_000_000):
+    """Allow larger scenes more instructions without relaxing memory checks."""
     from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_MEM_READ, UC_HOOK_MEM_WRITE
     from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESP, UC_X86_REG_EAX
     from mod_editor.core.nfl2k5_cave_oracle import XbeImage, RETAIL_SHA256
@@ -42,12 +43,13 @@ def prove_chunk(data,chunk,xbe):
         if base<=address<base+mapped:
             access["max_write"]=max(access["max_write"],address+size-base)
     uc.hook_add(UC_HOOK_MEM_READ,read_hook);uc.hook_add(UC_HOOK_MEM_WRITE,write_hook)
-    uc.emu_start(0x4DC00,stop,count=20_000_000)
+    uc.emu_start(0x4DC00,stop,count=instruction_limit)
     if (bytes(uc.mem_read(base,len(decoded)))!=decoded
             or bytes(uc.mem_read(base+allocation,128))!=bytes([0xA5])*128
             or access["max_read"]>allocation or access["max_write"]>len(decoded)
             or uc.reg_read(UC_X86_REG_EAX)!=len(decoded)):
         raise ValueError("Native in-place decoder or allocation guard differs")
     return dict(xbe_sha256=digest,scratch=chunk.overlap_scratch_bytes,
+                instruction_limit=instruction_limit,
                 decoded_bytes=len(decoded),stored_bytes=len(body),offset_bits=body[8],
                 exact_native_output=True,guard_unchanged=True,**access)

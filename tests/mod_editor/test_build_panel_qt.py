@@ -17,6 +17,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
+from mod_editor.core import nfl2k5_abilities_runtime as abilities_patch  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
 
@@ -196,6 +197,34 @@ class PresetButtonTests(unittest.TestCase):
             self.assertFalse(plan.widescreen or plan.kickoff_alignment)
             self.assertTrue(plan.arc_by_distance and plan.accel_ramp)
             self.assertIn("experimental", panel.preset_note.text())
+            panel.deleteLater()
+            self.app.processEvents()
+
+    def test_preset_clears_a_leftover_move_lock_instead_of_refusing_the_build(self) -> None:
+        """N35: a lock ticked before a preset used to survive it, so charge-stars-only made Make my disc refuse."""
+
+        panel = BuildPanel()
+        try:
+            panel.abilities_lock_checks["abilities_lock_right_stick"].setChecked(True)
+            panel.abilities_lock_checks["abilities_lock_special_moves"].setChecked(True)
+            panel.apply_preset("softdrink_advanced")   # the SOFTDRINK presets clear both locks and turn charge stars-only on
+            plan = panel.plan()
+            self.assertFalse(plan.abilities_lock_right_stick)
+            self.assertFalse(plan.abilities_lock_special_moves)
+            self.assertTrue(plan.abilities_charge_stars_only)
+            self.assertTrue(plan.abilities_lock_speedster)   # the separate Speedster lock keeps its preset value
+            self.assertEqual(mod_build.validate_plan(plan), [])
+            # the runtime that produces the user's refusal accepts the plan's settings unchanged
+            abilities_patch.code_for(
+                0x14DA000, abilities_off_week=plan.abilities_off_week,
+                lock_right_stick=plan.abilities_lock_right_stick,
+                lock_special_moves=plan.abilities_lock_special_moves,
+                lock_speedster=plan.abilities_lock_speedster,
+                right_stick_stars_only=plan.abilities_right_stick_stars_only,
+                button_moves_stars_only=plan.abilities_button_moves_stars_only,
+                charge_stars_only=plan.abilities_charge_stars_only,
+                star_access=plan.abilities_star_access)
+        finally:
             panel.deleteLater()
             self.app.processEvents()
 

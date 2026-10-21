@@ -45,6 +45,13 @@ def validate_neighbors(payload, image):
             raise ValueError("Foreign defensive-try neighbor at 0x2E3786")
 
 
+def neighbor_sites(payload):
+    # b776-ai2: the CPU QB reads owner hooks 0x19B7D3 (outside), 0x19BC72 and 0x19BD8C (inside
+    # the guarded QB tick). Only its own completely verified installation is normalized.
+    from . import nfl2k5_cpu_qb_reads as reads
+    return reads.normalized_sites(payload)
+
+
 def encode_options():
     return struct.pack("<f", MODERN_FACTOR)
 

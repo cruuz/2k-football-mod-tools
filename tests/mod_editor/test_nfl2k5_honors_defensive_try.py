@@ -83,7 +83,12 @@ class StaticTests(unittest.TestCase):
         shared = a & b
         self.assertTrue(shared <= derived_offsets(self.base), sorted(hex(o) for o in shared - derived_offsets(self.base)))
         self.assertTrue(shared)                       # ... and they do share exactly those derived bytes
-        self.assertEqual(changed_offsets(self.base, self.dt_first), a | b)
+        # Derived bytes (section digests, the allocator directory page) are recomputed for the combined image, so a
+        # single digest byte can coincide with the base by chance (1 in 256); every other byte must be exactly a | b.
+        combined = changed_offsets(self.base, self.dt_first)
+        self.assertTrue((combined ^ (a | b)) <= derived_offsets(self.base),
+                        sorted(hex(o) for o in (combined ^ (a | b)) - derived_offsets(self.base)))
+        self.assertEqual(combined - derived_offsets(self.base), (a | b) - derived_offsets(self.base))
 
     def test_the_fold_site_is_the_only_honors_edit_inside_a_defensive_try_pin(self):
         honors_sites = honors.sites(honors.allocations(self.dt_first)["code"]["va"])
@@ -211,7 +216,10 @@ class NativeTests(unittest.TestCase):
         m.record(0x177990, "progress", pop=4)
         rec = m.roster([(5, self.population())])[0]
         m.put(CLASS, 0)
-        m.call(0x14EFE0, stack=(4,))
+        # All 128 fields require more than the small direct-call default.
+        # Machine.call now refuses a truncated replay instead of treating it
+        # as a completed native function.
+        m.call(0x14EFE0, stack=(4,), budget=10_000_000)
         return {((w >> 16) & 0x7F, (w >> 23) & 31, bool(w & 0x20000000)): (w & 0xFFFF, bool(w & 0x40000000))
                 for w in m.stream(rec) if not w & 0x10000000}
 

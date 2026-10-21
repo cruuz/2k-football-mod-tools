@@ -26,7 +26,7 @@ common:
  # Retail calls at 0x244452 (side) / 0x244471 (rank); final SPECIAL calls
  # at 0x24445f and preserves EAX=encoded chain (0..4). Its return pin is
  # still 0x244464 after relocating the 46-record table to 0xee3000.
- mov dword ptr [esp+0x68],0
+ and dword ptr [esp+0x68],0
  mov eax,[esp+0x8c]
  push 2
  pop edx
@@ -54,11 +54,16 @@ no_bench:
  mov [esp+0x54],eax
  xor edi,edi
 position:
- mov dword ptr [esp+0x4c],10
- mov dword ptr [esp+0x50],1
+ push 10
+ pop dword ptr [esp+0x4c]
+ push 1
+ pop dword ptr [esp+0x50]
 field:
- mov dword ptr [esp+0x58],0
- mov dword ptr [esp+0x64],0
+ # b777 (mc5): +60 counts this chain's locks, +64 its players; close_holes
+ # rebuilds the reserved rows (+58) from the seats.
+ xor eax,eax
+ mov [esp+0x60],eax
+ mov [esp+0x64],eax
  xor ebx,ebx
 snapshot:
  cmp ebx,[esp+0x54]
@@ -75,22 +80,35 @@ snapshot:
  mov edx,[esp+0x50]
  test byte ptr [esi+0x52],dl
  jz unlocked
- bts [esp+0x58],eax
+ # b777 (mc5): tag the lock with its row; close_holes seats it.
+ or al,0x40
+ mov [esp+ebx],al
+ inc dword ptr [esp+0x60]
  jmp next_ordinal
 unlocked:
+ # EAX is this chain's stored row (the screen's priority).
  cmp dword ptr [esp+0x44],0
  je save_priority
- mov eax,[esp+0x64]
  cmp ecx,13
- jne cap
+ jne rank_ordinal
  # Retail only seeds the side chain for paired position enums.
  mov edx,0x1ec98
  bt edx,edi
- jc paired_side
- movzx eax,word ptr [esi+0x28]
- shr eax,cl
+ jnc save_priority
+ # b777 (dl3): retail maps the sorted ordinal 0/1/2 to side rows 2/0/1, so
+ # the rank-chain starter (ordinal 0) is never a side starter. With locks the
+ # rank starter need not be ordinal 0 (a better locked player can sit at rank
+ # 3), and an unlocked rank-0 player took side row 0 too (Noah's save: BUF
+ # Rousseau, BAL Wagner, ...: one player in two unit slots, which the exit
+ # check 0x243B50 refuses). Map the rank row this pass just assigned
+ # instead; identical to retail when ranks equal ordinals (no locks).
+ mov eax,[esi+0x28]
+ shr eax,10
  and eax,7
- jmp save_priority
+ jmp paired_side
+rank_ordinal:
+ mov eax,[esp+0x64]
+ jmp cap
 paired_side:
  cmp eax,3
  jae cap
@@ -101,8 +119,8 @@ paired_side:
 cap:
  cmp eax,7
  jbe save_priority
- push 7
- pop eax
+ # EAX is below 256 here (an ordinal or row): the byte store is enough.
+ mov al,7
 save_priority:
  mov [esp+ebx],al
 next_ordinal:
@@ -111,8 +129,8 @@ next_snapshot:
  inc ebx
  jmp snapshot
 allocate:
- mov dword ptr [esp+0x60],0
- mov dword ptr [esp+0x5c],0
+ # b777 (mc5): locked rows no longer leave permanent holes; see close_holes.
+ call close_holes
 priority:
  xor ebx,ebx
 candidate:
@@ -125,8 +143,7 @@ candidate:
 free_row:
  cmp eax,7
  jb test_row
- push 7
- pop eax
+ mov al,7
  jmp assign
 test_row:
  bt [esp+0x58],eax
@@ -153,8 +170,8 @@ next_priority:
  jb priority
  cmp dword ptr [esp+0x4c],13
  je next_position
- mov dword ptr [esp+0x4c],13
- mov dword ptr [esp+0x50],2
+ mov byte ptr [esp+0x4c],13
+ mov byte ptr [esp+0x50],2
  jmp field
 next_position:
  inc edi
@@ -167,7 +184,8 @@ next_position:
  mov ecx,254
  call fallback
  mov [esi+0x195],al
- mov eax,1
+ push 1
+ pop eax
  mov ecx,254
  call fallback
  mov [esi+0x196],al
@@ -203,8 +221,127 @@ epilogue:
  add esp,0x6c
  popad
  ret
+
+# b777 (mc5), called by close_holes as a lock is about to take row EDX of the
+# side chain: CF=1 when that player also starts the rank chain (rank 0) and
+# the row is a side-chain starter (0 or 1). He is then seated last (row tag 7)
+# so one player never fills two starting slots (the screen's exit check
+# 0x243B50 refuses that; Discord 10/18: Luvu SAM+MIKE, Highsmith both EDGEs).
+should_defer:
+ cmp edx,2
+ jae keep_seat
+ cmp esi,7
+ je keep_seat
+ cmp byte ptr [edi+0x4c],13
+ jne keep_seat
+ mov eax,[ebp+ebx*4]
+ test byte ptr [eax+0x29],0x1c
+ jnz keep_seat
+ stc
+ ret
+keep_seat:
+ clc
+ ret
 fallback=0x242bb0
 
+
+# Revision 3 (b777, job dl3; Noah 10/20: "Do new players with high overalls
+# that are signed in free agency become starters if they're the best overall?").
+# The 2026 roster refresh rank+side locks almost every club player, so the
+# weekly rank stage kept a locked incumbent in his row even when a much better
+# unlocked teammate (a free agent signing, trade or draft pick) joined. This
+# replaces the native weekly pointer sort of CPU-run clubs (0x2BDD31..0x2BDDE0)
+# with the same exchange sort (same compares, same 0xC3D70 stores, same order;
+# the last index's self-compare is new and never swaps) plus a release rule:
+# when an index is final it is the best remaining player of its position under
+# the native sort rating 0x246D80 (edx=1), so the first unlocked player of a
+# position seen is that position's best unlocked player. A rank-locked player
+# whose rating plus 0.03 (3 overall points) is not above that best unlocked
+# rating loses his rank and side locks (bits 0..1, kept cleared), and the rank
+# stage that follows seats him and the better player by the native order.
+# Returner locks (bits 2..4) stay. User clubs never reach this code (the
+# native user-club skip above it). The table of 17 best ratings and a scratch
+# float live in 19 pushed dwords (the outer index too); the native frame
+# slots are not used by this sort.
+.section .depth_sort,"ax"
+.global sort
+sort:
+ # [esp] scratch rating, [esp+4+4*pos] best unlocked rating of pos (0 = none
+ # yet), [esp+0x48] outer index; all start at zero. EBX inner index, EBP its
+ # record, ESI the outer record, EDI the team.
+ push 19
+ pop ecx
+sort_zero:
+ push 0
+ loop sort_zero
+ xor ebx,ebx
+sort_inner:
+ cmp [edi+0x11c],bl
+ jbe sort_settle
+ mov eax,[esp+0x48]
+ mov esi,[edi+eax*4]
+ mov ebp,[edi+ebx*4]
+ mov al,[esi+0x35]
+ cmp al,[ebp+0x35]
+ jne sort_next
+ mov ecx,esi
+ call sort_rate
+ fstp dword ptr [esp]
+ mov ecx,ebp
+ call sort_rate
+ fcomp dword ptr [esp]
+ fnstsw ax
+ sahf
+ jbe sort_next
+ mov ecx,edi
+ push ebx
+ mov edx,esi
+ call 0xc3d70
+ push dword ptr [esp+0x48]
+ mov edx,ebp
+ call 0xc3d70
+sort_next:
+ inc ebx
+ jmp sort_inner
+sort_settle:
+ # The inner index reached the count: the outer index did too when equal.
+ mov eax,[esp+0x48]
+ cmp eax,ebx
+ je sort_done
+ # roster[outer] is now final: the best remaining player of his position.
+ mov esi,[edi+eax*4]
+ movzx eax,byte ptr [esi+0x35]
+ cmp al,16
+ ja sort_step
+ lea ebp,[esp+eax*4+4]
+ mov ecx,esi
+ call sort_rate
+ test byte ptr [esi+0x52],1
+ jnz sort_locked
+ cmp dword ptr [ebp],0
+ jne sort_drop
+ fst dword ptr [ebp]
+sort_drop:
+ fstp st(0)
+ jmp sort_step
+sort_locked:
+ # 0x4F0F48 is the retail constant 0.03f (3 overall points).
+ fadd dword ptr [0x4f0f48]
+ fcomp dword ptr [ebp]
+ fnstsw ax
+ sahf
+ ja sort_step
+ and byte ptr [esi+0x52],0xfc
+sort_step:
+ inc dword ptr [esp+0x48]
+ mov ebx,[esp+0x48]
+ jmp sort_inner
+sort_rate:
+ push 1
+ pop edx
+ jmp 0x246d80
+sort_done:
+ add esp,0x4c
 
 # Replaces the whole ratings-to-rank stage, after the native pointer sort.
 .section .depth_weekly,"ax"
@@ -213,6 +350,81 @@ rank_stage:
  mov ecx,edi
  call weekly
  jmp 0x2bde70
+
+# b777 (mc5, Noah 10/20: blank TEN RB1 in MyCareer, then a freeze). Every club
+# player on the 2026 roster is rank+side locked, so when a locked starter left
+# (contract, trade, release) his row stayed reserved by nobody and the depth
+# chart showed a blank starter. The snapshot now tags each locked player of
+# this position with 0x40|row instead of reserving the row. Here, in row
+# order (then roster order), each locked player keeps his row while unlocked
+# players can still fill the rows above it, otherwise he moves up; the
+# reserved-row set is rebuilt from the seats. Unchanged when no hole exists;
+# duplicate locks get distinct rows. Also zeroes the allocator's priority and
+# next-row words (the two stores this call replaced). Frame F = EDI = ESP+0x24
+# after PUSHAD: F+i tags (0..7 unlocked priority, 0x40|row locked, 0xFE seated,
+# 0xFF other position), F+4c shift, F+54 roster count, F+58 reserved rows,
+# F+5c next row, F+60 the snapshot's lock count, F+64 its player count and
+# then the unlocked rows left. On the side chain, a lock that also starts the
+# rank chain is not seated in side row 0 or 1 (should_defer, compactor tail).
+close_holes:
+ pushad
+ lea edi,[esp+0x24]
+ mov eax,[edi+0x64]
+ sub eax,[edi+0x60]
+ mov [edi+0x64],eax
+ xor eax,eax
+ mov [edi+0x5c],eax
+ mov [edi+0x58],eax
+ xor esi,esi
+row_pass:
+ xor ebx,ebx
+locked_scan:
+ cmp ebx,[edi+0x54]
+ jae next_row
+ lea edx,[esi+0x40]
+ cmp [edi+ebx],dl
+ jne next_locked
+keep_room:
+ mov edx,[edi+0x5c]
+ cmp esi,edx
+ jbe seat
+ cmp dword ptr [edi+0x64],0
+ je seat
+ dec dword ptr [edi+0x64]
+ inc dword ptr [edi+0x5c]
+ jmp keep_room
+seat:
+ call should_defer
+ jnc seat_cap
+ mov byte ptr [edi+ebx],0x47
+ # The seat write below XORs from the tagged row: make the field say 7 too.
+ or byte ptr [eax+0x29],0xe0
+ jmp next_locked
+seat_cap:
+ cmp edx,7
+ jbe seat_row
+ mov dl,7
+seat_row:
+ bts [edi+0x58],edx
+ inc dword ptr [edi+0x5c]
+ mov byte ptr [edi+ebx],0xfe
+ mov eax,[ebp+ebx*4]
+ xor edx,esi
+ mov ecx,[edi+0x4c]
+ shl edx,cl
+ xor [eax+0x28],dx
+next_locked:
+ inc ebx
+ jmp locked_scan
+next_row:
+ inc esi
+ cmp esi,8
+ jb row_pass
+ xor eax,eax
+ mov [edi+0x5c],eax
+ mov [edi+0x60],eax
+ popad
+ ret
 
 # The first five bytes retain the rows module's chain-bit patch location.
 # The packer uses TEST EAX,EAX for retail, TEST AL,1 for SPECIAL (stride 11).
@@ -237,6 +449,43 @@ swap_fields:
  xor [ecx+0x28],di
  pop edi
  ret 4
+
+# b777 (mc5): the detail list's ratings bars (FUN_00242E00) divide 10000 by
+# the top row's three ratings, stored only when the top row has a player.
+# With an empty top row the first divisor was 0 and the next row raised #DE
+# (STATUS_INTEGER_DIVIDE_BY_ZERO at 0x242E53): Noah's frozen depth chart.
+# An empty top row now stores 1s (the native floor) before returning.
+panel_empty:
+ test esi,esi
+ jnz panel_done
+ push 1
+ pop eax
+ mov [0xc174c4],eax
+ mov [0xc174c8],eax
+ mov [0xc174cc],eax
+panel_done:
+ jmp 0x242f10
+
+# b777 (mc5): the weekly auto-depth skips user-controlled clubs (unless CPU
+# management is on). A MyCareer club is one, but the league still moves its
+# players (contracts, trades, cuts). Give such a club the screen compactor's
+# pass (order kept, holes closed) instead of nothing, then skip it as before.
+human_compact:
+ mov ecx,edi
+ call compact
+ jmp 0x2bdfd4
+
+# The weekly auto-depth's user-club skip (retail 0F84 to 0x2BDFD4).
+.section .depth_human,"ax"
+.global human_branch
+human_branch:
+ je human_compact
+
+# The ratings panel's empty-row branch (retail 0F84 to 0x242F10).
+.section .depth_panel,"ax"
+.global panel_branch
+panel_branch:
+ je panel_empty
 
 # Only the confirmed KR selection arm; EDI=team, ESI=selected player.
 # Clear previous KR claims, transfer previous KR1 to KR2 and mark new KR1.

@@ -152,6 +152,7 @@ from nfl_txtr import (  # noqa: E402
     decompress_vc_lz,
     encode_rgba_png,
     minimum_vc_lz_overlap_scratch,
+    check_vc_lz_native,
     swizzle_2d,
     unswizzle_2d,
 )
@@ -665,6 +666,12 @@ def _rebuild_vc_lz_fixed_span(
         zero_gap = consumed_cap - len(encoded)
         scratch = _aligned16(max(stored_size - len(encoded), alias))
         if scratch <= scratch_cap:
+            try:
+                check_vc_lz_native(encoded + bytes(consumed_cap - len(encoded)) + opaque_tail,
+                                   stored_size, scratch, decoded)
+            except TxtrError as exc:
+                last_error = exc
+                continue
             selected = (encoded, decoded_back, decode_info, alias, scratch)
             break
     if selected is None:

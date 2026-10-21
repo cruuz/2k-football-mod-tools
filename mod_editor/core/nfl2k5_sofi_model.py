@@ -311,7 +311,7 @@ class SoFi(mm.MetLife):
         cuts = self._aisle_cuts(loop)
         for b, k in enumerate(range(0, R, q["rows_per_band"])):
             quarter = [0.0, 0.5, 0.25, 0.75][b % 4]
-            bot, top, vs = [], [], []
+            bot, top = [], []
             for lp, pr in zip(loop, profiles):
                 last = len(pr) - 1
                 d0, y0 = pr[min(k, last)]
@@ -320,17 +320,19 @@ class SoFi(mm.MetLife):
                 h = 0.0 if k >= last else (1.8 if standing else min((y1 - y0) + q["extra"], 2.8))
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
                 top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
-                vs.append(lp.s * q["v_per_m"])
-            bot, top, vs = np.array(bot), np.array(top), np.array(vs)
+            bot, top = np.array(bot), np.array(top)
             L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
             # The upper rows and corners are longer than the field-wall line.
             # Using lp.s there stretched the fan atlas several times wider.
             # A bowl built in sector slices continues each band's phase from the slice before, so the fans run
             # unbroken across the sector joins (restarting at the wall line's arc cut them mid-body at every join).
+            # b77 cr1: V at a fixed 9.14 m a unit and U squeezing a whole person into any billboard height drew fans
+            # squashed on the short and tapering bands and stretched on the tall ones. Each column now keeps the retail
+            # proportion (mm.crowd_u, mm.crowd_band_v), the band's V phase still carried across the sector joins.
             phases = self.__dict__.setdefault("_band_phase", {})
-            start = phases.get((standing, tuple(np.round(bot[0], 4))), loop[0].s)
-            vs = (start + L) * q["v_per_m"]
-            phases[(standing, tuple(np.round(bot[-1], 4)))] = start + float(L[-1])
+            v0 = phases.get((standing, tuple(np.round(bot[0], 4))), loop[0].s * q["v_per_m"])
+            vs = np.array(mm.crowd_band_v(bot, top, v0))
+            phases[(standing, tuple(np.round(bot[-1], 4)))] = float(vs[-1])
             aisles = [L[i] + t * (L[i + 1] - L[i]) for i, t in cuts]
             edges = [0.0] + [e for a in aisles for e in (a - half, a + half)] + [L[-1]]
 
@@ -346,7 +348,8 @@ class SoFi(mm.MetLife):
                 cols = [e0] + [x for x in L if e0 + 1e-6 < x < e1 - 1e-6] + [e1]
                 pb, pt = [tuple(at(x, bot)) for x in cols], [tuple(at(x, top)) for x in cols]
                 vv = [float(at(x, vs)) for x in cols]
-                m.grid("crowd", [pb, pt], [[(quarter + 0.2425, v) for v in vv], [(quarter + 0.0075, v) for v in vv]],
+                us = [mm.crowd_u(quarter, b_, t_) for b_, t_ in zip(pb, pt)]
+                m.grid("crowd", [pb, pt], [[(u[0], v) for u, v in zip(us, vv)], [(u[1], v) for u, v in zip(us, vv)]],
                        facing=toward_field)
 
     def _rows_surface(self, m, material, loop, profiles, rows_per_band, vstart=0.0):
@@ -1666,7 +1669,7 @@ SOFI_SHOTS = {venue: [_PRESSBOX, _CRANE, _EXTERIOR, _ENDZONE, _PLAZA] for venue 
 #: south down the field's axis at the whole lit Infinity Screen (a night game; zero angles look along -z in every
 #: retail camera the model writes). PROVED IN GAME (lab 6, 2026-09-25): with every angle 0 the s40 camera looks down
 #: about 24 degrees at the field's centre from the eye, with a horizontal field of about 40 degrees: the whole LXI field
-#: from above the north end (both neutral end zones, the LXI mark, the shields on the 25s), the screen just above the
+#: from above the north end (both neutral end zones, the midfield mark, the 25-yard marks), the screen just above the
 #: frame. The s40 angle channels still play unlike s23/s24's, so the shot stays at zero angles.
 _SUPER_BOWL = dict(eye=(0.0, 44.0, 100.0), target=(0.0, 44.0, -10.0), fov=44.0, screen=True)
 SOFI_SHOTS["s40"] = [_SUPER_BOWL]
@@ -1906,8 +1909,8 @@ def paint_field(decoded, rec, system, venue, *, dry=None, turf=None, cap=256, ha
     overlays = _field_shape(rec, "D_graphic_overlays")
     st0, st1 = _stream(overlays, 0), _stream(overlays, 1)
     su, sv, ou, ov = struct.unpack_from("<4f", out, overlays["record_offset"] + 0x30)
-    for material, art_name, centre_along in FIELD_QUADS[venue]:
-        across, along = art_manifest()[f"field/{art_name}"]["quad_m"]
+    for material, art_name, centre_along, *size in FIELD_QUADS[venue]:
+        across, along = size[0] if size else art_manifest()[f"field/{art_name}"]["quad_m"]
         idx = _submesh_vertices(rec, out, overlays, material)
         for quad in [idx[k:k + 4] for k in range(0, len(idx), 4)]:
             centre = np.mean([struct.unpack_from("<3f", out, st0["offset"] + st0["stride"] * i) for i in quad], axis=0)
@@ -1928,16 +1931,19 @@ def paint_field(decoded, rec, system, venue, *, dry=None, turf=None, cap=256, ha
 TURF_SOURCE = "s23dd.iff"
 TURF_MATERIALS = ("color_premipped", "grass_outside_premipped", "numbers")
 #: the field textures SoFi paints in full, and their art: the three end-zone panels (both ends share them) and the
-#: midfield mark for the teams; the LXI mark at midfield and the NFL shield on the 25s for the Super Bowl (the retail s40
-#: field has no end-zone textures, only these two logo textures)
+#: midfield mark for the teams; for the Super Bowl the NFL shield at midfield and the LXI mark on both 25s, the layout
+#: of every Super Bowl field since XXXVIII (sb1, 2026-10-17: LX at Levi's Stadium and LVIII at Allegiant were painted
+#: this way; the retail s40 field has no end-zone textures, only these two logo textures)
 FIELD_MARKS = {venue: [(f"endzone_N_{part}", f"{venue}_endzone_{part}") for part in "LMR"]
                + [("center_logo", f"{venue}_midfield")] for venue in VENUES}
-FIELD_MARKS["s40"] = [("center_logo", "s40_midfield"), ("logo", "s40_shield")]
+FIELD_MARKS["s40"] = [("center_logo", "s40_shield"), ("logo", "s40_midfield")]
 #: the overlay quads sized to their art's true proportions, each around its own centre or, where a third value is given,
-#: moved along the field to that many metres from midfield (the Super Bowl shields to the 25-yard lines: the retail
-#: s40 logos sat on the 30s)
+#: moved along the field to that many metres from midfield (the Super Bowl marks to the 25-yard lines: the retail
+#: s40 logos sat on the 30s). A fourth value sets the quad's (across, along) metres at the art's own aspect: the
+#: midfield shield of a modern Super Bowl is about 12 yards across (measured on the LVIII and LX field diagrams).
 FIELD_QUADS = {venue: [("center_logo", f"{venue}_midfield", None)] for venue in VENUES}
-FIELD_QUADS["s40"] = [("center_logo", "s40_midfield", None), ("logo", "s40_shield", 25 * 0.9144)]
+SUPER_BOWL_SHIELD_M = (11.0, 11.0 * 4.9508 / 6.8129)
+FIELD_QUADS["s40"] = [("center_logo", "s40_shield", None, SUPER_BOWL_SHIELD_M), ("logo", "s40_midfield", 25 * 0.9144)]
 
 
 def mark_materials(venue):
@@ -2053,7 +2059,7 @@ HELP_TEXT = (
     "sunk below grade, the translucent canopy on its 37 columns, the Infinity Screen with the live feed, the plaza, "
     "Rivers Lake and a new pregame flyover with an exterior pass; both teams' 2026 end zones and midfield; the venue "
     "named SoFi Stadium, Inglewood, CA, roofed (no rain or snow on the field) and on turf. A franchise's first Super "
-    "Bowl (Super Bowl LXI) is played there too, with the LXI mark at midfield. The 2026 venue art leaves these two "
+    "Bowl (Super Bowl LXI) is played there too, with the NFL shield at midfield and the LXI mark on the 25s. The 2026 venue art leaves these two "
     "venues to it. Off in every preset; appearance in game is unwitnessed."
 )
 _PINS = None

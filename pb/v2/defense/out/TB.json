@@ -39,8 +39,8 @@
      457
     ],
     [
-     -610,
-     91
+     -455,
+     320
     ],
     [
      640,
@@ -228,7 +228,7 @@
    "merged_into_category": 9,
    "positions": [
     [
-     200,
+     365,
      0
     ],
     [
@@ -244,16 +244,16 @@
      0
     ],
     [
-     460,
-     91
+     330,
+     274
     ],
     [
      0,
      411
     ],
     [
-     -600,
-     91
+     -430,
+     274
     ],
     [
      0,
@@ -551,7 +551,7 @@
     "C4": 0.025,
     "C6": 0.014
    },
-   "blitz_model": 0.435,
+   "blitz_model": 0.601,
    "blitz_target": 0.674,
    "calls": 22
   }
@@ -1960,7 +1960,7 @@
    "authored_nodes": 14
   },
   {
-   "play": 253,
+   "play": 262,
    "appended": true,
    "name": "Speed Rush",
    "component": "front",
@@ -1981,7 +1981,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 254,
+   "play": 263,
    "appended": true,
    "name": "Dime Twist",
    "component": "front",
@@ -2002,7 +2002,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 255,
+   "play": 264,
    "appended": true,
    "name": "Mug Wide",
    "component": "front",
@@ -2023,7 +2023,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 256,
+   "play": 265,
    "appended": true,
    "name": "Mug Contain",
    "component": "front",
@@ -2044,7 +2044,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 257,
+   "play": 266,
    "appended": true,
    "name": "Mug Zero",
    "component": "coverage",
@@ -2067,7 +2067,7 @@
    "authored_nodes": 8
   },
   {
-   "play": 258,
+   "play": 267,
    "appended": true,
    "name": "Mug Fire 3",
    "component": "coverage",
@@ -2090,11 +2090,11 @@
    "authored_nodes": 4
   },
   {
-   "play": 259,
+   "play": 268,
    "appended": true,
    "name": "Mug Sim 3",
    "component": "coverage",
-   "concept": "Sim Pressure 3",
+   "concept": "Fire Zone 3",
    "band": 0,
    "pressure": false,
    "roles": [
@@ -2108,12 +2108,12 @@
    "source": {
     "authored": "mug:sim from CAR Cover 3"
    },
-   "rushers": 4,
+   "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 8
+   "authored_nodes": 6
   },
   {
-   "play": 260,
+   "play": 269,
    "appended": true,
    "name": "Mug Bail 3",
    "component": "coverage",
@@ -2139,21 +2139,21 @@
  "receipt": {
   "team": "TB",
   "offense_pack": "data/playbooks/softdrink_tb_modern.2k5book",
-  "offense_pack_sha256": "c26b455abbf7c8822f4c6a8b6f0f5e67fec51e14d9671b2e28517338a38778f1",
-  "source_fingerprint": "cde2377c42d794ea14ef154943b5a44ac470e63f8b505cb63e5dc720b03796f8",
-  "replacement_sha256": "abf805d73e1d0587ea893c54f42d48f14642d7241bf205dc7e2cbf80ae09b182",
-  "semantic_sha256": "f47724b2ac35a9599a06c6881ace511187e40aeb36c15bff3f2eff958dec5eaa",
+  "offense_pack_sha256": "76a7dcaf61b38bb887878b734c318321ca84664f02bee62b5e3df4952edd2198",
+  "source_fingerprint": "af0a69d765bbc6d79295a37c98477ff22157d7c685dba73252368dae5a17703f",
+  "replacement_sha256": "f1712c556e364247f9dd9c04f3ce0b0054882d2465072f3235f6d78dd76d5bf7",
+  "semantic_sha256": "2a76a5152f0a30f414610ac77247dbb3df110c0017b494181ca907c9884fe716",
   "plays": 68,
   "formations": 5,
-  "nodes": 2264,
+  "nodes": 2700,
   "node_capacity": 3500,
   "formation_count": 50,
-  "play_count": 261,
+  "play_count": 270,
   "misses": [],
   "band_loss": 0.07174,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_tb_defense.2k5book",
-  "pack_sha256": "ff0f8823433ba086bfda5829149b8f7187408837de5aae19b14e2426f1cb74a3"
+  "pack_sha256": "fda8ac7f838e1824160def9b547bd1106817e5fa5da16abab5913c5907b2e439"
  }
 }

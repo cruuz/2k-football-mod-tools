@@ -578,7 +578,7 @@ def classify(key: str, decoded: bytes, pins: Mapping[str, Any]) -> tuple[str, st
     """(helmets state, Guardian state): ('retail' | 'applied' | 'foreign', 'retail' | 'guardian' | 'foreign')."""
     pin = pins["scenes"][key]
     try:
-        d = region_digests(key, decoded)
+        d = region_digests(key, _hair_base(key, decoded))
     except (ModernHelmetsError, ValueError, KeyError, IndexError, struct.error):
         return "foreign", "foreign"
     if d["other"] != pin["other"]:
@@ -589,6 +589,13 @@ def classify(key: str, decoded: bytes, pins: Mapping[str, Any]) -> tuple[str, st
         helmets = {pin["owned_retail"]: "retail", pin["owned_applied"]: "applied"}.get(d["owned"], "foreign")
     guardian = {pin["guardian_retail"]: "retail", pin["guardian_applied"]: "guardian"}.get(d["guardian"], "foreign")
     return helmets, guardian
+
+
+def _hair_base(key: str, decoded: bytes) -> bytes:
+    """b775-hs1: Hair styles grows these two scenes after this owner (new materials, submeshes and vertices inserted
+    and every relocated pointer moved); this owner judges the exact retail-shaped bytes underneath."""
+    from . import nfl2k5_hair_styles as hair
+    return hair.retail_shaped(key, decoded) if key in hair.KEYS else bytes(decoded)
 
 
 def decode_span(key: str, span: bytes) -> bytes:

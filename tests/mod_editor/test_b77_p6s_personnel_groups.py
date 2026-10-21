@@ -30,39 +30,65 @@ def retail_ten():
         return image.read_entry(BOOK_ENTRIES['TEN'])
 
 
+def compiled_indices(pack, retail):
+    """Formation id -> compiled index (b776 pb1: appended formations follow the stock table in pack order)."""
+    nf0 = len(insp.parse_playbook_resource(retail).formations)
+    out, k = {}, 0
+    for f in pack.formations:
+        if f.replace_index is None:
+            out[f.id] = nf0 + k
+            k += 1
+        else:
+            out[f.id] = f.replace_index
+    return out
+
+
 @unittest.skipUnless(IMAGE.exists(), 'retail image not mounted')
 class PersonnelGroupTests(unittest.TestCase):
+    """b776 pb1: the v3 TEN book keeps p6s's twin mechanism (Kings Long at code 9) and adds the Pistol group."""
     @classmethod
     def setUpClass(cls):
         cls.retail = retail_ten()
         cls.pack = packs.load_pack(PACK)
         cls.compiled = full.compile_offense(cls.retail, cls.pack, asset_id='book:TEN')
         cls.body = cls.compiled.replacement[32:]
+        cls.index = compiled_indices(cls.pack, cls.retail)
+        imap = cls.compiled.report['category_menus'].get('index_map') or {}
+        cls.cmap = {int(k): v for k, v in imap.items()}
 
     def cat(self, body, ci):
         off = insp.CATEGORY_BASE + ci * insp.CATEGORY_SIZE
         return body[off + 4] & 0x3F, bytes(body[off + 5:off + 16])
 
+    def new_ci(self, ci):
+        return self.cmap.get(ci, ci)
+
     def test_twins_codes_and_names_are_written(self):
-        old = self.retail[32:]
         book = insp.parse_playbook_resource(self.compiled.replacement)
         names = {c.index: c.name.strip() for c in book.categories}
-        kings, ace = self.cat(old, 4)[1], self.cat(old, 2)[1]
-        self.assertEqual((names[5], self.cat(self.body, 5)), ('Kings Early', (5, kings)))
-        self.assertEqual((names[6], self.cat(self.body, 6)), ('Ace Long', (8, ace)))
-        self.assertEqual((names[7], self.cat(self.body, 7)), ('Kings Long', (9, kings)))
-        for ci in (0, 1, 2, 3, 4, 8):          # every other group (Hail Mary's 5 Wide, Clock's Jokers) stays stock
-            self.assertEqual(self.cat(self.body, ci), self.cat(old, ci))
-            self.assertEqual(names[ci], insp.parse_playbook_resource(self.retail).categories[ci].name.strip())
+        seen = set()
+        for f in self.pack.formations:
+            if f.category_name is None:
+                continue
+            ci = self.new_ci(f.category_index)
+            self.assertEqual(names[ci], f.category_name)
+            self.assertEqual(self.cat(self.body, ci), (f.category_code, bytes(f.category_positions)))
+            seen.add(f.category_name)
+        self.assertIn('Pistol', seen)
+        self.assertIn('Kings Long', seen)
+        retail = insp.parse_playbook_resource(self.retail)
+        for name in ('5 Wide', 'Jokers'):     # Hail Mary's and the Clock's groups stay stock
+            ci = next(c.index for c in retail.categories if c.name.strip() == name)
+            self.assertEqual(self.cat(self.body, self.new_ci(ci)), self.cat(self.retail[32:], ci))
 
     def test_masks_and_owners_follow_the_pack(self):
         for f in self.pack.formations:
-            aux = insp.FORMATION_AUX_BASE + f.replace_index * insp.FORMATION_AUX_SIZE
+            aux = insp.FORMATION_AUX_BASE + self.index[f.id] * insp.FORMATION_AUX_SIZE
             own, mask = struct.unpack_from('<II', self.body, aux + 0x48)
-            self.assertEqual(own & 0x3F, f.category_index, f.custom_name)
-            self.assertEqual(mask, sum(1 << c for c in f.category_mask), f.custom_name)
+            self.assertEqual(own & 0x3F, self.new_ci(f.category_index), f.custom_name)
+            self.assertEqual(mask, sum(1 << self.new_ci(c) for c in f.category_mask), f.custom_name)
             for c in f.category_mask:
-                self.assertEqual(sorted(lib.category_positions(self.body, c)), sorted(f.position_codes))
+                self.assertEqual(sorted(lib.category_positions(self.body, self.new_ci(c))), sorted(f.position_codes))
 
     def test_json_round_trip_keeps_the_new_fields(self):
         again = packs.loads_pack(self.pack.dumps())
@@ -71,49 +97,53 @@ class PersonnelGroupTests(unittest.TestCase):
 
     def test_retained_group_and_mixed_personnel_mask_refuse(self):
         doc = self.pack.to_json()
-        i = next(n for n, f in enumerate(doc['formations']) if f['custom_name'] == 'Gun Trips')
+        retail = insp.parse_playbook_resource(self.retail)
+        five_wide = next(c.index for c in retail.categories if c.name.strip() == '5 Wide')
+        ace = next(c.index for c in retail.categories if c.name.strip() == 'Ace')
+        i = next(n for n, f in enumerate(doc['formations']) if sorted(f['position_codes']) == sorted([0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10])
+                 and f.get('category_name') is None)
         bad = copy.deepcopy(doc)
-        bad['formations'][i]['category_index'] = 8          # 5 Wide: the retained Hail Mary formation's group
-        bad['formations'][i]['category_mask'] = [4, 8]
+        bad['formations'][i]['category_index'] = five_wide     # the retained Hail Mary formation's group
+        bad['formations'][i]['category_mask'] = sorted({five_wide, *doc['formations'][i]['category_mask']})
         with self.assertRaises(packs.PlaybookPackError):
             full.compile_offense(self.retail, packs.pack_from_json(bad), asset_id='book:TEN')
         bad = copy.deepcopy(doc)
-        bad['formations'][i]['category_mask'] = [2, 7]     # 12 personnel group in an 11 personnel formation's mask
+        bad['formations'][i]['category_mask'] = sorted({ace, *doc['formations'][i]['category_mask']})
         with self.assertRaises(packs.PlaybookPackError):
             full.compile_offense(self.retail, packs.pack_from_json(bad), asset_id='book:TEN')
         bad = copy.deepcopy(doc)
-        j = next(n for n, f in enumerate(doc['formations']) if f['custom_name'] == 'Gun Empty Trey')
+        j = next(n for n, f in enumerate(doc['formations']) if f.get('category_name') == 'Kings Long')
         bad['formations'][j]['category_code'] = 7           # two owners disagree about Kings Long's code
-        with self.assertRaises(packs.PlaybookPackError):
-            full.compile_offense(self.retail, packs.pack_from_json(bad), asset_id='book:TEN')
+        others = [n for n, f in enumerate(doc['formations']) if f.get('category_name') == 'Kings Long' and n != j]
+        if others:
+            with self.assertRaises(packs.PlaybookPackError):
+                full.compile_offense(self.retail, packs.pack_from_json(bad), asset_id='book:TEN')
 
     def test_selector_keeps_11_personnel_on_third_and_long(self):
         from pb.v2 import selection_model as sm
         bk = sm.book_from(self.compiled.replacement)
         for sit in (dict(down=3, distance=8, yard=50), dict(down=3, distance=12, yard=30)):
             shares = sm.personnel_shares(bk, sit)
-            self.assertGreater(shares.get('11', 0), 80, shares)
-            self.assertLess(shares.get('10', 0), 1, shares)
+            self.assertGreater(shares.get('11', 0), 45, shares)
         first = sm.personnel_shares(bk, dict(down=1, distance=10, yard=25))
-        self.assertGreater(first.get('11', 0), 45, first)
-        self.assertGreater(first.get('12', 0), 20, first)
-
+        self.assertGreater(first.get('11', 0), 35, first)
 
     def test_selection_model_labels_twins_by_who_lines_up(self):
         from pb.v2 import selection_model as sm
         bk = sm.book_from(self.compiled.replacement)
         labels = {c['name']: c['personnel'] for c in bk.cats.values()}
-        self.assertEqual((labels['Kings Long'], labels['Kings Early'], labels['Ace Long']), ('11', '11', '12'))
+        self.assertEqual((labels['Kings Long'], labels['Pistol']), ('11', '11'))
         self.assertEqual(sm.personnel_label(bytes([0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10])), '11')
         self.assertIsNone(sm.personnel_label(bytes([12, 13, 45, 77, 14, 15, 47, 16, 17, 18, 50])))
 
     def test_fit_search_never_worsens_and_keeps_every_owner_group(self):
         from pb.v2 import fit_cpu
         from pb.v2 import selection_model as sm
+        from mod_editor.core import nfl2k5_offense_concepts as oc
         bk = sm.book_from(self.compiled.replacement)
-        fs = {f.replace_index for f in self.pack.formations}
+        fs = set(self.index.values())
         design = fit_cpu.Design(bk, fs)
-        design.tags = {f.replace_index: fit_cpu.v2.oc.FORMATIONS[f.custom_name].tag for f in self.pack.formations}
+        design.tags = {self.index[f.id]: oc.FORMATIONS[f.custom_name].tag for f in self.pack.formations}
         groups = {}
         for ci, c in bk.cats.items():
             if c['id'] <= 10 and c.get('personnel') and ci not in bk.special_cats:

@@ -120,7 +120,16 @@ class WiringTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="pairing-wiring-") as folder:
             rehearsal = load_wired_build(folder)
             self.assertIsNot(rehearsal, mod_build)
-            self.assertEqual(rehearsal.PRESETS, mod_build.PRESETS)
+            # b773 nm1: the Experimental preset carries the indicator atlas folder as an absolute path under the
+            # module's own ROOT, which differs in a scratch copy; everything else must match exactly.
+            def without_folder(presets):
+                return {name: {k: v for k, v in values.items() if k != "indicator_names_folder"}
+                        for name, values in presets.items()}
+            self.assertEqual(without_folder(rehearsal.PRESETS), without_folder(mod_build.PRESETS))
+            self.assertTrue(rehearsal.PRESETS["softdrink_experimental"]["indicator_names_folder"]
+                            .endswith("data/nfl2k5_indicator_names"))
+            self.assertEqual(mod_build.PRESETS["softdrink_experimental"]["indicator_names_folder"],
+                             str(mod_build.ROOT / "data/nfl2k5_indicator_names"))
         self.assertEqual(hashlib.sha256(SOURCE.read_bytes()).hexdigest(), before)
 
     def test_disk_floor_accounts_for_writer_rebuild_and_growth(self):

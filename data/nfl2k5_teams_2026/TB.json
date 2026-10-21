@@ -91,7 +91,15 @@
        160.5,
        91.938
       ],
-      "width": 49.5
+      "width": 49.5,
+      "exclude_boxes": [
+       [
+        155,
+        82,
+        169,
+        89
+       ]
+      ]
      }
     ]
    },
@@ -244,7 +252,15 @@
        162.5,
        90.0
       ],
-      "width": 45.5
+      "width": 45.5,
+      "exclude_boxes": [
+       [
+        157,
+        82,
+        168,
+        89
+       ]
+      ]
      }
     ]
    },
@@ -997,5 +1013,6 @@
  },
  "u2d_b77": {
   "both": "pants stripe 12 to 7 px total: club 2026 photos (week 1 at CIN pewter pants, week 2 vs CLE white pants) show a thin black-red-black seam stripe, about 0.05 of the leg width in the oblique view (v0.5 0.2). Away kit (white jersey, pewter pants, BUCCANEERS wordmark 0.6 number heights wide) otherwise matches week 1 photos. No red-jersey game has been played yet in 2026 (weeks 2 to 4 at home were white), so the red home kit is left as in v0.5."
- }
+ },
+ "ov1_b773": "The imported chest wordmark includes a fragment of its old NFL shield. Exclude only that fragment in atlas coordinates; the separately placed collar shield and the wordmark letters retain their positions."
 }

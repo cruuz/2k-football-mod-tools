@@ -335,7 +335,16 @@ class AcceleratedClockWriterTests(unittest.TestCase):
 
     def test_malformed_allocator_compression_reports_foreign_and_refuses(self):
         directory_va = XbeImage(self.patched).va_for_offset(space.SCALE_DIRECTORY + 76)
-        damaged = repin_edit(self.patched, directory_va, b'\0\0')
+        # b773 sp2/ro1/tr1: the section header geometry now depends on the decoded directory requests, so the
+        # shared repin helper (which validates the scale structure first) refuses this damage by itself. Reseal the
+        # section digests directly to keep the corruption otherwise valid.
+        damaged = bytearray(self.patched)
+        offset = XbeImage(self.patched).offset(directory_va, 2)
+        damaged[offset:offset + 2] = b'\0\0'
+        for section in XbeImage(bytes(damaged)).sections:
+            damaged[section.header + 36:section.header + 56] = space._digest(
+                bytes(damaged[section.raw:section.raw + section.raw_size]))
+        damaged = bytes(damaged)
         self.assertEqual(clock.status(damaged), 'foreign')
         with self.assertRaises(ValueError):
             clock.apply(damaged)
