@@ -82,6 +82,9 @@ class Recorder:
                             and storage.state(after) == "applied")
             allow_append |= (owner in (space.OWNER, "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
                              and space.status(before) == "retail" and space.status(after) == "applied")
+            # b778-xs1: a late owner appended to a sealed image may grow the v4 pool (the last section, end of file).
+            allow_append |= (space.is_scaleout(after) and space.scale_version(after) == 4
+                             and space.status(before) == "applied" and space.status(after) == "applied")
             if owner == 'nfl2k5_music_metadata':
                 from . import nfl2k5_music_metadata as music
                 allow_append |= music.status(before) == 'retail' and music.status(after) == 'applied'

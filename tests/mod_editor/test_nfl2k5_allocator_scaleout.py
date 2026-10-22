@@ -76,12 +76,20 @@ class PlannerTests(unittest.TestCase):
         # Match the live union exactly so a stale name cannot mask capacity.
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
+        # b778-xs1: what the v3 run cannot hold whole now lands whole in the v4 pool (it used to refuse).
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
-            space.plan([('owner', kind, capacity, 4096)])
+            self.assertEqual(space.plan([('owner', kind, capacity, 4096)])['version'], 3)
+            with self.subTest(kind=kind):
+                report = space.plan([('owner', kind, capacity + 1, 4096)])
+                self.assertEqual(report['version'], 4)
+                row = next(a for a in report['allocations'] if a['owner'] == 'owner')
+                self.assertEqual((row['va'], row['size']), (space.POOL_VA + space.PAGE, capacity + 1))
+            with self.subTest(kind=kind):
+                report = space.plan([('alpha', kind, 1, 1), ('beta', kind, capacity - 1, 4096)])
+                beta = next(a for a in report['allocations'] if a['owner'] == 'beta')
+                self.assertEqual(beta['va'], space.POOL_VA + space.PAGE)
             with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, 'capacity'):
-                space.plan([('owner', kind, capacity + 1, 4096)])
-            with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, 'capacity'):
-                space.plan([('alpha', kind, 1, 1), ('beta', kind, capacity - 1, 4096)])
+                space.plan([('owner', kind, space.MAX_REQUEST_BYTES + 1, 4096)])
         for request in [('a', 'code', True, 1), ('a', 'data', 1, 3), ('a', 'read_only', -1, 1),
                         ('a', 'rw', 1, 1), (space.DIRECTORY_OWNER, 'read_only', 1, 1)]:
             with self.assertRaises(ValueError):
@@ -89,7 +97,7 @@ class PlannerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             space.plan([('owner', 'code', 1, 1)] * 2)
         with self.assertRaisesRegex(ValueError, 'count'):
-            space.plan([(f'owner_{i}', 'code', 1, 1) for i in range(97)])
+            space.plan([(f'owner_{i}', 'code', 1, 1) for i in range(space.MAX_REQUESTS)])
 
     def test_directory_capacity_does_not_depend_on_content_hash_entropy(self):
         requests = [("owner_" + hashlib.sha256(str(i).encode()).hexdigest()[:58], "code", 1, 1)
@@ -130,9 +138,14 @@ class PlannerTests(unittest.TestCase):
             self.assertEqual(len(block), space.PAGE)
             self.assertEqual(block[-512:], b'\xcc'*512)
         with patch.object(space.zlib, 'compress', return_value=b'x'*3509):
-            with self.assertRaisesRegex(ValueError, 'directory capacity'):
-                space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            # b778-xs1: a list the v3 page cannot hold moves to the v4 pool's document page
+            block = space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            self.assertEqual((len(block), block[:8]), (space.PAGE, space.POOL_BLOCK_MAGIC))
+            self.assertEqual(block[-512:], b'\xcc'*512)
             self.assertEqual(len(space._scale_directory([], seals)), space.PAGE)
+        with patch.object(space.zlib, 'compress', return_value=b'x'*(space.PAGE - 11)):
+            with self.assertRaisesRegex(ValueError, 'document capacity'):
+                space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
 
     def test_cli_text_json_and_refusal_without_build_or_output(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -146,7 +159,8 @@ class PlannerTests(unittest.TestCase):
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertEqual(len(json.loads(run.stdout)['pages']), 52)
-            path.write_text(json.dumps([['owner', 'data', 81921, 1]]), encoding='utf-8')
+            # b778-xs1: 81,921 RW bytes now land in the v4 pool; one request above MAX_REQUEST_BYTES still refuses.
+            path.write_text(json.dumps([['owner', 'data', space.MAX_REQUEST_BYTES + 1, 1]]), encoding='utf-8')
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 2)
             self.assertIn('capacity', run.stderr)

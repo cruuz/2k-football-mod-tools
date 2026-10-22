@@ -11,6 +11,14 @@ parts of the allocator directory page, using at most 2992 bytes. The remaining m
 prefix has a strict size limit; inactive slots stay zero and allocator-owned.
 The existing read-only section becomes executable, never writable. Old owner
 names retain their original permissions, bytes and allocations.
+
+Scale-out v4 (b778-xs1, "SP04"): when a request set no longer fits the three v3
+runs or the v3 directory page, ONE more preloaded writable+executable section, the
+pool, follows the v3 image (VA 0x150B000, end of file). Every v3 owner keeps its
+address; only what the v3 runs cannot hold goes to the pool, whole, in placement
+order, after a directory document page. Appending a late owner grows the pool a
+page at a time and moves nothing. v3 images stay valid and are still produced for
+sets that fit them. See the constants block above SCALE4_TAG.
 """
 from __future__ import annotations
 
@@ -148,13 +156,14 @@ EXTRA_SECTION_OWNERS = ("nfl2k5_music_metadata", "nfl2k5_my_career_home")
 
 
 def has_home_section(payload):
-    return (is_scaleout(payload) and struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1
+    return (is_scaleout(payload) and struct.unpack_from("<I", payload, 0x11C)[0] == scale_base_count(payload) + 1
             and payload[FILE_SIZE:FILE_SIZE + 8] == HOME_SECTION_MAGIC)
 
 
 def has_music(payload):
     if is_scaleout(payload):
-        return struct.unpack_from("<I", payload, 0x11C)[0] == SCALE_COUNT + 1 and not has_home_section(payload)
+        return (struct.unpack_from("<I", payload, 0x11C)[0] == scale_base_count(payload) + 1
+                and not has_home_section(payload))
     count = struct.unpack_from("<I", payload, 0x11C)[0]
     return count in (COUNT + 3, COUNT + 4) and any(
         struct.unpack_from("<I", payload, TABLE + i * 56 + 4)[0] == DATA_VA + PAGE
@@ -522,11 +531,15 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     added = [row for row in after if row not in before and row["owner"] != DIRECTORY_OWNER]
     _require(added and all(row["owner"] in LATE_OWNERS for row in added), "unexpected allocation change")
     buf = bytearray(payload)
+    # b778-xs1: a late owner that no v3 run holds is appended to the pool, growing it (and converting a v3 image to
+    # v4) without moving any byte that is already placed.
+    buf.extend(bytes(max(0, SCALE3_FILE_SIZE + _pool_size(wanted) - len(buf))))
     for row in added:
         content = buf[row["raw"]:row["raw"] + row["size"]]
-        pad = b"\xcc" if row["kind"] == "code" and row["owner"] not in DIRECTORY_CODE_OWNERS else b"\0"
+        pooled = row["va"] >= POOL_VA
+        pad = b"\xcc" if row["kind"] == "code" and row["owner"] not in DIRECTORY_CODE_OWNERS and not pooled else b"\0"
         _require(content == pad * row["size"], "the new owner's span is not unreserved padding")
-        if row["owner"] in DIRECTORY_CODE_OWNERS and row["kind"] == "code":
+        if row["kind"] == "code" and (row["owner"] in DIRECTORY_CODE_OWNERS or pooled):
             buf[row["raw"]:row["raw"] + row["size"]] = b"\xcc" * row["size"]
     _seal_scaleout(buf, wanted)
     result = bytes(buf)
@@ -632,9 +645,32 @@ SCALE_COUNT = COUNT + 3 + len(SCALE_RUNS)
 SCALE_HEADER_END = 0xA10
 SCALE_NAMES = DIRECTORY + 64
 SCALE_NAMES_END = SCALE_NAMES + (SCALE_COUNT + 1 - COUNT) * 12
-SCALE_FILE_SIZE = EXT_FILE_SIZE + sum(n * PAGE for _, _, n in SCALE_RUNS)
+SCALE3_FILE_SIZE = EXT_FILE_SIZE + sum(n * PAGE for _, _, n in SCALE_RUNS)
 SCALE_IMAGE_SIZE = max(va + n * PAGE for _, va, n in SCALE_RUNS) - 0x10000
-SCALE_DIRECTORY = SCALE_FILE_SIZE - 5 * PAGE
+SCALE_DIRECTORY = SCALE3_FILE_SIZE - 5 * PAGE
+# b778-xs1: scale-out v4 ("SP04"), the second scale-out. The v3 runs above are full (16 RX bytes, 0 RW, 16 RO in the
+# complete union), the v3 directory page had 19 compressed bytes left and the request list 1 slot. The header page has
+# room for exactly one more section descriptor (index 7 at 0x9C8, the last whole descriptor before the live header
+# caves at 0xA10), so v4 adds ONE section: the growable pool, preloaded writable+executable (flags 0x07, like retail
+# .data and Career Home's section), at the first page above the v3 image (0x150B000) and at the end of the file.
+# * Every v3 allocation keeps its VA and raw offset: the pool is only used for what no longer fits the v3 runs
+#   (a whole owner, never split), and late owners still go first-fit into the v3 runs before the pool.
+# * The pool's first page holds the allocation directory document (the v3 page keeps its seals and directory code
+#   slots), so the request list is bounded by MAX_REQUESTS, not by 1,104 bytes.
+# * The pool grows a page at a time as owners are appended (extend_scaleout): the section is last in VA and in the
+#   file, so growing it moves nothing. Its resident cost is exactly its pages (owners + one directory page).
+# * The pool takes descriptor index 6 and the v3 name slot 6 (".AS0006"); the optional music/Career Home section
+#   moves to index 7 with its name and page counters in the free 12 bytes after the header directory digest (0xDD4).
+# * A request set that fits v3 still produces exactly the v3 bytes; a v4 image always uses its pool (canonical).
+SCALE4_TAG = EXT_MAGIC + b"SP04"
+POOL_VA = SCALE_IMAGE_SIZE + 0x10000      # 0x150B000, the end of the v3 read-only run
+POOL_RAW = SCALE3_FILE_SIZE
+POOL_FLAGS = 0x07
+POOL_DOC = PAGE                           # the directory document page at the start of the pool
+MAX_POOL_PAGES = 1024                     # 4 MiB of address space; resident cost is only the pages in use
+POOL_INDEX = SCALE_COUNT - COUNT          # descriptor/name slot 6
+EXTRA4_NAME = DIRECTORY + 52              # 0xDD4: 8-byte name + two 16-bit page counters of the index-7 extra section
+SCALE_FILE_SIZE = POOL_RAW + MAX_POOL_PAGES * PAGE   # upper bound of any scale-out image (bounded reads)
 SCALE_DIRECTORY_VA = SCALE_RUNS[-1][1]
 DEBUG_START, DEBUG_END = LIB_END, 0xA10
 DEBUG_COPY = SCALE_NAMES_END
@@ -658,7 +694,7 @@ DIRECTORY_CODE_REQUESTS = (
     ("nfl2k5_team_ratings_spill", "read_only", 464, 16),
 )
 DIRECTORY_CODE_OWNERS = tuple(r[0] for r in DIRECTORY_CODE_REQUESTS)
-MAX_REQUESTS = 96
+MAX_REQUESTS = 320  # b778-xs1: v3 directories still hold what fits their page; larger sets use the v4 pool page
 MAX_REQUEST_BYTES = 96 * PAGE
 # M3 keeps the original MyCareer RW block and explicitly requests the final
 # scale-out RW page. Its code moves behind the old packing, leaving every
@@ -767,18 +803,30 @@ def dormant_union():
 
 
 def is_scaleout(payload):
-    return len(payload) >= DIRECTORY + 12 and payload[DIRECTORY:DIRECTORY + 12] == SCALE_TAG
+    return len(payload) >= DIRECTORY + 12 and payload[DIRECTORY:DIRECTORY + 12] in (SCALE_TAG, SCALE4_TAG)
+
+
+def scale_version(payload):
+    """3 for a v3 scale-out image, 4 for a v4 (pool) image; recognition only, validation is separate."""
+    _require(is_scaleout(payload), "not a scale-out image")
+    return 4 if payload[DIRECTORY:DIRECTORY + 12] == SCALE4_TAG else 3
+
+
+def scale_base_count(payload):
+    """Section count of a scale-out image without its optional music/Career Home section."""
+    return SCALE_COUNT + (1 if scale_version(payload) == 4 else 0)
 
 
 def accepted_file_sizes():
     """Bounded pre-read policy; recognition still validates every byte/descriptor."""
-    return (FILE_SIZE, FILE_SIZE + 0x10000, EXT_FILE_SIZE, SCALE_FILE_SIZE)
+    return (FILE_SIZE, FILE_SIZE + 0x10000, EXT_FILE_SIZE, SCALE3_FILE_SIZE,
+            *(POOL_RAW + pages * PAGE for pages in range(1, MAX_POOL_PAGES + 1)))
 
 
 def _requests(requests):
     out = []
     for request in requests:
-        _require(len(out) < MAX_REQUESTS, "allocation request count exceeds 96")
+        _require(len(out) < MAX_REQUESTS, f"allocation request count exceeds {MAX_REQUESTS}")
         _require(isinstance(request, (tuple, list)) and len(request) == 4,
                  "request must be (owner, kind, size, align)")
         owner, kind, size, align = request
@@ -868,8 +916,32 @@ def _scale_regions(requests=()):
                            flags={"code": 0x36, "data": 3, "read_only": 0x32}[kind]))
         raw += pages * PAGE
     if _directory_code_size(requests):
-        result[-1]["flags"] = 0x36  # read-only executable, never writable
+        result[5]["flags"] = 0x36  # read-only executable, never writable
+    if requests:
+        size = _pool_size(requests)
+        if size:
+            result.append(dict(kind="pool", va=POOL_VA, raw=POOL_RAW, size=size, flags=POOL_FLAGS))
     return result
+
+
+def _pool_rows(rows):
+    return [r for r in rows if r["va"] >= POOL_VA]
+
+
+def _v3_directory_fits(requests):
+    raw = json.dumps(dict(version=3, requests=_requests(requests)), sort_keys=True, separators=(",", ":")).encode("ascii")
+    return len(raw) <= 32768 and 76 + len(zlib.compress(raw, level=9)) <= _directory_budget(requests)
+
+
+def _pool_size(requests):
+    """0 for a request set the v3 runs and v3 directory page hold (a v3 image), else the pool's bytes (v4)."""
+    rows = _pool_rows(_scale_allocations(requests))
+    if not rows:
+        return 0
+    end = max(r["va"] + r["size"] for r in rows)
+    size = (end - POOL_VA + PAGE - 1) & -PAGE
+    _require(size <= MAX_POOL_PAGES * PAGE, f"the scale-out pool would exceed {MAX_POOL_PAGES} pages")
+    return size
 
 
 def _scale_allocations(requests):
@@ -905,6 +977,15 @@ def _scale_allocations(requests):
     if extra:
         regions = [dict(r, size=r["size"] - PAGE) if r["kind"] == "data" else r for r in regions]
     cursors = {r["va"]: PAGE if r["kind"] == "read_only" else 0 for r in regions}
+    pool = [POOL_DOC]  # b778-xs1: the v4 pool cursor (after its directory page), shared by every kind
+
+    def to_pool(owner, kind, size, align):
+        at = (pool[0] + align - 1) & -align
+        _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
+        out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                        va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
+        pool[0] = at + size
+
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:
             continue
@@ -915,6 +996,8 @@ def _scale_allocations(requests):
             at = (cursors[r["va"]] + align - 1) & -align
             if at >= r["size"]:
                 continue
+            if owner_offset == 0 and at + size > r["size"]:
+                continue  # b778-xs1: an owner the v3 run cannot hold whole goes whole to the pool (v3 refused it)
             take = min(remaining, r["size"] - at)
             out.append(dict(owner=owner, kind=kind, size=take, align=align,
                             va=r["va"] + at, raw=r["raw"] + at, owner_offset=owner_offset))
@@ -923,7 +1006,9 @@ def _scale_allocations(requests):
             owner_offset += take
             if not remaining:
                 break
-        _require(not remaining, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+        if remaining:
+            _require(remaining == size, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+            to_pool(owner, kind, size, align)
     if promoted:
         # The old footprint participates in packing but is not an allocation.
         # Old directories still decode with the unmodified 8192-byte request.
@@ -963,7 +1048,7 @@ def _scale_allocations(requests):
                 cursors[r["va"]] = at + size
                 break
         else:
-            _require(False, f"{kind} page capacity exceeded for {owner}; no unreserved page may be used")
+            to_pool(owner, kind, size, align)  # b778-xs1: after every earlier owner, so nothing moves
     # b77-i1: the tail owners' code sits at the top of the reserved legacy RX pages, top-down in TAIL_OWNERS order. The
     # place depends only on the region end, so adding or removing any other owner (the venue table, a late owner) moves
     # none of them, and adding them moves nobody; the venue table below stays under them.
@@ -1014,6 +1099,10 @@ def _scale_allocations(requests):
     directory_requests = [r for r in original_requests if r[0] in DIRECTORY_CODE_OWNERS]
     out.extend(_directory_metadata_rows(directory_requests))
     out.extend(_directory_code_rows(directory_requests))
+    if pool[0] > POOL_DOC or not _v3_directory_fits(original_requests):
+        # b778-xs1: a v4 image's directory document page, the first page of the pool.
+        out.append(dict(owner=DIRECTORY_OWNER, kind="read_only", size=POOL_DOC, align=PAGE,
+                        va=POOL_VA, raw=POOL_RAW, owner_offset=PAGE))
     # Check full reservations, including unused code padding and zero-filled
     # runtime state. Checking emitted bytes alone cannot protect M3's buffers.
     # Gap and tail placement must obey the same rule as sequential placement.
@@ -1055,10 +1144,26 @@ def _debug(payload, *, relocated):
                  "foreign debug metadata pointer")
 
 
-def _scale_header_directory(block, payload):
-    header = SCALE_TAG + struct.pack("<II", SCALE_DIRECTORY_VA, SCALE_DIRECTORY) + hashlib.sha256(block).digest()
+_EXTRA_NAMES = {"music": b".ASTRAr\0", "home": b".AS0007\0"}
+_UNSET = object()
+
+
+def _extra_kind(payload):
+    """The optional extra section of a scale-out image: "music", "home" or None."""
+    if not is_scaleout(payload):
+        return None
+    return "home" if has_home_section(payload) else "music" if has_music(payload) else None
+
+
+def _scale_header_directory(block, payload, extra=_UNSET):
+    v4 = block[:8] == POOL_BLOCK_MAGIC
+    extra = _extra_kind(payload) if extra is _UNSET else extra
+    tag = SCALE4_TAG if v4 else SCALE_TAG
+    header = tag + struct.pack("<II", SCALE_DIRECTORY_VA, SCALE_DIRECTORY) + hashlib.sha256(block).digest()
     result = bytearray(header.ljust(LIB_COPY - DIRECTORY, b"\0"))
-    result[SCALE_NAMES - DIRECTORY:SCALE_NAMES_END - DIRECTORY] = _scale_names(music=has_music(payload))
+    result[SCALE_NAMES - DIRECTORY:SCALE_NAMES_END - DIRECTORY] = _scale_names(music=extra == "music" and not v4)
+    if v4 and extra:
+        result[EXTRA4_NAME - DIRECTORY:EXTRA4_NAME - DIRECTORY + 12] = _EXTRA_NAMES[extra] + bytes(4)
     result[DEBUG_COPY - DIRECTORY:DEBUG_COPY - DIRECTORY + DEBUG_END - DEBUG_START] = payload[DEBUG_COPY:DEBUG_COPY + DEBUG_END - DEBUG_START]
     result[HEADER_LOGO_OFFSET - DIRECTORY:HEADER_LOGO_OFFSET - DIRECTORY + HEADER_LOGO[1]] = logo.BLANK_LOGO
     return result
@@ -1071,12 +1176,31 @@ def _scale_seals(payload, requests=None):
     size = PAGE-_directory_budget(requests)
     if size:
         code += payload[SCALE_DIRECTORY+PAGE-size:SCALE_DIRECTORY+PAGE]
-    ro = payload[SCALE_DIRECTORY + PAGE:SCALE_FILE_SIZE]
-    return {"code_sha256": _sha(code), "read_only_sha256": _sha(ro)}
+    ro = payload[SCALE_DIRECTORY + PAGE:SCALE3_FILE_SIZE]
+    seals = {"code_sha256": _sha(code), "read_only_sha256": _sha(ro)}
+    pool = _pool_size(requests)
+    if pool:
+        seals["pool_sha256"] = _sha(payload[POOL_RAW + POOL_DOC:POOL_RAW + pool])
+    return seals
+
+
+POOL_BLOCK_MAGIC = b"XSDIR4\0\0"
+POOL_DOC_MAGIC = b"XSDOC4\0\0"
+
+
+def _pool_document(requests):
+    """b778-xs1: the v4 directory document (the complete request list), the pool's first page."""
+    raw = json.dumps(dict(version=4, requests=_requests(requests)), sort_keys=True, separators=(",", ":")).encode("ascii")
+    _require(len(raw) <= 65536, "allocation directory document capacity exceeded")
+    compressed = zlib.compress(raw, level=9)
+    doc = POOL_DOC_MAGIC + struct.pack("<I", len(compressed)) + compressed
+    _require(len(doc) <= POOL_DOC, "allocation directory document capacity exceeded")
+    return doc.ljust(POOL_DOC, b"\0")
 
 
 def _scale_directory(requests, seals, directory_code=None):
     requests = _requests(requests)
+    pool = _pool_size(requests)
     budget = _directory_budget(requests)
     code_size = PAGE-budget
     if directory_code is None:
@@ -1090,6 +1214,13 @@ def _scale_directory(requests, seals, directory_code=None):
         at = row["raw"]-SCALE_DIRECTORY-budget
         _require(directory_code[at:at+row["size"]] == bytes(row["size"]),
                  "foreign inactive directory slot")
+    if pool:
+        # v4: the page keeps the seals (plus the pool's) and its directory code slots; the document is in the pool.
+        _pool_document(requests)
+        block = (POOL_BLOCK_MAGIC + struct.pack("<I", pool // PAGE) + bytes.fromhex(seals["code_sha256"])
+                 + bytes.fromhex(seals["read_only_sha256"]) + bytes.fromhex(seals.get("pool_sha256", "0" * 64)))
+        _require(len(block) <= PAGE-code_size, "allocation directory capacity exceeded")
+        return block.ljust(PAGE-code_size, b"\0") + directory_code
     raw = json.dumps(dict(version=3, requests=_requests(requests)),
                      sort_keys=True, separators=(",", ":")).encode("ascii")
     _require(len(raw) <= 32768, "allocation directory document capacity exceeded")
@@ -1103,11 +1234,28 @@ def _scale_directory(requests, seals, directory_code=None):
 
 
 def _seal_scaleout(buf, requests):
+    extra = _extra_kind(buf)
+    pool = _pool_size(requests)
+    if pool:
+        # b778-xs1: v4. Grow the file to the pool (never shrink it), write the document page, and on a v3 -> v4
+        # conversion move an installed music/Career Home descriptor from index 6 to index 7 (its bytes and digest
+        # unchanged; only its name/counter pointers now name the 0xDD4 slot).
+        _require(len(buf) <= POOL_RAW + pool, "the scale-out pool cannot shrink")
+        buf.extend(bytes(POOL_RAW + pool - len(buf)))
+        buf[POOL_RAW:POOL_RAW + POOL_DOC] = _pool_document(requests)
+        if extra and is_scaleout(buf) and scale_version(buf) == 3:
+            old, new = META_START + POOL_INDEX * 56, META_START + (POOL_INDEX + 1) * 56
+            descriptor = bytearray(buf[old:old + 56])
+            struct.pack_into("<I", descriptor, 20, 0x10000 + EXTRA4_NAME)
+            struct.pack_into("<II", descriptor, 28, 0x10000 + EXTRA4_NAME + 8, 0x10000 + EXTRA4_NAME + 10)
+            buf[new:new + 56] = descriptor
+        struct.pack_into("<I", buf, 0x10C, POOL_VA + pool - 0x10000)
+        struct.pack_into("<I", buf, 0x11C, SCALE_COUNT + 1 + (1 if extra else 0))
     size = PAGE-_directory_budget(requests)
     code = bytes(buf[SCALE_DIRECTORY+PAGE-size:SCALE_DIRECTORY+PAGE]) if size else b""
     block = _scale_directory(requests, _scale_seals(buf, requests), code)
     buf[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE] = block
-    buf[DIRECTORY:LIB_COPY] = _scale_header_directory(block, buf)
+    buf[DIRECTORY:LIB_COPY] = _scale_header_directory(block, buf, extra)
     for index, region in enumerate(_scale_regions(requests)):
         raw = region["raw"]
         at = META_START + index * 56
@@ -1116,6 +1264,19 @@ def _seal_scaleout(buf, requests):
 
 def _scale_directory_requests(payload):
     block = payload[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE]
+    if block[:8] == POOL_BLOCK_MAGIC:
+        _require(len(payload) >= POOL_RAW + POOL_DOC, "foreign scale-out pool extent")
+        doc = payload[POOL_RAW:POOL_RAW + POOL_DOC]
+        _require(doc[:8] == POOL_DOC_MAGIC, "foreign scale-out pool directory")
+        size = struct.unpack_from("<I", doc, 8)[0]
+        _require(0 < size <= POOL_DOC - 12, "foreign pool directory size")
+        decoder = zlib.decompressobj()
+        raw = decoder.decompress(doc[12:12 + size], 65537)
+        _require(len(raw) <= 65536 and decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail,
+                 "foreign compressed pool directory")
+        document = json.loads(raw)
+        _require(isinstance(document, dict) and document.get("version") == 4, "foreign pool directory document")
+        return _requests(document["requests"])
     _require(block[:8] == b"XSDIR3\0\0", "foreign scale-out allocation directory")
     size = struct.unpack_from("<I", block, 8)[0]
     _require(0 < size <= PAGE - 76, "foreign allocation directory size")
@@ -1134,20 +1295,32 @@ def _read_scale_directory(payload):
     size = PAGE-_directory_budget(requests)
     code = block[PAGE-size:] if size else b""
     _require(block == _scale_directory(requests, _scale_seals(payload, requests), code), "foreign owner bytes/directory seal")
+    if _pool_size(requests):
+        _require(payload[POOL_RAW:POOL_RAW + POOL_DOC] == _pool_document(requests), "foreign pool directory document")
     _require(payload[DIRECTORY:LIB_COPY] == _scale_header_directory(block, payload), "foreign directory header seal/names/counters")
     return requests
 
 
-def scale_music_slots():
+def scale_music_slots(payload=None):
+    """(descriptor, name, page counters) offsets of the optional music/Career Home section. In a v4 image the pool
+    holds index 6, so the extra section is index 7 with its name and counters at 0xDD4."""
+    if payload is not None and is_scaleout(payload) and scale_version(payload) == 4:
+        return META_START + (POOL_INDEX + 1) * 56, EXTRA4_NAME, EXTRA4_NAME + 8
     index = SCALE_COUNT - COUNT
     return META_START + index * 56, SCALE_NAMES + index * 12, SCALE_NAMES + index * 12 + 8
 
 
 def validate_scale_structure(payload):
-    _require(payload[:4] == b"XBEH" and len(payload) == SCALE_FILE_SIZE, "foreign scale-out XBE extent")
-    _require(struct.unpack_from("<3I", payload, 0x104) == (0x10000, PAGE, SCALE_IMAGE_SIZE), "foreign scale-out image geometry")
+    version = scale_version(payload)
+    _require(payload[:4] == b"XBEH" and len(payload) >= SCALE3_FILE_SIZE, "foreign scale-out XBE extent")
+    pool = _pool_size(_scale_directory_requests(payload))
+    _require((version == 4) == bool(pool), "foreign scale-out version")
+    _require(len(payload) == SCALE3_FILE_SIZE + pool, "foreign scale-out XBE extent")
+    image = POOL_VA + pool - 0x10000 if pool else SCALE_IMAGE_SIZE
+    _require(struct.unpack_from("<3I", payload, 0x104) == (0x10000, PAGE, image), "foreign scale-out image geometry")
     count, table = struct.unpack_from("<II", payload, 0x11C)
-    _require(count in (SCALE_COUNT, SCALE_COUNT + 1) and table == 0x10000 + TABLE, "foreign scale-out section table")
+    base = scale_base_count(payload)
+    _require(count in (base, base + 1) and table == 0x10000 + TABLE, "foreign scale-out section table")
     _geometry(payload, True)
     state = _special_state(payload, True)
     _library(payload, True)
@@ -1155,7 +1328,8 @@ def validate_scale_structure(payload):
     _require(struct.unpack_from("<II", payload, 0x178) == (0x10000 + LIB_COPY + 0x90, 1), "foreign feature library pointer/count")
     _require(_sha(payload[META_COPY:NAMES]) == METADATA_SHA256, "foreign relocated names/counters")
     _require(payload[NAMES:DIRECTORY] == b".ASTRAc\0.ASTRAd\0" + bytes(8), "foreign retired allocator names/counters")
-    _require(payload[SCALE_NAMES:SCALE_NAMES_END] == _scale_names(music=has_music(payload)), "foreign section names/counters")
+    _require(payload[SCALE_NAMES:SCALE_NAMES_END] == _scale_names(music=has_music(payload) and version == 3),
+             "foreign section names/counters")
     requests = _scale_directory_requests(payload)
     for index, region in enumerate(_scale_regions(requests)):
         at = META_START + index * 56
@@ -1175,6 +1349,17 @@ def _validate_scaleout(payload):
         content = payload[raw:raw + size]
         if region["kind"] == "data":
             _require(not any(content), "data pages must be zero initialised")
+        elif region["kind"] == "pool":
+            # b778-xs1: the directory page is checked by _read_scale_directory; data owners are zero, code and
+            # read-only owners are sealed by the pool SHA-256 and the digest, and every byte between owners is zero.
+            mask = bytearray(size)
+            mask[:POOL_DOC] = b"\1" * POOL_DOC
+            for a in _pool_rows(allocations):
+                at = a["raw"] - raw
+                if a["kind"] == "data":
+                    _require(not any(content[at:at + a["size"]]), "pool data owners must be zero initialised")
+                mask[at:at + a["size"]] = b"\1" * a["size"]
+            _require(all(owned or not value for owned, value in zip(mask, content)), "foreign unallocated pool padding")
         else:
             mask = bytearray(size)
             for a in allocations:
@@ -1185,17 +1370,17 @@ def _validate_scaleout(payload):
             _require(all(owned or value == pad for owned, value in zip(mask, content)), "foreign unallocated page padding")
         expected[index * 56:(index + 1) * 56] = _scale_descriptor(index, region, _digest(content))
     from . import nfl2k5_music_storage as music
-    if count == SCALE_COUNT + 1 and has_home_section(payload):
+    if count == scale_base_count(payload) + 1 and has_home_section(payload):
         from . import nfl2k5_my_career_home as home
         block = payload[music.RAW:music.RAW + music.CAPACITY]
         home._block_content(block)
-        header, name, refs = scale_music_slots()
-        expected[header - META_START:header - META_START + 56] = home._descriptor(block)
-    elif count == SCALE_COUNT + 1:
+        header, name, refs = scale_music_slots(payload)
+        expected[header - META_START:header - META_START + 56] = home._descriptor(block, payload)
+    elif count == scale_base_count(payload) + 1:
         block = payload[music.RAW:music.RAW + music.CAPACITY]
         music._block_data(block)
-        header, name, refs = scale_music_slots()
-        expected[header - META_START:header - META_START + 56] = music._descriptor(block, scaleout=True)
+        header, name, refs = scale_music_slots(payload)
+        expected[header - META_START:header - META_START + 56] = music._descriptor(block, scaleout=True, payload=payload)
     else:
         _require(not any(payload[FILE_SIZE:CODE2_RAW]), "foreign reserved music gap")
     _require(payload[META_START:SCALE_HEADER_END] == expected, "foreign scale-out descriptors/names/counters/padding")
@@ -1215,9 +1400,9 @@ def _apply_scaleout(payload, requests):
     _require(struct.unpack_from("<II", payload, 0x178) == (0x10994, 1), "foreign feature library pointer/count")
     allocations = _scale_allocations(requests)
     _scale_directory(requests, dict(code_sha256="0" * 64, read_only_sha256="0" * 64))
-    _require(DEBUG_COPY + DEBUG_END - DEBUG_START <= LIB_COPY and TABLE + (SCALE_COUNT + 1) * 56 <= SCALE_HEADER_END, "section descriptor/name budget exceeded")
+    _require(DEBUG_COPY + DEBUG_END - DEBUG_START <= LIB_COPY and TABLE + (SCALE_COUNT + 2) * 56 <= SCALE_HEADER_END, "section descriptor/name budget exceeded")
     buf = bytearray(payload)
-    buf.extend(bytes(SCALE_FILE_SIZE - len(buf)))
+    buf.extend(bytes(SCALE3_FILE_SIZE + _pool_size(requests) - len(buf)))
     buf[META_COPY:NAMES] = payload[META_START:META_END]
     buf[META_START:SCALE_HEADER_END] = _scale_header_tail()
     for index in range(COUNT):
@@ -1235,7 +1420,7 @@ def _apply_scaleout(payload, requests):
     for region in _scale_regions():
         if region["kind"] == "code":
             buf[region["raw"]:region["raw"] + region["size"]] = b"\xcc" * region["size"]
-    for row in _directory_code_rows(requests):
+    for row in _directory_code_rows(requests) + _pool_rows(allocations):
         if row["kind"] == "code":
             buf[row["raw"]:row["raw"]+row["size"]] = b"\xcc" * row["size"]
     logo_site = next(a for a in allocations if a["owner"] == LOGO_REQUEST[0])
@@ -1304,7 +1489,8 @@ def _capacity(regions, allocations, *, scaleout):
         matching = [r for r in regions if r["kind"] == kind and not r.get("music")]
         capacity = sum(r["size"] for r in matching)
         capacity += directory_code if kind == "code" else -directory_code if kind == "read_only" else 0
-        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] not in EXTRA_SECTION_OWNERS)
+        used = sum(a["size"] for a in allocations if a["kind"] == kind and a["owner"] not in EXTRA_SECTION_OWNERS
+                   and not (scaleout and a["va"] >= POOL_VA))
         free = capacity - used
         # Existing beta-61 tails remain owned, but are not offered to new owners.
         available = 0
@@ -1317,12 +1503,23 @@ def _capacity(regions, allocations, *, scaleout):
                             free_bytes=free, available_bytes=available)
         if directory_code and kind in ("code", "read_only"):
             result[kind]["shared_directory_code_bytes"] = directory_code
+    if scaleout:
+        # b778-xs1: the v4 pool takes code, data and read-only owners alike and grows a page at a time.
+        pool = next((r for r in regions if r["kind"] == "pool"), None)
+        rows = [a for a in allocations if a["va"] >= POOL_VA and a["owner"] != DIRECTORY_OWNER]
+        end = max([a["va"] + a["size"] - POOL_VA for a in rows] or [POOL_DOC])
+        size = pool["size"] if pool else 0
+        result["pool"] = dict(pages=size // PAGE, capacity_bytes=max(0, size - POOL_DOC),
+                              requested_bytes=sum(a["size"] for a in rows),
+                              by_kind={k: sum(a["size"] for a in rows if a["kind"] == k) for k in ("code", "data", "read_only")},
+                              free_bytes=(size - end) if pool else 0, directory_bytes=POOL_DOC if pool else 0,
+                              max_pages=MAX_POOL_PAGES, available_bytes=MAX_POOL_PAGES * PAGE - end)
     return result
 
 
 def _page_map(regions, allocations):
     pages = []
-    indices = {"code": 0, "data": 0, "read_only": 0}
+    indices = {"code": 0, "data": 0, "read_only": 0, "pool": 0}
     for region in regions:
         for offset in range(0, region["size"], PAGE):
             va, raw = region["va"] + offset, region["raw"] + offset
@@ -1351,8 +1548,8 @@ def _scaleout_layout(payload):
                             music=True, home=True))
         allocations.append(dict(owner=home.OWNER, kind="code", va=home.VA, raw=home.RAW, size=home.SIZE,
                                 align=PAGE))
-    return dict(status="applied", version=3, special=special_status, file_size=len(payload),
-                image_size=SCALE_IMAGE_SIZE, headers_size=PAGE, regions=regions, allocations=allocations,
+    return dict(status="applied", version=scale_version(payload), special=special_status, file_size=len(payload),
+                image_size=struct.unpack_from("<I", payload, 0x10C)[0], headers_size=PAGE, regions=regions, allocations=allocations,
                 pages=_page_map(regions, allocations), capacity=_capacity(regions, allocations, scaleout=True))
 
 
@@ -1372,8 +1569,10 @@ def plan(requests=(), *, scaleout=True):
         _scale_directory(normalized, dict(code_sha256="f" * 64, read_only_sha256="e" * 64))
     else:
         _directory(normalized, b"")
-    return dict(version=3 if use_scaleout else 2 if _extended(normalized) else 1,
-                requests=normalized, file_size=SCALE_FILE_SIZE if use_scaleout else EXT_FILE_SIZE if _extended(normalized) else FILE_SIZE,
+    pool = _pool_size(normalized) if use_scaleout else 0
+    return dict(version=(4 if pool else 3) if use_scaleout else 2 if _extended(normalized) else 1,
+                requests=normalized, file_size=SCALE3_FILE_SIZE + pool if use_scaleout else EXT_FILE_SIZE if _extended(normalized) else FILE_SIZE,
+                image_size=(POOL_VA + pool if pool else SCALE_IMAGE_SIZE + 0x10000) - 0x10000 if use_scaleout else None,
                 regions=regions, allocations=allocations, pages=_page_map(regions, allocations),
                 capacity=_capacity(regions, allocations, scaleout=use_scaleout),
                 experimental=True, runtime_witnessed=False)
