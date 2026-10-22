@@ -1528,7 +1528,6 @@
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Doubles Clamp Stack",
-    "Pistol Wing",
     "Singleback Trey",
     "Gun Wing",
     "Gun Tight Y Off",
@@ -2158,7 +2157,6 @@
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Open",
-    "Pistol Wing",
     "Pistol Trey",
     "Gun Wing",
     "Gun Y Off Trio Close"
@@ -2190,7 +2188,6 @@
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Pistol Wing",
-    "Singleback Trey",
     "Gun Tight Y Off",
     "Gun Y Off Trio Close"
    ]
@@ -2278,7 +2275,6 @@
     "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
-    "Singleback Trey",
     "Gun Wing",
     "Gun Tight Y Off"
    ]
@@ -2503,7 +2499,6 @@
    "formations": [
     "Singleback Doubles",
     "Pistol Bunch TE",
-    "Singleback Trey",
     "Gun Wing"
    ]
   },
@@ -2576,7 +2571,6 @@
    "formations": [
     "Empty Trey",
     "Gun Tight Open",
-    "Pistol Wing",
     "Singleback Trey"
    ]
   },

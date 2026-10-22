@@ -1505,7 +1505,6 @@
     "Singleback Doubles",
     "Gun Doubles",
     "Pistol Y Off Trips",
-    "Pistol Trey",
     "Pistol Doubles Y Off",
     "Gun Doubles Tight",
     "Gun Trey"
@@ -2346,7 +2345,6 @@
    "formations": [
     "Gun Bunch X Nasty",
     "Pistol Doubles",
-    "Pistol Trey",
     "Pistol Doubles Y Off",
     "Gun Doubles Tight",
     "Singleback Doubles Tight",
@@ -2742,7 +2740,6 @@
    "lane": null,
    "formations": [
     "Empty Trey",
-    "Pistol Trey",
     "Singleback Doubles Tight",
     "Gun Tight Slots"
    ]

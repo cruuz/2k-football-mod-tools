@@ -2371,7 +2371,6 @@
     "Gun Bunch X Nasty",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
-    "Pistol Wing",
     "Pistol Y Off Trips",
     "Singleback Trey",
     "Singleback Tight Y Off"
@@ -2466,7 +2465,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Tight Open",
-    "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Bunch",
     "Gun Tight Slots",
@@ -2854,7 +2852,6 @@
    "lane": null,
    "formations": [
     "Pistol Doubles",
-    "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Bunch",
     "Singleback Trey"
