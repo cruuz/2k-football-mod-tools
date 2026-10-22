@@ -35,6 +35,8 @@ SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset":
          "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
 # cm1: the clubs whose coach scene carries authored vertex edits (WAS: the bald head; the others: a lean body)
 GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "JAX", "BAL", "CLE", "IND", "PIT"}
+# b778 cf1: every scanned coach (tools/b77/cf1_recipes/<club>.json) ships a head shape in geometry.json
+GEOMETRY |= {p.stem for p in (ROOT / "tools" / "b77" / "cf1_recipes").glob("*.json")}
 # co2: the club whose coach wears another retail body, and the body (cNN) he wears
 MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "26", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
          "MIN": "28", "NYG": "22", "PHI": "18", "PIT": "27", "SEA": "13", "TEN": "15", "TB": "00", "CIN": "36",

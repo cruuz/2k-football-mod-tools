@@ -1,0 +1,9 @@
+{
+ "who": "Liam Coen",
+ "notes": "fair, ruddy skin; short sandy-brown hair receding at the temples; short reddish-blond stubble beard; blue-grey eyes; a broad smile in the official headshot (the mouth is closed here)",
+ "eyes": [120, 136, 150],
+ "mouth": "close",
+ "hair_colour": [104, 80, 62],
+ "hair": {"front": 46.2, "recede": 1.4, "side": 42.2, "back": 34.0, "sideburn": 37.6, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "density": 0.35}]
+}

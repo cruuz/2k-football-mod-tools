@@ -1,0 +1,8 @@
+{
+ "who": "Mike McCarthy",
+ "notes": "fair, ruddy skin; white-grey hair (under the Steelers cap of c27 it shows at the sides and back); light brows; blue eyes; clean-shaven; a smile with teeth in the official headshot (mouth closed here); the headshot is turned about 20 degrees, so his far side comes from the near side mirrored",
+ "eyes": [118, 140, 160],
+ "mouth": "close",
+ "hair_colour": [196, 192, 186],
+ "hair": {"front": 46.4, "recede": 1.2, "side": 43.4, "back": 34.5, "sideburn": 38.8, "edge": 0.35}
+}
