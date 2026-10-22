@@ -148,6 +148,7 @@ from . import nfl2k5_qb_accuracy as qb_accuracy_patch  # noqa: F401  b777-qb3: l
 from . import nfl2k5_hair_styles as hair_styles_patch  # noqa: F401  b775-hs1: its late owner is installed by the hair_styles image step; imported here so the cave manifest recorder observes it
 from . import nfl2k5_play_art_routes as play_art_routes_patch  # noqa: F401  b776-pa2: late owner installed by the play_art_routes step; imported so the cave manifest recorder observes it
 from . import nfl2k5_formation_art_spacing as formation_art_spacing_patch  # noqa: F401  b777-tp1: late owner installed with play_art_routes; imported so the cave manifest recorder observes it
+from . import nfl2k5_star_retention as star_retention_patch  # noqa: F401  b778-fa1: late owner (CPU clubs keep their stars); imported so the cave manifest recorder observes it
 from . import nfl2k5_force_out as force_out_patch  # noqa: F401  b778-fo1: late owner (modern sideline catches); imported so the cave manifest recorder observes it
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch

@@ -45,7 +45,7 @@ def overlaps(pos):
 
 class Wiring(unittest.TestCase):
     def test_last_late_owner_tied_to_play_art(self):
-        self.assertEqual(space.LATE_OWNERS[-2:], (fa.OWNER, "nfl2k5_force_out"))  # b778-fo1 last
+        self.assertEqual(space.LATE_OWNERS[-3:], (fa.OWNER, "nfl2k5_force_out", "nfl2k5_star_retention"))  # b778-fo1 last
         rows = [r for r in mod_build._LATE_OWNER_OPTIONS if r[0] == fa.OWNER]
         self.assertEqual(len(rows), 1)
         self.assertTrue(rows[0][2](mod_build.BuildPlan("a", "b", play_art_routes=True)))
