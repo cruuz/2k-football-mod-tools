@@ -3612,3 +3612,5 @@ tests/mod_editor/test_nfl2k5_broadcast_greens.py
 # i4: reserved-colour-aware helmet palette ladder
 tests/mod_editor/test_2k5_helmet_locked_palette.py
 tests/mod_editor/test_2k5_native_safe_palette_ladder.py
+# b778 sd1: stadium squares (model portals) and the Raymond James fascia clocks
+tests/mod_editor/test_b778_stadium_squares.py

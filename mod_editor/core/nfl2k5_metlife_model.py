@@ -795,6 +795,10 @@ class MetLife:
         """Vomitory openings at every other aisle (aisles fall every 13 m of the row, where the seat texture has
         its stairs): a dark opening standing at the front of ``row`` with a concrete lintel above it."""
         q = self.p["portals"]
+        if not q.get("draw", False):
+            # b778 sd1: the flat dark opening read as a black square in the crowd (Noah's 2026-10-21 stream at
+            # EverBank, also Gillette, AT&T and MetLife), so no model draws it; "draw": True brings it back
+            return
         every = q["every_m"]
         for a, b, sa, sb_ in zip(loop[:-1], loop[1:], secs[:-1], secs[1:]):
             k0, k1 = math.floor(a.s / every), math.floor(b.s / every)
