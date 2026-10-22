@@ -9,10 +9,10 @@
   "notes": "DESIGN: Chris O'Leary (Minter / Notre Dame multiple); 2025 baseline LAC. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "218e9da6e6a0acf0b25507dca973e8a8ae25dbf99d73c3ddcb13432852a587ea",
+  "book_fingerprint": "5bbe39a5fd9aa3cc4c2e9cfe11de02cc6b5bcc6ccb1dfc9d354d03ed4a281f4c",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2380
+  "donor_node_count": 2384
  },
  "budget": {
   "formations": 50,

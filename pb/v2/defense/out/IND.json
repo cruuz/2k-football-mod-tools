@@ -1904,13 +1904,13 @@
  "receipt": {
   "team": "IND",
   "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
-  "offense_pack_sha256": "b155e41a4249461fb8ccec0e309e34000e751bfc54a827cb194e38f6c647898c",
-  "source_fingerprint": "0cffb140cad95cf29054bbd7ddff678dab8b794b9a98bf95516124a32bbaef14",
-  "replacement_sha256": "e8282188c4dc865cc296f74aae66ee931b1c44cec395725c51e15fddd6e735b7",
+  "offense_pack_sha256": "e33b481c74d0535e08317890e29c181c5d77b949062cb4c81c72647c6a6ef833",
+  "source_fingerprint": "d672e4373a71fe9e8888569dd3e96886161140d8b74cfc12a46a251e175e8297",
+  "replacement_sha256": "bfd6f14b9a7762a8c35689d57c9e8de260ebd53bad6f56fcd2828613a6f1d006",
   "semantic_sha256": "1fa9834833c63f78177c81b413bb7f2eca72d9accefb3e2786b21a209dcaaa90",
   "plays": 62,
   "formations": 4,
-  "nodes": 2703,
+  "nodes": 2702,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1919,6 +1919,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_ind_defense.2k5book",
-  "pack_sha256": "a88f190fa02386f50115711e0c4575b412cd0c500151a7d8a0135473ee8945b6"
+  "pack_sha256": "65775fe30e1da3095f8ae19afb743f2ded1faa1974d88f58c9e66ea6d3cc6890"
  }
 }

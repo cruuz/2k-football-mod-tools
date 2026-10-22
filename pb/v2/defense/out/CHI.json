@@ -1952,13 +1952,13 @@
  "receipt": {
   "team": "CHI",
   "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-  "offense_pack_sha256": "85bb5709ebe20614f7fbc724b7f0e21693583e242e5b57837cbf27302e782a1b",
-  "source_fingerprint": "7953c6189465f16b64948a80df37c6699b1fb0bc09246306462246fc1c7941a8",
-  "replacement_sha256": "641a6b9098ca631c76bc71bf12ec8e9729ac6b8f9ab625afa593cf881ae2c3df",
+  "offense_pack_sha256": "8912fe85bd343273b49a5f15b05cbc9d5f8fd8616bb452977240c8bee3099de9",
+  "source_fingerprint": "2f4226d77d6fc272a2fb3fa609850ce0bcb00306550e577c8eb8861d03af0571",
+  "replacement_sha256": "5467304868f5c043794c17b4e01b2a1b75cdda5e7cff733cd961381cff3f0fb0",
   "semantic_sha256": "37af008037be4d8a5b43fd4b35723bb0be17b8d9c6602811afcbca4658218ab2",
   "plays": 64,
   "formations": 4,
-  "nodes": 2799,
+  "nodes": 2795,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1967,6 +1967,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_chi_defense.2k5book",
-  "pack_sha256": "cae1565b93753b66632a661704e0dd4e44f66f91ed954d5b0e69b2b893714c0c"
+  "pack_sha256": "d3d2b5f3d2589d834fb591f0c62e758fd8ab75ac27f805d9f5e63a84e4e6df13"
  }
 }

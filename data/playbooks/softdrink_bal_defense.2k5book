@@ -9,7 +9,7 @@
   "notes": "DESIGN: Anthony Weaver (Ravens multiple under Minter); 2025 baseline MIA. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "d87f8e20632433f00b644e2c2d385fbe5ceb252cea62e4bd64e4c02f871a6c4c",
+  "book_fingerprint": "055b6c63425296d883f054f0c7ef9ea93422948b95408aca16c0830f88d118bc",
   "donor_formation_count": 50,
   "donor_play_count": 270,
   "donor_node_count": 2268

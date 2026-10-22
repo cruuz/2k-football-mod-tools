@@ -2052,9 +2052,9 @@
  "receipt": {
   "team": "KC",
   "offense_pack": "data/playbooks/softdrink_kc_modern.2k5book",
-  "offense_pack_sha256": "04dc27dcddfd879f60b32fc5e3ead829e36af7f73ed553c267bbc2a599cc4718",
-  "source_fingerprint": "902001b47176ab60d46150b7a2a3b91e2ef8f7bee48fb7bd0a196215b94519e5",
-  "replacement_sha256": "60600788e75a31b105e675159c9052f3ef4478f546550078bfd2c42b9895c908",
+  "offense_pack_sha256": "0e127153a441d2e5f934ca1ffe605406a776a78ed7f0e9a3fda12b7b9dd4253d",
+  "source_fingerprint": "58a8516ab607fc151c9318582b554ac8dcf2d7277a86a9ae1ed4e994109c16d0",
+  "replacement_sha256": "9ba3d200822c402e62b4fda91362ca8cef7aa82912170f62f8a502346003869e",
   "semantic_sha256": "8d8a0df19b6856970b1b0b603a2fba5ffb23d9bcb86484bf269dc6adb60e4eed",
   "plays": 64,
   "formations": 5,
@@ -2067,6 +2067,6 @@
   "spy_play": 21,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_kc_defense.2k5book",
-  "pack_sha256": "a8e1436be088f5dbbd6b13f0328fea34818d7d343976a2cf9503ac3a65a7c0c2"
+  "pack_sha256": "7d257ac78f31a0befe8dc7978eb33fb008375c78c3f8084cf71560b89bd5a9c3"
  }
 }

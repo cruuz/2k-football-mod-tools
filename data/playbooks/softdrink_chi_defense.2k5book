@@ -9,10 +9,10 @@
   "notes": "DESIGN: Dennis Allen (Saints multiple man pressure); 2025 baseline CHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "7953c6189465f16b64948a80df37c6699b1fb0bc09246306462246fc1c7941a8",
+  "book_fingerprint": "2f4226d77d6fc272a2fb3fa609850ce0bcb00306550e577c8eb8861d03af0571",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2369
+  "donor_node_count": 2365
  },
  "budget": {
   "formations": 50,
