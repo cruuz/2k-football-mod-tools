@@ -1,8 +1,9 @@
 """Down sprites follow the native draw decision across retained HUD updates.
 
-Beta 76 sb: ESPN draws no hang-time, ball-on or FUMBLE plate. While one of those retail events would show, and in
-the kick, point-after and phase-0 states, the down field carries the black ESPN plate's wordmark (one token) and
-those three plates stay hidden; FLAG keeps its plate and hides the down. After the down steps to 2nd, 3rd or 4th
+Beta 76 sb: ESPN draws no hang-time, ball-on or FUMBLE plate. While hang time or FUMBLE would show, and in the
+kick, point-after and phase-0 states, the down field carries the black ESPN plate's wordmark (one token); those three
+plates stay hidden; FLAG keeps its plate and hides the down. b778 sb2 (stream c1-26): the retail ball-on event is up
+from the end of a play through play calling, so it keeps the down and distance (ESPN shows it between plays). After the down steps to 2nd, 3rd or 4th
 the label reads "Nth Down" (three drawn tokens) for 7 seconds of frames.
 """
 from pathlib import Path
@@ -21,7 +22,7 @@ import nfl2k5_scorebug_projection as projection
 RETAIL = ROOT / 'extracted/ESPN NFL 2K5 (USA)/default.xbe'
 NATIVE = RETAIL.is_file() and importlib.util.find_spec('unicorn') is not None
 DT = struct.unpack('<I', struct.pack('<f', 1 / 60))[0]
-FLAG, ESPN_EVENTS = 3, (2, 4, 5)         # element indices: 2 hang time, 3 FLAG, 4 ball on, 5 FUMBLE
+FLAG, ESPN_EVENTS = 3, (2, 5)            # element indices: 2 hang time, 3 FLAG, 4 ball on (keeps the down), 5 FUMBLE
 
 
 def shown(event):
@@ -29,7 +30,7 @@ def shown(event):
 
 
 def expected_glyphs(events, down_glyphs=5):
-    """FLAG hides the label; hang time, ball on or FUMBLE put the ESPN wordmark there; otherwise the label."""
+    """FLAG hides the label; hang time or FUMBLE put the ESPN wordmark there; otherwise (ball on too) the label."""
     records = {e['index']: shown(e) for e in events}
     return 0 if records[FLAG] else 1 if any(records[i] for i in ESPN_EVENTS) else down_glyphs
 
@@ -191,7 +192,7 @@ class DownVisibilityTests(unittest.TestCase):
                                  [FLAG] if active == FLAG else [])
                 entered, _ = seq.native_draw()
                 self.assertEqual([i for i in entered if i >= 2], [] if active is None else [active])
-                self.assertEqual(result['visible_glyphs'], 5 if active is None else 0 if active == FLAG else 1)
+                self.assertEqual(result['visible_glyphs'], 5 if active in (None, 4) else 0 if active == FLAG else 1)
 
     def test_compact_material_mapping_matches_all_used_native_slots(self):
         seq = self.sequence(False)
@@ -219,8 +220,9 @@ class DownVisibilityTests(unittest.TestCase):
                 for _ in range(45): result = seq.step()
                 entered, _ = seq.native_draw()
                 if state in ('kickoff', 'after_play'):
-                    # b76 sb: the kickoff phase and the retail ball-on event both show ESPN's wordmark plate.
-                    self.assertEqual(result['visible_glyphs'], 1)
+                    # b76 sb: the kickoff phase shows ESPN's wordmark plate; b778 sb2: the retail ball-on event
+                    # (after the play, through play calling) keeps the down and distance.
+                    self.assertEqual(result['visible_glyphs'], 1 if state == 'kickoff' else 5)
                 else:
                     self.assertEqual(result['visible_glyphs'] > 0, 0 in entered and not any(i in entered for i in (2, 3, 4, 5)))
                 if state == 'after_play':
