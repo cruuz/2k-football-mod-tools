@@ -500,6 +500,10 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-xs1: on-demand modules prototype: Career Home is not read at boot; the module loader (a late allocator
+    # owner, nfl2k5_module_loader) reads its section with the kernel's XeLoadSection when a MyCareer screen opens.
+    # EXPERIMENTAL and OFF in every preset until Noah's witnessed MyCareer session (docs/mod_editor/overlay_modules.md).
+    module_loader: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -981,6 +985,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_module_loader", "On-demand Career Home", lambda p: p.module_loader),  # b778-xs1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1089,6 +1094,23 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
     receipt["result"]["modern_force_out"] = "applied"
 
 
+def _apply_module_loader(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-xs1: the on-demand Career Home prototype, after Career Home and every other late allocator owner."""
+    if not plan.module_loader:
+        return
+    module = _core_module("nfl2k5_module_loader")
+    if module is None:
+        raise RuntimeError("On-demand Career Home needs nfl2k5_module_loader.")
+    progress("MyCareer: Career Home loaded on demand (experimental)", 0, 0)
+    payload, loader_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("On-demand Career Home: the output does not read back as applied")
+    receipt["steps"].append({"step": "module_loader", **loader_receipt})
+    receipt["result"]["module_loader"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -1188,6 +1210,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -3018,6 +3041,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.module_loader) is not bool:  # b778-xs1
+        raise ValueError("On-demand Career Home must be Off or On.")
+    if plan.module_loader and not (plan.my_career and plan.my_career_home and not plan.music_library):  # b778-xs1
+        raise ValueError("On-demand Career Home needs MyCareer with Career Home (and no jukebox music library).")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -5242,6 +5269,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-xs1: the on-demand Career Home gate, after every other late allocator owner (it is last in LATE_OWNERS)
+    _apply_module_loader(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5282,6 +5311,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.module_loader and _core_module("nfl2k5_module_loader").status(_xbe_bytes(target)) != "applied":  # b778-xs1
+        raise ValueError("the on-demand Career Home gate did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

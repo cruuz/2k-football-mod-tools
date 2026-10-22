@@ -264,7 +264,10 @@ def _block_content(block):
 
 def _descriptor(block, payload=None):
     _header, name, refs = space.scale_music_slots(payload)
-    return struct.pack("<9I20s", FLAGS, VA, SIZE, RAW, SIZE, 0x10000 + name, 0, 0x10000 + refs,
+    flags = FLAGS
+    if payload is not None and struct.unpack_from("<I", payload, _header)[0] == FLAGS & ~0x02:
+        flags = FLAGS & ~0x02  # b778-xs1: loaded on demand by nfl2k5_module_loader (preload flag clear)
+    return struct.pack("<9I20s", flags, VA, SIZE, RAW, SIZE, 0x10000 + name, 0, 0x10000 + refs,
                        0x10000 + refs + 2, space._digest(bytes(block[:SIZE])))
 
 
@@ -305,6 +308,10 @@ def status(payload):
         content = _block_content(block)
         _require(content == code_for(career_labels(payload))[0], "foreign Career Home content")
         _require(_career_state(payload)[2], "MyCareer Apartment does not name Career Home")
+        header = space.scale_music_slots(payload)[0]
+        if struct.unpack_from("<I", payload, header)[0] != FLAGS:  # on demand: only with the loader's gate
+            _require(any(r["owner"] == "nfl2k5_module_loader" for r in space.layout(payload)["allocations"]),
+                     "Career Home is not preloaded and no module loader opens it")
         return "applied"
     except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
         return "foreign"
