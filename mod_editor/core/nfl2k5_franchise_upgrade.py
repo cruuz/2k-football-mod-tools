@@ -611,3 +611,61 @@ def sync_coaches(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                     "after_sha256": sha(result), "disc_roster_sha256": sha(disc_body),
                     "matched": matched, "unmatched_preserved": unmatched,
                     "unnamed_preserved": unnamed, "changes": changes, **scope}
+
+
+#: b778-hr3: the hair style is the low nibble of player record +0x0D (nfl2k5_hair_styles; Studio field hair_style)
+HAIR_STYLE_OFFSET, HAIR_STYLE_MASK = 0x0D, 0x0F
+
+
+def sync_hair_styles(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's hair style (record +0x0D bits 0-3) into the franchise's own players by identity.
+
+    b778-hr3: a franchise keeps its whole roster in the save, so a franchise started before a disc had hair styles
+    (every record +0x0D zero) shows stock hair on every later disc. Only players whose (first, last, birth date) is
+    unique in both rosters are touched, only when the save still has style 0 and the disc has one; a style the user
+    set in the franchise is kept. Bits 4-7 and every other byte stay as they are.
+    """
+    _save, roster = franchise(payload)
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "hair style source must be a disc ROST")
+
+    def by_identity(document):
+        rows: dict[tuple[str, str, str], list[sr.Player]] = defaultdict(list)
+        for player in document.players:
+            if player.first or player.last:
+                rows[identity(player)].append(player)
+        return rows
+
+    saved, current = by_identity(roster), by_identity(target)
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    changes, kept, ambiguous = [], [], []
+    for key, sources in current.items():
+        styles = {disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK for p in sources}
+        if styles == {0} or key not in saved:
+            continue
+        players = saved[key]
+        if len(sources) != 1 or len(players) != 1:
+            ambiguous.append(" ".join(key[:2]))
+            continue
+        style = styles.pop()
+        player = players[0]
+        at = player.offset + HAIR_STYLE_OFFSET
+        before = payload[at] & HAIR_STYLE_MASK
+        if before == style:
+            continue
+        if before:
+            kept.append({"player": f"{player.first} {player.last}", "kept": before, "disc": style})
+            continue
+        out[at] = (payload[at] & ~HAIR_STYLE_MASK & 0xFF) | style
+        masks[at] = HAIR_STYLE_MASK
+        changes.append({"player": f"{player.first} {player.last}", "pool": player.pool, "index": player.index,
+                        "field": "hair_style", "offset": at, "before": before, "after": style})
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {"operation": "hair_styles", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "disc_players_with_style": sum(
+                        1 for p in target.players if disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK),
+                    "kept_user_styles": kept, "ambiguous_identities_skipped": sorted(set(ambiguous)),
+                    "changes": changes, **scope}

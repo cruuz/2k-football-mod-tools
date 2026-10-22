@@ -1094,6 +1094,39 @@ def apply_assignments(path: Path | str) -> dict[str, Any]:
     return receipt
 
 
+def roster_status(path: Path | str) -> dict[str, Any]:
+    """Read only: how many of the tracked 2026 assignments the image's main roster carries (record +0x0D bits 0-3)."""
+    from . import nfl2k5_roster_records as rr
+    with rr._outer_image()(str(path), writable=False) as archive:
+        entry = rr._entry(archive)
+        resource = archive.read(entry.virtual_offset, entry.size)
+    document = rr.RosterDocument(resource[rr.RESOURCE_HEADER_SIZE:], base=0, source="image",
+                                 resource_header=resource[:rr.RESOURCE_HEADER_SIZE])
+    plan = plan_assignments(document)
+    carried = [name for offset, style, name in plan["writes"]
+               if resource[rr.RESOURCE_HEADER_SIZE + offset] & 0x0F == style]
+    lost = [name for offset, style, name in plan["writes"]
+            if resource[rr.RESOURCE_HEADER_SIZE + offset] & 0x0F != style]
+    return {"league": plan["league"], "listed": plan["listed"], "carried": len(carried), "lost": lost}
+
+
+def verify_final(path: Path | str, roster_receipt: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """b778-hr3 publication gate: the finished image still carries the grown player scenes, the nine hair textures,
+    the executable owner and its hook, and (when the build step wrote them) every 2026 hair assignment.
+
+    Raises HairStylesError naming what is missing, so a later step can never drop the hair silently."""
+    state = image_status(path)
+    require(state == "applied", f"hair styles did not survive the final passes (the image reads {state!r})")
+    result: dict[str, Any] = {"status": state}
+    if roster_receipt is not None and roster_receipt.get("status") == "applied":
+        roster = roster_status(path)
+        require(roster["league"] and not roster["lost"],
+                "hair styles: the main roster lost the 2026 hair assignments after the hair step "
+                f"({len(roster['lost'])} players, e.g. {', '.join(roster['lost'][:3])})")
+        result["roster"] = {k: v for k, v in roster.items() if k != "lost"}
+    return result
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     import argparse
     parser = argparse.ArgumentParser(prog="python3 -m mod_editor.core.nfl2k5_hair_styles", description=LABEL)
