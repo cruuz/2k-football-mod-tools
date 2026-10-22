@@ -74,6 +74,9 @@ PRODUCT_MODULES = (
     "mod_editor.core.apf2k8_charge_abilities",
     "mod_editor.apf_studio.charge_abilities_qt",
     "mod_editor.apf_studio.fourth_down_qt",
+    "mod_editor.core.apf2k8_common_compiler",
+    "mod_editor.core.apf2k8_community_patches",
+    "mod_editor.apf_studio.community_patches_qt",
     'mod_editor.core.apf_field_material_writer',
     'mod_editor.apf_studio.field_material_service',
     'mod_editor.apf_studio.field_material_qt',
@@ -568,8 +571,7 @@ def _check_apf_wave_contract(modules: dict[str, object]) -> None:
     payload = json.dumps({"schema": schemes.SCHEMA, "presets": [recipe]}).encode()
     if schemes.validate_payload(payload, schemes.SELECTOR, {"schema": schemes.SCHEMA}) != [recipe]:
         raise RuntimeError("Scheme Presets logical payload contract changed")
-    for kind in ("formation_package_map", "play_assignment_route", "formation_alignment",
-                 "splb_book_membership", coverage.PROVIDER_KIND, schemes.PROVIDER_KIND):
+    for kind in ("formation_alignment", coverage.PROVIDER_KIND, schemes.PROVIDER_KIND):
         try:
             designs.check_composition((SimpleNamespace(kind=designs.PROVIDER_KIND), SimpleNamespace(kind=kind)))
         except ValidationError as exc:
@@ -577,6 +579,16 @@ def _check_apf_wave_contract(modules: dict[str, object]) -> None:
                 raise RuntimeError("Play Design conflict must name both features") from exc
         else:
             raise RuntimeError(f"Play Design admitted a conflicting {kind} edit")
+    # Who lines up, Assignment Routes and Fine-tune Plays compile on top of a design
+    # (apf2k8_common_compiler, contributed by Basileus Maximus).
+    for kind in ("formation_package_map", "play_assignment_route", "splb_book_membership"):
+        designs.check_composition((SimpleNamespace(kind=designs.PROVIDER_KIND), SimpleNamespace(kind=kind)))
+    community = modules["mod_editor.core.apf2k8_community_patches"]
+    for row in community.load_definitions():
+        community.verify_relocation(row)
+        community.check_reservations(row)
+        require(community.parse_payload(community.PatchDocument(row).as_toml().encode(), row.key).enabled is False,
+                "Community patch canonical export changed")
     reservations = json.loads((ROOT / "data/apf2k8/patch_reservations.json").read_text())
     ranges = reservations["ranges"]
     spans = sorted((int(r["start"], 16), int(r["end_inclusive"], 16)) for r in ranges)

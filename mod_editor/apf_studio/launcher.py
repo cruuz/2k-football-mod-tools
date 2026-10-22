@@ -352,6 +352,12 @@ class XeniaSettings:
 
 
 PASS_FETCH_FILENAME = "54540807-studio-pass-fetch.patch.toml"
+# Launcher kinds for Basileus Maximus' community patches (mod_editor/core/apf2k8_community_patches.py).
+COMMUNITY_PATCH_KINDS = {
+    "community_play_calling_by_package": "play_calling_by_package",
+    "community_all_packages_in_substitution": "all_packages_in_substitution",
+    "community_hidden_formations_revealed": "hidden_formations_revealed",
+}
 
 
 def _atomic_bytes(path: Path, payload: bytes) -> None:
@@ -489,6 +495,13 @@ class XeniaLauncher:
             from . import playcalling_patches
             return (playcalling_patches.FILENAME, lambda data: playcalling_patches.validate(data, curves=self._curve_module),
                     "Personnel curve patch", " Changes every book on the disc; EXPERIMENTAL. In-game result UNWITNESSED.")
+        if kind in COMMUNITY_PATCH_KINDS:
+            from mod_editor.core import apf2k8_community_patches as community
+            key = COMMUNITY_PATCH_KINDS[kind]
+            row = community.definition(key)
+            return (row.filename, lambda data, key=key: community.canonical_payload(data, key),
+                    f"Community patch ({row.name.split(':')[0]})",
+                    f" By {community.AUTHOR}; TU 1.1 only; relocated into Studio-reserved caves. Studio builds UNWITNESSED.")
         if kind != "pass_fetch":
             raise LaunchError("Unknown Studio patch")
         return (PASS_FETCH_FILENAME, _pass_fetch_profile, "Pass-fetch patch",
@@ -605,7 +618,7 @@ class XeniaLauncher:
         folder = storage / "patches"
         if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
             raise LaunchError("The launch patches folder is not a regular directory; move it aside and launch again")
-        for kind in ("pass_fetch", "curves", "situations", "fourth_down", "charge_abilities"):
+        for kind in ("pass_fetch", "curves", "situations", "fourth_down", "charge_abilities", *COMMUNITY_PATCH_KINDS):
             filename, validator, _, _ = self._patch_contract(kind)
             source = self.settings.patches_folder / filename
             target = folder / filename
@@ -625,6 +638,14 @@ class XeniaLauncher:
                 _atomic_bytes(target, payload)
                 if target.read_bytes() != payload:
                     raise LaunchError("Studio patch failed launch-folder readback; reinstall it and launch again")
+        from mod_editor.core.apf2k8_community_patches import upstream_conflicts
+        upstream = upstream_conflicts(folder)
+        if upstream and (folder / self._patch_contract("charge_abilities")[0]).exists():
+            # The upstream copies put their caves inside the charge-abilities code; Xenia would load both.
+            raise LaunchError(
+                "The launch patches folder holds Basileus Maximus' original patch files ("
+                + ", ".join(upstream) + "), whose caves overwrite the installed charge-abilities patch. "
+                f"Remove them from {folder} and install the relocated copies from Tools > Community play-calling patches.")
 
     def launch(self, game_root: Path, *, extra_env: Mapping[str, str] | None = None) -> LaunchReceipt:
         if not self.settings.configured or self.settings.xenia_path is None:
@@ -756,7 +777,7 @@ class XeniaLauncher:
         except OSError as exc:
             raise LaunchError(f"Xenia could not be started: {exc}") from exc
         patch_note = self.pass_fetch_status()["message"]
-        for kind in ("curves", "fourth_down", "charge_abilities"):
+        for kind in ("curves", "fourth_down", "charge_abilities", *COMMUNITY_PATCH_KINDS):
             status = self.pass_fetch_status(kind=kind)
             if status["installed"]:
                 patch_note += "\n" + status["message"]
