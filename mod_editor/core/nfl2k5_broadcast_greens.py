@@ -13,6 +13,12 @@ turf, and about 10 percent more per texture on top because the field's detail
 layer darkens it and the end zones have none); and the Anniversary aliases, whose
 fields are the retail s25 grass colour map, take the grass gain whatever surface
 their venue has today.
+
+b778 gr2 (Davy, 10/21, v0.6.1 at Gillette as the Patriots: "the color of the field seemed a little too light green";
+Noah: "darken Gillette a bit and other stadiums using the same surface as Gillette"): the home fields whose venue
+table look is FieldTurf (``synthetic_fieldturf``: ATL, CAR, CIN, DET, MIN, NE, NO, NYG, NYJ, SEA) take their own
+family, ``fieldturf``: the turf gain times one uniform shade, so the turf is a little deeper with its hue and
+saturation kept. Hellas Helix turf, natural grass, the Anniversary aliases and every stadium scene keep their bytes.
 """
 from __future__ import annotations
 
@@ -24,7 +30,7 @@ import struct
 from . import nfl2k5_modern_metlife as ml
 from . import nfl2k5_modern_surfaces as ms
 
-REVISION = "gr4-v1"
+REVISION = "b778-gr2-v1"
 SCHEMA = "nfl2k5_broadcast_greens/v1"
 # gr1 (frozen): median of the three neutral MetLife photo medians / median of three playtest MetLife still medians.
 # gr4 replaces it. The modern turf targets (nfl2k5_modern_surfaces LOOKS, the 10/13 disc's measured turf, MetLife by day
@@ -38,6 +44,15 @@ SYNTHETIC_GAIN = (74 / 88, 102 / 108, 102 / 108)
 # with the common green-channel reduction. This is an extrapolation, not a
 # claim that grass broadcasts were too bright in the playtest.
 GRASS_GAIN = (102 / 111,) * 3
+#: b778 gr2: the venue table look whose home fields take FIELDTURF_GAIN (nfl2k5_modern_surfaces LOOKS)
+FIELDTURF_LOOK = "synthetic_fieldturf"
+#: b778 gr2: one shade on all three channels (so hue and saturation stay where gr4 put them), about 7 percent less light
+#: in the colour map. In game the turf draws A x map - C with C about 20 per channel (Beta 77 st1, MetLife afternoon), so
+#: on screen it is about 8 percent darker in luma (6 to 10 was asked for; measured in xemu by the b778 gr2 job).
+FIELDTURF_SHADE = 0.93
+FIELDTURF_GAIN = tuple(k * FIELDTURF_SHADE for k in SYNTHETIC_GAIN)
+#: the gain each surface family takes
+GAINS = dict(grass=GRASS_GAIN, synthetic=SYNTHETIC_GAIN, fieldturf=FIELDTURF_GAIN)
 FIELD_MATERIALS = frozenset(("color_premipped", "grass_outside_premipped"))
 #: gr4: the six end-zone textures of a home field and of an Anniversary alias (protect_period_field renames them)
 END_ZONE_MATERIALS = frozenset([f"endzone_{e}_{p}" for e in "NS" for p in "LMR"]
@@ -74,8 +89,8 @@ def green(rgb, alpha=255):
 
 
 def rgb_transform(rgb, family):
-    require(family in ("grass", "synthetic"), "unknown surface family")
-    gains = GRASS_GAIN if family == "grass" else SYNTHETIC_GAIN
+    require(family in GAINS, "unknown surface family")
+    gains = GAINS[family]
     return tuple(int(round(c * k)) for c, k in zip(rgb, gains))
 
 
@@ -178,7 +193,8 @@ def end_zone_palette(palette, envelope, family):
     END_ZONE_MATCH; paint entries are untouched."""
     import colorsys
     h_lo, h_hi, s_lo, s_hi, v_lo, v_hi = envelope
-    gains = GRASS_GAIN if family == "grass" else SYNTHETIC_GAIN
+    require(family in GAINS, "unknown surface family")
+    gains = GAINS[family]
     out = bytearray(palette)
     selected = []
     for i in range(256):
@@ -369,6 +385,9 @@ def families(archive):
         result[prefix] = family
     retail = dict(result)
     result.update({p: v["surface"] for p, v in ms.venues().items()})
+    # b778 gr2: the FieldTurf home fields (the venue table's look, the one Modern surfaces paints them with) go deeper
+    result.update({p: "fieldturf" for p, v in ms.venues().items()
+                   if v["surface"] == "synthetic" and v.get("look") == FIELDTURF_LOOK})
     from . import nfl2k5_espn25_fields as fields
     for row in fields.catalog():
         # gr4: an Anniversary alias draws the RETAIL s25 grass colour map (nfl2k5_espn25_fields._field, whatever venue
@@ -492,5 +511,5 @@ def apply_to_image(target, *, progress=None, anniversary_receipt=None, workers=N
     if sr is not None:
         ms.save_receipt(target, sr)
     save(path, dict(schema=SCHEMA, revision=REVISION, bundles={n: rec for n, (_e, _a, rec) in work.items()},
-                    bytes_written=written, gains=dict(synthetic=SYNTHETIC_GAIN, grass=GRASS_GAIN)))
+                    bytes_written=written, gains=dict(GAINS)))
     return dict(state="applied", bundles=len(work), bytes_written=written, non_grass_bytes_changed=0)
