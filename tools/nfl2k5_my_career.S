@@ -89,9 +89,20 @@ primary:
  sub ecx, ebx
  cmp ecx, DWORD PTR [state+92]
  jne primary_lost
+.ifdef MYCAREER_INLINE
+ /* b778 mc6: +4 is the play-by-play name cue, +6 the portrait id. A last
+  * name no real player has gets cue 9000 + jersey (Last Name 0x346540), and
+  * the native jersey assigner 0x2BD260 rewrites cues 9000..9099 whenever it
+  * gives a new number (MyPlayer's draft pick, signings, trades). The cue is
+  * commentary data, not identity: only the portrait half is compared. */
+ mov cx, WORD PTR [eax+6]
+ cmp cx, WORD PTR [state+102]
+ jne primary_lost
+.else
  mov ecx, DWORD PTR [eax+4]
  cmp ecx, DWORD PTR [state+100]
  jne primary_lost
+.endif
  mov ecx, DWORD PTR [eax+0x18]
  xor ecx, DWORD PTR [state+120]
  test ecx, 0x0ffff000
