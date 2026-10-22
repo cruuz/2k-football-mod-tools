@@ -5282,6 +5282,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
+        hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
+        receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
+            target, hair_step.get("roster"))
     if plan.espn25_named_previews:
         receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)

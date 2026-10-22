@@ -16,6 +16,8 @@ from . import nfl2k5_franchise_upgrade as upgrade
 from . import nfl2k5_roster_records as rr
 from . import nfl2k5_save_rost as sr
 
+#: the migrations a franchise can take (b778-hr3: hair-styles copies the disc's hair styles into an older franchise)
+COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -123,8 +125,8 @@ class UpgradePlan:
 def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                  cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
     """Read, validate and preview every change, without creating any files."""
-    upgrade.require(command in ("upgrade", "coach-sync", "team-history"), "unknown upgrade command")
-    upgrade.require(team_history_path is None or command != "coach-sync",
+    upgrade.require(command in COMMANDS, "unknown upgrade command")
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles"),
                     "TEAM evidence requires upgrade or team-history")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -141,8 +143,12 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         evidence = json.loads(team_history_path.read_text(encoding="utf-8")) if team_history_path else None
         payload, step = upgrade.upgrade_team_history(payload, body, evidence)
         steps.append(step)
-    if command != "team-history":
+    if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "hair-styles"):
+        # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone
+        payload, step = upgrade.sync_hair_styles(payload, body)
         steps.append(step)
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,

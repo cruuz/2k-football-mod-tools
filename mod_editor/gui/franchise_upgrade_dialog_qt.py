@@ -47,6 +47,12 @@ def preview_text(plan):
         elif step["operation"] == "coach_sync":
             lines.append(f"Coach appearances: {len(step['changes'])} fields changed")
             lines += [f"  {c['coach']}: {c['field']} {c['before']} → {c['after']}" for c in step["changes"]]
+        elif step["operation"] == "hair_styles":   # b778-hr3
+            lines.append(f"Hair styles from the disc: {len(step['changes'])} players"
+                         + (f"; {len(step['kept_user_styles'])} styles you set kept" if step["kept_user_styles"] else ""))
+            lines += [f"  {c['player']}: hair style {c['before']} → {c['after']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
@@ -68,7 +74,7 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks and coach appearances. "
+                      "Choose the current build's disc to update experience, playbooks, coach appearances and hair styles. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)

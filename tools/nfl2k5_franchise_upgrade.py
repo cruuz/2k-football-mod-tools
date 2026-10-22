@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Upgrade an older SOFTDRINK 2026 franchise, or sync coach art from a disc.
+"""Upgrade an older SOFTDRINK 2026 franchise, or sync coach art or hair styles from a disc.
 
 Inputs are read only. Output is a new signed save directory; --dry-run writes
 only the requested receipt. The receipt includes input/output SHA-256 hashes
@@ -18,14 +18,14 @@ if str(ROOT) not in sys.path:
 
 from mod_editor.core import nfl2k5_franchise_upgrade as upgrade  # noqa: E402
 from mod_editor.core.nfl2k5_franchise_upgrade_io import (  # noqa: E402,F401
-    DEFAULT_COHORT, check_paths, hash_file, load_container, load_disc,
+    COMMANDS, DEFAULT_COHORT, check_paths, hash_file, load_container, load_disc,
     plan_upgrade, write_copy, write_plan,
 )
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("upgrade", "coach-sync", "team-history"))
+    parser.add_argument("command", choices=COMMANDS)
     parser.add_argument("--input", required=True, type=Path, help="signed FXG save folder or zip")
     parser.add_argument("--disc", required=True, type=Path, help="current/final disc, read only")
     parser.add_argument("--output", type=Path, help="new signed save folder")

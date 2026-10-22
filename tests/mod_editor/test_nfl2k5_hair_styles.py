@@ -26,6 +26,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(ROOT / "tests")]
@@ -525,6 +526,52 @@ class DiscTests(unittest.TestCase):
                 entry = disc.archive_entries[hs.OUTER]
                 self.assertEqual(entry.size, len(retail_outer3()) + receipt["growth"])
             self.assertEqual(hs.apply_to_image(path)["status"], "already_applied")
+
+
+    def test_final_gate_refuses_an_image_that_lost_half_of_the_hair(self):
+        """b778-hr3: the build's publication gate re-reads the finished image."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = (Path(tmp) / "fixture.iso").resolve()
+            self.fixture(path)
+            with self.assertRaisesRegex(hs.HairStylesError, "'retail'"):
+                hs.verify_final(path)
+            hs.apply_to_image(path)
+            with self.assertRaisesRegex(hs.HairStylesError, "'partial'"):
+                hs.verify_final(path)      # resources without the executable owner
+
+
+#: b778-hr3: the released v0.6.1 disc (read only; private, the test skips without it)
+V061_DISC = Path(os.environ.get("NFL2K5_V061_DISC",
+                                "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso"))
+
+
+class FinalGateTests(unittest.TestCase):
+    """b778-hr3: verify_final, the publication gate mod_build runs after every step."""
+
+    def test_roster_loss_after_the_hair_step_is_refused(self):
+        lost = {"league": True, "listed": 259, "carried": 258, "lost": ["Trevor Lawrence"]}
+        with mock.patch.object(hs, "image_status", return_value="applied"), \
+                mock.patch.object(hs, "roster_status", return_value=lost):
+            with self.assertRaisesRegex(hs.HairStylesError, "lost the 2026 hair assignments.*Trevor Lawrence"):
+                hs.verify_final("image.iso", {"status": "applied"})
+            # a user's own league roster (the step skipped the assignments) is not judged by the 2026 list
+            self.assertEqual(hs.verify_final("image.iso", {"status": "skipped"}), {"status": "applied"})
+            self.assertEqual(hs.verify_final("image.iso"), {"status": "applied"})
+
+    @unittest.skipUnless(V061_DISC.is_file(), "the released v0.6.1 disc is private")
+    def test_released_disc_carries_every_assignment_and_a_cleared_byte_is_seen(self):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        resource = hs.main_roster(V061_DISC)
+        status = hs.roster_status(V061_DISC, resource)
+        self.assertEqual((status["league"], status["carried"], status["lost"]), (True, 259, []))
+        document = rr.RosterDocument(resource[rr.RESOURCE_HEADER_SIZE:], base=0, source="image",
+                                     resource_header=resource[:rr.RESOURCE_HEADER_SIZE])
+        lawrence = next(p for p in document.players if (p.pool, p.index) == ("primary", 669))
+        self.assertEqual(lawrence.last, "Lawrence")
+        cleared = bytearray(resource)
+        cleared[rr.RESOURCE_HEADER_SIZE + lawrence.offset + 0x0D] &= 0xF0
+        status = hs.roster_status(V061_DISC, bytes(cleared))
+        self.assertEqual((status["carried"], status["lost"]), (258, ["Trevor Lawrence"]))
 
 
 # ------------------------------------------------------------------------------------------------ b776 hr2: riding hair

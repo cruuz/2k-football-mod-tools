@@ -263,6 +263,70 @@ class CoachTests(unittest.TestCase):
             up.sync_coaches(payload, disc_roster(payload))
 
 
+class HairStyleTests(unittest.TestCase):
+    """b778-hr3: a franchise keeps its own roster, so one started before hair styles (all +0x0D zero) showed stock
+    hair on the v0.6.1 disc. The hair-styles migration copies the disc's style nibble by identity."""
+
+    def disc_with_styles(self, payload, styles):
+        body = bytearray(disc_roster(payload))
+        target = sr.decode(bytes(body), preamble=0, reference_year=up.BASE_YEAR)
+        for player, style in zip(target.players, styles):
+            body[player.offset + up.HAIR_STYLE_OFFSET] = (body[player.offset + up.HAIR_STYLE_OFFSET] & 0xF0) | style
+        return bytes(body)
+
+    def test_older_franchise_gets_the_disc_styles_by_identity_and_nothing_else(self):
+        source = bytearray(fixture()[0])
+        players = sr.decode(bytes(source)).players
+        first, second = players[:2]
+        source[first.offset + 0x0D] = 0x50          # bits 4-7 are another field and must survive
+        source = bytes(source)
+        target = self.disc_with_styles(source, (4, 3))
+        result, receipt = up.sync_hair_styles(source, target)
+        self.assertEqual(result[first.offset + 0x0D], 0x54)
+        self.assertEqual(result[second.offset + 0x0D] & 0x0F, 3)
+        self.assertEqual([c["after"] for c in receipt["changes"]], [4, 3])
+        changed = [i for i, (a, b) in enumerate(zip(source, result)) if a != b]
+        self.assertEqual(changed, sorted({first.offset + 0x0D, second.offset + 0x0D}))
+        self.assertTrue(receipt["outside_declared_fields_identical"])
+        self.assertEqual(up.sync_hair_styles(result, target)[1]["changes"], [])   # idempotent
+
+    def test_a_style_set_in_the_franchise_is_kept_and_zero_on_disc_never_clears(self):
+        source = bytearray(fixture()[0])
+        first, second = sr.decode(bytes(source)).players[:2]
+        source[first.offset + 0x0D] = 7
+        source[second.offset + 0x0D] = 6
+        source = bytes(source)
+        result, receipt = up.sync_hair_styles(source, self.disc_with_styles(source, (4, 0)))
+        self.assertEqual(result, source)
+        self.assertEqual(receipt["kept_user_styles"][0]["kept"], 7)
+        self.assertEqual(receipt["changes"], [])
+
+    def test_hair_styles_is_a_command_and_part_of_upgrade(self):
+        self.assertIn("hair-styles", service.COMMANDS)
+        source = fixture()[0]
+        target = self.disc_with_styles(source, (4,))
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            folder = signed_folder(root / "source", source)
+            disc = root / "disc.iso"
+            disc.write_bytes(b"synthetic disc fingerprint")
+            # the synthetic arena has no coaches, so the full Studio validation is covered by the tests above
+            with patch.object(service, "load_disc", return_value=(target, {})), \
+                    patch.object(up, "validate_save", return_value={}):
+                plan = service.plan_upgrade(folder, disc, command="hair-styles")
+            self.assertEqual([s["operation"] for s in plan.receipt["steps"]], ["hair_styles"])
+            self.assertEqual(plan.receipt["changed_fields"], 1)
+            first = sr.decode(source).players[0]
+            self.assertEqual(plan.payload[first.offset + 0x0D] & 0x0F, 4)
+        from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
+        plan.receipt["validation"] = {"after": {"findings": []}}
+        self.assertIn("Hair styles from the disc: 1 players", preview_text(plan))
+        import tools.nfl2k5_franchise_upgrade as cli
+        with self.assertRaises(SystemExit):
+            cli.main(["no-such-command", "--input", "x", "--disc", "y", "--receipt", "z"])
+        self.assertEqual(cli.COMMANDS, service.COMMANDS)
+
+
 class PlaybookTests(unittest.TestCase):
     def test_all_teams_resolve_and_changed_choice_and_scheme_are_restored(self):
         payload, body, resources = book_fixture()
