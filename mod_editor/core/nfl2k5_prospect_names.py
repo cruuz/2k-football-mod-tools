@@ -108,8 +108,8 @@ LEGACY_NUMBER_AUDIO_ID = 0x238C             # 9100 exists: its clips say "double
 # sha256 of body[0x90:0x98] + the entry array + the string span, see pool_digest()
 RETAIL_POOL_SHA256 = "1a4900797b05ecc9858f2663cf1afbce9d4dc1d33dd803559e3350b008d204ab"
 SHIPPED_CSV = ROOT / "data" / "nfl2k5_modern_names.csv"
-SHIPPED_CSV_SHA256 = "c94fb3b94aae5cccd831e43bb8939073446cf61cce8934ea454e4c129355794a"   # tools/nfl2k5_modern_names_generate.py, 2026-09-04
-SHIPPED_POOL_SHA256 = "6e69e6423bc74c3a2a29dc0931261cb04bd0637874b1fa3332e6d9dfcf79d1ee"  # the pool digest after the shipped CSV is applied to the retail roster
+SHIPPED_CSV_SHA256 = "5a1ed5522511059a33a46a9e02147bd8c6fccd311ae82f8474f7fd0b02530a44"   # b778-rh1: first names re-ordered + 40 nicknames (tools/b77/rh1_names.py)
+SHIPPED_POOL_SHA256 = "9a82e461778236616ee6cc4fb52f9fd7abe0883dffd67aaed40da30dba05ea65"  # the pool digest after the shipped CSV is applied to the retail roster
 SHIPPED_BOUNDARY = 0x8CFAA             # body offset of the first replacement surname under the shipped CSV
 ATTRIBUTION = "nflverse-data (https://github.com/nflverse/nflverse-data), CC-BY-4.0"
 
@@ -262,8 +262,10 @@ def validate_name(value: str, label: str) -> str:
     _require(text.isascii(), f"{label}: {text!r} is not ASCII")
     _require(len(text) <= MAX_NAME_CHARS, f"{label}: {text!r} is longer than {MAX_NAME_CHARS} characters")
     _require(text[0].isalpha(), f"{label}: {text!r} must start with a letter")
-    _require(all(c.isalpha() or c in NAME_PUNCTUATION for c in text),
-             f"{label}: {text!r} may only use letters and {NAME_PUNCTUATION!r}")
+    _require(all(c.isalpha() or c in NAME_PUNCTUATION or c == " " for c in text),
+             f"{label}: {text!r} may only use letters, single spaces and {NAME_PUNCTUATION!r}")
+    # b778-rh1: two-word nicknames ("Riff Raff") take one inner space; never leading, trailing or doubled
+    _require("  " not in text and text == text.strip(), f"{label}: {text!r} has a stray space")
     return text
 
 
