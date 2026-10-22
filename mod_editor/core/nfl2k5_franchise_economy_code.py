@@ -158,13 +158,12 @@ WINDOWS = {
             "eb938d65f45b5e5f5dc3"
         ).ljust(352, b"\xcc")
     ),
-    0x3975f0: (  # roster_e: 196/224 bytes
+    0x3975f0: (  # roster_e: 153/224 bytes
         bytes.fromhex(
             "89f189fae8fe2e020085c0740c538b5e2480e30fe9aeb8f8ffc30f0b5589e556538b751856ff7514"
             "ff75108b550c8b4d08e81aead4ff568b551089c38b4d08e8ece9d4ff8d65f801d85b5e5dc35589e5"
-            "5789cf5689d653538b5d08e8e075daff85c0741e833d3c01e600017415895d088d65f489f289f95b"
-            "b8602b32005e5f5dffe080bf1c0100003277e26a0031d289f16a016a00e8b65df2ff8945f06a00e8"
-            "c85ff2ff5a8b55f0c1e00239d072bee80cb8f8fff646240f74b38d65f45b5e5f5dc20400"
+            "5789cf5689d6538b5d08e8e175daff85c0741b833d3c01e600017412895d0889f25b89f95eb8602b"
+            "32005f5dffe080bf1c0100003277e5e834b8f8fff646240f74da5b5e5f5dc20400"
         ).ljust(224, b"\xcc")
     ),
 }

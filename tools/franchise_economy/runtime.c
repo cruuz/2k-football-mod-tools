@@ -472,12 +472,12 @@ SECTION(".roster_d") void FAST economy_clubs(void *menu, unsigned vetcut) {
 
 /* DESIGN: the re-signing stage (0x323720) releases every expiring contract the
  * club does not renew (0x322B60 at 0x3237AC). A CPU club already at or below the
- * floor keeps a lower-level expiring player instead (no more than four times the
- * rookie minimum on the market), renewed through the economy's renewal gate
+ * floor re-signs the expiring player instead, through the economy's renewal gate
  * (0x322EB0, which refuses what the club cannot afford), so free agency does not
- * open with clubs far below 50. */
+ * open with clubs below 50: the league's free-agent pool alone cannot refill them
+ * before the draft. */
 SECTION(".roster_e") void FAST economy_expire(u8 *team, u8 *p, void *menu) {
-    if (CPU(team) && team[0x11c] <= FLOOR_PLAYERS && economy_value(p, 0, 0, 1, 0) <= 4 * economy_floor(0)) {
+    if (CPU(team) && team[0x11c] <= FLOOR_PLAYERS) {
         __asm__ volatile("call 0x322eb0" : : "S"(p), "D"(team) : "eax", "ecx", "edx", "cc", "memory");
         if (p[0x24] & 15) return;
     }

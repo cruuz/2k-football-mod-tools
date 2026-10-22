@@ -73,8 +73,8 @@ REVISION_2_SITES = frozenset({VETERAN_CUT_SURPLUS, ROLLOVER_DECREMENT})
 # - CPU clubs restructure (the money still owed is re-papered over the years left as the back-loaded curve 6
 #   with a 20% prorated bonus) before any cap release and before the stage-6 veteran cut;
 # - a 50-player floor for CPU clubs at every weekly advance and after every stage action, filled with
-#   lower-level depth (0x322BB0 with a capped budget); at the re-signing stage a club at the floor keeps
-#   (renews) a lower-level expiring player instead of releasing him; the reconcile no longer releases below 50 except a
+#   lower-level depth (0x322BB0 with a capped budget); at the re-signing stage a club at the floor
+#   re-signs an expiring player it can afford instead of releasing him; the reconcile no longer releases below 50 except a
 #   player paid twice the minimum; the user club's preseason gate and in-season trade check move from 42 to
 #   50 players (the roster screen's release warning and 42-healthy-players check, inside the Contracts
 #   editor's guarded span, are unchanged);
