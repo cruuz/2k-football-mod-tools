@@ -50,6 +50,7 @@ from mod_editor.core import nfl2k5_playbook_lint as lint  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_pack as packs  # noqa: E402
 from mod_editor.core import nfl2k5_route_reversal as rr  # noqa: E402
 from pb.v2 import build as v2  # noqa: E402
+from pb.v2 import sanity_b778 as sanity  # noqa: E402
 
 TREE = ROOT / "pb" / "research" / "madden27_team_tree.json"
 VERSION = "4.0.0"
@@ -917,11 +918,22 @@ def role_compatible(c: "Cand", spec: oc.FormationSpec) -> bool:
         # one non-featured route may change alignment class (the native route check then refuses collisions,
         # stacked landmarks and routes out of bounds in the new formation)
         return changed <= ROLE_CHANGES_MAX
+    return _backs_match(a, b)
+
+
+def _backs_match(a, b) -> bool:
+    """Same backs (by slot) within 2 yd of each other: the handoff, fake and lead paths are the same."""
     backs_a = {p.slot: (p.x, p.z) for p in a.players if p.z <= -2.5 and p.kind != oc.QB}
     backs_b = {p.slot: (p.x, p.z) for p in b.players if p.z <= -2.5 and p.kind != oc.QB}
     if set(backs_a) != set(backs_b):
         return False
     return all(abs(backs_a[s][0] - backs_b[s][0]) <= 2.0 and abs(backs_a[s][1] - backs_b[s][1]) <= 2.0 for s in backs_a)
+
+
+def is_pa_boot(design) -> bool:
+    """Play action whose QB leaves the fake on an authored Special Move (0x04 mode 1: boot / rollout point)."""
+    nodes = [n for ch in design.chains if ch for n in ch]
+    return any(n[0] == 0x14 for n in nodes) and any(n[0] == 0x04 and int(n[1][0]) == 1 for n in nodes)
 
 
 def distinct_enough(c: "Cand", spec: oc.FormationSpec, others: list) -> bool:
@@ -1335,9 +1347,16 @@ ALIGNMENT_BOUND = ("direct_snap", "sneak", "keeper", "flea", "reverse")
 
 def same_alignment_ok(c: Cand, spec: oc.FormationSpec) -> bool:
     """QB runs, direct snaps, the flea flicker and reverses are shared only into sets with the same QB alignment
-    (a direct snap belongs in the gun, a sneak under centre)."""
+    (a direct snap belongs in the gun, a sneak under centre); so are play-action boots and plays named "Pistol ..."."""
+    src = oc.FORMATIONS[c.fname]
     if c.design.play_type in ALIGNMENT_BOUND or c.family == "qb" or "gadget" in c.design.tags:
-        return oc.FORMATIONS[c.fname].align == spec.align
+        return src.align == spec.align
+    # b778 pb5: a play named for its alignment ("Pistol Boot") stays in that alignment, and a play-action boot keeps
+    # its QB alignment and faking backfield (the boot point is authored for them; TEN "Pistol Boot" in the gun)
+    if c.design.name.split(" ", 1)[0] == "Pistol" and spec.align != "pistol":
+        return False
+    if c.design.play_type == "pa_pass" and is_pa_boot(c.design):
+        return src.align == spec.align and _backs_match(_ctx(src), _ctx(spec))
     return True
 
 
@@ -1441,6 +1460,10 @@ def assemble(result: dict, team: str):
     info: v2.BookInfo = result["info"]
     plan: GroupPlan = result["plan"]
     forms, menus, chosen = result["forms"], result["menus"], result["chosen"]
+    # b778 pb5: the play-call formation picker opens on book slot 0 (pages run in slot order), so normal-down sets
+    # take the first slots and the goal line / short yardage / wildcat sets move down (pb/v2/sanity_b778.py)
+    forms = sanity.page_one_slots(list(forms), sanity.page_one_order(
+        list(forms), {f: oc.FORMATIONS[f].situation for f in forms}, {f: len(menus[f]) for f in forms}))
     cap = result["cap"]
     body = info.body
     # indices: ordinary records first, then appended
