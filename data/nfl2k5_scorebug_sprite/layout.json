@@ -2986,14 +2986,14 @@
    "ARI": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "ATL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3007,7 +3007,7 @@
    "BUF": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.1075,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3021,77 +3021,77 @@
    "CHI": {
     "fill_x": 1.14,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.046875,
     "shift_y": 0.0
    },
    "CIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DAL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DEN": {
     "fill_x": 0.86,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DET": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "GB": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.08,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "IND": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "JAX": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "KC": {
     "fill_x": 0.9,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.03125,
     "shift_y": 0.0
    },
    "MIA": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "MIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3105,14 +3105,14 @@
    "NO": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYG": {
     "fill_x": 1.14,
     "height": 1.0,
-    "zoom": 0.953,
+    "zoom": 1.12,
     "shift_x": -0.0156,
     "shift_y": 0.0
    },
@@ -3126,28 +3126,28 @@
    "LV": {
     "fill_x": 1.0,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "PHI": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.095,
     "shift_x": -0.015625,
     "shift_y": 0.0
    },
    "PIT": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAR": {
     "fill_x": 1.1,
     "height": 1.0,
-    "zoom": 0.953,
+    "zoom": 1.03,
     "shift_x": 0.0469,
     "shift_y": 0.0
    },
@@ -3175,14 +3175,14 @@
    "TB": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TEN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3196,14 +3196,14 @@
    "CLE": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "HOU": {
     "fill_x": 1.04,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    }
@@ -3341,6 +3341,144 @@
     }
    },
    "template_before_sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b"
+  },
+  "b778_sb2_logo_zoom": {
+   "job": "b778 sb2 2026-10-22",
+   "request": "Noah 10/21 stream c2-15: logos zoomed in a bit more and slightly cut off",
+   "target": 1.15,
+   "width_margin_texels": 3,
+   "corner_alpha": 64,
+   "reference": "2026 ESPN NFL Raiders at Texans and Bills at Chiefs bars (measurement only, no broadcast pixels)",
+   "zoom": {
+    "ARI": [
+     0.976,
+     1.15
+    ],
+    "ATL": [
+     0.976,
+     1.15
+    ],
+    "BAL": [
+     0.976,
+     0.976
+    ],
+    "BUF": [
+     0.976,
+     1.1075
+    ],
+    "CAR": [
+     0.976,
+     0.976
+    ],
+    "CHI": [
+     0.976,
+     1.15
+    ],
+    "CIN": [
+     0.976,
+     1.15
+    ],
+    "CLE": [
+     0.976,
+     1.15
+    ],
+    "DAL": [
+     0.976,
+     1.15
+    ],
+    "DEN": [
+     0.976,
+     1.15
+    ],
+    "DET": [
+     0.976,
+     1.15
+    ],
+    "GB": [
+     0.976,
+     1.08
+    ],
+    "HOU": [
+     0.976,
+     1.15
+    ],
+    "IND": [
+     0.976,
+     1.15
+    ],
+    "JAX": [
+     0.976,
+     1.15
+    ],
+    "KC": [
+     0.976,
+     1.15
+    ],
+    "LAC": [
+     0.976,
+     0.976
+    ],
+    "LAR": [
+     0.953,
+     1.03
+    ],
+    "LV": [
+     0.976,
+     1.15
+    ],
+    "MIA": [
+     0.976,
+     1.15
+    ],
+    "MIN": [
+     0.976,
+     1.15
+    ],
+    "NE": [
+     0.976,
+     0.976
+    ],
+    "NO": [
+     0.976,
+     1.15
+    ],
+    "NYG": [
+     0.953,
+     1.12
+    ],
+    "NYJ": [
+     0.976,
+     0.976
+    ],
+    "PHI": [
+     0.976,
+     1.095
+    ],
+    "PIT": [
+     0.976,
+     1.15
+    ],
+    "SEA": [
+     0.976,
+     0.976
+    ],
+    "SF": [
+     0.976,
+     0.976
+    ],
+    "TB": [
+     0.976,
+     1.15
+    ],
+    "TEN": [
+     0.976,
+     1.15
+    ],
+    "WAS": [
+     0.94,
+     0.94
+    ]
+   }
   }
  },
  "layer_order": "increasing-z",
