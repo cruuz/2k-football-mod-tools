@@ -219,6 +219,9 @@ python3 -m mod_editor --studio          # 2K5 Mod Studio
 
 ## Usage (the short version)
 
+New to modding? Read [START HERE](docs/START_HERE.md) first: it goes step by step from
+nothing to a playing SOFTDRINK 2K28 disc, then roster edits and franchise upgrades.
+
 **Install SOFTDRINK 2K28:** go to **Build & Share → Share → Install SOFTDRINK
 2K28**, then choose your unmodified retail image, the downloaded `.2k5patch`
 file itself, and a new output image. Follow [Install SOFTDRINK 2K28 in 5

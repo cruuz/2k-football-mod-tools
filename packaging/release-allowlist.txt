@@ -168,6 +168,7 @@ mod_editor/core/equipment_reporting.py
 mod_editor/core/image_use.py
 mod_editor/core/metadata_cache.py
 docs/mod_editor/number_sheets.md
+docs/START_HERE.md
 docs/mod_editor/install_softdrink_2k28.md
 docs/mod_editor/recommended_xemu_settings.md
 docs/mod_editor/discord_bugs_2_faq.md
