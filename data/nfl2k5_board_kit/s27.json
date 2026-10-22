@@ -248,6 +248,44 @@
       "materials": [
         "concrete"
       ]
+    },
+    {
+      "box": {
+        "x": [
+          87.5,
+          88.6
+        ],
+        "y": [
+          19.4,
+          21.5
+        ],
+        "z_abs": [
+          30.0,
+          35.4
+        ]
+      },
+      "materials": [
+        "stadium_lambert11ss"
+      ]
+    },
+    {
+      "box": {
+        "x": [
+          -88.6,
+          -87.5
+        ],
+        "y": [
+          19.4,
+          21.5
+        ],
+        "z_abs": [
+          30.0,
+          35.4
+        ]
+      },
+      "materials": [
+        "stadium_lambert11ss"
+      ]
     }
   ],
   "drop": [
@@ -491,6 +529,10 @@
         "digit_playclock_R"
       ],
       "shape": "group447"
+    },
+    {
+      "keep": [],
+      "shape": "group208"
     }
   ],
   "schema": "nfl2k5_board_kit/v1",
@@ -502,7 +544,8 @@
     "The retail s27 scene (PROVED OFFLINE): each end's 2004 scoreboard assembly is one shape (group448 at -z, group447 at +z): a 25.6 x 8.7 m feed quad at y 33.4 to 42.1, the score, clock and play clock digits under it (y 26.4 to 31.9), sponsor panels (lambert64/63, lambert65, lambert88), the flag banners and header (lambert5, lambert10), the grey housing (lambert8), the concrete tower (x +-20, y 0 to 45.2) and the rails; group448 also carries the Buccaneer Cove shop fronts (coveshops1), kept.",
     "INFERRED: the +z (south) board mirrors the measured -z one (the release gives both the same size; the pose saw only the far end).",
     "DESIGN: the four 7 x 45 ft scoreboard strips above the main boards and the sideline ribbons are left for a later schema key; the boards' frames and bodies take the retail black panel (lambert10) in a dark grey, so its light top band reads dark too.",
-    "DESIGN (main, 2026-09-29): the boards' bodies and backs take cement_walls, a plain retail material, at their dark colour (a solid panel from behind); the frame's material stays on the thin border only."
+    "DESIGN (main, 2026-09-29): the boards' bodies and backs take cement_walls, a plain retail material, at their dark colour (a solid panel from behind); the frame's material stays on the thin border only.",
+    "The retail s27 scene (PROVED OFFLINE, b778 sd1): group208 holds only the four 2004 suite-fascia game clocks (digit_clock_1..4 and digit_colen, x +-88.08, y 19.7 to 21.3, z +-33 to 35), each on a small dark housing quad in stadium_lambert11ss (group401, group422, group423; x +-88.1, y 19.6 to 21.3, |z| 30.2 to 35.1) over the suite boxes (LIGHT_box1, 0.1 m behind). The 2016 stadium has no fascia clocks (the game clock is on the end-zone boards, which already carry the moved digits), and Noah's 2026-10-21 stream showed one floating mid-facade between the NFL NETWORK and SPORTSCENTER signs, so the clocks and their housings go and the suite boxes behind them show."
   ],
   "team": "TB",
   "venue": "s27"
