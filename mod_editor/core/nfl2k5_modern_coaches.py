@@ -43,6 +43,14 @@ Philadelphia's in 2004): its own body, head mesh and face texture, his hair and 
 his glasses painted on (the model has no glasses geometry). That face is derived at build time from the disc's own
 texture (an authored weight mask and glasses overlay, integer arithmetic), so no retail pixels ship.
 
+Skin (b778 cm2): every coach stands on a 2004 model of his own skin (``DARK_SKIN_MODELS``, checked against the pins'
+``bodies[club]["skin"]``): no face is darkened or lightened onto another man's head, arms and hands. Tampa Bay's Todd
+Bowles wears the 2004 Dennis Green model (c00); Cleveland's Todd Monken (c26), Cincinnati's Zac Taylor (c36) and
+Indianapolis's Shane Steichen (c33) moved off the Black coaches' models c00, c06 and c11 (c33 and c36 are named by no
+coach record; c06 and c11 are worn by no club now and go back to retail on a disc built with an earlier version,
+``retired`` in the pins). Pittsburgh's Mike McCarthy wears the capped c27 with his heavy build carried over
+(geometry). A club record that holds an earlier version's model number (``superseded_body_codes``) is rewritten.
+
 Coach models (b77 cm1): where the 2004 model cannot reach the 2026 coach by texture alone, ``<club>/geometry.json``
 moves the scene's own vertices (``apply_geometry``: integer positions and normals of the vertices that move, refused on
 any mesh but the one each shape was authored on). Washington's Dan Quinn has a bald head (the 2004 hair volume off the
@@ -74,7 +82,8 @@ HELP_TEXT = (
     "Dresses every club's head coach on the sideline in his 2026 look: the club's 2026 colours on his polo, jacket "
     "and cap, the 2026 logo on his chest, a modern black headset, and his own face from his official headshot, "
     "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build (lean "
-    "coaches on a lean body), Washington's Dan Quinn has a bald head, and Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
+    "coaches on a lean body) and of his own skin (Tampa Bay's Todd Bowles on the game's 2004 Dennis Green model), "
+    "Pittsburgh's Mike McCarthy wears a cap, Washington's Dan Quinn has a bald head, and Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
     "sideline staff wear the same 2026 colours. Dallas and Washington pictures come from the SOFTDRINK league "
     "data; without it they show the game's no-photo image. The animations are the game's own. Experimental: "
     "not yet seen in the game by the SOFTDRINK tester."
@@ -118,6 +127,13 @@ PORTRAIT_HEADER = 0x20
 GEOMETRY_SCHEMA = "nfl2k5_coach_geometry/v1"
 GEOMETRY_FILE = "geometry.json"
 GEOMETRY_SHAPES = ("coachBodyGrp1", "coachLodGrp1", "coachHeadGrp1")
+# b778 cm2: the retail coach models whose head, arms and hands are a Black man's (the 2004 head coaches Dennis Green
+# c00, Lovie Smith c05, Marvin Lewis c06, Tony Dungy c11 and Herman Edwards c19, and the created-team coaches c50 and
+# c51; measured on the retail textures: arms luma 78-121 against 135-172 on every other model). A coach is only ever
+# dressed on a model of his own skin (pins ``bodies[club]["skin"]``): Noah 10/21, after Todd Bowles stood on the 2004
+# Jon Gruden model with a darkened face, "we should use an actual black model".
+DARK_SKIN_MODELS = frozenset({"00", "05", "06", "11", "19", "50", "51"})
+SKINS = ("dark", "light")
 
 
 class ModernCoachesError(ValueError):
@@ -176,17 +192,39 @@ def _check_pins(document: dict) -> dict:
                 f"{row['team']}: the geometry pin is malformed")
     bodies = [row["body_code"] for row in teams]
     require(len(set(bodies)) == len(bodies), "two clubs name the same coach body")
+    for row in teams:
+        require(all(str(code).isdigit() and code != row["body_code"] for code in row.get("superseded_body_codes", ())),
+                f"{row['team']}: malformed earlier coach bodies")
+    if "bodies" in document:          # record_pins checks the rows before the recorder adds the bodies
+        require(not skin_mismatches(document), "a coach is dressed on a model of another skin: "
+                + ", ".join(skin_mismatches(document)))
+    for row in document.get("retired", ()):
+        require(set(row) >= {"archive", "span_offset", "span_size", "retail_sha256", "superseded_sha256"}
+                and row["archive"] not in {r["archive"] for r in teams}, "modern coach retired model pin incomplete")
     for row in document.get("portraits", ()):
         require(set(row) >= {"team", "portrait_id", "retail_photo_id", "outer_index", "chunk_offset", "span_size",
                              "retail_sha256", "applied_sha256", "rejected_sha256"}, "modern coach portrait pin incomplete")
     return document
 
 
+def skin_mismatches(document: dict) -> list[str]:
+    """The clubs whose coach skin (pins ``bodies``) is not the skin of the model he wears (``DARK_SKIN_MODELS``)."""
+    bodies = document.get("bodies") or {}
+    out = []
+    for row in document.get("teams", ()):
+        skin = (bodies.get(row["team"]) or {}).get("skin")
+        if skin not in SKINS or (skin == "dark") != (row["body_code"] in DARK_SKIN_MODELS):
+            out.append(f"{row['team']} ({skin} on c{row['body_code']})")
+    return out
+
+
 def pins() -> dict:
     global _PINS
     if _PINS is None:
         require(PINS_PATH.is_file(), "the modern coach pins are missing from this build")
-        _PINS = _check_pins(json.loads(PINS_PATH.read_text(encoding="utf-8")))
+        document = json.loads(PINS_PATH.read_text(encoding="utf-8"))
+        require(isinstance(document, dict) and "bodies" in document, "the modern coach pins name no coach bodies")
+        _PINS = _check_pins(document)
     return _PINS
 
 
@@ -702,6 +740,7 @@ def _parts(archive, document: dict) -> list[dict]:
         if row["body_code"] != row["team_code"]:
             site, value = _coach_body_site(archive, row["team"])
             state = ("retail" if value == int(row["team_code"]) else "applied" if value == int(row["body_code"])
+                     else "previous" if value in {int(c) for c in row.get("superseded_body_codes", ())}
                      else "kept")
             out.append(dict(kind="body_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
         for pkg in row["sideline"]:
@@ -711,6 +750,16 @@ def _parts(archive, document: dict) -> list[dict]:
                      else "foreign")
             out.append(dict(kind="sideline", team=f"{row['team']}:{pkg['package']}", at=at, size=len(span),
                             state=state, row=dict(pkg, team=row["team"], palette_max=row.get("palette_max", 256))))
+    for row in document.get("retired", ()):
+        # b778 cm2: a model no club wears any more; a disc built with an earlier version holds that club's art there,
+        # which goes back to the retail bytes (no coach record names the model, so nothing shows it either way)
+        entry = entries.get(name_id(row["archive"]))
+        require(entry is not None, f"{row['archive']} is not on this disc")
+        at = entry.virtual_offset + row["span_offset"]
+        digest = sha(archive.read(at, row["span_size"]))
+        state = ("kept" if digest == row["retail_sha256"] else "previous" if digest in row["superseded_sha256"]
+                 else "foreign")
+        out.append(dict(kind="retired", team=row["archive"], at=at, size=row["span_size"], state=state, row=row))
     for row in document.get("portraits", ()):
         entry = archive.entries[row["outer_index"]]
         require(entry.name_id == int(row["outer_id"], 16), "the portrait aggregate moved")
@@ -776,7 +825,7 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
         parts = _parts(archive, document)
         require(all(p["state"] != "foreign" for p in parts),
                 "a coach model or portrait is neither the retail nor the 2026 bytes; rebuild from a supported USA source")
-        require(retail is not None or all(p["state"] != "previous" for p in parts if p["kind"] == "coach"),
+        require(retail is not None or all(p["state"] != "previous" for p in parts if p["kind"] in ("coach", "retired")),
                 "a coach model holds an earlier version of the 2026 coaches; rebuild from a supported USA source")
         entries = {e.name_id: e for e in archive.entries}
         for index, part in enumerate(parts):
@@ -823,11 +872,20 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
                 plan.append((part["at"], before, after))
                 out.update(written=True, portrait_id=row["portrait_id"], before_sha256=sha(before), after_sha256=sha(after),
                            changed_bytes=sum(a != b for a, b in zip(before, after)))
-            elif part["state"] == "retail" and part["kind"] == "body_id":
-                before = struct.pack("<H", int(row["team_code"]))
+            elif part["state"] == "previous" and part["kind"] == "retired":
+                say(f"2026 head coaches: {row['archive']} back to retail", index, len(parts))
+                template = _retail_archive(retail, row["archive"])
+                before = archive.read(part["at"], part["size"])
+                after = template[row["span_offset"]:row["span_offset"] + row["span_size"]]
+                require(sha(after) == row["retail_sha256"], f"{row['archive']}: the retail image does not hold the retail coach")
+                plan.append((part["at"], before, after))
+                out.update(written=True, archive=row["archive"], before_sha256=sha(before), after_sha256=sha(after),
+                           changed_bytes=sum(a != b for a, b in zip(before, after)))
+            elif part["state"] in ("retail", "previous") and part["kind"] == "body_id":
+                before = struct.pack("<H", int(part["value"]))
                 after = struct.pack("<H", int(row["body_code"]))
                 plan.append((part["at"], before, after))
-                out.update(written=True, body_before=int(row["team_code"]), body_after=int(row["body_code"]),
+                out.update(written=True, body_before=int(part["value"]), body_after=int(row["body_code"]),
                            archive=row["archive"], changed_bytes=sum(x != y for x, y in zip(before, after)))
             elif part["state"] == "retail" and part["kind"] == "photo_id":
                 before = struct.pack("<H", row["retail_photo_id"])
