@@ -788,10 +788,19 @@ def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
     season_now = save.header.display_year
     try:
         target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
-        rows = hh.read_body(disc_body, BASE_YEAR)
-    except (sr.SaveRostError, hh.HonorsHistoryError) as exc:
+    except sr.SaveRostError as exc:
         raise UpgradeRefused(f"honors source must be a disc ROST: {exc}") from exc
     require(target.layout.version in (17, 18), "honors source must be a disc ROST")
+    honor_names = {field: name for name, field in hh.FIELDS.items()}
+    rows = []                      # the disc's live regular-season honor words, as (player, honor, season)
+    for source in target.players:
+        for raw in target.history_words[source.key]:
+            field = (raw >> 16) & 127
+            if field in honor_names and _live_regular(raw) and not raw & FOLD_BIT and raw & 0xFFFF:
+                season = BASE_YEAR - source.record.values["years_pro"] + ((raw >> 23) & 31)
+                rows.append({"first": source.first, "last": source.last,
+                             "birth_date": str(source.record.birth_date or ""),
+                             "honor": honor_names[field], "season": season, "value": raw & 0xFFFF, "folded": False})
     streams = sorted((start, start + len(roster.history_words[key]) * 4, key)
                      for key, start in roster.history_offsets.items() if start is not None)
     # The game can leave one player's stream as the tail of another's. Those words belong to both players, so

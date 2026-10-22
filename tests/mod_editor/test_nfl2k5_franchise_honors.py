@@ -9,7 +9,9 @@ from collections import Counter
 import random
 import struct
 import sys
+import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -17,7 +19,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from mod_editor.core import nfl2k5_franchise_upgrade as up  # noqa: E402
+from mod_editor.core import nfl2k5_franchise_upgrade_io as service  # noqa: E402
+from mod_editor.core import nfl2k5_save_rost as sr  # noqa: E402
 from tests.mod_editor import test_nfl2k5_honors as native  # noqa: E402
+from tests.mod_editor.test_franchise_upgrade import disc_roster, fixture, signed_folder  # noqa: E402
 
 
 def word(field, slot, value, *, folded=False):
@@ -44,6 +49,138 @@ class FoldTests(unittest.TestCase):
         self.assertEqual(up.fold_words([], 5, 4), ())
         with self.assertRaises(up.UpgradeRefused):
             up.fold_words(words, 5, 1)
+
+
+def with_streams(data, document, pool, streams):
+    """A copy of a ROST-bearing buffer whose history pool at ``pool`` holds ``streams`` ({player index: words}),
+    in player order; every other player has no stream."""
+    data = bytearray(data)
+    words, at = 0, pool
+    data[pool:pool + 4 * 4000] = bytes(4 * 4000)
+    for player in document.players:
+        stream = streams.get(player.index)
+        pointer = player.offset + 0x2C
+        if not stream:
+            struct.pack_into("<i", data, pointer, 0)
+            continue
+        struct.pack_into("<i", data, pointer, at - pointer + 1)
+        for i, raw in enumerate(stream):
+            struct.pack_into("<I", data, at, raw | (0x80000000 if i == len(stream) - 1 else 0))
+            at += 4
+        words += len(stream)
+    struct.pack_into("<I", data, document.layout.root + 0x40, words)
+    struct.pack_into("<i", data, document.layout.root + 0x44, pool - (document.layout.root + 0x44) + 1)
+    return bytes(data)
+
+
+def pair(save_streams, disc_streams):
+    """(save payload, disc ROST body) over the synthetic franchise: Peyton Manning (years pro 7), Marvin Harrison (8)."""
+    base = fixture(current=True)[0]
+    document = sr.decode(base)
+    save = with_streams(base, document, 0x70000, save_streams)
+    disc = disc_roster(base)
+    disc = with_streams(disc, sr.decode(disc, preamble=0, reference_year=up.BASE_YEAR), 0x70000 - 0x2E0, disc_streams)
+    return save, disc
+
+
+def honors_of(payload, index):
+    _save, roster = up.franchise(payload)
+    player = roster.players[index]
+    return sorted(((w >> 16) & 127, (w >> 23) & 31, w & 0xFFFF, bool(w & 0x40000000))
+                  for w in roster.history_words[player.key] if 96 <= (w >> 16) & 127 <= 105)
+
+
+class SyncHonorsTests(unittest.TestCase):
+    """b778-pc2: a franchise keeps its career-stat pool in the save, so one started before the honors page carried
+    no award history. The disc's honors are copied by identity and re-slotted to the franchise's own season."""
+
+    def streams(self):
+        # years pro: Manning 8, Harrison 9. disc (2026): Manning MVP 2024 = slot 8 - (2026 - 2024) = 6, Harrison Pro Bowl
+        # 2025 = slot 9 - 1 = 8; save (2027): the same seasons are slots 5 and 7
+        return ({0: [word(0, 6, 17)]}, {0: [word(96, 6, 1)], 1: [word(103, 8, 1)]})
+
+    def test_honors_are_copied_by_identity_reslotted_and_idempotent(self):
+        save, disc = pair(*self.streams())
+        result, receipt = up.sync_honors(save, disc)
+        self.assertEqual(honors_of(result, 0), [(96, 5, 1, False)])
+        self.assertEqual(honors_of(result, 1), [(103, 7, 1, False)])
+        self.assertEqual(receipt["fold_depth"], 0)
+        self.assertEqual({(c["player"], c["field"], c["season"]) for c in receipt["changes"]},
+                         {("Peyton Manning", "honor.mvp", 2024), ("Marvin Harrison", "honor.pro_bowl", 2025)})
+        self.assertTrue(receipt["outside_declared_fields_identical"])
+        _save, before = up.franchise(save)
+        _save, after = up.franchise(result)
+        for player in before.players:        # nothing but the pool, the stream pointers and the used count moved
+            self.assertEqual({k: v for k, v in before.by_key[player.key].record.values.items() if k != "history_pointer"},
+                             {k: v for k, v in after.by_key[player.key].record.values.items() if k != "history_pointer"})
+        self.assertEqual(after.history_words[before.players[0].key][-1] & 0x80000000, 0x80000000)
+        again, receipt = up.sync_honors(result, disc)
+        self.assertEqual((again, receipt["changes"]), (result, []))
+
+    def test_unknown_identity_and_current_season_honors_are_left_out(self):
+        save, disc = pair(*self.streams())
+        edited = bytearray(disc)
+        document = sr.decode(bytes(edited), preamble=0, reference_year=up.BASE_YEAR)
+        edited[document.players[1].offset + 0x10:document.players[1].offset + 0x14] = bytes(4)   # no first name
+        result, receipt = up.sync_honors(save, bytes(edited))
+        self.assertEqual(honors_of(result, 1), [])
+        self.assertEqual(honors_of(result, 0), [(96, 5, 1, False)])
+
+    def test_a_full_pool_folds_the_oldest_seasons_like_the_game_and_keeps_career_totals(self):
+        old = [word(f, s, v) for s, base in ((1, 10), (2, 20)) for f, v in ((0, base), (1, base + 1), (2, base + 2))]
+        save, disc = pair({0: old + [word(0, 6, 17)]}, {0: [word(96, 6, 1)]})
+        with unittest.mock.patch.object(up, "HISTORY_RESERVE", 20000 - 7):    # room for 7 words: 7 + 1 honor does not fit
+            result, receipt = up.sync_honors(save, disc)
+        self.assertEqual(receipt["fold_depth"], 7)
+        self.assertEqual(receipt["folded_players"], ["Peyton Manning"])
+        _save, roster = up.franchise(result)
+        words = roster.history_words[roster.players[0].key]
+        folded = {((w >> 16) & 127): w & 0xFFFF for w in words if w & 0x40000000 and (w >> 23) & 31 == 2}
+        self.assertEqual(folded, {0: 30, 1: 32, 2: 34})                      # slot 1 merged into slot 2 by sum
+        self.assertFalse(any((w >> 23) & 31 == 1 for w in words if (w >> 16) & 127 < 96))
+        self.assertEqual(honors_of(result, 0), [(96, 5, 1, False)])
+        self.assertEqual(receipt["used_after"], len(words))
+        with unittest.mock.patch.object(up, "HISTORY_RESERVE", 20000 - 8):    # 8 words fit without folding
+            result, receipt = up.sync_honors(save, disc)
+        self.assertEqual(receipt["fold_depth"], 0)
+
+    def test_honors_below_an_existing_fold_floor_join_the_folded_word_once(self):
+        folded = word(0, 2, 30, folded=True)
+        save, disc = pair({0: [folded, word(0, 6, 17)]}, {0: [word(103, 3, 1), word(103, 4, 1)]})
+        # disc slots 3 and 4 are seasons 2022 and 2023: slots 2 and 3 in the save, the first at or below the floor (2)
+        result, receipt = up.sync_honors(save, disc)
+        self.assertEqual(honors_of(result, 0), [(103, 2, 1, True), (103, 3, 1, False)])
+        self.assertEqual(up.sync_honors(result, disc)[1]["changes"], [])
+
+    def test_shared_history_tails_are_not_edited(self):
+        base = fixture(current=True, shared=True)[0]
+        disc = pair({}, {0: [word(96, 6, 1)], 1: [word(103, 8, 1)]})[1]
+        result, receipt = up.sync_honors(base, disc)
+        self.assertEqual(result, base)
+        self.assertEqual(receipt["shared_history_skipped"], ["Marvin Harrison", "Peyton Manning"])
+
+    def test_nothing_fits_refuses_without_writing(self):
+        save, disc = pair({0: [word(0, 6, 17)]}, {0: [word(96, 6, 1)]})
+        with unittest.mock.patch.object(up, "HISTORY_RESERVE", 19999):
+            with self.assertRaisesRegex(up.UpgradeRefused, "does not fit"):
+                up.sync_honors(save, disc)
+
+    def test_honors_is_a_command_and_part_of_upgrade(self):
+        self.assertIn("honors", service.COMMANDS)
+        save, disc = pair(*self.streams())
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            folder = signed_folder(root / "source", save)
+            iso = root / "disc.iso"
+            iso.write_bytes(b"synthetic disc fingerprint")
+            with unittest.mock.patch.object(service, "load_disc", return_value=(disc, {})), \
+                    unittest.mock.patch.object(up, "validate_save", return_value={}):
+                plan = service.plan_upgrade(folder, iso, command="honors")
+        self.assertEqual([s["operation"] for s in plan.receipt["steps"]], ["honors"])
+        self.assertEqual(plan.receipt["changed_fields"], 2)
+        from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
+        plan.receipt["validation"] = {"after": {"findings": []}}
+        self.assertIn("Award history from the disc: 2 honors for 2 players", preview_text(plan))
 
 
 @unittest.skipUnless(native.NativeTests.__dict__.get("__unittest_skip__") is None and native.XBE.is_file()
