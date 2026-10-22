@@ -60,8 +60,9 @@ class ProviderBoundaryTests(unittest.TestCase):
             game.mkdir()
             source = ApfSource(game, game, game / "0A", build.EXPECTED_0A_SHA256, 0, "b" * 64, "Synthetic")
             design = Modification("design", "apf_play_design", root / "absent.json", "a" * 64, {})
-            for kind in ("formation_package_map", "play_assignment_route", "formation_alignment",
-                         "splb_book_membership", "coverage_geometry", "apf_scheme_presets"):
+            # Who lines up, Assignment Routes and Fine-tune Plays compile on top of a design now
+            # (apf2k8_common_compiler); these writers still start from retail and stay exclusive.
+            for kind in ("formation_alignment", "coverage_geometry", "apf_scheme_presets"):
                 with self.subTest(kind=kind), patch.object(build, "sha256_file", return_value=build.EXPECTED_0A_SHA256), \
                         patch.object(build, "_require_build_space"), patch.object(build, "_copy_regular") as copy, \
                         patch.object(play_design_service, "compile_modification") as compile_design:

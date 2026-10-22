@@ -239,6 +239,16 @@ class RetailWorkflowTests(unittest.TestCase):
             self.assertEqual(row["writer_mode"], "design_then_routes_maps_and_fine_tune")
             self.assertEqual(row["runtime_status"], "UNWITNESSED")
 
+    def test_project_with_design_route_and_fine_tune_saves_and_loads(self):
+        from mod_editor.apf_studio.session import ApfSession
+        self.session.replace_play_assignment_route(586, 5, 2, 5)
+        self.session.apply_splb_membership_batch((splb.MembershipChange(259, self.used, 586, True),), replace_outer=259)
+        path = self.temp / "stacked.apf2k8mod"
+        self.session.save_project(path)
+        fresh = ApfSession(self.source, SimpleNamespace(), cache_root=self.temp / "cache-fresh")
+        self.assertEqual(fresh.load_project(path), 3)
+        self.assertEqual(c.Book.from_bytes(fresh._staged_master_play_body()).to_bytes(), self.staged_master())
+
     def test_reverting_the_design_under_dependent_edits_is_refused(self):
         from mod_editor.apf_studio.session import SessionError
         self.session.replace_play_assignment_route(586, 5, 2, 5)

@@ -69,8 +69,9 @@ def synthetic() -> bytes:
     return bytes(data)
 
 
-def play_request(mode="edit", target=0, donor=0, name=None, nodes=None, copies=None):
-    return {"mode": mode, "target": target, "donor": donor, "name": name, "nodes": nodes or [], "copies": copies or []}
+def play_request(mode="edit", target=0, donor=0, name=None, nodes=None, copies=None, offer=None):
+    return {"mode": mode, "target": target, "donor": donor, "name": name, "nodes": nodes or [], "copies": copies or [],
+            "offer": offer}
 
 
 def synthetic_cpu() -> bytes:
@@ -241,7 +242,15 @@ class DesignerTests(unittest.TestCase):
 
     def test_payload_is_logical_strict_and_roundtrips(self):
         self.plan["plays"] = [play_request("append", 4, 0, "Made here")]
-        self.assertEqual(decode_plan(encode_plan(self.plan)), self.plan)
+        # Decoding normalizes: plans saved before the Playbook Manager fields (offer, offer_sets,
+        # unlock_offers) still load, with those fields at their "unchanged" defaults.
+        self.assertEqual(decode_plan(encode_plan(self.plan)), normalize_plan(self.plan))
+        self.assertEqual(normalize_plan(self.plan)["plays"][0]["offer"], None)
+        self.assertEqual((normalize_plan(self.plan)["offer_sets"], normalize_plan(self.plan)["unlock_offers"]), ([], None))
+        legacy = {k: v for k, v in self.plan.items() if k not in ("offer_sets", "unlock_offers")}
+        legacy["plays"] = [{k: v for k, v in r.items() if k != "offer"} for r in self.plan["plays"]]
+        legacy = json.dumps(legacy).encode()
+        self.assertEqual(decode_plan(legacy), normalize_plan(self.plan))
         with self.assertRaises(ValidationError):
             decode_plan(b'{"schema":"a","schema":"b"}')
         with self.assertRaises(ValidationError):

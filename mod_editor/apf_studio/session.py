@@ -2389,12 +2389,14 @@ class ApfSession:
     def check_design_composition(self, others, plan, digest) -> None:
         """Compile every staged edit that sits on top of a prospective design plan."""
 
-        state = self._design_state_for(plan, digest)
         maps = self._active_package_maps(others)
         routes = self._active_route_requests(others)
+        changes = self._active_splb_changes(others)
+        if not (maps or routes or changes):
+            return  # nothing is stacked on the design; build_design already verified it
+        state = self._design_state_for(plan, digest)
         try:
             master = common_compiler.compose_master(state.master, maps, routes)
-            changes = self._active_splb_changes(others)
             if changes:
                 common_compiler.check_fine_tune(
                     state.books, lambda outer: self._retail_splb_book(outer).body,
@@ -3365,8 +3367,9 @@ class ApfSession:
             updated = dict(self._modifications)
             updated.pop(asset_id)
             try:
-                self._compile_master_play(updated)
                 active = self._active_splb_changes(updated)
+                if self._active_package_maps(updated) or self._active_route_requests(updated):
+                    self._compile_master_play(updated)
                 if active:
                     self._compile_splb_groups(active, updated)
             except ValidationError as exc:
@@ -4023,10 +4026,13 @@ class ApfSession:
             master_play_modifications = {
                 item.asset_id: item
                 for item in validated
-                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND, coverage.PROVIDER_KIND,
-                                 play_design.PROVIDER_KIND}
+                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND, coverage.PROVIDER_KIND}
             }
             if master_play_modifications:
+                # Routes and Who-lines-up maps are checked on the designed MASTER when a design is
+                # staged; a design alone was already verified by its own validator.
+                master_play_modifications.update(
+                    {item.asset_id: item for item in validated if item.kind == play_design.PROVIDER_KIND})
                 try:
                     self._compile_master_play(master_play_modifications)
                 except ValidationError as exc:
