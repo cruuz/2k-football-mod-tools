@@ -318,6 +318,9 @@ class HairStyleTests(unittest.TestCase):
             self.assertEqual(plan.receipt["changed_fields"], 1)
             first = sr.decode(source).players[0]
             self.assertEqual(plan.payload[first.offset + 0x0D] & 0x0F, 4)
+        from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
+        plan.receipt["validation"] = {"after": {"findings": []}}
+        self.assertIn("Hair styles from the disc: 1 players", preview_text(plan))
         import tools.nfl2k5_franchise_upgrade as cli
         with self.assertRaises(SystemExit):
             cli.main(["no-such-command", "--input", "x", "--disc", "y", "--receipt", "z"])

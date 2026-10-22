@@ -1094,12 +1094,18 @@ def apply_assignments(path: Path | str) -> dict[str, Any]:
     return receipt
 
 
-def roster_status(path: Path | str) -> dict[str, Any]:
-    """Read only: how many of the tracked 2026 assignments the image's main roster carries (record +0x0D bits 0-3)."""
+def main_roster(path: Path | str) -> bytes:
+    """Read only: the image's main roster resource (header included)."""
     from . import nfl2k5_roster_records as rr
     with rr._outer_image()(str(path), writable=False) as archive:
         entry = rr._entry(archive)
-        resource = archive.read(entry.virtual_offset, entry.size)
+        return archive.read(entry.virtual_offset, entry.size)
+
+
+def roster_status(path: Path | str, resource: bytes | None = None) -> dict[str, Any]:
+    """Read only: how many of the tracked 2026 assignments the image's main roster carries (record +0x0D bits 0-3)."""
+    from . import nfl2k5_roster_records as rr
+    resource = main_roster(path) if resource is None else resource
     document = rr.RosterDocument(resource[rr.RESOURCE_HEADER_SIZE:], base=0, source="image",
                                  resource_header=resource[:rr.RESOURCE_HEADER_SIZE])
     plan = plan_assignments(document)
