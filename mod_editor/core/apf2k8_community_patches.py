@@ -362,7 +362,8 @@ def upstream_conflicts(folder: Path) -> list[str]:
     """Upstream (unrelocated) copies in a Xenia patches folder; they collide with the charge-abilities caves."""
     import hashlib
     found = []
-    known = {row.upstream_sha256: row for row in load_definitions()}
+    # Only the two whose caves were moved collide; the hidden-formations upstream file equals the Studio copy.
+    known = {row.upstream_sha256: row for row in load_definitions() if any(r.new_start != r.start for r in row.regions)}
     try:
         candidates = sorted(Path(folder).glob("*.patch.toml"))
     except OSError:
