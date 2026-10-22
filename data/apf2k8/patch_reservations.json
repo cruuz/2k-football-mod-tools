@@ -18,6 +18,26 @@
       "end_inclusive": "0x84D0D7FF"
     },
     {
+      "owner": "basileus_hidden_formations",
+      "start": "0x84D0D800",
+      "end_inclusive": "0x84D0D94F"
+    },
+    {
+      "owner": "basileus_play_calling_by_package",
+      "start": "0x84D0D980",
+      "end_inclusive": "0x84D0DAEF"
+    },
+    {
+      "owner": "basileus_all_packages_family_table",
+      "start": "0x84D0DB00",
+      "end_inclusive": "0x84D0DBAF"
+    },
+    {
+      "owner": "basileus_all_packages_code",
+      "start": "0x84D0DC00",
+      "end_inclusive": "0x84D0DE6F"
+    },
+    {
       "owner": "apf2k8_charge_abilities_visual_latch",
       "start": "0x852D6800",
       "end_inclusive": "0x852D6DFF"
@@ -48,5 +68,5 @@
       "end_inclusive": "0x852D653F"
     }
   ],
-  "note": "Exclusive ranges on pinned BASE and TU 1.1. Pass-fetch emits 716 bytes within E000..E2FF; its pristine-image preflight still checks the full page. Canonical pass-fetch and situation patches have disjoint write sets. Situation v4 code adds the native personnel-rating contribution hook and reserves E300..F2FF; the legacy franchise example retains F300..FFFF. Situation data is immutable string-section padding, code is executable padding, and last-draw receipts occupy writable data-section padding. External franchise recipes must honor all reservations, including the expanded situation range. Charge revision 4 adds consume/downgrade hooks and a 128-entry visual latch beyond the declared writable .XBMOVIE contents; code and latch are disjoint from all other owners. Missing or saturated latch keys use level-1 feedback; gameplay lifetime remains UNWITNESSED."
+  "note": "Exclusive ranges on pinned BASE and TU 1.1. Pass-fetch emits 716 bytes within E000..E2FF; its pristine-image preflight still checks the full page. Canonical pass-fetch and situation patches have disjoint write sets. Situation v4 code adds the native personnel-rating contribution hook and reserves E300..F2FF; the legacy franchise example retains F300..FFFF. Situation data is immutable string-section padding, code is executable padding, and last-draw receipts occupy writable data-section padding. External franchise recipes must honor all reservations, including the expanded situation range. Charge revision 4 adds consume/downgrade hooks and a 128-entry visual latch beyond the declared writable .XBMOVIE contents; code and latch are disjoint from all other owners. Missing or saturated latch keys use level-1 feedback; gameplay lifetime remains UNWITNESSED. Community patches by Basileus Maximus (TU 1.1 only) own D800..D94F (hidden formations), D980..DAEF (play calling by package, relocated from D400..D567), DB00..DBAF (all-packages family table) and DC00..DE6F (all-packages code and rank table, relocated from D580..D7E7); the upstream copies collided with charge abilities and must not be installed."
 }

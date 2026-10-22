@@ -73,3 +73,39 @@ An **XMA-decoder crash was reported on Canary**. That is a Canary observation;
 its cause and any relationship to edited game data remain unproved. Edge
 support and SDL input are not an XMA-decoder fix. This job launched neither
 runtime and collected no controller, audio or gameplay witness.
+
+## Community play-calling patches (Basileus Maximus)
+
+Open **Tools > Community play-calling patches (Basileus Maximus)**. Three Xenia
+patches by community modder **Basileus Maximus**, shipped with his permission,
+for **Title Update 1.1 only**:
+
+- **Play calling by package fixed**: every package can be picked in the play
+  call screen and applies to every formation; Punt, Field Goal and the other
+  kicking packages open their own formations.
+- **All packages in substitution menu**: the Substitutions screen lists every
+  package, in the main menu and in game, in a fixed order, and keeps new
+  formations next to their family.
+- **Hidden formations revealed**: offensive formations the game leaves out of
+  their family are grouped with it in the Playbook Manager and the in-game
+  picker.
+
+All three start **off**. **Review and install** writes the Studio's copy into
+the Xenia patches folder and enables Xenia's patch switch, like the other
+Studio patches; **Remove** takes it out again. Each patch file keeps
+`author = "Basileus Maximus"`.
+
+The author's original files put the first two patches' code into
+`0x84D0D400..0x84D0D7E7`, which the Studio's charged-abilities patch also uses,
+so the two could not be enabled together. The Studio's copies move that code to
+its own reserved space (`data/apf2k8/patch_reservations.json`):
+`0x84D0D980..0x84D0DAEF` (play calling) and `0x84D0DC00..0x84D0DE6F` (all
+packages); hidden formations (`0x84D0D800..0x84D0D94F`) and the all-packages
+family table (`0x84D0DB00..0x84D0DBAF`) stay where he put them. Only branch
+offsets and one table address change; every other instruction is his. A
+Capstone check compares both versions instruction by instruction. Do not keep
+his original files for the first two patches in the same patches folder: the
+Studio refuses to launch when they sit next to the charged-abilities patch.
+
+These patches change menus and play calling. Their in-game behavior with
+Studio builds has not been witnessed by the Studio maintainers.

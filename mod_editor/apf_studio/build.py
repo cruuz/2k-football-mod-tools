@@ -39,6 +39,7 @@ from mod_editor.core.apf2k8_splb_writer import (
 from mod_editor.core.errors import ValidationError
 from mod_editor.core import apf2k8_coverage_tuning as coverage
 from mod_editor.core.apf2k8_book_identity import disc_book_identity_report
+from mod_editor.core import apf2k8_common_compiler as common_compiler
 from . import play_design_service as play_design, coverage_service, scheme_service, field_material_service
 from . import playcalling_service, playcalling_build
 
@@ -1317,6 +1318,28 @@ class ApfBuildService:
                 )
             compiled[outer_index] = (result.entry_bytes, row)
             edit_rows.append(row)
+        if play_design_group and (
+            play_assignment_route_group or package_map_group or splb_membership_group
+        ):
+            # Design Play/Formation goes first; Assignment Routes, Who lines up and Fine-tune
+            # Plays are compiled on top of its MASTER and CPU books (one ordered compile).
+            for outer_index, entry_bytes, row in self._compile_design_combined(
+                play_design_group[0],
+                tuple(play_assignment_route_group),
+                tuple(package_map_group),
+                tuple(splb_membership_group),
+            ):
+                if outer_index in compiled:
+                    raise BuildError(
+                        "Design Play/Formation and its stacked edits collide with another edit at "
+                        f"outer {outer_index}"
+                    )
+                compiled[outer_index] = (entry_bytes, row)
+                edit_rows.append(row)
+            play_design_group = []
+            play_assignment_route_group = []
+            package_map_group = []
+            splb_membership_group = []
         if play_assignment_route_group or package_map_group or coverage_group:
             outer_index, entry_bytes, row = self._compile_master_play_edits(
                 routes=tuple(play_assignment_route_group),
@@ -2554,6 +2577,64 @@ class ApfBuildService:
             "edits_default_xex": False,
         }
         return entries, row
+
+    def _compile_design_combined(
+        self,
+        design: Modification,
+        routes: tuple[Modification, ...],
+        package_maps: tuple[Modification, ...],
+        splb_edits: tuple[Modification, ...],
+    ) -> list[tuple[int, bytes, dict[str, object]]]:
+        """Compile Design Play/Formation with the edits staged on top of it."""
+
+        try:
+            plan = play_design.read_modification(design)
+            requests = []
+            for modification in routes:
+                request = decode_route_clone_payload(
+                    modification.replacement_path.read_bytes(), modification.asset_id)
+                if request != route_clone_request_from_mapping(modification.metadata):
+                    raise ValidationError(f"APF route-clone metadata changed: {modification.asset_id}")
+                requests.append(request)
+            maps = []
+            for modification in package_maps:
+                change = decode_package_map_payload(
+                    modification.replacement_path.read_bytes(), modification.asset_id)
+                if change != package_map_from_mapping(modification.metadata):
+                    raise ValidationError(f"Who-lines-up metadata changed: {modification.asset_id}")
+                maps.append(change)
+            changes = []
+            for modification in splb_edits:
+                change = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(), modification.asset_id)
+                if change != splb_change_from_mapping(modification.metadata):
+                    raise ValidationError(f"Stock-playbook edit metadata changed: {modification.asset_id}")
+                changes.append(change)
+            result = common_compiler.build_combined(
+                self.source.index_0a, plan, package_maps=maps, routes=requests, splb_changes=changes)
+        except (OSError, ValidationError) as exc:
+            raise BuildError(f"Could not compile Design Play/Formation with its stacked edits: {exc}") from exc
+        by_outer: dict[int, list[Modification]] = {}
+        for modification in splb_edits:
+            change = splb_change_from_mapping(modification.metadata)
+            by_outer.setdefault(change.outer_index, []).append(modification)
+        master_edits = (*package_maps, *routes)
+        rows = []
+        for outer_index, entry_bytes in sorted(result.entries.items()):
+            members = (design, *master_edits) if outer_index == 180 else (design, *by_outer.get(outer_index, ()))
+            rows.append((outer_index, entry_bytes, {
+                "asset_ids": tuple(m.asset_id for m in members),
+                "kind": play_design.PROVIDER_KIND,
+                "outer_index": outer_index,
+                "replacement_payload_sha256s": {m.asset_id: m.replacement_sha256 for m in members},
+                "entry_size": len(entry_bytes), "entry_sha256": _hash_bytes(entry_bytes),
+                "writer_schema": play_design.SCHEMA,
+                "writer_mode": "design_then_routes_maps_and_fine_tune",
+                "verification": result.reports[outer_index],
+                "design_verification": result.design_report,
+                "runtime_status": "UNWITNESSED",
+            }))
+        return rows
 
     def _compile_master_play_edits(
         self,

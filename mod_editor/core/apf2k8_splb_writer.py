@@ -2364,14 +2364,23 @@ def fit_book_h7a(encoded: bytes, body: bytes, shift: int, budget: int) -> tuple[
 
 
 def build_book_patch(
-    index_path: Path, changes: Iterable[MembershipChange | TagMove | TrailerReplace]
+    index_path: Path, changes: Iterable[MembershipChange | TagMove | TrailerReplace],
+    *, base_body: bytes | None = None, master_play_count: int = 586,
 ) -> CompiledBook:
-    """Compile changes into a rebuilt outer entry without touching the source."""
+    """Compile changes into a rebuilt outer entry without touching the source.
+
+    ``base_body`` lets the changes sit on top of an already-edited book (a CPU
+    book that Design Play/Formation added rows to); the retail entry is still
+    read for its container layout.  ``master_play_count`` is the play count of
+    the MASTER the book will ship with.
+    """
 
     normalized = tuple(changes)
     outer_index = _normalize(normalized).outer_index
     book = read_book(Path(index_path), outer_index)
-    compiled = compile_book(book, normalized)
+    if base_body is not None:
+        book = parse_book(base_body, outer_index)
+    compiled = compile_book(book, normalized, master_play_count=master_play_count)
 
     try:
         archive = apf_outer.parse_archive(Path(index_path))
@@ -2468,7 +2477,7 @@ def build_book_patch(
         raise ValidationError("The rebuilt stock playbook changed its decoded block")
     rebuilt_part = reparsed.files[0].parts[0]
     verified = decoded[rebuilt_part.offset : rebuilt_part.offset + rebuilt_part.length]
-    verification = verify_book(book.body, verified, normalized)
+    verification = verify_book(book.body, verified, normalized, master_play_count=master_play_count)
 
     report = {
         **dict(compiled.report),

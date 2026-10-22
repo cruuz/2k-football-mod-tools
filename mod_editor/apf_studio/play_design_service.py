@@ -44,11 +44,11 @@ def check_composition(modifications) -> None:
     designs = [m for m in items if m.kind == PROVIDER_KIND]
     if len(designs) > 1:
         raise ValidationError("Only one atomic APF design plan may be staged.")
+    # Who lines up, Assignment Routes and Fine-tune Plays are compiled on top of the design
+    # (see core/apf2k8_common_compiler.py), so they may be staged together with it.  The
+    # writers below still start from the retail files and remain exclusive.
     conflicts = {
-        "formation_package_map": "Who lines up (formation_package_map)",
-        "play_assignment_route": "Assignment Routes (play_assignment_route)",
         "formation_alignment": "Formation Alignment (formation_alignment)",
-        "splb_book_membership": "Fine-tune Plays / CPU Audibles (splb_book_membership)",
         "coverage_geometry": "Coverage Geometry (coverage_geometry)",
         "apf_scheme_presets": "Scheme Presets (apf_scheme_presets)",
     }
@@ -59,8 +59,7 @@ def check_composition(modifications) -> None:
                     "Design Play/Formation (apf_play_design) owns MASTER and its CPU additions; conflicts with "
                     + conflicts[item.kind]
                     + ". Build them separately or revert one before staging; "
-                    "a common MASTER/CPU compiler is required.")
-
+                    "that writer does not yet compile on top of a design.")
 
 
 def stage_plan(session, plan: dict) -> dict:
@@ -72,6 +71,9 @@ def stage_plan(session, plan: dict) -> dict:
     probe = Modification(SELECTOR, PROVIDER_KIND, session.replacements_root / (digest + ".json"), digest, metadata(plan))
     check_composition([*prospective, probe])
     result = build_design(session.source.index_0a, plan)
+    # The design must also hold up under the Assignment Routes / Who lines up / Fine-tune
+    # edits already staged on top of it.
+    session.check_design_composition({m.asset_id: m for m in prospective}, plan, digest)
     if previous is not None and previous.replacement_sha256 == digest:
         return result.report
     stored = session._store_payload(digest, payload, ".json")

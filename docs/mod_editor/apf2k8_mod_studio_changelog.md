@@ -1,5 +1,17 @@
 # APF 2K8 Mod Studio Changelog
 
+## Next release (unreleased)
+
+Thanks to Basileus Maximus, who wrote these additions and shared them for the official Studio. His code is included with his permission under the Studio's MIT licence.
+
+- Created plays can be used by the player: they show up in the in-game Playbook Manager, in the formations of the play they were made from unless you choose others.
+- Created plays can be edited in Assignment Routes, and created and edited plays are listed in Fine-tune Plays, where they can be added to CPU playbooks.
+- Two new windows under Design Play/Formation: **Formation plays** (one formation at a time) and **Assign plays** (many formations at once, by personnel or formation family). Any stock or created play can be added to or taken out of a formation; a formation holds at most 84 plays, the in-game list limit. Plays your default playbook uses cannot be removed.
+- **Mirror** buttons in Design Play flip one player's assignment, or the QB's and the player he hands off to, the way the game flips a formation. Fake and real handoffs gain editable K, A and hole fields.
+- Design Play/Formation can be staged together with Assignment Routes, Who lines up and Fine-tune Plays. Build compiles the design first and the other edits on top of it (one ordered compile). Formation Alignment, Coverage Geometry and Scheme Presets still cannot be combined with a design.
+- His three Title Update 1.1 Xenia patches (play calling by package fixed, all packages in substitution menu, hidden formations revealed) are available from Tools, off by default. The Studio moved two of them out of the code space the charged-abilities patch uses, so all of them can be enabled together. See `docs/mod_editor/apf2k8_fourth_down_and_xenia.md`.
+- In-game results are not yet witnessed for these additions in Studio builds.
+
 ## 0.1.0-alpha.108 - beta 77.1
 
 Thanks to Urianus for the Situations panel reports. Both fixes are in the Studio, not in the game, and are covered by tests that fail on the old source.

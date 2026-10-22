@@ -57,9 +57,14 @@ def context(session):
     canonical = session._master_play_body()
     modification = session._modifications.get(coverage.PROFILE_ASSET_ID)
     edits = () if modification is None else read_profile(modification)
+    # With a Design Play/Formation edit staged, Who lines up and Assignment Routes are compiled on
+    # the designed MASTER, which Coverage Geometry does not read.  Show the retail zones then,
+    # instead of replaying edits on a MASTER they were not written for.
+    designed = session._design_modification() is not None
     preview, report = coverage.compose_geometry(
-        canonical, edits, package_maps=session._active_package_maps(),
-        routes=session._active_route_requests())
+        canonical, edits,
+        package_maps=() if designed else session._active_package_maps(),
+        routes=() if designed else session._active_route_requests())
     # Inspect source defaults with the pin; parse the already-verified composed
     # body separately so route clones update every shared assignment use.
     defaults = coverage.inspect_zones(canonical)

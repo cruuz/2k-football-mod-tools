@@ -667,6 +667,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         #: Which volume ``_book`` was read from, so a repeated refresh for the
         #: same game and book does not re-read the MASTER play catalog.
         self._loaded_index: Path | None = None
+        self._loaded_design: str | None = None
         self._plays: list[str] = []
         self._formations: dict[int, str] = {}
         self._categories: tuple[dict[str, object], ...] = ()
@@ -883,6 +884,14 @@ class ApfPlaybookMembershipPanel(QFrame):
             return outers[0]
         return None
 
+    def _design_key(self) -> str | None:
+        """Digest of the staged Design Play/Formation plan, so the tab reloads when it changes."""
+        session = getattr(self.facade, "session", None)
+        for item in getattr(session, "modifications", ()) if session is not None else ():
+            if item.kind == "apf_play_design":
+                return item.replacement_sha256
+        return None
+
     def set_context(self) -> None:
         session = getattr(self.facade, "session", None)
         if session is not self._pending_session:
@@ -927,6 +936,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             and outer is not None
             and self._book.outer_index == int(outer)
             and self._loaded_index == index_0a
+            and self._loaded_design == self._design_key()
         ):
             # Same game, same book: re-reading the whole MASTER play catalog
             # would cost seconds for nothing. Only the staged set can have
@@ -945,7 +955,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         if outer is None:
             return
         if (self._book is not None and self._book.outer_index == int(outer)
-                and self._loaded_index == index_0a):
+                and self._loaded_index == index_0a and self._loaded_design == self._design_key()):
             self._restore_from_project()
             self._refresh_formations()
             self._refresh_actions()
@@ -955,6 +965,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         # selected clone, or leave editable rows under the wrong picker label.
         self._load_generation += 1
         generation = self._load_generation
+        design_key = self._design_key()
         self._book = None
         self._loaded_index = None
         self._clear_staged()
@@ -1001,6 +1012,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             self._formation_packages = payload["formation_packages"]  # type: ignore[index]
             self._categories = payload["categories"]  # type: ignore[index]
             self._loaded_index = index_0a
+            self._loaded_design = design_key
             self._restore_from_project()
             used = [r for r in self._book.records if r.populated]
             staged = len(self.staged_changes())
@@ -1108,6 +1120,10 @@ class ApfPlaybookMembershipPanel(QFrame):
                 moves = [m for m in moves if m.from_play != change.from_play] + [change]
         return memberships, moves
 
+    def _play_total(self) -> int:
+        """Plays in the MASTER that will ship (586 retail; more with a Design append)."""
+        return max(len(self._plays), 586)
+
     def _preview(
         self, record_index: int, extra: tuple[StagedChange, ...] = ()
     ) -> tuple[splb.SplbEntry, ...] | None:
@@ -1118,7 +1134,8 @@ class ApfPlaybookMembershipPanel(QFrame):
             return None
         memberships, moves = self._record_changes(record_index, extra)
         try:
-            return splb.apply_record_changes(self._book, record, memberships, moves)
+            return splb.apply_record_changes(
+                self._book, record, memberships, moves, master_play_count=self._play_total())
         except ValidationError:
             return None
 
@@ -1630,7 +1647,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             try:
                 reader = getattr(self.facade, "compiled_splb_book", None)
                 compiled = (reader(self._book.outer_index, self.staged_changes()) if reader
-                            else splb.compile_book(self._book, self.staged_changes()))
+                            else splb.compile_book(self._book, self.staged_changes(), master_play_count=self._play_total()))
                 self.ladder_status.setText(". ".join(compiled.report["personnel_ladder"]["messages"]))
             except ValidationError as exc:
                 self.ladder_status.setText(str(exc))
@@ -2141,6 +2158,13 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._after_stage()
 
     def _build(self) -> None:
+        if self._design_key() is not None:
+            QMessageBox.information(
+                self, "Use Build Game Folder",
+                "A Design Play/Formation edit is staged. This tab's own build only knows the stock plays, "
+                "so it would leave the designed plays out. Use Build Game Folder at the bottom of the "
+                "window: it builds the design first and your Fine-tune and Assignment Routes edits on top.")
+            return
         if self._pending_books:
             QMessageBox.information(self, "Confirm pending edits", "Click Confirm all pending before building.")
             return

@@ -1451,13 +1451,32 @@ class ApfStudioFacade:
             return self.require_session().compiled_splb_book(outer_index, changes)
 
     def master_inventory(self):
+        """MASTER plays/formations as they will ship: retail plus any staged Design Play/Formation."""
         with self._session_lock:
-            return self.require_session().master_inventory()
+            session = self.require_session()
+            try:
+                return session.master_inventory(staged=True)
+            except Exception:
+                # A staged set that no longer compiles must not stop the tab loading; the build and
+                # the staging checks report the real error.
+                return session.master_inventory()
+
+    def staged_play_names(self):
+        """(index, name) for every play in the staged MASTER; empty when nothing is loaded."""
+        with self._session_lock:
+            session = self.session
+            if session is None:
+                return ()
+            try:
+                inventory = session.master_inventory(staged=True)
+            except Exception:
+                return ()
+            return tuple((index, str(play["name"])) for index, play in enumerate(inventory["plays"]))
 
     def master_formations(self):
         from mod_editor.core.apf2k8_package_map_writer import list_apf_formations
         with self._session_lock:
-            return list_apf_formations(self.require_session()._master_play_source())
+            return list_apf_formations(self.require_session()._master_play_base())
 
     def confirm_splb_pending(self, batches, progress=_noop):
         with self._session_lock:
