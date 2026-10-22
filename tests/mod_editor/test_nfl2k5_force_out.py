@@ -62,7 +62,7 @@ class StaticTests(unittest.TestCase):
         self.assertIn(("nfl2k5_force_out", "Modern sideline catches"),
                       [(owner, label) for owner, label, _ in mod_build._LATE_OWNER_OPTIONS])
         text = (ROOT / "mod_editor/core/nfl2k5_force_out.py").read_text(encoding="utf-8")
-        self.assertNotIn("/home/noah", text)
+        self.assertNotIn("/home/", text)
         self.assertNotIn("—", fo.HELP_TEXT + fo.BUILD_CAPTION)
 
 
