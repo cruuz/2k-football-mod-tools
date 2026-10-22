@@ -2165,7 +2165,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         state = module.status(patched)
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
         # so do depth locks (revision 1, the b775/b776 discs, before the b777 hole fix);
-        # so does the franchise economy (revision 1, before the b778 veteran-cut skip);
+        # so does the franchise economy (revision 1, before the b778 veteran-cut surplus fix);
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
         if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
