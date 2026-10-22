@@ -131,6 +131,8 @@ class NativeStageSixTests(unittest.TestCase):
             raw[0x36:0x52] = bytes([rating]) * 28
             m.uc.mem_write(p, bytes(raw))
             chosen[label] = p
+        from tests.franchise_economy_legacy import no_restructure_room
+        no_restructure_room(m, team, set(chosen.values()))   # b778 fa2: the retail cut alone, no restructures
         m.call(0xC3F00, ecx=team)
         m.put(0xE3C278, m.get(team + 0x124) + 1000)       # within 6000 of the cap, not over it
         m.put(0xE576A4, 6)

@@ -37,17 +37,9 @@ ROLLOVER_RETAIL = bytes.fromhex("8b42248d58ff33d883e30f33d8895a24")
 
 
 def revision_one(retail: bytes) -> bytes:
-    """The economy exactly as 54a30bc7b installed it: every site but the two revision-2 sites."""
-    current = economy.apply(retail)[0]
-    image = XbeImage(current)
-    out = bytearray(current)
-    offset = image.offset(economy.VETERAN_CUT_SURPLUS, 2)
-    out[offset:offset + 2] = RETAIL
-    offset = image.offset(ROLLOVER, 16)
-    out[offset:offset + 16] = ROLLOVER_RETAIL
-    for section in _sections(bytes(out)):
-        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
-    return bytes(out)
+    """The economy exactly as 54a30bc7b installed it (revision 1; b778 fa2: from the kept template)."""
+    from tests.franchise_economy_legacy import legacy_image
+    return legacy_image(retail, 1)
 
 
 class VeteranCutSiteTests(unittest.TestCase):
@@ -65,19 +57,16 @@ class VeteranCutSiteTests(unittest.TestCase):
         self.assertEqual(site.patched, FIXED)
         self.assertNotIn(SITE, [s.va for s in economy.sites(revision=1)])
         self.assertEqual(economy.status(self.current), "applied")
-        self.assertEqual(economy.REVISION, 2)
+        self.assertGreaterEqual(economy.REVISION, 2)
 
     def test_revision_one_reads_legacy_and_upgrades_to_the_same_bytes(self):
         self.assertEqual(economy.status(self.legacy), "legacy")
         upgraded, receipt = economy.apply(self.legacy)
         self.assertEqual(upgraded, self.current)
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
-        self.assertEqual([e["va"] for e in receipt["edits"]], ["0x247ba8", "0x2bfb61"])
-        changed = [i for i, (a, b) in enumerate(zip(self.legacy, upgraded)) if a != b]
-        image = XbeImage(self.legacy)
-        allowed = {image.offset(SITE, 2) + 1} | set(range(image.offset(ROLLOVER, 16), image.offset(ROLLOVER, 16) + 16))
-        self.assertTrue(set(i for i in changed if i >= 0x1000) <= allowed)
-        self.assertIn(image.offset(SITE, 2) + 1, changed)  # 6a 01 -> 6a 00
+        edited = {int(e["va"], 16) for e in receipt["edits"]}
+        self.assertTrue({ROLLOVER, SITE} <= edited)   # b778 fa2: revision 3 rewrites its own sites too
+        self.assertEqual(XbeImage(upgraded).read(SITE, 2), FIXED)
 
     def test_legacy_composes_with_the_practice_squad_and_reverts_exactly(self):
         combined_legacy = squad.apply(self.legacy)[0]
@@ -129,6 +118,8 @@ class NativeStageSixTests(unittest.TestCase):
         salary = m.call(0xE6380, ecx=p)
         self.assertGreater(salary, market * 14 // 10)
         self.assertLess(salary, market * 2)
+        from tests.franchise_economy_legacy import no_restructure_room
+        no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
         m.put(0xE3C278, m.get(team + 0x124) + 1000)  # within 6000 of the cap, not over it
         m.put(0xE576A4, 6)
@@ -155,7 +146,9 @@ class NativeStageSixTests(unittest.TestCase):
         members = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
         self.assertIn(p, members)
         raw = bytes(m.uc.mem_read(p, 84))
-        self.assertEqual((raw[0x24] & 15, raw[0x27] & 15), (3, 4))
+        self.assertEqual(raw[0x24] & 15, 3)
+        # b778 fa2: revision 3 may restructure him first (the money owed re-papered over his 3 years left).
+        self.assertIn((raw[0x27] & 15, raw[0x26]), ((4, 2), (3, 0x26)))
 
     def test_a_veteran_paid_over_twice_his_market_value_is_still_cut(self):
         from tools.franchise_economy.probe import start
@@ -174,6 +167,8 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576B8, 1)
         market = m.call(0x2BD440, ecx=p, edx=0, args=(0, 1, 3)) & 0xFFFF
         self.assertGreater(m.call(0xE6380, ecx=p), market * 21 // 10)
+        from tests.franchise_economy_legacy import no_restructure_room
+        no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
         m.put(0xE3C278, m.get(team + 0x124) + 1000)
         m.put(0xE576A4, 6)
@@ -215,7 +210,7 @@ class RolloverDecrementTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("NFL2K5_V061_DISC"), "set NFL2K5_V061_DISC to the released v0.6.1 image")
 class ReleasedDiscTests(unittest.TestCase):
-    def test_released_disc_is_legacy_and_upgrades_only_the_two_sites(self):
+    def test_released_disc_is_legacy_and_upgrades_in_place(self):
         from mod_editor.core.nfl2k5_depth_chart_storage import image_file_node
         path = Path(os.environ["NFL2K5_V061_DISC"])
         size = path.stat().st_size
@@ -230,12 +225,15 @@ class ReleasedDiscTests(unittest.TestCase):
         self.assertEqual(economy.status(upgraded), "applied")
         self.assertEqual(squad.status(upgraded), "applied")
         self.assertEqual(XbeImage(upgraded).read(SITE, 2), FIXED)
-        changed = [i for i, (a, b) in enumerate(zip(payload, upgraded)) if a != b]
-        image = XbeImage(payload)
-        allowed = {image.offset(SITE, 2) + 1} | set(range(image.offset(ROLLOVER, 16), image.offset(ROLLOVER, 16) + 16))
-        self.assertTrue(set(i for i in changed if i >= 0x1000) <= allowed)
         self.assertEqual(XbeImage(upgraded).read(ROLLOVER, 16), economy.ROLLOVER_DECREMENT_PATCHED)
-        self.assertEqual(receipt["sections_repinned"], [0])
+        # b778 fa2: only economy sites change (revision 3 adds its own), every other byte is the disc's.
+        image = XbeImage(payload)
+        allowed = set()
+        for site in economy.sites():
+            offset = image.offset(site.va, len(site.patched))
+            allowed |= set(range(offset, offset + len(site.patched)))
+        changed = {i for i, (a, b) in enumerate(zip(payload, upgraded)) if a != b and i >= 0x1000}
+        self.assertTrue(changed <= allowed)
 
 
 if __name__ == "__main__":
