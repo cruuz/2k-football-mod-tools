@@ -279,6 +279,7 @@ class Choice:
     note: str = ''
     base_flags: int | None = None
     designed: tuple = ()
+    source: L.Script | None = None   # the retail script authored chains were derived from (odd variants)
 
 
 def membership(book, body, roles: dict[str, Role]) -> dict[int, Slot]:
@@ -721,7 +722,7 @@ def pick_odd(s: Slot, ch: Choice, home: Role, roles: dict[str, Role], library: L
                 state.designed[r] += 1
         if lab != ch.concept:
             ch.note = f'fallback {ch.concept} -> {lab}'
-        s.content = Choice(lab, chains=v.chains, base_flags=v.flags, designed=throttled,
+        s.content = Choice(lab, chains=v.chains, base_flags=v.flags, designed=throttled, source=v.source,
                            note=(ch.note + '; ' if ch.note else '') +
                            f'odd variant of {v.source.book} {v.source.name}, edges rush {sorted(v.pattern)}'
                            + (f', zone blitz on {sorted(designed)}' if designed else '')
@@ -977,6 +978,43 @@ def local_donor(book, body, type_code: int, component: str, want_flags: int, exc
     if best is None:
         raise ValueError(f'No local {component} donor of type {type_code}')
     return best
+
+
+# b778 of1: a Defense Start (0x1B) in mode 0 moves its defender by (x, y) from HIS FORMATION SPOT before the snap, and
+# a retail script's y was authored against the spot of the formation it came from.  pick_scripts also borrows scripts
+# from other layouts of the same type, so a walk-up can be longer than the new spot is deep: v0.6.1's Bear 46 corner
+# blitzes took the 4-3 crash corner's 3 yd step (365 cm spot) from the 1.7 yd Bear press spot and stood the corner
+# 1.3 yd offside (CPU PIT #5 flagged before the snap, Noah's 10/21 stream).  Such a walk-up is shortened so the
+# defender stops where the retail script put him in its own formation (never behind his new spot, never past the
+# line); a script without a known source stops at MIN_WALKUP_CM.  A defender whose walk-up is cancelled outright stays
+# on his spot (the script's sideways step goes too: the Bear 46 box safety would otherwise end 1.3 yd from the Mike).
+# Walk-ups that stay onside are not touched.
+MIN_WALKUP_CM = 61.0    # retail's shallowest spot-relative walk-up of a standing defender (Bear Double Crash 1 corners)
+
+
+def onside_presnap(chains, target_spots: dict, source_spots=()) -> tuple[list, list]:
+    """``chains`` with every spot-relative walk-up that would cross the line shortened (see above).
+
+    ``target_spots``: slot -> formation depths (cm) of every formation the record is listed on; ``source_spots``: the
+    retail script's own formation depths per slot (``L.Script.spots``), empty when unknown.  Returns the chains and a
+    list of (slot, old y, new y, new shallowest pre-snap depth) for the slots it changed."""
+    out, changed = list(chains), []
+    for s, chain in enumerate(chains):
+        off = dlint.presnap_offset(chain)
+        depths = list(target_spots.get(s, ()))
+        if off is None or not depths:
+            continue
+        spot = min(float(z) for z in depths)
+        if spot + off[1] >= 0:
+            continue
+        want = (float(source_spots[s]) + off[1]) if source_spots else MIN_WALKUP_CM
+        final = max(0.0, min(spot, want))
+        y = math.ceil((final - spot) / codec.FT_CM - 1e-6) * codec.FT_CM
+        x = chain[0][1][2] if y else 0.0
+        first = (chain[0][0], [*chain[0][1][:2], x, y, *chain[0][1][4:]])
+        out[s] = [first] + [(n[0], list(n[1])) for n in chain[1:]]
+        changed.append((s, off[1], y, spot + y))
+    return out, changed
 
 
 def frozen(chains) -> tuple:
@@ -1318,6 +1356,7 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
     for s in sorted(slots.values(), key=lambda s: s.index):
         if s.content is None:
             continue
+        moved = []
         src_roles = [r for r in ROLE_PRIORITY if r in s.roles and r not in s.extra_links and roles[r].fi is not None]
         if src_roles:
             home = roles[src_roles[0]]
@@ -1361,10 +1400,19 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
                 full = ch.chains
             else:
                 continue
+            listed = [roles[r] for r in sorted(s.roles | s.extra_links) if r in roles]
+            src = ch.script if ch.script is not None else ch.source
+            onside, moved = onside_presnap(full, {k: [r.positions[k][1] for r in listed] for k in range(11)},
+                                           src.spots if src is not None else ())
+            if moved:
+                chains = diff_against(onside, lib.decoded_chains(body, donor))
             st = L.structure(full, home.kinds, front_slots_of(home), ('odd:' if home.type_code == 4 else 'even:') + home.source_name)
             label, concept = st.label, st.label
         rows[s.index] = dict(slot=s, donor=donor, chains=chains, home=home, label=label, concept=concept, st=st,
                              donor_flags=book.plays[donor].flags_or_id)
+        if moved:
+            rows[s.index]['onside'] = [dict(slot=k, walkup_yd=round(-a / codec.YD_CM, 2), now_yd=round(-b / codec.YD_CM, 2),
+                                            presnap_depth_yd=round(d / codec.YD_CM, 2)) for k, a, b, d in moved]
         if s.component == 'coverage' and home.type_code == 4:
             rows[s.index]['sts'] = {r: L.structure(full, roles[r].kinds, front_slots_of(roles[r]), okie.role_layout(roles[r]))
                                     for r in s.roles if roles[r].type_code == 4}
@@ -1458,6 +1506,8 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
                                      if ch is not None and ch.script is not None else dict(authored=ch.note if ch else ''))),
                             rushers=(r['st'].n_rush if r['st'] else None), spy_slots=list(spy),
                             authored_nodes=sum(len(c) for c in r['chains'] if c)))
+        if r.get('onside'):
+            catalog[-1]['presnap_kept_onside'] = r['onside']   # b778 of1
     formations = []
     for key in ('base', 'base2', 'bear', 'nickel', 'dime', 'nickel_odd', 'dime_odd'):
         r = roles.get(key)

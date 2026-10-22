@@ -323,6 +323,9 @@ class Script:
     chains: list
     struct: Structure
     key: str
+    # b778 of1: each slot's formation depth (cm, z[0]) in the retail formation the script was read from.  Its
+    # spot-relative Defense Start (0x1B mode 0) offsets were authored against these spots (build.onside_presnap).
+    spots: tuple = ()
 
     def to_json(self):
         return dict(book=self.book, play=self.play_index, name=self.name, flags=self.flags, formation=self.formation,
@@ -353,7 +356,8 @@ def scan_book(team: str, raw: bytes) -> list[Script]:
             if lib.defense_component(chains) != 'coverage':
                 continue
             st = structure(chains, kinds, fslots, lay)
-            out.append(Script(team, p.index, p.name, p.flags_or_id, fname, codes, tcode, chains, st, chains_key(chains)))
+            out.append(Script(team, p.index, p.name, p.flags_or_id, fname, codes, tcode, chains, st, chains_key(chains),
+                              tuple(float(sl.z[0]) for sl in rec.slots)))
     return out
 
 
