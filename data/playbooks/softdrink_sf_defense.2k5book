@@ -9,7 +9,7 @@
   "notes": "DESIGN: Raheem Morris (Tampa / Rams split coverage); 2025 baseline ATL. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "1f7e2b95aa73dee40ecf3d85848223da131684a637e1840cb51892fab98fe066",
+  "book_fingerprint": "9272e8bd4bd98d77ec806be18fb6fbc5ec46fe1ac5fe5e25436333d87308c917",
   "donor_formation_count": 50,
   "donor_play_count": 268,
   "donor_node_count": 2258

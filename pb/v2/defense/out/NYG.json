@@ -1955,9 +1955,9 @@
  "receipt": {
   "team": "NYG",
   "offense_pack": "data/playbooks/softdrink_giants_modern.2k5book",
-  "offense_pack_sha256": "75c25af0a78bc75ffe163af8c6c98faca8f9ffcbf3cbe929a25f272a3724e1de",
-  "source_fingerprint": "0ae324e5cb6ce25118ab7bbf8dff6bb17ea58046d2df7ab4e1ca966071716521",
-  "replacement_sha256": "2a2cdc9672b17d70d4b1c5bbbe03436911ee23a12b74f44e07e95e9d81f8d43d",
+  "offense_pack_sha256": "299b88846ce87fb0df94ced4daa3b45efbd96d3dd7b4cad11c916b7600df295a",
+  "source_fingerprint": "ce0d98154797135fb14e0541496eb66824994c8a0de0df37c1da6e558602d4b7",
+  "replacement_sha256": "ab25b4958ce8aabb1cf0fe84461809eea9e8cd1acf825dada1f058be4cbfed34",
   "semantic_sha256": "5e5eae13da772d5bda4930450a080f6b2c1eddf3e32243518ca2bde017f82fd5",
   "plays": 65,
   "formations": 4,
@@ -1970,6 +1970,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_nyg_defense.2k5book",
-  "pack_sha256": "3da8dacb0e41d5a8b8db84dc3024f3d465f5f2d9cdd16d048033f7df99ba9842"
+  "pack_sha256": "206477648d286844cc6e49eaea0a0580948de5136aed043b7aac71312d396343"
  }
 }

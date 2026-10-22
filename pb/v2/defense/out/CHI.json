@@ -1952,9 +1952,9 @@
  "receipt": {
   "team": "CHI",
   "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-  "offense_pack_sha256": "35cb22b9d1f954f50ba07cfa47708fed5080826f18687cfbfec888793b1764fe",
-  "source_fingerprint": "244091fe34ba4a8a3e42f1ff7e39cd702ae11cc5441dc33afc516ea0bd9ed46a",
-  "replacement_sha256": "ad87beaba4fe4ab36f85212b310b01614c7be8da5a5b3bffc8739182f479f6bc",
+  "offense_pack_sha256": "85bb5709ebe20614f7fbc724b7f0e21693583e242e5b57837cbf27302e782a1b",
+  "source_fingerprint": "7953c6189465f16b64948a80df37c6699b1fb0bc09246306462246fc1c7941a8",
+  "replacement_sha256": "641a6b9098ca631c76bc71bf12ec8e9729ac6b8f9ab625afa593cf881ae2c3df",
   "semantic_sha256": "37af008037be4d8a5b43fd4b35723bb0be17b8d9c6602811afcbca4658218ab2",
   "plays": 64,
   "formations": 4,
@@ -1967,6 +1967,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_chi_defense.2k5book",
-  "pack_sha256": "229b30ce6888b70882314e7802fc839013c7bdf47ea02edad18ede1f696b8d4d"
+  "pack_sha256": "cae1565b93753b66632a661704e0dd4e44f66f91ed954d5b0e69b2b893714c0c"
  }
 }

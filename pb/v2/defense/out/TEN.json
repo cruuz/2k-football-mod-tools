@@ -2171,9 +2171,9 @@
  "receipt": {
   "team": "TEN",
   "offense_pack": "data/playbooks/softdrink_ten_modern.2k5book",
-  "offense_pack_sha256": "3c765887b993df5fd5dfca84bc596e5973b3356b88335940550b2e77655dcd90",
-  "source_fingerprint": "7e78bc9ab40cc5fb78a034c42db8597b1dfdbc359df53f0a004c60de8d80e03f",
-  "replacement_sha256": "e848dc44b9b0e9117b2d5d1602958fb9c4f8d0d263c231e66227acf605a759d7",
+  "offense_pack_sha256": "c99772d8203b38d6a5107a85b75838be2d1d8d7f1847a75ec51f050c43681e34",
+  "source_fingerprint": "da560a39a92e5347a1d9f0171ee3c9c1e3bbcf6f9cf8bed8cd02234a3d579a08",
+  "replacement_sha256": "cd8d231d808dcbc4ceed32c071084b05ceece366daf3c44b34f77f3fd71266dc",
   "semantic_sha256": "a537069b741199099899b6207553ec753e1d5046ef96148bedd91442e619c59e",
   "plays": 72,
   "formations": 5,
@@ -2186,6 +2186,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_ten_defense.2k5book",
-  "pack_sha256": "cd7eba7d0292d26f5b23424375593e60ff9c827f4861701a3e446a53613c7a0e"
+  "pack_sha256": "b85fe940b3626d4086dab76ffce37e4675119e4c718f5acac240334655a36a94"
  }
 }

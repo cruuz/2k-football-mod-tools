@@ -1997,9 +1997,9 @@
  "receipt": {
   "team": "PHI",
   "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
-  "offense_pack_sha256": "bd7643b2917b07e1b1fa759ff87fb118ea8afbdecf33e2de2cf1a95bc191f21d",
-  "source_fingerprint": "69c18dee388013a9ca758b8737d4496361260abea249067d35485ce3d4a09ba5",
-  "replacement_sha256": "e1b4c6e22d2800b16f1d8d994c53376f8cf48e9eaef1a16ee5f8775ac56da065",
+  "offense_pack_sha256": "1dd67a7f8a18ef1355e345445cb33127631e0ee0729014a3d45d429cdefc561f",
+  "source_fingerprint": "a5261cbde39645a8eee675707596d0dc9456e97aacf88ce9a6ca066dbdb69f31",
+  "replacement_sha256": "f2843412994b9025cb10991a813607dd685bb13c1a9017f4a943bab50ce4dd00",
   "semantic_sha256": "76cd45801e346dd9ddec6043d5d631fc40880166c0678365272a66f28b5fdc76",
   "plays": 66,
   "formations": 4,
@@ -2012,6 +2012,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_phi_defense.2k5book",
-  "pack_sha256": "d40c54fc476ceed574cd5087cf91e57f533f2bfeed67212cad73706e2e82b8fd"
+  "pack_sha256": "705a4a6841d748279d068f2be39401b7b484e48b335c382820bbd90bb04444bf"
  }
 }

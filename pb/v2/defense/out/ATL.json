@@ -1934,9 +1934,9 @@
  "receipt": {
   "team": "ATL",
   "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
-  "offense_pack_sha256": "44d8eafae7871451010737616ecc64933d0507e374a944f48675a874333473e9",
-  "source_fingerprint": "0f7ca01f7951d26315b2fe757fc4e589d50c20b7a7b971c4349bd5b7e8cdb0c8",
-  "replacement_sha256": "212cbce38929b24685cca75d9371dffdf14aa1bc04ddf4680dc0acdcf83307e4",
+  "offense_pack_sha256": "178143d76dc5b5610daca282c5f190523f0e8a42fff490d991f1d519f1d39084",
+  "source_fingerprint": "81520abb154cfee4a21e9073ba3331507489a1fa6ee6879c832af4447990eba6",
+  "replacement_sha256": "37ddea8d208cf8a85fc8ff0d1ff366daa73a3564656f2719dd502b9a8e4cdab6",
   "semantic_sha256": "2c37565793b0b49968950b504b7d3121bd73c2468931cc29cd69be0ac8084e42",
   "plays": 64,
   "formations": 4,
@@ -1949,6 +1949,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_atl_defense.2k5book",
-  "pack_sha256": "d6540f47397d20087a1e6ef6b92b5423a570fb47fccd00d853a752a599c681f4"
+  "pack_sha256": "c09f41f8aa806b79e9bbc0f2bd042013fb4951ff60e1962a820a5ad0fd7b878b"
  }
 }

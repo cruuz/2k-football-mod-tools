@@ -1879,9 +1879,9 @@
  "receipt": {
   "team": "JAX",
   "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
-  "offense_pack_sha256": "b006d6be4f3387f1f5eda6fee26247f56de2c3cb02fc0c9f26f46428cc7739e1",
-  "source_fingerprint": "a8eaae4d5e5dcc23eeb4b60616f76af7f8d8d5a84bed16d194530dee3263b0ad",
-  "replacement_sha256": "7a6e7550d71799e2d02e23ac05ae3a84f32f93f4c20a24b0733a4b2b958e6a33",
+  "offense_pack_sha256": "a923b6d9ca7f8815b40fff42bc954e853d0d723f5759101dbfd7bfe5d1ba4544",
+  "source_fingerprint": "8278a1858ae8b0bc6d41b5d465a80ce81ff2390ab782b5fe90e7c64116380089",
+  "replacement_sha256": "753a5b6babd472c8d7d6b1a599ebfcdd291abc0afa0941df7b9986a06cc80e80",
   "semantic_sha256": "557f851186af89991561791d6ffe778afc0add23f0700b288c1c7fff12c20ae9",
   "plays": 62,
   "formations": 4,
@@ -1894,6 +1894,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_jax_defense.2k5book",
-  "pack_sha256": "44c109af64f403b7cf8ba5fe467eec38a1ad9d4dc850d2955c8750f410161e39"
+  "pack_sha256": "5d8e5440600f52aea023502bce191433ee2c90fa90116bb540d365709cc6c6a1"
  }
 }

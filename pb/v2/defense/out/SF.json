@@ -1940,9 +1940,9 @@
  "receipt": {
   "team": "SF",
   "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
-  "offense_pack_sha256": "d7f80390bc3cefdb85c1701e32d6dadb85da540f522841392a8b03f8f0b961de",
-  "source_fingerprint": "1f7e2b95aa73dee40ecf3d85848223da131684a637e1840cb51892fab98fe066",
-  "replacement_sha256": "d2757f5efbbbe58b355ecef70be4abdc536214a2ddd32eca6c024a49704a6095",
+  "offense_pack_sha256": "ea220191e6db132c41331a2da2b404c484d6c2347d1eabf7a89e08001379365c",
+  "source_fingerprint": "9272e8bd4bd98d77ec806be18fb6fbc5ec46fe1ac5fe5e25436333d87308c917",
+  "replacement_sha256": "633f483c20b0b2b13f2a78e6e55f7723b0027be7a9338089f05d7fef97774fc4",
   "semantic_sha256": "c94e2101ec760063274aaea33f567f052b7cf095ef166c65268d9192997ca99a",
   "plays": 64,
   "formations": 4,
@@ -1955,6 +1955,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sf_defense.2k5book",
-  "pack_sha256": "d38e3a588416f4c3719063b6e81fefb6c0bb2eb881049ff948b985468edbd35e"
+  "pack_sha256": "ec3928a99c61e875bd217ff047948119bab078e7929fbf317961c737a7ba773b"
  }
 }
