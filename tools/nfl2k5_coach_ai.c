@@ -28,6 +28,10 @@ extern void FAST offense_native(u32 *, u32 *, u32 *, u32 *, u32 *);
 extern void FAST defense_native(u32 *, u32 *, u32 *, u32 *, u32 *, u32 *, u32 *);
 extern u32 FAST category_native(u8 *, u32);
 extern u8 *FAST vip_native(u8 *);
+#ifdef B778
+extern u32 FAST late_native(void);
+extern u32 FAST half_bits_native(void);
+#endif
 static int career(void);
 
 /* Playback data is not a virtual controller. Keep automatic teams on the
@@ -57,6 +61,13 @@ u32 FAST coach_choose(u8 *team, u32 *out) {
     if (!context || U(context,0x38)!=2) return 0;
     offense=PTR(0xe60280,0)==team;
     if (!offense && PTR(0xe60284,0)!=team) return 0;
+    /* b778: fourth downs and the clock windows (last two minutes of the first half, last five minutes of the game)
+     * stay with the game's own clock-aware CPU caller: Modern 2 fourth downs, kneel, spike, Hail Mary, timeouts and
+     * urgency. The playback pools know none of these. */
+#ifdef B778
+    if (offense && (U(PTR(0xe602ec,0),4)==4 || late_native()
+                    || (U(0xe602c4,0)==2 && half_bits_native()<=0x42f00000u))) return 0;
+#endif
     state.selecting=1;
     flag=U(team,0x38);
     /* Preserve the existing VIP-aware fourth-down policy inside this draw.

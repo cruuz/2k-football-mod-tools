@@ -620,6 +620,10 @@ vip_active:
     jz vip_no
     cmp dword ptr [ecx+0x30], 0
     jne vip_no
+.ifdef CLOCK_AWARE
+    cmp dword ptr [ecx+0x38], 0    /* b778: automatic coach profiles clear the virtual-controller flag; only a user VIP delegates */
+    je vip_no
+.endif
     call native_vip
     test eax, eax
     jz vip_no
