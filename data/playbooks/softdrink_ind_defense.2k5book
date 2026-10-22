@@ -1927,7 +1927,7 @@
    "replace_name": "Bear 1 Hard",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 5, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",

@@ -513,7 +513,7 @@ class Nfl2k5UnifiedVisualProvider:
     )
     backend_module_sha256 = "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/nfl2k5_defense_lint.py": "fc8036bacbd96e0043fda79b59fadbfbaeeb4606e34709bfbcff23b4fa6400d0",
+        "mod_editor/core/nfl2k5_defense_lint.py": "11863cffaf5250b3c150432b1f74d9f6115e6603fcc6d7a3e6127b9ebb6e2756",
         "mod_editor/core/nfl2k5_espn25_fields.py": "9f05401fe044e8f373b82e13b3cf9912d6b2fc802e4bb51f7e772ce0c9facea6",
         "mod_editor/core/nfl2k5_super_bowl_walls.py": "55dce3e1e700d56a2895e5f206503700cb246dfeb1cfdf866240e5e04f9d8917",
         "mod_editor/core/nfl2k5_super_bowl_fields.py": "dc0f9488b0feffb30ebf934573c606e973ba1980c444b7a1cd8c1eb71005570d",

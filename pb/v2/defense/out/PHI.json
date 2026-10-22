@@ -1703,7 +1703,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 208,
@@ -1749,7 +1757,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 210,
@@ -1983,11 +1999,11 @@
   "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
   "offense_pack_sha256": "bd7643b2917b07e1b1fa759ff87fb118ea8afbdecf33e2de2cf1a95bc191f21d",
   "source_fingerprint": "69c18dee388013a9ca758b8737d4496361260abea249067d35485ce3d4a09ba5",
-  "replacement_sha256": "4d31e4f28eab57126a547b344214d2ede853de0661127db3ad5318afda892931",
-  "semantic_sha256": "151bd72ff737559f26f1fd61edfa363d6a8a12fe4b52cb6abda3f409963ed5ec",
+  "replacement_sha256": "e1b4c6e22d2800b16f1d8d994c53376f8cf48e9eaef1a16ee5f8775ac56da065",
+  "semantic_sha256": "76cd45801e346dd9ddec6043d5d631fc40880166c0678365272a66f28b5fdc76",
   "plays": 66,
   "formations": 4,
-  "nodes": 2761,
+  "nodes": 2763,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1996,6 +2012,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_phi_defense.2k5book",
-  "pack_sha256": "3d4008d1f3b0a06c89a97a002ca81becb46f271373c04d9f28974bb555cbbdf5"
+  "pack_sha256": "d40c54fc476ceed574cd5087cf91e57f533f2bfeed67212cad73706e2e82b8fd"
  }
 }

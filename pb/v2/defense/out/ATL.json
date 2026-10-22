@@ -1504,7 +1504,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 185,
@@ -1550,7 +1558,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 187,
@@ -1920,11 +1936,11 @@
   "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
   "offense_pack_sha256": "44d8eafae7871451010737616ecc64933d0507e374a944f48675a874333473e9",
   "source_fingerprint": "0f7ca01f7951d26315b2fe757fc4e589d50c20b7a7b971c4349bd5b7e8cdb0c8",
-  "replacement_sha256": "832798f08ef39f8625f87ed4dbb691824d9b29d65192db3fcd17917d152ee4ed",
-  "semantic_sha256": "70a1120fe4d0624a480e381d864a1adafca91543bdb850cad6c402c229b4de20",
+  "replacement_sha256": "212cbce38929b24685cca75d9371dffdf14aa1bc04ddf4680dc0acdcf83307e4",
+  "semantic_sha256": "2c37565793b0b49968950b504b7d3121bd73c2468931cc29cd69be0ac8084e42",
   "plays": 64,
   "formations": 4,
-  "nodes": 2693,
+  "nodes": 2695,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1933,6 +1949,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_atl_defense.2k5book",
-  "pack_sha256": "10ec71f235db52abdaae1076621f0bdaae5779cbe70544bc2784856e32d4c3b5"
+  "pack_sha256": "d6540f47397d20087a1e6ef6b92b5423a570fb47fccd00d853a752a599c681f4"
  }
 }
