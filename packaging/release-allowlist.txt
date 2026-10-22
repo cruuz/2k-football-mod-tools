@@ -617,6 +617,7 @@ data/nfl2k5_kit_fixes_2026_sea1.json
 data/nfl2k5_kit_fixes_2026_ov1.json
 data/nfl2k5_kit_fixes_2026_ku1.json
 data/nfl2k5_kit_fixes_2026_sw1.json
+data/nfl2k5_kit_fixes_2026_names.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_pants_hem_2026.py
 data/nfl2k5_pants_hem_2026.json

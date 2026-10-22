@@ -1,0 +1,43 @@
+{
+ "schema": "nfl2k5_kit_fixes_2026/v1",
+ "source": "uf1 (b778): SWeaR's report 10/21 'Last names are glitched on Dallas Alternate 1 uni'. Audit of all 696 kit packages on the v0.6.1 release: the letter atlas of 07H7 and 07A7 (the 2026 road kit's 07A0 letters) does not match their NAME glyph offsets; every other kit's atlas matches its own metrics.",
+ "method": "NAME rows with relayout: the donor's 29 (offset, width) pairs replace the kit's own, applied only when the kit's own atlas, measured column by column at the top mip, has the donor's glyph layout and not its own. Nothing else in the kit changes.",
+ "textures": [
+  {
+   "selector": "07A7",
+   "chunk": 44,
+   "texture": "NAME",
+   "kind": "name",
+   "relayout": true,
+   "resource_size": 1526672,
+   "offset": 500512,
+   "length": 192,
+   "before_sha256": "95cca2ebff16007a4721e2748012c9599fd4b0d404041e9cadea7ae1c2c7d371",
+   "after_sha256": "636c479539041df1644b9214df2b7a2f344a72dc4fbaff5f070e96cb6334d1a0",
+   "defects": [
+    "b778-uf1-DAL7-names"
+   ],
+   "note": "Arctic Cowboy (2026 Alternate 1) wears the 2026 road kit's letter atlas (07A0: apostrophe 32, hyphen 64, A 96) over the retail 1994 metrics (A 128), so every letter was drawn from its neighbour's cell; the atlas's own metrics from 07A0",
+   "donor_selector": "07A0",
+   "donor_sha256": "636c479539041df1644b9214df2b7a2f344a72dc4fbaff5f070e96cb6334d1a0"
+  },
+  {
+   "selector": "07H7",
+   "chunk": 44,
+   "texture": "NAME",
+   "kind": "name",
+   "relayout": true,
+   "resource_size": 1529504,
+   "offset": 500512,
+   "length": 192,
+   "before_sha256": "95cca2ebff16007a4721e2748012c9599fd4b0d404041e9cadea7ae1c2c7d371",
+   "after_sha256": "636c479539041df1644b9214df2b7a2f344a72dc4fbaff5f070e96cb6334d1a0",
+   "defects": [
+    "b778-uf1-DAL7-names"
+   ],
+   "note": "Arctic Cowboy (2026 Alternate 1) wears the 2026 road kit's letter atlas (07A0: apostrophe 32, hyphen 64, A 96) over the retail 1994 metrics (A 128), so every letter was drawn from its neighbour's cell; the atlas's own metrics from 07A0",
+   "donor_selector": "07A0",
+   "donor_sha256": "636c479539041df1644b9214df2b7a2f344a72dc4fbaff5f070e96cb6334d1a0"
+  }
+ ]
+}
