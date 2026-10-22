@@ -8,8 +8,8 @@
     "book": "ARZ",
     "input_sha256": "00bcaf90e742ce3d16d9113adc013cc54ab7fa5f20dad54497e64b00d3b788ff",
     "output_sha256": "d6637778dc118dea1c9922a58b3833376ffac6c2cfb85a1c911a117ea9ba4261",
-    "offense_pack_sha256": "dd7ed86c3be041f8629186972f9bd873cb30a217eacf0c41416fa20d9f617ee9",
-    "defense_pack_sha256": "ef3639df986f30b7f65a34d1bfe33da1201631587b5f5543dcc7f3ae37bcea5c"
+    "offense_pack_sha256": "df26d6a85c192219f08aa1289ca888b33948edc2ebf51999b9ae75831d2fa218",
+    "defense_pack_sha256": "11d42c09476f8d2bdbca681b80be5340ba69fb083776d92ddbb753ffc26ef058"
    }
   ],
   "308": [
@@ -338,8 +338,8 @@
     "book": "TEN",
     "input_sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
     "output_sha256": "8aea8480bf0d7fad735ec4b3619c923ae068bedddcb75f785653b25adacc113f",
-    "offense_pack_sha256": "c99772d8203b38d6a5107a85b75838be2d1d8d7f1847a75ec51f050c43681e34",
-    "defense_pack_sha256": "b85fe940b3626d4086dab76ffce37e4675119e4c718f5acac240334655a36a94"
+    "offense_pack_sha256": "e3a3bf8008b995d0bf3373017ec098130e5abfd7f463a95a61d1cf7f6a896193",
+    "defense_pack_sha256": "6cc6283a99d0af2cfd888b5368b2c8052c7a77634b2c16ff6012392c0679f1de"
    }
   ],
   "342": [

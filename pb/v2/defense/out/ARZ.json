@@ -1923,9 +1923,9 @@
  "receipt": {
   "team": "ARZ",
   "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
-  "offense_pack_sha256": "dd7ed86c3be041f8629186972f9bd873cb30a217eacf0c41416fa20d9f617ee9",
-  "source_fingerprint": "dfc83ba7b2508725cbd16d6731da58b40e91b7888e5df705d6d466bf77487970",
-  "replacement_sha256": "8f37c279f59f2a4417ce3d5224eeeb844eec3acc640e5b184e95bb7fb44d668e",
+  "offense_pack_sha256": "df26d6a85c192219f08aa1289ca888b33948edc2ebf51999b9ae75831d2fa218",
+  "source_fingerprint": "4e19aadbdabe805dab05501fcefaf8d04d527226fe7a0c78ef82ba982f6ae641",
+  "replacement_sha256": "570dfbc070378d3d52c2f8de91ba9c5e5cae6921ceddcbb3c776533a02352940",
   "semantic_sha256": "cc3c41437bcd7df7c2677267b2e26458202bc8c1815b1fce9a81e9bee6102d8e",
   "plays": 64,
   "formations": 4,
@@ -1938,6 +1938,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_arz_defense.2k5book",
-  "pack_sha256": "ef3639df986f30b7f65a34d1bfe33da1201631587b5f5543dcc7f3ae37bcea5c"
+  "pack_sha256": "11d42c09476f8d2bdbca681b80be5340ba69fb083776d92ddbb753ffc26ef058"
  }
 }
