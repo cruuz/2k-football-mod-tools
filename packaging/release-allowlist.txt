@@ -1953,6 +1953,7 @@ mod_editor/core/nfl2k5_db_ball_play_code.py
 mod_editor/core/nfl2k5_qb_accuracy.py
 mod_editor/core/nfl2k5_qb_accuracy_code.py
 mod_editor/core/nfl2k5_formation_art_spacing.py
+mod_editor/core/nfl2k5_force_out.py
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
@@ -3597,6 +3598,7 @@ mod_editor/core/nfl2k5_run_blocking.py
 mod_editor/core/nfl2k5_run_blocking_code.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
+tests/mod_editor/test_nfl2k5_force_out.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md

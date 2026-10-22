@@ -233,6 +233,8 @@ CPU_AI_OPTIONS = (
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
 from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
 CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
+# b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -242,7 +244,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "Draws each route's last segment at its real length in the play-call art, like Madden: go routes run up "
                   "the panel, drags cross the formation, flats and outs reach the sideline. Retail cuts that segment to "
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
-                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT))
+                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
+                 ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT))  # b778-fo1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
