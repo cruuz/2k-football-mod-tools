@@ -234,8 +234,10 @@ class HostBudgetTests(unittest.TestCase):
             # nl1: the "You were drafted by the <city> <nickname>." notice.
             # mc4: the progress menu draws what the prior-season sim frames draw (handler in runtime.S), and
             # the progress note drawn on the native menu (runtime.c mode_draw) is gone.
+            # b778 mc6: inline_stage compares the portrait half of record +4 (not the play-by-play cue) and
+            # inline_decode lets resolve_team derive the saved stage (test_nfl2k5_my_career_mc6).
             'tools/mycareer_mode/runtime.c':
-                '97af870c1bf4ea97a8317090b280ea19a14a05e1b3778c7acf529631269784fc',
+                '97db42cd7e781b2d2ec4f2f2f809e1e057a3b4890c501a10a2918b4d4af123a5',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
