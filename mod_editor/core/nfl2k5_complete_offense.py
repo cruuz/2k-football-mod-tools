@@ -108,6 +108,23 @@ def validate_structure(pack):
             require(target is not None and 0 < target < len(p.assignments) and
                     any(int(n[0]) == 0x15 for n in p.assignments[target]),
                     'A direct snap needs the centre to snap to a carrier with a run path')
+    no_huddle = getattr(pack, 'no_huddle', ())
+    if no_huddle:
+        # b778 pb7: the book header holds exactly five offensive No Huddle entries (0x4C, five byte pairs)
+        require(len(no_huddle) == NO_HUDDLE_ENTRIES, f'No Huddle lists exactly {NO_HUDDLE_ENTRIES} plays')
+        menus = dict(pack.menus)
+        require(len({pid for _f, pid in no_huddle}) == NO_HUDDLE_ENTRIES, 'No Huddle repeats a play')
+        for fid, pid in no_huddle:
+            require(fid in menus and pid in menus[fid], f'No Huddle {fid}/{pid}: the play is not on that menu')
+            require(ps[pid].play_type != 'special', 'No Huddle takes ordinary offense plays')
+
+
+#: b778 pb7: the PLAY body header table at 0x4C is ten (formation index, menu link) byte pairs: five offense
+#: then five defense (0xFEFA0 -> 0xFF09C: entry (side * 5 + button) when the open panel has five buttons; the
+#: three-button panel is the audible list, which lives elsewhere). The No Huddle panel shows them on A, B, L, R
+#: and entry 0 (Noah's 10/21 stream: A = entry 1 X Slant Flat, B = 2, L = 3 Bubble Screen, R = 4).
+NO_HUDDLE_TABLE = 0x4C
+NO_HUDDLE_ENTRIES = 5
 
 
 def ordinary_indices(book, body):
@@ -455,13 +472,21 @@ def compile_offense(resource, pack, *, asset_id):
             words[slot] = 0x8000 | (3 << 9) | play_ids[pid]
             special_words.setdefault(fi, []).append(slot)
         struct.pack_into('<36H', result, aux, *words)
-    # PROVED OFFLINE: preserve default audible formation indices; remap their
-    # link byte to one of the first three valid entries in each new menu.
-    for n in range(5):
-        off = 32 + 0x4C + n*2
-        fi = result[off]
-        require(fi in fs, 'Unexpected special offense default audible')
-        result[off+1] = min(n, 2)
+    if pack.no_huddle:
+        # b778 pb7: the pack names its five No Huddle plays (formation, play) -> (formation index, menu link)
+        menus = dict(pack.menus)
+        for n, (fid, pid) in enumerate(pack.no_huddle):
+            off = 32 + NO_HUDDLE_TABLE + n * 2
+            result[off] = pack.formations_by_id[fid].replace_index
+            result[off + 1] = menus[fid].index(pid)
+    else:
+        # PROVED OFFLINE: preserve the retail No Huddle formation indices (once called default audibles);
+        # remap their link byte to one of the first three valid entries in each new menu.
+        for n in range(NO_HUDDLE_ENTRIES):
+            off = 32 + NO_HUDDLE_TABLE + n*2
+            fi = result[off]
+            require(fi in fs, 'Unexpected special offense default audible')
+            result[off+1] = min(n, 2)
     rebuilt = repack(bytes(result), names, assignments)
     final = insp.parse_playbook_resource(rebuilt, asset_id=asset_id)
     ui_problems = insp.playcall_ui_problems(rebuilt)
