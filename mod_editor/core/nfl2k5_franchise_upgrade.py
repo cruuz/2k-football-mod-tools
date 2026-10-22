@@ -679,6 +679,7 @@ FOLD_MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
 HONOR_FIELD_FIRST, HONOR_FIELD_LAST = 96, 105
 DEAD_WORD = 0x30000000                     # deleted (bit 28) or postseason (bit 29): never live regular-season data
 FOLD_BIT, END_BIT = 0x40000000, 0x80000000
+TEAM_FIELD = 87
 HISTORY_RESERVE = 64                       # dwords kept free after the sync (the game folds again by itself when full)
 SYNC_FOLD_DEPTHS = range(15, 1, -1)        # the card shows 15 season rows, so fold the oldest seasons first
 
@@ -772,6 +773,90 @@ def _add_honors(words, years_pro: int, season_now: int, honors) -> tuple[tuple[i
     return tuple(_with_end(new + words)), added, skipped
 
 
+def _history_streams(roster) -> tuple[list, set]:
+    """-> (streams [(start, stop, key)] in pool order, the keys whose words another player shares).
+
+    The game can leave one player's stream as the tail of another's. Those words belong to both players, so
+    neither is edited; every other stream is rebuilt around them."""
+    streams = sorted((start, start + len(roster.history_words[key]) * 4, key)
+                     for key, start in roster.history_offsets.items() if start is not None)
+    shared, cluster, cluster_end = set(), [], -1
+    for start, stop, key in streams:
+        if cluster and start < cluster_end:
+            cluster.append(key)
+            cluster_end = max(cluster_end, stop)
+        else:
+            if len(cluster) > 1:
+                shared.update(cluster)
+            cluster, cluster_end = [key], stop
+    if len(cluster) > 1:
+        shared.update(cluster)
+    return streams, shared
+
+
+def _rewrite_history(payload: bytes, roster, streams, shared, new_streams, used_after: int) -> tuple[bytes, dict]:
+    """Write ``new_streams`` ({player key: words}) into the saved pool, keeping unowned words and shared tails as
+    they are, fixing every +0x2C pointer and the used count, and proving that nothing else changed."""
+    used, pool = roster.pool_used, roster.pool
+    require(pool is not None, "history pool pointer is missing")
+    require(not any(payload[pool + used * 4:pool + max(used_after, used) * 4]), "nonzero history slack")
+    end = pool + max(used_after, used) * 4
+    require(end <= roster.layout.end, "history rewrite exceeds the roster arena")
+    for table in roster.tables.values():
+        if table.offset is not None and table.count and used_after > used:
+            require(end <= table.offset or pool >= table.offset + table.count * table.stride,
+                    "history rewrite would overlap a roster table")
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    out[pool:end] = bytes(end - pool)
+    masks.update({offset: 255 for offset in range(pool, end)})
+    cursor, old_end, new_start, anchor = pool, pool, {}, None
+    for start, stop, key in streams:
+        require(start >= pool and stop <= pool + used * 4, "history stream outside the pool")
+        if start < old_end:                      # a shared tail: unedited, placed relative to its owner
+            require(key in shared and anchor is not None and stop <= old_end, "unexpected history overlap")
+            new_start[key] = anchor[1] + (start - anchor[0])
+            continue
+        if start > old_end:                      # words no player points at (left by the game): carried over as they are
+            out[cursor:cursor + start - old_end] = payload[old_end:start]
+            cursor += start - old_end
+        words = new_streams[key]
+        new_start[key] = cursor
+        anchor = (start, cursor)
+        for word in words:
+            struct.pack_into("<I", out, cursor, word)
+            cursor += 4
+        old_end = stop
+    if old_end < pool + used * 4:
+        out[cursor:cursor + pool + used * 4 - old_end] = payload[old_end:pool + used * 4]
+        cursor += pool + used * 4 - old_end
+    for player in sorted(roster.players, key=lambda p: p.key):     # players with no stream yet get one at the end
+        words = new_streams[player.key]
+        if roster.history_offsets[player.key] is None and words:
+            new_start[player.key] = cursor
+            for word in words:
+                struct.pack_into("<I", out, cursor, word)
+                cursor += 4
+    for player in roster.players:
+        pointer = player.offset + 0x2C
+        before = payload[pointer:pointer + 4]
+        if player.key in new_start:
+            struct.pack_into("<i", out, pointer, new_start[player.key] - pointer + 1)
+        if bytes(out[pointer:pointer + 4]) != before:
+            masks.update({pointer + i: 255 for i in range(4)})
+    require(cursor == pool + used_after * 4, f"history pool size mismatch {(cursor - pool) // 4} vs {used_after}")
+    struct.pack_into("<I", out, roster.layout.root + 0x40, used_after)
+    masks.update({roster.layout.root + 0x40 + i: 255 for i in range(4)})
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    checked = sr.decode(result, base_year=BASE_YEAR)
+    for player in roster.players:
+        require(identity(checked.by_key[player.key]) == identity(player), "history rewrite changed a player identity")
+        require(checked.history_words[player.key] == new_streams[player.key], "history read-back differs")
+    require(checked.pool_used == used_after, "history used count differs")
+    return result, scope
+
+
 def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
     """Copy the disc roster's award history (Player Card honors page) into the franchise's own players by identity.
 
@@ -801,21 +886,7 @@ def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                 rows.append({"first": source.first, "last": source.last,
                              "birth_date": str(source.record.birth_date or ""),
                              "honor": honor_names[field], "season": season, "value": raw & 0xFFFF, "folded": False})
-    streams = sorted((start, start + len(roster.history_words[key]) * 4, key)
-                     for key, start in roster.history_offsets.items() if start is not None)
-    # The game can leave one player's stream as the tail of another's. Those words belong to both players, so
-    # neither is edited (listed in the receipt); every other stream is rebuilt around them.
-    shared, cluster, cluster_end = set(), [], -1
-    for start, stop, key in streams:
-        if cluster and start < cluster_end:
-            cluster.append(key)
-            cluster_end = max(cluster_end, stop)
-        else:
-            if len(cluster) > 1:
-                shared.update(cluster)
-            cluster, cluster_end = [key], stop
-    if len(cluster) > 1:
-        shared.update(cluster)
+    streams, shared = _history_streams(roster)
     disc_ids = Counter(identity(p) for p in target.players if p.first or p.last)
     saved = defaultdict(list)
     for player in roster.players:
@@ -877,62 +948,7 @@ def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                          "skipped": [], "fold_depth": 0, "folded_players": [], "changes": [],
                          "used_before": used, "used_after": used, "capacity": capacity,
                          "outside_declared_fields_identical": True, "changed_bytes": 0}
-    require(pool is not None, "history pool pointer is missing")
-    require(not any(payload[pool + used * 4:pool + max(used_after, used) * 4]), "nonzero history slack")
-    end = pool + max(used_after, used) * 4
-    require(end <= roster.layout.end, "honors sync exceeds the roster arena")
-    for table in roster.tables.values():
-        if table.offset is not None and table.count and used_after > used:
-            require(end <= table.offset or pool >= table.offset + table.count * table.stride,
-                    "honors sync would overlap a roster table")
-    out = bytearray(payload)
-    masks: dict[int, int] = {}
-    out[pool:end] = bytes(end - pool)
-    masks.update({offset: 255 for offset in range(pool, end)})
-    cursor, old_end, new_start, anchor = pool, pool, {}, None
-    for start, stop, key in streams:
-        require(start >= pool and stop <= pool + used * 4, "history stream outside the pool")
-        if start < old_end:                      # a shared tail: unedited, placed relative to its owner
-            require(key in shared and anchor is not None and stop <= old_end, "unexpected history overlap")
-            new_start[key] = anchor[1] + (start - anchor[0])
-            continue
-        if start > old_end:                      # words no player points at (left by the game): carried over as they are
-            out[cursor:cursor + start - old_end] = payload[old_end:start]
-            cursor += start - old_end
-        words = new_streams[key]
-        new_start[key] = cursor
-        anchor = (start, cursor)
-        for word in words:
-            struct.pack_into("<I", out, cursor, word)
-            cursor += 4
-        old_end = stop
-    if old_end < pool + used * 4:
-        out[cursor:cursor + pool + used * 4 - old_end] = payload[old_end:pool + used * 4]
-        cursor += pool + used * 4 - old_end
-    for player in sorted(roster.players, key=lambda p: p.key):     # players with no stream yet get one at the end
-        words = new_streams[player.key]
-        if roster.history_offsets[player.key] is None and words:
-            new_start[player.key] = cursor
-            for word in words:
-                struct.pack_into("<I", out, cursor, word)
-                cursor += 4
-    for player in roster.players:
-        pointer = player.offset + 0x2C
-        before = payload[pointer:pointer + 4]
-        if player.key in new_start:
-            struct.pack_into("<i", out, pointer, new_start[player.key] - pointer + 1)
-        if bytes(out[pointer:pointer + 4]) != before:
-            masks.update({pointer + i: 255 for i in range(4)})
-    require(cursor == pool + used_after * 4, f"honors pool size mismatch {(cursor - pool) // 4} vs {used_after}")
-    struct.pack_into("<I", out, roster.layout.root + 0x40, used_after)
-    masks.update({roster.layout.root + 0x40 + i: 255 for i in range(4)})
-    result = bytes(out)
-    scope = prove_scope(payload, result, masks)
-    checked = sr.decode(result, base_year=BASE_YEAR)
-    for player in roster.players:
-        require(identity(checked.by_key[player.key]) == identity(player), "honors sync changed a player identity")
-        require(checked.history_words[player.key] == new_streams[player.key], "honors read-back differs")
-    require(checked.pool_used == used_after, "honors used count differs")
+    result, scope = _rewrite_history(payload, roster, streams, shared, new_streams, used_after)
     changes = []
     for key, rows_added in sorted(added.items()):
         player = by_key[key]
@@ -949,3 +965,99 @@ def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                     "fold_depth": depth,
                     "folded_players": [f"{by_key[k].first} {by_key[k].last}" for k in folded],
                     "used_before": used, "used_after": used_after, "capacity": capacity, "changes": changes, **scope}
+
+
+def infer_played_clubs(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """OPT-IN. Fill the Player Card TEAM column for the first franchise season from the disc's starting clubs.
+
+    b778-pc2: a franchise that played its first season on a disc without the per-game club recorder (the recorder
+    writes field 87 after every game, so every season played on v0.6.1 has it) shows ``--`` for that season on every
+    card. The save cannot say who played for whom, so ``team-history`` refuses to guess. This step is the guess:
+    the franchise started from the disc's rosters, so a player's club for BASE_YEAR (2026) is the club he is on in
+    the disc's roster, when his (first, last, birth date) is unique in both rosters and the save has a games row for
+    that season and no club for it. A player who changed clubs during that first season keeps the wrong (starting)
+    club; the receipt says so on every row. Later seasons are never inferred. Fits by folding like ``sync_honors``.
+    """
+    save, roster = franchise(payload)
+    season_now = save.header.display_year
+    require(season_now > BASE_YEAR, "no completed first season to fill")
+    try:
+        target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    except sr.SaveRostError as exc:
+        raise UpgradeRefused(f"club source must be a disc ROST: {exc}") from exc
+    require(target.layout.version in (17, 18), "club source must be a disc ROST")
+    clubs = {team.abbreviation: team.index for team in roster.teams[:32]}
+    require(len(clubs) == 32, "requires unique NFL club abbreviations")
+    streams, shared = _history_streams(roster)
+    disc_ids = Counter(identity(p) for p in target.players if p.first or p.last)
+    disc_by_offset = {p.offset: p for p in target.players}
+    disc_club = {}
+    for team in target.teams[:32]:
+        for offset in team.player_offsets:
+            if offset in disc_by_offset and team.abbreviation in clubs:
+                disc_club.setdefault(identity(disc_by_offset[offset]), team.abbreviation)
+    saved = defaultdict(list)
+    for player in roster.players:
+        if player.first or player.last:
+            saved[identity(player)].append(player)
+    wanted, shared_skipped = {}, set()         # save key -> (slot, club index + 1, club)
+    for key, abbreviation in disc_club.items():
+        players = saved.get(key, [])
+        if not key[2] or disc_ids[key] != 1 or len(players) != 1:
+            continue
+        player = players[0]
+        slot = player.record.values["years_pro"] - (season_now - BASE_YEAR)
+        words = roster.history_words[player.key]
+        live = [w for w in words if _live_regular(w) and (w >> 23) & 31 == slot]
+        if slot < 1 or not any((w >> 16) & 127 == 0 and w & 0xFFFF for w in live) \
+                or any((w >> 16) & 127 == TEAM_FIELD for w in live):
+            continue
+        if player.key in shared:
+            shared_skipped.add(f"{player.first} {player.last}")
+            continue
+        wanted[player.key] = (slot, clubs[abbreviation] + 1, abbreviation)
+    by_key = roster.by_key
+
+    def build(depth):
+        out, folded = {}, []
+        for key, words in roster.history_words.items():
+            player = by_key[key]
+            if depth and words and key not in shared:
+                after = fold_words(words, player.record.values["years_pro"], depth)
+                if after != words:
+                    folded.append(key)
+                words = after
+            out[key] = tuple(words)
+        for key, (slot, value, _club) in wanted.items():
+            new = (slot << 23) | (TEAM_FIELD << 16) | value
+            out[key] = tuple(_with_end([new, *out[key]]))
+        return out, folded, roster.pool_used + sum(
+            len(words) - len(roster.history_words[key]) for key, words in out.items())
+
+    chosen = None
+    for depth in (0, *SYNC_FOLD_DEPTHS):
+        built = build(depth)
+        if built[2] <= roster.pool_capacity - HISTORY_RESERVE:
+            chosen = (depth, built)
+            break
+    require(chosen is not None, "the clubs do not fit the history pool even after folding old seasons")
+    depth, (new_streams, folded, used_after) = chosen
+    if not wanted and not folded:
+        return payload, {"operation": "played_clubs", "before_sha256": sha(payload), "after_sha256": sha(payload),
+                         "disc_roster_sha256": sha(disc_body), "season": BASE_YEAR, "fold_depth": 0,
+                         "folded_players": [], "shared_history_skipped": sorted(shared_skipped), "changes": [],
+                         "used_before": roster.pool_used, "used_after": roster.pool_used,
+                         "capacity": roster.pool_capacity, "outside_declared_fields_identical": True,
+                         "changed_bytes": 0}
+    result, scope = _rewrite_history(payload, roster, streams, shared, new_streams, used_after)
+    changes = [{"pool": by_key[key].pool, "index": by_key[key].index,
+                "player": f"{by_key[key].first} {by_key[key].last}", "season": BASE_YEAR, "slot": slot,
+                "field": "team_history", "before": None, "after": club,
+                "basis": {"kind": "disc_starting_club", "inferred": True,
+                          "note": "the club on the disc roster; a trade or signing during the season is not visible"}}
+               for key, (slot, _value, club) in sorted(wanted.items())]
+    return result, {"operation": "played_clubs", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "season": BASE_YEAR, "fold_depth": depth,
+                    "folded_players": [f"{by_key[k].first} {by_key[k].last}" for k in folded],
+                    "shared_history_skipped": sorted(shared_skipped), "used_before": roster.pool_used,
+                    "used_after": used_after, "capacity": roster.pool_capacity, "changes": changes, **scope}

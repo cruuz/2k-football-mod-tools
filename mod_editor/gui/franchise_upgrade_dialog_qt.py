@@ -60,6 +60,12 @@ def preview_text(plan):
             lines += [f"  {c['player']}: {c['field'].split('.')[1]} {c['season'] or 'pre-fold'}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "played_clubs":   # b778-pc2
+            lines.append(f"First-season clubs inferred from the disc roster: {len(step['changes'])} players"
+                         + (f"; oldest seasons of {len(step['folded_players'])} veterans merged" if step["folded_players"] else ""))
+            lines += [f"  {c['player']}: {c['season']} {c['after']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")

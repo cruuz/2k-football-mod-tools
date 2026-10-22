@@ -22,6 +22,7 @@ from mod_editor.core import nfl2k5_franchise_upgrade as up  # noqa: E402
 from mod_editor.core import nfl2k5_franchise_upgrade_io as service  # noqa: E402
 from mod_editor.core import nfl2k5_save_rost as sr  # noqa: E402
 from tests.mod_editor import test_nfl2k5_honors as native  # noqa: E402
+from tests.mod_editor.test_franchise_team_history_upgrade import fixture as club_fixture  # noqa: E402
 from tests.mod_editor.test_franchise_upgrade import disc_roster, fixture, signed_folder  # noqa: E402
 
 
@@ -181,6 +182,60 @@ class SyncHonorsTests(unittest.TestCase):
         from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
         plan.receipt["validation"] = {"after": {"findings": []}}
         self.assertIn("Award history from the disc: 2 honors for 2 players", preview_text(plan))
+
+
+class PlayedClubsTests(unittest.TestCase):
+    """b778-pc2 (opt-in): the first franchise season has no club on a card when it was played before the recorder."""
+
+    def placed(self, abbreviation):
+        save, disc = club_fixture()
+        document = sr.decode(disc, preamble=0, reference_year=up.BASE_YEAR)
+        team = next(t for t in document.teams if t.abbreviation == abbreviation)
+        data = bytearray(disc)
+        data[team.offset + 0x11C] = 1
+        pointer = team.offset
+        struct.pack_into("<i", data, pointer, document.players[0].offset - pointer + 1)
+        return save, bytes(data)
+
+    def test_the_first_season_club_comes_from_the_disc_roster_and_says_so(self):
+        save, disc = self.placed("BUF")
+        result, receipt = up.infer_played_clubs(save, disc)
+        _s, roster = up.franchise(result)
+        player = roster.players[0]
+        clubs = [t.abbreviation for t in roster.teams[:32]]
+        team = [w for w in roster.history_words[player.key] if (w >> 16) & 127 == 87 and not w & 0x30000000]
+        self.assertEqual([((w >> 23) & 31, (w & 0xFFFF) - 1) for w in team], [(2, clubs.index("BUF"))])
+        self.assertEqual([(c["player"], c["season"], c["after"], c["basis"]["inferred"]) for c in receipt["changes"]],
+                         [("Test Player", 2026, "BUF", True)])
+        self.assertTrue(receipt["outside_declared_fields_identical"])
+        self.assertEqual(up.infer_played_clubs(result, disc)[1]["changes"], [])        # idempotent
+
+    def test_nothing_is_guessed_without_a_disc_club_a_games_row_or_a_completed_season(self):
+        save, disc = club_fixture()
+        self.assertEqual(up.infer_played_clubs(save, disc)[1]["changes"], [])         # on no disc club
+        save, disc = self.placed("BUF")
+        data = bytearray(save)
+        roster = sr.decode(bytes(data))
+        data[roster.layout.root + 0x40:roster.layout.root + 0x44] = struct.pack("<I", 0)   # empty history: no games row
+        for player in roster.players:
+            struct.pack_into("<i", data, player.offset + 0x2C, 0)
+        self.assertEqual(up.infer_played_clubs(bytes(data), disc)[1]["changes"], [])
+
+    def test_it_is_a_command_and_not_part_of_upgrade(self):
+        self.assertIn("played-clubs", service.COMMANDS)
+        save, disc = self.placed("BUF")
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            folder = signed_folder(root / "source", save)
+            iso = root / "disc.iso"
+            iso.write_bytes(b"synthetic disc fingerprint")
+            with unittest.mock.patch.object(service, "load_disc", return_value=(disc, {})), \
+                    unittest.mock.patch.object(up, "validate_save", return_value={}):
+                plan = service.plan_upgrade(folder, iso, command="played-clubs")
+        self.assertEqual([s["operation"] for s in plan.receipt["steps"]], ["played_clubs"])
+        from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
+        plan.receipt["validation"] = {"after": {"findings": []}}
+        self.assertIn("First-season clubs inferred from the disc roster: 1 players", preview_text(plan))
 
 
 @unittest.skipUnless(native.NativeTests.__dict__.get("__unittest_skip__") is None and native.XBE.is_file()
