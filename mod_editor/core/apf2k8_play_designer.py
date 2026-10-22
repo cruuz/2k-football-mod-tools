@@ -21,10 +21,159 @@ PROVIDER_KIND = "apf_play_design"
 SELECTOR = "play-design:apf:playbook:180:0"
 STATUS = "Offline verified; experimental / UNWITNESSED in-game; CPU books only"
 MAX_PLAN_BYTES = 256 * 1024
+FORMATION_LIMIT = 176
 
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+# Playbook Manager availability: MASTER's relation block holds one 84-byte row per formation. Each row is
+# big-endian 32-bit words; play N is bit (N % 32), least-significant first, of word (N // 32). Verified
+# against the in-game manager lists for I Pro, Ace and Quads (row index == formation index).
+OFFER_ROW = c.RELATION_STRIDE
+OFFER_WORDS = 20  # 640 play bits; the 21st word is not play data
+# The in-game manager lists at most 84 plays per formation, checked and unchecked together (matches the 84-entry
+# playbook record). Verified against I Pro and Quads: 15+69 and 9+75 rows end at play 76. Anything past 84 is cut off.
+OFFER_LIMIT = 84
+
+
+def offer_position(formation: int, play: int) -> tuple[int, int]:
+    """(absolute byte offset of the 32-bit word, bit number within it)."""
+    return c.RELATION_BASE + formation * OFFER_ROW + (play // 32) * 4, play % 32
+
+
+def offer_get(body: bytes, formation: int, play: int) -> bool:
+    at, bit = offer_position(formation, play)
+    return bool(struct.unpack_from(">I", body, at)[0] >> bit & 1)
+
+
+def offer_set(body: bytearray, formation: int, play: int, value: bool) -> tuple[int, int]:
+    at, bit = offer_position(formation, play)
+    word = struct.unpack_from(">I", body, at)[0]
+    word = word | (1 << bit) if value else word & ~(1 << bit)
+    struct.pack_into(">I", body, at, word)
+    return at, at + 4
+
+
+def offered_plays(body: bytes, formation: int) -> list[int]:
+    """Plays a formation's Playbook Manager list offers."""
+    count = struct.unpack_from(">I", body, 0x38)[0]
+    return [p for p in range(count) if offer_get(body, formation, p)]
+
+
+def offered_formations(body: bytes, play: int) -> list[int]:
+    """Formations whose Playbook Manager list offers this play."""
+    count = struct.unpack_from(">I", body, 0x34)[0]
+    return [f for f in range(count) if offer_get(body, f, play)]
+
+
+def _side(body: bytes, base: int, stride: int, index: int) -> int:
+    """Type/side nibble of a play or formation record (offense 0, defense 1, special teams 2+)."""
+    return struct.unpack_from(">I", body, base + index * stride + 4)[0] >> 28
+
+
+def formation_side(body: bytes, formation: int) -> int:
+    return _side(body, c.FORMATION_BASE, c.FORMATION_SIZE, formation)
+
+
+def play_side(body: bytes, play: int) -> int:
+    return _side(body, c.PLAY_BASE, c.PLAY_SIZE, play)
+
+
+SPECIAL_SITUATION_MAX = 3  # retail formations that offer this few plays or fewer (Clock, Hail Mary...) are left alone by "all"
+
+
+def unlockable_formations(source: bytes) -> dict[str, list[int]]:
+    """Offense and defense formations the bulk scopes cover, from the pinned baseline."""
+    count = struct.unpack_from(">I", source, 0x34)[0]
+    plays = struct.unpack_from(">I", source, 0x38)[0]
+    out = {"offense": [], "defense": []}
+    for f in range(count):
+        side = formation_side(source, f)
+        if side in (0, 1) and sum(offer_get(source, f, p) for p in range(plays)) > SPECIAL_SITUATION_MAX:
+            out["offense" if side == 0 else "defense"].append(f)
+    return out
+
+
+# Shortcuts for choosing formations. Personnel comes from each formation's own personnel package: the package's 11 role
+# bytes name RB (HB/FB), TE and WR slots, so Pro Set (FB HB TE WR WR) is "21", Ace "12", Kings "11", Flush "10".
+_FAMILY_PREFIXES = (("Strong Power I", "Power I"), ("Weak Power I", "Power I"), ("Strong I ", "Strong I"), ("Weak I ", "Weak I"),
+                    ("I ", "I"), ("Split ", "Split"), ("Near ", "Near"), ("Far ", "Far"))
+FAMILY_ORDER = ("I", "Strong I", "Weak I", "Split", "Near", "Far", "Power I", "Singleback", "Shotgun")
+
+
+def formation_family(name: str) -> str | None:
+    """Offensive formation family from its name; None for special-situation formations (Hail Mary, Clock)."""
+    if name in ("Hail Mary", "Clock"):
+        return None
+    if name.startswith("Gun:"):
+        return "Shotgun"
+    for prefix, family in _FAMILY_PREFIXES:
+        if name.startswith(prefix):
+            return family
+    return "Singleback"
+
+
+def formation_personnel(book, body: bytes, formation: int) -> tuple[str, str]:
+    """(key, package name): offense key is RB then TE count such as "21"; defense key is the package name."""
+    category = book.formations[formation].category_index
+    name = book.name_at(c.CATEGORY_BASE + category * 16, book.categories[category][0])
+    if formation_side(body, formation) != 0:
+        return name, name
+    roles = [value & 31 for value in body[0x49 + 16 * category:0x54 + 16 * category]]
+    return f"{sum(r in (10, 11) for r in roles)}{sum(r == 8 for r in roles)}", name
+
+
+def assign_plays(current: Mapping[int, set], locked: Mapping[int, set], plays: set, formations, *,
+                 remove: bool = False, limit: int = OFFER_LIMIT) -> tuple[dict[int, set], dict[int, int]]:
+    """Offer (or stop offering) plays in formations. Returns (changed formation -> full offered set, skipped counts).
+
+    Adding never exceeds the limit: plays that do not fit are skipped, lowest play numbers first. Plays a formation's
+    default playbook uses are never removed (a missing bit crashes the manager); those are counted as skipped.
+    """
+    changed: dict[int, set] = {}
+    skipped: dict[int, int] = {}
+    for f in formations:
+        base = set(current.get(f, ())) | (set(locked.get(f, ())) if not remove else set())
+        if remove:
+            kept = plays & set(locked.get(f, ()))
+            gone = (plays & base) - kept
+            if gone:
+                changed[f] = base - gone
+            if kept & base:
+                skipped[f] = len(kept & base)
+        else:
+            missing = sorted(plays - base)
+            take = missing[:max(0, limit - len(base))]
+            if take or base != set(current.get(f, ())):
+                changed[f] = base | set(take)
+            if len(take) < len(missing):
+                skipped[f] = len(missing) - len(take)
+    return {f: v for f, v in changed.items() if v != set(current.get(f, ()))}, skipped
+
+
+def unlock_pairs(body: bytes, source: bytes, spec: Mapping) -> list[tuple[int, int]]:
+    """(formation, play) pairs the unlock adds: every play of a formation's own side (offense or defense).
+
+    Retail never offers a play in a formation of the other side, and never lists special-teams plays in
+    offense/defense formations (apart from QB Punt), so those stay as they are. Plays that retail offers
+    nowhere (developer test plays and a few unused ones) are skipped unless spec["hidden"] is true.
+    """
+    plays = struct.unpack_from(">I", body, 0x38)[0]
+    original_plays = struct.unpack_from(">I", source, 0x38)[0]
+    original_formations = struct.unpack_from(">I", source, 0x34)[0]
+    sides = [play_side(body, p) for p in range(plays)]
+    never = {p for p in range(original_plays) if not any(offer_get(source, g, p) for g in range(original_formations))}
+    out = []
+    for f in spec["formations"]:
+        side = formation_side(body, f)
+        if side not in (0, 1):
+            raise ValidationError(f"Formation {f} is a special-teams formation; the unlock covers offense and defense formations only.")
+        for p in range(plays):
+            if sides[p] == side and (spec["hidden"] or p not in never):
+                out.append((f, p))
+    return out
 
 
 def _keys(value: object, keys: set[str], label: str) -> dict:
@@ -46,7 +195,11 @@ def _name(value: object) -> str:
 
 
 def normalize_plan(value: Mapping) -> dict:
-    doc = _keys(value, {"schema", "source_sha256", "plays", "formations", "cpu_calls"}, "Design plan")
+    if isinstance(value, dict):
+        value = {**value}
+        value.setdefault("unlock_offers", None)  # older plans
+        value.setdefault("offer_sets", [])
+    doc = _keys(value, {"schema", "source_sha256", "plays", "formations", "cpu_calls", "unlock_offers", "offer_sets"}, "Design plan")
     if doc["schema"] != SCHEMA:
         raise ValidationError("Unsupported APF design plan schema.")
     digest = doc["source_sha256"]
@@ -55,12 +208,51 @@ def normalize_plan(value: Mapping) -> dict:
     for kind in ("plays", "formations", "cpu_calls"):
         if not isinstance(doc[kind], list) or len(doc[kind]) > 176:
             raise ValidationError(f"{kind} must be a bounded list.")
-    out = {"schema": SCHEMA, "source_sha256": digest, "plays": [], "formations": [], "cpu_calls": []}
+    out = {"schema": SCHEMA, "source_sha256": digest, "plays": [], "formations": [], "cpu_calls": [], "unlock_offers": None, "offer_sets": []}
+    if not isinstance(doc["offer_sets"], list) or len(doc["offer_sets"]) > FORMATION_LIMIT:
+        raise ValidationError("offer_sets must be a bounded list.")
+    seen_sets = set()
+    for raw in doc["offer_sets"]:
+        entry = dict(_keys(raw, {"formation", "plays"}, "offer set"))
+        c.bounded(entry["formation"], 0, c.FORMATION_CAPACITY - 1, "Offer-set formation")
+        if entry["formation"] in seen_sets:
+            raise ValidationError("Two offer sets target the same formation.")
+        seen_sets.add(entry["formation"])
+        if not isinstance(entry["plays"], list) or len(entry["plays"]) > OFFER_LIMIT:
+            raise ValidationError(f"A formation can offer at most {OFFER_LIMIT} plays in the Playbook Manager.")
+        for play in entry["plays"]:
+            c.bounded(play, 0, c.PLAY_CAPACITY - 1, "Offered play")
+        if len(set(entry["plays"])) != len(entry["plays"]):
+            raise ValidationError("Duplicate offered play in an offer set.")
+        out["offer_sets"].append({"formation": entry["formation"], "plays": sorted(entry["plays"])})
+    out["offer_sets"].sort(key=lambda e: e["formation"])
+    unlock = doc["unlock_offers"]
+    if unlock is not None:
+        unlock = dict(_keys(unlock, {"formations", "hidden"}, "unlock_offers"))
+        if not isinstance(unlock["formations"], list) or len(unlock["formations"]) > FORMATION_LIMIT or type(unlock["hidden"]) is not bool:
+            raise ValidationError("unlock_offers needs a formation list and a hidden-plays flag.")
+        for f in unlock["formations"]:
+            c.bounded(f, 0, c.FORMATION_CAPACITY - 1, "Unlocked formation")
+        if len(set(unlock["formations"])) != len(unlock["formations"]):
+            raise ValidationError("Duplicate unlocked formation.")
+        unlock["formations"] = sorted(unlock["formations"])
+        out["unlock_offers"] = unlock if unlock["formations"] else None
     for kind in ("plays", "formations"):
         seen = set()
         for raw in doc[kind]:
-            fields = {"mode", "target", "donor", "name"} | ({"copies", "nodes"} if kind == "plays" else {"positions"})
+            fields = {"mode", "target", "donor", "name"} | ({"copies", "nodes", "offer"} if kind == "plays" else {"positions"})
+            if kind == "plays" and isinstance(raw, dict) and "offer" not in raw:
+                raw = {**raw, "offer": None}  # older plans: append inherits the donor's formations
             r = dict(_keys(raw, fields, kind))
+            if kind == "plays":
+                if r["offer"] is not None:
+                    if not isinstance(r["offer"], list) or len(r["offer"]) > FORMATION_LIMIT:
+                        raise ValidationError("offer must be a list of formation indexes or null.")
+                    for f in r["offer"]:
+                        c.bounded(f, 0, c.FORMATION_CAPACITY - 1, "Offered formation")
+                    if len(set(r["offer"])) != len(r["offer"]):
+                        raise ValidationError("Duplicate offered formation.")
+                    r["offer"] = sorted(r["offer"])
             if r["mode"] not in ("edit", "append", "replace"):
                 raise ValidationError("Choose edit, append or explicit slot replacement.")
             maximum = c.PLAY_CAPACITY - 1 if kind == "plays" else c.FORMATION_CAPACITY - 1
@@ -111,8 +303,8 @@ def normalize_plan(value: Mapping) -> dict:
         if r["donor_record"] is not None:
             c.bounded(r["donor_record"], 0, 175, "CPU donor record")
         out["cpu_calls"].append(r)
-    if not any(out[k] for k in ("plays", "formations", "cpu_calls")):
-        raise ValidationError("Choose at least one design or CPU book addition.")
+    if not any(out[k] for k in ("plays", "formations", "cpu_calls", "offer_sets")) and out["unlock_offers"] is None:
+        raise ValidationError("Choose at least one design, CPU book addition or offer unlock.")
     return out
 
 
@@ -140,7 +332,7 @@ def decode_plan(data: bytes) -> dict:
 
 
 def empty_plan(source: bytes) -> dict:
-    return {"schema": SCHEMA, "source_sha256": sha(source), "plays": [], "formations": [], "cpu_calls": []}
+    return {"schema": SCHEMA, "source_sha256": sha(source), "plays": [], "formations": [], "cpu_calls": [], "unlock_offers": None, "offer_sets": []}
 
 
 @dataclass(frozen=True)
@@ -220,6 +412,58 @@ def _compile(source: bytes, plan: dict) -> tuple[bytes, list[tuple[int, int]], l
         if count != original_count:
             struct.pack_into(">I", body, offset, count)
             allowed.append((offset, offset + 4))
+    # Playbook Manager availability for authored plays. Appended plays inherit the donor's formations unless an
+    # explicit list is given; edits/replacements keep their formations unless a list is given.
+    formation_count = struct.unpack_from(">I", body, 0x34)[0]
+    for r in plan["plays"]:
+        if r["offer"] is None and r["mode"] != "append":
+            continue
+        target = r["target"]
+        if r["offer"] is None:
+            wanted = {f for f in range(formation_count) if offer_get(body, f, r["donor"])}
+        else:
+            wanted = set(r["offer"])
+            if any(f >= formation_count for f in wanted):
+                raise ValidationError("An offered formation does not exist in this design.")
+        for f in range(formation_count):
+            if offer_get(body, f, target) != (f in wanted):
+                allowed.append(offer_set(body, f, target, f in wanted))
+        receipt.append({"kind": "offer", "play": target, "formations": sorted(wanted)})
+    unlock = plan["unlock_offers"]
+    if unlock is not None:
+        if any(f >= formation_count for f in unlock["formations"]):
+            raise ValidationError("An unlocked formation does not exist in this design.")
+        added = 0
+        for f, p in unlock_pairs(bytes(body), source, unlock):
+            if not offer_get(body, f, p):
+                allowed.append(offer_set(body, f, p, True))
+                added += 1
+        receipt.append({"kind": "unlock_offers", "formations": unlock["formations"], "hidden": unlock["hidden"], "added": added})
+    play_count = struct.unpack_from(">I", body, 0x38)[0]
+    for entry in plan["offer_sets"]:
+        f = entry["formation"]
+        if f >= formation_count:
+            raise ValidationError(f"Offer set formation {f} does not exist in this design.")
+        side = formation_side(bytes(body), f)
+        if side not in (0, 1):
+            raise ValidationError(f"Formation {f} is a special-teams formation; its plays cannot be changed here.")
+        wanted = set(entry["plays"])
+        for p in sorted(wanted):
+            if p >= play_count:
+                raise ValidationError(f"Offered play {p} does not exist in this design.")
+            retail = f < struct.unpack_from(">I", source, 0x34)[0] and p < struct.unpack_from(">I", source, 0x38)[0] and offer_get(source, f, p)
+            if play_side(bytes(body), p) != side and not retail:
+                raise ValidationError(f"Play {p} is on the other side of the ball from formation {f}.")
+        for p in range(play_count):
+            if offer_get(body, f, p) != (p in wanted):
+                allowed.append(offer_set(body, f, p, p in wanted))
+        receipt.append({"kind": "offer_set", "formation": f, "count": len(wanted)})
+    for f in range(formation_count):
+        offered = sum(offer_get(body, f, p) for p in range(play_count))
+        if offered > OFFER_LIMIT:
+            raise ValidationError(
+                f"Formation {f} would offer {offered} plays. The Playbook Manager shows at most {OFFER_LIMIT} plays per "
+                "formation (checked and unchecked together) and cuts the rest off, so remove some first.")
     if names_changed:
         cursor = c.STRING_BASE
         body[c.STRING_BASE:c.STRING_END] = bytes(c.STRING_END - c.STRING_BASE)
@@ -317,6 +561,25 @@ def verify_design(source: bytes, replacement: bytes, plan: Mapping) -> dict:
         for slot, variant, x, y in r["positions"]:
             if formation.slots[slot].x[variant] != x or formation.slots[slot].y[variant] != y:
                 raise ValidationError("Reparsed formation alignment differs from the design.")
+    unlocked = {}
+    if plan["unlock_offers"] is not None:
+        for f, p in unlock_pairs(replacement, source, plan["unlock_offers"]):
+            unlocked.setdefault(p, set()).add(f)
+            if not offer_get(replacement, f, p):
+                raise ValidationError("Reparsed Playbook Manager availability is missing an unlocked play.")
+    overridden = {e["formation"]: set(e["plays"]) for e in plan["offer_sets"]}
+    for r in plan["plays"]:
+        if r["offer"] is not None:
+            expected_formations = set(r["offer"]) | unlocked.get(r["target"], set())
+            for f, wanted in overridden.items():
+                expected_formations.discard(f)
+                if r["target"] in wanted:
+                    expected_formations.add(f)
+            if set(offered_formations(replacement, r["target"])) != expected_formations:
+                raise ValidationError("Reparsed Playbook Manager availability differs from the design.")
+    for entry in plan["offer_sets"]:
+        if offered_plays(replacement, entry["formation"]) != entry["plays"]:
+            raise ValidationError("Reparsed formation play list differs from the design.")
     for kind, records in (("plays", after.plays), ("formations", after.formations)):
         for r in plan[kind]:
             actual = after.play_name(r["target"]) if kind == "plays" else after.formation_name(r["target"])

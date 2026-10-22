@@ -24,6 +24,12 @@ CPU_PINS = {
     957: "a2ce06b26b10dd3b9be637553fef01e4f961c9f74cfc162be35b5267fd301fa3",
     1405: "45ee87e572dfa573c82db722e95b45b4d999efea9d822276b73d1a832e939dcf",
     1411: "07ad3538b6ff994600b1f0b468bea0b962e758fa42444f242d89bc79f0a32797",
+    # USER/global books: fingerprints of the decoded retail bodies, computed with
+    # the same parse as every pin above and checked against all eleven of them.
+    293: "83b3da4aa3fd412f50e242c130c6613d59aa27e0c7ddcf3943689dedb00d92e1",   # USER-d
+    656: "2740c33db3378ec9ffb8be222aed7cbd17c99f376c46b2ef240b28ca7e4e1408",   # global-d
+    1037: "e973cc4933d6678f3ff2493adf9a227a43d14c4ab89f8d50ae4d97fedbcd75a2",  # USER-o
+    1439: "e5ca4ff34db2eb19fd71869104ab8148f3bc34ea3a1a8f68d9156e851d9812f1",  # global-o
 }
 
 @dataclass(frozen=True)
@@ -71,7 +77,10 @@ def read_resource(index: Path, outer: int) -> Resource:
         if outer not in splb.STOCK_BOOKS or not splb.STOCK_BOOKS[outer] or file.name != "spb" or file.type_name != "SPLB":
             raise ValidationError("Only named on-disc CPU books are writable.")
         book = splb.parse_book(resource.body, outer)
-        if book.name != splb.STOCK_BOOKS[outer] or sha(resource.body) != CPU_PINS[outer]:
+        pin = CPU_PINS.get(outer)
+        if pin is None:
+            raise ValidationError(f"No verified fingerprint exists for book {splb.STOCK_BOOKS[outer]} (entry {outer}).")
+        if book.name != splb.STOCK_BOOKS[outer] or sha(resource.body) != pin:
             raise ValidationError("CPU book identity pin failed.")
     return resource
 
@@ -145,7 +154,8 @@ def compile_cpu_calls(source: bytes, outer: int, master_source: bytes, master_af
         c.bounded(fi, 0, len(after_master.formations) - 1, "Callable formation")
         c.bounded(ri, 0, 175, "CPU record")
         play_type = after_master.plays[pi].type_nibble
-        if (original_book.name.startswith("O-") and play_type != 0) or (original_book.name.startswith("X-") and play_type != 1):
+        if ((original_book.name.startswith("O-") or original_book.name == "USER-o") and play_type != 0) or (
+                (original_book.name.startswith("X-") or original_book.name == "USER-d") and play_type != 1):
             raise ValidationError("Play side does not match the selected CPU book.")
         row = original_book.records[ri]
         signature = (fi, call["donor_record"])

@@ -167,17 +167,35 @@ class PlayAssignmentRoutePanel(QWidget):
             if model is not None
             else ()
         )
+        self._fill_combos()
+        self.refresh()
+
+    def _fill_combos(self) -> None:
         for combo in (self.target_play, self.donor_play):
             previous = combo.currentData()
+            combo.blockSignals(True)
             combo.clear()
             for index, name in self._plays:
                 combo.addItem(f"{index:03d} · {name}", index)
             restored = combo.findData(previous)
             if restored >= 0:
                 combo.setCurrentIndex(restored)
+            combo.blockSignals(False)
         if len(self._plays) > 1 and self.donor_play.currentIndex() == 0:
             self.donor_play.setCurrentIndex(1)
-        self.refresh()
+
+    def _sync_staged_names(self) -> None:
+        """Use the MASTER that will ship, so a design's renamed and new plays are listed."""
+        reader = getattr(self.facade, "staged_play_names", None)
+        if reader is None or not self._plays:
+            return
+        try:
+            staged = tuple(reader())
+        except Exception:
+            return
+        if staged and staged != self._plays:
+            self._plays = staged
+            self._fill_combos()
 
     def _coordinates(self) -> tuple[int, int, int, int] | None:
         values = (
@@ -223,7 +241,9 @@ class PlayAssignmentRoutePanel(QWidget):
         )
 
     def _copy_failed(self, coordinates, message: str) -> None:
-        if message.strip() != ROUTE_ORPHAN_MESSAGE.strip():
+        # The session may append a "[design staged: ...]" diagnostic note after the
+        # writer's message, so match the orphan message as a prefix, not exactly.
+        if not message.strip().startswith(ROUTE_ORPHAN_MESSAGE.strip()):
             QMessageBox.critical(self, "Could not copy route", failure_body(message))
             return
         self._offer_relay_copy(coordinates)
@@ -383,6 +403,7 @@ class PlayAssignmentRoutePanel(QWidget):
         return next((name for value, name in self._plays if value == index), f"Play {index}")
 
     def refresh(self) -> None:
+        self._sync_staged_names()
         session = getattr(self.facade, "session", None)
         if session is not self._pending_session:
             self.clear_pending()

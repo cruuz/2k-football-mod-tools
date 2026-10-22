@@ -322,7 +322,7 @@ def _slot(
     plays = parsed["plays"]
     assert isinstance(plays, list)
     if not 0 <= play_index < len(plays):
-        raise ValidationError(f"{role} play index is outside APF MASTER PLAY.")
+        raise ValidationError(f"{role} play index is outside APF MASTER PLAY (play {play_index}; this MASTER has {len(plays)} plays).")
     if not 0 <= slot_index < playbook_inventory.SLOT_COUNT:
         raise ValidationError("APF assignment slots must be between 0 and 10.")
     play = plays[play_index]

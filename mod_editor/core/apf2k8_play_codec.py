@@ -55,6 +55,75 @@ def encode_align(v: tuple) -> int:
     return v[0] << 30 | v[1] << 5 | v[2] | v[3] << 13 | v[4] << 8 | v[5] << 16
 
 
+#: Opcodes whose X byte (bits 24..31, integer feet + 128) the engine negates when a play is mirrored.
+MIRROR_X_OPS = (0x01, 0x04, 0x09, 0x11, 0x15, 0x18)
+#: Opcodes that carry a side-dependent operand this tool does not rewrite (defence, kicking, links).
+MIRROR_UNSUPPORTED_OPS = (0x07, 0x08, 0x0A, 0x0D, 0x0E, 0x0F, 0x10, 0x19, 0x1A, 0x1B)
+
+
+def mirror_chain_edits(chain) -> tuple[list[tuple[int, str, int]], list[str]]:
+    """Field edits that turn one assignment into its mirror image, plus notes for what cannot be mirrored.
+
+    Rules are the engine's own (``nfl2k5_play_codec.decode_operands(..., mirror=True)``): X offsets
+    negate, a block leg's turn swaps +45/-45, a pass-block segment's distance changes sign, a handoff hole
+    h becomes 9-h, rush lanes become 16-lane, and the dual-lane 1C swaps and reflects its two lanes.
+    Inside/outside route segments are relative to where the player lines up, so they stay as they are:
+    the mirror image of a route belongs to a player on the other side of the formation.
+
+    Returns ``([(node index, field, value), ...], [note, ...])``.  Edits are absolute values for
+    ``Node.with_field``; mirroring the result again gives the original back.
+    """
+
+    edits: list[tuple[int, str, int]] = []
+    notes: list[str] = []
+    for index, node in enumerate(chain):
+        packed = struct.unpack_from(">I", node.to_bytes(), 4)[0]
+        field_bits = lambda lo, width: (packed >> lo) & ((1 << width) - 1)
+        op = node.op
+
+        def mirror_x():
+            feet = field_bits(24, 8) - 128
+            if feet == 0:
+                return
+            if not -128 <= -feet <= 127:
+                notes.append(f"Node {index} ({node.name}): X offset {feet} ft has no mirror in range")
+                return
+            edits.append((index, "x_ft", -feet))
+
+        if op in MIRROR_X_OPS:
+            if op == 0x11:
+                if field_bits(0, 5) % 10 != 9:  # leg type 9 uses absolute coordinates
+                    mirror_x()
+                turn = field_bits(14, 2)
+                if turn in (0, 1):
+                    edits.append((index, "turn", 1 - turn))
+            else:
+                mirror_x()
+        elif op == 0x12 and field_bits(0, 4) == 9:  # pass block: the distance sign is the side
+            distance = field_bits(24, 8) - 64
+            if distance:
+                if -64 <= -distance <= 191:
+                    edits.append((index, "distance_ft", -distance))
+                else:
+                    notes.append(f"Node {index} ({node.name}): pass-block distance {distance} ft has no mirror in range")
+        elif op in (0x16, 0x17):
+            hole = field_bits(28, 4)
+            if hole:
+                edits.append((index, "hole", 9 - hole))
+        elif op in (0x0B, 0x0C):
+            lane = field_bits(27, 5)
+            if lane <= 16 and 16 - lane != lane:
+                edits.append((index, "lane", 16 - lane))
+        elif op == 0x1C:
+            before, after = decode_align(packed), decode_align(packed, mirror=True)
+            for name, position in (("first_flag", 1), ("first_lane", 2), ("second_flag", 3), ("second_lane", 4)):
+                if before[position] != after[position]:
+                    edits.append((index, name, after[position]))
+        elif op in MIRROR_UNSUPPORTED_OPS:
+            notes.append(f"Node {index} ({node.name}): not mirrored by this tool")
+    return edits, notes
+
+
 @dataclass(frozen=True)
 class Node:
     op: int
@@ -102,6 +171,43 @@ class Node:
         }
         for op in (0x0B, 0x0C):
             specifications[op, "lane"] = (27, 5, 0, 17, 0)
+        # Fake/real handoff and block-leg fields.  K on the QB's Fake Handoff To (0x14) picks the
+        # fake style (K=7 appears only in PA Sprint 43 Post); A and the hole on the HB's
+        # Fake Take Handoff (0x17) / Take Handoff (0x16) carry the handoff side (hole h mirrors
+        # to 9-h).  Leg X is integer feet like the other X fields.
+        for op in (0x13, 0x14):
+            specifications[op, "k"] = (4, 4, 0, 15, 0)
+        for op in (0x16, 0x17):
+            specifications[op, "a"] = (0, 4, 0, 15, 0)
+            specifications[op, "hole"] = (28, 4, 0, 8, 0)
+        specifications[0x11, "turn"] = (14, 2, 0, 2, 0)
+        for op in MIRROR_X_OPS:
+            specifications.setdefault((op, "x_ft"), (24, 8, -128, 127, 128))
+        # Block Leg, fake handoff and handoff-take fields (layouts from nfl2k5_play_codec.decode_operands).
+        specifications[0x11, "turn"] = (14, 2, 0, 3, 0)
+        specifications[0x11, "x_ft"] = (24, 8, -128, 127, 128)
+        specifications[0x11, "y_ft"] = (16, 8, -64, 191, 64)
+        for op in (0x13, 0x14):
+            specifications[op, "k"] = (4, 4, 0, 15, 0)
+        for op in (0x16, 0x17):
+            specifications[op, "a"] = (0, 4, 0, 15, 0)
+            specifications[op, "hole"] = (28, 4, 0, 8, 0)
+        # Fake/take handoff pairs (QB 0x14 "Fake Handoff To", HB 0x17 "Fake Take Handoff").  K selects the
+        # fake style (retail uses 0,1,2,5,7,8); A is the take-handoff variant bit; the hole is 0..8
+        # and the engine mirrors it as 9 - hole.  Only retail-observed meaning is documented here.
+        for op in (0x13, 0x14):
+            specifications[op, "slot"] = (0, 4, 0, 10, 0)
+            specifications[op, "k"] = (4, 4, 0, 15, 0)
+        for op in (0x16, 0x17):
+            specifications[op, "a"] = (0, 4, 0, 15, 0)
+            specifications[op, "hole"] = (28, 4, 0, 8, 0)
+        # Block leg: the turn (0 = +45 deg, 1 = -45 deg, 2 = none) and offsets.  Leg type 9 stores raw
+        # coordinates instead of feet, so its offsets are not editable here.
+        specifications[0x11, "turn"] = (14, 2, 0, 2, 0)
+        specifications[0x11, "x_ft"] = (24, 8, -128, 127, 128)
+        specifications[0x11, "y_ft"] = (16, 8, -64, 191, 64)
+        specifications[0x12, "flag"] = (4, 1, 0, 1, 0)
+        specifications[0x12, "k"] = (20, 4, 0, 15, 0)
         for name, shift, width, maximum in (
             ("mode", 30, 2, 3), ("first_flag", 5, 1, 1),
             ("first_lane", 0, 5, 17), ("second_flag", 13, 1, 1),
@@ -111,6 +217,8 @@ class Node:
         spec = specifications.get((self.op, field))
         if spec is None:
             raise ValidationError(f"Field {field!r} is not writable on opcode {self.op:#x}.")
+        if self.op == 0x11 and field in ("x_ft", "y_ft") and self.operands[0] == 9:
+            raise ValidationError("Block leg type 9 stores raw coordinates; its offsets are not editable.")
         shift, width, lo, hi, bias = spec
         bounded(value, lo, hi, field)
         raw = self.to_bytes()
