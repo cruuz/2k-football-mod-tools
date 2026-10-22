@@ -185,7 +185,161 @@ def alignment_named(name: str) -> str | None:
     return "pistol" if name.split(" ", 1)[0] == "Pistol" else None
 
 
-def fix_pa_backfield(doc: dict, catalog: dict) -> list:
+# Sharing checks of the generator (pb/v2/generator.py, b777 pb4), restated on pack geometry for the refill.
+NEAR_DUP_MAX_YD, NEAR_DUP_SUM_YD = 2.0, 4.0
+ROLE_CHANGES_MAX = 1          # one non-featured route runner may change alignment class (generator.role_compatible)
+SHARE_CAP = {"run": 12, "quick": 9, "dropback": 9, "pa": 9, "deep": 5, "screen": 3}
+BOOK_FAMILY = {"run": "run", "trick": "run", "qb": "run", "quick": "quick", "screen": "screen",
+               "dropback": "dropback", "rollout": "dropback", "deep": "deep", "pa": "pa", "boot": "pa"}
+MAX_SCREENS = 2
+WR, TE = 9, 8
+SKILL = (WR, TE, HB, FB)
+YD_CM = 91.44
+
+
+def _runner_slots(play: dict) -> set:
+    """Route runners as the generator counts them (a route segment that is not only a pass block)."""
+    out = set()
+    for s, ch in enumerate(play["assignments"]):
+        kinds = [int(n[1][0]) for n in (ch or []) if n[0] == ROUTE]
+        if kinds and not all(k in (9, 10) for k in kinds):
+            out.add(s)
+    return out
+
+
+def _first_read(play: dict) -> int | None:
+    """The featured receiver: the QB's first read in his Dropback / Pass node (operands 1-4, slot = read + 5)."""
+    for n in play["assignments"][0] or []:
+        if n[0] == 0x06 and 1 <= int(n[1][1]) <= 5:
+            return int(n[1][1]) + 5
+    return None
+
+
+def _side_class(form: dict, slot: int) -> str:
+    """back / outside / inside (slot and inline merged, MERGE_INSIDE) of a skill player, as generator._side_rank."""
+    pos = [(x / YD_CM, z / YD_CM) for x, z in form["slot_positions"]]
+    kinds = [c & 31 for c in form["position_codes"]]
+    x, z = pos[slot]
+    if z <= -2.5 and abs(x) < 3.5:
+        return "back"
+    same = [abs(qx) for (qx, qz), k in zip(pos, kinds) if k in SKILL and (qx < 0) == (x < 0)
+            and not (qz <= -2.5 and abs(qx) < 3.5)]
+    if same and abs(x) >= max(same) - 0.01 and abs(x) >= 7.0:
+        return "outside"
+    return "inside"
+
+
+def share_fits(play: dict, row: dict, home: dict, form: dict, listed: list) -> bool:
+    """May ``play`` (catalog ``row``, designed in ``home``) also be listed in ``form``? The generator's rules: same
+    personnel slots, route runners keep their alignment class, runs keep their backfield, alignment-bound plays and
+    PA boots keep their alignment, and the play is not the same on the field as in any formation already listing
+    it (``listed``)."""
+    if form["position_codes"] != home["position_codes"]:
+        return False
+    ptype = play.get("play_type")
+    if ptype in ("direct_snap", "sneak", "keeper", "flea", "reverse", "special") or row.get("family") in ("qb", "trick"):
+        return False
+    named = alignment_named(play["custom_name"])
+    if named is not None and qb_alignment(form) != named:
+        return False
+    if is_pa_boot(play) and not backfield_compatible(home, form):
+        return False
+    if ptype in ("pass", "pa_pass"):
+        runners = _runner_slots(play)
+        primary = _first_read(play)
+        changed = 0
+        for s in runners:
+            a, b = _side_class(home, s), _side_class(form, s)
+            if a == b:
+                continue
+            if "back" in (a, b) or s == primary:
+                return False
+            changed += 1
+        if changed > ROLE_CHANGES_MAX:
+            return False
+    elif not backfield_compatible(home, form):
+        return False
+    else:
+        runners = {s for s, c in enumerate(form["position_codes"]) if c & 31 in SKILL}
+    skills = [s for s, c in enumerate(form["position_codes"]) if c & 31 in SKILL]
+    for g in listed:
+        d = {s: (abs(g["slot_positions"][s][0] - form["slot_positions"][s][0])
+                 + abs(g["slot_positions"][s][1] - form["slot_positions"][s][1])) / YD_CM for s in skills}
+        if max((d[s] for s in runners if s in d), default=0.0) < NEAR_DUP_MAX_YD or sum(d.values()) < NEAR_DUP_SUM_YD:
+            return False
+    return True
+
+
+def lint_clean(form: dict, play: dict) -> bool:
+    """The playbook linter on this one pairing, as authored and as the Studio compiler writes it (the shipped packs
+    lint clean: tests/mod_editor/test_nfl2k5_playbook_lint.py)."""
+    from mod_editor.core import nfl2k5_play_codec as codec
+    from mod_editor.core import nfl2k5_playbook_lint as lint
+    chains = [list(codec.encode_chain([(n[0], tuple(n[1])) for n in (chain or [])])) for chain in play["assignments"]]
+    view = lint.PlayView(-1, form["custom_name"], -1, play["custom_name"], int(play.get("play_flags") or 0),
+                         [(float(x), float(z)) for x, z in form["slot_positions"]], list(form["position_codes"]), chains)
+    if lint.lint_views([view], "refill").findings:
+        return False
+    return not [f for f in lint.lint_views([lint.as_built(view)], "refill").findings if f.code in lint.EXECUTION_CODES]
+
+
+def refill_candidates(doc: dict, catalog: dict, fid: str, uses: Counter, checker=None) -> list[str]:
+    """Records of this book that may join the menu of ``fid``: least-linked first, then catalog order."""
+    forms = {f["id"]: f for f in doc["formations"]}
+    by_name = {f["custom_name"]: f for f in doc["formations"]}
+    plays = {p["id"]: p for p in doc["plays"]}
+    rows = {r["play"]: r for r in catalog["plays"]}
+    menu = doc["menus"][fid]
+    form = forms[fid]
+    screens = sum(1 for pid in menu if "screen" in plays[pid]["custom_name"].casefold())
+    names_in_menu = {plays[pid]["custom_name"] for pid in menu}
+    out = []
+    for n, (pid, row) in enumerate(rows.items()):
+        p = plays.get(pid)
+        if p is None or pid in menu or row.get("home") not in by_name or uses[pid] < 1:
+            continue
+        name = p["custom_name"]
+        if name in names_in_menu:
+            continue                                  # never the same play name twice in one menu
+        if "screen" in name.casefold() and screens >= MAX_SCREENS:
+            continue
+        concept = (p.get("concept") or "") + " " + name
+        if "Mesh" in concept or "Vert" in concept:
+            continue                                  # mesh / four verticals stay at two menus (pb4)
+        if uses[pid] >= SHARE_CAP.get(BOOK_FAMILY.get(row.get("family"), "run"), 3) + 1:
+            continue
+        listed = [forms[g] for g, m in doc["menus"].items() if pid in m]
+        rollout = any(n[0] == SPECIAL_MOVE and int(n[1][0]) == 1 for n in p["assignments"][0] or [])
+        if rollout and not backfield_compatible(by_name[row["home"]], form):
+            continue                                  # additions never take a rollout out of its backfield
+        if not share_fits(p, row, by_name[row["home"]], form, listed) or not lint_clean(form, p):
+            continue
+        if checker is not None and not checker(form, p):
+            continue
+        out.append((uses[pid], n, pid))
+    return [pid for _u, _n, pid in sorted(out)]
+
+
+def native_route_checker(xbe_path=None):
+    """The generator's native route check (tools/b77/p6s_route_check, retail route initializer 0x229AE0 under
+    Unicorn): refuse a play whose routes COLLIDE, STACK or leave the field in this formation."""
+    from tools.b77 import p6s_route_check as rc
+    from mod_editor.core import nfl2k5_play_codec as codec
+    m, cache = rc.machine(xbe_path), {}
+
+    def ok(form: dict, play: dict) -> bool:
+        rows = []
+        for s in range(11):
+            chain = play["assignments"][s] or []
+            nodes = codec.encode_chain([(n[0], tuple(n[1])) for n in chain])
+            x, z = form["slot_positions"][s]
+            rows.append((s, form["position_codes"][s] & 31, x, z, nodes))
+        found = rc.check_rows(m, cache, rows)
+        return not [f for f in found if f[0] in ("COLLIDE", "STACK", "OOB")]
+    return ok
+
+
+def fix_pa_backfield(doc: dict, catalog: dict, checker=None) -> list:
     forms = {f["id"]: f for f in doc["formations"]}
     by_name = {f["custom_name"]: f for f in doc["formations"]}
     plays = {p["id"]: p for p in doc["plays"]}
@@ -211,37 +365,73 @@ def fix_pa_backfield(doc: dict, catalog: dict) -> list:
                 continue                              # never remove the last place a record is listed
             drops[fid].append(pid)
     for fid, bad in drops.items():
-        menu = doc["menus"][fid]
         if not bad:
             continue
-        # keep back as few of the mismatched links as needed when the menu cannot otherwise end on a whole page
-        for keep_back in range(len(bad) + 1):
-            drop = bad[:len(bad) - keep_back]
-            trial = Counter(uses)
-            for pid in drop:
-                trial[pid] -= 1
-            kept = [pid for pid in menu if pid not in drop]
-            # whole pages again: drop shared links from the end (never the first page, never a record's last link)
-            extra = []
-            for pid in reversed(kept[PAGE:]):
-                if (len(kept) - len(extra)) % PAGE == 0:
-                    break
-                if trial[pid] > 1 and pid not in bad:
-                    extra.append(pid)
-                    trial[pid] -= 1
-            kept = [pid for pid in kept if pid not in extra]
-            if len(kept) >= PAGE and len(kept) % PAGE == 0:
+        before = list(doc["menus"][fid])
+        for pid in bad:
+            uses[pid] -= 1
+        doc["menus"][fid] = [pid for pid in before if pid not in bad]
+        # refill one for one where the generator's sharing rules allow (keeps the book's volume), else end the menu
+        # on a whole page by dropping shared links from the end (never the first page, never a record's last link)
+        added = []
+        for pid in refill_candidates(doc, catalog, fid, uses, checker or None):
+            if len(added) >= len(bad):
                 break
-        else:
+            doc["menus"][fid].append(pid)
+            uses[pid] += 1
+            added.append(pid)
+        kept = doc["menus"][fid]
+        extra = []
+        for pid in reversed(kept[PAGE:]):
+            if (len(kept) - len(extra)) % PAGE == 0:
+                break
+            if uses[pid] > 1 and pid not in added:
+                extra.append(pid)
+                uses[pid] -= 1
+        kept = [pid for pid in kept if pid not in extra]
+        if len(kept) < PAGE or len(kept) % PAGE:
             raise SystemExit(f"{doc['book']['team']} {forms[fid]['custom_name']}: cannot keep whole pages")
-        uses = trial
-        if not drop and not extra:
-            continue
         doc["menus"][fid] = kept
-        changes.append(dict(formation=forms[fid]["custom_name"], dropped=[plays[p]["custom_name"] for p in drop],
-                            kept_mismatched=[plays[p]["custom_name"] for p in bad if p not in drop],
-                            trimmed=[plays[p]["custom_name"] for p in extra], links=len(kept)))
+        changes.append(dict(formation=forms[fid]["custom_name"], dropped=[plays[p]["custom_name"] for p in bad],
+                            added=[plays[p]["custom_name"] for p in added],
+                            trimmed=[plays[p]["custom_name"] for p in extra], links=len(kept),
+                            links_before=len(before)))
     return changes
+
+
+MENU_MAX = 36                 # links per formation (generator.MENU_MAX, the native 9-bit link id menus)
+
+
+def restore_volume(doc: dict, catalog: dict, target: int, checker=None) -> list:
+    """Add whole pages (three records that pass ``share_fits`` and the native route check) to this book's menus until
+    it lists at least ``target`` links again: shortest menus first, never a slot-rule set (pb4 caps those at 9),
+    never past MENU_MAX. Returns [(formation, [plays])]."""
+    from pb.v2 import generator as gen
+    from mod_editor.core import nfl2k5_offense_concepts as oc
+    forms = {f["id"]: f for f in doc["formations"]}
+    plays = {p["id"]: p for p in doc["plays"]}
+    uses = Counter(pid for menu in doc["menus"].values() for pid in menu)
+    added = []
+    total = sum(len(m) for m in doc["menus"].values())
+    while total < target:
+        progress = False
+        for fid in sorted(doc["menus"], key=lambda f: (len(doc["menus"][f]), f)):
+            name = forms[fid]["custom_name"]
+            spec = oc.FORMATIONS.get(name)
+            if spec is None or gen.slot_rule_violations(spec) or len(doc["menus"][fid]) + PAGE > MENU_MAX:
+                continue
+            page = refill_candidates(doc, catalog, fid, uses, checker)[:PAGE]
+            if len(page) < PAGE:
+                continue
+            doc["menus"][fid].extend(page)
+            uses.update(page)
+            total += PAGE
+            added.append((name, [plays[p]["custom_name"] for p in page]))
+            progress = True
+            break
+        if not progress:
+            break
+    return added
 
 
 # ---------------------------------------------------------------------------
@@ -286,12 +476,14 @@ def fix_spot_out(doc: dict) -> list:
 # driver
 # ---------------------------------------------------------------------------
 
-def fix_doc(doc: dict, catalog: dict, rules=RULES, ranking=None) -> dict:
+def fix_doc(doc: dict, catalog: dict, rules=RULES, ranking=None, checker=None) -> dict:
     out = {}
     if "page_one" in rules:
         out["page_one"] = fix_page_one(doc, ranking)
     if "pa_backfield" in rules:
-        out["pa_backfield"] = fix_pa_backfield(doc, catalog)
+        before = sum(len(m) for m in doc["menus"].values())
+        out["pa_backfield"] = fix_pa_backfield(doc, catalog, checker)
+        out["pa_volume"] = restore_volume(doc, catalog, before, checker)
     if "direct_snap" in rules:
         out["direct_snap"] = fix_direct_snap(doc)
     if "spot_out" in rules:
@@ -336,6 +528,7 @@ def main(argv=None) -> int:
     from pb.v2 import generator as gen
     manifest = json.loads((ROOT / "pb/v2/manifest.json").read_text())
     totals, report = Counter(), {}
+    checker = native_route_checker(args.xbe) if args.xbe and "pa_backfield" in rules else None
     image = None
     if args.image and "page_one" in rules:
         from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
@@ -353,17 +546,18 @@ def main(argv=None) -> int:
             compiled = packs.apply_pack_to_resource(image.read_entry(BOOK_ENTRIES[row["team"]]), packs.load_pack(path),
                                                     asset_id="book:" + row["team"], xbe=xbe)
             ranking = lottery_ranking(compiled.replacement)
-        changes = fix_doc(doc, cat, rules, ranking)
+        changes = fix_doc(doc, cat, rules, ranking, checker)
         if ranking is not None:
             changes["page_one_ranking"] = ranking[:6]
         report[row["team"]] = changes
         for k, v in changes.items():
-            if k in RULES:
+            if k in RULES or k == "pa_volume":
                 totals[k] += len(v)
             if k == "pa_backfield":
                 totals["pa_links_dropped"] += sum(len(c["dropped"]) for c in v)
+                totals["pa_links_added"] += sum(len(c["added"]) for c in v)
                 totals["page_links_trimmed"] += sum(len(c["trimmed"]) for c in v)
-        if args.check or not any(changes.get(r) for r in RULES):
+        if args.check or not any(changes.get(r) for r in RULES + ("pa_volume",)):
             continue
         pack = packs.loads_pack(json.dumps(doc))
         packs.save_pack(pack, path)

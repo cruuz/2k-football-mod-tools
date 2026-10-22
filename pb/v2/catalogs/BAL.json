@@ -672,7 +672,6 @@
     "X Spot Out",
     "X Comeback Seam",
     "PA Post Corner Shot",
-    "Pistol Yankee",
     "Z Comeback Seam",
     "PA Z Deep Post",
     "Post Corner Shot",
@@ -685,7 +684,8 @@
     "X Scissors Sluggo",
     "PA Z Corner Post",
     "X Dagger Spot Out",
-    "PA Z Comeback Seam"
+    "PA Z Comeback Seam",
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     2,
@@ -1146,7 +1146,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Strong Close",
     "Pistol Strong",
     "Pistol Strong Y Off Close"
    ]
@@ -1390,6 +1389,7 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Strong Close",
     "Pistol Strong",
     "Pistol Strong Y Off Close"
    ]

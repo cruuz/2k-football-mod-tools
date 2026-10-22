@@ -254,9 +254,9 @@
     "X Fade Curl",
     "PA Z Dagger",
     "Slot Seam Levels",
-    "PA Boot X Dagger",
     "PA X Smash Bench",
-    "X Deep Hooks"
+    "X Deep Hooks",
+    "RB Corner Post"
    ],
    "cpu_situation": [
     4,
@@ -499,13 +499,13 @@
     "Z Out Seam Whip",
     "X Whip",
     "PA Z Corner Post",
-    "PA Boot X Dagger",
     "Y Cross Dig",
     "Slot Whip",
     "PA Double Move",
     "PA Y Stick Nod",
     "X Deep Hooks",
-    "PA Slot Double Move"
+    "PA Slot Double Move",
+    "RB Corner Post"
    ],
    "cpu_situation": [
     2,
@@ -583,12 +583,12 @@
     "RB Sail Out",
     "PA Z Corner Post",
     "Slot Choice",
-    "PA Boot X Dagger",
     "Y Scissors Snag",
     "ATL Scissors",
     "Z Out Seam",
     "Z Dagger",
-    "Slip Screen Wk"
+    "Slip Screen Wk",
+    "Z Double Move"
    ],
    "cpu_situation": [
     0,
@@ -612,8 +612,8 @@
     "PA Slot Stick Nod",
     "ATL Scissors",
     "X Deep Hooks",
-    "PA Boot X Dagger",
-    "RB Slip Screen"
+    "RB Slip Screen",
+    "Bubble Screen"
    ],
    "cpu_situation": [
     0,
@@ -659,7 +659,7 @@
     "Z Dagger",
     "Z Out Seam",
     "RB Sail Out",
-    "PA Boot X Dagger"
+    "Bubble Screen"
    ],
    "cpu_situation": [
     0,
@@ -788,7 +788,6 @@
     "PA Y Stick Nod",
     "Y Cross Dig",
     "Y Whip Return",
-    "PA Boot X Dagger",
     "Slot Seam Levels",
     "Slot China",
     "PA Z Dagger",
@@ -798,7 +797,8 @@
     "PA Slot Double Move",
     "Z Out Seam Whip",
     "Z Out Seam",
-    "X Fade Curl"
+    "X Fade Curl",
+    "RB Corner Post"
    ],
    "cpu_situation": [
     4,
@@ -1920,12 +1920,6 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Normal Y Off Close",
-    "Pistol Wing",
-    "Pistol Bunch TE",
-    "Pistol Trey",
-    "Gun Tight Slots",
     "Singleback Doubles Tight"
    ]
   },
@@ -2474,6 +2468,7 @@
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Open",
+    "Pistol Wing",
     "Gun Tight Slots",
     "Singleback Doubles Tight"
    ]
@@ -3272,7 +3267,8 @@
    "formations": [
     "Gun Wildcat",
     "Gun Bunch X Nasty",
-    "Pistol Wing"
+    "Pistol Wing",
+    "Pistol Bunch TE"
    ]
   },
   {
@@ -3370,6 +3366,7 @@
    "lane": null,
    "formations": [
     "Gun Empty Trey",
+    "Pistol Trey",
     "Gun Tight Slots",
     "Singleback Doubles Tight"
    ]
@@ -3776,7 +3773,10 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Pistol Doubles Y Off"
+    "Gun Bunch X Nasty",
+    "Gun Normal Y Off Close",
+    "Pistol Doubles Y Off",
+    "Gun Tight Slots"
    ]
   },
   {

@@ -386,12 +386,9 @@
     "Slip Screen Wk",
     "X Deep Post",
     "Z Steep In Seam",
-    "Boot Y Scissors",
     "Inside Zone Split Wk",
     "PA U Stick Nod",
     "Y Shallow Cross",
-    "Pin Pull Sweep",
-    "RB Texas",
     "PA X Scissors"
    ],
    "cpu_situation": [
@@ -485,7 +482,10 @@
     "X Sail",
     "Y Zig Flat Out",
     "Z Deep Post Whip",
-    "Z Dagger"
+    "Z Dagger",
+    "Bubble Screen",
+    "Y Mills Snag",
+    "Z Curl Combo"
    ],
    "cpu_situation": [
     0,
@@ -527,7 +527,6 @@
     "Y Shallow Cross",
     "X Deep Post",
     "PA U Stick Nod",
-    "Boot Y Scissors",
     "X Out Seam",
     "X Stick Return",
     "Lead Stretch",
@@ -538,7 +537,8 @@
     "Z Steep In Seam",
     "Z Deep Post",
     "Power G",
-    "RB Texas"
+    "RB Texas",
+    "PA X Scissors"
    ],
    "cpu_situation": [
     4,
@@ -772,7 +772,6 @@
     "Slip Screen Wk",
     "Z Deep Post",
     "PA U Stick Nod",
-    "Boot Y Scissors",
     "Lead Stretch",
     "Z Steep In Seam",
     "X Out Seam",
@@ -784,7 +783,8 @@
     "Y Shallow Cross",
     "Power G",
     "Pin Pull Sweep",
-    "Sprint Curl Flat"
+    "Sprint Curl Flat",
+    "RB Texas"
    ],
    "cpu_situation": [
     0,
@@ -1963,6 +1963,7 @@
     "Gun Wildcat",
     "Gun Doubles",
     "Gun Bunch X Nasty",
+    "Singleback Bunch X Nasty",
     "Pistol Bunch",
     "Gun Trips"
    ]
@@ -1993,6 +1994,7 @@
     "Gun Wildcat",
     "Gun Doubles",
     "Gun Bunch X Nasty",
+    "Singleback Bunch X Nasty",
     "Pistol Bunch",
     "Gun Trips"
    ]
@@ -2233,10 +2235,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
-    "Pistol Deuce Close",
-    "Gun Deuce Close",
-    "Ace Wing"
+    "Gun Deuce Close"
    ]
   },
   {
@@ -2329,7 +2328,6 @@
    "deep": false,
    "lane": 4,
    "formations": [
-    "Singleback Ace",
     "Pistol Deuce Close",
     "Singleback Ace Bunch",
     "Ace Wing"
@@ -2426,9 +2424,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
     "Pistol Deuce Close",
-    "Singleback Ace Bunch"
+    "Singleback Ace Bunch",
+    "Ace Wing"
    ]
   },
   {
@@ -2481,6 +2479,7 @@
    "formations": [
     "Gun Wildcat",
     "Gun Bunch TE",
+    "Singleback Bunch X Nasty",
     "Pistol Bunch"
    ]
   },
@@ -4269,7 +4268,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace"
+    "Singleback Ace",
+    "Pistol Deuce Close"
    ]
   },
   {

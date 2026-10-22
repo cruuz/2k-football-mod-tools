@@ -74,16 +74,13 @@
     "X Choice Out",
     "Direct Snap Power",
     "X Smash",
-    "PA Boot X Flood",
     "PA Y Return Flood",
     "Z Deep Post Whip",
     "Sprint Slot Sail",
     "Pin Pull Sweep",
     "Y Spacing Zig",
     "Sprint Slot Flood",
-    "Y Whip Seam",
-    "Y Sail Skinny Post",
-    "RB Curls Slant"
+    "Y Whip Seam"
    ],
    "cpu_situation": [
     4,
@@ -133,7 +130,10 @@
     "RB Slip Screen Wk",
     "PA Z Deep Post",
     "Sprint Bench",
-    "Y Trail"
+    "Y Trail",
+    "PA Boot X Flood",
+    "Y Sail Skinny Post",
+    "RB Curls Slant"
    ],
    "cpu_situation": [
     1,
@@ -154,7 +154,6 @@
     "Dagger Seam",
     "Inside Trap",
     "RB Draw Wk",
-    "PA Boot X Flood",
     "SEA Mills",
     "X Choice Out",
     "Z Hook Corner",
@@ -179,7 +178,11 @@
     "PA Z Deep Post",
     "Sprint Bench",
     "Slot Y Trail",
-    "Y Trail"
+    "Y Trail",
+    "Y Switch Outs",
+    "Y Sail Skinny Post",
+    "RB Curls Slant",
+    "PA Slot Deep Flood"
    ],
    "cpu_situation": [
     4,
@@ -232,7 +235,6 @@
     "Dagger Seam",
     "RB Draw Wk",
     "Y Whip Seam",
-    "PA Boot X Flood",
     "X Fade Curl",
     "Slot Deep Over",
     "Inside Trap",
@@ -250,7 +252,11 @@
     "PA Z Skinny Shot",
     "PA Z Deep Post",
     "Slot Zig Flat",
-    "Sprint Bench"
+    "Sprint Bench",
+    "Y Bubble Screen",
+    "Z Hitch Seam",
+    "Y Trail",
+    "PA X Out and Up"
    ],
    "cpu_situation": [
     4,
@@ -368,11 +374,8 @@
     "Y Stick Out",
     "Max Y Mills",
     "Mesh Wheel",
-    "Boot Over Deep",
     "Sprint X Bench",
-    "FB Screen",
-    "X Out Seam Whip",
-    "RB Slip Screen Wk"
+    "FB Screen"
    ],
    "cpu_situation": [
     1,
@@ -725,7 +728,6 @@
     "Slot Y Trail",
     "RB Draw Wk",
     "Y Stick Return",
-    "PA Boot X Flood",
     "Sprint Z Bench",
     "Inside Trap",
     "Y Spacing Zig",
@@ -735,7 +737,8 @@
     "PA Y Return Flood",
     "Y Trail",
     "Slot Zig Flat",
-    "Y Whip Seam"
+    "Y Whip Seam",
+    "Y Switch Outs"
    ],
    "cpu_situation": [
     4,
@@ -861,7 +864,6 @@
     "Slot Y Trail",
     "Crack Toss",
     "RB Stretch Wk",
-    "PA Boot X Flood",
     "Z Hook Corner",
     "Sprint Slot Flood",
     "SEA Slant Flat",
@@ -886,7 +888,8 @@
     "PA Slot Y Trail",
     "Sprint Z Bench",
     "Sprint Bench",
-    "Y Sail Skinny Post"
+    "Y Sail Skinny Post",
+    "RB Curls Slant"
    ],
    "cpu_situation": [
     4,
@@ -960,7 +963,6 @@
     "X Smash",
     "X Choice Out",
     "Crack Toss",
-    "PA Boot X Flood",
     "Y Sail Skinny Post",
     "Z Hook Corner",
     "RB Draw Wk",
@@ -978,7 +980,8 @@
     "PA Z Bench",
     "PA Slot Y Trail",
     "Sprint Z Bench",
-    "RB Curls Slant"
+    "RB Curls Slant",
+    "Y Switch Outs"
    ],
    "cpu_situation": [
     4,
@@ -1034,10 +1037,7 @@
     "PA Z Go Shot Over",
     "X Scissors",
     "X Out Seam Whip",
-    "PA Z Deep Post",
-    "Sprint X Bench",
-    "Boot Over Deep",
-    "Z Curl Flat"
+    "PA Z Deep Post"
    ],
    "cpu_situation": [
     2,
@@ -1197,10 +1197,8 @@
    "lane": null,
    "formations": [
     "I-Form Pro",
-    "Wing T",
     "I-Form Close",
-    "I-Form Y Off Close",
-    "Split Backs"
+    "I-Form Y Off Close"
    ]
   },
   {
@@ -1648,6 +1646,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Doubles",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Y Off",
@@ -1682,15 +1681,10 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Trey Open",
+    "Singleback Doubles",
     "Singleback Y Off Trey",
     "Singleback Bunch",
-    "Gun Bunch",
-    "Singleback Doubles Tight",
-    "Gun Y Off Trips"
+    "Singleback Doubles Tight"
    ]
   },
   {
@@ -1718,6 +1712,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Gun Trey Open",
@@ -2118,7 +2113,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
+    "Singleback Doubles",
+    "Gun Doubles",
     "Gun Trips TE",
     "Gun Tight Y Off",
     "Singleback Y Off Trey",
@@ -2185,6 +2181,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Gun Tight Y Off",
     "Gun Trey Open",
     "Singleback Y Off Trey",
@@ -2216,10 +2213,12 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
+    "Singleback Doubles",
+    "Gun Doubles",
     "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
     "Singleback Bunch",
+    "Gun Bunch",
     "Singleback Doubles Tight",
     "Gun Y Off Trips",
     "Singleback Trey"
@@ -2437,6 +2436,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Gun Tight Y Off",
     "Gun Trey Open",
     "Singleback Doubles Tight",
@@ -2540,7 +2540,6 @@
    "lane": null,
    "formations": [
     "I-Form Pro",
-    "Wing T",
     "I-Form Close",
     "I-Form Y Off Close",
     "Split Backs"
@@ -2594,8 +2593,7 @@
     "I-Form Pro",
     "Wing T",
     "I-Form Close",
-    "I-Form Y Off Close",
-    "Split Backs"
+    "I-Form Y Off Close"
    ]
   },
   {
@@ -2745,8 +2743,7 @@
    "formations": [
     "Pistol Strong",
     "I-Form Close",
-    "I-Form Y Off Close",
-    "Split Backs"
+    "I-Form Y Off Close"
    ]
   },
   {
@@ -2968,7 +2965,6 @@
    "lane": null,
    "formations": [
     "I-Form Pro",
-    "Wing T",
     "I-Form Y Off Close"
    ]
   },
@@ -3146,6 +3142,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Bunch X Nasty",
     "Gun Empty Trey",
     "Gun Tight Y Off",
     "Pistol Y Off Trips"
@@ -3288,8 +3285,11 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Doubles",
     "Pistol Doubles",
-    "Singleback Doubles Tight"
+    "Gun Trey Open",
+    "Singleback Doubles Tight",
+    "Gun Y Off Trips"
    ]
   },
   {

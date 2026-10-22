@@ -129,8 +129,8 @@
     "PA Steep In Seam",
     "Slot Smash",
     "Z Snag",
-    "Boot Y Scissors",
-    "PA X Smash"
+    "PA X Smash",
+    "RB Mills Stick"
    ],
    "cpu_situation": [
     1,
@@ -170,13 +170,10 @@
     "Sprint X Bench",
     "PA Y Sail",
     "PA X Curl Combo",
-    "Boot Y Scissors",
     "Sprint X Sail",
     "PA X Smash",
     "PA X Steep In Seam",
-    "X Cluster Wheel",
-    "X Out Seam",
-    "RB Mills Stick"
+    "X Cluster Wheel"
    ],
    "cpu_situation": [
     2,
@@ -236,7 +233,6 @@
     "PA Y Sail",
     "Sprint X Bench",
     "PA Z Deep Post",
-    "Boot Y Scissors",
     "PA Post Corner Shot",
     "X Cluster Wheel",
     "PA X Smash",
@@ -244,7 +240,8 @@
     "PA X Curl Combo",
     "X Out Seam",
     "Sprint X Sail",
-    "RB Mills Stick"
+    "RB Mills Stick",
+    "Z Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -663,8 +660,8 @@
     "Z Snag",
     "PA Post Corner Shot",
     "PA Z Deep Post",
-    "Boot Y Scissors",
-    "Slot Smash"
+    "Slot Smash",
+    "PA Z Go Shot Whip"
    ],
    "cpu_situation": [
     1,
@@ -815,14 +812,17 @@
     "Steep In Seam",
     "Slot China",
     "PA Y Sail",
-    "Boot Y Scissors",
     "Sprint X Bench",
     "PA X Steep In Seam",
     "PA X Smash",
     "X Cluster Wheel",
     "Sprint X Sail",
     "X Out Seam",
-    "OAK RB Screen"
+    "OAK RB Screen",
+    "Z Sluggo Seam",
+    "PA Z Go Shot Whip",
+    "Z Go Shot",
+    "RB Mills Stick"
    ],
    "cpu_situation": [
     3,
@@ -1320,7 +1320,9 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Doubles"
+    "Gun Doubles",
+    "Pistol Doubles Y Off",
+    "Gun Y Off Trips"
    ]
   },
   {
@@ -1420,8 +1422,10 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Gun Bunch X Nasty",
     "Pistol Doubles",
-    "Pistol Doubles Y Off"
+    "Pistol Doubles Y Off",
+    "Gun Y Off Trips"
    ]
   },
   {
@@ -1705,13 +1709,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
     "Gun Normal Y Off Close",
-    "Pistol Doubles Y Off",
-    "Gun Doubles Clamp Stack",
-    "Gun Y Off Trips"
+    "Gun Doubles Clamp Stack"
    ]
   },
   {
@@ -2192,7 +2191,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Doubles",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Pistol Wing",
@@ -3011,9 +3009,10 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Doubles",
+    "Singleback Doubles",
     "Gun Bunch X Nasty",
-    "Pistol Wing"
+    "Pistol Wing",
+    "Gun Y Off Trips"
    ]
   },
   {
@@ -3383,7 +3382,8 @@
    "lane": null,
    "formations": [
     "Empty Trey",
-    "Gun Bunch X Nasty"
+    "Gun Bunch X Nasty",
+    "Gun Y Off Trips"
    ]
   },
   {

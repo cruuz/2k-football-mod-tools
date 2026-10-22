@@ -238,7 +238,6 @@
     "RB Stretch",
     "Slot Stick Nod",
     "Titans Mills",
-    "Pistol Boot",
     "Slot Stick",
     "Zone Toss",
     "Z Steep In Seam",
@@ -250,7 +249,8 @@
     "RB Steep In Seam",
     "X Whip Return",
     "Y Deep Over Out",
-    "Bubble Screen"
+    "Bubble Screen",
+    "PA Y Seam Shot"
    ],
    "cpu_situation": [
     4,
@@ -487,11 +487,11 @@
     "X Cluster Wheel",
     "01 Trap Wk",
     "Y Return Flood",
-    "Pistol Boot",
     "X Stick Out",
     "Y Deep Over Out",
     "RB Stretch",
-    "Slot Sail Return"
+    "Slot Sail Return",
+    "PA X Seam Shot"
    ],
    "cpu_situation": [
     3,
@@ -705,7 +705,6 @@
     "Y Smash Outs",
     "01 Trap Wk",
     "Slant Seam",
-    "Pistol Boot",
     "Z Deep Post",
     "Z Cluster Wheel",
     "Slot Slot Fade",
@@ -728,7 +727,8 @@
     "RB Texas",
     "X Whip Return",
     "RB Slants Out",
-    "RB Steep In Seam"
+    "RB Steep In Seam",
+    "PA Y Seam Shot"
    ],
    "cpu_situation": [
     0,
@@ -929,7 +929,6 @@
     "Stick",
     "Titans Mills",
     "Y Seam Hitch",
-    "Pistol Boot",
     "Titans Post Wheel",
     "WB Sweep",
     "Inside Zone",
@@ -950,7 +949,8 @@
     "RB Slants Out",
     "RB Steep In Seam",
     "RB Bang Hitch",
-    "X Whip Return"
+    "X Whip Return",
+    "PA Y Seam Shot"
    ],
    "cpu_situation": [
     0,
@@ -983,7 +983,6 @@
     "Y Seam Hitch",
     "RB Slip Screen",
     "Titans Mills",
-    "Pistol Boot",
     "Stick",
     "X Stick Out",
     "Z Cluster Wheel",
@@ -996,7 +995,8 @@
     "RB Slants Out",
     "PA Y Scissors",
     "RB Bang Hitch",
-    "X Whip Return"
+    "X Whip Return",
+    "PA X Seam Shot"
    ],
    "cpu_situation": [
     4,
@@ -1121,15 +1121,10 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Bunch X Nasty",
     "Pistol Doubles",
-    "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Pistol Trey",
-    "Pistol Doubles Y Off",
-    "Gun Doubles Tight",
-    "Singleback Bunch",
-    "Gun Tight Slots"
+    "Pistol Doubles Y Off"
    ]
   },
   {
@@ -1620,7 +1615,10 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Doubles"
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Doubles Tight",
+    "Singleback Bunch"
    ]
   },
   {
@@ -3517,7 +3515,9 @@
    "lane": null,
    "formations": [
     "Pistol Doubles",
-    "Pistol Doubles Y Off"
+    "Gun Trey Y-Flex",
+    "Pistol Doubles Y Off",
+    "Gun Tight Slots"
    ]
   },
   {
