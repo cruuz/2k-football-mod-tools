@@ -171,36 +171,18 @@ class Node:
         }
         for op in (0x0B, 0x0C):
             specifications[op, "lane"] = (27, 5, 0, 17, 0)
-        # Fake/real handoff and block-leg fields.  K on the QB's Fake Handoff To (0x14) picks the
-        # fake style (K=7 appears only in PA Sprint 43 Post); A and the hole on the HB's
-        # Fake Take Handoff (0x17) / Take Handoff (0x16) carry the handoff side (hole h mirrors
-        # to 9-h).  Leg X is integer feet like the other X fields.
-        for op in (0x13, 0x14):
-            specifications[op, "k"] = (4, 4, 0, 15, 0)
-        for op in (0x16, 0x17):
-            specifications[op, "a"] = (0, 4, 0, 15, 0)
-            specifications[op, "hole"] = (28, 4, 0, 8, 0)
-        specifications[0x11, "turn"] = (14, 2, 0, 2, 0)
-        for op in MIRROR_X_OPS:
-            specifications.setdefault((op, "x_ft"), (24, 8, -128, 127, 128))
-        # Block Leg, fake handoff and handoff-take fields (layouts from nfl2k5_play_codec.decode_operands).
-        specifications[0x11, "turn"] = (14, 2, 0, 3, 0)
-        specifications[0x11, "x_ft"] = (24, 8, -128, 127, 128)
-        specifications[0x11, "y_ft"] = (16, 8, -64, 191, 64)
-        for op in (0x13, 0x14):
-            specifications[op, "k"] = (4, 4, 0, 15, 0)
-        for op in (0x16, 0x17):
-            specifications[op, "a"] = (0, 4, 0, 15, 0)
-            specifications[op, "hole"] = (28, 4, 0, 8, 0)
-        # Fake/take handoff pairs (QB 0x14 "Fake Handoff To", HB 0x17 "Fake Take Handoff").  K selects the
-        # fake style (retail uses 0,1,2,5,7,8); A is the take-handoff variant bit; the hole is 0..8
-        # and the engine mirrors it as 9 - hole.  Only retail-observed meaning is documented here.
+        # Fake/take handoff pairs (QB 0x13 "Handoff To" / 0x14 "Fake Handoff To", HB 0x16 "Take Handoff" /
+        # 0x17 "Fake Take Handoff"; layouts from nfl2k5_play_codec.decode_operands).  K selects the fake
+        # style (retail uses 0,1,2,5,7,8); A is the take-handoff variant bit; the hole is 0..8 and the
+        # engine mirrors it as 9 - hole.  Only retail-observed meaning is documented here.
         for op in (0x13, 0x14):
             specifications[op, "slot"] = (0, 4, 0, 10, 0)
             specifications[op, "k"] = (4, 4, 0, 15, 0)
         for op in (0x16, 0x17):
             specifications[op, "a"] = (0, 4, 0, 15, 0)
             specifications[op, "hole"] = (28, 4, 0, 8, 0)
+        for op in MIRROR_X_OPS:
+            specifications.setdefault((op, "x_ft"), (24, 8, -128, 127, 128))
         # Block leg: the turn (0 = +45 deg, 1 = -45 deg, 2 = none) and offsets.  Leg type 9 stores raw
         # coordinates instead of feet, so its offsets are not editable here.
         specifications[0x11, "turn"] = (14, 2, 0, 2, 0)

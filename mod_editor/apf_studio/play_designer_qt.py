@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import apf2k8_play_codec as codec
+from mod_editor.core.errors import ValidationError
 from mod_editor.core.apf2k8_play_designer import (
     FAMILY_ORDER, assign_plays, compile_design, empty_plan, formation_family, formation_personnel, formation_side, offered_plays,
     play_side, unlockable_formations, OFFER_LIMIT, OFFER_ROW, STATUS,
@@ -196,7 +197,7 @@ class PlayDesignDialog(_RecordDialog):
             return
         try:
             self.chain[self.node.currentData()].with_field(self.field.currentData(), self.value.value())
-        except ValueError as exc:
+        except (ValueError, ValidationError) as exc:
             QMessageBox.warning(self, "Invalid assignment field", failure_body(exc))
             return
         self.nodes[self.slot.currentData(), self.node.currentData(), self.field.currentData()] = self.value.value()
@@ -662,6 +663,10 @@ class PlayDesignerPanel(QWidget):
             QPushButton(t) for t in ("Design Play…", "Design Formation…", "Add CPU call…", "Formation plays…", "Assign plays…")]
         for button in (self.play_button, self.formation_button, self.cpu_button, self.offer_button, self.assign_button):
             buttons.addWidget(button)
+        self.offer_button.setToolTip("Choose the plays one formation offers in the in-game Playbook Manager (at most 84). "
+                                     "Contributed by Basileus Maximus.")
+        self.assign_button.setToolTip("Offer or stop offering plays in many formations at once, by personnel or family. "
+                                      "Contributed by Basileus Maximus.")
         self.offer_button.clicked.connect(self._offers)
         self.assign_button.clicked.connect(self._assign)
         self.play_button.clicked.connect(lambda: self._record("plays"))
@@ -722,7 +727,7 @@ class PlayDesignerPanel(QWidget):
     def _accept(self, draft):
         try:
             compile_design(self.source, draft)
-        except ValueError as exc:
+        except (ValueError, ValidationError) as exc:
             QMessageBox.warning(self, "Cannot apply design", failure_body(exc))
             return False
         self.draft = draft
@@ -745,7 +750,7 @@ class PlayDesignerPanel(QWidget):
             draft = copy.deepcopy(self.draft)
             draft["plays"].append(request)
             self._accept(draft)
-        except ValueError as exc:
+        except (ValueError, ValidationError) as exc:
             QMessageBox.warning(self, "Cannot add concept", failure_body(exc))
 
     def _cpu(self):
@@ -773,7 +778,7 @@ class PlayDesignerPanel(QWidget):
         try:
             changed = any(self.draft.get(k) for k in ("plays", "formations", "cpu_calls", "offer_sets"))
             body = compile_design(self.source, self.draft).replacement if changed else self.source
-        except ValueError as exc:
+        except (ValueError, ValidationError) as exc:
             QMessageBox.warning(self, "Cannot open formation plays", failure_body(exc))
             return
         dialog = FormationOfferDialog(codec.Book.from_bytes(body), self.source, body, self._locked(), self)
@@ -785,7 +790,7 @@ class PlayDesignerPanel(QWidget):
         try:
             changed = any(self.draft.get(k) for k in ("plays", "formations", "cpu_calls", "offer_sets"))
             body = compile_design(self.source, self.draft).replacement if changed else self.source
-        except ValueError as exc:
+        except (ValueError, ValidationError) as exc:
             QMessageBox.warning(self, "Cannot open assign plays", failure_body(exc))
             return
         dialog = AssignPlaysDialog(codec.Book.from_bytes(body), self.source, body, self._locked(), self)
