@@ -56,6 +56,15 @@ PINS = {
 VETERAN_CUT_SURPLUS = 0x2BFB61              # push 1 (surplus) -> push 0, inside retail 0x2BFAF0
 VETERAN_CUT_PATCHED = bytes.fromhex("6a00")
 PINS[VETERAN_CUT_SURPLUS] = "5bbc5bfabfc3553dfedc9330b8318b2f152eb1da00cb08f894cc88b395a0b178"
+# b778 fa1 (revision 2). PROVED OFFLINE: the rollover (0x247B40) lowers every rostered contract's years left
+# with ((v - 1) ^ v) & 15 ^ v, so a player still on a club with 0 years left wraps to 15. Under the economy
+# the renew gate refuses a renewal the club cannot afford and leaves him on the roster at 0 (Noah's MyNFL3,
+# 2027: Humphrey, Chase Brown, Brisker, Togiai; native 2028 rollover: Chase Brown 15 of 1). Lower only a
+# nonzero count; a player at 0 reaches the next re-signing stage as an expiring contract again.
+ROLLOVER_DECREMENT = 0x247BA8
+ROLLOVER_DECREMENT_PATCHED = bytes.fromhex("f642240f7403fe4a24") + b"\x90" * 7   # test; jz; dec byte [edx+0x24]
+PINS[ROLLOVER_DECREMENT] = "4fbd4ad51bfce990b29a4f408fab5b2aad2c9f030cafebeb45c552d0c6a15cd8"
+REVISION_2_SITES = frozenset({VETERAN_CUT_SURPLUS, ROLLOVER_DECREMENT})
 REVISION = 2
 
 
@@ -86,6 +95,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[address] = b"\xe9" + struct.pack("<i", SYMBOLS[symbol] - address - 5)
     if revision >= 2:
         replacements[VETERAN_CUT_SURPLUS] = VETERAN_CUT_PATCHED
+        replacements[ROLLOVER_DECREMENT] = ROLLOVER_DECREMENT_PATCHED
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
@@ -96,12 +106,12 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 
 def _standalone_status(payload: bytes) -> str:
-    """retail | applied | legacy (revision 1: every site but the veteran-cut surplus argument) | foreign."""
+    """retail | applied | legacy (revision 1: every site but the two revision-2 sites) | foreign."""
     try:
         image = XbeImage(payload)
         states = {site.va: _site_state(image, site) for site in sites()}
-        core = {state for va, state in states.items() if va != VETERAN_CUT_SURPLUS}
-        if core == {"applied"} and states[VETERAN_CUT_SURPLUS] == "retail":
+        core = {state for va, state in states.items() if va not in REVISION_2_SITES}
+        if core == {"applied"} and {states[va] for va in REVISION_2_SITES} == {"retail"}:
             return "legacy"
         unique = set(states.values())
         return next(iter(unique)) if len(unique) == 1 else "foreign"
@@ -131,7 +141,7 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
     from . import nfl2k5_roster_fill_composition as composition
     # A legacy (revision-1) image already carries every other site and the shared chain.
     shared = composition.installation_edits(payload, "economy") if state == "retail" else []
-    todo = sites() if state == "retail" else tuple(s for s in sites() if s.va == VETERAN_CUT_SURPLUS)
+    todo = sites() if state == "retail" else tuple(s for s in sites() if s.va in REVISION_2_SITES)
     image, out = XbeImage(payload), bytearray(payload)
     sections, touched, edits = _sections(payload), set(), []
     for site in todo:
