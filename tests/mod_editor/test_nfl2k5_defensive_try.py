@@ -52,7 +52,7 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(receipt["changed_bytes"], 0)
         self.assertFalse(receipt["runtime_witnessed"])
         self.assertEqual(self.receipt["changed_bytes"], sum(a != b for a, b in zip(self.retail, self.patched)) + len(self.patched) - len(self.retail))
-        self.assertEqual(len(self.patched), space.SCALE_FILE_SIZE)
+        self.assertEqual(len(self.patched), space.SCALE3_FILE_SIZE)  # b778-xs1: v3 extent
 
     def test_each_hook_refuses_mixed_or_foreign_before_mutation(self):
         for name, (va, before, _) in {**patch.BRANCHES, **patch.HOOKS}.items():

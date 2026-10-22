@@ -129,8 +129,10 @@ class HelperCodeTests(unittest.TestCase):
         self.assertEqual([(r["kind"], r["size"]) for r in rows], [("read_only", ct.RO_SIZE)])
         rest = [r for r in space.dormant_union() if r[0] != ct.OWNER]
         space._scale_allocations(sorted(rest + [(ct.OWNER, "read_only", ct.RO_SIZE + 16, 16)]))
-        with self.assertRaisesRegex(ValueError, "page capacity exceeded"):
-            space._scale_allocations(sorted(rest + [(ct.OWNER, "read_only", ct.RO_SIZE + 32, 16)]))
+        # b778-xs1: one more byte than the v3 read-only run holds puts the whole block in the v4 pool instead
+        bigger = [a for a in space._scale_allocations(sorted(rest + [(ct.OWNER, "read_only", ct.RO_SIZE + 32, 16)]))
+                  if a["owner"] == ct.OWNER]
+        self.assertEqual([(a["size"], a["va"] >= space.POOL_VA) for a in bigger], [(ct.RO_SIZE + 32, True)])
         # the budget fixture the other owners' tests read
         fixture = json.loads((ROOT / "tests/fixtures/nfl2k5_allocator_beta62_requests.json").read_text())
         self.assertIn([ct.OWNER, "read_only", ct.RO_SIZE, 16], fixture)

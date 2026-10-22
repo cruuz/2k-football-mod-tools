@@ -155,10 +155,16 @@ class CompleteOwnerTests(unittest.TestCase):
         overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 16, 16),))
         self.assertTrue(space.is_scaleout(overflow))
         self.assertEqual(space.status(overflow), "applied")
-        with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.plan(REQUESTS + (("extra", "code", 32, 16),))
-        with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.plan(REQUESTS + (("extra", "code", 98305, 16),))
+        # b778-xs1: what the v3 runs cannot hold goes whole to the v4 pool; every v3 row stays where it was
+        v3 = space.plan(REQUESTS + (("extra", "code", 16, 16),))
+        for size in (32, 98305):
+            v4 = space.plan(REQUESTS + (("extra", "code", size, 16),))
+            self.assertEqual(v4["version"], 4)
+            extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
+            self.assertEqual((extra["va"], extra["size"]), (space.POOL_VA + space.PAGE, size))
+            self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"] if a["owner"] not in ("extra", space.DIRECTORY_OWNER)))
+        with self.assertRaisesRegex(ValueError, "capacity"):
+            space.plan(REQUESTS + (("extra", "code", space.MAX_REQUEST_BYTES + 1, 16),))
 
     def test_dispatcher_and_raw_writer_status_roundtrip(self):
         patched, receipt = tt._apply_all(self.retail, None, False, accel_ramp=True, **OPTIONS)

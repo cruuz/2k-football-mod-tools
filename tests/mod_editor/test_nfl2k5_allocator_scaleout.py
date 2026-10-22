@@ -304,7 +304,7 @@ class SyntheticTests(unittest.TestCase):
         offsets = [0x104, 0x108, 0x10C, 0x11C, 0x120, 0x14C, 0x150, 0x154,
                    0x178, 0x17C, space.META_COPY, space.SCALE_NAMES, space.DEBUG_COPY, space.LIB_COPY,
                    space.DIRECTORY + 12, space.SCALE_DIRECTORY, space.SCALE_DIRECTORY + 4095,
-                   space.SCALE_DIRECTORY + 4096, space.SCALE_FILE_SIZE - 1,
+                   space.SCALE_DIRECTORY + 4096, space.SCALE3_FILE_SIZE - 1,  # b778-xs1: the v3 extent
                    space.DATA_RAW, space.EXT_FILE_SIZE]
         offsets += [space.META_START + i * 56 + field for i in range(space.SCALE_COUNT - space.COUNT)
                     for field in (0, 4, 8, 12, 16, 20, 24, 28, 32, 36)]

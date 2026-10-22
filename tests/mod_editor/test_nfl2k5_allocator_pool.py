@@ -251,5 +251,40 @@ class PoolSyntheticTests(unittest.TestCase):
         self.assertEqual(bytes(machine.mem_read(data["va"] + 8, 4)), struct.pack("<I", 0x5EC0DD00))
 
 
+class PoolCareerHomeTests(unittest.TestCase):
+    """Career Home (the optional extra section) on a real MyCareer image survives the v3 -> v4 conversion."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_my_career_fixture import XBE
+        if not XBE.is_file():
+            raise unittest.SkipTest("pinned USA XBE required")
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_my_career_home as home
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        cls.mode, cls.home = mode, home
+        late = patch.object(space, "LATE_OWNERS", space.LATE_OWNERS + LATE)
+        late.start()
+        cls.addClassCleanup(late.stop)
+        cls.v3 = home.apply(mode.apply(retail_bytes())[0])[0]
+        cls.v4, cls.receipt = space.extend_scaleout(cls.v3, [(BIG_CODE[0], "code", 98304, 16)])  # more than the whole v3 run
+
+    def test_home_moves_to_index_7_and_every_owner_still_validates(self):
+        v3, v4, home = self.v3, self.v4, self.home
+        self.assertEqual((space.scale_version(v3), space.scale_version(v4)), (3, 4))
+        self.assertEqual((space.status(v4), self.mode.status(v4), home.status(v4)), ("applied",) * 3)
+        self.assertTrue(space.has_home_section(v4))
+        self.assertFalse(space.has_music(v4))
+        self.assertEqual(struct.unpack_from("<I", v4, 0x11C)[0], space.SCALE_COUNT + 2)
+        old, new = space.META_START + 6 * 56, space.META_START + 7 * 56
+        self.assertEqual(struct.unpack_from("<I", v4, new + 4)[0], home.VA)
+        self.assertEqual(v3[old:old + 20], v4[new:new + 20])          # flags, VA, sizes, raw: unchanged
+        self.assertEqual(v3[old + 36:old + 56], v4[new + 36:new + 56])  # digest: the section bytes are unchanged
+        self.assertEqual(v4[space.EXTRA4_NAME:space.EXTRA4_NAME + 8], b".AS0007\0")
+        self.assertEqual(v3[home.RAW:home.RAW + home.SIZE], v4[home.RAW:home.RAW + home.SIZE])
+        self.assertEqual(home.check_static(v4), home.check_static(v3))
+        self.assertLessEqual(rows(space.layout(v3)), rows(space.layout(v4)))
+        self.assertEqual(home.apply(v4)[0], v4)  # exact replay on v4
+
+
 if __name__ == "__main__":
     unittest.main()

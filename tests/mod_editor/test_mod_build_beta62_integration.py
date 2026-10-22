@@ -254,7 +254,7 @@ class ExecutableTests(unittest.TestCase):
                 for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')
                 self.assertEqual(runtime.status(final), 'applied')
-                self.assertEqual(len(final), space.SCALE_FILE_SIZE)
+                self.assertEqual(len(final), space.SCALE3_FILE_SIZE)  # b778-xs1: the v3 extent (SCALE_FILE_SIZE is now the v4 upper bound)
             self.assertEqual(events,['runtime','runtime'])
 
     def test_flatter_flight_preserves_ceiling_and_refuses_other_flight_before_overwrite(self):
