@@ -42,6 +42,19 @@ PINS = {
     0x13ECA0: "b38f0a0efc9ddd6e2a56e58581da229723090d2de23f9ee4d051a2e5f0a143ce",
 }
 
+# b778 fa1 (revision 2). PROVED OFFLINE: the retail stage-6 veteran cap cut 0x2BFAF0, called for
+# every club from the offseason advance at 0x247FF5 (years pro >= 10, 210%), releases a veteran while
+# payroll + 6000 >= cap when his base salary exceeds 2.1 x 0x2BD440(surplus, aging, remaining) and his
+# dead money is below salary x remaining. The economy's 0x2BD440 surplus term clamps an overpaid
+# player to one unit, so imported real contracts (Mahomes, Kittle, Stanley) were cut after free
+# agency and the draft, when no club had room left to sign them. Skip only that call; the callee's
+# ret 4 popped the pushed 210, so the stack stays balanced. Over-cap clubs are still reconciled by
+# economy_reconcile (0x24806A, 0x247BC6). A revision-1 image reads "legacy" and upgrades in place.
+VETERAN_CUT_CALL = 0x247FF5
+VETERAN_CUT_SKIP = bytes.fromhex("83c4049090")  # add esp, 4; nop; nop  (was call 0x2BFAF0)
+PINS[VETERAN_CUT_CALL] = "767e6c6aa5c1e83f666e5f7b8daf8773dbde0f143e40ea5c3383a22d71f6118e"
+REVISION = 2
+
 
 class EconomyError(ValueError):
     """PROVED OFFLINE: mismatched or mixed economy bytes are refused atomically."""
@@ -54,7 +67,9 @@ class Site:
     digest: str
 
 
-def sites() -> tuple[Site, ...]:
+def sites(revision: int = REVISION) -> tuple[Site, ...]:
+    if revision not in (1, 2):
+        raise EconomyError("unknown economy revision")
     replacements = {**WINDOWS, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -66,18 +81,27 @@ def sites() -> tuple[Site, ...]:
     replacements[0x322EB0] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_renew_gate"] - 0x322EB0 - 5) + b"\x90\x90"
     for address, symbol in ((0x13ED30, "economy_penalty"), (0x13ECA0, "economy_cap")):
         replacements[address] = b"\xe9" + struct.pack("<i", SYMBOLS[symbol] - address - 5)
+    if revision >= 2:
+        replacements[VETERAN_CUT_CALL] = VETERAN_CUT_SKIP
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
+def _site_state(image: XbeImage, site: Site) -> str:
+    current = image.read(site.va, len(site.patched))
+    return ("applied" if current == site.patched else
+            "retail" if hashlib.sha256(current).hexdigest() == site.digest else "foreign")
+
+
 def _standalone_status(payload: bytes) -> str:
+    """retail | applied | legacy (revision 1: every site but the veteran-cut skip) | foreign."""
     try:
         image = XbeImage(payload)
-        states = set()
-        for site in sites():
-            current = image.read(site.va, len(site.patched))
-            states.add("applied" if current == site.patched else
-                       "retail" if hashlib.sha256(current).hexdigest() == site.digest else "foreign")
-        return next(iter(states)) if len(states) == 1 else "foreign"
+        states = {site.va: _site_state(image, site) for site in sites()}
+        core = {state for va, state in states.items() if va != VETERAN_CUT_CALL}
+        if core == {"applied"} and states[VETERAN_CUT_CALL] == "retail":
+            return "legacy"
+        unique = set(states.values())
+        return next(iter(unique)) if len(unique) == 1 else "foreign"
     except (ValueError, struct.error, IndexError):
         return "foreign"
 
@@ -99,13 +123,15 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
     state = status(payload)
     if state == "applied":
         return payload, {"already_applied": True, "changed_bytes": 0}
-    if state != "retail":
+    if state not in ("retail", "legacy"):
         raise EconomyError(f"economy sites are {state}; refusing to patch")
     from . import nfl2k5_roster_fill_composition as composition
-    shared = composition.installation_edits(payload, "economy")
+    # A legacy (revision-1) image already carries every other site and the shared chain.
+    shared = composition.installation_edits(payload, "economy") if state == "retail" else []
+    todo = sites() if state == "retail" else tuple(s for s in sites() if s.va == VETERAN_CUT_CALL)
     image, out = XbeImage(payload), bytearray(payload)
     sections, touched, edits = _sections(payload), set(), []
-    for site in sites():
+    for site in todo:
         offset = image.offset(site.va, len(site.patched))
         out[offset:offset + len(site.patched)] = site.patched
         touched.add(_section_for_offset(sections, offset).index)
@@ -124,6 +150,7 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
         raise EconomyError("economy post-apply verification failed")
     return result, {"evidence": "PROVED OFFLINE", "changed_bytes": sum(a != b for a, b in zip(payload, result)),
                     "edits": edits, "sections_repinned": sorted(touched), "game_cap_thousands": GAME_CAP,
+                    "revision": REVISION, **({"upgraded_from": "legacy"} if state == "legacy" else {}),
                     "real_dollars_per_game_dollar": DOLLAR_SCALE, "source": SOURCE,
                     "limitations": "DESIGN: fitted cap curves, experience-based aging, estimated rookie pool; no exact cash/guarantee accounting"}
 
