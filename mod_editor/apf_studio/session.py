@@ -2418,6 +2418,10 @@ class ApfSession:
         return self._retail_splb_book(outer_index)
 
     def master_play_count(self, modifications=None) -> int:
+        # Only Design Play/Formation appends plays; without one the shipped MASTER is retail
+        # (586 plays), so Fine-tune Plays keeps working without reading MASTER at all.
+        if self._design_modification(modifications) is None:
+            return 586
         return common_compiler.play_count(self._compile_master_play(modifications))
 
     def compiled_splb_book(self, outer_index, changes, modifications=None):
