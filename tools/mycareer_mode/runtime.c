@@ -111,7 +111,11 @@ void inline_decode(void) {
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
     for(i=0;i<14;i++) if(save_words[i]) S(4*save_words[i])=W(b,32+4*i);
-    S(24)=B(b,36); S(32)=B(b,37); S(36)=B(b,38); state[149]=B(b,39);
+    /* b778 mc6: the saved stage byte (2..6) is not trusted. resolve_team
+     * below derives 2..5 from the record's flags and club membership, so a
+     * career saved as lost (6) by the old play-by-play cue check is judged
+     * again on its record; a real identity loss still fails primary. */
+    S(24)=3; S(32)=B(b,37); S(36)=B(b,38); state[149]=B(b,39);
     S(96)=W(b,44); S(112)=W(b,48); S(116)=W(b,52);
     S(180)=B(b,80); S(184)=B(b,81);
     /* Enable only after the whole native deserialization has completed. */
@@ -143,7 +147,9 @@ u32 FC inline_stage(const u8 *file,u32 size) {
     if(!inline_valid(b,arena) || W(r,0)>4096 || W(b,32)>=W(r,0) ||
        !(pool=relative(r,arena,4,84*W(r,0)))) return 0;
     p=pool+84*W(b,32);
-    if(B(r,p+0x35)!=B(b,39) || W(r,p+4)!=W(b,56) ||
+    /* b778 mc6: +4 is the play-by-play cue the native jersey assigner
+     * rewrites (see primary); only the portrait half +6 is identity. */
+    if(B(r,p+0x35)!=B(b,39) || *(u16 *)(r+p+6)!=*(u16 *)(b+58) ||
        (W(r,p+0x18)&0x0ffff000)!=W(b,60)) return 0;
     for(i=0;i<3;i++) {
         ref=relative(r,arena,p+(i?12+i*4:0),i?2:8);
