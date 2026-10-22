@@ -1,4 +1,4 @@
-# 2026 head coaches (beta 77 co1, co2, co3, cm1)
+# 2026 head coaches (beta 77 co1, co2, co3, cm1; b778 cm2)
 
 Authored textures for `mod_editor/core/nfl2k5_modern_coaches.py`, one folder per club (2026 abbreviations), each at
 the native size of the coach model's texture slot (the 4x masters stay with the art job; they go into the 2K5 Edition
@@ -24,6 +24,15 @@ The module reserves these ids in the coach records. A plain build fills the rese
 disc's `nophoto` pixels. Retail slots and the rejected co3 renders become that fallback; external league pictures
 are kept. Applying the league project replaces either old photo crops or rejected renders with its real headshots.
 The painted 3D coach faces and their pins are unchanged.
+
+Skin (b778 cm2): every coach stands on a retail model of his own skin (the module's `DARK_SKIN_MODELS`: the 2004
+Black head coaches' models c00, c05, c06, c11, c19 and the created-team coaches c50, c51; `pins.json` `bodies[club].skin`
+for the coach, checked when the pins load). Tampa Bay's Todd Bowles wears Dennis Green's c00 (Noah 10/21: "we should use
+an actual black model"); Todd Monken (CLE, c26), Zac Taylor (CIN, c36) and Shane Steichen (IND, c33) moved off c00, c06
+and c11. Pittsburgh's Mike McCarthy wears the capped c27, with his heavy build carried over in `PIT/geometry.json`.
+`superseded_body_codes` names a model an earlier version wrote into a club's record (rewritten on such a disc); `retired`
+lists the models no club wears any more (c06, c11), put back to retail on such a disc. Recipes and the 3D move of the
+face detail between head meshes: `tools/b77/cm2_coach_models.py`; pins: `tools/b77/cm2_record_pins.py --retail RETAIL.iso --write`.
 
 Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Fourteen clubs' coaches wear
 another retail body that fits their build better (`pins.json` `bodies`: the model and why; `body_code` per club), and
