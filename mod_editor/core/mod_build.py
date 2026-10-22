@@ -4593,6 +4593,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      **{k: v for k, v in swoosh_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                               for kit in swoosh_receipt["kits"]]})
+        # b778-uf1 (SWeaR 10/21: Dallas Alternate 1 last names glitched): a nameplate takes the glyph metrics of the
+        # letter atlas it carries (07H7/07A7 wear 07A0's letters), only when its measured atlas has that layout.
+        names_fix_receipt = kit_fixes.apply_nameplates(target)
+        if names_fix_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_names",
+                                     **{k: v for k, v in names_fix_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in names_fix_receipt["kits"]]})
         if plan.espn25_more_moments:
             # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
             # style indexes composed from kits already on the copy (read after every uniform writer above), labelled

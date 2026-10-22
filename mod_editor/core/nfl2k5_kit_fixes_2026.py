@@ -40,6 +40,13 @@ number just above it; on the others it stays at the shared place below the shoul
 field, clear of the number, stripes, logos and holes. Its ``warp`` operation carries an existing swoosh (the
 Packers home sleeve's pixels on the user's disc, never a drawing of the mark) through a mesh measured on the player
 model onto the model's surface, across the shoulder cap of the torso texture where it must.
+
+Job uf1 (b778, SWeaR 10/21: "Last names are glitched on Dallas Alternate 1 uni") gives a nameplate the glyph metrics
+of the letter atlas it actually carries, atlas offsets included (``data/nfl2k5_kit_fixes_2026_names.json``,
+``apply_nameplates``). The Arctic Cowboy slots (07H7/07A7) wear the 2026 road kit's letters (07A0, apostrophe and
+hyphen 32 texels apart, A at 96) over the retail 1994 metrics (wide hyphen, A at 128), so every letter of a name
+was copied from its neighbour's cell. A ``relayout`` name row is applied only when the kit's own atlas, measured
+column by column, has exactly the donor's glyph layout and not its own (``nameplate_layout``).
 """
 from __future__ import annotations
 
@@ -52,7 +59,7 @@ import struct
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
-from nfl_txtr import decode_chunk, parse_chunks, parse_texture, swizzle_2d, unswizzle_2d
+from nfl_txtr import decode_chunk, parse_chunks, parse_texture, swizzle_2d, texture_to_rgba, unswizzle_2d
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
 SCHEMA = "nfl2k5_kit_fixes_2026/v1"
@@ -63,6 +70,7 @@ DATA_SEA1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_se
 DATA_OV1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ov1.json"
 DATA_KU1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ku1.json"
 DATA_SW1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sw1.json"
+DATA_NAMES = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_names.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SUPER = 4                      # samples per texel along each axis (the 4x master)
 UNIT = 200                     # fixed-point units per texel for shape coordinates
@@ -1249,11 +1257,56 @@ def compile_unif(span, row):
 NAME_METRICS = slice(0x2C, 0xA0)        # 29 little-endian (atlas offset, glyph width) pairs in the NAME body
 
 
-def compile_name(span, donor_span, row):
+NAME_ATLAS_CHUNK = 43                   # the 1024x32 linear P8 letter strip the NAME metrics index
+NAME_ATLAS_ALPHA = 64                   # a texel at or above this alpha is letter (fill, outline or anti-aliasing)
+
+
+def name_metrics(name_span):
+    """The 29 (atlas offset, glyph width) pairs (' - A..Z c) of one raw NAME chunk span."""
+    chunks = parse_chunks(name_span)
+    require(len(chunks) == 1 and chunks[0].kind == "NAME" and not chunks[0].compressed, "expected one raw NAME chunk")
+    pairs = struct.unpack_from("<58H", name_span, chunks[0].body_offset + NAME_METRICS.start)
+    return list(zip(pairs[0::2], pairs[1::2]))
+
+
+def atlas_glyph_starts(atlas_span):
+    """Where each glyph of a nameplate letter atlas starts, measured: the first column of every run of columns that
+    hold a letter texel at the top mip. Every retail kit (634) has exactly one run per NAME pair, starting at its
+    offset and exactly its width wide."""
+    chunks = parse_chunks(atlas_span)
+    require(len(chunks) == 1 and chunks[0].kind == "TXTR", "expected one nameplate atlas chunk")
+    decoded, _ = decode_chunk(atlas_span, chunks[0])
+    texture = parse_texture(decoded, chunks[0])
+    require(texture.name == "names", "not a nameplate atlas: " + texture.name)
+    alpha = np.frombuffer(texture_to_rgba(decoded, chunks[0], texture), np.uint8).reshape(
+        texture.height, texture.width, 4)[..., 3]
+    filled = (alpha >= NAME_ATLAS_ALPHA).any(axis=0)
+    edges = np.flatnonzero(np.diff(np.concatenate(([0], filled.astype(np.int8)))) == 1)
+    return [int(x) for x in edges]
+
+
+def layout_fits(starts, metrics):
+    """The atlas holds one glyph per NAME pair, each starting at its stored offset (one texel of slack)."""
+    return len(starts) == len(metrics) and all(abs(s - x) <= 1 for s, (x, _) in zip(starts, metrics))
+
+
+def nameplate_layout(raw):
+    """(measured glyph starts, NAME pairs, fits) for one kit package: the uf1 (b778) audit of every kit."""
+    atlas = _chunk_for(raw, NAME_ATLAS_CHUNK)
+    names = [c for c in parse_chunks(raw) if c.kind == "NAME"]
+    require(len(names) == 1, "expected one NAME chunk")
+    starts = atlas_glyph_starts(raw[atlas.offset:atlas.end_offset])
+    metrics = name_metrics(raw[names[0].offset:names[0].end_offset])
+    return starts, metrics, layout_fits(starts, metrics)
+
+
+def compile_name(span, donor_span, row, atlas_starts=None):
     """Give a nameplate the glyph metrics of the kit whose name atlas it carries (uf3, b773). The native compositor
     (0x1C2140) copies each letter at its stored width, so a slot that borrowed a wider atlas but kept its own narrow
     widths cuts every letter (the Unc Bowl Steelers: GAINWELL read CAINVELL). Only the metric pairs change; the
-    donor must be the same raw NAME layout and identical outside them."""
+    donor must be the same raw NAME layout and identical outside them. A ``relayout`` row (uf1, b778) also takes the
+    donor's atlas offsets, and only when ``atlas_starts`` (the kit's own atlas, measured) fit the donor's metrics
+    and not the kit's own."""
     pieces = []
     for blob in (span, donor_span):
         chunks = parse_chunks(blob)
@@ -1272,9 +1325,16 @@ def compile_name(span, donor_span, row):
     new[chunk.body_offset + NAME_METRICS.start:chunk.body_offset + NAME_METRICS.stop] = donor_body[NAME_METRICS]
     old = struct.unpack_from("<58H", body, NAME_METRICS.start)
     now = struct.unpack_from("<58H", donor_body, NAME_METRICS.start)
-    require(old[0::2] == now[0::2], "the donor's glyph atlas offsets differ")
-    return bytes(new), dict(donor_selector=row["donor_selector"],
-                            widths_changed=sum(a != b for a, b in zip(old[1::2], now[1::2])))
+    detail = dict(donor_selector=row["donor_selector"], widths_changed=sum(a != b for a, b in zip(old[1::2], now[1::2])))
+    if row.get("relayout"):
+        require(atlas_starts is not None, "a relayout nameplate needs its measured atlas")
+        mine, theirs = list(zip(old[0::2], old[1::2])), list(zip(now[0::2], now[1::2]))
+        require(not layout_fits(atlas_starts, mine), "the nameplate atlas already fits its own metrics")
+        require(layout_fits(atlas_starts, theirs), "the nameplate atlas does not have the donor's glyph layout")
+        detail["offsets_changed"] = sum(a != b for a, b in zip(old[0::2], now[0::2]))
+    else:
+        require(old[0::2] == now[0::2], "the donor's glyph atlas offsets differ")
+    return bytes(new), detail
 
 
 def texture_rgba(span):
@@ -1387,7 +1447,16 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
                 require(not strict, selector + ": nameplate donor differs from its pin")
                 skipped.append(row["chunk"])
                 continue
-            new, detail = compile_name(span, donor_span, row)
+            starts = None
+            if row.get("relayout"):
+                atlas = _chunk_for(raw, NAME_ATLAS_CHUNK)
+                starts = atlas_glyph_starts(raw[atlas.offset:atlas.end_offset])
+                if not layout_fits(starts, name_metrics(donor_span)):
+                    # the user's own letters (not the donor's layout): keep the kit as it is (strict refuses)
+                    require(not strict, selector + ": nameplate atlas does not have the donor's glyph layout")
+                    skipped.append(row["chunk"])
+                    continue
+            new, detail = compile_name(span, donor_span, row, starts)
         else:
             donors, missing = {}, False
             for index, pin in sorted((row.get("donors") or {}).items()):
@@ -1541,3 +1610,13 @@ def swooshes():
 def apply_swooshes(path, *, strict=False):
     """Studio uniform finish pass for sw1, after ku1 (the last writer of the kit textures): pinned spans only."""
     return apply_to_image(path, strict=strict, document=swooshes())
+
+
+def nameplates():
+    """uf1 (b778): nameplate metrics that follow the letter atlas a kit carries (Dallas Arctic Cowboy, 07H7/07A7)."""
+    return spec(DATA_NAMES)
+
+
+def apply_nameplates(path, *, strict=False):
+    """Studio uniform finish pass for uf1 (b778), after sw1 (every atlas writer has run): pinned NAME spans only."""
+    return apply_to_image(path, strict=strict, document=nameplates())
