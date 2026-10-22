@@ -164,6 +164,11 @@ def depth_ranks(depth_csv: Path, team: str, since: str | None = None) -> dict[st
     return best
 
 
+def latest_schools_first(college: str | None) -> list[str]:
+    """The schools of an nflverse roster row, most recent first (the file's own order)."""
+    return [c.strip() for c in (college or "").split(";") if c.strip()]
+
+
 def pbp_for(last: str, jersey: int, bank: dict[str, int]) -> tuple[int, str]:
     # Retail-player ordinals can insert that player's given name. The verified generic bank
     # supplies surname-only clips and already excludes ambiguous or unrecorded entries.
@@ -589,7 +594,9 @@ def build(args) -> int:
         if "dreads" in face:
             rec.set("dreads", int(face["dreads"]))
         college = ""
-        for c in reversed([c.strip() for c in (r.get("college") or "").split(";") if c.strip()]):
+        # b778 rd1: nflverse lists the LATEST school first ("Texas; Houston": Golden played at Houston, then Texas);
+        # the previous reversed() walk wrote the oldest school the table had (265 players, Burrow: Ohio State).
+        for c in latest_schools_first(r.get("college")):
             if norm(c) in colleges_norm:
                 doc.set_college(p, colleges_norm[norm(c)])
                 college = doc.colleges[colleges_norm[norm(c)]]
