@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f04",
+   "custom_name": "Singleback Doubles",
    "donor": {
-    "index": 10,
-    "name": "I Jokers"
+    "index": 19,
+    "name": "Triple"
    },
    "replace_index": 0,
    "replace_name": "Split Pro",
@@ -39,23 +39,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 4,
+   "situation": [1, 0, 0],
+   "category_mask": [4, 23]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f14",
+   "custom_name": "Singleback Ace",
    "donor": {
-    "index": 14,
-    "name": "Strong I Jokers Pair"
+    "index": 22,
+    "name": "Tight Triple"
    },
    "replace_index": 1,
    "replace_name": "Split Spread",
@@ -66,43 +66,19 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
-   ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
-  },
-  {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
-   "donor": {
-    "index": 19,
-    "name": "Triple"
-   },
-   "replace_index": 2,
-   "replace_name": "Split Twins",
-   "slot_positions": [
-    [0, -482],
-    [302, 0],
-    [-302, 0],
-    [0, 0],
-    [155, 0],
-    [-155, 0],
-    [457, 0],
+    [-1463, -137],
     [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [183, -485]
+    [-457, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 4,
-   "situation": [0, 4, 1],
-   "category_mask": [4]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "category_index": 5,
+   "category_positions": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "situation": [2, 1, 4],
+   "category_mask": [5],
+   "category_code": 3,
+   "category_name": "Ace 2"
   },
   {
    "id": "f03",
@@ -111,8 +87,8 @@
     "index": 29,
     "name": "Doubles Right"
    },
-   "replace_index": 3,
-   "replace_name": "Far Pro",
+   "replace_index": 2,
+   "replace_name": "Split Twins",
    "slot_positions": [
     [0, -185],
     [302, 0],
@@ -132,11 +108,38 @@
    "category_mask": [4, 23]
   },
   {
-   "id": "f04",
-   "custom_name": "Singleback Doubles",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
     "index": 19,
     "name": "Triple"
+   },
+   "replace_index": 3,
+   "replace_name": "Far Pro",
+   "slot_positions": [
+    [0, -482],
+    [302, 0],
+    [-302, 0],
+    [0, 0],
+    [155, 0],
+    [-155, 0],
+    [457, 0],
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [183, -485]
+   ],
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 4,
+   "situation": [0, 4, 1],
+   "category_mask": [4]
+  },
+  {
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
+   "donor": {
+    "index": 10,
+    "name": "I Jokers"
    },
    "replace_index": 4,
    "replace_name": "Far Spread",
@@ -147,16 +150,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [0, -640]
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 4,
-   "situation": [1, 0, 0],
-   "category_mask": [4, 23]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f05",
@@ -405,11 +408,11 @@
    "category_mask": [4]
   },
   {
-   "id": "f14",
-   "custom_name": "Singleback Ace",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 22,
-    "name": "Tight Triple"
+    "index": 14,
+    "name": "Strong I Jokers Pair"
    },
    "replace_index": 14,
    "replace_name": "Strong I Jokers Pair",
@@ -420,19 +423,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [457, 0],
-    [-1463, -137],
-    [1463, -137],
     [-457, 0],
-    [0, -640]
+    [457, 0],
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "category_index": 5,
-   "category_positions": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "situation": [2, 1, 4],
-   "category_mask": [5],
-   "category_code": 3,
-   "category_name": "Ace 2"
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f15",

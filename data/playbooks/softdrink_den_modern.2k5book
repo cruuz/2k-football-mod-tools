@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f14",
+   "custom_name": "Singleback Ace",
    "donor": {
-    "index": 13,
-    "name": "Split Jokers"
+    "index": 2,
+    "name": "Tight Triple"
    },
    "replace_index": 0,
    "replace_name": "Triple",
@@ -40,49 +40,52 @@
     [155, 0],
     [-155, 0],
     [-457, 0],
+    [1463, -137],
+    [-1463, -137],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 41, 9, 8, 10],
+   "category_index": 2,
+   "situation": [2, 1, 1],
+   "category_mask": [2]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f07",
+   "custom_name": "Gun Bunch X Nasty",
    "donor": {
-    "index": 16,
-    "name": "I Wing Jokers"
+    "index": 8,
+    "name": "Bunch"
    },
    "replace_index": 1,
    "replace_name": "Flip Triple",
    "slot_positions": [
-    [0, -185],
+    [0, -482],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
+    [594, -110],
+    [777, -137],
     [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
+    [-732, 0],
+    [-229, -482]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 6,
+   "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "situation": [4, 3, 1],
+   "category_mask": [6],
+   "category_code": 9,
+   "category_name": "Kings Long"
   },
   {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
+   "id": "f13",
+   "custom_name": "Gun Empty Trey",
    "donor": {
-    "index": 1,
-    "name": "Flip Triple"
+    "index": 22,
+    "name": "Flip Triple Open"
    },
    "replace_index": 2,
    "replace_name": "Tight Triple",
@@ -94,15 +97,18 @@
     [155, 0],
     [-155, 0],
     [457, 0],
-    [1463, -137],
+    [1554, -137],
     [-823, -137],
     [-1554, 0],
-    [183, -485]
+    [1006, -137]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 4,
-   "situation": [4, 4, 1],
-   "category_mask": [4]
+   "category_index": 6,
+   "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "situation": [4, 3, 0],
+   "category_mask": [4, 6],
+   "category_code": 9,
+   "category_name": "Kings Long"
   },
   {
    "id": "f03",
@@ -213,34 +219,31 @@
    "category_mask": [4]
   },
   {
-   "id": "f07",
-   "custom_name": "Gun Bunch X Nasty",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 8,
-    "name": "Bunch"
+    "index": 16,
+    "name": "I Wing Jokers"
    },
    "replace_index": 7,
    "replace_name": "Trey",
    "slot_positions": [
-    [0, -482],
+    [0, -185],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
-    [594, -110],
-    [777, -137],
+    [-457, 0],
     [457, 0],
-    [-732, 0],
-    [-229, -482]
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 6,
-   "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [4, 3, 1],
-   "category_mask": [6],
-   "category_code": 9,
-   "category_name": "Kings Long"
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f08",
@@ -381,11 +384,11 @@
    "category_mask": [3]
   },
   {
-   "id": "f13",
-   "custom_name": "Gun Empty Trey",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
-    "index": 22,
-    "name": "Flip Triple Open"
+    "index": 1,
+    "name": "Flip Triple"
    },
    "replace_index": 13,
    "replace_name": "Split Jokers",
@@ -397,25 +400,22 @@
     [155, 0],
     [-155, 0],
     [457, 0],
-    [1554, -137],
+    [1463, -137],
     [-823, -137],
     [-1554, 0],
-    [1006, -137]
+    [183, -485]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 6,
-   "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [4, 3, 0],
-   "category_mask": [4, 6],
-   "category_code": 9,
-   "category_name": "Kings Long"
+   "category_index": 4,
+   "situation": [4, 4, 1],
+   "category_mask": [4]
   },
   {
-   "id": "f14",
-   "custom_name": "Singleback Ace",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 2,
-    "name": "Tight Triple"
+    "index": 13,
+    "name": "Split Jokers"
    },
    "replace_index": 14,
    "replace_name": "I Pro",
@@ -427,15 +427,15 @@
     [155, 0],
     [-155, 0],
     [-457, 0],
-    [1463, -137],
-    [-1463, -137],
     [457, 0],
-    [0, -640]
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 41, 9, 8, 10],
-   "category_index": 2,
-   "situation": [2, 1, 1],
-   "category_mask": [2]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f15",

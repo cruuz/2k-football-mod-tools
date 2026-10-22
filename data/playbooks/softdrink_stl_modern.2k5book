@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f20",
+   "custom_name": "Singleback Doubles Tight",
    "donor": {
-    "index": 20,
-    "name": "I Wing Jokers"
+    "index": 2,
+    "name": "Triple"
    },
    "replace_index": 0,
    "replace_name": "Quads",
@@ -39,23 +39,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [914, -137],
+    [-914, 0],
+    [-594, -137],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [3, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 9, 73, 10],
+   "category_index": 4,
+   "situation": [0, 1, 0],
+   "category_mask": [4, 23]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f04",
+   "custom_name": "Singleback Doubles",
    "donor": {
-    "index": 22,
-    "name": "I Jokers"
+    "index": 12,
+    "name": "Doubles Left"
    },
    "replace_index": 1,
    "replace_name": "Trey",
@@ -66,43 +66,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
-    [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
-   ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
-  },
-  {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
-   "donor": {
-    "index": 12,
-    "name": "Doubles Left"
-   },
-   "replace_index": 2,
-   "replace_name": "Triple",
-   "slot_positions": [
-    [0, -482],
-    [302, 0],
-    [-302, 0],
-    [0, 0],
-    [155, 0],
-    [-155, 0],
     [457, 0],
     [1463, -137],
     [-1554, 0],
     [-823, -137],
-    [183, -485]
+    [0, -640]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 9, 73, 10],
    "category_index": 4,
-   "situation": [4, 4, 1],
-   "category_mask": [4]
+   "situation": [1, 3, 0],
+   "category_mask": [4, 23]
   },
   {
    "id": "f03",
@@ -111,8 +84,8 @@
     "index": 16,
     "name": "Empty Tight"
    },
-   "replace_index": 3,
-   "replace_name": "Trips",
+   "replace_index": 2,
+   "replace_name": "Triple",
    "slot_positions": [
     [0, -185],
     [302, 0],
@@ -132,11 +105,38 @@
    "category_mask": [4, 23]
   },
   {
-   "id": "f04",
-   "custom_name": "Singleback Doubles",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
     "index": 12,
     "name": "Doubles Left"
+   },
+   "replace_index": 3,
+   "replace_name": "Trips",
+   "slot_positions": [
+    [0, -482],
+    [302, 0],
+    [-302, 0],
+    [0, 0],
+    [155, 0],
+    [-155, 0],
+    [457, 0],
+    [1463, -137],
+    [-1554, 0],
+    [-823, -137],
+    [183, -485]
+   ],
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 9, 73, 10],
+   "category_index": 4,
+   "situation": [4, 4, 1],
+   "category_mask": [4]
+  },
+  {
+   "id": "f01",
+   "custom_name": "Goal Line",
+   "donor": {
+    "index": 22,
+    "name": "I Jokers"
    },
    "replace_index": 4,
    "replace_name": "Doubles",
@@ -147,16 +147,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [1463, -137],
-    [-1554, 0],
-    [-823, -137],
-    [0, -640]
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 9, 73, 10],
-   "category_index": 4,
-   "situation": [1, 3, 0],
-   "category_mask": [4, 23]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f05",
@@ -585,11 +585,11 @@
    "category_name": "Pistol"
   },
   {
-   "id": "f20",
-   "custom_name": "Singleback Doubles Tight",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 2,
-    "name": "Triple"
+    "index": 20,
+    "name": "I Wing Jokers"
    },
    "replace_index": 20,
    "replace_name": "I Wing Jokers",
@@ -600,16 +600,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [914, -137],
-    [-914, 0],
-    [-594, -137],
-    [0, -640]
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 9, 73, 10],
-   "category_index": 4,
-   "situation": [0, 1, 0],
-   "category_mask": [4, 23]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [3, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f21",

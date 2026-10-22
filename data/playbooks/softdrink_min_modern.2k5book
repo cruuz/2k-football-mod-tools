@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f22",
+   "custom_name": "Singleback Bunch",
    "donor": {
-    "index": 12,
-    "name": "I Jokers"
+    "index": 2,
+    "name": "Triple"
    },
    "replace_index": 0,
    "replace_name": "Doubles",
@@ -39,23 +39,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
-    [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [732, 0],
+    [-1554, 0],
+    [914, -137],
+    [594, -137],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [2, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
+   "category_index": 5,
+   "situation": [0, 2, 0],
+   "category_mask": [5, 7]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f04",
+   "custom_name": "Singleback Doubles",
    "donor": {
-    "index": 13,
-    "name": "I Jokers Pair"
+    "index": 2,
+    "name": "Triple"
    },
    "replace_index": 1,
    "replace_name": "Tight Triple",
@@ -66,43 +66,43 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
+    [-1554, 0],
+    [1463, -137],
+    [-823, -137],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
+   "category_index": 5,
+   "situation": [0, 0, 0],
+   "category_mask": [5, 7]
   },
   {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
+   "id": "f17",
+   "custom_name": "Singleback Bunch X Nasty",
    "donor": {
-    "index": 23,
-    "name": "Gun: Doubles Right"
+    "index": 0,
+    "name": "Doubles"
    },
    "replace_index": 2,
    "replace_name": "Triple",
    "slot_positions": [
-    [0, -482],
+    [0, -185],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
+    [594, -110],
+    [-732, 0],
+    [777, -137],
     [457, 0],
-    [-1554, 0],
-    [1463, -137],
-    [-823, -137],
-    [183, -485]
+    [0, -640]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
    "category_index": 5,
-   "situation": [0, 4, 1],
-   "category_mask": [5]
+   "situation": [0, 0, 0],
+   "category_mask": [5, 7]
   },
   {
    "id": "f03",
@@ -132,11 +132,11 @@
    "category_mask": [5]
   },
   {
-   "id": "f04",
-   "custom_name": "Singleback Doubles",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 2,
-    "name": "Triple"
+    "index": 13,
+    "name": "I Jokers Pair"
    },
    "replace_index": 4,
    "replace_name": "Quads",
@@ -147,16 +147,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [-1554, 0],
-    [1463, -137],
-    [-823, -137],
-    [0, -640]
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
-   "category_index": 5,
-   "situation": [0, 0, 0],
-   "category_mask": [5, 7]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f05",
@@ -498,31 +498,31 @@
    "category_name": "Kings Long"
   },
   {
-   "id": "f17",
-   "custom_name": "Singleback Bunch X Nasty",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
-    "index": 0,
-    "name": "Doubles"
+    "index": 23,
+    "name": "Gun: Doubles Right"
    },
    "replace_index": 17,
    "replace_name": "Split Jokers",
    "slot_positions": [
-    [0, -185],
+    [0, -482],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
-    [594, -110],
-    [-732, 0],
-    [777, -137],
     [457, 0],
-    [0, -640]
+    [-1554, 0],
+    [1463, -137],
+    [-823, -137],
+    [183, -485]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
    "category_index": 5,
-   "situation": [0, 0, 0],
-   "category_mask": [5, 7]
+   "situation": [0, 4, 1],
+   "category_mask": [5]
   },
   {
    "id": "f18",
@@ -636,11 +636,11 @@
    "category_name": "Queens 2"
   },
   {
-   "id": "f22",
-   "custom_name": "Singleback Bunch",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 2,
-    "name": "Triple"
+    "index": 12,
+    "name": "I Jokers"
    },
    "replace_index": 22,
    "replace_name": "Gun: Trips Left",
@@ -651,16 +651,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [732, 0],
-    [-1554, 0],
-    [914, -137],
-    [594, -137],
-    [0, -640]
+    [-457, 0],
+    [457, 0],
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 73, 10],
-   "category_index": 5,
-   "situation": [0, 2, 0],
-   "category_mask": [5, 7]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [2, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f23",

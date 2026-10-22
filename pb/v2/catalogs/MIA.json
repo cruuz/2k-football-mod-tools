@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": null,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 9,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 24,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -288,7 +288,7 @@
   },
   {
    "formation": "I-Form Pro",
-   "index": 9,
+   "index": 1,
    "family": "I-Form",
    "personnel": "21",
    "group": "Pro",
@@ -762,7 +762,7 @@
   },
   {
    "formation": "I-Form Close",
-   "index": 24,
+   "index": 2,
    "family": "I-Form",
    "personnel": "21",
    "group": "Pro",
@@ -997,7 +997,7 @@
   },
   {
    "formation": "I-Form Y Off Close",
-   "index": null,
+   "index": 0,
    "family": "I-Form",
    "personnel": "21",
    "group": "Pro",

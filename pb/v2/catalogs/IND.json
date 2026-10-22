@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 7,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": null,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -208,7 +208,7 @@
   },
   {
    "formation": "Gun Bunch X Nasty",
-   "index": 7,
+   "index": 1,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings",
@@ -386,7 +386,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -977,7 +977,7 @@
   },
   {
    "formation": "Gun Spread Y-Slot",
-   "index": null,
+   "index": 2,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings Long",

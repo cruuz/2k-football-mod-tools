@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f14",
+   "custom_name": "Singleback Ace",
    "donor": {
-    "index": 11,
-    "name": "I Jacks"
+    "index": 3,
+    "name": "Doubles"
    },
    "replace_index": 0,
    "replace_name": "Trips",
@@ -39,23 +39,26 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [-1463, -137],
+    [1463, -137],
+    [-457, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [3, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "category_index": 21,
+   "category_positions": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "situation": [3, 1, 4],
+   "category_mask": [21],
+   "category_code": 3,
+   "category_name": "Ace"
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f04",
+   "custom_name": "Singleback Doubles",
    "donor": {
-    "index": 12,
-    "name": "I Jacks Load"
+    "index": 4,
+    "name": "Triple"
    },
    "replace_index": 1,
    "replace_name": "Quads",
@@ -66,20 +69,20 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 3,
+   "situation": [1, 0, 0],
+   "category_mask": [3, 22]
   },
   {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
+   "id": "f07",
+   "custom_name": "Gun Bunch X Nasty",
    "donor": {
     "index": 22,
     "name": "Gun: Doubles Right"
@@ -93,16 +96,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [594, -110],
+    [777, -137],
     [457, 0],
-    [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [183, -485]
+    [-732, 0],
+    [-229, -482]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
    "category_index": 22,
    "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [4, 4, 1],
+   "situation": [4, 3, 1],
    "category_mask": [22],
    "category_code": 9,
    "category_name": "Kings Long"
@@ -135,11 +138,11 @@
    "category_mask": [3, 22]
   },
   {
-   "id": "f04",
-   "custom_name": "Singleback Doubles",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 4,
-    "name": "Triple"
+    "index": 12,
+    "name": "I Jacks Load"
    },
    "replace_index": 4,
    "replace_name": "Triple",
@@ -150,16 +153,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [0, -640]
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 3,
-   "situation": [1, 0, 0],
-   "category_mask": [3, 22]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f05",
@@ -216,8 +219,8 @@
    "category_mask": [3]
   },
   {
-   "id": "f07",
-   "custom_name": "Gun Bunch X Nasty",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
     "index": 22,
     "name": "Gun: Doubles Right"
@@ -231,16 +234,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [594, -110],
-    [777, -137],
     [457, 0],
-    [-732, 0],
-    [-229, -482]
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [183, -485]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
    "category_index": 22,
    "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [4, 3, 1],
+   "situation": [4, 4, 1],
    "category_mask": [22],
    "category_code": 9,
    "category_name": "Kings Long"
@@ -411,11 +414,11 @@
    "category_mask": [3]
   },
   {
-   "id": "f14",
-   "custom_name": "Singleback Ace",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 3,
-    "name": "Doubles"
+    "index": 11,
+    "name": "I Jacks"
    },
    "replace_index": 14,
    "replace_name": "Strong I Twins",
@@ -426,19 +429,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [457, 0],
-    [-1463, -137],
-    [1463, -137],
     [-457, 0],
-    [0, -640]
+    [457, 0],
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "category_index": 21,
-   "category_positions": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "situation": [3, 1, 4],
-   "category_mask": [21],
-   "category_code": 3,
-   "category_name": "Ace"
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [3, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f15",

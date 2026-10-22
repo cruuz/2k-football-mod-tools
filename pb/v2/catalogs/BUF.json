@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": null,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 25,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 14,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -401,7 +401,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 2,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -802,7 +802,7 @@
   },
   {
    "formation": "Singleback Deuce Close",
-   "index": 25,
+   "index": 1,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -879,7 +879,7 @@
   },
   {
    "formation": "Singleback Y Trips",
-   "index": null,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",

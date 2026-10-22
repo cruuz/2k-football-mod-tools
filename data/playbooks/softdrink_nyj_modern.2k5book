@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f23",
+   "custom_name": "Singleback Doubles Tight",
    "donor": {
-    "index": 14,
-    "name": "I Load Heavy"
+    "index": 4,
+    "name": "Triple"
    },
    "replace_index": 0,
    "replace_name": "Flip Triple",
@@ -39,23 +39,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [914, -137],
+    [-594, -137],
+    [-914, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [3, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 3,
+   "situation": [0, 1, 0],
+   "category_mask": [3, 24]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f04",
+   "custom_name": "Singleback Doubles",
    "donor": {
-    "index": 13,
-    "name": "I Load"
+    "index": 5,
+    "name": "Doubles"
    },
    "replace_index": 1,
    "replace_name": "Quads",
@@ -66,23 +66,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [594, -91],
-    [0, -366],
-    [0, -594]
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 4],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 3,
+   "situation": [1, 0, 0],
+   "category_mask": [3, 24]
   },
   {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
+   "id": "f06",
+   "custom_name": "Gun Trips TE",
    "donor": {
-    "index": 4,
-    "name": "Triple"
+    "index": 5,
+    "name": "Doubles"
    },
    "replace_index": 2,
    "replace_name": "Trips",
@@ -93,17 +93,17 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [457, 0],
-    [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [183, -485]
+    [-457, 0],
+    [1189, -137],
+    [823, -137],
+    [1554, 0],
+    [-229, -482]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
    "category_index": 24,
    "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [3, 4, 1],
-   "category_mask": [24],
+   "situation": [0, 4, 1],
+   "category_mask": [3, 24],
    "category_code": 9,
    "category_name": "Kings Long"
   },
@@ -135,11 +135,11 @@
    "category_mask": [3, 24]
   },
   {
-   "id": "f04",
-   "custom_name": "Singleback Doubles",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 5,
-    "name": "Doubles"
+    "index": 13,
+    "name": "I Load"
    },
    "replace_index": 4,
    "replace_name": "Triple",
@@ -150,16 +150,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [1463, -137],
-    [-823, -137],
-    [-1554, 0],
-    [0, -640]
+    [594, -91],
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 3,
-   "situation": [1, 0, 0],
-   "category_mask": [3, 24]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f05",
@@ -189,11 +189,11 @@
    "category_mask": [3]
   },
   {
-   "id": "f06",
-   "custom_name": "Gun Trips TE",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
-    "index": 5,
-    "name": "Doubles"
+    "index": 4,
+    "name": "Triple"
    },
    "replace_index": 6,
    "replace_name": "F Split Quads",
@@ -204,17 +204,17 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
-    [1189, -137],
-    [823, -137],
-    [1554, 0],
-    [-229, -482]
+    [457, 0],
+    [1463, -137],
+    [-823, -137],
+    [-1554, 0],
+    [183, -485]
    ],
    "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
    "category_index": 24,
    "category_positions": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "situation": [0, 4, 1],
-   "category_mask": [3, 24],
+   "situation": [3, 4, 1],
+   "category_mask": [24],
    "category_code": 9,
    "category_name": "Kings Long"
   },
@@ -672,11 +672,11 @@
    "category_mask": [2]
   },
   {
-   "id": "f23",
-   "custom_name": "Singleback Doubles Tight",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 4,
-    "name": "Triple"
+    "index": 14,
+    "name": "I Load Heavy"
    },
    "replace_index": null,
    "replace_name": "",
@@ -687,16 +687,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
     [457, 0],
-    [914, -137],
-    [-594, -137],
-    [-914, 0],
-    [0, -640]
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 3,
-   "situation": [0, 1, 0],
-   "category_mask": [3, 24]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [3, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f24",

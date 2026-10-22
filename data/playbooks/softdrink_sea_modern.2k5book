@@ -24,11 +24,11 @@
  },
  "formations": [
   {
-   "id": "f00",
-   "custom_name": "Goal Line Sneak",
+   "id": "f14",
+   "custom_name": "Singleback Ace",
    "donor": {
-    "index": 3,
-    "name": "I Wing Jokers"
+    "index": 17,
+    "name": "Pair Slot"
    },
    "replace_index": 0,
    "replace_name": "I Spread",
@@ -39,23 +39,23 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
     [457, 0],
-    [0, -594],
-    [101, -421],
-    [-101, -421]
+    [-1463, -137],
+    [1463, -137],
+    [-457, 0],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [4, 4, 5],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "category_index": 2,
+   "situation": [1, 1, 3],
+   "category_mask": [2]
   },
   {
-   "id": "f01",
-   "custom_name": "Goal Line",
+   "id": "f17",
+   "custom_name": "Singleback Deuce Close",
    "donor": {
-    "index": 4,
-    "name": "I Jokers"
+    "index": 18,
+    "name": "Ace"
    },
    "replace_index": 1,
    "replace_name": "I Pro",
@@ -66,43 +66,43 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [-457, 0],
-    [457, 0],
     [594, -91],
-    [0, -366],
-    [0, -594]
+    [-732, 0],
+    [732, 0],
+    [-594, -91],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
-   "category_index": 0,
-   "situation": [2, 4, 4],
-   "category_mask": [0]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "category_index": 2,
+   "situation": [2, 1, 3],
+   "category_mask": [2]
   },
   {
-   "id": "f02",
-   "custom_name": "Gun Wildcat",
+   "id": "f26",
+   "custom_name": "Singleback H Back",
    "donor": {
-    "index": 24,
-    "name": "Gun: Doubles Right"
+    "index": 18,
+    "name": "Ace"
    },
    "replace_index": 2,
    "replace_name": "I Twins",
    "slot_positions": [
-    [0, -482],
+    [0, -185],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
     [457, 0],
-    [1463, -137],
-    [-823, -137],
     [-1554, 0],
-    [183, -485]
+    [1463, -137],
+    [-366, -110],
+    [0, -640]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
-   "category_index": 4,
-   "situation": [4, 4, 1],
-   "category_mask": [4]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
+   "category_index": 2,
+   "situation": [2, 2, 4],
+   "category_mask": [2]
   },
   {
    "id": "f03",
@@ -411,11 +411,11 @@
    "category_name": "Kings Long"
   },
   {
-   "id": "f14",
-   "custom_name": "Singleback Ace",
+   "id": "f00",
+   "custom_name": "Goal Line Sneak",
    "donor": {
-    "index": 17,
-    "name": "Pair Slot"
+    "index": 3,
+    "name": "I Wing Jokers"
    },
    "replace_index": 14,
    "replace_name": "Bunch",
@@ -426,16 +426,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
-    [457, 0],
-    [-1463, -137],
-    [1463, -137],
     [-457, 0],
-    [0, -640]
+    [457, 0],
+    [0, -594],
+    [101, -421],
+    [-101, -421]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "category_index": 2,
-   "situation": [1, 1, 3],
-   "category_mask": [2]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [4, 4, 5],
+   "category_mask": [0]
   },
   {
    "id": "f15",
@@ -492,11 +492,11 @@
    "category_mask": [4]
   },
   {
-   "id": "f17",
-   "custom_name": "Singleback Deuce Close",
+   "id": "f01",
+   "custom_name": "Goal Line",
    "donor": {
-    "index": 18,
-    "name": "Ace"
+    "index": 4,
+    "name": "I Jokers"
    },
    "replace_index": 17,
    "replace_name": "Pair Slot",
@@ -507,16 +507,16 @@
     [0, 0],
     [155, 0],
     [-155, 0],
+    [-457, 0],
+    [457, 0],
     [594, -91],
-    [-732, 0],
-    [732, 0],
-    [-594, -91],
-    [0, -640]
+    [0, -366],
+    [0, -594]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "category_index": 2,
-   "situation": [2, 1, 3],
-   "category_mask": [2]
+   "position_codes": [0, 5, 37, 6, 7, 39, 40, 8, 72, 11, 10],
+   "category_index": 0,
+   "situation": [2, 4, 4],
+   "category_mask": [0]
   },
   {
    "id": "f18",
@@ -744,31 +744,31 @@
    "category_mask": [4, 23]
   },
   {
-   "id": "f26",
-   "custom_name": "Singleback H Back",
+   "id": "f02",
+   "custom_name": "Gun Wildcat",
    "donor": {
-    "index": 18,
-    "name": "Ace"
+    "index": 24,
+    "name": "Gun: Doubles Right"
    },
    "replace_index": null,
    "replace_name": "",
    "slot_positions": [
-    [0, -185],
+    [0, -482],
     [302, 0],
     [-302, 0],
     [0, 0],
     [155, 0],
     [-155, 0],
     [457, 0],
-    [-1554, 0],
     [1463, -137],
-    [-366, -110],
-    [0, -640]
+    [-823, -137],
+    [-1554, 0],
+    [183, -485]
    ],
-   "position_codes": [0, 5, 37, 6, 7, 39, 8, 9, 41, 40, 10],
-   "category_index": 2,
-   "situation": [2, 2, 4],
-   "category_mask": [2]
+   "position_codes": [0, 5, 37, 6, 7, 39, 8, 41, 73, 9, 10],
+   "category_index": 4,
+   "situation": [4, 4, 1],
+   "category_mask": [4]
   },
   {
    "id": "f27",

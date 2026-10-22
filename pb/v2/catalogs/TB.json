@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 4,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 3,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -96,7 +96,7 @@
   },
   {
    "formation": "Empty Trey",
-   "index": 3,
+   "index": 2,
    "family": "Empty",
    "personnel": "11",
    "group": "Kings",
@@ -118,7 +118,7 @@
   },
   {
    "formation": "Singleback Doubles",
-   "index": 4,
+   "index": 0,
    "family": "Singleback",
    "personnel": "11",
    "group": "Kings",
@@ -398,7 +398,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 1,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace 2",
