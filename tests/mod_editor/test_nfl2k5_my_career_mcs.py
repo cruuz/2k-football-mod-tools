@@ -89,10 +89,11 @@ class ScheduleStaticTests(unittest.TestCase):
 
     def test_schedule_costs_mycareer_no_byte(self):
         """MyCareer's compressed RW template carries the Apartment's three Career Home addresses; with the layout pad
-        they cost what ui1's layout cost (13 spare without Career Home, 7 with it, on this retail-length image)."""
+        they cost what ui1's layout cost (13 spare without Career Home, 7 with it, on this retail-length image).
+        b778 mc6 spends 4 of them on the identity fix (primary +2, inline_stage/inline_decode +2 after alignment)."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
-        self.assertEqual((alone, home.check_static(self.p17)['mycareer_spare_bytes']), (13, 7))
+        self.assertEqual((alone, home.check_static(self.p17)['mycareer_spare_bytes']), (9, 3))
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 
     def test_runtime_reads_the_same_season_byte(self):
