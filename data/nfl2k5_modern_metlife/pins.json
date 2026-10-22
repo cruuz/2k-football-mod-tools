@@ -40,14 +40,14 @@
    "name_id": 2794413904,
    "size": 1573376,
    "retail_sha256": "ae901ca8001d4be6a4e1c36a5a534bfb375d1a05854fda1bae133257942e2eee",
-   "applied_sha256": "ea58ef04b2e5242b10c435b1ce4c2734eb00dae707b5bd15cb236542d09cc5fd",
+   "applied_sha256": "729cefb724eda1892cdf6e711fa097d59f326694e881a0327eb9d89fb9c2cd2c",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125344,
      "retail": "18db207f966232f4f9e065495a765072f88d8aa3d2938c2cea59e7672373aa41",
-     "applied": "1d3872149a06936932b5a119d7aa18ac76a7c9c726295237e0a6e38bbf09c5b7",
+     "applied": "5f63d41ee6506c80b8456f397942cae53ca5bdff347def82cc1520302b8c003d",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -116,14 +116,14 @@
    "name_id": 2352983807,
    "size": 1553728,
    "retail_sha256": "fa61be23b5fb4c52e5e7b58388b5f8e3773cf9dee0c008b244a6a55466c13d1d",
-   "applied_sha256": "0628de654b98659271ccb5982810a624dbcad639f2be6d9b1d624a04d45a6cd9",
+   "applied_sha256": "588e7da8e827a69375088ccc973ebedadf9c26718cb99b0570ba2e4737a9442d",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114064,
      "retail": "4263ae80837dbf231e975cfdb36644e8fa3879885b514355d15f24d384b61ce9",
-     "applied": "66b70ea930eff94abe461329b9695bdd8c19e70a2cf01bbe54333a557a4056ae",
+     "applied": "eca16469ebf14e361e91e36e58cac19d674241d5abd8f84f7358a8658df0187d",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -192,14 +192,14 @@
    "name_id": 1677575617,
    "size": 1545504,
    "retail_sha256": "9c02c7712c84bead9cee486c41ac26dc275084f2f0f64a27e9ecd08e9d4aa1e5",
-   "applied_sha256": "18d99f7cbe6aed03bd9ad30c779c6343db0f026448882e8f26fc535010d7cedf",
+   "applied_sha256": "1e1b48803940cc987e470622d47a4d6865fd9ab167e7b58119a0b33b87fa2cd9",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97824,
      "retail": "225f96a49f9a04a1d8eb58bf50a79e35ec84511673d637274e7d04332df0d72f",
-     "applied": "433fadc6e6b74c4211b87889cb4cf0c5e5e1ecd9c8b045fe592606a56c35e101",
+     "applied": "72eb055bef9fafff905dd0d612cfda3c2dec3b76d5ca0a6205c7fc8d32dcf46c",
      "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
@@ -268,15 +268,15 @@
    "name_id": 1043081280,
    "size": 1547424,
    "retail_sha256": "820336c6248899ccac35a4e63bcc7893768cfe49db4102f6b2293479600fa4d1",
-   "applied_sha256": "970a6fba49b78a2231c89a9c59c0ca200e47fc106932d29d049121e4403b7b93",
+   "applied_sha256": "e67977206476d0274143faf4621008e787447773c35521e7ae4b842a027ea1ff",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125424,
      "retail": "656e4c136cba8c1bf47a3f2940ba4c54b302ed646d82beaa074bc93291640d07",
-     "applied": "845692bcf0adca55a97f37d31585bc40606738231ca7fa1c1d7690808187cb9f",
-     "encoder": "greedy",
+     "applied": "1812a43b862e779626a9e2b994b4c1f5102b61c35577071a86e46d6512a65c3c",
+     "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -344,16 +344,16 @@
    "name_id": 345823727,
    "size": 1543760,
    "retail_sha256": "0a2c3fcd025bd92079197d409b081e7bef055ae2cf2b29935e3e2b08af72f2a9",
-   "applied_sha256": "3624e05d52185bd03556605badb1b10f65fb6021be5bdba463372e797db33752",
+   "applied_sha256": "71a907580b6827ba7675ef1ad74f6ec55f7acf80fb1a8d3243df5c9ea4af386a",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114144,
      "retail": "5048f2b301ec6ec6d85a045de92709e65b62f6ed968b2291dcd2e2246d59a589",
-     "applied": "793624e7b561a834d7281193e5ed11673b9011bbf0218f604474b5a58baba32c",
-     "encoder": "optimal",
-     "padding_bytes": 0,
+     "applied": "53c8573ed606804f044733691dd592dc2abf4c4b6e8d25e6e48a7614525af6c7",
+     "encoder": "greedy",
+     "padding_bytes": 1,
      "patches": [
       "center_logo"
      ],
@@ -420,16 +420,16 @@
    "name_id": 4217287377,
    "size": 1538720,
    "retail_sha256": "6582f883170e15aa8b22f4516efcf9a66bb454e2d2a7b222b04ac97e7db672f2",
-   "applied_sha256": "44ae53bcbac6d3ff7c3382f0e83c4bd1914c9013bfb2afaa63cf3b1a3d06fb75",
+   "applied_sha256": "bf00c66bd1a81b2b739afb3eddf241c37f01f748e60028177e7818ae9393068f",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97872,
      "retail": "0ec48f8bc41313ae68a4dc2c21741b3af2fbb87c5a5fc6cfee84ecef95f3e9a1",
-     "applied": "a09f126c9f0cf8faeb46b39ec17b3ceae2d1e005503475926d4f2238b46a8cad",
-     "encoder": "greedy",
-     "padding_bytes": 0,
+     "applied": "a669878c2341af11800391ceb82bb4f3b95c41e0db4b72692e16d55b547e97d0",
+     "encoder": "optimal",
+     "padding_bytes": 1,
      "patches": [
       "center_logo"
      ],
@@ -496,14 +496,14 @@
    "name_id": 1287173937,
    "size": 1527440,
    "retail_sha256": "32aef45cf3fdc436e9fd2819271d9e2964ccd3850300ce6a793ce3f601f6a744",
-   "applied_sha256": "16c28ae85ba69d833c2bcd1f763f5bbf90367fd3022230892b365ae933a9980c",
+   "applied_sha256": "64bbc7be812abe64edb157a395a1552c556084087963b2660c736050b0206f90",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 125344,
      "retail": "b3336fc548b44256832c9dbc3dd8dd59f49230a599c807e39df9911b75595c30",
-     "applied": "73663b6ccac6ae50a809ae8ae92b2303b1a2bddef057ca7304498c927ee4f86b",
+     "applied": "ec40139bb65c21717d0bd57de5c04b6a9e7ccb448e55977d7d6fce021c9f4233",
      "encoder": "optimal",
      "padding_bytes": 0,
      "patches": [
@@ -572,15 +572,15 @@
    "name_id": 1711818398,
    "size": 1537552,
    "retail_sha256": "450569dad28918b34184c70e3b5e626986d867aae258654e782167ba055b0a71",
-   "applied_sha256": "4f5c2be93dd00ee5b5666cd4078877fd2f7b8c9371c0a1a83c64b2871f56c99e",
+   "applied_sha256": "6b8c30b5c5e07b8ef8395fc8aa2be20d1ea96ffe121438e185dd30015481ff2c",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 114064,
      "retail": "87d3f11de448c7e90dcee472c7469adee7f57347ebb85f8bc9e2a09676af33ff",
-     "applied": "c7567bb684e25104be693c825791e921a37978ebb714423d8baa790ba0b33dbb",
-     "encoder": "optimal",
+     "applied": "9519e1edf8abbef8908ab070d8a7b31e99b20a68d731d5e7eaf2d3feb163b639",
+     "encoder": "greedy",
      "padding_bytes": 0,
      "patches": [
       "center_logo"
@@ -648,16 +648,16 @@
    "name_id": 2311728544,
    "size": 1528000,
    "retail_sha256": "251128e124380551b45b2ac5d6169a338fb4173b17afb22f81b4eb86bbce9610",
-   "applied_sha256": "381d118b836233ded0aa6f399f757a9797d0f8f534cdd04a21ca97bd43718f5e",
+   "applied_sha256": "9465d78ad86af01793967b9920fd357e2b4da5ddde234e9f05b6394a71fcbff7",
    "sites": [
     {
      "kind": "field",
      "offset": 0,
      "size": 97808,
      "retail": "5eaec4ef675007834104404319ac5307e9377f4ef7dcac77db05c76068ba41f7",
-     "applied": "9f7e968d31c0227f356757a0fe8832365c856a65bcf56cb59acdee0b2ebcea9b",
+     "applied": "cec63c77c44b3dcdd84a9a961ed622fa05b488aeb13f404b2549e2e2de7c9a04",
      "encoder": "greedy",
-     "padding_bytes": 0,
+     "padding_bytes": 1,
      "patches": [
       "center_logo"
      ],

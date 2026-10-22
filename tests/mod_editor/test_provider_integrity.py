@@ -355,7 +355,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
                 "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
                 "data/nfl2k5_moment_kits_pins.json": "41e16f7cf9ca83af6b5f1ce4580018d0391b38e47390be73da77ab5958e9ca92",
-                "data/nfl2k5_unc_bowl_uniforms_pins.json": "9250124aa4301c63a63689679ffaffca85722824a7230af4642e8ae89b9dc9bb",
+                "data/nfl2k5_unc_bowl_uniforms_pins.json": "84dc131eebe5188fbfc18eee5187abc8ac5aba572b3796a35d2cd905a2769fe0",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
                 "data/nfl2k5_kit_fixes_2026.json": "96551c07e3f12661d1c6ddd9a5df2d2da9a3a39d1f8aabce85f03c90958741e9",
                 "data/nfl2k5_kit_fixes_2026_alts.json": "800ef88d28d7ec19db3290f5cb3005efbe9863570775152d4a3d3f804e737caa",

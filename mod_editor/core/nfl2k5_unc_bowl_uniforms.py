@@ -229,11 +229,74 @@ def _far_pants(decoded, chunk):
     return bytes(out)
 
 
+def classify(name, raw, document=None):
+    """What one owned kit package holds: ``retail``, ``before`` (the pinned v0.6 spans this module finishes),
+    ``after`` (already finished) or ``foreign`` (anything else: another tool's patch, the user's own edits to the
+    pinned textures, a mix of the two states, a later SOFTDRINK disc)."""
+    if document is None:
+        document = json.loads(PINS.read_text(encoding="utf-8"))
+    spec = document["resources"][name]
+    if len(raw) != spec["size"]:
+        return "foreign"
+    if sha(raw) == spec.get("retail_sha256"):
+        return "retail"
+    hashes = [sha(raw[p["offset"]:p["offset"] + p["length"]]) for p in spec["spans"]]
+    if all(h == p["before_sha256"] for h, p in zip(hashes, spec["spans"])):
+        return "before"
+    if all(h == p["after_sha256"] for h, p in zip(hashes, spec["spans"])):
+        return "after"
+    return "foreign"
+
+
+def _skip_note(name, state):
+    team = "Bengals" if name == "06H5.IFF" else "Steelers"
+    if state == "retail":
+        return (f"Unc Bowl: {name} is still the stock {team} kit, so the {team} wear it as it is. "
+                "The black/gold and white-Bengal repairs only finish the SOFTDRINK 2K28 kits.")
+    return (f"Unc Bowl: {name} was changed by something other than retail or SOFTDRINK 2K28 (another patch, "
+            f"or your own edits to that kit), so the {team} Unc Bowl repair was left out and the kit was not touched.")
+
+
+def source_states(path):
+    """{name: state} for the two owned kits on a disc image, read-only, plus whether its Unc Bowl row uses them."""
+    with bump._Image.open(Path(path), writable=False) as image:
+        index = bump._parsed_index(image)
+        entries = {bump.logical_name_for(e.name_id): e for e in index.entries}
+        out = {}
+        for name in OWNED:
+            if name not in entries:
+                out[name] = "foreign"
+                continue
+            out[name] = classify(name, image.read_segments(index.sub_extents(entries[name], 0, entries[name].size)))
+        situ_entry = index.entries[22]
+        situ = image.read_segments(index.sub_extents(situ_entry, 0, situ_entry.size)) \
+            if situ_entry.name_id == 0x3F407CF4 else b""
+        out["uses_slots"] = bool(situ) and unc_bowl_uses_slots(situ)
+        return out
+
+
+def preflight_source(path):
+    """Before any write: refuse a source disc whose two Unc Bowl kit packages are neither retail nor a SOFTDRINK
+    state, naming the file. (Before this, the same disc was refused at the last uniform step, hours in.)"""
+    states = source_states(path)
+    bad = [name for name in OWNED if states[name] == "foreign"]
+    if bad:
+        raise ValueError(
+            f"{' and '.join(bad)} on this disc is not the retail file, and not from SOFTDRINK 2K28 v0.6 either "
+            "(another patch tool, an add-on installer or a later disc changed it), so the Unc Bowl kits cannot be "
+            "built on it. Choose your clean, unmodified USA retail ISO as the source and build again. "
+            "Nothing was written.")
+    return states
+
+
 def apply_to_image(path):
     """Finish the two kits when the disc's Unc Bowl actually selects H5/A4.
 
     Retail and other moment selections are left to their own owners. Read all
-    inputs and compile both packages before writing either package.
+    inputs and compile both packages before writing either package. A kit that
+    is still retail (the project carries no SOFTDRINK kit) or that something else
+    changed is left exactly as it is and named in ``user_notes``; it no longer
+    stops the build.
     """
     with bump._Image.open(Path(path), writable=True) as image:
         index = bump._parsed_index(image)
@@ -245,9 +308,19 @@ def apply_to_image(path):
         entries = {bump.logical_name_for(e.name_id): e for e in index.entries}
         read = lambda name: image.read_segments(index.sub_extents(entries[name], 0, entries[name].size))
         originals = {name: read(name) for name in OWNED}
-        specs = {name: validate_owned(name, raw) for name, raw in originals.items()}
-        fixed = {"06H5.IFF": finish_cincinnati(originals["06H5.IFF"]),
-                 "22A4.IFF": finish_pittsburgh(originals["22A4.IFF"], read("22H0.IFF"))}
+        document = json.loads(PINS.read_text(encoding="utf-8"))
+        states = {name: classify(name, raw, document) for name, raw in originals.items()}
+        notes = [_skip_note(name, state) for name, state in states.items() if state in ("retail", "foreign")]
+        todo = [name for name in OWNED if states[name] in ("before", "after")]
+        if not todo:
+            return dict(state="kits_not_repaired", runtime_witnessed=False, changed=False,
+                        kit_states=states, user_notes=notes)
+        specs = {name: validate_owned(name, originals[name]) for name in todo}
+        fixed = {}
+        if "06H5.IFF" in todo:
+            fixed["06H5.IFF"] = finish_cincinnati(originals["06H5.IFF"])
+        if "22A4.IFF" in todo:
+            fixed["22A4.IFF"] = finish_pittsburgh(originals["22A4.IFF"], read("22H0.IFF"))
         for name, data in fixed.items():
             require(all(sha(data[p["offset"]:p["offset"] + p["length"]]) == p["after_sha256"]
                         for p in specs[name]["spans"]), "compiled Unc Bowl uniform differs from output pins")
@@ -255,9 +328,13 @@ def apply_to_image(path):
             if data != originals[name]:
                 image.write_segments(index.sub_extents(entries[name], 0, len(data)), data)
             require(read(name) == data, "Unc Bowl kit read-back differs")
-        return dict(state="applied", runtime_witnessed=False,
-                    resources={name: dict(before_sha256=sha(originals[name]), after_sha256=sha(data),
-                                          changed=data != originals[name]) for name, data in fixed.items()})
+        receipt = dict(state="applied" if len(todo) == len(OWNED) else "partly_applied", runtime_witnessed=False,
+                       kit_states=states,
+                       resources={name: dict(before_sha256=sha(originals[name]), after_sha256=sha(data),
+                                             changed=data != originals[name]) for name, data in fixed.items()})
+        if notes:
+            receipt["user_notes"] = notes
+        return receipt
 
 
 def unc_bowl_uses_slots(situ):
