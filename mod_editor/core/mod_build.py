@@ -500,6 +500,11 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-ai5: CPU ball carriers stay in bounds and CPU quarterbacks slide only past the sticks (or when a defender
+    # reaches them first). A late executable owner (nfl2k5_ball_carrier_ai) hooks the carrier's sideline filter at
+    # 0x2E29E6 and the slide decision at 0x2E340E; human carriers and late-half clock urgency keep retail. EXPERIMENTAL:
+    # on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    cpu_ball_carriers: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -703,6 +708,11 @@ for _preset in PRESETS.values():
     _preset["modern_force_out"] = False
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
+# b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks (gameplay AI, like run blocking).
+for _preset in PRESETS.values():
+    _preset["cpu_ball_carriers"] = False
+PRESETS["softdrink_advanced"]["cpu_ball_carriers"] = True
+PRESETS["softdrink_experimental"]["cpu_ball_carriers"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -947,6 +957,21 @@ def _run_blocking_preflight(source: Path, progress) -> None:
                          "build from your unmodified retail dump.")
 
 
+def _ball_carrier_preflight(source: Path, progress) -> None:
+    """b778-ai5: refuse a source whose ball-carrier AI code is foreign, before any write."""
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU ball carriers is not available in this installation.")
+    progress("Checking the ball-carrier AI for CPU ball carriers", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU ball carriers cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
 def _force_out_preflight(source: Path, progress) -> None:
     """b778-fo1: refuse a source whose sideline catch ruling is foreign, before any write (as qb3 does)."""
     module = _core_module("nfl2k5_force_out")
@@ -981,6 +1006,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1089,6 +1115,23 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
     receipt["result"]["modern_force_out"] = "applied"
 
 
+def _apply_ball_carriers(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks, the last late allocator owner."""
+    if not plan.cpu_ball_carriers:
+        return
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None:
+        raise RuntimeError("CPU ball carriers needs nfl2k5_ball_carrier_ai.")
+    progress("CPU AI: ball carriers stay in bounds, QBs slide past the sticks", 0, 0)
+    payload, carrier_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU ball carriers: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_ball_carriers", **{k: v for k, v in carrier_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_ball_carriers"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -1188,6 +1231,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1398,6 +1442,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    ball_carriers = _core_module("nfl2k5_ball_carrier_ai")  # b778-ai5
+    out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3018,6 +3064,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
+        raise ValueError("CPU ball carriers must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3736,6 +3784,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
+    if plan.cpu_ball_carriers:  # b778-ai5: before any write
+        _ball_carrier_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5242,6 +5292,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-ai5: CPU ball carriers, after the force-out owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_ball_carriers(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5282,6 +5334,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.cpu_ball_carriers and _core_module("nfl2k5_ball_carrier_ai").status(_xbe_bytes(target)) != "applied":  # b778-ai5
+        raise ValueError("CPU ball carriers did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
