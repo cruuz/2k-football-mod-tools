@@ -229,29 +229,38 @@ def scan(payload: bytes | bytearray, *, source: str = '') -> Scan:
                 tuple(c for c in colleges if c.issue))
 
 
-def repair(payload: bytes | bytearray, *, source: str = '', college_index: int | None = None,
-           expected_sha256: str | None = None) -> tuple[bytes, dict]:
-    """Repair all findings to one verified local college record, atomically in memory.
+def fallback_index(names) -> int:
+    """The default college for a player without one: the first case-insensitive
+    None entry, else the first blank entry, else entry zero."""
+    names = list(names)
+    _require(bool(names), 'roster has no college table')
+    return next((i for i, n in enumerate(names) if n.strip().casefold() == 'none'),
+                next((i for i, n in enumerate(names) if not n.strip()), 0))
 
-    Default: first case-insensitive None entry, else first blank entry, else entry
-    zero. An explicit ordinal is allowed; address proximity is not evidence of
-    the intended college. Broken table strings require separate research and are
-    refused, even if unreferenced. Nothing signs, writes, or weakens a validator.
+
+def resolve_index(names, name) -> int:
+    """b778 fr1: the table index for a source college name, never "no college".
+
+    A player record must always point at a college record. Retail has no null
+    college word; the Franchise Player Contracts and Free Agents info panel
+    (0x6E0D8..0x6E147, case 3) reads ``[[player+0]]`` with no null check and the
+    game stops on the first highlighted player without one. Order: the exact
+    name, then each ``;``-separated school of a multi-school source cell in order
+    (nflverse lists the last school first: "Illinois; Globe Institute"), then
+    ``fallback_index`` ("None" in the disc table).
     """
-    data = bytes(payload)
-    digest = hashlib.sha256(data).hexdigest()
-    _require(expected_sha256 is None or expected_sha256 == digest, 'stale college scan: payload changed')
-    report = scan(data, source=source)
-    _require(not report.table_issues, 'college table has unreadable names; player-only repair refused')
-    if college_index is None:
-        college_index = next((c.index for c in report.colleges if c.name.strip().casefold() == 'none'),
-                             next((c.index for c in report.colleges if not c.name.strip()), 0))
-    _require(type(college_index) is int and 0 <= college_index < len(report.colleges),
-             'college index is outside this roster table')
-    college = report.colleges[college_index]
+    names = list(names)
+    text = (name or '').strip() if isinstance(name, str) else ''
+    for candidate in (text, *(part.strip() for part in text.split(';'))):
+        if candidate and candidate in names:
+            return names.index(candidate)
+    return fallback_index(names)
+
+
+def _point_at(data: bytes, report: Scan, findings, college: College) -> tuple[bytes, list[dict]]:
     out = bytearray(data)
     repairs = []
-    for finding in report.findings:
+    for finding in findings:
         raw = college.offset - finding.offset + 1
         _require(-(1 << 31) <= raw < (1 << 31) and raw != 0, 'college relative pointer is not encodable')
         struct.pack_into('<i', out, finding.offset, raw)
@@ -269,8 +278,57 @@ def repair(payload: bytes | bytearray, *, source: str = '', college_index: int |
                 career.read(fixed)
         except (codec.SaveRostError, career.CareerSaveError) as exc:
             raise CollegeCheckError(f'candidate fails unchanged roster/identity validation: {exc}') from exc
+    return fixed, repairs
+
+
+def repair(payload: bytes | bytearray, *, source: str = '', college_index: int | None = None,
+           expected_sha256: str | None = None) -> tuple[bytes, dict]:
+    """Repair all findings to one verified local college record, atomically in memory.
+
+    Default: first case-insensitive None entry, else first blank entry, else entry
+    zero. An explicit ordinal is allowed; address proximity is not evidence of
+    the intended college. Broken table strings require separate research and are
+    refused, even if unreferenced. Nothing signs, writes, or weakens a validator.
+    """
+    data = bytes(payload)
+    digest = hashlib.sha256(data).hexdigest()
+    _require(expected_sha256 is None or expected_sha256 == digest, 'stale college scan: payload changed')
+    report = scan(data, source=source)
+    _require(not report.table_issues, 'college table has unreadable names; player-only repair refused')
+    if college_index is None:
+        college_index = fallback_index(c.name for c in report.colleges)
+    _require(type(college_index) is int and 0 <= college_index < len(report.colleges),
+             'college index is outside this roster table')
+    college = report.colleges[college_index]
+    fixed, repairs = _point_at(data, report, report.findings, college)
+    if repairs:
         _require(not scan(fixed).findings, 'college repair read-back differs')
     return fixed, {'source': source, 'before_sha256': digest,
                    'after_sha256': hashlib.sha256(fixed).hexdigest(), 'changed': len(repairs),
                    'college_index': college.index, 'college': college.name,
                    'repairs': repairs, 'saved': False}
+
+
+def heal_null_references(payload: bytes | bytearray, *, source: str = '') -> tuple[bytes, dict]:
+    """b778 fr1: point every player with a null college word at ``fallback_index``.
+
+    The main roster writer runs this on its final bytes, so no build can ship a
+    player that stops the Contracts or Free Agents screen. Only null words
+    change; other findings are reported, never guessed. Repetition is a no-op.
+    """
+    data = bytes(payload)
+    report = scan(data, source=source)
+    nulls = [f for f in report.findings if f.reason == 'null_reference']
+    others = [f for f in report.findings if f.reason != 'null_reference']
+    college = None
+    fixed, repairs = data, []
+    if nulls:
+        _require(not report.table_issues, 'college table has unreadable names; null college repair refused')
+        college = report.colleges[fallback_index(c.name for c in report.colleges)]
+        fixed, repairs = _point_at(data, report, nulls, college)
+        _require(not any(f.reason == 'null_reference' for f in scan(fixed).findings),
+                 'null college repair read-back differs')
+    return fixed, {'source': source, 'changed': len(repairs),
+                   'college': college.name if college else None,
+                   'players': [f"{r['pool']}:{r['index']} {r['player']}" for r in repairs],
+                   'other_findings': len(others)}

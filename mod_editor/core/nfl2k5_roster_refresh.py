@@ -54,6 +54,7 @@ def _repair_create_buffers(doc):
 
 def apply_body(body, plan):
     from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_college_check as college_check
     from . import nfl2k5_practice_squad as ps
 
     rr._require(plan.get("schema") == SCHEMA, "Unknown roster refresh schema")
@@ -137,8 +138,9 @@ def apply_body(body, plan):
             p.record.set("player_type", rr.FLAG_NFL_PLAYER)
             doc.set_name(p, "first", row["first"])
             doc.set_name(p, "last", row["last"])
-            if row.get("college") in doc.colleges:
-                doc.set_college(p, doc.colleges.index(row["college"]))
+            # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
+            # reads it without a null check); unknown or blank names take the table's "None".
+            doc.set_college(p, college_check.resolve_index(doc.colleges, row.get("college")))
             added += 1
         else:
             # A replay must preserve later ratings, appearance and history edits.
