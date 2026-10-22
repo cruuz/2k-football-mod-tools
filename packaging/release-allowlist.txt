@@ -2927,6 +2927,7 @@ tests/mod_editor/test_b765_s1_seams.py
 mod_editor/core/nfl2k5_free_agents.py
 mod_editor/core/nfl2k5_roster_appearance_transfer.py
 mod_editor/data/nfl2k5_free_agents_2026.v1.json
+mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
