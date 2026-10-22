@@ -1541,7 +1541,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 196,
@@ -1978,11 +1986,11 @@
   "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
   "offense_pack_sha256": "fc1c7ec51b889c6a4ca53b694fb16184c9367956716373e474447a988fb0f3cd",
   "source_fingerprint": "921f7d8ce72df5ca11cfe1c0b6aed9a80941e84725604fdf23cdb6de7d8363e5",
-  "replacement_sha256": "28966324d181116a677aa44069c00054b4cceedf954c024f131b9163d21b5e98",
-  "semantic_sha256": "74c053fdc45e333f622f1881aa896e29804334f3a8c59bb31e8f96627cde2231",
+  "replacement_sha256": "e7c599cb239fc50658ee9bfee65915373d648499d3eb365549f18abf31c50fc8",
+  "semantic_sha256": "2d7a96f75f9384876203c3a0beda57596b90a427c48a1fa652b247078d6bc3f0",
   "plays": 66,
   "formations": 4,
-  "nodes": 2674,
+  "nodes": 2676,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1991,6 +1999,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_gb_defense.2k5book",
-  "pack_sha256": "19e9801b9fdf25dc117bc9217e0c8370b9266767e6ceecf65b34871cd8f6c1e7"
+  "pack_sha256": "7d598c1f06db330fd81f38fcfc12fc234916b051823e73685dd4cf23c09f8e82"
  }
 }
