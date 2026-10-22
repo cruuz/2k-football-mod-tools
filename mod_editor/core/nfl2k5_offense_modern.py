@@ -65,7 +65,8 @@ _r("Release Out", lambda d: [(6, 6), (0, _ft(d)), (5, 24)], 4, "6:6 0:12 5:24 (1
 _r("Angle Drag", lambda d: [(3, 6), (4, 75)], 0, "3:6 4:75 (13)", "two steps at sixty degrees, then flat across the formation", "crosser")
 _r("Post Go", lambda d: [(0, _ft(d)), (2, 15), (0, 30)], 7, "0:21 2:15 0:30 (32)", "sell the post, then go", "double")
 _r("Corner Go", lambda d: [(0, _ft(d)), (6, 15), (0, 30)], 7, "0:21 6:15 0:30 (32)", "sell the corner, then go", "double")
-_r("Spot Out", lambda d: [(0, _ft(d)), (8, 3), (5, 15)], 5, "0:15 8:3 5:15 (29)", "five yards, sit, then slide out", "quick")
+# b778 pb5: the sit is kind 7 (settle outside); kind 8 settled 0.9 yd inside and the slide out crossed the stem (a loop)
+_r("Spot Out", lambda d: [(0, _ft(d)), (7, 3), (5, 15)], 5, "0:15 7:3 5:15 (29)", "five yards, sit, then slide out", "quick")
 _r("Fade Stop", lambda d: [(6, 15), (0, _ft(d)), (8, 15)], 4, "6:15 0:12 8:15 (12)", "outside release, up, then settle", "intermediate")
 _r("Fade Curl", lambda d: [(6, 6), (0, _ft(d)), (11, 6)], 6, "6:6 0:18 11:6 (6)", "outside release, then a curl back inside", "intermediate")
 _r("Zig", lambda d: [(1, _ft(d)), (5, 24)], 14, "1:42 5:24 (15)", "long inside stem, then back out", "intermediate")
@@ -1091,7 +1092,9 @@ def run_design(ctx: oc.FormationContext, scheme: str, *, weak: bool = False, car
     qb = ctx.qb.slot
     if rs.template == "Direct Snap":
         out[qb] = [start(4), (0x03, [0]), (0x01, [0, 0, 0, 0.6, 0.0, 0.0]),
-                   release(-9 * d, -9, a=2, b=11)]
+                   # b778 pb5: mode 1 (offset from the QB himself), as retail's "H Direct Snap" decoy does; mode 0
+                   # aims at a point measured from the ball, which the play art draws as a backward arrow
+                   (0x18, [1, -9 * d * FT, -9 * FT, 2, 11, 0, 0])]
     else:
         pre = []
         for op, vals in tpl["qb"]:

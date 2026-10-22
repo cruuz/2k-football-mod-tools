@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 22,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": null,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -395,7 +395,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -658,7 +658,7 @@
   },
   {
    "formation": "Strong Close",
-   "index": 22,
+   "index": 1,
    "family": "Strong",
    "personnel": "21",
    "group": "Pro",
@@ -672,7 +672,6 @@
     "X Spot Out",
     "X Comeback Seam",
     "PA Post Corner Shot",
-    "Pistol Yankee",
     "Z Comeback Seam",
     "PA Z Deep Post",
     "Post Corner Shot",
@@ -685,7 +684,8 @@
     "X Scissors Sluggo",
     "PA Z Corner Post",
     "X Dagger Spot Out",
-    "PA Z Comeback Seam"
+    "PA Z Comeback Seam",
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     2,
@@ -967,7 +967,7 @@
   },
   {
    "formation": "Weak I",
-   "index": null,
+   "index": 2,
    "family": "Weak",
    "personnel": "21",
    "group": "Pro",
@@ -1146,7 +1146,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Strong Close",
     "Pistol Strong",
     "Pistol Strong Y Off Close"
    ]
@@ -1390,6 +1389,7 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Strong Close",
     "Pistol Strong",
     "Pistol Strong Y Off Close"
    ]

@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": null,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 13,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -185,7 +185,10 @@
     "PA Z Deep Hooks",
     "RB Double Move",
     "PA Z Skinny Shot",
-    "Y Choice Out Post"
+    "Y Choice Out Post",
+    "RB Texas",
+    "PA Slot Cross Dig",
+    "RB Return Flood"
    ],
    "cpu_situation": [
     2,
@@ -388,7 +391,7 @@
   },
   {
    "formation": "Gun Empty Trey",
-   "index": 13,
+   "index": 2,
    "family": "Empty",
    "personnel": "11",
    "group": "Kings Long",
@@ -407,7 +410,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 1,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -576,7 +579,6 @@
     "Y Smash",
     "Y Cross Over",
     "PA X Double Move",
-    "Y Leak Boot",
     "Z Snag",
     "Outside Zone",
     "PA Y Post Wheel",
@@ -595,7 +597,8 @@
     "X Comeback Seam",
     "Z Deep Post Whip",
     "U Choice",
-    "RB Slip Screen Wk"
+    "RB Slip Screen Wk",
+    "PA X Dagger"
    ],
    "cpu_situation": [
     4,
@@ -623,7 +626,6 @@
     "X Out and Up Snag",
     "RB Toss",
     "PA X Double Move",
-    "Y Leak Boot",
     "X Comeback Seam",
     "RB Stretch Wk",
     "Z Hitch Seam",
@@ -633,9 +635,7 @@
     "X Dagger Whip",
     "Lead Stretch",
     "Outside Zone Wk",
-    "Z Snag",
-    "PA X Dagger",
-    "Inside Zone"
+    "Z Snag"
    ],
    "cpu_situation": [
     0,
@@ -906,7 +906,7 @@
   },
   {
    "formation": "Singleback Ace Bunch",
-   "index": null,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -1223,8 +1223,6 @@
    "lane": null,
    "formations": [
     "Singleback Ace",
-    "Pistol Deuce Close",
-    "Pistol Y Trips",
     "Singleback Ace Close",
     "Singleback Ace Bunch",
     "Ace Wing"
@@ -3401,7 +3399,6 @@
    "lane": 2,
    "formations": [
     "Singleback Ace",
-    "Pistol Y Trips",
     "Singleback Ace Close",
     "Singleback Ace Bunch",
     "Ace Wing"
@@ -3431,7 +3428,7 @@
    "lane": null,
    "formations": [
     "Pistol Ace",
-    "Pistol Y Trips",
+    "Pistol Deuce Close",
     "Singleback Ace Close",
     "Singleback Ace Bunch",
     "Ace Wing"
@@ -3598,6 +3595,7 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
+    "Gun Doubles",
     "Pistol Bunch",
     "Singleback Y Off Trey"
    ]
@@ -3955,6 +3953,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Doubles",
     "Pistol Doubles",
     "Pistol Y Off Trips"
    ]
@@ -4060,6 +4059,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
+    "Gun Doubles",
     "Singleback Y Off Trey"
    ]
   },

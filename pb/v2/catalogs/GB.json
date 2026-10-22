@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 20,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 4,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 14,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -118,7 +118,7 @@
   },
   {
    "formation": "Singleback Doubles",
-   "index": 4,
+   "index": 1,
    "family": "Singleback",
    "personnel": "11",
    "group": "Kings",
@@ -186,9 +186,12 @@
     "Slot Cross Dig",
     "X China",
     "PA X Post Go",
-    "PA Boot X Smash",
     "Z Steep In Seam",
-    "Boot X Smash"
+    "PA Y Switch Stick",
+    "PA Z Go Shot",
+    "GB Stick Nod",
+    "X Steep In Seam",
+    "Y Post Wheel Dig"
    ],
    "cpu_situation": [
     4,
@@ -257,9 +260,9 @@
     "Slot Y Trail",
     "X Whip Out",
     "PA Y Y Trail",
-    "Boot X Smash",
     "Z Out Seam",
-    "X China"
+    "X China",
+    "Sprint RB Sail"
    ],
    "cpu_situation": [
     4,
@@ -410,7 +413,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 2,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -540,7 +543,6 @@
     "GB Quick Outs",
     "RB Dive",
     "RB Toss",
-    "Boot X Smash",
     "Slot Cross Dig",
     "Lead Stretch Wk",
     "Y Double Slants",
@@ -556,9 +558,10 @@
     "PA Slot Drive",
     "Y Sail",
     "PA Slot Y Trail",
-    "PA Boot X Smash",
     "X China",
-    "Z Fade Curl"
+    "Z Fade Curl",
+    "PA Y Switch Stick",
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     1,
@@ -593,7 +596,7 @@
   },
   {
    "formation": "Singleback H Back",
-   "index": 20,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -691,7 +694,7 @@
     "GB Post Wheel",
     "PA Y Curls",
     "Slot Cross Dig",
-    "PA Boot X Smash"
+    "RB Corner Strike"
    ],
    "cpu_situation": [
     0,
@@ -735,9 +738,9 @@
     "Sprint X Sail",
     "PA Z Dagger Whip",
     "PA Y Curls",
-    "Boot X Smash",
     "Comeback Seam",
-    "PA Boot X Smash"
+    "PA Y Switch Stick",
+    "RB Corner Strike"
    ],
    "cpu_situation": [
     4,
@@ -780,10 +783,10 @@
     "PA Z Dagger",
     "Z Fade Curl",
     "Slot Choice",
-    "Boot X Smash",
     "PA X Post Go",
     "Y Sail",
-    "Slot Y Trail"
+    "Slot Y Trail",
+    "Sprint RB Sail"
    ],
    "cpu_situation": [
     0,
@@ -807,11 +810,8 @@
     "RB Stretch Wk",
     "Y China Return",
     "Slip Screen Wk",
-    "Boot Over",
     "GB PA Shot",
-    "RB Out Seam",
-    "Y Screen",
-    "X Post Go"
+    "RB Out Seam"
    ],
    "cpu_situation": [
     4,
@@ -851,13 +851,13 @@
     "Z Out Seam",
     "Y Choice Out",
     "PA Y Y Trail",
-    "PA Boot X Smash",
     "X Steep In Seam",
     "X Whip Out",
     "PA Z Curl Flat",
     "Slot Y Trail",
     "PA X Post Go",
-    "Z Dagger"
+    "Z Dagger",
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -885,7 +885,6 @@
     "Y Double Slants",
     "Y Post Wheel Dig",
     "Crack Toss Wk",
-    "PA Boot X Smash",
     "GB Bench",
     "RB Dive",
     "Slot Choice",
@@ -897,13 +896,14 @@
     "PA Slot Y Trail",
     "X China",
     "PA Slot Drive",
-    "Boot X Smash",
     "PA X Deep Post",
     "Slot Sail Return",
     "PA Y Curls",
     "Z Steep In Seam",
     "Z Out Seam",
-    "X Steep In Seam"
+    "X Steep In Seam",
+    "Comeback Seam",
+    "PA Y Switch Stick"
    ],
    "cpu_situation": [
     0,
@@ -1200,6 +1200,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
+    "Gun Doubles",
     "Gun Bunch TE",
     "Pistol Bunch",
     "Gun Trips",
@@ -1229,8 +1230,7 @@
    "lane": null,
    "formations": [
     "Singleback Ace",
-    "Singleback H Back",
-    "Gun Ace Wing"
+    "Singleback H Back"
    ]
   },
   {
@@ -1465,7 +1465,10 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Trips"
+    "Gun Doubles",
+    "Pistol Wing",
+    "Gun Trips",
+    "Gun Trey"
    ]
   },
   {
@@ -1793,13 +1796,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Wing",
     "Singleback Bunch",
-    "Gun Tight Slots",
-    "Gun Trips",
-    "Pistol Trey",
     "Singleback Tight Y Off"
    ]
   },
@@ -1963,13 +1960,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Doubles",
-    "Pistol Wing",
     "Singleback Bunch",
-    "Gun Tight Y Off",
-    "Gun Tight Slots",
-    "Gun Trey",
-    "Pistol Trey",
     "Singleback Tight Y Off"
    ]
   },
@@ -2702,6 +2693,7 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
+    "Gun Doubles",
     "Singleback Bunch",
     "Gun Tight Slots",
     "Gun Trey",
@@ -2754,6 +2746,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Doubles",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Singleback Bunch",
@@ -2957,7 +2950,8 @@
     "Pistol Bunch",
     "Gun Tight Y Off",
     "Gun Tight Slots",
-    "Gun Trips"
+    "Gun Trips",
+    "Pistol Trey"
    ]
   },
   {
@@ -3157,7 +3151,9 @@
    "formations": [
     "Singleback Doubles",
     "Gun Trips TE",
-    "Singleback Bunch"
+    "Singleback Bunch",
+    "Gun Tight Y Off",
+    "Gun Tight Slots"
    ]
   },
   {
@@ -3272,7 +3268,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Ace Wing",
     "Pistol Ace"
    ]
   },
@@ -3545,7 +3540,9 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Doubles"
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Trips"
    ]
   },
   {
@@ -3593,8 +3590,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
-    "Gun Ace Wing"
+    "Singleback Ace"
    ]
   },
   {
@@ -4847,7 +4843,11 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat"
+    "Gun Wildcat",
+    "Gun Doubles",
+    "Pistol Wing",
+    "Gun Tight Slots",
+    "Pistol Trey"
    ]
   },
   {

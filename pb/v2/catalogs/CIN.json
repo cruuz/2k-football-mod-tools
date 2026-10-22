@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": null,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -37,7 +37,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 7,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -59,7 +59,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 16,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -217,7 +217,7 @@
   },
   {
    "formation": "Gun Bunch X Nasty",
-   "index": 7,
+   "index": 1,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings",
@@ -472,7 +472,7 @@
   },
   {
    "formation": "Gun Doubles Clamp Stack",
-   "index": 16,
+   "index": 2,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings",
@@ -996,7 +996,7 @@
   },
   {
    "formation": "Singleback Ace Bunch",
-   "index": null,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -1467,7 +1467,6 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Doubles",
     "Pistol Wing",
     "Pistol Trey"
@@ -2473,7 +2472,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Doubles",
     "Pistol Wing",
     "Gun Tight Open",
@@ -3137,7 +3135,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Bunch X Nasty",
     "Gun Trey Open",
     "Gun Doubles Tight"

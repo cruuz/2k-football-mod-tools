@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -37,7 +37,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 4,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -56,7 +56,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 7,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -109,7 +109,7 @@
   },
   {
    "formation": "Singleback Doubles",
-   "index": 4,
+   "index": 1,
    "family": "Singleback",
    "personnel": "11",
    "group": "Kings",
@@ -153,7 +153,6 @@
     "PHI Quick Outs",
     "Post Corner Shot",
     "Z Bench Levels",
-    "PA Boot Y Smash",
     "RB Stretch",
     "Slot Drive",
     "Outside Zone Wk",
@@ -176,7 +175,8 @@
     "PA Comeback Seam",
     "PA Slot Stick Nod",
     "RB Curl Flat",
-    "PA X Deep Post"
+    "PA X Deep Post",
+    "PA Z Out Seam"
    ],
    "cpu_situation": [
     4,
@@ -211,7 +211,7 @@
   },
   {
    "formation": "Gun Bunch X Nasty",
-   "index": 7,
+   "index": 2,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings",
@@ -241,13 +241,13 @@
     "Slot Zig Flat Out",
     "Slot Whip Return",
     "PA X Deep Post",
-    "PA Boot Y Smash",
     "RB Bench",
     "PA Slot Flood",
     "PA Slot Drive",
     "PA X Bench",
     "RB Texas",
-    "PA Deep Over"
+    "PA Deep Over",
+    "PA Seam Shot"
    ],
    "cpu_situation": [
     4,
@@ -401,7 +401,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -515,7 +515,7 @@
     "PA Deep Over",
     "PA Slot Drive",
     "Corner Strike",
-    "PA Boot Y Smash"
+    "X Comeback Seam"
    ],
    "cpu_situation": [
     0,
@@ -706,10 +706,10 @@
     "PA Deep Over",
     "X Comeback Seam",
     "Slot Whip Return",
-    "PA Boot Y Smash",
     "PA Slot Flood",
     "Slot Drive",
-    "PA Slot Drive"
+    "PA Slot Drive",
+    "Z Go Shot Out"
    ],
    "cpu_situation": [
     2,
@@ -801,11 +801,11 @@
     "PA Slot Stick Nod",
     "PA X Deep Post",
     "PHI Smash",
-    "PA Boot Y Smash",
     "PA Slot Flood",
     "PA Comeback Seam",
     "RB Bench",
-    "RB Sail"
+    "RB Sail",
+    "PA Z Out Seam"
    ],
    "cpu_situation": [
     4,
@@ -931,7 +931,6 @@
     "Y Smash Levels",
     "Inside Zone Wk",
     "Y Whip Out",
-    "PA Boot Y Smash",
     "RB Sail",
     "Direct Snap Power",
     "Slot Stick Return",
@@ -945,7 +944,8 @@
     "PA Deep Over",
     "PA X Deep Post",
     "RB Curl Flat",
-    "Slot Whip Return"
+    "Slot Whip Return",
+    "PA Seam Shot"
    ],
    "cpu_situation": [
     4,
@@ -1375,7 +1375,9 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Y Off Trips"
+    "Gun Bunch X Nasty",
+    "Gun Y Off Trips",
+    "Gun Tight Slots"
    ]
   },
   {
@@ -1451,7 +1453,8 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Y Off Trio Close"
+    "Gun Y Off Trio Close",
+    "Gun Spread Y-Slot"
    ]
   },
   {
@@ -1766,14 +1769,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
     "Pistol Doubles",
-    "Gun Y Off Trio Close",
-    "Pistol Bunch",
-    "Gun Spread Y-Slot",
-    "Gun Y Off Trips",
-    "Gun Tight Slots"
+    "Pistol Bunch"
    ]
   },
   {
@@ -3360,6 +3357,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Y Off Trio Close",
     "Gun Spread Y-Slot"
    ]
   },
@@ -4646,7 +4644,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat"
+    "Gun Wildcat",
+    "Gun Doubles",
+    "Gun Y Off Trips"
    ]
   },
   {

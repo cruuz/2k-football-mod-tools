@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": 14,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 26,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 6,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -195,7 +195,7 @@
   },
   {
    "formation": "Gun Trips TE",
-   "index": 6,
+   "index": 2,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings Long",
@@ -233,7 +233,6 @@
     "Slot Drive Out",
     "Z Out and Up",
     "CAR Quick Outs",
-    "Boot Corner",
     "X Bench Dig",
     "Slot Choice Out",
     "RB Slip Screen Wk",
@@ -256,7 +255,8 @@
     "Z Curl Combo",
     "Z Bench Steep In",
     "Slot Deep Flood",
-    "Slot Bubble Screen"
+    "Slot Bubble Screen",
+    "Z Hitch Seam"
    ],
    "cpu_situation": [
     4,
@@ -413,7 +413,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -480,7 +480,6 @@
     "Y Switch Stick",
     "Inside Zone Split",
     "Z Hitch Seam",
-    "Boot Corner",
     "CAR Comebacks",
     "Slot Y Trail",
     "Direct Snap Power",
@@ -505,7 +504,8 @@
     "Y Stick",
     "Z Comeback Seam",
     "Z Fade Curl",
-    "RB Stick Out and Up"
+    "RB Stick Out and Up",
+    "PA Slot Switch"
    ],
    "cpu_situation": [
     2,
@@ -527,7 +527,6 @@
     "Inside Zone Split",
     "X Choice Return",
     "CAR Comebacks",
-    "Boot Corner",
     "Slot Verticals",
     "Direct Snap Power",
     "X Curl Combo",
@@ -551,7 +550,8 @@
     "Z Comeback Seam",
     "Z Fade Curl",
     "Z Bench Steep In",
-    "RB Whip"
+    "RB Whip",
+    "Y Switch Stick"
    ],
    "cpu_situation": [
     0,
@@ -619,7 +619,6 @@
     "Y Whip Out",
     "X Spot Out Post Dig",
     "Slot Verticals",
-    "Boot Corner",
     "X Curl Combo",
     "Slot Drive Out",
     "PA Slot Stick Nod",
@@ -634,7 +633,8 @@
     "X Bench Dig",
     "Z Curl Combo",
     "CAR Hank",
-    "RB Stick Out and Up"
+    "RB Stick Out and Up",
+    "Y Switch Stick"
    ],
    "cpu_situation": [
     4,
@@ -759,7 +759,6 @@
     "CAR Mesh Wheel",
     "X Hook Corner",
     "Slot Choice Out",
-    "Boot Corner",
     "CAR Quick Outs",
     "Slot Drive Out",
     "CAR Curl Flat",
@@ -782,7 +781,8 @@
     "Z Bench Steep In",
     "Z Curl Combo",
     "RB Whip",
-    "Slot Bubble Screen"
+    "Slot Bubble Screen",
+    "PA Slot Switch"
    ],
    "cpu_situation": [
     4,
@@ -842,7 +842,7 @@
   },
   {
    "formation": "Singleback H Back",
-   "index": 26,
+   "index": 1,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -1073,11 +1073,6 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Doubles Clamp Stack",
-    "Gun Y Off Trio Close",
-    "Pistol Doubles Y Off",
-    "Gun Doubles Tight",
     "Singleback Trey"
    ]
   },
@@ -2339,6 +2334,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Gun Y Off Trio Close",
     "Gun Y Off Trips",
@@ -3368,7 +3364,9 @@
    "lane": null,
    "formations": [
     "Pistol Doubles",
-    "Pistol Wing"
+    "Gun Doubles Clamp Stack",
+    "Pistol Wing",
+    "Gun Doubles Tight"
    ]
   },
   {
@@ -3582,7 +3580,9 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Doubles Clamp Stack"
+    "Gun Doubles Clamp Stack",
+    "Gun Y Off Trio Close",
+    "Pistol Doubles Y Off"
    ]
   },
   {

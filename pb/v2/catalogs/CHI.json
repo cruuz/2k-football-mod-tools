@@ -18,7 +18,7 @@
  "formations": [
   {
    "formation": "Goal Line Sneak",
-   "index": 0,
+   "index": null,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -40,7 +40,7 @@
   },
   {
    "formation": "Goal Line",
-   "index": 1,
+   "index": 16,
    "family": "Goal Line",
    "personnel": "23",
    "group": "Jacks",
@@ -62,7 +62,7 @@
   },
   {
    "formation": "Gun Wildcat",
-   "index": 2,
+   "index": 14,
    "family": "Wildcat",
    "personnel": "11",
    "group": "Kings",
@@ -236,7 +236,6 @@
     "CHI Bench",
     "Inside Zone",
     "PA X Deep Hooks",
-    "CHI PA Boot",
     "Z Dagger Whip",
     "PA Slot Cross Dig",
     "PA Double Move",
@@ -250,7 +249,8 @@
     "Slot Flood Return",
     "Slot Smash Stick",
     "RB Flood",
-    "RB Curl Combo"
+    "RB Curl Combo",
+    "Z Steep In Seam"
    ],
    "cpu_situation": [
     4,
@@ -401,7 +401,7 @@
   },
   {
    "formation": "Singleback Ace",
-   "index": 14,
+   "index": 2,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -457,7 +457,7 @@
   },
   {
    "formation": "Singleback Deuce Close",
-   "index": 16,
+   "index": 1,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -575,7 +575,6 @@
     "Slot Bubble Screen",
     "Z Hitch Seam",
     "PA Slot Y Trail",
-    "CHI PA Boot",
     "Slot Flood Return",
     "PA Slot Cross Dig",
     "Y Stick",
@@ -593,7 +592,8 @@
     "Y Hank",
     "RB Curl Combo",
     "RB Flood",
-    "Slot Stick Nod"
+    "Slot Stick Nod",
+    "RB Switch"
    ],
    "cpu_situation": [
     0,
@@ -633,13 +633,13 @@
     "Slot Drive Return",
     "Slot Hitch Seam",
     "PA X Deep Hooks",
-    "CHI PA Boot",
     "Y Hank",
     "PA Double Move",
     "PA X Post Go",
     "PA X Fade Curl",
     "Y Mills",
-    "X Smash Snag"
+    "X Smash Snag",
+    "RB Flood"
    ],
    "cpu_situation": [
     3,
@@ -675,7 +675,6 @@
     "PA X Post Go",
     "CHI Bench",
     "Y Stick",
-    "CHI PA Boot",
     "Y Mills",
     "PA Slot Y Trail",
     "X Slot Fade Snag",
@@ -685,7 +684,8 @@
     "PA Double Move",
     "Slot Drive Return",
     "Z Fade Curl",
-    "Slot Comeback Seam"
+    "Slot Comeback Seam",
+    "RB Switch"
    ],
    "cpu_situation": [
     0,
@@ -706,7 +706,6 @@
     "Z Dagger Whip",
     "Pin Pull Sweep",
     "Slot Smash Stick",
-    "CHI PA Boot",
     "Power G Wk",
     "QB Power",
     "Slot Stick Nod",
@@ -731,7 +730,8 @@
     "PA X Fade Curl",
     "PA Double Move",
     "Z Curl Flat",
-    "Z Fade Curl"
+    "Z Fade Curl",
+    "Slot Bubble Screen"
    ],
    "cpu_situation": [
     4,
@@ -802,10 +802,10 @@
     "PA X Deep Hooks",
     "Z Dagger Whip",
     "PA Slot Y Trail",
-    "CHI PA Boot",
     "PA Double Move",
     "Slot Zig Flat Out",
-    "PA X Post Go"
+    "PA X Post Go",
+    "Slot Bubble Screen"
    ],
    "cpu_situation": [
     0,
@@ -874,7 +874,7 @@
   },
   {
    "formation": "Singleback Ace Close",
-   "index": null,
+   "index": 0,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
@@ -973,7 +973,6 @@
     "X Slot Fade Snag",
     "PA X Deep Hooks",
     "Slot Drive Return",
-    "CHI PA Boot",
     "X Double Slants",
     "PA Slot Cross Dig",
     "Z Curl Flat",
@@ -981,7 +980,8 @@
     "PA X Post Go",
     "PA X Fade Curl",
     "Slot Zig Flat Out",
-    "Slot Flood Return"
+    "Slot Flood Return",
+    "RB Switch"
    ],
    "cpu_situation": [
     4,
@@ -1154,14 +1154,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles Y Off",
-    "Gun Trips",
-    "Gun Trey",
-    "Gun Tight Slots",
-    "Gun Doubles Clamp Stack",
-    "Gun Normal Y Off Close"
+    "Singleback Doubles"
    ]
   },
   {
@@ -2369,7 +2362,8 @@
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
-    "Pistol Doubles Y Off"
+    "Pistol Doubles Y Off",
+    "Gun Trips"
    ]
   },
   {
@@ -2514,6 +2508,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Pistol Doubles Y Off",
     "Gun Tight Slots",
     "Gun Doubles Clamp Stack"
@@ -3278,7 +3273,8 @@
    "formations": [
     "Gun Wildcat",
     "Gun Bunch X Nasty",
-    "Pistol Doubles Y Off"
+    "Pistol Doubles Y Off",
+    "Gun Tight Slots"
    ]
   },
   {
@@ -3452,7 +3448,8 @@
    "formations": [
     "Empty Trey",
     "Gun Trips",
-    "Gun Trey"
+    "Gun Trey",
+    "Gun Doubles Clamp Stack"
    ]
   },
   {
@@ -3576,7 +3573,10 @@
    "lane": null,
    "formations": [
     "Pistol Doubles",
-    "Gun Trips"
+    "Pistol Doubles Y Off",
+    "Gun Trips",
+    "Gun Trey",
+    "Gun Normal Y Off Close"
    ]
   },
   {
