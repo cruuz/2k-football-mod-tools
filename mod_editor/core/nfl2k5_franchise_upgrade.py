@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import hashlib
+import json
+from pathlib import Path
 import re
 import struct
 import zlib
@@ -669,3 +671,124 @@ def sync_hair_styles(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                         1 for p in target.players if disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK),
                     "kept_user_styles": kept, "ambiguous_identities_skipped": sorted(set(ambiguous)),
                     "changes": changes, **scope}
+
+
+# b778-fa3: the 2026-10-22 free-agent depth (Kaepernick and the other verified unsigned, unretired veterans the dated
+# refresh adds to the disc's free agents). A franchise keeps its own roster, so an existing franchise only gains them
+# here. Nothing grows: each one fills a vacant create-player record of the save, inside the save's own arena.
+FREE_AGENT_DEPTH = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_free_agent_depth_2026.v1.json"
+SAVE_KEEP_VACANCIES = 4          # vacant records left for Create Player / MyCareer in the franchise
+DRAFT_WINDOW_END = 2324          # the native class generator's records end at 2323; never fill one
+BLANK_NAME = "****************"
+
+
+def free_agent_cohort(path=FREE_AGENT_DEPTH) -> list[dict]:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    require(data.get("schema") == "nfl2k5.free_agent_depth.v1", "unknown free-agent depth data")
+    return [{"name": p["name"], "identity": (p["first"], p["last"], p["birth_date"])} for p in data["players"]]
+
+
+def _save_vacancies(document, payload) -> list:
+    """Vacant create records the native importer/creator would take (flags & 5 == 1, unowned, unlisted), outside the
+    draft generator's window, with their own two blank name buffers."""
+    listed = set(document.free_agents)
+    rows = []
+    for player in document.by_pool("primary"):
+        if (payload[player.offset + 8] & 5 != 1 or player.group != "pool" or player.teams
+                or player.offset in listed or (player.pool, player.index) in document.reserve_owner
+                or player.index < DRAFT_WINDOW_END or not player.first == player.last == BLANK_NAME):
+            continue
+        targets = [document._pointer_target(player.offset, key) for key in ("first_name_pointer", "last_name_pointer")]
+        if all(document.name_refs.get(t) == 1 for t in targets) and targets[0] != targets[1]:
+            rows.append(player)
+    return rows
+
+
+def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_VACANCIES,
+                     cohort: list | None = None, strict: bool = False) -> tuple[bytes, dict]:
+    """Add the disc's free-agent depth players that this franchise lacks to its free agents.
+
+    Each player's record is the disc's own record for him (ratings, physicals, appearance, commentary), his
+    names and college placed through the save's pools, no history, an unsigned contract, and years pro advanced by
+    the franchise's completed seasons. Only players on the disc's free-agent list whose (first, last, birth date) is
+    nowhere in the save are added, in the data's priority order, and only while ``keep`` vacant records remain.
+    ``strict`` (the free-agents command) refuses when none can be added for lack of room.
+    """
+    from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_roster_records as rr
+    save, roster = franchise(payload)
+    require(type(keep) is int and keep >= 0, "keep must be a non-negative record count")
+    cohort = free_agent_cohort() if cohort is None else cohort
+    document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
+    disc = rr.RosterDocument(disc_body, scheme="one_pool", reference_year=BASE_YEAR)
+    require(document.free_agent_list is not None, "the franchise has no free-agent list")
+
+    def key(player):
+        return player.first, player.last, str(player.record.birth_date)
+    in_save = {key(p) for p in document.players if p.first != BLANK_NAME}
+    disc_free = defaultdict(list)
+    for offset in disc.free_agents:
+        disc_free[key(disc.by_offset[offset])].append(disc.by_offset[offset])
+    wanted, already, absent = [], [], []
+    for row in cohort:
+        identity = tuple(row["identity"])
+        if identity in in_save:
+            already.append(row["name"])
+        elif len(disc_free.get(identity, ())) != 1:
+            absent.append(row["name"])
+        else:
+            wanted.append((row["name"], disc_free[identity][0]))
+    vacant = _save_vacancies(document, payload)
+    room = max(0, len(vacant) - keep)
+    room = min(room, document.free_agent_capacity - len(document.free_agents))
+    chosen, left = wanted[:room], [name for name, _ in wanted[room:]]
+    require(not (strict and wanted and not chosen),
+            f"this franchise has {len(vacant)} vacant player records and keeps {keep} for Create Player; "
+            f"no room for the {len(wanted)} new free agents")
+    year = save.header.year_field
+    pointer_bytes = {rr.FIELD_BY_NAME[name].offset for name in rr.POINTER_FIELDS}
+    changes, spans = [], []
+    for (name, source), target in zip(chosen, sorted(vacant, key=lambda p: -p.index)):
+        raw = bytearray(disc_body[source.offset:source.offset + rr.PLAYER_SIZE])
+        for at in pointer_bytes:
+            raw[at:at + 4] = bytes(4)
+        record = rr.PlayerRecord.decode(bytes(raw), scheme="one_pool", reference_year=BASE_YEAR)
+        require(all(record.values[f] == 0 for f in ("contract_value", "contract_length", "contract_remaining")),
+                f"{name}: the disc record is not an unsigned free agent")
+        for field in ("first_name_pointer", "last_name_pointer"):
+            record.values[field] = target.record.values[field]
+        before_years = record.values["years_pro"]
+        record.set("years_pro", min(31, before_years + year))
+        target.record = record
+        document.set_name(target, "first", source.first)
+        document.set_name(target, "last", source.last)
+        document.set_college(target, college_check.resolve_index(document.colleges, source.college))
+        document.free_agents.append(target.offset)
+        spans.append((target.offset, target.offset + rr.PLAYER_SIZE))
+        changes.append({"player": name, "pool": target.pool, "index": target.index, "field": "new_free_agent",
+                        "disc_index": source.index, "years_pro": [before_years, record.values["years_pro"]],
+                        "college": document.colleges[target.college_index] if target.college_index is not None else ""})
+    document._reindex_membership()
+    result = document.to_body(normalise_commentary=False) if chosen else bytes(payload)
+    require(len(result) == len(payload), "save size changed")
+    # Scope: the filled records, the player-name pool, the free-agent pointers and their count; nothing else.
+    lo, hi = document.names.start, document.names.end
+    fa_start = document.free_agent_list
+    fa_end = fa_start + 4 * document.free_agent_capacity
+    count_at = document.obj_base + rr.FREE_AGENT_COUNT_FIELD
+    for offset, (a, b) in enumerate(zip(payload, result)):
+        if a != b:
+            require(lo <= offset < hi or fa_start <= offset < fa_end or count_at <= offset < count_at + 4
+                    or any(s <= offset < e for s, e in spans), f"free-agent write escaped its scope at {offset:#x}")
+    check = rr.RosterDocument(result, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
+    listed = {key(check.by_offset[o]) for o in check.free_agents}
+    require(all(key(source) in listed for _name, source in chosen), "a new free agent is missing after read-back")
+    sr.decode(result, base_year=BASE_YEAR)
+    after_vacant = len(_save_vacancies(check, result)) if chosen else len(vacant)
+    return result, {"operation": "free_agents", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "franchise_year_field": year,
+                    "vacant_records_before": len(vacant), "vacant_records_after": after_vacant, "kept_for_create": keep,
+                    "free_agents_before": len(document.original_free_agents), "free_agents_after": len(check.free_agents),
+                    "already_in_franchise": already, "not_on_disc": absent, "no_room": left,
+                    "changes": changes, "outside_declared_fields_identical": True,
+                    "changed_bytes": sum(a != b for a, b in zip(payload, result))}

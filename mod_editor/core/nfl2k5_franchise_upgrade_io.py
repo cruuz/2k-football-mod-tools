@@ -16,8 +16,9 @@ from . import nfl2k5_franchise_upgrade as upgrade
 from . import nfl2k5_roster_records as rr
 from . import nfl2k5_save_rost as sr
 
-#: the migrations a franchise can take (b778-hr3: hair-styles copies the disc's hair styles into an older franchise)
-COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles")
+#: the migrations a franchise can take (b778-hr3: hair-styles copies the disc's hair styles into an older franchise;
+#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks)
+COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "free-agents")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -126,7 +127,7 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                  cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
     """Read, validate and preview every change, without creating any files."""
     upgrade.require(command in COMMANDS, "unknown upgrade command")
-    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles"),
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "free-agents"),
                     "TEAM evidence requires upgrade or team-history")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -149,6 +150,10 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
     if command in ("upgrade", "hair-styles"):
         # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone
         payload, step = upgrade.sync_hair_styles(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "free-agents"):
+        # b778-fa3: the free-agent depth fills vacant records of the save itself; free-agents alone refuses without room
+        payload, step = upgrade.sync_free_agents(payload, body, strict=command == "free-agents")
         steps.append(step)
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,
