@@ -178,6 +178,13 @@ class AutomaticCoachDeferral(unittest.TestCase):
         m.configure(**state)
         m.u32(m.HOME + 0x38, 1)
         self.assertEqual(m.run_policy(), 0)      # user VIP: delegated to the native chart and VIP roll
+        # The brief's case: trailing by 7, 1:22 left, 4th and 5 at the opponent 35 -> go, for an automatic profile.
+        late = dict(down=4, quarter=4, seconds=82, score_margin=-7, own_yard=65, distance=5, home=True,
+                    quarter_seconds=300)
+        self.assertEqual(money.decision(level="modern2", **{k: v for k, v in late.items() if k != "home"}), "go")
+        m.configure(**late)
+        m.u32(m.HOME + 0x38, 0)
+        self.assertEqual(m.run_policy(), 1)
 
 
 if __name__ == "__main__":
