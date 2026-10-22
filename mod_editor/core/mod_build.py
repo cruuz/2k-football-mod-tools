@@ -3684,6 +3684,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.run_blocking:  # fx1: like qb3, before any write
         _run_blocking_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
+    if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
+        unc = _core_module("nfl2k5_unc_bowl_uniforms")
+        if unc is not None:
+            progress("Checking the Unc Bowl kits on the source disc", 0, 0)
+            try:
+                unc.preflight_source(source if _retail_source is None else _retail_source)
+            except (OSError, KeyError, IndexError):
+                pass  # an image this check cannot read is judged by the owners' own checks, as before
     if plan.modern_coaches:  # b77-co1
         coaches = _core_module("nfl2k5_modern_coaches")
         if coaches is None or not is_image:
@@ -4479,6 +4487,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
         uniforms_receipt = uniforms.apply_to_image(target)
         receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
+        for note in uniforms_receipt.get("user_notes", ()):  # b778-bd1: a kit left as it is is said, not a late failure
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         # b772-ny1: finish the known NYG home art after the project's uniform
         # layers. The native shoulder anNN textures use the plain jersey mips.
         numbers = _core_module("nfl2k5_nyg_numbers")

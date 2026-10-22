@@ -89,7 +89,8 @@
           "before_sha256": "378a26c9c4ed0d94031884096ae736bc7e09cdfe2fc5a1cf42d8b4476586ff77",
           "after_sha256": "aceb4e3e89b929a2a58ec700ba94a7d0f5e67330b531d14c39f127e691840fdd"
         }
-      ]
+      ],
+      "retail_sha256": "0200be3131a71840f0f8b1a5ba93889ed9dbc7cede80d5ce056e903d658699e6"
     },
     "22A4.IFF": {
       "size": 1433312,
@@ -101,7 +102,8 @@
           "before_sha256": "ddf172952457ae138e7d8468550e0d8814bddd0352f6a280cc8c89a87755a5f3",
           "after_sha256": "31f5b6be715636eff14c3a30ecf656ea493899300ab83078d47e8d4d0ab13e23"
         }
-      ]
+      ],
+      "retail_sha256": "21f1034af5434f2f675cfd317257ea027488eacd0f2d59672a374a78c8a2732a"
     }
   }
 }
