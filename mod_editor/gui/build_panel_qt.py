@@ -913,9 +913,14 @@ class BuildPanel(QWidget):
                                                    "slot 0 (often a QB). Returners are now tracked by player, starters stay off the units unless nobody "
                                                    "else is eligible, and only WR, CB, S, RB and FB can return.")
         self.progression_check = self._option(f, "progression", "Change player growth & decline",
-                                              "Growth over years 1-5, harder decline after years 9-12; more stars and busts.",
-                                              details="The ten aging-curve tables grow by rating family and decline harder after year 9-12 (speed first); each "
-                                                      "position's archetype mix is widened. Draft-day ratings are unchanged.")
+                                              "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.",
+                                              details="Growth over the first five years by rating family, with each position's archetype mix widened, then "
+                                                      "each position ages on its own NFL curve (running backs from about 25, corners and "
+                                                      "receivers from 27, linemen later, quarterbacks, kickers and punters into their late "
+                                                      "30s); a back with 1,200+ scrimmage yards ages a year slower. Quarterbacks in their "
+                                                      "first three seasons move up or down on their passing efficiency; a veteran QB never "
+                                                      "loses ratings for a down year. Retirement ages follow NFL career lengths. Draft-day "
+                                                      "ratings are unchanged.")
         self.franchise_economy_check = self._option(
             f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
             "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",
