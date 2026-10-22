@@ -56,7 +56,7 @@
    "links": 594,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "5170cb7478b40caed2dd5e02daa5c6b5ce43429c1f4251216f16fd227ff93e16"
+   "semantic_sha256": "ef7fc8aca42cfba9fc1d99aede7fd409098e4d611fa080d9436ea1ec69ca8460"
   },
   {
    "team": "ATL",
@@ -66,7 +66,7 @@
    "links": 510,
    "appended_formations": 11,
    "appended_plays": 14,
-   "semantic_sha256": "4ec7e72a80874e5d4c4a2ac398565db73bab76c91e2774553a39e31c147f9271"
+   "semantic_sha256": "ab6605f2ea07443d3a769f1a9635acf6a14705780e671ce42f68fcd83c817245"
   },
   {
    "team": "BAL",
@@ -76,7 +76,7 @@
    "links": 462,
    "appended_formations": 8,
    "appended_plays": 7,
-   "semantic_sha256": "901f8b9e123c595ab92637a87610eebca3e659beb32d140f741b4ac907d92f7b"
+   "semantic_sha256": "559fb79b0701fdf2a9cdaaa43aa0c93187fa5a901681bc0dde620fc9f14b2d9d"
   },
   {
    "team": "BUF",
@@ -86,7 +86,7 @@
    "links": 489,
    "appended_formations": 4,
    "appended_plays": 0,
-   "semantic_sha256": "0787966d39e3ce1d4c84a55bbc8c43081c491e8f3e8028f9e6079f116c52e627"
+   "semantic_sha256": "6a015ef1acdf8151ad3f40974e89ae2ba678ac12d51148ca4856eda2a0bd2029"
   },
   {
    "team": "CAR",
@@ -96,7 +96,7 @@
    "links": 504,
    "appended_formations": 5,
    "appended_plays": 0,
-   "semantic_sha256": "16e9b504731b3297d9dda598a2699496f789e697c775b6a7de3e38e9b67e7fd7"
+   "semantic_sha256": "078d58e3f854db47dcb341cfe55390284a3c5614958af8fb1610c0957bb1f9a7"
   },
   {
    "team": "CHI",
@@ -106,7 +106,7 @@
    "links": 489,
    "appended_formations": 9,
    "appended_plays": 2,
-   "semantic_sha256": "61498920cfde3c98c65e6a60b6467c66789fdb4373358c45161e18960ab01ef0"
+   "semantic_sha256": "ef276d077b458007f605ad5a5b72df0f0dfe0e792c3f31122e76b813fb07ac33"
   },
   {
    "team": "CIN",
@@ -116,7 +116,7 @@
    "links": 558,
    "appended_formations": 6,
    "appended_plays": 0,
-   "semantic_sha256": "1b87ba91d64cd1d11b704f502c8afd1def17f9be0f79213804b2bc5d8b420807"
+   "semantic_sha256": "856ff89f21de14b9bad7d6c43952246cec3c69ac53088bf92108705d6fbaa404"
   },
   {
    "team": "CLE",
@@ -126,7 +126,7 @@
    "links": 501,
    "appended_formations": 6,
    "appended_plays": 0,
-   "semantic_sha256": "076d34bf79e0b16b24369b8d9da7e3cc6e383695ae6e9b3991c75023a24d3db4"
+   "semantic_sha256": "6d6ad713eebcfb6637036c30da4532d5125789f8bc9fed17863b8a60e303efe3"
   },
   {
    "team": "DAL",
@@ -136,7 +136,7 @@
    "links": 483,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "3449ba1ae2874ed661e4c02e49cbc90a3fcdc6d03c3aef74a158b382e3e6dd78"
+   "semantic_sha256": "200ffccab8c11a97b460497bc00b57645877cacf25955bd4dd9ba9511031694f"
   },
   {
    "team": "DEN",
@@ -146,7 +146,7 @@
    "links": 543,
    "appended_formations": 8,
    "appended_plays": 0,
-   "semantic_sha256": "2f795b7c9c8706a9d9b023fe436f888e2213c481080ef564aa7cea4472e08ec8"
+   "semantic_sha256": "6973845a63e5773ba17014c8b890f3232641fd563ce3746f107069dc0545fff1"
   },
   {
    "team": "DET",
@@ -156,7 +156,7 @@
    "links": 537,
    "appended_formations": 9,
    "appended_plays": 13,
-   "semantic_sha256": "d60805e69567fcd8cab2022358e2d5bc4aca539904f2c70423d1a1677b49c708"
+   "semantic_sha256": "793d76212ebbd127071e77ca5948451b0949035b25a3219b2c6c77e9c8adac94"
   },
   {
    "team": "GB",
@@ -166,7 +166,7 @@
    "links": 504,
    "appended_formations": 2,
    "appended_plays": 4,
-   "semantic_sha256": "ec0a7694eaa7aea9832fcfbcfea49675be6e98cfcaf84d0a1eb7b11727b8de0c"
+   "semantic_sha256": "6d06ace5cdeb61bf7e875799750653305843acc23f0d782849ebde1427c85650"
   },
   {
    "team": "HOU",
@@ -176,7 +176,7 @@
    "links": 540,
    "appended_formations": 10,
    "appended_plays": 0,
-   "semantic_sha256": "2f89be27cd2b82dcefe38bfd87654d8ce7385814b154c71c0f5d1c0554dc0b58"
+   "semantic_sha256": "656e6d63bca367b0adf946deaf67138da7c6720b0bdcb83dcffe093c60674d0d"
   },
   {
    "team": "IND",
@@ -186,7 +186,7 @@
    "links": 477,
    "appended_formations": 5,
    "appended_plays": 3,
-   "semantic_sha256": "d46012d3c128b076f718ad964af2ae08e472771518a2d3931de523f1b775b8bc"
+   "semantic_sha256": "24e99627b55cd56cd87c85c5e50c437f2c8f2ac6654e7c982e8dd5325ede3e2b"
   },
   {
    "team": "JAX",
@@ -196,7 +196,7 @@
    "links": 558,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "4f262d21aa03b6a80a3cc905dabcc772f8e3c96539affc504764131e32556687"
+   "semantic_sha256": "882155fa4f8cf3e63558b2acb256cd73d74c2a7e1137438c455fbff1ca47f64b"
   },
   {
    "team": "KC",
@@ -206,7 +206,7 @@
    "links": 591,
    "appended_formations": 7,
    "appended_plays": 1,
-   "semantic_sha256": "7971f68eaa54c261c809ec9dc2eb6b33e4c2e58e02cc2d3087638ab29d1a4ea5"
+   "semantic_sha256": "9bee2bcefed5bffc3187c007ef8f10a0b843ab9c7420d36e9f09e4ec77d00f51"
   },
   {
    "team": "MIA",
@@ -216,7 +216,7 @@
    "links": 525,
    "appended_formations": 7,
    "appended_plays": 9,
-   "semantic_sha256": "8930f7c3b227cbcf602e495a49041384b4017cfe7ba3f8577ad0cc0257ee738c"
+   "semantic_sha256": "3b070b9ff0f429c0c54dde8a60a54f607642b8277eacd5fa632b4e3a0be27867"
   },
   {
    "team": "MIN",
@@ -226,7 +226,7 @@
    "links": 354,
    "appended_formations": 3,
    "appended_plays": 0,
-   "semantic_sha256": "48761120a8ae16c81db9907cb4f9c8ad758b731f3dcba460290c0ab1a3fbf012"
+   "semantic_sha256": "f214720126fa239346f65c502d9c9b046f915c3285a520133baa4f9189daecf1"
   },
   {
    "team": "NE",
@@ -236,7 +236,7 @@
    "links": 426,
    "appended_formations": 8,
    "appended_plays": 0,
-   "semantic_sha256": "86111885a58b576158104cda2e4208677fc20e4e3c759e4acfdb322bf34b9409"
+   "semantic_sha256": "ce993faa1a6d5ab8398abf4671da42d235279a75b40e084893242f31a6ab964a"
   },
   {
    "team": "NO",
@@ -246,7 +246,7 @@
    "links": 552,
    "appended_formations": 9,
    "appended_plays": 4,
-   "semantic_sha256": "3a6037ccc35777808595294ad01773170846c805cf854462bca10e86b21d3e26"
+   "semantic_sha256": "e7dcd1b9781aa5f98ff5fd210953335addf801ef0838121e84bcb13505654193"
   },
   {
    "team": "NYG",
@@ -256,7 +256,7 @@
    "links": 543,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "ec93a8fe4e02db591efcbffbcfd2cc5fa78d43f867a4625520a806edf60ce2da"
+   "semantic_sha256": "f4d86c5fe701deab39278beae8b9a254318664b21cc2a0af80d72bc428ad41a5"
   },
   {
    "team": "NYJ",
@@ -266,7 +266,7 @@
    "links": 411,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "1fdd11c9da176af720bb6db9e0f8b823b8ad6b53a069d642de718d291430a61f"
+   "semantic_sha256": "275e81a3d800ed73f8a018a764720759f923104a02afc0e3c727db5c0d92160c"
   },
   {
    "team": "OAK",
@@ -276,7 +276,7 @@
    "links": 423,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "c6256896126a347b115f3c20f865716b0c7925e4250baa06f5f20f702fd058e1"
+   "semantic_sha256": "afa866d75779dc9919cae6c85d368120b58bd9a7373bd9e95a9b9849b3813df0"
   },
   {
    "team": "PHI",
@@ -286,7 +286,7 @@
    "links": 453,
    "appended_formations": 9,
    "appended_plays": 1,
-   "semantic_sha256": "d89070d4b4cd935cf3124a4363a0d8a0aa2deb75d64c10ee3c59c5bb78d02e45"
+   "semantic_sha256": "fbdbcec37210b8e7db79e6642c719a1d70eb972f2b9570f3290b2b7d4847c999"
   },
   {
    "team": "PIT",
@@ -296,7 +296,7 @@
    "links": 486,
    "appended_formations": 9,
    "appended_plays": 7,
-   "semantic_sha256": "77ca5ed69770e8ba8edc7a20a000ee616b3df9793256b0f7f1474769d3d5be22"
+   "semantic_sha256": "db0b871164d17fd95abee6d20276d334e14a7ac42ba9dd8b71452a7db78e5f16"
   },
   {
    "team": "SD",
@@ -306,7 +306,7 @@
    "links": 435,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "5e8461ba34b44d409db1cc15df40b5fe350d290bc14c84999addd6f21d5fba34"
+   "semantic_sha256": "221d68a8a4bd2c353e6bc2f029a8d1e3c1250fe377e53f2e5996e28091886283"
   },
   {
    "team": "SEA",
@@ -316,7 +316,7 @@
    "links": 501,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "cb1e48692f65bec21e58f0bcea42b1ff0cdc6b210d7e79784405eb77af1e70ed"
+   "semantic_sha256": "774d6da1c507464660eeae0fd181bdd89065368f4a90262d656facdcbf80c65c"
   },
   {
    "team": "SF",
@@ -326,7 +326,7 @@
    "links": 429,
    "appended_formations": 11,
    "appended_plays": 19,
-   "semantic_sha256": "b68095437223b692b647c8d56417b37a8e202ea155acee47c5ca2ebcefe6b0df"
+   "semantic_sha256": "bceb6f93a45b9188e2dd820e48e085712cb3c990784384620101f9895c640bed"
   },
   {
    "team": "STL",
@@ -336,7 +336,7 @@
    "links": 543,
    "appended_formations": 5,
    "appended_plays": 0,
-   "semantic_sha256": "33a70a1dd13f34048c8f44bdf0fb8f52180e1068f4a05cc5c01c384ed414ffda"
+   "semantic_sha256": "135134f259e93eed8aad67bf40b5f26f55e08bae32a63be4ff597dd04289d5de"
   },
   {
    "team": "TB",
@@ -346,7 +346,7 @@
    "links": 456,
    "appended_formations": 0,
    "appended_plays": 9,
-   "semantic_sha256": "1f5ebe7b85d7bbd05528cab357494052626db4234176c2401561c186d1081606"
+   "semantic_sha256": "c4944b9664e4c2d97d2094e32b519e1c19afbf2be9909245aae317cc447075e9"
   },
   {
    "team": "TEN",
@@ -356,7 +356,7 @@
    "links": 504,
    "appended_formations": 11,
    "appended_plays": 4,
-   "semantic_sha256": "1fd8f6ebf720bd46cd09a3219b778b971b8d60b86ccc1a36a428e8a871cbca0c"
+   "semantic_sha256": "9069f3f88877d7e17983711473cf427a74a774eafd6f39525a1b3292fe6ea447"
   },
   {
    "team": "WAS",
@@ -366,7 +366,7 @@
    "links": 408,
    "appended_formations": 7,
    "appended_plays": 2,
-   "semantic_sha256": "4b21d528a2a11cc94b848cb8cd4fae6f1427b0bb7b9a9b2749bb89370dde44d4"
+   "semantic_sha256": "fa4fb76d8229fca76f52f10836c51e4434bcf71789676cc5952bafff2f793863"
   }
  ],
  "post_process": "pb/v2/repair_reversals.py --apply (b777 sc1) on the generator output: screen decoys release and stalk, play-action back stems clamped"
