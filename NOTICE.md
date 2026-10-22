@@ -56,6 +56,16 @@ Build commands, toolchain and exact hashes for both bundled binaries are
 recorded in `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md`, so the
 bytes can be reproduced rather than trusted.
 
+## Contributed work
+
+The APF 2K8 Mod Studio includes work by community modder **Basileus Maximus**,
+shared with permission for the official release: the Playbook Manager, mirror and
+combined Design Play/Formation additions (`mod_editor/core/apf2k8_common_compiler.py`
+and changes across the APF play designer, Fine-tune Plays and Assignment Routes),
+and three Title Update 1.1 Xenia patches (`mod_editor/data/apf2k8_community_patches.v1.json`,
+relocated by the Studio into its reserved code space). They are distributed under
+this repository's MIT licence.
+
 ## Trademarks
 
 *ESPN NFL 2K5*, *All-Pro Football 2K8*, and all related names, logos and marks
