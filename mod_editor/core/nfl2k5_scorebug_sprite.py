@@ -861,7 +861,9 @@ class NativePreview:
     def capture(self,state=None,widescreen=False):
         import nfl2k5_scorebug_projection as projection
         s=normalize_state(state);capture={};mode=self.modes[bool(widescreen)]
-        events={'standard':(0,1),'FLAG':(1,3),'FUMBLE':(1,5),'hang time':(1,2),'ball on':(1,4),'score slabs':(0,1),'hidden play clock':(0,)}
+        # b778 sb2: ball on keeps the down element (0) up; xemu on the released disc showed both visible from the end
+        # of a play through play calling.
+        events={'standard':(0,1),'FLAG':(1,3),'FUMBLE':(1,5),'hang time':(1,2),'ball on':(0,1,4),'score slabs':(0,1),'hidden play clock':(0,)}
         visibility='flag' if s['event']=='FLAG' else 'fumble' if s['event']=='FUMBLE' else None
         from . import nfl2k5_scorebug_teams as teams
         palette=teams.load()

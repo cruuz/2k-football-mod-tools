@@ -203,10 +203,13 @@ static u32 FAST element_visible(u32 record) {
 
 /* sb: the plate shows ESPN's black wordmark plate whenever it carries no down: the kick and
  * point-after phases, pregame, the half and the overtime toss (FC7D0 prints "Kickoff", "Point After",
- * "Pregame"... there), and while a retail event ESPN never draws would show: hang time (A95AA8),
- * ball on (A95B88) or FUMBLE (A95BF8). FLAG (A95B18) keeps its own yellow plate. */
+ * "Pregame"... there), and while a retail event ESPN never draws would show: hang time (A95AA8)
+ * or FUMBLE (A95BF8). FLAG (A95B18) keeps its own yellow plate.
+ * b778 sb2: ball on (A95B88) no longer counts. Retail raises it from the end of a play through play
+ * calling (seen in xemu: phase 4, play-call mode [B641B4]=1, ball on and the down element both up), so
+ * the play-select screen showed the wordmark where ESPN keeps "3rd & 2". Its plate and text stay blank. */
 NOINLINE static u32 espn_mode(void) {
- return V(0xe602b4)!=4 || element_visible(0xa95aa8) || element_visible(0xa95b88) || element_visible(0xa95bf8);
+ return V(0xe602b4)!=4 || element_visible(0xa95aa8) || element_visible(0xa95bf8);
 }
 NOINLINE static u32 timeouts_now(void) {
  u32 t=0;
@@ -224,8 +227,8 @@ NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
   * underlying glyphs only while those elements actually draw (the plates
   * have translucent pixels). No request word participates in this decision. */
  if(f->source==7) {
-  /* FLAG draws its own plate. Any other retail event puts the bar in the ESPN-plate mode, whose
-   * wordmark does not follow the down element's slide (sb). */
+  /* FLAG draws its own plate. Hang time and FUMBLE put the bar in the ESPN-plate mode, whose
+   * wordmark does not follow the down element's slide (sb); ball on keeps the down (b778 sb2). */
   if(element_visible(0xa95b18))return;
   if(!espn_mode() && !element_visible(0xa959c8))return;
  }
