@@ -669,3 +669,274 @@ def sync_hair_styles(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                         1 for p in target.players if disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK),
                     "kept_user_styles": kept, "ambiguous_identities_skipped": sorted(set(ambiguous)),
                     "changes": changes, **scope}
+
+
+# --- b778-pc2: award history for a franchise created before the honors page -------------------------------------
+#: fields the retail history fold (FUN_0014EFE0, rule table 0xAA26C0) merges by MAX; every other field sums. Past
+#: field 86 the retail lookup reads unrelated variables: TEAM (87) is a nonzero read (sums, and the folded row shows
+#: "--" anyway) and the honors owner pins fields 96..105 to sum.
+FOLD_MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
+HONOR_FIELD_FIRST, HONOR_FIELD_LAST = 96, 105
+DEAD_WORD = 0x30000000                     # deleted (bit 28) or postseason (bit 29): never live regular-season data
+FOLD_BIT, END_BIT = 0x40000000, 0x80000000
+HISTORY_RESERVE = 64                       # dwords kept free after the sync (the game folds again by itself when full)
+SYNC_FOLD_DEPTHS = range(15, 1, -1)        # the card shows 15 season rows, so fold the oldest seasons first
+
+
+def _signed16(raw: int) -> int:
+    return (raw & 0xFFFF) - (0x10000 if raw & 0x8000 else 0)
+
+
+def _with_end(words) -> list[int]:
+    words = [w & ~END_BIT & 0xFFFFFFFF for w in words]
+    if words:
+        words[-1] |= END_BIT
+    return words
+
+
+def fold_words(words, years_pro: int, depth: int) -> tuple[int, ...]:
+    """The game's own history fold for one stream: every live regular-season word at least ``depth`` seasons old is
+    merged into the season ``depth - 1`` old (sum, or max for FOLD_MAX_FIELDS, 16-bit signed as the game stores it)
+    and the receiving word is flagged folded (bit 30). Deleted and postseason words, and words newer than ``depth``,
+    stay as they are; the end bit stays on the last word. Differentially tested against the retail code under
+    Unicorn (tests/mod_editor/test_nfl2k5_franchise_honors.py)."""
+    require(depth >= 2, "fold depth must be at least 2")
+    target_slot = years_pro - depth + 1
+    keep, merged = [], {}
+    for raw in words:
+        raw &= ~END_BIT & 0xFFFFFFFF
+        word = cs.Word(raw)
+        if not raw & DEAD_WORD and years_pro - word.slot >= depth and target_slot >= 0:
+            merged.setdefault(word.field, []).append(raw)
+        else:
+            keep.append(raw)
+    for field, olds in sorted(merged.items()):
+        index = next((i for i, raw in enumerate(keep)
+                      if not raw & DEAD_WORD and (raw >> 16) & 127 == field and (raw >> 23) & 31 == target_slot), None)
+        current = _signed16(keep[index]) if index is not None else None
+        values = [_signed16(raw) for raw in olds]
+        if field in FOLD_MAX_FIELDS:
+            result = max([0 if current is None else current] + values)
+        else:
+            result = sum(values) + (0 if current is None else current)
+        if result & 0xFFFF == 0:                  # the game's writer treats 0 as "no entry"
+            if index is not None:
+                del keep[index]
+        elif index is None:
+            keep.append((result & 0xFFFF) | (field << 16) | (target_slot << 23) | FOLD_BIT)
+        else:
+            keep[index] = (keep[index] & ~0xFFFF & 0xFFFFFFFF) | (result & 0xFFFF) | FOLD_BIT
+    return tuple(_with_end(keep))
+
+
+def _live_regular(raw: int) -> bool:
+    return not raw & DEAD_WORD
+
+
+def _add_honors(words, years_pro: int, season_now: int, honors) -> tuple[tuple[int, ...], list, list]:
+    """-> (stream with the honors added, added [(honor, season, slot, clamped)], skipped [(honor, season, reason)]).
+
+    ``honors`` is [(honor, season)]. A season's slot is ``years_pro - (season_now - season)``. A word already
+    present for that field and slot is kept (idempotent). When the stream has a fold floor (a folded word: older
+    seasons are merged into that slot) an honor at or below it is counted in the floor slot's folded word instead
+    (raised to the disc's count, never summed again, so a second run changes nothing)."""
+    from . import nfl2k5_honors_history as hh
+    words = [w & ~END_BIT & 0xFFFFFFFF for w in words]
+    folded_slots = [(w >> 23) & 31 for w in words if _live_regular(w) and w & FOLD_BIT]
+    floor = max(folded_slots) if folded_slots else None
+    live = {((w >> 16) & 127, (w >> 23) & 31): i for i, w in enumerate(words) if _live_regular(w)}
+    new, added, skipped, below = [], [], [], {}
+    for honor, season in sorted(honors, key=lambda h: (h[1], h[0])):
+        field = hh.FIELDS[honor]
+        slot = years_pro - (season_now - season)
+        if not 1 <= slot < years_pro:
+            skipped.append((honor, season, f"no completed season slot (years pro {years_pro})"))
+            continue
+        if floor is not None and slot <= floor:
+            below[field] = below.get(field, 0) + 1
+            continue
+        if (field, slot) in live:
+            continue
+        live[(field, slot)] = None
+        new.append(hh.word(field, slot))
+        added.append((honor, season, slot, False))
+    for field, count in sorted(below.items()):
+        index = live.get((field, floor))
+        if index is None:
+            new.append(hh.word(field, floor, count) | FOLD_BIT)
+            added.append((hh.HONORS[field - hh.FIELD0], None, floor, True))
+        elif (words[index] & 0xFFFF) < count:
+            words[index] = (words[index] & ~0xFFFF & 0xFFFFFFFF) | count | FOLD_BIT
+            added.append((hh.HONORS[field - hh.FIELD0], None, floor, True))
+    new.sort(key=lambda w: ((w >> 23) & 31, (w >> 16) & 127))
+    return tuple(_with_end(new + words)), added, skipped
+
+
+def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's award history (Player Card honors page) into the franchise's own players by identity.
+
+    b778-pc2: a franchise keeps its whole roster, career-stat pool included, in the save, so a franchise started
+    before a disc carried the honors page shows "HONORS: NONE YET" for every player. The disc's honor words
+    (history fields 96..105, one per honor and season) are re-slotted for the franchise's current season and added
+    to the players whose (first, last, birth date) is unique in both rosters. A word the save already has is kept.
+    The saved pool is usually full (the game folds old seasons whenever it runs out), so when the honors do not
+    fit the oldest seasons are folded the way the game does it (``fold_words``), 15 seasons back first, only as
+    deep as needed; the card's career totals do not change, and the receipt lists every folded player.
+    """
+    from . import nfl2k5_honors_history as hh
+    save, roster = franchise(payload)
+    season_now = save.header.display_year
+    try:
+        target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+        rows = hh.read_body(disc_body, BASE_YEAR)
+    except (sr.SaveRostError, hh.HonorsHistoryError) as exc:
+        raise UpgradeRefused(f"honors source must be a disc ROST: {exc}") from exc
+    require(target.layout.version in (17, 18), "honors source must be a disc ROST")
+    streams = sorted((start, start + len(roster.history_words[key]) * 4, key)
+                     for key, start in roster.history_offsets.items() if start is not None)
+    # The game can leave one player's stream as the tail of another's. Those words belong to both players, so
+    # neither is edited (listed in the receipt); every other stream is rebuilt around them.
+    shared, cluster, cluster_end = set(), [], -1
+    for start, stop, key in streams:
+        if cluster and start < cluster_end:
+            cluster.append(key)
+            cluster_end = max(cluster_end, stop)
+        else:
+            if len(cluster) > 1:
+                shared.update(cluster)
+            cluster, cluster_end = [key], stop
+    if len(cluster) > 1:
+        shared.update(cluster)
+    disc_ids = Counter(identity(p) for p in target.players if p.first or p.last)
+    saved = defaultdict(list)
+    for player in roster.players:
+        if player.first or player.last:
+            saved[identity(player)].append(player)
+    wanted = defaultdict(list)                # save player key -> [(honor, season)]
+    ambiguous, unmatched, shared_skipped = set(), set(), set()
+    for row in rows:
+        if row["folded"] or not row["value"]:
+            continue
+        key = (row["first"], row["last"], row["birth_date"])
+        players = saved.get(key, [])
+        if disc_ids[key] != 1 or len(players) != 1:
+            (ambiguous if players or disc_ids[key] > 1 else unmatched).add(" ".join(key[:2]))
+            continue
+        if players[0].key in shared:
+            shared_skipped.add(f"{players[0].first} {players[0].last}")
+            continue
+        wanted[players[0].key].append((row["honor"], row["season"]))
+    by_key = roster.by_key
+
+    def years_pro(player):
+        return player.record.values["years_pro"]
+
+    def build(depth):
+        out, folded = {}, []
+        for key, words in roster.history_words.items():
+            player = by_key[key]
+            if depth and words and key not in shared:
+                after = fold_words(words, years_pro(player), depth)
+                if after != words:
+                    folded.append(key)
+                words = after
+            out[key] = tuple(words)
+        added, skipped = {}, []
+        for key, honors in wanted.items():
+            player = by_key[key]
+            out[key], got, skip = _add_honors(out[key], years_pro(player), season_now, honors)
+            added[key] = got
+            skipped += [(key, *item) for item in skip]
+        return out, folded, added, skipped, roster.pool_used + sum(
+            len(words) - len(roster.history_words[key]) for key, words in out.items())
+
+    capacity = roster.pool_capacity
+    chosen = None
+    for depth in (0, *SYNC_FOLD_DEPTHS):
+        built = build(depth)
+        if built[4] <= capacity - HISTORY_RESERVE:
+            chosen = (depth, built)
+            break
+    require(chosen is not None, "the award history does not fit the history pool even after folding old seasons")
+    depth, (new_streams, folded, added, skipped, used_after) = chosen
+    pool, used = roster.pool, roster.pool_used
+    if not any(added.values()) and not folded:
+        return payload, {"operation": "honors", "before_sha256": sha(payload), "after_sha256": sha(payload),
+                         "disc_roster_sha256": sha(disc_body), "disc_honor_rows": len(rows), "matched_players": len(wanted),
+                         "ambiguous_identities_skipped": sorted(ambiguous), "unmatched_identities": len(unmatched),
+                         "shared_history_skipped": sorted(shared_skipped),
+                         "skipped": [], "fold_depth": 0, "folded_players": [], "changes": [],
+                         "used_before": used, "used_after": used, "capacity": capacity,
+                         "outside_declared_fields_identical": True, "changed_bytes": 0}
+    require(pool is not None, "history pool pointer is missing")
+    require(not any(payload[pool + used * 4:pool + max(used_after, used) * 4]), "nonzero history slack")
+    end = pool + max(used_after, used) * 4
+    require(end <= roster.layout.end, "honors sync exceeds the roster arena")
+    for table in roster.tables.values():
+        if table.offset is not None and table.count and used_after > used:
+            require(end <= table.offset or pool >= table.offset + table.count * table.stride,
+                    "honors sync would overlap a roster table")
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    out[pool:end] = bytes(end - pool)
+    masks.update({offset: 255 for offset in range(pool, end)})
+    cursor, old_end, new_start, anchor = pool, pool, {}, None
+    for start, stop, key in streams:
+        require(start >= pool and stop <= pool + used * 4, "history stream outside the pool")
+        if start < old_end:                      # a shared tail: unedited, placed relative to its owner
+            require(key in shared and anchor is not None and stop <= old_end, "unexpected history overlap")
+            new_start[key] = anchor[1] + (start - anchor[0])
+            continue
+        if start > old_end:                      # words no player points at (left by the game): carried over as they are
+            out[cursor:cursor + start - old_end] = payload[old_end:start]
+            cursor += start - old_end
+        words = new_streams[key]
+        new_start[key] = cursor
+        anchor = (start, cursor)
+        for word in words:
+            struct.pack_into("<I", out, cursor, word)
+            cursor += 4
+        old_end = stop
+    if old_end < pool + used * 4:
+        out[cursor:cursor + pool + used * 4 - old_end] = payload[old_end:pool + used * 4]
+        cursor += pool + used * 4 - old_end
+    for player in sorted(roster.players, key=lambda p: p.key):     # players with no stream yet get one at the end
+        words = new_streams[player.key]
+        if roster.history_offsets[player.key] is None and words:
+            new_start[player.key] = cursor
+            for word in words:
+                struct.pack_into("<I", out, cursor, word)
+                cursor += 4
+    for player in roster.players:
+        pointer = player.offset + 0x2C
+        before = payload[pointer:pointer + 4]
+        if player.key in new_start:
+            struct.pack_into("<i", out, pointer, new_start[player.key] - pointer + 1)
+        if bytes(out[pointer:pointer + 4]) != before:
+            masks.update({pointer + i: 255 for i in range(4)})
+    require(cursor == pool + used_after * 4, f"honors pool size mismatch {(cursor - pool) // 4} vs {used_after}")
+    struct.pack_into("<I", out, roster.layout.root + 0x40, used_after)
+    masks.update({roster.layout.root + 0x40 + i: 255 for i in range(4)})
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    checked = sr.decode(result, base_year=BASE_YEAR)
+    for player in roster.players:
+        require(identity(checked.by_key[player.key]) == identity(player), "honors sync changed a player identity")
+        require(checked.history_words[player.key] == new_streams[player.key], "honors read-back differs")
+    require(checked.pool_used == used_after, "honors used count differs")
+    changes = []
+    for key, rows_added in sorted(added.items()):
+        player = by_key[key]
+        for honor, season, slot, clamped in rows_added:
+            changes.append({"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
+                            "field": f"honor.{honor}", "history_field": hh.FIELDS[honor], "season": season,
+                            "slot": slot, "folded_floor": clamped})
+    return result, {"operation": "honors", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "disc_honor_rows": len(rows),
+                    "matched_players": len(wanted), "ambiguous_identities_skipped": sorted(ambiguous),
+                    "unmatched_identities": len(unmatched), "shared_history_skipped": sorted(shared_skipped),
+                    "skipped": [{"player": f"{by_key[k].first} {by_key[k].last}", "honor": h, "season": s, "reason": r}
+                                for k, h, s, r in skipped],
+                    "fold_depth": depth,
+                    "folded_players": [f"{by_key[k].first} {by_key[k].last}" for k in folded],
+                    "used_before": used, "used_after": used_after, "capacity": capacity, "changes": changes, **scope}
