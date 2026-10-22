@@ -73,7 +73,8 @@ REVISION_2_SITES = frozenset({VETERAN_CUT_SURPLUS, ROLLOVER_DECREMENT})
 # - CPU clubs restructure (the money still owed is re-papered over the years left as the back-loaded curve 6
 #   with a 20% prorated bonus) before any cap release and before the stage-6 veteran cut;
 # - a 50-player floor for CPU clubs at every weekly advance and after every stage action, filled with
-#   minimum-salary depth (0x322BB0 with a capped budget); the reconcile no longer releases below 50 except a
+#   lower-level depth (0x322BB0 with a capped budget); at the re-signing stage a club at the floor keeps
+#   (renews) a lower-level expiring player instead of releasing him; the reconcile no longer releases below 50 except a
 #   player paid twice the minimum; the user club's preseason gate and in-season trade check move from 42 to
 #   50 players (the roster screen's release warning and 42-healthy-players check, inside the Contracts
 #   editor's guarded span, are unchanged);
@@ -88,6 +89,7 @@ STAGE6_CASE = 0x24809C              # weekly-advance jump table entry for stage 
 USER_FLOOR = 0x2BF992               # cmp byte [ecx+0x11C], 42: the user club's preseason roster gate
 USER_FLOOR_TEXT = 0xE8922A          # "42" in "The %s %s must have at least 42 players."
 OFFER_DAYS_SEED = 0x32327E          # new offers copied player +0x25 bits 5-7 into their day count
+EXPIRING_RELEASE = 0x3237AC        # call 0x322B60: the re-signing stage releases an expiring contract
 USER_TRADE_FLOOR = 0x2BB13C         # cmp ebp, 42: an in-season trade may not leave the user club below it
 USER_TRADE_TEXT = 0xE99FA4          # "42" in "You must keep 42 players on your team or you will not be able to ..."
 FLOOR_PLAYERS = 50
@@ -103,6 +105,7 @@ for _va, _digest in ((0x323870, "7ff0b7859e73de1e317c60d8c9d3f405f5e5519767a0e19
                      (USER_FLOOR_TEXT, "e24460917716856724254344202653c566f02f7c2074430cd4b9b6884b39c5cd"),
                      (OFFER_DAYS_SEED, "b4296d8e851226474af9a26c93be4874e70e454e69e0dc4c52bf790ac1a806b1"),
                      (USER_TRADE_FLOOR, "490566c6a8181843df6c7111073ac94bc538a1bce677071bb93660193154107a"),
+                     (EXPIRING_RELEASE, "df8ba409850ca02e7cb8d6609900617acc3c9a69c2b5b9860f9a953650ffb4e8"),
                      (USER_TRADE_TEXT, "e24460917716856724254344202653c566f02f7c2074430cd4b9b6884b39c5cd")):
     PINS[_va] = _digest
 # Revision 1 and 2 bytes of every site whose revision-3 bytes differ (the windows and the jumps into code
@@ -120,7 +123,8 @@ PREVIOUS = {
     0x323BB3: "b4b95b9f37daf14470599da75ef463b6aeea0e35a8c3ba6579830ccd8c3e20f3",
 }
 REVISION_3_SITES = frozenset({0x323870, 0x396F50, 0x3B9F60, 0x3D2890, 0x3BA4B0, 0x3975F0, AFTER_STAGE, STAGE6_CASE,
-                              USER_FLOOR, USER_FLOOR_TEXT, OFFER_DAYS_SEED, USER_TRADE_FLOOR, USER_TRADE_TEXT})
+                              USER_FLOOR, USER_FLOOR_TEXT, OFFER_DAYS_SEED, USER_TRADE_FLOOR, USER_TRADE_TEXT,
+                              EXPIRING_RELEASE})
 REVISION = 3
 
 
@@ -161,6 +165,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[OFFER_DAYS_SEED] = bytes.fromhex("5fc6460900") + b"\x90" * 8   # pop edi; mov byte [esi+9], 0
         replacements[USER_TRADE_FLOOR] = bytes.fromhex("83fd") + bytes((FLOOR_PLAYERS,))
         replacements[USER_TRADE_TEXT] = str(FLOOR_PLAYERS).encode("utf-16-le")
+        replacements[EXPIRING_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_expire"] - EXPIRING_RELEASE - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 

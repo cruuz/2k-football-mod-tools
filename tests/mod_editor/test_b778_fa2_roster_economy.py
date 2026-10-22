@@ -44,8 +44,9 @@ class Revision3ImageTests(unittest.TestCase):
         self.assertEqual(text, "The %s %s must have at least 50 players.")
         self.assertEqual(image.read(economy.OFFER_DAYS_SEED, 13), bytes.fromhex("5fc6460900") + b"\x90" * 8)
         self.assertEqual(struct.unpack("<I", image.read(economy.STAGE6_CASE, 4))[0], code.SYMBOLS["economy_stage6"])
-        call = image.read(economy.AFTER_STAGE, 5)
-        self.assertEqual(economy.AFTER_STAGE + 5 + struct.unpack("<i", call[1:])[0], code.SYMBOLS["economy_after"])
+        for site, symbol in ((economy.AFTER_STAGE, "economy_after"), (economy.EXPIRING_RELEASE, "economy_expire")):
+            call = image.read(site, 5)
+            self.assertEqual(site + 5 + struct.unpack("<i", call[1:])[0], code.SYMBOLS[symbol])
         self.assertEqual(code.SYMBOLS["economy_week"], 0x323870)
         self.assertEqual(code.SYMBOLS["economy_fill_gate"], 0x31E605)   # the practice-squad chain target
         for va, window in code.WINDOWS.items():
@@ -207,6 +208,59 @@ def clear_free_agent_weeks(m):
     for i in range(m.get(m.root + 0x38)):
         p = m.get(lst + 4 * i)
         m.uc.mem_write(p + 0x25, bytes((m.uc.mem_read(p + 0x25, 1)[0] & 31,)))
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class ExpiringContractsAtTheFloorTests(unittest.TestCase):
+    """The re-signing stage (0x323720) with one CPU club at 50 players, six of them lower-level players on
+    expiring contracts that the retail renewal draw declines."""
+
+    def run_resign(self, payload):
+        from tools.franchise_economy.probe import start
+        m = start(retail_roster(), payload)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        for t in range(32):
+            m.call(0xC4D30, ecx=m.team_base + 500 * t, edx=0)
+        team = m.team_base
+        for p in roster(m, team)[50:]:
+            m.call(0x2BD900, ecx=team, edx=p, args=(1, 1))
+        members = roster(m, team)
+        self.assertEqual(len(members), 50)
+        cheap = sorted(members, key=lambda p: m.call(code.SYMBOLS["economy_value"] if "economy_value" in code.SYMBOLS
+                                                     else 0x2BD440, ecx=p, edx=0, args=(0, 1, 0)) & 0xFFFF)[:6]
+        for t in range(1, 32):                       # every other contract runs on: only this club re-signs
+            for p in roster(m, m.team_base + 500 * t):
+                raw = bytearray(m.uc.mem_read(p, 84))
+                if not raw[0x24] & 15:
+                    raw[0x24] |= 1
+                    raw[0x27] = (raw[0x27] & 0xF0) | max(raw[0x27] & 15, 1)
+                    m.uc.mem_write(p, bytes(raw))
+        for p in members:
+            raw = bytearray(m.uc.mem_read(p, 84))
+            if p in cheap:
+                raw[0x24] &= 0xF0                    # expiring
+            elif not raw[0x24] & 15:
+                raw[0x24] |= 1
+                raw[0x27] = (raw[0x27] & 0xF0) | max(raw[0x27] & 15, 1)
+            m.uc.mem_write(p, bytes(raw))
+        m.call(0xC3F00, ecx=team)
+        m.put(0xE3C278, m.get(team + 0x124) + 5000)
+        m.put(0xE576A4, 2)
+        # Narrower claim: the retail renewal draw (0x322790) declines every expiring player here.
+        m.leaf(0x322790, lambda: m.ret(pop=4), reason="renewal draw declines (test scenario)")
+        m.call(0x323720, ecx=MENU, budget=2_000_000_000)
+        return [p in roster(m, team) for p in cheap], len(roster(m, team))
+
+    def test_revision_two_releases_them(self):
+        from tests.franchise_economy_legacy import legacy_image
+        kept, count = self.run_resign(legacy_image(retail_bytes(), 2))
+        self.assertEqual((kept, count), ([False] * 6, 44))
+
+    def test_revision_three_keeps_the_club_at_fifty(self):
+        kept, count = self.run_resign(economy.apply(retail_bytes())[0])
+        self.assertEqual(kept, [True] * 6)
+        self.assertEqual(count, 50)
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")

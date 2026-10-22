@@ -238,7 +238,7 @@ SECTION(".roster_d") unsigned FAST economy_renew_room(u8 *p, u8 *team) {
     return room >= (int)economy_value(p, !!(remaining & 15), 0, 1, 0) + 10;
 }
 
-SECTION(".roster_c") __attribute__((naked)) void economy_renew_gate(void) {
+SECTION(".roster_e") __attribute__((naked)) void economy_renew_gate(void) {
     __asm__("mov %esi, %ecx\nmov %edi, %edx\ncall economy_renew_room\n"
             "test %eax, %eax\njz 1f\npush %ebx\nmov 0x24(%esi), %ebx\n"
             "and $15, %bl\njmp 0x322eb7\n1: ret\n");
@@ -339,9 +339,9 @@ SECTION(".reconcile") void FAST economy_reconcile(u8 *team) {
 /* DESIGN: the retail weekly CPU fill (0x323870), rebuilt as one helper: every
  * position below the native minimum (or wanted depth) gets a 0x322BB0 signing
  * with chance `chance`. With `floor` set it fills a club to FLOOR_PLAYERS with
- * minimum-salary depth instead: the budget starts at twice the rookie minimum and
- * doubles only when nobody at the position is that cheap, so the best cheap
- * player at a needed position signs at (about) the minimum. */
+ * lower-level depth instead: the budget is twice the rookie minimum, doubling only
+ * when nobody at the position is that cheap (to four times it until free agency
+ * closes), so the best cheap player at a needed position signs at about the minimum. */
 SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsigned want, unsigned floor) {
     int need[17];
     (want ? n_need_want : n_need_low)(need, team);
@@ -353,10 +353,15 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
                 if (n_frand(RNG) < chance) n_cpu_sign(team, pos, budget, menu);
                 continue;
             }
-            /* The cheapest tier first: twice the rookie minimum, then doubling, up to the room. */
+            /* Lower-level players first, the cheapest tier first: twice the rookie minimum,
+             * then four times it (about $3.7M real), within the room. Before free agency
+             * (stages 1 and 2) the market above that is left to free agency and the clubs'
+             * own offers; from the end of free agency on the tiers keep doubling to the room. */
             if (team[0x11c] >= FLOOR_PLAYERS) return;
             int room = ROOM(team) - 10;
-            for (budget = 2 * economy_floor(0); !n_cpu_sign(team, pos, minimum(budget, room), menu) && budget < room; budget *= 2) {}
+            unsigned least = economy_floor(0);
+            int top = *(u32 *)0xe576a4 >= 3 ? room : (int)(4 * least);
+            for (budget = 2 * least; !n_cpu_sign(team, pos, minimum(budget, room), menu) && budget < room && budget < top; budget *= 2) {}
         }
 }
 
@@ -377,18 +382,24 @@ SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
  * clubs (less 10, and less a minimum salary for each slot a club still needs to
  * reach the floor), preferring clubs he would start for (fewer players at least
  * as good at his position than the native minimum there), then clubs he would
- * play for (fewer than the wanted depth). */
+ * play for (fewer than the wanted depth). A club that already signed a free
+ * agent unsigned for two weeks or more since this week's count (his count is
+ * still on him until the next weekly pass clears rostered players) makes no
+ * other offer that week, so the deals spread across clubs. */
 SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
     unsigned pos = p[0x35], least = economy_floor(0), tier = 0;
     float him = n_rating(p, 1);
     int best = 0;
     for (unsigned t = 0; t < n_teams(); ++t) {
         u8 *team = n_team(t);
-        unsigned count = team[0x11c], better = 0, level;
+        unsigned count = team[0x11c], better = 0, busy = 0, level;
         if (!CPU(team)) continue;
-        for (unsigned j = 0; j < count; ++j)
-            if (((u8 **)team)[j][0x35] == pos && !(n_rating(((u8 **)team)[j], 1) < him)) ++better;
-        level = better < n_minimum_at(pos) ? 2 : better < n_wanted_at(pos) ? 1 : 0;
+        for (unsigned j = 0; j < count; ++j) {
+            u8 *q = ((u8 **)team)[j];
+            busy |= q[0x25] >= 0x40;     /* signed a long-unsigned free agent since this week's count */
+            if (q[0x35] == pos && !(n_rating(q, 1) < him)) ++better;
+        }
+        level = busy ? 0 : better < n_minimum_at(pos) ? 2 : better < n_wanted_at(pos) ? 1 : 0;
         int room = ROOM(team) - 10;
         if (count < FLOOR_PLAYERS) room -= (int)((FLOOR_PLAYERS - 1 - count) * least);
         if (level && room > 0 && (level > tier || (level == tier && room > best))) {
@@ -407,8 +418,8 @@ SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
  * 4. A free agent above PROVE_IT unsigned for two weeks takes the best offer on
  *    the table (economy_value now asks no more than it): the club with the most
  *    room that would start him signs him through 0x322BB0 to a one-year deal
- *    (economy_contract), at most one such deal per club a week. In season a full
- *    club first cuts one player (0x2BF9A0). */
+ *    (economy_contract), one such deal per club a week. In season a full club
+ *    first cuts one player (0x2BF9A0). */
 SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, float want) {
     (void)unused;
     for (unsigned pass = 0; pass < 2; ++pass) {
@@ -428,15 +439,12 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         for (unsigned i = 0; i < team[0x11c]; ++i) ((u8 **)team)[i][0x25] &= 31;
         if (CPU(team)) upkeep(team, menu);
     }
-    unsigned limit = *(u32 *)0xe576a4 >= 8 ? 53 : 64, taken = 0;
+    unsigned limit = *(u32 *)0xe576a4 >= 8 ? 53 : 64;
     for (unsigned i = list[0]; i-- > 0;) {
         u8 *p = ((u8 **)list[1])[i], *club = 0;
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
-        unsigned bit = 1u << ((club - n_team(0)) / 500 & 31);   /* one prove-it deal per club per week */
-        if (taken & bit) continue;
-        taken |= bit;
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
     }
@@ -462,10 +470,24 @@ SECTION(".roster_d") void FAST economy_clubs(void *menu, unsigned vetcut) {
     }
 }
 
-SECTION(".roster_e") __attribute__((naked)) void economy_after(void) {
+/* DESIGN: the re-signing stage (0x323720) releases every expiring contract the
+ * club does not renew (0x322B60 at 0x3237AC). A CPU club already at or below the
+ * floor keeps a lower-level expiring player instead (no more than four times the
+ * rookie minimum on the market), renewed through the economy's renewal gate
+ * (0x322EB0, which refuses what the club cannot afford), so free agency does not
+ * open with clubs far below 50. */
+SECTION(".roster_e") void FAST economy_expire(u8 *team, u8 *p, void *menu) {
+    if (CPU(team) && team[0x11c] <= FLOOR_PLAYERS && economy_value(p, 0, 0, 1, 0) <= 4 * economy_floor(0)) {
+        __asm__ volatile("call 0x322eb0" : : "S"(p), "D"(team) : "eax", "ecx", "edx", "cc", "memory");
+        if (p[0x24] & 15) return;
+    }
+    ((void (FAST *)(u8 *, u8 *, void *))0x322b60)(team, p, menu);
+}
+
+SECTION(".week") __attribute__((naked)) void economy_after(void) {
     __asm__("mov %ebx, %ecx\nxor %edx, %edx\ncall economy_clubs\njmp 0xc4bb0\n");
 }
 
-SECTION(".roster_e") __attribute__((naked)) void economy_stage6(void) {
+SECTION(".week") __attribute__((naked)) void economy_stage6(void) {
     __asm__("xor %ecx, %ecx\nmov $1, %edx\ncall economy_clubs\njmp 0x247fd7\n");
 }
