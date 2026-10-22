@@ -690,7 +690,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_cpu_qb_reads_code.py": "a20b09e6bf4b98a02f481562717630c633bbf84d206921f2f9c7548707a6738c",
         "mod_editor/core/nfl2k5_db_ball_play.py": "1da99c1ded8ec24816fc6c188675d1f4429c651b29a4be291862eeb1b0f6205d",
         "mod_editor/core/nfl2k5_db_ball_play_code.py": "4e380523a17918720ad3c229f1a7d3ca5682dc12ebc70df63ef022b3449db3b6",
-        "mod_editor/core/nfl2k5_qb_accuracy.py": "15431f5bfafb94dfcae28b7a49e8dc376a544c7d0994d927d75787b76e8673c2",
+        "mod_editor/core/nfl2k5_qb_accuracy.py": "b403633c90055ca933201dd0058923c96559297b95ed35831483acd0f6d6b59f",
         "mod_editor/core/nfl2k5_qb_accuracy_code.py": "af47c459ed3b95d52b22e480745ff767868136e292b4c953c2e5d4bc5030a70f",
         "mod_editor/core/nfl2k5_crib.py": "01f98c38f1dcf6a6175e017b68794fc16011b437763eb42d8d3810430760fb8c",
         "mod_editor/core/nfl2k5_crib_electronics_targets.py": "6d474769ee594d792d11f112fb3e39da8bd2ae8117bae92231956b4305112e2b",

@@ -86,11 +86,11 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(0x2D9F18 + 5 + struct.unpack_from("<i", raw, 1)[0], code + assembly.LABELS["place"])
         self.assertEqual(raw[5:], b"\x90\x90")
         self.assertEqual(self.receipt["runtime_witnessed"], False)
-        self.assertEqual([e["label"] for e in self.receipt["edits"]], ["miss_store", "quick_lead", "screen_lead"])
+        self.assertEqual([e["label"] for e in self.receipt["edits"]], ["miss_store", "quick_lead"])
         lead = image.read(0x2DAD97, 36)                                       # b777 qb4: quick-throw placement
         self.assertEqual(0x2DAD97 + 5 + struct.unpack_from("<i", lead, 1)[0], code + assembly.LABELS["lead"])
         self.assertEqual((lead[0], lead[5:]), (0xE9, b"\x90" * 31))
-        self.assertEqual(image.read(0x226832, 3), bytes.fromhex("83fa20"))   # cmp edx, 0x20: kind 9 takes the lead path
+        self.assertEqual(image.read(0x226832, 3), bytes.fromhex("83fa09"))   # b778 qa1: the screen shortcut stays retail
         self.assertEqual(space.status(self.final), "applied")
 
     def test_replay_and_foreign_refusal_before_mutation(self):
@@ -101,6 +101,7 @@ class WriterTests(unittest.TestCase):
         for label, (va, content) in {"hook": (0x2D9F18, b"\xe9\x00\x00\x00\x00"),
                                      "nops": (0x2D9F1D, b"\xcc"),
                                      "screen operand": (0x226834, b"\x0a"),
+                                     "v0.6.1 screen operand": (0x226834, b"\x20"),   # b778 qa1: no longer this owner's
                                      "quick lead nops": (0x2DADBA, b"\xcc"),
                                      "lead solver": (0x2DAC90, b"\x90"),
                                      "predictor": (0x226840, b"\x90"),

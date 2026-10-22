@@ -14,9 +14,15 @@ and its height error by the QB's own Pass Accuracy (k_acc curve in the cave: 0.5
 grades, ball flight, catching and interceptions are untouched; a throw with no miss (a set QB) is byte-for-byte
 retail. Settings are build-time only.
 
-It also makes screen passes lead the receiver (SCREEN_LEAD, one operand byte): retail aims a screen (route kind 9) at the
-spot where the back is at the release, so a back still moving out to his screen spot turns and comes back for the ball
-(Noah 10/20: "HB screen, he starts running backwards"); now the ball is led along his route, which ends at his spot.
+b778 qa1: screen passes are retail again. b777 qb3 had changed one operand (0x226834, cmp edx,9 -> 0x20) so a screen
+receiver (route kind 9) was led along his route to his screen spot. That rested on a fixture whose receiver never had
+the moving animation flag, so retail looked like "aim at his release spot". In the game retail leads a MOVING screen
+receiver: the kind-9 shortcut returns 0 for a moving player and the target routine 0x2F43E0 then extrapolates his
+root-motion velocity (0x2F4350) over the flight time. With the operand changed, a back or bubble receiver who keeps
+running at or past his spot was thrown to the spot itself, behind him (native: 5.3 yd behind a back running 7 yd/s
+through his spot, 7.7 yd when 2 yd past it; on the released v0.6.1 disc a live CPU screen release was aimed at the
+back's release x where retail led him 1.24 yd along his run). The operand is no longer touched; the predictor span
+stays a guarded prerequisite.
 
 b777 qb4 adds quick-throw placement (LEAD hook, same cave): when a moving receiver runs within 45 degrees of the throw
 line (quick outs, flats, bubbles), the lead solver 0x2DA8E0 moves the target 1.5 yd sideways off his path toward the
@@ -38,17 +44,12 @@ BUILD_CAPTION = "Accurate short throws and throws on the run (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Quarterbacks stop overthrowing drags, outs, slants and digs, above all on the run: a miss "
              "on a throw under 40 yards now shrinks with the passer's own Pass Accuracy (a 90 passer misses by about a "
              "third of what he did, a 55 passer about as before) and lands behind the receiver as often as ahead of "
-             "him. Screen passes lead the back toward his spot instead of pulling him backwards, and quick outs, flats "
-             "and bubbles are thrown on the receiver's path instead of a yard and a half underneath him, so he can "
-             "catch them in stride. Ratings and grades are unchanged; deep balls and throws from a set pocket keep "
+             "him. Quick outs, flats and bubbles are thrown on the receiver's path instead of a yard and a half "
+             "underneath him, so he can catch them in stride. Ratings and grades are unchanged; deep balls and throws from a set pocket keep "
              "their native accuracy and placement.")
 HOOK = ("miss_store", 0x002D9F18, bytes.fromhex("d95c24148b5d08"), "place")
-# b777 coordinator ask (screens): the route predictor 0x2266A0 (callers: the throw target 0x2F43E0 and the CPU QB read
-# grid 0x19A3FA) returns a screen receiver's (route kind 9) CURRENT spot instead of leading him, so a back still moving
-# to his screen spot has to come back for the ball. The kind-9 shortcut test "cmp edx, 9" (0x226832) gets an
-# impossible operand (kinds are masked to 0..31), so kind 9 takes the predictor's ordinary path: he is led along his
-# route segments, which end at his screen spot (1.5 yd behind the line). Stem-block kind 10 keeps the shortcut.
-SCREEN_LEAD = ("screen_lead", 0x00226834, b"\x09", b"\x20")
+# b777 qb3 changed the screen-route shortcut operand at 0x226834 (09 -> 20); b778 qa1 dropped that edit (see the module
+# docstring). A disc built with it reads as foreign here; rebuild from a supported source.
 # b777 qb4: the lead solver's placement tail (fld sin; fmul [0x4F0F74]; fadd x; fstp x; fld cos; ...; fstp z) at
 # 0x2DAD97..0x2DADBB becomes a jmp to the cave's depth-scaled copy, which returns to 0x2DADBB.
 LEAD = ("quick_lead", 0x002DAD97, bytes.fromhex("d9442434d80d740f4f00d8442450d95c2450d9442430d80d740f4f00d8442458d95c2458"),
@@ -102,7 +103,7 @@ def sites(code_va=0):
     for name, va, before, label in (HOOK, LEAD):
         jump = b"\xe9" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
         edits.append((name, va, before, jump.ljust(len(before), b"\x90")))
-    return edits + [SCREEN_LEAD]
+    return edits
 
 
 def _recognize(payload):
@@ -182,4 +183,4 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "LEAD", "SCREEN_LEAD", "apply", "status", "read_settings", "allocation", "code_for", "sites"]
+__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "LEAD", "apply", "status", "read_settings", "allocation", "code_for", "sites"]

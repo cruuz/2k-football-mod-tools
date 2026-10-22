@@ -163,20 +163,32 @@ class AccuracyMachine(NativeMachine):
                 "launch": launch, "raw": (time, *end[:3]), "capture": dict(self.capture)}
 
 
-def screen_target(machine, position, velocity, hold=1.):
-    """A screen receiver (route kind 9, HB role) at ``position`` yd moving ``velocity`` yd/s; QB set 9 yd deep."""
+def screen_target(machine, position, velocity, hold=1., *, spot=None, due=None):
+    """A screen receiver (route kind 9, HB role) at ``position`` yd moving ``velocity`` yd/s; QB set 9 yd deep.
+
+    b778 qa1: a moving receiver carries the game's moving animation flag (0x08 at [P+0x14]), as every running player
+    does in the game; the retail kind-9 shortcut then leaves the lead to the target routine's root-motion velocity
+    fallback 0x2F4350 (the clip velocity this fixture sets equals ``velocity``). ``spot`` (yd) and ``due`` (seconds from
+    now) replace the default far straight route segment with one that ends at his screen spot."""
     machine.ratings()
     machine.quarterback("set")
     machine.vec(machine.Q + 0x530, (0., 0., -9 * YD, 1.))
     machine.vec(machine.BALL + 0x100, (0., 180., -9 * YD, 1.))
     machine.route((position[0] * YD, position[1] * YD), (velocity[0] * YD, velocity[1] * YD), kind=9, role=1,
                   direction=1, line=0.)
+    if spot is not None:
+        record = 0xC16590
+        machine.f(record + 12, 1. + due)
+        machine.f(record + 16, spot[0] * YD)
+        machine.f(record + 20, spot[1] * YD)
     machine.put(machine.P + 0x2C, 1)
     machine.uc.mem_write(machine.P + 0x1035, bytes([1]))
+    machine.uc.mem_write(machine.P + 0x400, bytes([0x08 if any(velocity) else 0x00]))
     result = machine.target(hold)
     time = result["time"]
     return {"flight_s": time, "aim": (result["point"][0] / YD, result["point"][2] / YD),
-            "receiver": (position[0] + velocity[0] * time, position[1] + velocity[1] * time)}
+            "receiver": (position[0] + velocity[0] * time, position[1] + velocity[1] * time),
+            "velocity_fallback": result["fallback_calls"]}
 
 
 def summary(rows):
