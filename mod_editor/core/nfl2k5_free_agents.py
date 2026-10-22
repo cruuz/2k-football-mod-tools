@@ -41,6 +41,7 @@ def is_pack_input(edits):
 def apply_body(body, data=None):
     """Return new bytes and a scope receipt; never mutate the caller's data."""
     from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_college_check as college_check
     data = load_data() if data is None else data
     rr._require(data.get("schema") == SCHEMA and data.get("as_of") == "2026-10-05",
                 "Unsupported free-agent plan.")
@@ -133,8 +134,9 @@ def apply_body(body, data=None):
         p.record.set("pbp_id", 9000 + row["commentary_number"])
         doc.set_name(p, "first", row["first"])
         doc.set_name(p, "last", row["last"])
-        if row.get("college") in doc.colleges:
-            doc.set_college(p, doc.colleges.index(row["college"]))
+        # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
+        # reads it without a null check); unknown or blank names take the table's "None".
+        doc.set_college(p, college_check.resolve_index(doc.colleges, row.get("college")))
         doc.free_agents.append(p.offset)
     doc._reindex_membership()
     # This writer owns appearance, new records and FA membership. Preserve

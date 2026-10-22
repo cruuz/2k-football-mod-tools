@@ -3516,6 +3516,10 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme, refresh_follows=refresh_follows)
         body, commentary_receipt = repair_commentary_body(body)
         receipt["commentary"] = {k: v for k, v in commentary_receipt.items() if k != "edits"}
+        # b778 fr1: the last word on the main roster: no player leaves without a college record (a null word
+        # stops the Franchise Contracts / Free Agents screens on that player). Only null words change.
+        from . import nfl2k5_college_check
+        body, receipt["college_null_repair"] = nfl2k5_college_check.heal_null_references(body, source="main roster")
         replacement = before[:RESOURCE_HEADER_SIZE] + body
         from . import nfl2k5_college_refs
         nfl2k5_college_refs.verify_table_edit(archive, before[RESOURCE_HEADER_SIZE:], body)
