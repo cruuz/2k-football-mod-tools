@@ -44,7 +44,8 @@ class Revision3ImageTests(unittest.TestCase):
         self.assertEqual(text, "The %s %s must have at least 50 players.")
         self.assertEqual(image.read(economy.OFFER_DAYS_SEED, 13), bytes.fromhex("5fc6460900") + b"\x90" * 8)
         self.assertEqual(struct.unpack("<I", image.read(economy.STAGE6_CASE, 4))[0], code.SYMBOLS["economy_stage6"])
-        for site, symbol in ((economy.AFTER_STAGE, "economy_after"), (economy.EXPIRING_RELEASE, "economy_expire")):
+        for site, symbol in ((economy.AFTER_STAGE, "economy_after"), (economy.EXPIRING_RELEASE, "economy_expire"),
+                             (economy.FA_RETIREMENT, "economy_fa_retire")):
             call = image.read(site, 5)
             self.assertEqual(site + 5 + struct.unpack("<i", call[1:])[0], code.SYMBOLS[symbol])
         self.assertEqual(code.SYMBOLS["economy_week"], 0x323870)
@@ -56,6 +57,9 @@ class Revision3ImageTests(unittest.TestCase):
         from tools.franchise_economy import dead_code
         report = dead_code.verify(self.retail)
         self.assertEqual(report["references"], 0)
+        self.assertEqual(report["tls_callbacks"], [])
+        self.assertTrue(report["kernel_imports_all_ordinals"])
+        self.assertGreater(report["kernel_imports"], 100)
         self.assertEqual(sorted(int(k, 16) for k in report["windows"]),
                          sorted(va for va in code.WINDOWS if va in dead_code.WINDOWS))
         for va, (size, digest) in dead_code.WINDOWS.items():
@@ -261,6 +265,36 @@ class ExpiringContractsAtTheFloorTests(unittest.TestCase):
         kept, count = self.run_resign(economy.apply(retail_bytes())[0])
         self.assertEqual(kept, [True] * 6)
         self.assertEqual(count, 50)
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class FreeAgentsSurviveTheNewLeagueYearTests(unittest.TestCase):
+    """The retail retirement pass 0x2BDB00 with every free agent unsigned (contract value 0)."""
+
+    def marked(self, payload):
+        from tools.franchise_economy.probe import start
+        m = start(retail_roster(), payload)
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        lst, n = m.get(m.root + 0x3C), m.get(m.root + 0x38)
+        agents = [m.get(lst + 4 * i) for i in range(n)]
+        for p in agents:
+            m.uc.mem_write(p + 10, b"\0\0")
+        m.call(0x2BDB00, budget=2_000_000_000)
+        retired = [p for p in agents if m.uc.mem_read(p + 8, 1)[0] & 8]
+        return len(agents), retired, [m.uc.mem_read(p + 10, 2) for p in agents]
+
+    def test_revision_two_retires_every_free_agent(self):
+        from tests.franchise_economy_legacy import legacy_image
+        n, retired, values = self.marked(legacy_image(retail_bytes(), 2))
+        self.assertGreater(n, 100)
+        self.assertEqual(len(retired), n)
+
+    def test_revision_three_retires_them_on_age_and_rating_only(self):
+        # The pass still retires the lowest-rated free agents (0x2BD0E0) when the roster file needs free
+        # records for the draft class, so the pool keeps its best players instead of none.
+        n, retired, values = self.marked(economy.apply(retail_bytes())[0])
+        self.assertLess(len(retired), n - 50)
+        self.assertEqual(set(bytes(v) for v in values), {b"\0\0"})   # the lent unit is returned
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")

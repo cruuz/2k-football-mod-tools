@@ -484,6 +484,18 @@ SECTION(".roster_e") void FAST economy_expire(u8 *team, u8 *p, void *menu) {
     ((void (FAST *)(u8 *, u8 *, void *))0x322b60)(team, p, menu);
 }
 
+/* DESIGN: at the end of the playoffs the retail retirement pass (0x2BDB00) asks
+ * 0x2BCF90 about every free agent, and that decision retires anyone whose contract
+ * value is zero at once (0x2BCFAA), which every unsigned free agent is: the pool
+ * emptied at each new league year (332 of 332 in a v0.6.1 franchise) and clubs that
+ * lost players to retirement had nobody to sign. At the free-agent call (0x2BDB74)
+ * a zero value is lent as one unit for the call only, so a free agent retires on
+ * the same age and rating rule as a rostered player (32 of those 332 did). */
+SECTION(".roster_e") __attribute__((naked)) void economy_fa_retire(void) {
+    __asm__("mov 4(%esp), %eax\npush %esi\nmovzwl 10(%edi), %esi\ntest %esi, %esi\njnz 1f\n"
+            "movw $1, 10(%edi)\n1: push %eax\ncall 0x2bcf90\nmov %si, 10(%edi)\npop %esi\nret $4\n");
+}
+
 SECTION(".week") __attribute__((naked)) void economy_after(void) {
     __asm__("mov %ebx, %ecx\nxor %edx, %edx\ncall economy_clubs\njmp 0xc4bb0\n");
 }

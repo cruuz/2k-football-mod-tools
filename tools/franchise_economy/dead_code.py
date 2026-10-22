@@ -6,8 +6,18 @@ For every window [start, end) this checks, over every byte offset of every secti
 - no rel32 call/jmp (E8/E9) or rel32 conditional jump (0F 80..8F) outside the window targets inside it;
 - no rel8 short jump (70..7F, EB) outside the window targets inside it;
 - the window starts after a return and alignment padding and its bytes match the pinned digest.
-A computed address that never appears as an encoding cannot be excluded by a static scan; the same
-standard admitted the practice-squad caves (tools/practice_squad/AUDIT.md). Usage: dead_code.py RETAIL_XBE
+Indirect transfers (b778 fa2, asked by the coordinator). A function-pointer table, a C++ vtable, a callback
+argument or a `mov reg, imm`/`push imm` all hold the target as a plain 4-byte absolute value somewhere in the
+image, so the value scan above (every byte offset, every section, plus the XBE headers) covers them. The other
+ways an XBE can reach code are checked by name: the entry point (stored XOR-encoded in the header, both the
+retail and the debug key are decoded), TLS callbacks (the TLS directory's callback list), and imports. An XBE
+has no export table and no DLL imports: its only imports are kernel ordinals in the kernel thunk table
+(XOR-encoded address), which the loader resolves to kernel addresses outside the image, and the XDK libraries
+are linked statically and called directly. The image has a fixed base and no relocations, so code cannot form
+a window address except from an encoded constant or arithmetic on one; that last case is outside any static
+scan and is covered dynamically (fa2 report: execution hooks on the five windows in the unpatched executable
+through a franchise offseason and season in Unicorn, and breakpoints in xemu across boot, menus, a franchise
+load and a played game; no hit). Usage: dead_code.py RETAIL_XBE
 """
 from __future__ import annotations
 
@@ -41,11 +51,12 @@ def references(payload: bytes, windows=WINDOWS) -> dict:
             if lo <= target < hi and not lo <= source < hi:
                 found[hex(lo)].append((hex(source), hex(target)))
 
+    headers = struct.unpack_from("<I", payload, 0x108)[0]
+    blocks = [(0x10000, payload[:headers])]
     for section in image.sections:
-        if not section.raw_size:
-            continue
-        data = image.read(section.start, section.raw_size)
-        base = section.start
+        if section.raw_size:
+            blocks.append((section.start, image.read(section.start, section.raw_size)))
+    for base, data in blocks:
         # Absolute values: the top two bytes of every window address are 0x00 and 0x39/0x3B/0x3D.
         for lo, hi in spans:
             top = struct.pack("<H", lo >> 16)
@@ -88,11 +99,45 @@ def verify(payload: bytes) -> dict:
         if not tail or not (tail.endswith(b"\xc3") or tail[-3:-2] == b"\xc2"):
             raise ValueError(f"{start:#x}: not preceded by a return and padding")
         report[hex(start)] = {"size": size, "sha256": digest}
+    lo_hi = [(start, start + size) for start, (size, _) in WINDOWS.items()]
+    def outside(va):
+        return not any(lo <= va < hi for lo, hi in lo_hi)
+    entry = struct.unpack_from("<I", payload, 0x128)[0]
+    for key in (0xA8FC57AB, 0x94859D4B):                      # retail and debug entry-point keys
+        if not outside(entry ^ key):
+            raise ValueError("the XBE entry point is inside a window")
+    tls = struct.unpack_from("<I", payload, 0x12C)[0]
+    callbacks = struct.unpack("<I", image.read(tls + 12, 4))[0] if tls else 0
+    tls_callbacks = []
+    while callbacks:
+        cb = struct.unpack("<I", image.read(callbacks + 4 * len(tls_callbacks), 4))[0]
+        if not cb:
+            break
+        if not outside(cb):
+            raise ValueError("a TLS callback is inside a window")
+        tls_callbacks.append(hex(cb))
+    thunk = struct.unpack_from("<I", payload, 0x158)[0]
+    thunks = []
+    for key in (0x5B6D40B6, 0xEFB1F152):                      # retail and debug kernel-thunk keys
+        try:
+            raw = image.read(thunk ^ key, 4 * 400)
+        except Exception:  # noqa: BLE001 - the other key does not decode to a mapped address
+            continue
+        for i in range(400):
+            v = struct.unpack_from("<I", raw, 4 * i)[0]
+            if not v:
+                break
+            if not (v & 0x80000000) or not outside(v):
+                raise ValueError("a kernel import is not an ordinal")
+            thunks.append(v)
+        break
     refs = references(payload)
     bad = {k: v for k, v in refs.items() if v}
     if bad:
         raise ValueError(f"referenced windows: {bad}")
-    return {"evidence": "PROVED OFFLINE", "windows": report, "references": 0}
+    return {"evidence": "PROVED OFFLINE", "windows": report, "references": 0,
+            "entry_point": hex(entry ^ 0xA8FC57AB), "tls_callbacks": tls_callbacks,
+            "kernel_imports": len(thunks), "kernel_imports_all_ordinals": True}
 
 
 if __name__ == "__main__":

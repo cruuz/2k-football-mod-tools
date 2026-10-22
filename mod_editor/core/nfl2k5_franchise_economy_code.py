@@ -158,12 +158,13 @@ WINDOWS = {
             "eb938d65f45b5e5f5dc3"
         ).ljust(352, b"\xcc")
     ),
-    0x3975f0: (  # roster_e: 153/224 bytes
+    0x3975f0: (  # roster_e: 188/224 bytes
         bytes.fromhex(
             "89f189fae8fe2e020085c0740c538b5e2480e30fe9aeb8f8ffc30f0b5589e556538b751856ff7514"
             "ff75108b550c8b4d08e81aead4ff568b551089c38b4d08e8ece9d4ff8d65f801d85b5e5dc35589e5"
             "5789cf5689d6538b5d08e8e175daff85c0741b833d3c01e600017412895d0889f25b89f95eb8602b"
-            "32005f5dffe080bf1c0100003277e5e834b8f8fff646240f74da5b5e5f5dc20400"
+            "32005f5dffe080bf1c0100003277e5e834b8f8fff646240f74da5b5e5f5dc204008b442404560fb7"
+            "770a85f6750666c7470a010050e8ee58f2ff6689770a5ec204000f0b"
         ).ljust(224, b"\xcc")
     ),
 }
@@ -176,4 +177,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_pick': 2861856, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080}
+SYMBOLS = {'economy_pick': 2861856, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080}
