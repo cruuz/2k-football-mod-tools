@@ -94,15 +94,28 @@ disc...** (marked experimental).
 
 ## 7. Common settings
 
-- **Extra point distance.** The Studio cannot set a custom distance. It has one on/off choice, **Modern kick spots and kicking
-  power** (Gameplay, Game Fixes, and in Build & Share). On: kickoffs from the 35, touchbacks to the 35, extra points snapped from
-  the 15, and longer kicking range for strong kickers. Two-point tries stay at the 2. Off: the original game's spots, with the
-  extra point snapped from the 2. There is no way in the Studio to choose any other yard line. As far as the SOFTDRINK build recipe
-  shows, this option is off in the pack as released, so a SOFTDRINK disc uses the original extra point spot. To try the 15, use
-  **Customize SOFTDRINK 2K28**, tick the option, and build your own disc.
+- **Extra point distance.** The Studio cannot set a custom distance. In SOFTDRINK 2K28 extra points are snapped from the 15,
+  and that is fixed. It comes from one on/off option, **Modern kick spots & kicking power**, and the only other choice is the
+  original game's spot, the 2. That option controls four things together: kickoffs from the 35 instead of the 30, touchbacks on
+  kickoffs to the 35 instead of the 20 (punts and safety kicks keep the original 20), extra points from the 15 instead of the 2
+  (two-point tries stay at the 2), and a longer field goal range for strong kickers (about 65 to 69 yards for a 99 kicker).
+  SOFTDRINK also turns on **Dynamic kickoff alignment** (kickoff coverage and return line-ups) and **Dynamic kickoff** (nobody
+  moves until the ball comes down, a landing zone, CPU kicks and touchbacks to the 35), which are built for the 35-yard tee.
+  To go back to the original extra point spot:
+  1. Open **Build & Share**, **Share**, **Customize SOFTDRINK 2K28**.
+  2. Untick **Dynamic kickoff: ready stance and close blocks**. Do this first: while it is ticked, a build switches
+     **Modern kick spots & kicking power** back on by itself.
+  3. Untick **Dynamic kickoff alignment**, and untick **Modern kick spots & kicking power**.
+  4. Optional: tick **More kicking power; keep 2004 kick spots** to keep the longer field goals with the original spots. You
+     cannot tick this and Modern kick spots together.
+  5. Make my disc. This puts the extra point back at the 2, and also puts kickoffs back to the 30 and kickoff touchbacks back to
+     the 20, with the original kickoff set-ups.
+  A customized build is made from the pack's included sources. The pack notes say a rebuild from those sources has not been
+  checked against the released disc byte for byte, so expect to test it yourself.
 - **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Modern, Experimental), read the list of changes,
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
-- **Play clock.** The optional **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes.
+- **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
+  accelerated clock on with a 20 second minimum.
 - **Memory.** Always 128 MiB in xemu for SOFTDRINK.
 
 ## 8. If something goes wrong
