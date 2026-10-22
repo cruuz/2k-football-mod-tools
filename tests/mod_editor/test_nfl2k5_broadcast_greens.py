@@ -179,9 +179,10 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(result["a23"], "grass")
         self.assertEqual(result["a24"], "synthetic")
 
-    def test_b778_only_the_fieldturf_home_fields_take_the_fieldturf_family(self):
+    def test_b778_the_fieldturf_and_helix_home_fields_take_their_own_families(self):
         # Davy (10/21, Gillette): "a little too light green"; Noah: darken Gillette and the venues with the same surface.
-        # The real venue table decides: the ten synthetic_fieldturf venues go deeper, Helix and grass keep their family.
+        # Noah (10/22, Nissan at night): the Helix turf is "too vibrant ... too green". The real venue table decides:
+        # the ten synthetic_fieldturf venues and the six synthetic_helix venues change, natural grass keeps its family.
         from mod_editor.core import nfl2k5_espn25_fields as fields
         archive = SimpleNamespace(entries=[SimpleNamespace(virtual_offset=0, size=32)] * 6,
                                   read=lambda offset, size: bytes(32))
@@ -194,18 +195,25 @@ class OwnershipTests(unittest.TestCase):
                          {"ATL", "CAR", "CIN", "DET", "MIN", "NE", "NO", "NYG", "NYJ", "SEA"})
         helix = {p for p, v in table.items() if v["look"] == "synthetic_helix"}
         self.assertEqual({table[p]["team"] for p in helix}, {"DAL", "IND", "LAR", "LAC", "TEN", "HOU"})
-        self.assertTrue(all(result[p] == "synthetic" for p in helix))
+        self.assertEqual({p for p, v in result.items() if v == "helix"}, helix)
+        self.assertNotIn("synthetic", set(result.values()))   # no home venue is left on the plain synthetic family
         self.assertTrue(all(result[p] == "grass" for p, v in table.items() if v["surface"] == "grass"))
 
-    def test_b778_helix_and_grass_gains_are_the_released_gr4_gains(self):
-        # every bundle outside the ten FieldTurf venues takes exactly the gains the v0.6.1 disc was built with
+    def test_b778_grass_and_plain_synthetic_gains_are_the_released_gr4_gains(self):
+        # every bundle outside the sixteen turf home venues takes exactly the arithmetic the v0.6.1 disc was built with
         self.assertEqual(g.GAINS["synthetic"], (74 / 88, 102 / 108, 102 / 108))
         self.assertEqual(g.GAINS["grass"], (102 / 111,) * 3)
         self.assertEqual(g.SYNTHETIC_GAIN, (74 / 88, 102 / 108, 102 / 108))
         self.assertEqual(g.rgb_transform((88, 108, 64), "synthetic"), (74, 102, 60))
         before, rec = fixture()
-        helix, _ = g.paint_scene(before, rec, "synthetic")
-        self.assertEqual(helix[256:259], bytes((round(61 * 102 / 108), round(110 * 102 / 108), round(86 * 74 / 88))))
+        plain, _ = g.paint_scene(before, rec, "synthetic")
+        self.assertEqual(plain[256:259], bytes((round(61 * 102 / 108), round(110 * 102 / 108), round(86 * 74 / 88))))
+        self.assertEqual(set(g.SATURATION), {"helix"})
+        for rgb in ((100, 125, 69), (88, 108, 64), (7, 250, 3)):          # end zones: c * k * m, as gr4 wrote it
+            for family in ("grass", "synthetic"):
+                want = tuple(int(min(255, max(0, round(c * k * m)))) for c, k, m in zip(rgb, g.GAINS[family], g.END_ZONE_MATCH))
+                self.assertEqual(g._shade(rgb, family, g.END_ZONE_MATCH), want)
+                self.assertEqual(g.rgb_transform(rgb, family), tuple(int(round(c * k)) for c, k in zip(rgb, g.GAINS[family])))
 
     def test_b778_fieldturf_is_a_little_deeper_with_the_same_hue(self):
         import colorsys
@@ -240,6 +248,32 @@ class OwnershipTests(unittest.TestCase):
             self.assertAlmostEqual(t / h, g.FIELDTURF_SHADE, delta=0.02)
         with self.assertRaisesRegex(ValueError, "unknown surface family"):
             g.rgb_transform((88, 108, 64), "astroturf")
+
+    def test_b778_helix_is_a_little_deeper_and_less_vivid_with_the_same_hue(self):
+        import colorsys
+        self.assertEqual(g.HELIX_GAIN, tuple(k * g.HELIX_SHADE for k in g.SYNTHETIC_GAIN))
+        self.assertTrue(0.85 <= g.HELIX_SATURATION < 1.0)
+        def luma(rgb):
+            r, gr, b = rgb
+            return 0.299 * r + 0.587 * gr + 0.114 * b
+        for target in ((86, 107, 58), (84, 105, 62), (72, 93, 58), (98, 124, 66)):      # the Helix look by light
+            old, new = g.rgb_transform(target, "synthetic"), g.rgb_transform(target, "helix")
+            self.assertTrue(0.90 <= luma(new) / luma(old) <= 0.95, (old, new))
+            h0, s0, _ = colorsys.rgb_to_hsv(*(v / 255 for v in old))
+            h1, s1, _ = colorsys.rgb_to_hsv(*(v / 255 for v in new))
+            self.assertLess(abs(h1 - h0) * 360, 3.0, (old, new))          # same hue (one-byte rounding only)
+            self.assertTrue(0.02 <= s0 - s1 <= 0.08, (old, new, s0, s1))   # slightly less saturated
+        # the same entries change and paint stays exact; end zones follow the field
+        before, rec = fixture()
+        plain, plain_receipt = g.paint_scene(before, rec, "synthetic")
+        helix, helix_receipt = g.paint_scene(before, rec, "helix")
+        self.assertEqual(helix_receipt["decoded_ranges"], plain_receipt["decoded_ranges"])
+        self.assertEqual(helix[:256], before[:256])
+        self.assertEqual(helix[259:], before[259:])
+        envelope = g.ms.turf_envelope([(86, 110, 61), (82, 106, 58)])
+        palette = bytes((61, 110, 86, 255)) + bytes(1020)
+        _ez, sel = g.end_zone_palette(palette, envelope, "helix")
+        self.assertEqual(sel, [0])
 
     def test_zero_scratch_final_flag_alignment_changes_without_decoded_changes(self):
         import nfl_vc_lz_fill as fill

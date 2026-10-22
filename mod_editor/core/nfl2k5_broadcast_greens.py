@@ -18,7 +18,10 @@ b778 gr2 (Davy, 10/21, v0.6.1 at Gillette as the Patriots: "the color of the fie
 Noah: "darken Gillette a bit and other stadiums using the same surface as Gillette"): the home fields whose venue
 table look is FieldTurf (``synthetic_fieldturf``: ATL, CAR, CIN, DET, MIN, NE, NO, NYG, NYJ, SEA) take their own
 family, ``fieldturf``: the turf gain times one uniform shade, so the turf is a little deeper with its hue and
-saturation kept. Hellas Helix turf, natural grass, the Anniversary aliases and every stadium scene keep their bytes.
+saturation kept. Noah (10/22 livestream, Nissan Stadium at night): "The grass is too vibrant ... It's too green": the
+Hellas Helix home fields (``synthetic_helix``: DAL, IND, LAR, LAC, TEN, HOU) take ``helix``: the turf gain times the
+same shade, and a slight desaturation toward their own luma (hue kept). Natural grass, the Anniversary aliases, the
+other synthetic fields (neutral venues, rows 24 and 25) and every stadium scene keep their bytes.
 """
 from __future__ import annotations
 
@@ -52,7 +55,17 @@ FIELDTURF_LOOK = "synthetic_fieldturf"
 FIELDTURF_SHADE = 0.93
 FIELDTURF_GAIN = tuple(k * FIELDTURF_SHADE for k in SYNTHETIC_GAIN)
 #: the gain each surface family takes
-GAINS = dict(grass=GRASS_GAIN, synthetic=SYNTHETIC_GAIN, fieldturf=FIELDTURF_GAIN)
+#: b778 gr2: the Hellas Helix home fields: the same shade, then their chroma times HELIX_SATURATION around their own
+#: Rec. 601 luma, so they are a little darker and a little less vivid with the same hue (Noah, 10/22, Nissan at night)
+HELIX_LOOK = "synthetic_helix"
+HELIX_SHADE = FIELDTURF_SHADE
+HELIX_SATURATION = 0.88
+HELIX_GAIN = tuple(k * HELIX_SHADE for k in SYNTHETIC_GAIN)
+GAINS = dict(grass=GRASS_GAIN, synthetic=SYNTHETIC_GAIN, fieldturf=FIELDTURF_GAIN, helix=HELIX_GAIN)
+#: the families whose colour is also pulled toward its luma after the gain (1.0 everywhere else)
+SATURATION = dict(helix=HELIX_SATURATION)
+#: the home-venue looks that take their own family (nfl2k5_modern_surfaces LOOKS -> family)
+LOOK_FAMILIES = {FIELDTURF_LOOK: "fieldturf", HELIX_LOOK: "helix"}
 FIELD_MATERIALS = frozenset(("color_premipped", "grass_outside_premipped"))
 #: gr4: the six end-zone textures of a home field and of an Anniversary alias (protect_period_field renames them)
 END_ZONE_MATERIALS = frozenset([f"endzone_{e}_{p}" for e in "NS" for p in "LMR"]
@@ -88,10 +101,21 @@ def green(rgb, alpha=255):
     return alpha > 0 and g > r * 1.08 and g > b * 1.10 and g - min(r, b) > 18
 
 
-def rgb_transform(rgb, family):
+def _shade(rgb, family, extra=(1, 1, 1)):
+    """rgb x family gain x extra, then (helix only) the chroma scaled around its luma, rounded and clamped. With no
+    saturation step this is the gr4 arithmetic exactly (c * k * m), so grass and the other synthetic fields keep
+    their bytes."""
     require(family in GAINS, "unknown surface family")
-    gains = GAINS[family]
-    return tuple(int(round(c * k)) for c, k in zip(rgb, gains))
+    v = [c * k * m for c, k, m in zip(rgb, GAINS[family], extra)]
+    s = SATURATION.get(family)
+    if s is not None:
+        y = 0.299 * v[0] + 0.587 * v[1] + 0.114 * v[2]
+        v = [y + s * (c - y) for c in v]
+    return tuple(int(min(255, max(0, round(c)))) for c in v)
+
+
+def rgb_transform(rgb, family):
+    return _shade(rgb, family)
 
 
 def palette_transform(palette, family):
@@ -194,7 +218,6 @@ def end_zone_palette(palette, envelope, family):
     import colorsys
     h_lo, h_hi, s_lo, s_hi, v_lo, v_hi = envelope
     require(family in GAINS, "unknown surface family")
-    gains = GAINS[family]
     out = bytearray(palette)
     selected = []
     for i in range(256):
@@ -204,7 +227,7 @@ def end_zone_palette(palette, envelope, family):
         if not (h_lo - ms.ENV_HUE <= h <= h_hi + ms.ENV_HUE and s_lo - ms.ENV_SAT <= sat <= s_hi + ms.ENV_SAT
                 and v_lo - ms.ENV_VAL <= v <= v_hi + ms.ENV_VAL):
             continue
-        nr, ng, nb = (int(min(255, max(0, round(c * k * m)))) for c, k, m in zip((r, g, b), gains, END_ZONE_MATCH))
+        nr, ng, nb = _shade((r, g, b), family, END_ZONE_MATCH)
         if (nb, ng, nr) != (b, g, r):
             out[i * 4:i * 4 + 3] = bytes((nb, ng, nr))
             selected.append(i)
@@ -385,9 +408,9 @@ def families(archive):
         result[prefix] = family
     retail = dict(result)
     result.update({p: v["surface"] for p, v in ms.venues().items()})
-    # b778 gr2: the FieldTurf home fields (the venue table's look, the one Modern surfaces paints them with) go deeper
-    result.update({p: "fieldturf" for p, v in ms.venues().items()
-                   if v["surface"] == "synthetic" and v.get("look") == FIELDTURF_LOOK})
+    # b778 gr2: the FieldTurf and Helix home fields (the venue table's look, the one Modern surfaces paints them with)
+    result.update({p: LOOK_FAMILIES[v["look"]] for p, v in ms.venues().items()
+                   if v["surface"] == "synthetic" and v.get("look") in LOOK_FAMILIES})
     from . import nfl2k5_espn25_fields as fields
     for row in fields.catalog():
         # gr4: an Anniversary alias draws the RETAIL s25 grass colour map (nfl2k5_espn25_fields._field, whatever venue
@@ -511,5 +534,5 @@ def apply_to_image(target, *, progress=None, anniversary_receipt=None, workers=N
     if sr is not None:
         ms.save_receipt(target, sr)
     save(path, dict(schema=SCHEMA, revision=REVISION, bundles={n: rec for n, (_e, _a, rec) in work.items()},
-                    bytes_written=written, gains=dict(GAINS)))
+                    bytes_written=written, gains=dict(GAINS), saturation=dict(SATURATION)))
     return dict(state="applied", bundles=len(work), bytes_written=written, non_grass_bytes_changed=0)
