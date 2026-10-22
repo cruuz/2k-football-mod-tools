@@ -500,6 +500,12 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-pi1: Franchise practice: injured players sit out. Retail heals every match copy for practice (0x61540: keeps
+    # injuries only in league games, modes 5..7), so a starter who is out for weeks lines up in the Coach's Desk
+    # Practice. A late executable owner (nfl2k5_practice_injuries) hooks 0x61550 so practice (modes 0..2) with a
+    # season or franchise loaded keeps the copies' injuries; the native lineup check then benches them, as on game day.
+    # On in the Advanced and Experimental presets (the ones with the Coach's Desk Practice row).
+    practice_injuries: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -703,6 +709,10 @@ for _preset in PRESETS.values():
     _preset["modern_force_out"] = False
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
+del _preset
+# b778-pi1: franchise practice keeps injuries: on wherever the Coach's Desk Practice row (franchise_practice) is on.
+for _preset in PRESETS.values():
+    _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -962,6 +972,21 @@ def _force_out_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _practice_injuries_preflight(source: Path, progress) -> None:
+    """b778-pi1: refuse a source whose practice injury handling is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_practice_injuries")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Franchise practice injuries is not available in this installation.")
+    progress("Checking the practice injury handling", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Franchise practice injuries cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The practice injury code in this source is not retail or Franchise practice injuries. Turn "
+                         "it off or build from your unmodified retail dump.")
+
+
 # fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
 _LATE_OWNER_OPTIONS = (
     ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
@@ -981,6 +1006,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_practice_injuries", "Franchise practice injuries", lambda p: p.practice_injuries),  # b778-pi1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1089,6 +1115,23 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
     receipt["result"]["modern_force_out"] = "applied"
 
 
+def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pi1: franchise practice keeps injuries, the last late allocator owner."""
+    if not plan.practice_injuries:
+        return
+    module = _core_module("nfl2k5_practice_injuries")
+    if module is None:
+        raise RuntimeError("Franchise practice injuries needs nfl2k5_practice_injuries.")
+    progress("Franchise: injured players sit out of practice", 0, 0)
+    payload, injury_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Franchise practice injuries: the output does not read back as applied")
+    receipt["steps"].append({"step": "practice_injuries", **{k: v for k, v in injury_receipt.items() if k != "reservations"}})
+    receipt["result"]["practice_injuries"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -1188,6 +1231,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1398,6 +1442,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    practice_injuries = _core_module("nfl2k5_practice_injuries")  # b778-pi1
+    out["practice_injuries"] = (practice_injuries.status(_xbe_bytes(source)) if practice_injuries is not None
+                                else "unavailable")
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3018,6 +3065,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.practice_injuries) is not bool:  # b778-pi1
+        raise ValueError("Franchise practice injuries must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3736,6 +3785,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
+    if plan.practice_injuries:  # b778-pi1: like fo1, before any write
+        _practice_injuries_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5240,8 +5291,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_qb_accuracy(plan, target, receipt, progress)
     # b777-tp1: the formation art icon spacing (with play_art_routes) is the last late allocator owner
     _apply_formation_art_spacing(plan, target, receipt, progress)
-    # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    # b778-fo1: modern sideline catches (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-pi1: franchise practice injuries, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_practice_injuries(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5282,6 +5335,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.practice_injuries and _core_module("nfl2k5_practice_injuries").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("franchise practice injuries did not survive the final passes")  # b778-pi1
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

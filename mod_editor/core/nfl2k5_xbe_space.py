@@ -683,7 +683,8 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_run_blocking",  # b777-ol1 (int7: after the jersey number sizes)
                "nfl2k5_qb_accuracy",  # b777-qb3/qb4 (int7: after run blocking)
                "nfl2k5_formation_art_spacing",  # b777-tp1: after QB accuracy
-               "nfl2k5_force_out")  # b778-fo1: last, after the formation art spacing; the build applies it last
+               "nfl2k5_force_out",  # b778-fo1: after the formation art spacing
+               "nfl2k5_practice_injuries")  # b778-pi1: last, after the force-out rule; the build applies it last
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
