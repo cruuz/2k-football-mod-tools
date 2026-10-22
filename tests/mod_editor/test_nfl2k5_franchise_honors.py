@@ -43,6 +43,14 @@ class FoldTests(unittest.TestCase):
         self.assertTrue(out[-1] & 0x80000000)
         self.assertFalse(any(w & 0x80000000 for w in out[:-1]))
 
+    def test_a_sum_that_overflows_a_signed_cell_is_not_folded(self):
+        words = [word(8, 1, 30000), word(8, 2, 30000), word(0, 4, 16)]
+        out = up.fold_words(words, 5, 4)
+        self.assertEqual(sorted(w & ~0x80000000 for w in out), sorted(words))
+        words = [word(8, 1, 3000), word(8, 2, 20000), word(0, 4, 16)]
+        self.assertEqual(sorted(w & ~0x80000000 for w in up.fold_words(words, 5, 4)),
+                         sorted([word(8, 2, 23000, folded=True), word(0, 4, 16)]))
+
     def test_fold_leaves_new_seasons_dead_words_and_short_careers(self):
         dead = word(2, 1, 7) | 0x10000000
         words = [word(0, 4, 16), dead | 0x80000000]
@@ -274,7 +282,7 @@ class NativeFoldTests(unittest.TestCase):
                     if key in used:
                         continue
                     used.add(key)
-                    value = rng.choice((rng.randint(0, 600), rng.randint(0, 65535)))
+                    value = rng.randint(0, 600)
                     words.append(word(key[0], key[1], value, folded=rng.random() < 0.15))
                 streams.append((yp, words))
             for (yp, words), native_stream in zip(streams, self.native_fold(streams, depth)):

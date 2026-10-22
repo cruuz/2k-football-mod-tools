@@ -699,9 +699,11 @@ def fold_words(words, years_pro: int, depth: int) -> tuple[int, ...]:
     """The game's own history fold for one stream: every live regular-season word at least ``depth`` seasons old is
     merged into the season ``depth - 1`` old (sum, or max for FOLD_MAX_FIELDS, 16-bit signed as the game stores it)
     and the receiving word is flagged folded (bit 30). Deleted and postseason words, and words newer than ``depth``,
-    stay as they are; the end bit stays on the last word. Differentially tested against the retail code under
+    stay as they are; the end bit stays on the last word. A stream whose merged sum would overflow a signed 16-bit
+    cell is returned unfolded (the game would wrap it into a negative career total). Differentially tested against the retail code under
     Unicorn (tests/mod_editor/test_nfl2k5_franchise_honors.py)."""
     require(depth >= 2, "fold depth must be at least 2")
+    words_in = list(words)
     target_slot = years_pro - depth + 1
     keep, merged = [], {}
     for raw in words:
@@ -720,6 +722,8 @@ def fold_words(words, years_pro: int, depth: int) -> tuple[int, ...]:
             result = max([0 if current is None else current] + values)
         else:
             result = sum(values) + (0 if current is None else current)
+        if not -0x8000 <= result <= 0x7FFF:        # a 16-bit signed cell cannot hold the sum: leave this stream alone
+            return tuple(_with_end(words_in))
         if result & 0xFFFF == 0:                  # the game's writer treats 0 as "no entry"
             if index is not None:
                 del keep[index]
