@@ -107,7 +107,7 @@
     "Slot Return Flood",
     "QB Keep",
     "End Around",
-    "Slot Deep Hooks",
+    "RB Spacing",
     "Slot Sail Out"
    ],
    "cpu_situation": [
@@ -205,7 +205,7 @@
     "X Fade Out",
     "PA Cluster Wheel",
     "Inside Trap",
-    "RB Zig Flat Out",
+    "Y Whip Seam",
     "NO Curl Flat",
     "NO Slant Flat",
     "Slot Seam Shot",
@@ -2163,6 +2163,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Doubles Clamp Stack",
@@ -2767,7 +2768,6 @@
    "lane": null,
    "formations": [
     "Gun Wildcat",
-    "Gun Trips TE",
     "Pistol Y Off Trips",
     "Gun Bunch",
     "Pistol Doubles Y Off"
@@ -4799,28 +4799,27 @@
   {
    "play": "p141",
    "play_index": 220,
-   "name": "Slot Deep Hooks",
-   "concept": "Slot Deep Hooks Seams",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "Slot",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Deep Hook",
-    "Go",
+    "Flat",
     "Hitch",
-    "Steep In"
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p142",

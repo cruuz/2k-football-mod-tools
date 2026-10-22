@@ -108,7 +108,7 @@
     "QB Keep",
     "End Around",
     "RB Deep Flood",
-    "Max Y Stick Nod Out"
+    "CAR Quick Outs"
    ],
    "cpu_situation": [
     0,
@@ -1008,7 +1008,7 @@
    "tag": "base",
    "menu": [
     "FB Screen",
-    "PA Z Go Shot",
+    "PA Y Seam Shot",
     "RB Sail Skinny Post",
     "X Hitch Seam Whip",
     "PA X Comeback Seam",
@@ -1506,7 +1506,8 @@
    "lane": null,
    "formations": [
     "I-Form Pro",
-    "Wing T"
+    "Wing T",
+    "I-Form Y Off Close"
    ]
   },
   {
@@ -1588,27 +1589,27 @@
   {
    "play": "p021",
    "play_index": 77,
-   "name": "PA Z Go Shot",
-   "concept": "PA Z Go Shot Skinny Post",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "home": "I-Form Y Off Close",
+   "name": "CAR Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
    "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
     "Go",
-    "Hitch",
-    "Skinny Post"
+    "Out",
+    "Stick"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Y Off Close"
-   ]
+    "Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p022",
@@ -2662,7 +2663,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Gun Y Off Trio Close",
     "Pistol Wing",
     "Singleback Trey",

@@ -438,7 +438,7 @@
     "RB Draw Wk",
     "Steep In Seam",
     "China",
-    "Z Go Shot"
+    "DAL Double Slants"
    ],
    "cpu_situation": [
     3,
@@ -865,7 +865,7 @@
     "Inside Zone Split",
     "Deep Post",
     "PA Deep Post",
-    "X Cross Dig",
+    "Z Hitch Seam",
     "PA Hook Corner",
     "PA Post Wheel"
    ],
@@ -1532,27 +1532,27 @@
   {
    "play": "p020",
    "play_index": 76,
-   "name": "Z Go Shot",
-   "concept": "Z Go Shot Smash",
-   "family": "deep",
-   "header": "dropback",
+   "name": "DAL Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "Z",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Flag",
-    "Go",
-    "Hitch"
+    "Arrow",
+    "Hitch",
+    "Slant"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p021",
@@ -2572,8 +2572,7 @@
     "Singleback Ace",
     "Gun Ace Wing",
     "Pistol Ace Wing",
-    "Singleback Y Trips",
-    "Gun Ace Flex"
+    "Singleback Y Trips"
    ]
   },
   {
@@ -3251,7 +3250,8 @@
    "lane": null,
    "formations": [
     "Singleback Ace",
-    "Singleback Y Trips"
+    "Singleback Y Trips",
+    "Gun Ace Flex"
    ]
   },
   {

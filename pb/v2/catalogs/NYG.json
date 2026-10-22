@@ -105,7 +105,7 @@
     "QB Keep",
     "End Around",
     "Y Bubble Screen",
-    "RB Post Wheel"
+    "Z Slant Flat"
    ],
    "cpu_situation": [
     1,
@@ -204,10 +204,10 @@
     "RB Toss",
     "Z Levels Curl",
     "NYG Scissors",
-    "X Scissors",
+    "NYG Slant Flat",
     "RB Counter",
     "Y Stick",
-    "X Cross Dig"
+    "Y Double Slants"
    ],
    "cpu_situation": [
     0,
@@ -244,7 +244,7 @@
     "RB Toss",
     "Y Stick Return",
     "QB Power",
-    "X Curl Flat",
+    "Y China Return",
     "Inside Zone",
     "PA X Levels",
     "Y Stick",
@@ -283,7 +283,7 @@
     "PA Return Flood",
     "X Scissors",
     "RB Comeback Seam",
-    "Y Sail Return",
+    "NYG Slant Flat",
     "Slot Cross Dig",
     "Max X Post Wheel",
     "Y Cross Dig",
@@ -522,7 +522,7 @@
     "Power G",
     "PA Z Post Go",
     "QB Draw",
-    "X Curl Flat",
+    "NYG Slant Flat",
     "NYG Post Corner",
     "Power G Wk",
     "Y Choice Out",
@@ -557,7 +557,7 @@
    "tag": "pass",
    "menu": [
     "X Hitch Seam",
-    "RB Zig Flat",
+    "NYG Slant Flat",
     "Power G Wk",
     "RB Counter",
     "PA X Dagger",
@@ -917,9 +917,9 @@
     "Z Hitch Seam",
     "Max X Go Shot",
     "RB Counter",
-    "Slot Sail",
+    "Z Slant Flat",
     "Slot Hank",
-    "Slot Sail Out",
+    "Slot Spacing",
     "Bubble Screen",
     "Slot Stick",
     "Slot Spot Out"
@@ -986,7 +986,7 @@
    "tag": "pass",
    "menu": [
     "X Slot Fade",
-    "PA Z Deep Post",
+    "Y Stick",
     "Max Y Seam Shot"
    ],
    "cpu_situation": [
@@ -1547,26 +1547,30 @@
   {
    "play": "p016",
    "play_index": 75,
-   "name": "PA Z Deep Post",
-   "concept": "PA Z Deep Post Bang",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "home": "Gun Split Pro",
-   "primary": "Z",
+   "name": "NYG Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Bang",
-    "Flat",
-    "Post"
+    "Arrow",
+    "Go",
+    "Slant"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
-    "Gun Split Pro"
-   ]
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Gun Y Off Trio Close",
+    "Gun Trey Y-Flex"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p017",
@@ -1724,10 +1728,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Open",
-    "Gun Y Off Trio Close",
     "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Bunch",
@@ -1762,7 +1764,6 @@
    "formations": [
     "Gun Doubles",
     "Gun Bunch X Nasty",
-    "Pistol Doubles",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
     "Pistol Wing",
@@ -2031,7 +2032,6 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Tight Open",
     "Gun Y Off Trips",
@@ -2234,6 +2234,7 @@
    "formations": [
     "Gun Wildcat",
     "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Gun Y Off Trio Close",
     "Pistol Wing",
     "Pistol Y Off Trips",
@@ -2268,7 +2269,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trey Y-Flex",
     "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Bunch",
@@ -2464,6 +2464,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
+    "Gun Trips TE",
     "Gun Tight Open",
     "Pistol Y Off Trips",
     "Gun Bunch",
@@ -2616,7 +2617,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Pistol Doubles",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
@@ -4057,26 +4057,26 @@
   {
    "play": "p109",
    "play_index": 168,
-   "name": "Slot Sail",
-   "concept": "Slot Sail Out Outs",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Pistol Spread",
-   "primary": "Slot",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Out",
-    "Sail",
-    "Stick"
+    "Arrow",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Pistol Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p110",
@@ -4448,16 +4448,17 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {
    "play": "p127",
    "play_index": 204,
-   "name": "Slot Sail Out",
-   "concept": "Slot Sail Out Dagger",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Slot Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Pistol Spread",
@@ -4465,16 +4466,15 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Out",
-    "Sail",
+    "Hitch",
     "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Pistol Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p128",
@@ -4894,28 +4894,27 @@
   {
    "play": "p146",
    "play_index": 229,
-   "name": "RB Post Wheel",
-   "concept": "HB Post Wheel Curl Seams",
-   "family": "deep",
-   "header": "dropback",
+   "name": "Z Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "HB",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Curl",
+    "Arrow",
     "Go",
-    "Hitch",
-    "Post",
-    "Wheel"
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   }
  ],
  "shared_links": 398,

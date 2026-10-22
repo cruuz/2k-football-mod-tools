@@ -284,7 +284,7 @@
     "Y Sail Out",
     "X Curl Combo",
     "RB Texas",
-    "Z Double Move"
+    "Y Switch Whip"
    ],
    "cpu_situation": [
     3,
@@ -395,7 +395,7 @@
     "Slot Bubble Screen",
     "X Mills Out Drag",
     "RB Slip Screen",
-    "Slot Curl Combo",
+    "RB Spacing",
     "RB Flood Return",
     "X Zig Flat"
    ],
@@ -454,7 +454,7 @@
     "Z Snag Curls",
     "RB Double Slants",
     "Inside Zone Wk",
-    "Slot Sail",
+    "Slot Whip Seam",
     "RB Slip Screen",
     "QB Draw"
    ],
@@ -642,7 +642,7 @@
     "Z Fade Curl Bench",
     "Y Slot Fade Stick",
     "X Curl Combo",
-    "Z Skinny Shot Fade",
+    "Double Slants",
     "Z Post Corner Shot",
     "Z Double Move"
    ],
@@ -665,7 +665,7 @@
     "Z Skinny Shot Fade",
     "Zone Toss Wk",
     "RB Bench Dig",
-    "X Curl Combo",
+    "Double Slants",
     "PA Z Go Shot Stick",
     "Y Slot Fade Stick",
     "Z Double Move",
@@ -1037,7 +1037,7 @@
     "X Curl Combo",
     "RB Slip Screen Wk",
     "Z Skinny Shot Fade",
-    "Z Post Corner Shot"
+    "Double Slants"
    ],
    "cpu_situation": [
     3,
@@ -1304,7 +1304,6 @@
    "lane": null,
    "formations": [
     "Singleback Ace",
-    "Gun Deuce Close",
     "Gun Y Trips",
     "Singleback Y Trips",
     "Singleback Deuce Close",
@@ -1365,8 +1364,7 @@
     "Singleback Ace",
     "Gun Deuce Close",
     "Gun Y Trips",
-    "Singleback Deuce Close",
-    "Gun Ace"
+    "Singleback Deuce Close"
    ]
   },
   {
@@ -2392,7 +2390,6 @@
    "formations": [
     "Singleback Ace",
     "Gun Deuce Close",
-    "Gun Y Trips",
     "Singleback Y Trips",
     "Singleback Deuce Close",
     "Gun Ace"
@@ -3355,6 +3352,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Pistol Doubles",
     "Gun Tight Open"
    ]
   },
@@ -4345,10 +4343,10 @@
   {
    "play": "p126",
    "play_index": 186,
-   "name": "Slot Sail",
-   "concept": "Slot Sail Skinny Post Comebacks",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Slot Whip Seam",
+   "concept": "Whip Seam",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
@@ -4356,17 +4354,17 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Back In",
-    "Comeback",
-    "Hook Corner",
-    "Sail",
-    "Skinny Post"
+    "Arrow",
+    "Go",
+    "Slant",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p127",
@@ -4539,28 +4537,27 @@
   {
    "play": "p134",
    "play_index": 197,
-   "name": "Slot Curl Combo",
-   "concept": "Slot Curl Combo Angle Cross Stick",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle Cross",
-    "Comeback",
-    "Curl",
     "Flat",
+    "Hitch",
     "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p135",
@@ -4913,27 +4910,29 @@
   {
    "play": "p150",
    "play_index": 228,
-   "name": "Z Double Move",
-   "concept": "Z Double Move Spot Out Slant Flat",
-   "family": "deep",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Doubles",
-   "primary": "Z",
+   "personnel": "12",
+   "home": "Gun Deuce Close",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Out and Up",
-    "Slant",
-    "Spot Out"
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Pistol Doubles"
-   ]
+    "Gun Deuce Close",
+    "Gun Y Trips",
+    "Gun Ace"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p151",

@@ -203,7 +203,7 @@
     "PA Z Zig Flat",
     "Crack Toss",
     "Slot Deep Over",
-    "Y Sail Skinny Post",
+    "Y Spacing Zig",
     "SEA Mills",
     "Inside Zone",
     "Y Whip Seam",
@@ -446,7 +446,7 @@
     "Slot Sail",
     "Outside Zone",
     "X Corner Post",
-    "X Steep In Seam",
+    "SEA Double Slants",
     "X Fade Curl Snag",
     "RB China Return",
     "QB Draw",
@@ -2115,7 +2115,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Tight Y Off",
     "Singleback Y Off Trey",
     "Singleback Bunch",
@@ -2405,6 +2404,7 @@
    "formations": [
     "Gun Wildcat",
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Tight Y Off",
     "Gun Trey Open",
@@ -3872,27 +3872,27 @@
   {
    "play": "p105",
    "play_index": 162,
-   "name": "X Steep In Seam",
-   "concept": "X Steep In Seam Whip Hitches",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "SEA Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "X",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
+    "Arrow",
     "Hitch",
-    "Steep In",
-    "Whip"
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p106",

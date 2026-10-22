@@ -203,7 +203,7 @@
    "tag": "pass",
    "menu": [
     "X Slip Screen",
-    "X Deep Hooks",
+    "Y Whip Return",
     "Counter GT",
     "Sprint X Bench",
     "PA Slot Stick Nod",
@@ -247,7 +247,7 @@
     "X Whip",
     "PA Z Fade Curl",
     "PA Slot Double Move",
-    "RB Sail Out",
+    "Y Whip Return",
     "Slot China",
     "PA Y Stick Nod",
     "PA Z Corner Post",
@@ -400,7 +400,7 @@
     "X Slip Screen",
     "X Curls",
     "RB Flood",
-    "Z Dagger"
+    "Z Snag"
    ],
    "cpu_situation": [
     4,
@@ -611,7 +611,7 @@
     "Z Post Wheel",
     "PA Slot Stick Nod",
     "ATL Scissors",
-    "X Deep Hooks",
+    "Y Whip Return",
     "RB Slip Screen",
     "Bubble Screen"
    ],
@@ -1582,7 +1582,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Normal Y Off Close",
     "Pistol Wing",
@@ -1685,10 +1684,8 @@
    "formations": [
     "Gun Wildcat",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Normal Y Off Close",
-    "Pistol Bunch TE",
     "Pistol Doubles Y Off",
     "Singleback Bunch X Nasty",
     "Singleback Doubles Tight"
@@ -2240,8 +2237,11 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Trips TE",
+    "Gun Bunch X Nasty",
     "Gun Tight Open",
     "Pistol Wing",
+    "Pistol Bunch TE",
     "Gun Tight Slots",
     "Singleback Bunch X Nasty",
     "Singleback Doubles Tight"
@@ -4951,10 +4951,10 @@
   {
    "play": "p149",
    "play_index": null,
-   "name": "Z Dagger",
-   "concept": "Z Dagger Seam Out Seams",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
@@ -4962,17 +4962,18 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Flat",
-    "Go",
+    "Arrow",
+    "Flag",
     "Hitch",
-    "Seam Out"
+    "Slant",
+    "Snag"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   }
  ],
  "shared_links": 359,

@@ -130,7 +130,7 @@
     "RB Slip Screen Wk",
     "Boot Flood",
     "Z Steep In Seam",
-    "X Levels Snag",
+    "Y Spacing",
     "PA Slot Flood",
     "Z Hook Corner Snag",
     "Slot Seam Levels",
@@ -207,7 +207,7 @@
     "Y Slot Fade Seams",
     "PA X Curl Combo",
     "X Mills Stick",
-    "X Deep Hooks"
+    "Slot Choice Return"
    ],
    "cpu_situation": [
     4,
@@ -652,7 +652,7 @@
     "Slot Out Seam",
     "Y Drive Out and Up",
     "X Levels Snag",
-    "Slot Comeback Seam",
+    "Y Spacing",
     "PA Deep Post",
     "TB WR Slip Screen"
    ],
@@ -712,7 +712,7 @@
     "X Comeback Seam",
     "PA Z Deep Post",
     "Z Steep In Seam",
-    "RB Flood Out",
+    "Y Stick",
     "TB RB Screen"
    ],
    "cpu_situation": [
@@ -757,7 +757,7 @@
    "menu": [
     "QB Power",
     "RB Whip",
-    "U Comeback Seam",
+    "Y Deep Over Out",
     "Y Seam Shot",
     "X Curl Combo Whip",
     "PA Deep Post"
@@ -1324,7 +1324,8 @@
    "lane": null,
    "formations": [
     "Pistol Y Trips",
-    "Gun Ace Wing"
+    "Gun Ace Wing",
+    "Pistol Ace"
    ]
   },
   {
@@ -1584,7 +1585,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Doubles Clamp Stack",
@@ -1692,7 +1692,6 @@
     "Pistol Doubles",
     "Gun Tight Open",
     "Pistol Wing",
-    "Singleback Trey",
     "Gun Wing",
     "Gun Y Off Trio Close"
    ]
@@ -1858,7 +1857,6 @@
     "Gun Bunch TE",
     "Gun Tight Open",
     "Pistol Wing",
-    "Pistol Trey",
     "Gun Wing",
     "Gun Tight Y Off"
    ]
@@ -2018,7 +2016,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
@@ -2086,6 +2083,7 @@
    "formations": [
     "Gun Wildcat",
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Gun Tight Open",
@@ -2327,6 +2325,7 @@
     "Gun Bunch TE",
     "Pistol Bunch TE",
     "Pistol Wing",
+    "Singleback Trey",
     "Gun Wing",
     "Gun Tight Y Off",
     "Gun Y Off Trio Close"
@@ -3960,27 +3959,27 @@
   {
    "play": "p113",
    "play_index": 184,
-   "name": "U Comeback Seam",
-   "concept": "U Comeback Seam Whip Stick",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Y Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "12",
-   "home": "Pistol Ace",
-   "primary": "U",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
-    "Comeback",
-    "Stick",
-    "Whip"
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Pistol Ace"
-   ]
+    "Singleback Doubles",
+    "Pistol Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p114",

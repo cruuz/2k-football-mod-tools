@@ -104,7 +104,7 @@
    "tag": "empty",
    "menu": [
     "RB Slip Screen",
-    "X Levels",
+    "Z Snag",
     "QB Keep",
     "End Around",
     "RB Flood Return",
@@ -208,7 +208,7 @@
     "Z Slants",
     "PA Slot Drive",
     "Crack Toss",
-    "X Cluster Wheel",
+    "Y Spot Out Stick",
     "Stick",
     "DET RB Screen",
     "DET Mills",
@@ -463,7 +463,7 @@
     "X Slip Screen",
     "X Comeback Seam",
     "Inside Trap",
-    "Z Fade Curl",
+    "DET Whip Seam",
     "RB Corner Post",
     "Z Dagger"
    ],
@@ -577,7 +577,7 @@
     "Pin Pull Sweep Wk",
     "RB Counter Wk",
     "Slot Stick Out",
-    "RB Texas",
+    "Double Slants",
     "RB Mills",
     "Z Cross Dig",
     "PA Slot Zig Flat",
@@ -1377,7 +1377,6 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Tight Slots",
     "Singleback Wing",
@@ -1755,7 +1754,6 @@
     "Pistol Doubles",
     "Gun Tight Slots",
     "Gun Doubles Clamp Stack",
-    "Pistol Bunch TE",
     "Singleback Y Off Trey",
     "Singleback Wing",
     "Gun Spread Y-Slot"
@@ -2449,6 +2447,7 @@
    "formations": [
     "Gun Wildcat",
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Tight Slots",
     "Gun Doubles Clamp Stack",
     "Gun Y Off Trio Close",
@@ -2479,6 +2478,7 @@
     "Gun Empty Trey",
     "Gun Tight Slots",
     "Gun Doubles Clamp Stack",
+    "Pistol Bunch TE",
     "Gun Y Off Trio Close",
     "Singleback Trey"
    ]
@@ -4505,28 +4505,28 @@
   {
    "play": "p129",
    "play_index": 202,
-   "name": "Z Fade Curl",
-   "concept": "Z Fade Curl Stick",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "DET Whip Seam",
+   "concept": "Whip Seam",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "Z",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
-    "Back Cross",
-    "Comeback",
-    "Fade Curl",
-    "Release Out",
-    "Stick"
+    "Arrow",
+    "Go",
+    "Slant",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p130",
@@ -4694,27 +4694,29 @@
   {
    "play": "p137",
    "play_index": 216,
-   "name": "X Levels",
-   "concept": "X Levels Corner Post Comebacks",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "X",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Comeback",
-    "Corner Post",
-    "Dig",
-    "Spot Out"
+    "Arrow",
+    "Flag",
+    "Hitch",
+    "Slant",
+    "Snag"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p138",

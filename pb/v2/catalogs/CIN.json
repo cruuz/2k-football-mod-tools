@@ -98,7 +98,7 @@
    "tag": "empty",
    "menu": [
     "Y Screen",
-    "Slot Cross Dig",
+    "RB Double Slants",
     "QB Keep",
     "End Around",
     "X Snag Out",
@@ -400,7 +400,7 @@
     "QB Power",
     "RB Spot Seams",
     "Y Spot Fade",
-    "X Curl Combo",
+    "Y Stick",
     "Slot China Out",
     "Y Bubble Screen",
     "RB Smash Slant Flat"
@@ -526,7 +526,7 @@
    "tag": "pass",
    "menu": [
     "U Dagger",
-    "PA U Dagger",
+    "Y Whip Seam",
     "Inside Zone",
     "Counter GT",
     "RB Counter",
@@ -1555,27 +1555,28 @@
   {
    "play": "p017",
    "play_index": 67,
-   "name": "Y Mills",
-   "concept": "Mills",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Y Stick",
+   "concept": "Stick",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "21",
-   "home": "Gun Split Pro",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
    "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Comeback",
-    "Dig",
-    "Post"
+    "Go",
+    "Slant",
+    "Stick"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
-    "Gun Split Pro"
-   ]
+    "Gun Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p018",
@@ -1599,7 +1600,8 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro"
    ]
   },
   {
@@ -2116,7 +2118,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Empty Trey",
     "Pistol Wing",
     "Pistol Bunch TE",
     "Gun Tight Open",
@@ -4793,28 +4794,27 @@
   {
    "play": "p140",
    "play_index": 216,
-   "name": "Slot Cross Dig",
-   "concept": "Slot Cross Dig Return Whip",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "Slot",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Crossing Dig",
-    "Curl",
-    "Flat",
-    "Return",
-    "Whip"
+    "Arrow",
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p141",
@@ -5020,28 +5020,28 @@
   {
    "play": "p150",
    "play_index": 226,
-   "name": "PA U Dagger",
-   "concept": "PA U Dagger Seam Out Corner Smash",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
+   "name": "Y Whip Seam",
+   "concept": "Whip Seam",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
    "personnel": "12",
    "home": "Gun Wing Slot Offset",
-   "primary": "U",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Dig",
-    "Hitch",
-    "Seam Out",
-    "Stem Block"
+    "Arrow",
+    "Go",
+    "Slant",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Wing Slot Offset"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p151",

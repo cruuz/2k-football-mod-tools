@@ -202,7 +202,7 @@
     "Y Screen",
     "PA Curl Combo",
     "X Deep Hooks",
-    "Deep Hooks",
+    "RB Slants",
     "Slot Fade",
     "PIT Mesh Wheel"
    ],
@@ -391,7 +391,7 @@
     "Bubble Screen",
     "RB Flood Out",
     "Y Slot Fade",
-    "Max Post Wheel"
+    "Z Quick Outs"
    ],
    "cpu_situation": [
     4,
@@ -829,7 +829,7 @@
    "menu": [
     "Y Spot Out",
     "Z Fade Curl",
-    "Comeback Seam"
+    "X Snag"
    ],
    "cpu_situation": [
     4,
@@ -971,7 +971,7 @@
     "Slot Fade",
     "X Bang Hitch",
     "RB Scissors",
-    "Slot Drive",
+    "Slot Stick Out",
     "Inside Zone",
     "QB Power",
     "Slot China",
@@ -1400,7 +1400,8 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -1769,7 +1770,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
     "Pistol Bunch",
@@ -2406,7 +2406,6 @@
    "lane": null,
    "formations": [
     "Gun Bunch X Nasty",
-    "Gun Empty Trey",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Gun Normal Y Off Close"
@@ -2435,6 +2434,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Bunch TE",
@@ -3233,8 +3233,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
+    "Gun Spread"
    ]
   },
   {
@@ -4217,28 +4216,27 @@
   {
    "play": "p120",
    "play_index": 177,
-   "name": "Comeback Seam",
-   "concept": "Z Comeback Seam Whip Dagger",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "21",
-   "home": "Singleback FB Wing",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
    "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Comeback",
-    "Dig",
-    "Snag",
-    "Whip"
+    "Go",
+    "Out",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback FB Wing"
-   ]
+    "Gun Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p121",
@@ -4469,7 +4467,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Spread"
+    "Gun Spread",
+    "Gun Spread Tight"
    ]
   },
   {

@@ -98,7 +98,7 @@
    "tag": "empty",
    "menu": [
     "RB Choice Out",
-    "Slot Deep Post",
+    "Double Slants",
     "QB Keep",
     "End Around",
     "Y Stick Out",
@@ -364,7 +364,7 @@
    "menu": [
     "Slot Curls Seams",
     "RB Post Wheel",
-    "Slot Cross Dig"
+    "RB Spacing"
    ],
    "cpu_situation": [
     4,
@@ -410,9 +410,9 @@
     "PA Z Post Go",
     "RB Stretch",
     "Slot Seam Shot",
-    "X Steep In Seam",
+    "Slot Double Slants",
     "Sprint Sail",
-    "Steep In Seam",
+    "Z Slant Flat",
     "X Hitch Seam",
     "Slot Stick",
     "X Sail Return",
@@ -3076,28 +3076,27 @@
   {
    "play": "p085",
    "play_index": 135,
-   "name": "X Steep In Seam",
-   "concept": "X Steep In Seam Angle Cross Slant Flat",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Slot Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "X",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle Cross",
     "Arrow",
-    "Back In",
-    "Slant",
-    "Steep In"
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p086",
@@ -3224,28 +3223,26 @@
   {
    "play": "p091",
    "play_index": 141,
-   "name": "Steep In Seam",
-   "concept": "X Steep In Seam Angle Cross Corner Smash",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "X",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
-    "Angle Cross",
-    "Corner",
-    "Hitch",
-    "Steep In"
+    "Arrow",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p092",
@@ -4011,27 +4008,27 @@
   {
    "play": "p125",
    "play_index": 178,
-   "name": "Slot Cross Dig",
-   "concept": "Slot Cross Dig Skinny Post Slants",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Crossing Dig",
     "Flat",
-    "Skinny Post",
-    "Slant"
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p126",
@@ -4224,27 +4221,27 @@
   {
    "play": "p134",
    "play_index": 222,
-   "name": "Slot Deep Post",
-   "concept": "Slot Deep Post Whip Levels",
-   "family": "deep",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "Slot",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Flat",
-    "Post",
-    "Whip"
+    "Arrow",
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p135",

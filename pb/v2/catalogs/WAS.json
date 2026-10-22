@@ -191,7 +191,7 @@
    "tag": "pass",
    "menu": [
     "X Snag Fade",
-    "X Curl Combo Whip",
+    "WAS Slant Flat",
     "01 Trap",
     "Slot Stick Return",
     "X Slip Screen",
@@ -416,7 +416,7 @@
    "tag": "spread",
    "menu": [
     "Z Quick Outs",
-    "Slot Smash Snag",
+    "Double Slants",
     "Inside Zone",
     "Slot Whip Return",
     "Slot Whip",
@@ -424,7 +424,7 @@
     "RB Steep In Seam",
     "Z Double Move",
     "Bubble Screen",
-    "Z Steep In Seam",
+    "WAS Slant Flat",
     "Z Deep Post Bench",
     "QB Power"
    ],
@@ -800,7 +800,7 @@
     "X Snag",
     "Z Deep Post Slants",
     "RB Slip Screen Wk",
-    "Z Comeback Seam",
+    "Z Quick Outs",
     "Z Snag Stick"
    ],
    "cpu_situation": [
@@ -1114,6 +1114,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Trips TE",
     "Pistol Doubles",
     "Gun Doubles Clamp Stack",
     "Pistol Wing",
@@ -1500,7 +1501,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Doubles Clamp Stack",
@@ -2414,8 +2414,7 @@
    "formations": [
     "Pistol Ace",
     "Pistol Deuce Close",
-    "Gun Deuce Close",
-    "Gun Ace"
+    "Gun Deuce Close"
    ]
   },
   {
@@ -2495,7 +2494,8 @@
    "formations": [
     "Singleback Ace",
     "Pistol Deuce Close",
-    "Gun Deuce Close"
+    "Gun Deuce Close",
+    "Gun Ace"
    ]
   },
   {
@@ -3537,10 +3537,10 @@
   {
    "play": "p098",
    "play_index": 157,
-   "name": "Slot Smash Snag",
-   "concept": "Slot Smash Snag Dagger",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
@@ -3548,17 +3548,16 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Back In",
-    "Corner",
-    "Dig",
+    "Arrow",
     "Hitch",
-    "Snag"
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p099",
@@ -4001,10 +4000,10 @@
   {
    "play": "p118",
    "play_index": 201,
-   "name": "Z Steep In Seam",
-   "concept": "Z Steep In Seam Spot Out Out Drag",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "WAS Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
@@ -4012,17 +4011,15 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Back Hook",
-    "Dig",
-    "Seam Out",
-    "Spot Out",
-    "Steep In"
+    "Arrow",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p119",

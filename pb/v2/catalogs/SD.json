@@ -201,7 +201,7 @@
     "QB Power",
     "X Curl Combo",
     "Y Scissors",
-    "Slot Sail",
+    "RB Spacing",
     "Y Choice",
     "Inside Zone",
     "Corner Strike"
@@ -430,8 +430,8 @@
     "Slip Screen",
     "Post Wheel",
     "Outside Zone",
-    "Sail",
-    "Slot Sail",
+    "Z Snag",
+    "Double Slants",
     "Bang Hitch",
     "X Hitch Seam",
     "Slot China",
@@ -1675,7 +1675,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Trey",
     "Gun Y Off Trips",
@@ -1804,6 +1803,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Pistol Trey",
@@ -3805,10 +3805,37 @@
   {
    "play": "p108",
    "play_index": 122,
-   "name": "Sail",
-   "concept": "Slot Sail Return Slants",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Flag",
+    "Hitch",
+    "Slant",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ],
+   "added_by": "b778 pb7"
+  },
+  {
+   "play": "p109",
+   "play_index": 123,
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
@@ -3817,40 +3844,15 @@
    "must": "",
    "routes": [
     "Arrow",
-    "Return",
-    "Sail",
+    "Hitch",
     "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
-  },
-  {
-   "play": "p109",
-   "play_index": 123,
-   "name": "Slot Sail",
-   "concept": "Slot Sail Skinny Post Whip",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Curl",
-    "Sail",
-    "Skinny Post",
-    "Whip"
    ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread"
-   ]
+   "added_by": "b778 pb7"
   },
   {
    "play": "p110",

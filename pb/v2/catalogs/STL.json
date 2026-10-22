@@ -101,7 +101,7 @@
    "tag": "empty",
    "menu": [
     "Slot Bubble Screen",
-    "Z Curl Combo",
+    "RB Spacing",
     "QB Keep",
     "End Around",
     "X Bench Dig",
@@ -4712,28 +4712,27 @@
   {
    "play": "p137",
    "play_index": 216,
-   "name": "Z Curl Combo",
-   "concept": "Z Curl Combo Spot Out Smash",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
-   "primary": "Z",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Curl",
     "Flat",
     "Hitch",
-    "Spot Out"
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p138",

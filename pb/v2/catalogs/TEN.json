@@ -98,7 +98,7 @@
    "tag": "empty",
    "menu": [
     "Bubble Screen",
-    "X Dagger Whip",
+    "RB Double Slants",
     "QB Keep",
     "End Around",
     "RB Slip Screen",
@@ -203,8 +203,8 @@
     "Titans Post Wheel",
     "Slot Deep Over",
     "Slot Stick",
-    "Y Smash Outs",
-    "X Cluster Wheel"
+    "RB Slants Out",
+    "X Whip Return"
    ],
    "cpu_situation": [
     4,
@@ -302,7 +302,7 @@
     "Pin Pull Sweep",
     "FB Screen",
     "Z Deep Post Bang",
-    "X Steep In Seam",
+    "Max X Mills",
     "Z Hitch Seam"
    ],
    "cpu_situation": [
@@ -464,7 +464,7 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "U Out Seam",
+    "Y Whip Seam",
     "PA Z Verticals",
     "Counter GT Wk"
    ],
@@ -486,11 +486,11 @@
     "Slot Choice Out",
     "X Cluster Wheel",
     "01 Trap Wk",
-    "Y Return Flood",
+    "X Whip Return",
     "X Stick Out",
     "Y Deep Over Out",
     "RB Stretch",
-    "Slot Sail Return",
+    "X Double Slants",
     "PA X Seam Shot"
    ],
    "cpu_situation": [
@@ -782,7 +782,7 @@
     "X Choice Out",
     "Slot Zig Flat",
     "Slot Verticals",
-    "X Curl Combo",
+    "Z Quick Outs",
     "QB Draw",
     "Bubble Screen"
    ],
@@ -1368,7 +1368,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Pistol Trey",
@@ -1401,7 +1400,6 @@
    "formations": [
     "Gun Doubles",
     "Pistol Doubles",
-    "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Pistol Trey",
     "Singleback Wing",
@@ -1690,6 +1688,7 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -1814,6 +1813,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
     "Singleback Wing",
@@ -1947,7 +1947,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Pistol Doubles",
     "Pistol Y Off Trips",
     "Pistol Trey",
@@ -2046,7 +2045,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
@@ -2210,6 +2208,7 @@
    "formations": [
     "Gun Doubles",
     "Pistol Doubles",
+    "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Pistol Trey",
     "Singleback Wing",
@@ -2244,7 +2243,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Pistol Trey",
     "Singleback Wing",
@@ -2341,8 +2339,10 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
+    "Gun Trey Y-Flex",
     "Pistol Doubles Y Off",
     "Gun Doubles Tight",
     "Singleback Doubles Tight",
@@ -4041,27 +4041,27 @@
   {
    "play": "p112",
    "play_index": 175,
-   "name": "X Steep In Seam",
-   "concept": "X Steep In Seam Whip Return",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "21",
-   "home": "I-Form Pro",
-   "primary": "X",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Back In",
-    "Return",
-    "Steep In",
-    "Whip"
+    "Arrow",
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro"
-   ]
+    "Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p113",
@@ -4155,27 +4155,27 @@
   {
    "play": "p117",
    "play_index": 180,
-   "name": "X Curl Combo",
-   "concept": "X Curl Combo Seam Out Hitches",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "00",
    "home": "Gun Empty",
-   "primary": "X",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Curl",
-    "Flat",
-    "Hitch",
-    "Seam Out"
+    "Go",
+    "Out",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p118",
@@ -4339,28 +4339,28 @@
   {
    "play": "p125",
    "play_index": 206,
-   "name": "U Out Seam",
-   "concept": "U Out Seam Angle Cross Corner Smash",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Y Whip Seam",
+   "concept": "Whip Seam",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "12",
    "home": "Gun Wing Slot Offset",
-   "primary": "U",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
-    "Angle Cross",
-    "Corner",
-    "Hitch",
-    "Out"
+    "Arrow",
+    "Go",
+    "Slant",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Wing Slot Offset"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p126",

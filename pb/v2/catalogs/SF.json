@@ -104,7 +104,7 @@
     "RB Return Flood",
     "QB Keep",
     "End Around",
-    "Slot Stick Nod",
+    "SF Quick Outs",
     "X Seam Levels"
    ],
    "cpu_situation": [
@@ -290,7 +290,7 @@
     "RB Stretch",
     "PA Post Corner Shot",
     "Z Deep Post",
-    "PA Steep In Seam",
+    "X Sail Out and Up",
     "Y Sail"
    ],
    "cpu_situation": [
@@ -379,7 +379,7 @@
     "QB Power",
     "RB Curls Stick",
     "RB Zig Flat",
-    "X Return Flood"
+    "Z Snag Slant Flat"
    ],
    "cpu_situation": [
     4,
@@ -433,7 +433,7 @@
     "Slot Fade",
     "RB Slip Screen",
     "Slot Slot Fade Smash",
-    "Z Comeback Seam",
+    "Slot Whip Seam",
     "Z Corner Post",
     "Bubble Screen"
    ],
@@ -871,7 +871,7 @@
    "tag": "base",
    "menu": [
     "Y Slot Fade",
-    "PA Steep In Seam",
+    "X Sail",
     "Z Bench Snag"
    ],
    "cpu_situation": [
@@ -1272,7 +1272,6 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "Gun Empty Trey",
     "Singleback Bunch X Nasty",
     "Gun Y Off Trio Close",
     "Gun Trips",
@@ -2002,7 +2001,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Singleback Bunch X Nasty",
     "Gun Y Off Trio Close",
     "Gun Trips",
@@ -2464,6 +2462,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "I-Form Pro",
     "Wing T",
     "Weak Close",
     "Gun Split Pro"
@@ -3166,7 +3165,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "Gun Split Pro"
+    "Gun Split Pro",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -4004,28 +4004,27 @@
   {
    "play": "p118",
    "play_index": 173,
-   "name": "PA Steep In Seam",
-   "concept": "PA FB Steep In Seam Spot Out Smash",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "home": "Singleback FB Wing",
-   "primary": "FB",
+   "name": "SF Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Hitch",
-    "Spot Out",
-    "Steep In",
-    "Stem Block"
+    "Go",
+    "Out",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback FB Wing"
-   ]
+    "Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p119",
@@ -4080,28 +4079,28 @@
   {
    "play": "p121",
    "play_index": 179,
-   "name": "Z Comeback Seam",
-   "concept": "Z Comeback Seam Seam Out Whip",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Slot Whip Seam",
+   "concept": "Whip Seam",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "Z",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Comeback",
-    "Curl",
-    "Seam Out",
+    "Go",
+    "Slant",
     "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Spread"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p122",
@@ -4725,26 +4724,27 @@
   {
    "play": "p149",
    "play_index": null,
-   "name": "PA Steep In Seam",
-   "concept": "PA Z Steep In Seam Seam Out Bomb Post",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "home": "I-Form Pro",
+   "name": "Z Snag Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
    "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Post",
-    "Seam Out",
-    "Steep In"
+    "Arrow",
+    "Go",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro"
-   ]
+    "Gun Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   }
  ],
  "shared_links": 277,
