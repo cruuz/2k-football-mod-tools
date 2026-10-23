@@ -40,7 +40,7 @@ class DataTests(unittest.TestCase):
   s=json.loads((DATA/'layout.json').read_text());f=next(f for f in s['fields'] if f['name']=='down')
   g=s['glyph_sets']['label'];factor=f['size']/g['cap_height'];e=g['glyphs']['ESPN']
   # b778-int2: the down anchor is 961 so the single ESPN wordmark centres on the sb4/sb5 plate (1.76 -> <1.5 HUD px).
-        self.assertEqual((f['size'],f['anchor']), (24,[961,955]))
+  self.assertEqual((f['size'],f['anchor']), (24,[961,955]))
   self.assertEqual([v*factor for v in e['size']],[100,24])
   self.assertEqual(f['anchor'][1]-e['raise']*factor,956)
   self.assertEqual(sprite.probe_sizes(),(34,327264,327680))
