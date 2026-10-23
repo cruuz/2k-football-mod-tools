@@ -3,23 +3,23 @@
   "face_id": "0304",
   "family": "f",
   "kind": "live_face",
-  "png": "/home/noah/2k-worktrees/b778-ss1/data/nfl2k5_classic_teams/face/f0304.png"
+  "png": "data/nfl2k5_classic_teams/face/f0304.png"
  },
  {
   "face_id": "0304",
   "family": "h",
   "kind": "live_face",
-  "png": "/home/noah/2k-worktrees/b778-ss1/data/nfl2k5_classic_teams/face/h0304.png"
+  "png": "data/nfl2k5_classic_teams/face/h0304.png"
  },
  {
   "face_id": "0304",
   "family": "n",
   "kind": "live_face",
-  "png": "/home/noah/2k-worktrees/b778-ss1/data/nfl2k5_classic_teams/face/n0304.png"
+  "png": "data/nfl2k5_classic_teams/face/n0304.png"
  },
  {
   "portrait_id": "0304",
   "kind": "player_portrait",
-  "png": "/home/noah/2k-worktrees/b778-ss1/data/nfl2k5_classic_teams/face/portrait_0304.png"
+  "png": "data/nfl2k5_classic_teams/face/portrait_0304.png"
  }
 ]
