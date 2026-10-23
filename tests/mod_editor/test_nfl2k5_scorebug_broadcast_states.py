@@ -7,7 +7,10 @@ the native preview runs the retail HUD update with the installed owner. Broadcas
 * the black ESPN wordmark plate (22,21,23; white mark in 100 x 24 px at 910..1010 x 956..980) whenever the plate
   carries no down: the kick and point-after phases, pregame, the half and the overtime toss (the retail formatter
   FC7D0 prints "Kickoff", "Point After", "Pregame"... there, which the label set cannot draw), and in place of the
-  retail hang-time, ball-on and FUMBLE plates, which ESPN never draws; FLAG keeps its yellow plate (205,198,0);
+  retail hang-time and FUMBLE plates, which ESPN never draws; FLAG keeps its yellow plate (205,198,0);
+* b778 sb2 (stream c1-26): the retail ball-on event is up from the end of a play through play calling (xemu, released
+  v0.6.1: phase 4, play-call mode [0xB641B4] = 1, ball on and the down element both visible), so it keeps the down and
+  distance on the team plate, as ESPN does between plays; its own plate and text stay hidden;
 * "3rd Down" for 7 s after the down steps (ESPN's median of 52 interim labels in the full game);
 * ":54" under a minute (the retail FC100 prints "0:54");
 * the play-clock cell red (213,0,54) with white digits at 5 and under;
@@ -200,7 +203,7 @@ class OwnerTests(unittest.TestCase):
             self.m.put(PHASE, phase)
             self.assertEqual(self.m.call(self.labels['espn_mode']), espn, phase)
         self.m.put(PHASE, 4)
-        for record, espn in ((HANG_TIME, 1), (BALL_ON, 1), (FUMBLE, 1), (FLAG, 0)):
+        for record, espn in ((HANG_TIME, 1), (BALL_ON, 0), (FUMBLE, 1), (FLAG, 0)):
             self.event(record, True)
             self.assertEqual(self.m.call(self.labels['espn_mode']), espn, hex(record))
             self.event(record, False)
@@ -341,8 +344,8 @@ class NativePreviewTests(unittest.TestCase):
             self.assertNotEqual(self.colour(c, self.rows(wide, 'plate')[0]), ESPN_PLATE)
             self.assertEqual(len(self.visible(c, wide, 'down')), 5)            # "3rd & 10"
 
-    def test_espn_plate_replaces_hang_time_ball_on_and_fumble_and_flag_keeps_its_plate(self):
-        for event, record in (('hang time', HANG_TIME), ('ball on', BALL_ON), ('FUMBLE', FUMBLE)):
+    def test_espn_plate_replaces_hang_time_and_fumble_and_flag_keeps_its_plate(self):
+        for event, record in (('hang time', HANG_TIME), ('FUMBLE', FUMBLE)):
             g, c = self.capture(False, event=event)
             self.assert_espn_plate(g, c, False, event)
             self.assertTrue(self.event_plate_hidden(c, record), event)
@@ -350,6 +353,16 @@ class NativePreviewTests(unittest.TestCase):
         g, c = self.capture(False, event='FLAG')
         self.assertEqual(self.visible(c, False, 'down'), [])
         self.assertFalse(self.event_plate_hidden(c, FLAG))
+
+    def test_ball_on_keeps_the_down_and_distance(self):
+        """b778 sb2 (c1-26): play select raises the retail ball-on event; the bar keeps "4th & 3" on the team plate."""
+        for wide in (False, True):
+            g, c = self.capture(wide, down=4, distance=3, event='ball on', possession='home')
+            drawn, uv = self.tokens(c, wide, 'down', 'label')
+            self.assertEqual(drawn, [uv['4'], uv['th'], uv['&'], uv['3']], wide)
+            self.assertNotEqual(self.colour(c, self.rows(wide, 'plate')[0]), ESPN_PLATE, wide)
+            self.assertTrue(self.event_plate_hidden(c, BALL_ON), wide)
+            self.assertFalse(any(row['vertices'] for row in g['draws']), wide)      # no retail "Ball on" text
 
     def test_interim_label(self):
         for wide in (False, True):

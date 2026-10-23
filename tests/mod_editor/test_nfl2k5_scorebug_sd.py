@@ -14,7 +14,8 @@ def sampling_receipt():
           # b76 sbfix: the widest plate is "2nd & INCHES" ('nd' is the widest suffix; Inches draws in capitals).
           'label':['2','nd',' ','&',' ','Inch','es'],'ticks':['3'],
           # b76 s15: the widest regular-season record, the widest record tab and the possession chevron.
-          'record':['10','-6','-1'],'record_tab':['8'],'chevron':['^'],
+          # b778 sb2: the band's tokens are the record lengths 3..6 (at most 17 games), one set per side.
+          'record':['10','-6','-1'],'record_tab':['6'],'record_tab_home':['6'],'chevron':['^'],
           # b76 sb: the TIMEOUT tab is one token.
           'timeout_tab':['T']}
  for wide in (False,True):

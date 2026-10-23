@@ -93,8 +93,11 @@ class LogoFitTests(unittest.TestCase):
   display_aspect=(box[2]-box[0])/(box[3]-box[1])
   # Check the complete silhouette at its actual quad aspect. The authored
   # per-team fits preserve every stroke inside the larger s10 wells.
+  # b778 sb2: marks zoomed past the wing are cut at its rails, so the proportions are read from the same fit drawn
+  # whole (zoom held at 1); the zoom scales width and height alike.
   for team,expect in (('KC',1.59),('DEN',1.68),('BUF',None)):
-   im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
+   whole=dict(art.logo_fit_for(team,fit));whole['zoom']=min(1.0,whole.get('zoom',1.0))
+   im=exact.mnf_panel(team,'home',fit=whole);x0,y0,x1,y1=im.getchannel('A').getbbox()
    aspect=(x1-x0)/(y1-y0)*display_aspect
    self.assertGreater(aspect,1.4,team)
    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
@@ -105,7 +108,7 @@ class LogoFitTests(unittest.TestCase):
   zoomed=exact.mnf_panel('LV','home',fit={'height':1.0,'zoom':1.25,'shift_y':-.1})
   self.assertEqual(plain.size,zoomed.size)
   self.assertNotEqual(plain.tobytes(),zoomed.tobytes())
-  self.assertEqual(zoomed.getchannel('A').getbbox()[1],0)
+  self.assertEqual(zoomed.getchannel('A').getbbox()[1],1)   # b778 sb2: cut at the rail inside a clear one-texel border
   self.assertEqual(exact.mnf_panel('LV','home').tobytes(),
                    exact.mnf_panel('LV','home',fit={'zoom':1,'shift_x':0,'shift_y':0}).tobytes())
   for fit in ({'zoom':float('nan')},{'zoom':2.01},{'shift_x':.51},{'shift_y':float('inf')}):

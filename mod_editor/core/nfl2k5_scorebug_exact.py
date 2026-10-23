@@ -766,5 +766,14 @@ def mnf_panel(team, side, fit=None):
             # legacy callers and the 64 by 64 runtime texture contract.
             im.paste(logo, ((64-w)//2+round(shift_x*64),
                            l0+(l1-l0-h)//2+round(shift_y*64)))
+            # b778 sb2: a mark zoomed past the wing's rails (cut there, as ESPN draws them) still keeps a
+            # one-texel transparent border, so a bilinear sample at the quad edge never pulls ink from the
+            # opposite edge. Only zooms past 1.0 are touched, so every earlier fit (and the historical
+            # probes, which draw at 1.0) keeps its exact bytes.
+            if zoom > 1.0:
+                alpha = im.getchannel("A")
+                alpha.paste(0, (0, 0, 64, 1)); alpha.paste(0, (0, 63, 64, 64))
+                alpha.paste(0, (0, 0, 1, 64)); alpha.paste(0, (63, 0, 64, 64))
+                im.putalpha(alpha)
             im = alpha_bleed(im)
     return im

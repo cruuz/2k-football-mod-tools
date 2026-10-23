@@ -80,7 +80,8 @@ class NativeTests(unittest.TestCase):
  def test_new_matchup_states_use_complete_tokens_in_both_aspects(self):
   cases=[(dict(down=2,previous_down=1),'2nddown'),(dict(down=4,distance=1),'4th&1'),
          (dict(down=3,distance=16),'3rd&16'),(dict(down=2,goal_to_go=True),'2nd&goal'),
-         (dict(phase=2),'espn'),(dict(event='hang time'),'espn'),(dict(event='ball on'),'espn'),
+         (dict(phase=2),'espn'),(dict(event='hang time'),'espn'),
+         (dict(event='ball on'),'3rd&10'),   # b778 sb2: the ball-on event (play calling) keeps the down and distance
          (dict(event='FLAG'),'')]
   for wide in (False,True):
    for state,text in cases:
