@@ -77,6 +77,7 @@ FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchis
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
 FEATURE_KEYS += ("player_progress",)  # b778-pg2: Player Progress screen, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
+FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("inbox_standings",)  # b778-pc3: inbox story 23 standings setup (pointer-only edit)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform

@@ -124,7 +124,7 @@ class B776Tests(unittest.TestCase):
         self.assertLessEqual(va + rb.CODE_SIZE, section.start + section.raw_size)   # inside an already loaded section
         self.assertIn(rb.OWNER, space.LATE_OWNERS)
         # fx1 (review pr68 nit): qb_accuracy is the last late owner, directly after run blocking
-        self.assertEqual(space.LATE_OWNERS[-15:-1], (rb.OWNER, "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard"))  # b778-fo1 last
+        self.assertEqual(space.LATE_OWNERS[-16:-1], (rb.OWNER, "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles"))  # b778-fo1 last
 
 
 class PlanTests(unittest.TestCase):
