@@ -513,6 +513,12 @@ class BuildPlan:
     crib_trophy_room: bool = False
     # b778-pc3: retail inbox story 23 omits its single-row standings setup.
     inbox_standings: bool = False
+    # b778-fa1: CPU clubs keep their stars. The retail stage-6 veteran cap cut (0x2BFAF0) releases 10+ year
+    # veterans on cap savings alone (Noah's MyNFL3 lost Mahomes, Kittle and Stanley before the 2027 preseason). A late
+    # executable owner (nfl2k5_star_retention) hooks its value call at 0x2BFB67 so a player rated over 85, or a QB
+    # over 75, is never its target. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28
+    # recipe builds from Experimental); Basic keeps the retail rule.
+    star_retention: bool = False
     # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
     # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
     # skin, generic head and Dreads bit follow the face. New Portrai2.iff / portrai2.cdf outers (every existing portrait
@@ -745,6 +751,12 @@ del _name, _preset
 for _preset in PRESETS.values():
     _preset["rookie_faces"] = False
 PRESETS["softdrink_experimental"]["rookie_faces"] = True
+del _preset
+# b778-fa1: CPU clubs keep their stars when clearing cap room (franchise AI), on in Advanced and Experimental.
+for _preset in PRESETS.values():
+    _preset["star_retention"] = False
+PRESETS["softdrink_advanced"]["star_retention"] = True
+PRESETS["softdrink_experimental"]["star_retention"] = True
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1009,6 +1021,46 @@ def _force_out_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _star_retention_preflight(source: Path, progress) -> None:
+    """b778-fa1: refuse a source whose veteran cap cut is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_star_retention")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU clubs keep their stars is not available in this installation.")
+    progress("Checking the CPU veteran cap cut for CPU clubs keep their stars", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU clubs keep their stars cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The CPU veteran cap cut in this source is not retail or CPU clubs keep their stars. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
+# fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
+_LATE_OWNER_OPTIONS = (
+    ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
+    ("nfl2k5_letter_grades_progress", "Letter grades", lambda p: p.letter_grades),
+    ("nfl2k5_honors", "Honors page", lambda p: p.honors_page),
+    ("nfl2k5_coach_ai", "Automatic coach AI", lambda p: p.coach_ai),
+    ("nfl2k5_moment_coaches", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
+    ("nfl2k5_moment_context", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
+    ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
+    ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
+    ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
+    ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck),
+    ("nfl2k5_db_ball_play", "Defender ball play", lambda p: p.db_ball_play),
+    ("nfl2k5_play_art_routes", "Play art: full-length routes", lambda p: p.play_art_routes),
+    ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
+    ("nfl2k5_run_blocking", "Run blocking", lambda p: p.run_blocking),
+    ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
+    ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
+    ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
+)
+_REBUILD_HINT = " Build from your unmodified retail dump instead."
+
+
+
 def _alien_prospect_preflight(plan, source: Path, is_image: bool, progress) -> None:
     """b778-ee1: the alien prospect needs rookie faces (his portrait joins its record), a disc image, the art and the
     retail generator, builder and face-record bytes."""
@@ -1067,6 +1119,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
     ("nfl2k5_module_loader", "On-demand Career Home", lambda p: p.module_loader),  # b778-xs1
+    ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1188,6 +1241,23 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
         raise RuntimeError("Modern sideline catches: the output does not read back as applied")
     receipt["steps"].append({"step": "modern_force_out", **{k: v for k, v in force_receipt.items() if k != "reservations"}})
     receipt["result"]["modern_force_out"] = "applied"
+
+
+def _apply_star_retention(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-fa1: CPU clubs keep their stars (veteran cap cut), the last late allocator owner."""
+    if not plan.star_retention:
+        return
+    module = _core_module("nfl2k5_star_retention")
+    if module is None:
+        raise RuntimeError("CPU clubs keep their stars needs nfl2k5_star_retention.")
+    progress("Franchise: CPU clubs keep their stars", 0, 0)
+    payload, star_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU clubs keep their stars: the output does not read back as applied")
+    receipt["steps"].append({"step": "star_retention", **{k: v for k, v in star_receipt.items() if k != "reservations"}})
+    receipt["result"]["star_retention"] = "applied"
 
 
 def _apply_crib_trophy_room(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
@@ -1339,6 +1409,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
                                ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
+                               ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1558,6 +1629,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["alien_prospect"] = alien.xbe_status(_xbe_bytes(source)) if alien is not None else "unavailable"
     team_sleeves = _core_module("nfl2k5_team_sleeves")  # b778-sl1
     out["team_sleeves"] = team_sleeves.status(_xbe_bytes(source)) if team_sleeves is not None else "unavailable"
+    star_retention = _core_module("nfl2k5_star_retention")  # b778-fa1
+    out["star_retention"] = star_retention.status(_xbe_bytes(source)) if star_retention is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3190,6 +3263,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Rookie faces must be Off or On.")
     if type(plan.alien_prospect) is not bool:  # b778-ee1
         raise ValueError("The alien prospect must be Off or On.")
+    if type(plan.star_retention) is not bool:  # b778-fa1
+        raise ValueError("CPU clubs keep their stars must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3927,6 +4002,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _rookie_faces_preflight(source, is_image, progress)
     if plan.alien_prospect:  # b778-ee1: before any write
         _alien_prospect_preflight(plan, source, is_image, progress)
+    if plan.star_retention:  # b778-fa1: like fo1, before any write
+        _star_retention_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5484,6 +5561,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-fa1: CPU clubs keep their stars, after the other late allocator owners (LATE_OWNERS order)
+    _apply_star_retention(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
     # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
     _apply_inbox_standings(plan, target, receipt, progress)
@@ -5535,6 +5614,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the on-demand Career Home gate did not survive the final passes")
     if plan.inbox_standings and _core_module("nfl2k5_inbox_standings").status(_xbe_bytes(target)) != "applied":
         raise ValueError("inbox standings did not survive the final passes")
+    if plan.star_retention and _core_module("nfl2k5_star_retention").status(_xbe_bytes(target)) != "applied":  # b778-fa1
+        raise ValueError("CPU clubs keep their stars did not survive the final passes")
     if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
             target, _xbe_bytes) != "applied":  # b778-rh1
         raise ValueError("rookie faces did not survive the final passes")

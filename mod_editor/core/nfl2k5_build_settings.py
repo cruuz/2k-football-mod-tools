@@ -63,6 +63,7 @@ FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real 
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
+FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
 FEATURE_KEYS += ("modern_force_out",)  # b778-fo1: modern sideline catches (no force-out from 2008), late executable owner
 FEATURE_KEYS += ("crib_trophy_room",)  # b778-xs1: the Crib keeps only the Trophy Room side (shop cut), in place
 FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module loader prototype), late executable owner, off

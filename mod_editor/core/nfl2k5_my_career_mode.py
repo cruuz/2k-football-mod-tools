@@ -555,7 +555,7 @@ def check_context(payload, edits, *, installed=False):
     cap_va = 0x13EF17
     cap_before = bytes.fromhex("c70578c2e300743a0100")
     if image.read(cap_va, len(cap_before)) != cap_before:
-        legacy.require(economy.status(payload) == "applied", "foreign initial-cap economy companion")
+        legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
     # The optional dated pick owner shares this initializer. Normalize only

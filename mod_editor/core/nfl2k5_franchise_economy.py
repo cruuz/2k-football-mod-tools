@@ -42,6 +42,31 @@ PINS = {
     0x13ECA0: "b38f0a0efc9ddd6e2a56e58581da229723090d2de23f9ee4d051a2e5f0a143ce",
 }
 
+# b778 fa1 (revision 2). PROVED OFFLINE: the retail stage-6 veteran cap cut 0x2BFAF0, called for
+# every club from the offseason advance at 0x247FF5 (years pro >= 10, 210%), releases a veteran while
+# payroll + 6000 >= cap when his base salary exceeds 2.1 x 0x2BD440(surplus, aging, remaining) and
+# his dead money is below salary x remaining. The economy's 0x2BD440 answers surplus=1 with trade
+# surplus, value + (value - salary) x min(remaining, 4) x 0.5, which clamps an overpaid player to
+# one unit, so real contracts (Mahomes 48.53M vs 18.01M, Kittle 16.80M vs 1.84M, Stanley 16.45M vs
+# 5.33M in 2027) were cut after free agency and the draft, when no club had room to sign them.
+# Pass surplus=0 at this one call: the rule then compares salary with 2.1 x the player's modelled
+# market value (Mahomes 38.35M, Kittle 12.09M, Stanley 9.04M), as retail compared it with its own
+# bounded value. The cut still gives over-cap clubs relief from genuinely overpaid veterans; trades
+# and every other 0x2BD440 caller are unchanged. A revision-1 image reads "legacy" and upgrades.
+VETERAN_CUT_SURPLUS = 0x2BFB61              # push 1 (surplus) -> push 0, inside retail 0x2BFAF0
+VETERAN_CUT_PATCHED = bytes.fromhex("6a00")
+PINS[VETERAN_CUT_SURPLUS] = "5bbc5bfabfc3553dfedc9330b8318b2f152eb1da00cb08f894cc88b395a0b178"
+# b778 fa1 (revision 2). PROVED OFFLINE: the rollover (0x247B40) lowers every rostered contract's years left
+# with ((v - 1) ^ v) & 15 ^ v, so a player still on a club with 0 years left wraps to 15. Under the economy
+# the renew gate refuses a renewal the club cannot afford and leaves him on the roster at 0 (Noah's MyNFL3,
+# 2027: Humphrey, Chase Brown, Brisker, Togiai; native 2028 rollover: Chase Brown 15 of 1). Lower only a
+# nonzero count; a player at 0 reaches the next re-signing stage as an expiring contract again.
+ROLLOVER_DECREMENT = 0x247BA8
+ROLLOVER_DECREMENT_PATCHED = bytes.fromhex("f642240f7403fe4a24") + b"\x90" * 7   # test; jz; dec byte [edx+0x24]
+PINS[ROLLOVER_DECREMENT] = "4fbd4ad51bfce990b29a4f408fab5b2aad2c9f030cafebeb45c552d0c6a15cd8"
+REVISION_2_SITES = frozenset({VETERAN_CUT_SURPLUS, ROLLOVER_DECREMENT})
+REVISION = 2
+
 
 class EconomyError(ValueError):
     """PROVED OFFLINE: mismatched or mixed economy bytes are refused atomically."""
@@ -54,7 +79,9 @@ class Site:
     digest: str
 
 
-def sites() -> tuple[Site, ...]:
+def sites(revision: int = REVISION) -> tuple[Site, ...]:
+    if revision not in (1, 2):
+        raise EconomyError("unknown economy revision")
     replacements = {**WINDOWS, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -66,18 +93,28 @@ def sites() -> tuple[Site, ...]:
     replacements[0x322EB0] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_renew_gate"] - 0x322EB0 - 5) + b"\x90\x90"
     for address, symbol in ((0x13ED30, "economy_penalty"), (0x13ECA0, "economy_cap")):
         replacements[address] = b"\xe9" + struct.pack("<i", SYMBOLS[symbol] - address - 5)
+    if revision >= 2:
+        replacements[VETERAN_CUT_SURPLUS] = VETERAN_CUT_PATCHED
+        replacements[ROLLOVER_DECREMENT] = ROLLOVER_DECREMENT_PATCHED
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
+def _site_state(image: XbeImage, site: Site) -> str:
+    current = image.read(site.va, len(site.patched))
+    return ("applied" if current == site.patched else
+            "retail" if hashlib.sha256(current).hexdigest() == site.digest else "foreign")
+
+
 def _standalone_status(payload: bytes) -> str:
+    """retail | applied | legacy (revision 1: every site but the two revision-2 sites) | foreign."""
     try:
         image = XbeImage(payload)
-        states = set()
-        for site in sites():
-            current = image.read(site.va, len(site.patched))
-            states.add("applied" if current == site.patched else
-                       "retail" if hashlib.sha256(current).hexdigest() == site.digest else "foreign")
-        return next(iter(states)) if len(states) == 1 else "foreign"
+        states = {site.va: _site_state(image, site) for site in sites()}
+        core = {state for va, state in states.items() if va not in REVISION_2_SITES}
+        if core == {"applied"} and {states[va] for va in REVISION_2_SITES} == {"retail"}:
+            return "legacy"
+        unique = set(states.values())
+        return next(iter(unique)) if len(unique) == 1 else "foreign"
     except (ValueError, struct.error, IndexError):
         return "foreign"
 
@@ -99,13 +136,15 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
     state = status(payload)
     if state == "applied":
         return payload, {"already_applied": True, "changed_bytes": 0}
-    if state != "retail":
+    if state not in ("retail", "legacy"):
         raise EconomyError(f"economy sites are {state}; refusing to patch")
     from . import nfl2k5_roster_fill_composition as composition
-    shared = composition.installation_edits(payload, "economy")
+    # A legacy (revision-1) image already carries every other site and the shared chain.
+    shared = composition.installation_edits(payload, "economy") if state == "retail" else []
+    todo = sites() if state == "retail" else tuple(s for s in sites() if s.va in REVISION_2_SITES)
     image, out = XbeImage(payload), bytearray(payload)
     sections, touched, edits = _sections(payload), set(), []
-    for site in sites():
+    for site in todo:
         offset = image.offset(site.va, len(site.patched))
         out[offset:offset + len(site.patched)] = site.patched
         touched.add(_section_for_offset(sections, offset).index)
@@ -124,6 +163,7 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
         raise EconomyError("economy post-apply verification failed")
     return result, {"evidence": "PROVED OFFLINE", "changed_bytes": sum(a != b for a, b in zip(payload, result)),
                     "edits": edits, "sections_repinned": sorted(touched), "game_cap_thousands": GAME_CAP,
+                    "revision": REVISION, **({"upgraded_from": "legacy"} if state == "legacy" else {}),
                     "real_dollars_per_game_dollar": DOLLAR_SCALE, "source": SOURCE,
                     "limitations": "DESIGN: fitted cap curves, experience-based aging, estimated rookie pool; no exact cash/guarantee accounting"}
 

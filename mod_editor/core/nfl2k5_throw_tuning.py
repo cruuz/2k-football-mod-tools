@@ -148,6 +148,7 @@ from . import nfl2k5_qb_accuracy as qb_accuracy_patch  # noqa: F401  b777-qb3: l
 from . import nfl2k5_hair_styles as hair_styles_patch  # noqa: F401  b775-hs1: its late owner is installed by the hair_styles image step; imported here so the cave manifest recorder observes it
 from . import nfl2k5_play_art_routes as play_art_routes_patch  # noqa: F401  b776-pa2: late owner installed by the play_art_routes step; imported so the cave manifest recorder observes it
 from . import nfl2k5_formation_art_spacing as formation_art_spacing_patch  # noqa: F401  b777-tp1: late owner installed with play_art_routes; imported so the cave manifest recorder observes it
+from . import nfl2k5_star_retention as star_retention_patch  # noqa: F401  b778-fa1: late owner (CPU clubs keep their stars); imported so the cave manifest recorder observes it
 from . import nfl2k5_force_out as force_out_patch  # noqa: F401  b778-fo1: late owner (modern sideline catches); imported so the cave manifest recorder observes it
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
@@ -2165,9 +2166,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         state = module.status(patched)
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
         # so do depth locks (revision 1, the b775/b776 discs, before the b777 hole fix);
+        # so does the franchise economy (revision 1, before the b778 veteran-cut surplus fix);
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}
