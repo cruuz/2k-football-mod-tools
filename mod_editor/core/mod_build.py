@@ -357,6 +357,10 @@ class BuildPlan:
     # "choice" = the retail default plus a per-side colour flip on the same up/down that picks the era on
     # Controller Assign / Team Select (past the last era: flip and restart); "" = retail. Unwitnessed.
     uniform_choice: str = ""
+    # b778-sl1 (Noah 10/22: "Team colored sleeves would be sick"): the black undershirt sleeve
+    # style is rebound to each side's own uniform package and recoloured per kit. Data-only XBE
+    # table flip plus package palettes; needs a disc image; on in every SOFTDRINK preset.
+    team_sleeves: bool = False
     helmet_finish: str = "glossy"  # ADVANCED (beta 66, maumau78): "matte" zeroes both helmet LODs' shell reflection weight; off in every preset
     # laces to the posts on FG/PAT holds: one 6-byte hook on the held-ball join point + a 143-byte cave in a
     # dead routine that rolls the ball 180 degrees about its long axis on live Field Goal formation plays
@@ -560,7 +564,7 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.team_sleeves or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
@@ -594,7 +598,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False, "franchise_economy": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "punter_holder": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": False, "punter_holder": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -615,7 +619,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "punter_holder": True, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": False, "punter_holder": True, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -637,7 +641,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": True, "punter_holder": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": True, "punter_holder": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -1255,6 +1259,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "name_keyboard": _core_module("nfl2k5_name_keyboard") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
+        "team_sleeves": _core_module("nfl2k5_team_sleeves") is not None,
         "kick_laces": _core_module("nfl2k5_kick_laces") is not None,
         "punter_holder": _core_module("nfl2k5_punter_holder") is not None,
         "franchise_practice": _core_module("nfl2k5_franchise_practice") is not None,
@@ -1398,6 +1403,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    team_sleeves = _core_module("nfl2k5_team_sleeves")  # b778-sl1
+    out["team_sleeves"] = team_sleeves.status(_xbe_bytes(source)) if team_sleeves is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3093,6 +3100,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         tt.TuningSettings(plan.max_deep_yards, plan.arc,
                           plan.realistic_flight, plan.arc_by_distance).validated()
     uniform_choice_mode(plan.uniform_choice)
+    if type(plan.team_sleeves) is not bool:
+        raise ValueError("team_sleeves must be boolean")
+    if plan.team_sleeves and not tt.is_disc_image(plan.source):
+        raise ValueError("Team-coloured sleeves need a disc image (the sleeve textures live in the uniform packages)")
+    if plan.team_sleeves and _core_module("nfl2k5_team_sleeves") is None:
+        raise ValueError("The team-coloured sleeves writer is not available in this installation")
     if type(plan.hires_pack) is not bool:
         raise ValueError("hires_pack must be boolean")
     if type(plan.hires_scale) is not int or plan.hires_scale not in (1, 2):
@@ -3126,6 +3139,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Unknown or duplicate Hi-res family selection")
     if plan.hires_pack and hires_module is None:
         raise ValueError("The Hi-res pack is not available in this installation")
+    if plan.team_sleeves and plan.hires_pack and "jerseys" in families:
+        # The Hi-res jerseys family pins the complete 768-byte player texture binding table; row 36's
+        # context-first word is exactly what the sleeve change edits, so the two cannot both be checked.
+        raise ValueError("Team-coloured sleeves change the player texture binding table that the Hi-res "
+                         "jerseys family pins; turn one of the two options off")
     if plan.hires_pack and not families:
         raise ValueError("Select at least one Hi-res family")
     plan = replace(plan, hires_families=families)
@@ -4667,6 +4685,24 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["moment_kits"] = moment_kits.image_status(target)
             if receipt["result"]["moment_kits"] != "applied":
                 raise ValueError("the Anniversary moment kits failed their read-back on the copy")
+    if is_image and plan.team_sleeves:
+        # b778-sl1: after every uniform writer (the last is the Anniversary moment kits above), so the
+        # Team palette a package carries is the final art. Data only: one .rdata flag and package palettes.
+        sleeves = _core_module("nfl2k5_team_sleeves")
+        if sleeves is None:
+            raise RuntimeError("the team-coloured sleeves module is not available in this build")
+        progress("Making the long sleeves team-coloured", 0, 0)
+        xbe, xbe_receipt = sleeves.apply(_xbe_bytes(target))
+        _write_xbe_bytes(target, xbe)
+        sleeves.verify(_xbe_bytes(target))
+        sleeve_receipt = sleeves.apply_to_image(target)
+        receipt["steps"].append({"step": "team_sleeves", "xbe": xbe_receipt, **sleeve_receipt})
+        receipt["result"]["team_sleeves"] = "applied"
+        if sleeve_receipt.get("skipped"):
+            note = (f"Team-coloured sleeves: left {len(sleeve_receipt['skipped'])} uniform package(s) "
+                    "with their own long-sleeve artwork.")
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
