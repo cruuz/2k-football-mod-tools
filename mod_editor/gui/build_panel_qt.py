@@ -241,6 +241,7 @@ from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
 # b778-fa1: CPU clubs keep their stars (franchise veteran cap cut; on in the Advanced and Experimental presets).
 # b778-pi1: franchise practice keeps injuries (on with the Coach's Desk Practice row in Advanced and Experimental).
 from mod_editor.core import nfl2k5_practice_injuries as _practice_injuries  # noqa: E402
+from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
@@ -259,7 +260,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT),  # b778-rh1
                  ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
                  ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
-                 ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT))  # b778-pi1
+                 ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
+                 ("cpu_ball_carriers", _ball_carrier_ai.BUILD_CAPTION, _ball_carrier_ai.HELP_TEXT))  # b778-ai5
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",

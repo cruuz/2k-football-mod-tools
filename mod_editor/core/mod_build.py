@@ -525,6 +525,11 @@ class BuildPlan:
     # season or franchise loaded keeps the copies' injuries; the native lineup check then benches them, as on game day.
     # On in the Advanced and Experimental presets (the ones with the Coach's Desk Practice row).
     practice_injuries: bool = False
+    # b778-ai5: CPU ball carriers stay in bounds and CPU quarterbacks slide only past the sticks (or when a defender
+    # reaches them first). A late executable owner (nfl2k5_ball_carrier_ai) hooks the carrier's sideline filter at
+    # 0x2E29E6 and the slide decision at 0x2E340E; human carriers and late-half clock urgency keep retail. EXPERIMENTAL:
+    # on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    cpu_ball_carriers: bool = False
 
     # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
     # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
@@ -767,6 +772,12 @@ PRESETS["softdrink_experimental"]["star_retention"] = True
 # b778-pi1: franchise practice keeps injuries: on wherever the Coach's Desk Practice row (franchise_practice) is on.
 for _preset in PRESETS.values():
     _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))
+del _preset
+# b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks (gameplay AI, like run blocking).
+for _preset in PRESETS.values():
+    _preset["cpu_ball_carriers"] = False
+PRESETS["softdrink_advanced"]["cpu_ball_carriers"] = True
+PRESETS["softdrink_experimental"]["cpu_ball_carriers"] = True
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1067,9 +1078,26 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
     ("nfl2k5_module_loader", "On-demand Career Home", lambda p: p.module_loader),  # b778-xs1
     ("nfl2k5_practice_injuries", "Franchise practice injuries", lambda p: p.practice_injuries),  # b778-pi1
+    ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
+
+
+def _ball_carrier_preflight(source: Path, progress) -> None:
+    """b778-ai5: refuse a source whose ball-carrier AI code is foreign, before any write."""
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU ball carriers is not available in this installation.")
+    progress("Checking the ball-carrier AI for CPU ball carriers", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU ball carriers cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
+                         "or build from your unmodified retail dump.")
+
 
 
 def _star_retention_preflight(source: Path, progress) -> None:
@@ -1268,6 +1296,24 @@ def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, pro
     receipt["result"]["practice_injuries"] = "applied"
 
 
+def _apply_ball_carriers(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks, the last late allocator owner."""
+    if not plan.cpu_ball_carriers:
+        return
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None:
+        raise RuntimeError("CPU ball carriers needs nfl2k5_ball_carrier_ai.")
+    progress("CPU AI: ball carriers stay in bounds, QBs slide past the sticks", 0, 0)
+    payload, carrier_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU ball carriers: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_ball_carriers", **{k: v for k, v in carrier_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_ball_carriers"] = "applied"
+
+
+
 def _apply_star_retention(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-fa1: CPU clubs keep their stars (veteran cap cut), the last late allocator owner."""
     if not plan.star_retention:
@@ -1435,6 +1481,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
                                ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
+                               ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
+                               ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1659,6 +1707,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     practice_injuries = _core_module("nfl2k5_practice_injuries")  # b778-pi1
     out["practice_injuries"] = (practice_injuries.status(_xbe_bytes(source)) if practice_injuries is not None
                                 else "unavailable")
+    ball_carriers = _core_module("nfl2k5_ball_carrier_ai")  # b778-ai5
+    out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3321,6 +3371,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU clubs keep their stars must be Off or On.")
     if type(plan.practice_injuries) is not bool:  # b778-pi1
         raise ValueError("Franchise practice injuries must be Off or On.")
+    if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
+        raise ValueError("CPU ball carriers must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -4062,6 +4114,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _star_retention_preflight(source, progress)
     if plan.practice_injuries:  # b778-pi1: like fo1, before any write
         _practice_injuries_preflight(source, progress)
+    if plan.cpu_ball_carriers:  # b778-ai5: before any write
+        _ball_carrier_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5622,6 +5676,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_force_out(plan, target, receipt, progress)
     # b778-pi1: franchise practice injuries, after force-out (LATE_OWNERS order)
     _apply_practice_injuries(plan, target, receipt, progress)
+    # b778-ai5: CPU ball carriers, after the practice injuries owner (LATE_OWNERS order)
+    _apply_ball_carriers(plan, target, receipt, progress)
     # b778-fa1: CPU clubs keep their stars, after the other late allocator owners (LATE_OWNERS order)
     _apply_star_retention(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
@@ -5679,6 +5735,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU clubs keep their stars did not survive the final passes")
     if plan.practice_injuries and _core_module("nfl2k5_practice_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("franchise practice injuries did not survive the final passes")  # b778-pi1
+    if plan.cpu_ball_carriers and _core_module("nfl2k5_ball_carrier_ai").status(_xbe_bytes(target)) != "applied":  # b778-ai5
+        raise ValueError("CPU ball carriers did not survive the final passes")
     if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
             target, _xbe_bytes) != "applied":  # b778-rh1
         raise ValueError("rookie faces did not survive the final passes")

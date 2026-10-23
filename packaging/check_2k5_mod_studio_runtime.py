@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ced1c64174d1ecd531c34fb0c8320a9e6fdaa11a900a498ee4f33464b6a6ae10",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "676bdf15aa4717928f6811b2d9b2b873568371b1df138ac1dc46beaa88db33c9",
+    "mod_editor/gui/build_panel_qt.py": "5911aeca7340778a8f8bb2cd4d4e2f26412673d255bf3bcfdc86eb3df5f89790",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "676bdf15aa4717928f6811b2d9b2b873568371b1df138ac1dc46beaa88db33c9",
+    "mod_editor/gui/build_panel_qt.py": "5911aeca7340778a8f8bb2cd4d4e2f26412673d255bf3bcfdc86eb3df5f89790",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2034,6 +2034,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_inbox_standings",                 # b778-pc3
         "mod_editor.core.nfl2k5_rookie_faces",                    # b778-rh1
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
+        "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
         "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
