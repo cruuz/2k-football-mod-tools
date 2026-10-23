@@ -34911,6 +34911,459 @@
    "template": "h-28-1999-titans-0.iff",
    "week": 17,
    "why": "Noah: peak Tannehill/Henry/A.J. Brown; 2019 = AFC Championship Game run (2020 is the swap)"
+  },
+  "seamen_2006": {
+   "abbreviation": "SEA",
+   "asset_code": "14",
+   "city": "Sarasota",
+   "nickname": "Seamen",
+   "csv_sha256": "809e6dcd933ae2f96448b6432e0a9c198d4fdb26fa34f612b11301cb8e146bde",
+   "selector": "dolphins",
+   "season": 2006,
+   "template": "h-14-1984-dolphins-3.iff",
+   "why": "Noah: the 2006 Sarasota Seamen, the expansion team of the SOFTDRINKTV Madden 07 series",
+   "evidence": "EXPERIMENTAL / UNWITNESSED: hand-transcribed from episode 1's roster cards and sortable tables (roster at 1:44-7:18, table pages 1:44-2:09 and 4:55-5:09); not a lab or Noah witness. Visible Madden ratings are copied exactly; fields the videos do not show are fitted to the shown overall from 2K5 position profiles. Video overall is Madden's; native_overall is 2K5's computed display overall.",
+   "sources": [
+    "/media/noah/12TB HDD1/yt-dlp/sarasota-seamen/20201211 Madden 07 but it's the worst team ever (ft. Not The Expert) [6iyuAgcINdA].mp4"
+   ],
+   "video_times": {
+    "roster_cards_and_tables": "1:44-2:09 and 4:55-5:09",
+    "team_select_and_logo": "1:30-1:44",
+    "home_uniform": "7:25-7:40",
+    "away_uniform": "episode 5 2:37 and 12:58; episode 3 8:23"
+   },
+   "bus_jibber": {
+    "video_size": "7 ft 0 in, 415 lb",
+    "2k5_size": "7 ft 0 in, 405 lb (weight_raw is a byte: 255 + 150 = 405 max)",
+    "video_ratings": "SPD 97, STR 99, ACC 99, THP 97, AWR 50, accuracy 60; OVR 73",
+    "face": "generic head; no authored face texture in this job (the classic-team data path has no portrait importer)"
+   },
+   "players": [
+    {
+     "name": "Torrance Styles",
+     "position": "QB",
+     "jersey": 15,
+     "video_overall": 75,
+     "native_overall": 78,
+     "video_rated": true
+    },
+    {
+     "name": "Bus Jibber",
+     "position": "QB",
+     "jersey": 1,
+     "video_overall": 73,
+     "native_overall": 77,
+     "video_rated": true
+    },
+    {
+     "name": "R. Hilton",
+     "position": "QB",
+     "jersey": 10,
+     "video_overall": 50,
+     "native_overall": 50,
+     "video_rated": false
+    },
+    {
+     "name": "O. Hendrickson",
+     "position": "QB",
+     "jersey": 12,
+     "video_overall": 39,
+     "native_overall": 39,
+     "video_rated": false
+    },
+    {
+     "name": "G. Jones",
+     "position": "HB",
+     "jersey": 20,
+     "video_overall": 61,
+     "native_overall": 61,
+     "video_rated": true
+    },
+    {
+     "name": "W. Wells",
+     "position": "HB",
+     "jersey": 23,
+     "video_overall": 56,
+     "native_overall": 56,
+     "video_rated": true
+    },
+    {
+     "name": "E. Lyle",
+     "position": "HB",
+     "jersey": 24,
+     "video_overall": 48,
+     "native_overall": 48,
+     "video_rated": true
+    },
+    {
+     "name": "Q. Matthews",
+     "position": "FB",
+     "jersey": 44,
+     "video_overall": 54,
+     "native_overall": 54,
+     "video_rated": true
+    },
+    {
+     "name": "R. Hayden",
+     "position": "WR",
+     "jersey": 88,
+     "video_overall": 67,
+     "native_overall": 67,
+     "video_rated": true
+    },
+    {
+     "name": "I. Pharr",
+     "position": "WR",
+     "jersey": 83,
+     "video_overall": 59,
+     "native_overall": 59,
+     "video_rated": true
+    },
+    {
+     "name": "R. Valentine",
+     "position": "WR",
+     "jersey": 82,
+     "video_overall": 57,
+     "native_overall": 57,
+     "video_rated": true
+    },
+    {
+     "name": "C. Shields",
+     "position": "WR",
+     "jersey": 85,
+     "video_overall": 47,
+     "native_overall": 47,
+     "video_rated": true
+    },
+    {
+     "name": "J. Spikes",
+     "position": "WR",
+     "jersey": 86,
+     "video_overall": 36,
+     "native_overall": 36,
+     "video_rated": true
+    },
+    {
+     "name": "John Mike Peter",
+     "position": "TE",
+     "jersey": 84,
+     "video_overall": 82,
+     "native_overall": 82,
+     "video_rated": true
+    },
+    {
+     "name": "K. Monroe",
+     "position": "TE",
+     "jersey": 80,
+     "video_overall": 54,
+     "native_overall": 54,
+     "video_rated": true
+    },
+    {
+     "name": "C. Grandmont",
+     "position": "TE",
+     "jersey": 81,
+     "video_overall": 49,
+     "native_overall": 49,
+     "video_rated": true
+    },
+    {
+     "name": "X. Gold",
+     "position": "T",
+     "jersey": 62,
+     "video_overall": 75,
+     "native_overall": 75,
+     "video_rated": true
+    },
+    {
+     "name": "G. Miles",
+     "position": "T",
+     "jersey": 69,
+     "video_overall": 51,
+     "native_overall": 51,
+     "video_rated": false
+    },
+    {
+     "name": "R. Sitrin",
+     "position": "T",
+     "jersey": 76,
+     "video_overall": 56,
+     "native_overall": 56,
+     "video_rated": false
+    },
+    {
+     "name": "K. Justice",
+     "position": "T",
+     "jersey": 71,
+     "video_overall": 46,
+     "native_overall": 46,
+     "video_rated": false
+    },
+    {
+     "name": "A. Moore",
+     "position": "G",
+     "jersey": 67,
+     "video_overall": 68,
+     "native_overall": 68,
+     "video_rated": false
+    },
+    {
+     "name": "B. Spires",
+     "position": "G",
+     "jersey": 73,
+     "video_overall": 71,
+     "native_overall": 71,
+     "video_rated": true
+    },
+    {
+     "name": "V. Atkinson",
+     "position": "G",
+     "jersey": 66,
+     "video_overall": 64,
+     "native_overall": 64,
+     "video_rated": false
+    },
+    {
+     "name": "G. Walker",
+     "position": "G",
+     "jersey": 68,
+     "video_overall": 63,
+     "native_overall": 63,
+     "video_rated": false
+    },
+    {
+     "name": "S. Harris",
+     "position": "G",
+     "jersey": 64,
+     "video_overall": 60,
+     "native_overall": 60,
+     "video_rated": false
+    },
+    {
+     "name": "I. Collins",
+     "position": "G",
+     "jersey": 61,
+     "video_overall": 58,
+     "native_overall": 58,
+     "video_rated": false
+    },
+    {
+     "name": "L. Wall",
+     "position": "C",
+     "jersey": 75,
+     "video_overall": 62,
+     "native_overall": 62,
+     "video_rated": false
+    },
+    {
+     "name": "O. Bowers",
+     "position": "C",
+     "jersey": 70,
+     "video_overall": 55,
+     "native_overall": 55,
+     "video_rated": false
+    },
+    {
+     "name": "M. Addis",
+     "position": "DE",
+     "jersey": 90,
+     "video_overall": 77,
+     "native_overall": 77,
+     "video_rated": true
+    },
+    {
+     "name": "T. Nelson",
+     "position": "DE",
+     "jersey": 95,
+     "video_overall": 62,
+     "native_overall": 62,
+     "video_rated": true
+    },
+    {
+     "name": "A. Dorsey",
+     "position": "DE",
+     "jersey": 94,
+     "video_overall": 50,
+     "native_overall": 50,
+     "video_rated": true
+    },
+    {
+     "name": "E. Graham",
+     "position": "DE",
+     "jersey": 97,
+     "video_overall": 53,
+     "native_overall": 53,
+     "video_rated": true
+    },
+    {
+     "name": "M. King",
+     "position": "DT",
+     "jersey": 99,
+     "video_overall": 65,
+     "native_overall": 65,
+     "video_rated": false
+    },
+    {
+     "name": "T. Lewis",
+     "position": "DT",
+     "jersey": 92,
+     "video_overall": 64,
+     "native_overall": 64,
+     "video_rated": false
+    },
+    {
+     "name": "J. Spielman",
+     "position": "DT",
+     "jersey": 98,
+     "video_overall": 57,
+     "native_overall": 57,
+     "video_rated": false
+    },
+    {
+     "name": "J. Holmes",
+     "position": "DT",
+     "jersey": 93,
+     "video_overall": 53,
+     "native_overall": 53,
+     "video_rated": false
+    },
+    {
+     "name": "M. Schultz",
+     "position": "OLB",
+     "jersey": 53,
+     "video_overall": 55,
+     "native_overall": 55,
+     "video_rated": true
+    },
+    {
+     "name": "K. Price",
+     "position": "OLB",
+     "jersey": 59,
+     "video_overall": 52,
+     "native_overall": 52,
+     "video_rated": true
+    },
+    {
+     "name": "G. Wilson",
+     "position": "OLB",
+     "jersey": 50,
+     "video_overall": 44,
+     "native_overall": 44,
+     "video_rated": false
+    },
+    {
+     "name": "T. Moore",
+     "position": "OLB",
+     "jersey": 52,
+     "video_overall": 48,
+     "native_overall": 48,
+     "video_rated": false
+    },
+    {
+     "name": "E. Nixon",
+     "position": "ILB",
+     "jersey": 56,
+     "video_overall": 48,
+     "native_overall": 48,
+     "video_rated": true
+    },
+    {
+     "name": "P. Adams",
+     "position": "ILB",
+     "jersey": 54,
+     "video_overall": 42,
+     "native_overall": 42,
+     "video_rated": false
+    },
+    {
+     "name": "R. Davis",
+     "position": "CB",
+     "jersey": 47,
+     "video_overall": 65,
+     "native_overall": 65,
+     "video_rated": true
+    },
+    {
+     "name": "J. Burns",
+     "position": "CB",
+     "jersey": 22,
+     "video_overall": 55,
+     "native_overall": 55,
+     "video_rated": true
+    },
+    {
+     "name": "K. Harry",
+     "position": "CB",
+     "jersey": 21,
+     "video_overall": 55,
+     "native_overall": 55,
+     "video_rated": true
+    },
+    {
+     "name": "D. Grimm",
+     "position": "CB",
+     "jersey": 25,
+     "video_overall": 51,
+     "native_overall": 51,
+     "video_rated": true
+    },
+    {
+     "name": "O. Schwartz",
+     "position": "CB",
+     "jersey": 26,
+     "video_overall": 44,
+     "native_overall": 44,
+     "video_rated": true
+    },
+    {
+     "name": "M. Henson",
+     "position": "FS",
+     "jersey": 31,
+     "video_overall": 50,
+     "native_overall": 50,
+     "video_rated": false
+    },
+    {
+     "name": "L. Fraser",
+     "position": "FS",
+     "jersey": 27,
+     "video_overall": 46,
+     "native_overall": 46,
+     "video_rated": false
+    },
+    {
+     "name": "C. Cottrell",
+     "position": "SS",
+     "jersey": 30,
+     "video_overall": 55,
+     "native_overall": 55,
+     "video_rated": false
+    },
+    {
+     "name": "R. McNeal",
+     "position": "SS",
+     "jersey": 28,
+     "video_overall": 33,
+     "native_overall": 33,
+     "video_rated": false
+    },
+    {
+     "name": "G. McClain",
+     "position": "K",
+     "jersey": 9,
+     "video_overall": 41,
+     "native_overall": 41,
+     "video_rated": false
+    },
+    {
+     "name": "R. Tripp",
+     "position": "P",
+     "jersey": 18,
+     "video_overall": 57,
+     "native_overall": 57,
+     "video_rated": false
+    }
+   ]
   }
  },
  "years_pro_convention": "game_rookie_1",

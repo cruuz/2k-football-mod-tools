@@ -181,6 +181,16 @@
    "kit_note": "New kit authored by ct1 (style 14, CT1-TEN in data/nfl2k5_moment_kits.json): the 2018-2023 set, navy home and white road over navy pants, titanium-grey shoulders edged in Titans blue, block numerals with a Titans-blue outline, navy helmet, grey sword stripe on the pants (GUD 2019_TEN_H2/B). Falls back to the franchise spare (the 1999-2017 kit) when the kit is not on the disc.",
    "stadium": "franchise",
    "stadium_note": "Nissan Stadium: the Titans' row."
+  },
+  "seamen_2006": {
+   "kit": {
+    "prefer": 14,
+    "fallback": "modern"
+   },
+   "kit_quality": "close",
+   "kit_note": "The video's created-team set: teal jersey and pants at home, white jersey and pants on the road, white helmet with a teal/black stripe, black facemask, plain chest and sleeves. Authored as new MIA style 14 from the 2026 Dolphins cut: aqua -> the video's teal (#10B984), orange -> black, pants chunks swapped for green-on-green home and white-on-white away; the Dolphins chest/sleeve wordmarks and helmet logos are painted out. The helmet shell is the plain Browns shell (no side logo) recoloured white. Fallback: the modern Dolphins kit.",
+   "stadium": "franchise",
+   "stadium_note": "Borrowed Dolphins home row (Hard Rock Stadium) as the closest existing Florida venue; 2K5 has no Sarasota stadium and the classic-team file borrows a retail franchise's venue row."
   }
  }
 }

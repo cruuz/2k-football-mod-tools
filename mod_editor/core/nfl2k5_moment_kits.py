@@ -54,9 +54,11 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def document(path=None):
-    doc = json.loads(Path(path or DATA).read_text(encoding="utf-8"))
-    require(doc.get("schema") == SCHEMA, "unexpected data schema")
+def validate_document(doc):
+    """Validate a moment/classic-kit document in the shared shape and return it."""
+    require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "unexpected data schema")
+    doc.setdefault("selections", [])
+    doc.setdefault("classic_defaults", [])
     ids = [k["id"] for k in doc["kits"]]
     require(len(set(ids)) == len(ids), "duplicate kit ids")
     seen = set()
@@ -86,6 +88,10 @@ def document(path=None):
     for c in doc.get("classic_defaults", []):
         require(type(c["style"]) is int and 1 <= c["style"] <= MAX_STYLE, c["file"] + ": classic default style")
     return doc
+
+
+def document(path=None):
+    return validate_document(json.loads(Path(path or DATA).read_text(encoding="utf-8")))
 
 
 def pins():
@@ -392,7 +398,8 @@ def expected(doc, inputs):
     files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
     situ = bytearray(inputs["situ"])
     fields = _situ_fields(inputs["situ"])
-    require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
+    if doc.get("selections"):
+        require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
     for s in doc["selections"]:
         struct.pack_into("<I", situ, fields[(s["row"], s["side"])][1], s["style"])
     return packages, members, files, bytes(situ)
@@ -434,7 +441,7 @@ def image_status(path, doc=None):
     try:
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
-            if len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
+            if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
             return state_of(doc, read_inputs(target, doc), target)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
@@ -456,7 +463,8 @@ def compile_edits(target, doc, inputs):
     for name, data in files.items():
         if data != inputs["files"][name]:
             edits[target.outer(name)] = data
-    edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
+    if situ != inputs["situ"]:
+        edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
     appended = sorted(packages.items())
     if len(appended[-1][1]) % 2048:
         appended.append((FILLER, bytes(2048)))
