@@ -76,6 +76,7 @@ FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity l
 FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchise draft, late executable owner
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
 FEATURE_KEYS += ("player_progress",)  # b778-pg2: Player Progress screen, late executable owner
+FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("inbox_standings",)  # b778-pc3: inbox story 23 standings setup (pointer-only edit)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform
@@ -89,6 +90,7 @@ FEATURE_KEYS += ("k128_memory", "k128_roster_heap", "k128_early")  # b76-k1: 128
 FEATURE_KEYS += ("letter_grades",)  # b77-f4: letter grades in Franchise (allocator owner, late)
 FEATURE_KEYS += ("coach_ai",)  # preserved as an explicit editable Build setting
 FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors page (allocator owner, late) and its award history
+FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-college screen guard (late owner)
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
 FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: optional folder of the user's own Super Bowl logos, "" = off
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")

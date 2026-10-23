@@ -252,6 +252,7 @@ from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
 # b778-pg1: franchise in-season weekly progression (off in every preset until the second scale-out).
 from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # noqa: E402
 from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
+from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -275,7 +276,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
                  ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT),  # b778-dr1
                  ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT),  # b778-pg1
-                 ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT))  # b778-pg2
+                 ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
+                 ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT))  # b778-cr1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
