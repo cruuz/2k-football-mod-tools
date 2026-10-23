@@ -3942,8 +3942,51 @@ def recorded_surname_ids() -> dict[str, int]:
 PBP_REPLACED = frozenset({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK}) | PBP_UNRECORDED_NAMES
 
 
+# b778 rd1 (Noah's 10/21 stream: Berman called Jonathan Taylor "Chester Taylor"): a retail full-name cue is the recording of one
+# person's first AND last name. Roster generators that matched a new player to "a retail player with the same surname"
+# left 673 players on the wrong first name. data/nfl2k5_retail_name_cues.json is the retail table (cue -> the one retail
+# player who carries it, tools/b77/rd1_name_cues.py); a cue that names somebody with this surname but another first
+# name is replaced by the player's own recording, else the recorded surname, else his number.
+NAME_CUES_PATH = ROOT / "data" / "nfl2k5_retail_name_cues.json"
+
+
+def retail_name_cues() -> dict[int, tuple[str, str]]:
+    """cue -> (first, last) of the retail player it records; empty when the pinned table is absent."""
+    global _RETAIL_NAME_CUES
+    if _RETAIL_NAME_CUES is None:
+        table: dict[int, tuple[str, str]] = {}
+        try:
+            document = json.loads(NAME_CUES_PATH.read_text(encoding="utf-8"))
+            table = {int(cue): (str(row[0]), str(row[1])) for cue, row in document["cues"].items()}
+        except (OSError, ValueError, KeyError, IndexError, TypeError):
+            table = {}
+        _RETAIL_NAME_CUES = table
+    return _RETAIL_NAME_CUES
+
+
+_RETAIL_NAME_CUES: dict[int, tuple[str, str]] | None = None
+
+
+def _first_key(first: str) -> str:
+    return " ".join(str(first).split()).casefold()
+
+
+def is_wrong_name_cue(cue: int, first: str, last: str) -> bool:
+    """True when ``cue`` is a retail full-name call of somebody who shares this surname but not this first name."""
+    owner = retail_name_cues().get(cue)
+    return (owner is not None and commentary_surname(owner[1]) == commentary_surname(last)
+            and _first_key(owner[0]) != _first_key(first))
+
+
+def exact_name_cue(first: str, last: str) -> int | None:
+    """The one retail full-name cue that records exactly this first and last name, when there is one."""
+    wanted = (_first_key(first), commentary_surname(last))
+    hits = {cue for cue, (f, l) in retail_name_cues().items() if (_first_key(f), commentary_surname(l)) == wanted}
+    return next(iter(hits)) if len(hits) == 1 else None
+
+
 def commentary_id(last: str, jersey: int, current: int, *, surname_ids: Mapping[str, int] | None = None,
-                  sync_numbers: bool = True) -> int:
+                  sync_numbers: bool = True, first: str | None = None) -> int:
     """The play-by-play id a populated record should carry: c1's rules as one pure function.
 
     * ``current`` in PBP_REPLACED (0, 9100 "double zero", 9101, the unrecorded retail names) becomes the exact
@@ -3953,6 +3996,12 @@ def commentary_id(last: str, jersey: int, current: int, *, surname_ids: Mapping[
 
     The jersey must be 0..99: a real #0 player is called by the recorded "zero" clip 9000, never "double zero".
     """
+    if first is not None and is_wrong_name_cue(current, first, last):
+        # b778 rd1: the call names another player; his own recording if retail has one, else surname, else number
+        own = exact_name_cue(first, last)
+        if own is not None:
+            return own
+        current = PBP_NUMBER_FALLBACK
     if current in PBP_REPLACED:
         bank = recorded_surname_ids() if surname_ids is None else surname_ids
         found = bank.get(commentary_surname(last))
@@ -3974,9 +4023,10 @@ def normalise_player_commentary(player: Player, surname_ids: Mapping[str, int] |
     if not (player.first or player.last) or "*" in player.first + player.last:
         return False
     old = player.record.values["pbp_id"]
-    if old in PBP_REPLACED or (sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100):
+    if (old in PBP_REPLACED or is_wrong_name_cue(old, player.first, player.last)
+            or (sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100)):
         new = commentary_id(player.last, player.record.values["jersey"], old,
-                            surname_ids=surname_ids, sync_numbers=sync_numbers)
+                            surname_ids=surname_ids, sync_numbers=sync_numbers, first=player.first)
     else:
         return False
     player.record.set("pbp_id", new)
