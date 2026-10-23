@@ -475,19 +475,7 @@
   "Pookie": 0,
   "Meatball": 0,
   "Spud": 0,
-  "Catfish": 0,
-  "Hoss": 0,
-  "Rooster": 0,
-  "Gravy": 0,
-  "Boom Boom": 0,
-  "Sugar Bear": 0,
-  "Pistol": 0,
-  "Dozer": 0,
-  "Snacks": 0,
-  "Pork Chop": 0,
-  "Hot Rod": 0,
-  "Bear": 0,
-  "Sweet Pea": 0
+  "Catfish": 0
  },
  "last": {
   "Smith": 7,
@@ -507,11 +495,11 @@
   "Harris": 20,
   "Martin": 1,
   "Thompson": 8,
-  "Bolden": 37,
+  "Bolden Jr.": 37,
   "McCray": 41,
   "Robinson": 23,
   "Clark": 5,
-  "Rivers": 25,
+  "Rivers Jr.": 25,
   "Lewis": 16,
   "Lee": 7,
   "Walker": 15,
@@ -520,7 +508,7 @@
   "Young": 11,
   "King": 8,
   "Wright": 15,
-  "Gaines": 24,
+  "Gaines Jr.": 24,
   "Hill": 12,
   "Scott": 17,
   "Green": 20,
@@ -547,16 +535,16 @@
   "Bell": 15,
   "Murphy": -2,
   "Bailey": 5,
-  "Pryor": 18,
+  "Pryor Jr.": 18,
   "Cooper": 11,
   "Richardson": 18,
   "Cox": -6,
   "Howard": 13,
   "Ward": 1,
-  "Wynn": 17,
+  "Wynn III": 17,
   "Peterson": 5,
   "Gray": 9,
-  "Booker": 30,
+  "Booker Jr.": 30,
   "James": 21,
   "Watson": 9,
   "Brooks": 12,
@@ -604,7 +592,7 @@
   "McDonald": 1,
   "Branch": 12,
   "Marshall": 15,
-  "Charles": 32,
+  "Charles Jr.": 32,
   "Diggs": 34,
   "Murray": 7,
   "Freeman": 10,
@@ -620,7 +608,7 @@
   "Henry": 16,
   "Boyd": 12,
   "Mason": 7,
-  "Golden": 4,
+  "Golden Jr.": 4,
   "Kennedy": 0,
   "Warren": 5,
   "Dixon": 18,
@@ -661,7 +649,7 @@
   "Watkins": 12,
   "Olson": -56,
   "Carroll": -10,
-  "Mathews": -4,
+  "Mathews Jr.": -4,
   "Duncan": 2,
   "Snyder": -36,
   "Hart": 1,
@@ -669,7 +657,7 @@
   "Bradley": 9,
   "Lane": 2,
   "Andrews": 7,
-  "Milton": 24,
+  "Milton Jr.": 24,
   "Harper": 6,
   "Fox": -17,
   "Riley": 12,
@@ -719,16 +707,16 @@
   "Gilbert": 3,
   "Garrett": 5,
   "Larson": -56,
-  "Rush": 7,
+  "Rush Sr.": 7,
   "Welch": -6,
   "Frazier": 22,
   "Burke": -5,
   "Hanson": -19,
   "Day": -11,
-  "Strong": 17,
+  "Strong III": 17,
   "Winston": 29,
   "Bowman": -2,
-  "Battle": 43,
+  "Battle Jr.": 43,
   "Fowler": -9,
   "Brewer": -9,
   "Hoffman": -41,
@@ -739,13 +727,13 @@
   "Douglas": 17,
   "Fleming": 7,
   "Jensen": -56,
-  "Boykin": 20,
+  "Boykin Jr.": 20,
   "Byrd": 10,
   "Davidson": -6,
   "Hopkins": 5,
   "May": -7,
   "Terry": 10,
-  "Bullock": 13,
+  "Bullock II": 13,
   "Wade": 8,
   "Clemons": 20,
   "Cleveland": 9,
@@ -782,7 +770,7 @@
   "Newman": -10,
   "Haynes": 13,
   "McDaniel": -1,
-  "Dotson": 5,
+  "Dotson Jr.": 5,
   "Bush": 9,
   "Vaughn": 1,
   "Parks": 13,
@@ -796,7 +784,7 @@
   "Powers": -18,
   "Schultz": -49,
   "Barker": -13,
-  "Durant": 25,
+  "Durant II": 25,
   "Page": 0,
   "Elliss": 0,
   "Ball": -4,
@@ -821,7 +809,7 @@
   "Griffith": -11,
   "Fant": 8,
   "Hubbard": 3,
-  "Felton": 29,
+  "Felton II": 29,
   "Reeves": -2,
   "Warner": -2,
   "Stevenson": 16,
@@ -837,9 +825,9 @@
   "Dennis": 13,
   "McGee": 7,
   "Farmer": 0,
-  "Hairston": 41,
-  "Heath": 1,
-  "Herron": -2,
+  "Nguyen": 0,
+  "Chen": 0,
+  "Patel": 0,
   "Glover": 22,
   "Manning": 5,
   "Cohen": -11,
@@ -887,7 +875,7 @@
   "Osborne": -3,
   "Paul": 10,
   "McCarthy": -22,
-  "Hinton": 21,
+  "Hinton Jr.": 21,
   "Lindsey": 7,
   "Humphrey": 8,
   "Huntley": 18,
@@ -904,10 +892,10 @@
   "Gill": -1,
   "Kamara": 52,
   "Greer": -8,
-  "Lovett": 14,
+  "Lovett IV": 14,
   "Simon": 12,
   "Waters": -3,
-  "Mays": 19,
+  "Mays III": 19,
   "Ballard": 1,
   "Schwartz": -56,
   "McBride": 8,
@@ -1004,19 +992,7 @@
   "Pookie",
   "Meatball",
   "Spud",
-  "Catfish",
-  "Hoss",
-  "Rooster",
-  "Gravy",
-  "Boom Boom",
-  "Sugar Bear",
-  "Pistol",
-  "Dozer",
-  "Snacks",
-  "Pork Chop",
-  "Hot Rod",
-  "Bear",
-  "Sweet Pea"
+  "Catfish"
  ],
  "surname_code_cuts": [
   -16,
@@ -1028,5 +1004,127 @@
   1,
   15,
   38
- ]
+ ],
+ "rare": {
+  "surnames": [
+   "Nguyen",
+   "Chen",
+   "Patel"
+  ],
+  "groups": [
+   "east",
+   "east",
+   "south"
+  ],
+  "first_names": [
+   "Minh",
+   "Tuan",
+   "Huy",
+   "Vinh",
+   "Wei",
+   "Jun",
+   "Ming",
+   "Hao",
+   "Raj",
+   "Nikhil",
+   "Ravi",
+   "Neil"
+  ],
+  "surname_source": "US Census Bureau, Frequently Occurring Surnames from the 2010 Census (Names_2010Census.csv)",
+  "first_source": "Rosenman, Olivella & Imai, Harvard Dataverse doi:10.7910/DVN/SGKW0K (CC0); P(Asian | name) with US male shares white .60, Black .13, Hispanic .18, Asian .06, other .03",
+  "census": {
+   "NGUYEN": {
+    "rank": 38,
+    "count": 437645,
+    "pct_api": 96.45
+   },
+   "PATEL": {
+    "rank": 95,
+    "count": 229973,
+    "pct_api": 94.78
+   },
+   "CHEN": {
+    "rank": 150,
+    "count": 169580,
+    "pct_api": 96.12
+   }
+  },
+  "first_stats": {
+   "HAO": {
+    "p_name_given_asian": 0.000423,
+    "p_asian_given_name": 0.949
+   },
+   "HUY": {
+    "p_name_given_asian": 0.000709,
+    "p_asian_given_name": 0.954
+   },
+   "JUN": {
+    "p_name_given_asian": 0.000521,
+    "p_asian_given_name": 0.949
+   },
+   "MING": {
+    "p_name_given_asian": 0.000477,
+    "p_asian_given_name": 0.913
+   },
+   "MINH": {
+    "p_name_given_asian": 0.001596,
+    "p_asian_given_name": 0.935
+   },
+   "NEIL": {
+    "p_name_given_asian": 0.000552,
+    "p_asian_given_name": 0.121
+   },
+   "NIKHIL": {
+    "p_name_given_asian": 0.000313,
+    "p_asian_given_name": 0.835
+   },
+   "RAJ": {
+    "p_name_given_asian": 0.000392,
+    "p_asian_given_name": 0.825
+   },
+   "RAVI": {
+    "p_name_given_asian": 0.000647,
+    "p_asian_given_name": 0.827
+   },
+   "TUAN": {
+    "p_name_given_asian": 0.001373,
+    "p_asian_given_name": 0.951
+   },
+   "VINH": {
+    "p_name_given_asian": 0.000736,
+    "p_asian_given_name": 0.94
+   },
+   "WEI": {
+    "p_name_given_asian": 0.000705,
+    "p_asian_given_name": 0.951
+   }
+  }
+ },
+ "suffixes": {
+  "source": "nflverse-data players.parquet (CC-BY-4.0), last_season 2025-2026: 166 of 3,306 players (5.0 %) have a suffix; Jr. 60.8 %, III 17.5 %, II 15.7 %, IV 3.6 %, Sr. 1.8 %, V 0.6 %",
+  "rows": {
+   "Bolden Jr.": "Jr.",
+   "Rivers Jr.": "Jr.",
+   "Gaines Jr.": "Jr.",
+   "Pryor Jr.": "Jr.",
+   "Booker Jr.": "Jr.",
+   "Golden Jr.": "Jr.",
+   "Milton Jr.": "Jr.",
+   "Battle Jr.": "Jr.",
+   "Boykin Jr.": "Jr.",
+   "Dotson Jr.": "Jr.",
+   "Hinton Jr.": "Jr.",
+   "Charles Jr.": "Jr.",
+   "Mathews Jr.": "Jr.",
+   "Wynn III": "III",
+   "Strong III": "III",
+   "Mays III": "III",
+   "Bullock II": "II",
+   "Felton II": "II",
+   "Durant II": "II",
+   "Lovett IV": "IV",
+   "Rush Sr.": "Sr."
+  },
+  "share_of_draws": 0.0433
+ }
 }

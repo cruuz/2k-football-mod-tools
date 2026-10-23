@@ -26,9 +26,17 @@ def shipped_pool():
     return [r.first for r in rows], [r.last for r in rows]
 
 
-def toy_bank(count=40, hanging=5, start=2200):
-    return {"buckets": [dict(tone=b // 3, build=b % 3, start=start + count * b, count=count, hanging=hanging)
-                        for b in range(rf.BUCKETS)]}
+def toy_bank(count=40, hanging=5, start=2200, rare=10):
+    rows = [dict(tone=b // 3, build=b % 3, start=start + count * b, count=count, hanging=hanging) for b in range(rf.BUCKETS)]
+    base = start + count * rf.BUCKETS
+    for g, group in enumerate(rf.RARE_GROUPS):
+        for build in range(3):
+            rows.append(dict(tone=rf.RARE_TONES[g], build=build, group=group, start=base + rare * (3 * g + build),
+                             count=rare, hanging=0))
+    return {"buckets": rows}
+
+
+RARE_ROW = 347
 
 
 class Tables(unittest.TestCase):
@@ -41,13 +49,17 @@ class Tables(unittest.TestCase):
         self.assertEqual(len(t), rf.TABLE_DATA)
         self.assertEqual(struct.unpack_from("<H", t, rf.T_NICK0)[0], 445)
         self.assertEqual(t[rf.T_NICKMASK], rf.NICKMASK)
-        self.assertEqual((t[rf.T_LEANMAX], t[rf.T_HEAVYMIN]), (rf.LEAN_MAX_LB - 150, rf.HEAVY_MIN_LB - 150))
+        self.assertEqual(struct.unpack_from("<HH", t, rf.T_RS0)[0], RARE_ROW)
+        self.assertEqual(struct.unpack_from("<H", t, rf.T_RFIRST0)[0], rf.POOL_COUNT - len(rf.RARE_FIRSTS))
+        self.assertEqual(tuple(t[rf.T_TONES:rf.T_TONES + 2]), rf.RARE_TONES)
         self.assertEqual(list(t[rf.T_TCB:rf.T_TCB + 4]), sorted(t[rf.T_TCB:rf.T_TCB + 4]))
         sig = list(t[rf.T_SIG:rf.T_SIG + 32])
         self.assertEqual(sig, sorted(sig))
         self.assertEqual((sig[0], sig[-1]), (0, 255))
         for b in range(rf.BUCKETS):
-            self.assertEqual(struct.unpack_from("<HBB", t, rf.T_BUCKETS + 4 * b), (2200 + 40 * b, 40, 5))
+            self.assertEqual(struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * b), (2200 + 40 * b, 40 | 5 << 9))
+        for r in range(6):
+            self.assertEqual(struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * (18 + r)), (2200 + 720 + 10 * r, 10))
         self.assertTrue(rf.T_LASTBITS + (rf.POOL_COUNT + 3) // 4 <= rf.TABLE_DATA)
 
     def test_first_bands_rise(self):
@@ -81,14 +93,16 @@ class Tables(unittest.TestCase):
         for white in ("CONNOR", "TANNER", "COLE", "HUNTER"):
             if white in first:
                 self.assertLess(first[white], -24, white)
-        self.assertEqual(len(names["nicknames"]), rf.POOL_COUNT - 445)
+        self.assertEqual(len(names["nicknames"]), rf.POOL_COUNT - 445 - len(rf.RARE_FIRSTS))
 
 
 class Names(unittest.TestCase):
     def test_shipped_pool(self):
         firsts, lasts = shipped_pool()
         names = rf.load_names()
-        self.assertEqual(firsts[445:], names["nicknames"])
+        self.assertEqual(firsts[445:473], names["nicknames"])
+        self.assertEqual(tuple(firsts[473:]), rf.RARE_FIRSTS)
+        self.assertEqual(rf.rare_layout(firsts, shipped_pool()[1]), (RARE_ROW, 473))
         lr = [names["first"][n] for n in firsts[:445]]
         self.assertEqual(lr, sorted(lr))
         layout = pn.plan_layout(pn.read_csv(pn.SHIPPED_CSV.read_text(encoding="utf-8")))
@@ -97,6 +111,19 @@ class Names(unittest.TestCase):
         for nick in names["nicknames"]:
             self.assertEqual(pn.validate_name(nick, "nickname"), nick)
             self.assertLessEqual(len(nick), pn.MAX_NAME_CHARS)
+
+    def test_suffixes(self):
+        """b778-rh2: about 4 % of surname draws carry a suffix (nflverse 2025-26 rosters: 5.0 %), mostly Jr., all on
+        number-announced rows, every name within the 12-character limit."""
+        rows = pn.read_csv(pn.SHIPPED_CSV.read_text(encoding="utf-8"))
+        suffixed = [r for r in rows if r.last.split(" ")[-1] in ("Jr.", "Sr.", "II", "III", "IV")]
+        self.assertEqual(len(suffixed), 21)
+        self.assertTrue(all(not r.retained and len(r.last) <= pn.MAX_NAME_CHARS for r in suffixed))
+        kinds = collections.Counter(r.last.split(" ")[-1] for r in suffixed)
+        self.assertEqual(kinds, collections.Counter({"Jr.": 13, "III": 3, "II": 3, "IV": 1, "Sr.": 1}))
+        names = rf.load_names()
+        for r in suffixed:
+            self.assertEqual(names["last"][r.last], names["last"].get(r.last.split(" ")[0], names["last"][r.last]))
 
     def test_space_rules(self):
         self.assertEqual(pn.validate_name("Riff Raff", "x"), "Riff Raff")
@@ -108,6 +135,7 @@ class Names(unittest.TestCase):
         firsts, _ = shipped_pool()
         self.assertEqual(rf.nick0(firsts, names), 445)
         self.assertEqual(rf.nick0(["Michael"] * rf.POOL_COUNT, names), rf.POOL_COUNT)
+        self.assertEqual(rf.rare_layout(["Michael"] * rf.POOL_COUNT, ["Smith"] * rf.POOL_COUNT), (rf.RS0_OFF, rf.POOL_COUNT))
 
 
 # ------------------------------------------------------------------------------------------- the native code
@@ -205,10 +233,18 @@ class Native(unittest.TestCase):
 
     def test_face_matches_bucket(self):
         for (fi, li, pos, wt), r in zip(self.prospects, self.res):
+            build = 0 if wt <= rf.LEAN_MAX_LB else 1 if wt < rf.HEAVY_MIN_LB else 2
+            if RARE_ROW <= li < RARE_ROW + 3:
+                g = int(li - RARE_ROW == 2)
+                rare_b, k = divmod(r["photo"] - 2920, 10)
+                self.assertEqual(rare_b, 3 * g + build, "a rare surname takes his group's row for his build")
+                self.assertEqual(r["tone"], rf.RARE_TONES[g])
+                self.assertEqual(r["first"], 473 + 4 * (li - RARE_ROW) + (0xC0FFEE & 3))
+                self.assertEqual(r["dreads"], 0)
+                continue
             b, k = divmod(r["photo"] - 2200, 40)
             self.assertTrue(0 <= b < 18)
             self.assertEqual(b // 3, r["tone"], "skin = the face's tone")
-            build = 0 if wt <= rf.LEAN_MAX_LB else 1 if wt < rf.HEAVY_MIN_LB else 2
             self.assertEqual(b % 3, build, "the face's build follows his weight")
             self.assertEqual(r["dreads"], int(k < 5), "Dreads bit = the face's hanging hair")
             self.assertLessEqual(r["face"], 6, "a generic head exists for every face shape drawn")
@@ -235,13 +271,17 @@ class Native(unittest.TestCase):
         self.assertLessEqual(clash, 1)
 
     def test_nicknames_are_rare(self):
-        drawn = sum(1 for fi, *_ in self.prospects if fi >= 445)
-        kept = sum(1 for r in self.res if r["first"] >= 445)
-        self.assertGreater(drawn, 15)
+        drawn = sum(1 for fi, *_ in self.prospects if 445 <= fi < 473)
+        kept = sum(1 for (fi, li, *_), r in zip(self.prospects, self.res) if 445 <= r["first"] < 473)
+        self.assertGreater(drawn, 10)
         self.assertLess(kept, drawn / 3)
-        for (fi, *_), r in zip(self.prospects, self.res):
+        for (fi, li, *_), r in zip(self.prospects, self.res):
+            if RARE_ROW <= li < RARE_ROW + 3:
+                continue
             if fi < 445:
                 self.assertEqual(r["first"], fi, "an ordinary first name is never touched")
+            if fi >= 473:
+                self.assertLess(r["first"], 445, "a rare first name never comes from an ordinary draw")
 
     def test_old_pool_is_neutral(self):
         """A pool whose first name 0 starts with another letter (an older save) gets no first-name term."""
@@ -270,6 +310,72 @@ class Native(unittest.TestCase):
         b = sum(r["tone"] >= 2 for r in res[100:])
         self.assertLess(w, 25)
         self.assertGreater(b, 60)
+
+
+class NativeRh2(unittest.TestCase):
+    """b778-rh2: 9-bit rows, the rare East / South Asian rows and their names, the older-pool and user-CSV switches."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        cls.firsts, cls.lasts = shipped_pool()
+
+    def test_rows_above_255(self):
+        bank = toy_bank(count=400, hanging=100, start=1000)
+        for r in bank["buckets"][18:]:
+            r["start"] += 400 * 18 - 40 * 18
+        table = rf.tables(self.firsts, self.lasts, bank)
+        rng = random.Random(5)
+        pros = [(rng.randrange(445), rng.choice([0, 1, 2, 5, 9]), rf.POSITIONS.index("CB"), 190) for _ in range(300)]
+        res = run_class(table, pros, seed=11)
+        idx = [r["photo"] - (1000 + 400 * (3 * r["tone"])) for r in res]
+        self.assertTrue(all(0 <= k < 400 for k in idx), "lean rows: start + index")
+        self.assertGreater(sum(k >= 256 for k in idx), 60, "indices past 255 are drawn")
+        for k, r in zip(idx, res):
+            self.assertEqual(r["dreads"], int(k < 100), "hanging = the first 100 faces, also when the index is past 255")
+
+    def test_rare_surnames(self):
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        qb = rf.POSITIONS.index("QB")
+        pros = [(rng_first, RARE_ROW + g, qb, wt) for g in range(3) for wt in (200, 250, 310) for rng_first in (3, 300, 450, 480)]
+        res = run_class(table, pros, seed=2)
+        for (fi, li, _pos, wt), r in zip(pros, res):
+            g = li - RARE_ROW
+            grp = int(g == 2)
+            build = 0 if wt <= rf.LEAN_MAX_LB else 1 if wt < rf.HEAVY_MIN_LB else 2
+            self.assertEqual(divmod(r["photo"] - 2920, 10)[0], 3 * grp + build)
+            self.assertEqual(r["tone"], rf.RARE_TONES[grp])
+            first = r["first"]
+            self.assertTrue(473 + 4 * g <= first < 477 + 4 * g, "one of the surname's own four first names")
+            self.assertEqual(self.firsts[first], rf.RARE_FIRSTS[first - 473])
+            self.assertLessEqual(r["face"], 6)
+
+    def test_rare_rate_in_a_class(self):
+        """Uniform surname draws: about 3 rare prospects in 485, two East to one South."""
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        rng = random.Random(12)
+        pros = [(rng.randrange(485), rng.randrange(485), rng.randrange(17), rng.randint(180, 330)) for _ in range(1500)]
+        res = run_class(table, pros, seed=12)
+        east = sum(1 for r in res if 2920 <= r["photo"] < 2950)
+        south = sum(1 for r in res if 2950 <= r["photo"] < 2980)
+        self.assertTrue(3 <= east <= 15 and 1 <= south <= 9, (east, south))
+        self.assertEqual(east + south, sum(1 for p in pros if RARE_ROW <= p[1] < RARE_ROW + 3))
+
+    def test_older_pool_and_user_csv_have_no_rare_rows(self):
+        old = bytearray(rf.tables(self.firsts, self.lasts, toy_bank()))
+        struct.pack_into("<H", old, rf.T_CANARY, ord("Z"))
+        lasts = list(self.lasts)
+        lasts[RARE_ROW:RARE_ROW + 3] = ["Smith", "Jones", "Brown"]
+        user = rf.tables(self.firsts, lasts, toy_bank())
+        self.assertEqual(struct.unpack_from("<H", user, rf.T_RS0)[0], rf.RS0_OFF)
+        pros = [(5, RARE_ROW + g, 0, 220) for g in range(3)] * 10
+        for table in (bytes(old), user):
+            for (fi, *_), r in zip(pros, run_class(table, pros, seed=4)):
+                self.assertLess(r["photo"], 2920, "an ordinary row")
+                self.assertEqual(r["first"], fi)
 
 
 @unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
@@ -313,11 +419,12 @@ class Portraits(unittest.TestCase):
         by_hash = {rf.member_hash(n): self._slot(n, tx) for n in names}
         cdf = b"".join(by_hash[h] for h in hashes)
         rgb = bytes(range(128)) * 3 * 128
-        new_record, new_cdf, added = rf.build_portraits(bytes(record), cdf, [(2201, rgb), (6718, rgb)])
-        self.assertEqual(added, 2)
+        new_record, new_cdf, added = rf.build_portraits(bytes(record), cdf, [(2201, rgb), (6718, rgb), (10123, rgb)])
+        self.assertEqual(added, 3)
         count, slot, new_hashes = rf.parse_record(new_record)
-        self.assertEqual((count, slot), (5, rf.SLOT))
-        self.assertEqual(len(new_cdf), 5 * rf.SLOT)
+        self.assertEqual((count, slot), (6, rf.SLOT))
+        self.assertEqual(len(new_cdf), 6 * rf.SLOT)
+        self.assertIn(rf.member_hash("10123"), new_hashes, "five-digit ids are named like the game's %04d prints them")
         self.assertEqual(new_record[0x20:0x20 + 24], rf.CDF_NAME.encode("utf-16-le"))
         for i, h in enumerate(new_hashes):
             s = new_cdf[i * rf.SLOT:(i + 1) * rf.SLOT]
@@ -351,11 +458,20 @@ class Bank(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(sorted(ids), sorted(f["id"] for f in self.bank["faces"]))
         for f in self.bank["faces"]:
-            b = f["tone"] * 3 + f["build"]
+            b = (rf.BUCKETS + 3 * rf.RARE_GROUPS.index(f["rare"]) + f["build"]) if f.get("rare") else f["tone"] * 3 + f["build"]
             row = self.bank["buckets"][b]
             self.assertTrue(row["start"] <= f["id"] < row["start"] + row["count"])
             self.assertEqual(f["hanging"], f["id"] - row["start"] < row["hanging"])
-        self.assertTrue(all(1000 <= i <= 9999 for i in ids))
+        self.assertTrue(all(rf.ID_MIN <= i < rf.ID_END for i in ids))
+
+    def test_rare_rows_and_tags(self):
+        rows = self.bank["buckets"]
+        for g, group in enumerate(rf.RARE_GROUPS):
+            for build in range(3):
+                row = rows[rf.BUCKETS + 3 * g + build]
+                self.assertEqual((row["group"], row["tone"], row["build"], row["hanging"]), (group, rf.RARE_TONES[g], build, 0))
+        for f in self.bank["faces"]:
+            self.assertIn(f.get("look"), ("striking", "good", "ordinary", "plain", "homely", "ugly", "extreme", "novelty"))
 
     def test_atlases(self):
         faces = dict(rf.bank_faces(self.bank))
