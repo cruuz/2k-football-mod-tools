@@ -25,7 +25,7 @@ from mod_editor.core import platform_compat as io  # noqa: E402
 PACK = Path(os.environ.get("NFL2K5_RETAIL_INDEX", str(ROOT / "extracted" / "ESPN NFL 2K5 (USA)" / "vc_53450030" / "0")))
 XBE = PACK.parents[1] / "default.xbe"
 XISO = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-SCRATCH = Path(os.environ.get("NFL2K5_ASSETS_SCRATCH", "/media/noah/Storage/.b70-fable-assets"))
+SCRATCH = Path(os.environ.get("NFL2K5_ASSETS_SCRATCH", "/home/noah/2k-worktrees/.b77-scratch/b778/assets-scratch"))
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_PIL = importlib.util.find_spec("PIL") is not None
 RETAIL = PACK.is_file() and XBE.is_file()
