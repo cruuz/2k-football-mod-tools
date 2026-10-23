@@ -228,3 +228,100 @@ n_sf:
 n_side:
     .short 'a','l','i','e','n','_','s','i','d','e','l','i','n','e',0
 end:
+
+# ee2 follow-up: lanky long limbs and a thinner body for photo 1947, on the player matrix postprocessor (0x93850).
+# The engine has no limb-length table: height is one uniform root scale (0x918B0) and the four weight profiles only
+# scale each bone's girth perpendicular to its SKEL axis. The postprocessor does receive the 25 low and 62 high
+# current bone matrices, so this hook scales each arm about its shoulder (true segment length) and lowers the whole
+# upper body (thorax and everything above it) on the waist by SPINE_DROP, so the torso is shorter and the legs read
+# proportionally longer. Only translation lanes change; joint rotations, animations and attachments stay intact.
+.set POST_VA, 0x93850
+.set POST_RESUME, 0x93856
+.set GIRTH_VA, 0x93859
+.set GIRTH_RESUME, 0x9385E
+.set GIRTH_NOP, 0x938BD
+.set SCHED, 0x4EF898           # u8[62]: high current matrix -> low source channel
+
+skel:                               # 0x93850 entry: ecx = player context, edx = mask, [esp+4] = low current
+    cmp word ptr [ecx+6], ALIEN_ID  # photo id (the roster record, as in every ee1/ee2 lookup)
+    jne 90f
+    mov esi, [esp+4]                # low_current, high_current at +0x640
+    pushad
+    # lower the upper body by SPINE_DROP (low 10..24 thorax..shoulderpads, high 27..59); the feet and hips stay
+    movss xmm6, dword ptr [spine_drop]
+    lea ebx, [esi+0x280]                    # low[10] thorax
+    mov ebp, 15
+    call spine
+    lea ebx, [esi+0xD00]                    # high[27] thorax
+    mov ebp, 33
+    call spine
+    # arms: each distal joint is scaled about its shoulder, so the whole arm chain gets longer
+    mov ebx, esi                            # low[0]
+    xor edi, edi
+    mov ebp, 25
+1:  movzx eax, byte ptr [edi+chains]
+    test eax, eax
+    jz 2f
+    call limb
+2:  add ebx, 64
+    inc edi
+    dec ebp
+    jnz 1b
+    lea ebx, [esi+0x640]                    # high[0]
+    xor edi, edi
+    mov ebp, 62
+3:  movzx eax, byte ptr [edi+SCHED]
+    movzx eax, byte ptr [eax+chains]
+    test eax, eax
+    jz 4f
+    call limb
+4:  add ebx, 64
+    inc edi
+    dec ebp
+    jnz 3b
+    popad
+90: push ebp
+    mov ebp, esp
+    and esp, 0xfffffff0
+    jmp POST_RESUME
+
+spine:                              # ebx first matrix, ebp count, xmm6 drop -> y -= drop
+    movss xmm0, dword ptr [ebx+0x34]
+    subss xmm0, xmm6
+    movss dword ptr [ebx+0x34], xmm0
+    add ebx, 64
+    dec ebp
+    jnz spine
+    ret
+
+limb:                               # eax chain, ebx matrix, esi low base
+    movzx edx, byte ptr [eax+pivots-1]
+    movss xmm3, dword ptr [eax*4+factors-4]
+    mov ecx, edx
+    shl ecx, 6
+    add ecx, esi
+    movups xmm0, xmmword ptr [ecx+0x30]
+    movups xmm1, xmmword ptr [ebx+0x30]
+    subps xmm1, xmm0
+    shufps xmm3, xmm3, 0
+    mulps xmm1, xmm3
+    addps xmm1, xmm0
+    movups xmmword ptr [ebx+0x30], xmm1
+    ret
+
+weight:                             # 0x93859: eax = weight pounds for the profile, before the retail clamp
+    movzx eax, byte ptr [ecx+0x2a]
+    add eax, 150
+    cmp word ptr [ecx+6], ALIEN_ID
+    jne 1f
+    mov eax, 100                    # the visual body profile: his record says 150 (the save floor), the mesh uses 100
+1:  ret
+
+.balign 2
+factors:                            # chain 1 left arm, 2 right arm
+    .float 1.16, 1.16
+pivots:
+    .byte 14, 19                    # lhumerus, rhumerus
+chains:                             # low index / schedule channel -> chain (0 = torso, root, legs or pad)
+    .byte 0,0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,1,1,1, 0,2,2,2,2, 0,0
+spine_drop: .float 4.0

@@ -18,8 +18,12 @@ How it works
   (the thinnest of the four weight profiles). Name, position, ratings, college and age are the generator's own, so he
   is drafted, signed, played, developed, saved and retired like anybody else. The game scales a player's model by
   height (0x918B0: height * 0.0129275 is stored as the entity scale at +8 and applied to the transform's +0x48), so
-  95 inches makes him 22.8 % taller than the 77.35-inch reference, and the weight-profile matrices (0x93850) get
-  thinner with the low weight.
+  95 inches makes him 22.8 % taller than the 77.35-inch reference. The four weight profiles (0x93850) only scale each
+  bone's girth perpendicular to its SKEL axis; there is no per-bone length table. The same postprocessor receives all
+  25 low and 62 high current bone matrices, and ee2's arm/spine length hook for them is built and unit-tested but
+  NOT APPLIED (it never completes the practice loader when the alien is on the field; see the look section). What
+  ships is the profile override: a visual 100 lb so the mesh is thinner than the record's 150 lb floor (the save
+  field cannot hold 100).
 * Once per franchise. The flag is bit 0 of byte +0x0F of draft template record 2 (``[[0xB72918]+0x0C] + 0xB7``): the
   template table travels inside the roster arena, so the franchise save carries it with no save hook. No code of the
   game reads or writes that byte (the templates are only read by FUN_002BD200/FUN_002BD230 for the generator, which
@@ -43,6 +47,13 @@ How it works
     placeholder-face layout, and alien_sideline, a 128 x 128 P8 skin in the retail sideline-skin layout, both added to
     outer 3. Two more 7-byte lookups, keyed on photo id 1947: 0x8F152 (the player builder's far-LOD sf0..sf5 face,
     record in EBX) and 0x119B35 (the sideline-person builder's sideline_skin_00..05 body, record in EDI).
+  - a thin body (ee2 follow-up): a 9-byte hook at 0x93859 gives the weight profile 100 lb instead of the record's
+    150, and a 2-byte NOP at 0x938BD lets that value past the retail 150 lb floor, so the four weight-profile girth
+    matrices treat him as a 100 lb player. The same code region also contains an UNUSED arm/spine length hook that
+    scales the current bone matrices at 0x93850 (arms 1.16x about the shoulders, upper body lowered 4 units); it is
+    built and unit-tested but NOT APPLIED: with it applied, the practice loader never completes when the alien is on
+    the field (the game remains at "LOADING", loader_busy 1; restoring 0x93850 to retail bytes in RAM lets the same
+    practice load). The engine has no per-bone length table, so this remains the one open lever for long limbs.
 * Space: none from the allocator. The seventeen "copy a field from the low or the high template on a coin" blocks of
   FUN_000E6780 (0xE696E..0xE6D15, 935 bytes) are rewritten as one table loop that makes the same 17 calls of the float
   rand in the same order with the same compares (bit for bit the same prospect, proved under Unicorn on the retail
@@ -89,10 +100,18 @@ NECK_RETAIL = bytes.fromhex("8b04952055b600")      # mov eax,[edx*4+0xB65520]
 SF_SITE, SIDE_SITE = 0x8F152, 0x119B35
 SF_RETAIL = bytes.fromhex("8b0c850855b600")        # mov ecx,[eax*4+0xB65508]  (far face sf0..sf5)
 SIDE_RETAIL = bytes.fromhex("8b04858082ba00")      # mov eax,[eax*4+0xBA8280]  (sideline_skin_00..05)
+SKEL_SITE, GIRTH_SITE, GIRTH_NOP_SITE = 0x93850, 0x93859, 0x938BD
+SKEL_RETAIL = bytes.fromhex("558bec83e4f0")        # 0x93850: push ebp; mov ebp,esp; and esp,-16
+GIRTH_RETAIL = bytes.fromhex("0fb6412a0596000000")  # movzx eax,[ecx+0x2A]; add eax,150
+GIRTH_NOP_RETAIL = bytes.fromhex("7511")           # jne 0x938D0: the weight floor 150 (the alien uses 100)
 HEIGHT_INCHES = 95            # 7'11"; the card formats [0x2B] / 12 and % 12, and 0x918B0 scales the model by it
 WEIGHT_RAW = 0                # the record stores pounds - 150 unsigned: 0 = 150 lb, the smallest the game reads/shows
 WEIGHT_LB = WEIGHT_RAW + 150
 BODY_TYPE = 0                 # the record's +0x18 bits 3-4: weight profile 0, the thinnest of the four
+VISUAL_WEIGHT = 100           # 0x93850's input weight for photo 1947 (the mesh; the record keeps the 150 lb floor)
+# The following describe the UNUSED 0x93850 matrix hook (built into CODE but not applied; see the docstring).
+ARM_SCALE = 1.16              # the arm chains would scale about the shoulders in 0x93850's current matrices
+SPINE_DROP = 4.0              # the upper body would be lowered this many model units at the waist
 FACES_STRING_VA = 0xE62E78    # UTF-16 "igfaces.iff": the FaceTextures registry's record file (read at 0x73F45, 0x749C8)
 RETAIL_RECORD = "igfaces.iff"
 RECORD_NAME = "igface2.iff"   # same length
@@ -143,6 +162,7 @@ SYMBOLS = {k: int(v, 16) for k, v in _CODE_DOC["symbols"].items()}
 OFF_FIRST_SEASON_JMP = SYMBOLS["first_season"] - CODE_VA
 OFF_THRESH = _CODE_DOC["thresh_imm_offset"]
 WRAP_VA, HAND_VA, ARM_VA, NECK_VA, SF_VA, SIDE_VA = (SYMBOLS[k] for k in ("wrap", "hand", "arm", "neck", "sf", "side"))
+SKEL_VA, GIRTH_VA = SYMBOLS["skel"], SYMBOLS["weight"]
 RETAIL_CODE_SHA256 = _CODE_DOC["retail_region_sha256"]
 require(CODE[OFF_FIRST_SEASON_JMP] == 0xEB and struct.unpack_from("<I", CODE, OFF_THRESH)[0] == THRESH,
         "the alien code's patch points moved")
@@ -168,12 +188,15 @@ def _spans(test: bool = False) -> list[tuple[int, bytes, str]]:
             (NECK_SITE, _rel(NECK_SITE, NECK_VA), "neck texture lookup -> gray for photo 1947"),
             (SF_SITE, _rel(SF_SITE, SF_VA), "far-face sf0..sf5 lookup -> alien_sf for photo 1947"),
             (SIDE_SITE, _rel(SIDE_SITE, SIDE_VA), "sideline_skin_00..05 lookup -> alien_sideline for photo 1947"),
+            (GIRTH_SITE, _rel(GIRTH_SITE, GIRTH_VA, 9), "weight profile -> visual 100 lb for photo 1947"),
+            (GIRTH_NOP_SITE, b"\x90\x90", "let the visual 100 lb weight past the retail 150 lb floor"),
             (FACES_STRING_VA, RECORD_NAME.encode("utf-16-le"), "FaceTextures record file name")]
 
 
 def _retail() -> dict[int, bytes]:
     return {CALL_SITE: CALL_RETAIL, HAND_SITE: HAND_RETAIL, ARM_SITE: ARM_RETAIL, NECK_SITE: NECK_RETAIL,
-            SF_SITE: SF_RETAIL, SIDE_SITE: SIDE_RETAIL, FACES_STRING_VA: RETAIL_RECORD.encode("utf-16-le")}
+            SF_SITE: SF_RETAIL, SIDE_SITE: SIDE_RETAIL, GIRTH_SITE: GIRTH_RETAIL,
+            GIRTH_NOP_SITE: GIRTH_NOP_RETAIL, FACES_STRING_VA: RETAIL_RECORD.encode("utf-16-le")}
 
 
 def _section_map(payload: bytes) -> list[tuple[int, int, int, int]]:

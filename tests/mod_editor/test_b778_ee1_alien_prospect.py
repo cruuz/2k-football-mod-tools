@@ -78,20 +78,31 @@ class Code(unittest.TestCase):
         # the coin loop ends by jumping back into retail code right after the 17 blocks
         self.assertIn(b"\xe9" + struct.pack("<i", ap.CODE_END - (ap.SYMBOLS["table"])), ap.CODE)
 
+    def test_length_hook_is_not_applied(self):
+        """ee2 follow-up: the 0x93850 hook is built but disabled (it hangs the practice loader)."""
+        spans = {va for va, _d, _l in ap._spans()}
+        self.assertNotIn(ap.SKEL_SITE, spans)
+        self.assertIn(ap.GIRTH_SITE, spans)
+        self.assertIn(ap.GIRTH_NOP_SITE, spans)
+
     def test_odds(self):
         self.assertAlmostEqual(ap.per_class_probability(), 1 / 150, delta=2e-5)
         hundred = 1 - (1 - ap.per_class_probability()) ** 99    # the first class never rolls
         self.assertTrue(0.47 < hundred < 0.50, hundred)
 
     def test_spans_are_relative_calls(self):
-        sites = (ap.CALL_SITE, ap.HAND_SITE, ap.ARM_SITE, ap.NECK_SITE, ap.SF_SITE, ap.SIDE_SITE)
-        targets = (ap.WRAP_VA, ap.HAND_VA, ap.ARM_VA, ap.NECK_VA, ap.SF_VA, ap.SIDE_VA)
+        sites = (ap.CALL_SITE, ap.HAND_SITE, ap.ARM_SITE, ap.NECK_SITE, ap.SF_SITE, ap.SIDE_SITE,
+                 ap.GIRTH_SITE)
+        targets = (ap.WRAP_VA, ap.HAND_VA, ap.ARM_VA, ap.NECK_VA, ap.SF_VA, ap.SIDE_VA,
+                   ap.GIRTH_VA)
         for va, data, _label in ap._spans():
             if va in sites:
                 self.assertEqual(data[0], 0xE8)
                 target = va + 5 + struct.unpack_from("<i", data, 1)[0]
                 self.assertIn(target, targets)
                 self.assertTrue(all(b == 0x90 for b in data[5:]))
+            if va == ap.GIRTH_NOP_SITE:
+                self.assertEqual(data, b"\x90\x90")
         self.assertEqual(len(ap.RECORD_NAME), len(ap.RETAIL_RECORD))
 
 
@@ -319,6 +330,134 @@ class Size(unittest.TestCase):
         self.assertEqual(ap.BODY_TYPE, 0, "profile 0 is the thinnest weight profile")
 
 
+
+SCHEDULE = (0, 1, 2, 3, 4, 1, 2, 1, 1, 1, 1, 1, 1, 5, 6, 7, 8, 5, 6, 5, 5, 5, 5, 5, 5, 0,
+            9, 10, 11, 12, 13, 14, 15, 15, 15, 15, 15, 17, 14, 14, 15, 14, 15, 14, 18, 19, 20, 20,
+            20, 20, 20, 22, 19, 19, 20, 20, 19, 19, 23, 24, 5, 1)
+LOW_CHAIN = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 0, 0)
+PIVOTS = (14, 19)
+FACTORS = (1.16, 1.16)
+
+
+class Lanky(unittest.TestCase):
+    """ee2 follow-up: the 0x93850 entry hook (arms + shorter torso) and the 0x93859 weight hook, under Unicorn."""
+
+    LOW, HIGH, RECORD, STACK, EXIT = 0x2100000, 0x2100000 + 0x640, 0x2200000, 0x2210000, 0x93856
+
+    @classmethod
+    def setUpClass(cls):
+        _unicorn()
+
+    def _machine(self):
+        from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+        mu = Uc(UC_ARCH_X86, UC_MODE_32)
+        mu.mem_map(0, 0x1600000)
+        mu.mem_map(0x2000000, 0x300000)
+        mu.mem_write(ap.CODE_VA, ap.code_bytes())
+        mu.mem_write(ap.SCHED if hasattr(ap, "SCHED") else 0x4EF898, bytes(SCHEDULE))
+        mu.mem_write(self.EXIT, b"\xf4")                 # the hook's jmp to retail becomes HLT for the test
+        # one 4x4 matrix per bone: translation at +0x30..+0x3c
+        for base, count, start in ((self.LOW, 25, 0), (self.HIGH, 62, 1000)):
+            for i in range(count):
+                at = base + i * 64
+                mu.mem_write(at, bytes(64))
+                mu.mem_write(at + 0x30, struct.pack("<4f", 100 + start + i, 200 + start + i, 300 + start + i, 1.0))
+        for i, (x, y) in ((14, (10, 50)), (15, (20, 50)), (16, (30, 50)), (17, (40, 50)),
+                          (19, (10, 60)), (20, (20, 60)), (21, (30, 60)), (22, (40, 60))):
+            mu.mem_write(self.LOW + i * 64 + 0x30, struct.pack("<4f", x, y, 0.0, 1.0))
+        # high arm bones start at their low joint positions
+        for j, low_i in ((32, 15), (37, 17), (46, 20), (51, 22)):
+            mu.mem_write(self.HIGH + j * 64 + 0x30, bytes(mu.mem_read(self.LOW + low_i * 64 + 0x30, 16)))
+        mu.mem_write(self.RECORD, self._record())
+        return mu
+
+    def _record(self, photo=ap.ALIEN_ID, height=ap.HEIGHT_INCHES):
+        rec = bytearray(0x54)
+        struct.pack_into("<H", rec, 6, photo)
+        rec[0x2A], rec[0x2B] = ap.WEIGHT_RAW, height
+        return bytes(rec)
+
+    def _run_skel(self, mu):
+        from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESP
+        mu.mem_write(self.STACK, struct.pack("<II", self.EXIT, self.LOW))
+        mu.reg_write(UC_X86_REG_ECX, self.RECORD)
+        mu.reg_write(UC_X86_REG_EDX, 0x1FFFFFF)
+        mu.reg_write(UC_X86_REG_ESP, self.STACK)
+        mu.emu_start(ap.SKEL_VA, self.EXIT, count=200000)
+        return mu
+
+    def _translation(self, mu, base, index):
+        return struct.unpack("<4f", bytes(mu.mem_read(base + index * 64 + 0x30, 16)))
+
+    def _expected(self):
+        low = [[100 + i, 200 + i, 300 + i] for i in range(25)]
+        for i, (x, y) in ((14, (10, 50)), (15, (20, 50)), (16, (30, 50)), (17, (40, 50)),
+                          (19, (10, 60)), (20, (20, 60)), (21, (30, 60)), (22, (40, 60))):
+            low[i] = [x, y, 0.0]
+        for i in range(10, 25):
+            low[i][1] -= ap.SPINE_DROP
+        for i in range(1, 25):
+            chain = LOW_CHAIN[i]
+            if chain:
+                p = low[PIVOTS[chain - 1]]
+                f = FACTORS[chain - 1]
+                low[i] = [p[k] + f * (low[i][k] - p[k]) for k in range(3)]
+        high = [[1100 + j, 1200 + j, 1300 + j] for j in range(62)]
+        for j, point in ((32, [20, 50, 0]), (37, [40, 50, 0]), (46, [20, 60, 0]), (51, [40, 60, 0])):
+            high[j] = list(point)
+        for j in range(27, 60):
+            high[j][1] -= ap.SPINE_DROP
+        for j in range(62):
+            chain = LOW_CHAIN[SCHEDULE[j]]
+            if chain:
+                p = low[PIVOTS[chain - 1]]
+                f = FACTORS[chain - 1]
+                high[j] = [p[k] + f * (high[j][k] - p[k]) for k in range(3)]
+        return low, high
+
+    def test_arm_chains_and_spine(self):
+        mu = self._run_skel(self._machine())
+        low, high = self._expected()
+        for i in range(25):
+            for got, want in zip(self._translation(mu, self.LOW, i)[:3], low[i]):
+                self.assertAlmostEqual(got, want, places=3, msg=i)
+        for j in range(62):
+            for got, want in zip(self._translation(mu, self.HIGH, j)[:3], high[j]):
+                self.assertAlmostEqual(got, want, places=3, msg=j)
+
+    def test_other_players_are_untouched(self):
+        for photo, height in ((1946, 95), (0, 95), (0, 0)):
+            mu = self._machine()
+            mu.mem_write(self.RECORD, self._record(photo, height))
+            before = {base: [self._translation(mu, base, i) for i in range(count)]
+                      for base, count in ((self.LOW, 25), (self.HIGH, 62))}
+            self._run_skel(mu)
+            for base, count in ((self.LOW, 25), (self.HIGH, 62)):
+                for i in range(count):
+                    self.assertEqual(self._translation(mu, base, i), before[base][i], (photo, height, base, i))
+
+    def test_weight_hook(self):
+        from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_ESP
+        mu = Uc(UC_ARCH_X86, UC_MODE_32)
+        mu.mem_map(0, 0x1600000)
+        mu.mem_map(0x2000000, 0x400000)
+        mu.mem_write(ap.CODE_VA, ap.code_bytes())
+        mu.mem_write(0x2300000, b"\xf4")
+        for photo, height, want in ((ap.ALIEN_ID, 95, ap.VISUAL_WEIGHT), (1946, 95, 150), (ap.ALIEN_ID, 96, ap.VISUAL_WEIGHT)):
+            mu.mem_write(0x2200000, self._record(photo, height))
+            mu.mem_write(0x2210000, struct.pack("<I", 0x2300000))
+            mu.reg_write(UC_X86_REG_ECX, 0x2200000)
+            mu.reg_write(UC_X86_REG_ESP, 0x2210000)
+            mu.emu_start(ap.GIRTH_VA, 0x2300000)
+            self.assertEqual(mu.reg_read(UC_X86_REG_EAX), want, (photo, height))
+
+    def test_constants_are_in_the_code(self):
+        self.assertIn(struct.pack("<f", ap.ARM_SCALE) * 2, ap.CODE)
+        self.assertIn(struct.pack("<f", ap.SPINE_DROP), ap.CODE)
+        self.assertIn(b"\xb8" + struct.pack("<I", ap.VISUAL_WEIGHT), ap.CODE)
+
+
 @unittest.skipUnless(RELEASED_ISO and Path(RELEASED_ISO).is_file(), "set NFL2K5_RELEASED_ISO to the v0.6.1 disc image")
 class Textures(unittest.TestCase):
     @classmethod
@@ -452,6 +591,12 @@ class RetailBytes(unittest.TestCase):
         for seed in range(400):
             self.assertEqual(run(a, seed), run(b, seed), seed)
 
+
+    def test_lanky_sites_are_retail(self):
+        for va, want in ((ap.SKEL_SITE, ap.SKEL_RETAIL), (ap.GIRTH_SITE, ap.GIRTH_RETAIL),
+                         (ap.GIRTH_NOP_SITE, ap.GIRTH_NOP_RETAIL)):
+            at = ap._offset(self.retail, va, len(want))
+            self.assertEqual(self.retail[at:at + len(want)], want, hex(va))
 
     def test_height_scale_and_weight_profile_do_not_crash(self):
         """Run the real 0x918B0 (height -> model scale) on the retail XBE at 7'11", and check the real 0x93850
