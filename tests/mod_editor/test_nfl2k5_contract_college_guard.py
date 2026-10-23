@@ -51,8 +51,9 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(after, b"\xe9" + struct.pack("<i", 0x14DA000 - 0x6E11F - 5))
 
     def test_late_owner_is_last(self):
-        self.assertEqual(space.LATE_OWNERS[-1], guard.OWNER)
-        self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_force_out")
+        # b778-int2: xs1's module loader stays last; the guard is immediately before it.
+        self.assertEqual(space.LATE_OWNERS[-2:], (guard.OWNER, "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-12], "nfl2k5_force_out")
 
     def test_relocations(self):
         a, b = guard.code_for(0x14DA000), guard.code_for(0x14DB000)
