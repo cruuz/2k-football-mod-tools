@@ -44,10 +44,10 @@
   },
   "capsule": {
    "box": [
-    613,
-    0,
-    673,
-    16
+    1398,
+    12,
+    1518,
+    44
    ]
   },
   "plate": {
@@ -3038,7 +3038,7 @@
    "BUF": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 1.1075,
+    "zoom": 1.1325,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3394,8 +3394,8 @@
      0.976
     ],
     "BUF": [
-     0.976,
-     1.1075
+     1.1075,
+     1.1325
     ],
     "CAR": [
      0.976,
@@ -3519,9 +3519,88 @@
    "band": "drawn: {\"width\": 180.0, \"height\": 28.0, \"top\": 1022, \"outer\": 439.0, \"solid\": 0.5, \"alpha\": 0.5, \"feather_rows\": 2, \"levels\": 32, \"colour\": [8, 10, 14], \"z\": -18.25}; one cell per side, behind the team mark",
    "reference": "2026 ESPN NFL Bills at Chiefs bar with records (measurement only, no broadcast pixels)",
    "template_before_sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398"
+  },
+  "b778_sb3_espn_fidelity": {
+   "job": "b778 sb3 2026-10-23",
+   "request": "Noah 10/23: border/glow, deeper team gradient over the logo, down-and-distance gradient",
+   "wing": {
+    "a1": 0.8761,
+    "d1": 41.19,
+    "v1": 0.2879,
+    "a2": 1.05,
+    "d2": 14.0,
+    "d3": 350.0,
+    "a3": 2.0,
+    "d4": 3.2,
+    "d5": 95.0,
+    "window_start": 250.0,
+    "window_end": 330.0
+   },
+   "plate_rows": [
+    0.34,
+    0.42,
+    0.62,
+    0.84,
+    0.82,
+    0.79,
+    0.77,
+    0.75,
+    0.74,
+    0.73,
+    0.72,
+    0.71,
+    0.71,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.69,
+    0.69,
+    0.69,
+    0.69,
+    0.68,
+    0.68,
+    0.68,
+    0.68,
+    0.67,
+    0.67,
+    0.67,
+    0.66,
+    0.66,
+    0.65,
+    0.63,
+    0.6,
+    0.55,
+    0.47,
+    0.36,
+    0.24
+   ],
+   "plate_source": [
+    274,
+    38
+   ],
+   "capsule_source": [
+    183,
+    40
+   ],
+   "rim": {
+    "cells": [
+     "away_rim",
+     "home_rim"
+    ],
+    "tint": "the runtime lightens the wing shade for the rail; the sourced accent rim stays in the table",
+    "method": "white coverage: outer rail glint, top corners and a centre-weighted lower lip; no new quad"
+   },
+   "buf_zoom": {
+    "before": 1.1075,
+    "after": 1.1325
+   },
+   "buf": "charging primary buffalo from data/nfl2k5_scorebug_assets/logos/buf.png",
+   "reference": "reports/b72_s9/broadcast_away_median.png, broadcast_home_median.png and .b77-scratch/b778/sb2/ref_bars.png (measurement only, no broadcast pixels)"
   }
  },
  "layer_order": "increasing-z",
- "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.",
+ "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge. The sb3 highlight cell is a white specular mask, not team colour; the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply.",
  "team_accents": "team_accents.json"
 }
