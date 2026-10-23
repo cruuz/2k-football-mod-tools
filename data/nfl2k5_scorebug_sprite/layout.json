@@ -1,3585 +1,3585 @@
 {
- "schema": "nfl2k5_scorebug_sprite/v1",
- "frame": [
-  1920,
-  1080
- ],
- "atlas": [
-  256,
-  512
- ],
- "template": "template.png",
- "cells": {
-  "away_rim": {
-   "box": [
-    0,
-    0,
-    174,
-    45
-   ]
-  },
-  "body": {
-   "box": [
-    176,
-    0,
-    349,
-    45
-   ]
-  },
-  "home_rim": {
-   "box": [
-    351,
-    0,
-    525,
-    45
-   ]
-  },
-  "capsule": {
-   "box": [
-    1200,
-    360,
-    1281,
-    376
-   ]
-  },
-  "plate": {
-   "box": [
-    1200,
-    404,
-    1290,
-    423
-   ]
-  },
-  "wing": {
-   "box": [
-    774,
-    0,
-    887,
-    45
-   ]
-  },
-  "home_wing": {
-   "box": [
-    889,
-    0,
-    1002,
-    45
-   ]
-  },
-  "red": {
-   "box": [
-    1200,
-    430,
-    1219,
-    446
-   ]
-  },
-  "espn_mnf": {
-   "box": [
-    1026,
-    1,
-    1097,
-    13
-   ]
-  },
-  "espn_nfl": {
-   "box": [
-    1098,
-    1,
-    1169,
-    13
-   ]
-  },
-  "event": {
-   "box": [
-    1173,
-    0,
-    1175,
-    2
-   ]
-  },
-  "flag": {
-   "box": [
-    1177,
-    0,
-    1266,
-    15
-   ]
-  },
-  "score_0": {
-   "box": [
-    1268,
-    0,
-    1280,
-    23
-   ]
-  },
-  "score_1": {
-   "box": [
-    1282,
-    0,
-    1288,
-    23
-   ]
-  },
-  "score_2": {
-   "box": [
-    1290,
-    0,
-    1301,
-    23
-   ]
-  },
-  "score_3": {
-   "box": [
-    1303,
-    0,
-    1315,
-    23
-   ]
-  },
-  "score_4": {
-   "box": [
-    1317,
-    0,
-    1329,
-    23
-   ]
-  },
-  "score_5": {
-   "box": [
-    1331,
-    0,
-    1343,
-    23
-   ]
-  },
-  "score_6": {
-   "box": [
-    1345,
-    0,
-    1357,
-    23
-   ]
-  },
-  "score_7": {
-   "box": [
-    1359,
-    0,
-    1369,
-    23
-   ]
-  },
-  "score_8": {
-   "box": [
-    1371,
-    0,
-    1383,
-    23
-   ]
-  },
-  "score_9": {
-   "box": [
-    1385,
-    0,
-    1397,
-    23
-   ]
-  },
-  "clock_0": {
-   "box": [
-    1399,
-    0,
-    1405,
-    11
-   ]
-  },
-  "clock_1": {
-   "box": [
-    1407,
-    0,
-    1410,
-    11
-   ]
-  },
-  "clock_2": {
-   "box": [
-    1412,
-    0,
-    1418,
-    11
-   ]
-  },
-  "clock_3": {
-   "box": [
-    1420,
-    0,
-    1426,
-    11
-   ]
-  },
-  "clock_4": {
-   "box": [
-    1428,
-    0,
-    1434,
-    11
-   ]
-  },
-  "clock_5": {
-   "box": [
-    1436,
-    0,
-    1442,
-    11
-   ]
-  },
-  "clock_6": {
-   "box": [
-    1444,
-    0,
-    1450,
-    11
-   ]
-  },
-  "clock_7": {
-   "box": [
-    1452,
-    0,
-    1458,
-    11
-   ]
-  },
-  "clock_8": {
-   "box": [
-    1460,
-    0,
-    1466,
-    11
-   ]
-  },
-  "clock_9": {
-   "box": [
-    1468,
-    0,
-    1474,
-    11
-   ]
-  },
-  "colon": {
-   "box": [
-    1476,
-    0,
-    1478,
-    7
-   ]
-  },
-  "small_0": {
-   "box": [
-    1480,
-    0,
-    1486,
-    10
-   ]
-  },
-  "small_1": {
-   "box": [
-    1488,
-    0,
-    1491,
-    10
-   ]
-  },
-  "small_2": {
-   "box": [
-    1493,
-    0,
-    1499,
-    10
-   ]
-  },
-  "small_3": {
-   "box": [
-    1501,
-    0,
-    1507,
-    10
-   ]
-  },
-  "small_4": {
-   "box": [
-    1509,
-    0,
-    1515,
-    10
-   ]
-  },
-  "small_5": {
-   "box": [
-    1517,
-    0,
-    1523,
-    10
-   ]
-  },
-  "small_6": {
-   "box": [
-    1525,
-    0,
-    1531,
-    10
-   ]
-  },
-  "small_7": {
-   "box": [
-    0,
-    47,
-    6,
-    57
-   ]
-  },
-  "small_8": {
-   "box": [
-    8,
-    47,
-    14,
-    57
-   ]
-  },
-  "small_9": {
-   "box": [
-    16,
-    47,
-    22,
-    57
-   ]
-  },
-  "small_st": {
-   "box": [
-    24,
-    47,
-    33,
-    54
-   ]
-  },
-  "small_nd": {
-   "box": [
-    35,
-    47,
-    46,
-    54
-   ]
-  },
-  "small_rd": {
-   "box": [
-    48,
-    47,
-    58,
-    54
-   ]
-  },
-  "small_th": {
-   "box": [
-    60,
-    47,
-    69,
-    54
-   ]
-  },
-  "small_&": {
-   "box": [
-    71,
-    47,
-    79,
-    57
-   ]
-  },
-  "small_Goal": {
-   "box": [
-    81,
-    47,
-    112,
-    57
-   ]
-  },
-  "small_GOAL": {
-   "box": [
-    114,
-    47,
-    145,
-    57
-   ]
-  },
-  "small_and": {
-   "box": [
-    147,
-    47,
-    166,
-    57
-   ]
-  },
-  "small_OT": {
-   "box": [
-    168,
-    47,
-    177,
-    57
-   ]
-  },
-  "small_ST": {
-   "box": [
-    179,
-    47,
-    188,
-    54
-   ]
-  },
-  "small_ND": {
-   "box": [
-    190,
-    47,
-    201,
-    54
-   ]
-  },
-  "small_RD": {
-   "box": [
-    203,
-    47,
-    213,
-    54
-   ]
-  },
-  "small_TH": {
-   "box": [
-    215,
-    47,
-    224,
-    54
-   ]
-  },
-  "small_Inch": {
-   "box": [
-    226,
-    47,
-    248,
-    57
-   ]
-  },
-  "small_es": {
-   "box": [
-    250,
-    47,
-    262,
-    57
-   ]
-  },
-  "label_0": {
-   "box": [
-    264,
-    47,
-    270,
-    56
-   ]
-  },
-  "label_1": {
-   "box": [
-    274,
-    47,
-    278,
-    56
-   ]
-  },
-  "label_2": {
-   "box": [
-    281,
-    47,
-    286,
-    56
-   ]
-  },
-  "label_3": {
-   "box": [
-    290,
-    47,
-    295,
-    56
-   ]
-  },
-  "label_4": {
-   "box": [
-    299,
-    47,
-    305,
-    56
-   ]
-  },
-  "label_5": {
-   "box": [
-    309,
-    47,
-    314,
-    56
-   ]
-  },
-  "label_6": {
-   "box": [
-    318,
-    47,
-    324,
-    56
-   ]
-  },
-  "label_7": {
-   "box": [
-    327,
-    47,
-    332,
-    56
-   ]
-  },
-  "label_8": {
-   "box": [
-    335,
-    47,
-    340,
-    56
-   ]
-  },
-  "label_9": {
-   "box": [
-    344,
-    47,
-    350,
-    56
-   ]
-  },
-  "label_st": {
-   "box": [
-    353,
-    47,
-    362,
-    56
-   ]
-  },
-  "label_nd": {
-   "box": [
-    366,
-    47,
-    377,
-    56
-   ]
-  },
-  "label_rd": {
-   "box": [
-    382,
-    47,
-    391,
-    56
-   ]
-  },
-  "label_th": {
-   "box": [
-    395,
-    47,
-    404,
-    56
-   ]
-  },
-  "label_&": {
-   "box": [
-    408,
-    47,
-    415,
-    56
-   ]
-  },
-  "label_Goal": {
-   "box": [
-    419,
-    47,
-    447,
-    56
-   ]
-  },
-  "label_GOAL": {
-   "box": [
-    457,
-    47,
-    485,
-    56
-   ]
-  },
-  "label_and": {
-   "box": [
-    495,
-    47,
-    513,
-    56
-   ]
-  },
-  "label_OT": {
-   "box": [
-    519,
-    47,
-    528,
-    56
-   ]
-  },
-  "label_ST": {
-   "box": [
-    532,
-    47,
-    541,
-    56
-   ]
-  },
-  "label_ND": {
-   "box": [
-    545,
-    47,
-    556,
-    56
-   ]
-  },
-  "label_RD": {
-   "box": [
-    561,
-    47,
-    570,
-    56
-   ]
-  },
-  "label_TH": {
-   "box": [
-    574,
-    47,
-    583,
-    56
-   ]
-  },
-  "label_Inch": {
-   "box": [
-    100,
-    300,
-    124,
-    309
-   ]
-  },
-  "label_es": {
-   "box": [
-    136,
-    300,
-    148,
-    309
-   ]
-  },
-  "tick": {
-   "box": [
-    631,
-    47,
-    637,
-    49
-   ]
-  },
-  "quarter_1ST": {
-   "box": [
-    639,
-    47,
-    649,
-    56
-   ]
-  },
-  "quarter_2ND": {
-   "box": [
-    651,
-    47,
-    665,
-    56
-   ]
-  },
-  "quarter_3RD": {
-   "box": [
-    667,
-    47,
-    681,
-    56
-   ]
-  },
-  "quarter_4TH": {
-   "box": [
-    683,
-    47,
-    697,
-    56
-   ]
-  },
-  "quarter_OT": {
-   "box": [
-    155,
-    300,
-    167,
-    309
-   ]
-  },
-  "chevron": {
-   "box": [
-    441,
-    65,
-    463,
-    72
-   ]
-  },
-  "timeouts_0": {
-   "box": [
-    465,
-    65,
-    491,
-    67
-   ]
-  },
-  "timeouts_1": {
-   "box": [
-    493,
-    65,
-    519,
-    67
-   ]
-  },
-  "timeouts_2": {
-   "box": [
-    521,
-    65,
-    547,
-    67
-   ]
-  },
-  "timeouts_3": {
-   "box": [
-    549,
-    65,
-    575,
-    67
-   ]
-  },
-  "espn_plate_mark": {
-   "box": [
-    0,
-    300,
-    33,
-    309
-   ]
-  },
-  "label_Down": {
-   "box": [
-    60,
-    300,
-    87,
-    309
-   ]
-  },
-  "timeout_tab": {
-   "box": [
-    0,
-    320,
-    114,
-    337
-   ]
-  },
-  "record_d0": {
-   "box": [
-    1,
-    80,
-    8,
-    89
-   ]
-  },
-  "record_d1": {
-   "box": [
-    10,
-    80,
-    15,
-    89
-   ]
-  },
-  "record_d2": {
-   "box": [
-    17,
-    80,
-    23,
-    89
-   ]
-  },
-  "record_d3": {
-   "box": [
-    25,
-    80,
-    31,
-    89
-   ]
-  },
-  "record_d4": {
-   "box": [
-    33,
-    80,
-    40,
-    89
-   ]
-  },
-  "record_d5": {
-   "box": [
-    42,
-    80,
-    48,
-    89
-   ]
-  },
-  "record_d6": {
-   "box": [
-    50,
-    80,
-    56,
-    89
-   ]
-  },
-  "record_d7": {
-   "box": [
-    58,
-    80,
-    64,
-    89
-   ]
-  },
-  "record_d8": {
-   "box": [
-    66,
-    80,
-    72,
-    89
-   ]
-  },
-  "record_d9": {
-   "box": [
-    74,
-    80,
-    80,
-    89
-   ]
-  },
-  "record_d10": {
-   "box": [
-    82,
-    80,
-    92,
-    89
-   ]
-  },
-  "record_d11": {
-   "box": [
-    94,
-    80,
-    102,
-    89
-   ]
-  },
-  "record_d12": {
-   "box": [
-    104,
-    80,
-    114,
-    89
-   ]
-  },
-  "record_d13": {
-   "box": [
-    116,
-    80,
-    126,
-    89
-   ]
-  },
-  "record_d14": {
-   "box": [
-    128,
-    80,
-    138,
-    89
-   ]
-  },
-  "record_d15": {
-   "box": [
-    140,
-    80,
-    150,
-    89
-   ]
-  },
-  "record_d16": {
-   "box": [
-    152,
-    80,
-    162,
-    89
-   ]
-  },
-  "record_d17": {
-   "box": [
-    164,
-    80,
-    173,
-    89
-   ]
-  },
-  "record_m0": {
-   "box": [
-    175,
-    80,
-    185,
-    89
-   ]
-  },
-  "record_m1": {
-   "box": [
-    187,
-    80,
-    195,
-    89
-   ]
-  },
-  "record_m2": {
-   "box": [
-    197,
-    80,
-    206,
-    89
-   ]
-  },
-  "record_m3": {
-   "box": [
-    208,
-    80,
-    217,
-    89
-   ]
-  },
-  "record_m4": {
-   "box": [
-    219,
-    80,
-    229,
-    89
-   ]
-  },
-  "record_m5": {
-   "box": [
-    231,
-    80,
-    240,
-    89
-   ]
-  },
-  "record_m6": {
-   "box": [
-    242,
-    80,
-    251,
-    89
-   ]
-  },
-  "record_m7": {
-   "box": [
-    253,
-    80,
-    262,
-    89
-   ]
-  },
-  "record_m8": {
-   "box": [
-    264,
-    80,
-    273,
-    89
-   ]
-  },
-  "record_m9": {
-   "box": [
-    275,
-    80,
-    284,
-    89
-   ]
-  },
-  "record_m10": {
-   "box": [
-    286,
-    80,
-    299,
-    89
-   ]
-  },
-  "record_m11": {
-   "box": [
-    301,
-    80,
-    312,
-    89
-   ]
-  },
-  "record_m12": {
-   "box": [
-    314,
-    80,
-    327,
-    89
-   ]
-  },
-  "record_m13": {
-   "box": [
-    329,
-    80,
-    342,
-    89
-   ]
-  },
-  "record_m14": {
-   "box": [
-    344,
-    80,
-    357,
-    89
-   ]
-  },
-  "record_m15": {
-   "box": [
-    359,
-    80,
-    372,
-    89
-   ]
-  },
-  "record_m16": {
-   "box": [
-    374,
-    80,
-    387,
-    89
-   ]
-  },
-  "record_m17": {
-   "box": [
-    389,
-    80,
-    401,
-    89
-   ]
-  },
-  "record_band_away": {
-   "box": [
-    1,
-    92,
-    61,
-    103
-   ]
-  },
-  "record_band_home": {
-   "box": [
-    63,
-    92,
-    123,
-    103
-   ]
-  },
-  "plate_gloss": {
-   "box": [
-    1200,
-    450,
-    1290,
-    469
-   ]
-  }
- },
- "glyph_sets": {
-  "score": {
-   "cap_height": 53,
-   "glyphs": {
-    "0": {
-     "cell": "score_0",
-     "size": [
-      50.9913,
-      53
-     ],
-     "advance": 55.2313,
-     "raise": 0
-    },
-    "1": {
-     "cell": "score_1",
-     "size": [
-      26.01558,
-      53
-     ],
-     "advance": 30.255580000000002,
-     "raise": 0
-    },
-    "2": {
-     "cell": "score_2",
-     "size": [
-      47.8696,
-      53
-     ],
-     "advance": 52.1096,
-     "raise": 0
-    },
-    "3": {
-     "cell": "score_3",
-     "size": [
-      48.910520000000005,
-      53
-     ],
-     "advance": 53.15052000000001,
-     "raise": 0
-    },
-    "4": {
-     "cell": "score_4",
-     "size": [
-      53.07314,
-      53
-     ],
-     "advance": 57.313140000000004,
-     "raise": 0
-    },
-    "5": {
-     "cell": "score_5",
-     "size": [
-      50.9913,
-      53
-     ],
-     "advance": 55.2313,
-     "raise": 0
-    },
-    "6": {
-     "cell": "score_6",
-     "size": [
-      50.9913,
-      53
-     ],
-     "advance": 55.2313,
-     "raise": 0
-    },
-    "7": {
-     "cell": "score_7",
-     "size": [
-      40.58528,
-      53
-     ],
-     "advance": 44.82528,
-     "raise": 0
-    },
-    "8": {
-     "cell": "score_8",
-     "size": [
-      50.9913,
-      53
-     ],
-     "advance": 55.2313,
-     "raise": 0
-    },
-    "9": {
-     "cell": "score_9",
-     "size": [
-      50.9913,
-      53
-     ],
-     "advance": 55.2313,
-     "raise": 0
-    },
-    " ": {
-     "cell": "tick",
-     "size": [
-      0.0,
-      0
-     ],
-     "advance": 6.36
-    }
-   }
-  },
-  "clock": {
-   "cap_height": 27,
-   "glyphs": {
-    "0": {
-     "cell": "clock_0",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "1": {
-     "cell": "clock_1",
-     "size": [
-      13.88016,
-      27
-     ],
-     "advance": 16.02216,
-     "raise": 0
-    },
-    "2": {
-     "cell": "clock_2",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "3": {
-     "cell": "clock_3",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "4": {
-     "cell": "clock_4",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "5": {
-     "cell": "clock_5",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "6": {
-     "cell": "clock_6",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "7": {
-     "cell": "clock_7",
-     "size": [
-      21.97692,
-      27
-     ],
-     "advance": 24.11892,
-     "raise": 0
-    },
-    "8": {
-     "cell": "clock_8",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    "9": {
-     "cell": "clock_9",
-     "size": [
-      23.356368,
-      27
-     ],
-     "advance": 25.498368,
-     "raise": 0
-    },
-    ":": {
-     "cell": "colon",
-     "size": [
-      7.497,
-      18
-     ],
-     "advance": 9.639,
-     "raise": -7
-    },
-    " ": {
-     "cell": "tick",
-     "size": [
-      0.0,
-      0
-     ],
-     "advance": 6.426
-    }
-   }
-  },
-  "small": {
-   "cap_height": 26,
-   "glyphs": {
-    "0": {
-     "cell": "small_0",
-     "size": [
-      20.222,
-      26
-     ],
-     "advance": 22.222,
-     "raise": 0
-    },
-    "1": {
-     "cell": "small_1",
-     "size": [
-      11.556,
-      26
-     ],
-     "advance": 13.556,
-     "raise": 0
-    },
-    "2": {
-     "cell": "small_2",
-     "size": [
-      20.222,
-      26
-     ],
-     "advance": 22.222,
-     "raise": 0
-    },
-    "3": {
-     "cell": "small_3",
-     "size": [
-      20.222,
-      26
-     ],
-     "advance": 22.222,
-     "raise": 0
-    },
-    "4": {
-     "cell": "small_4",
-     "size": [
-      20.222,
-      26
-     ],
-     "advance": 22.222,
-     "raise": 0
-    },
-    "5": {
-     "cell": "small_5",
-     "size": [
-      19.158,
-      26
-     ],
-     "advance": 21.158,
-     "raise": 0
-    },
-    "6": {
-     "cell": "small_6",
-     "size": [
-      20.526,
-      26
-     ],
-     "advance": 22.526,
-     "raise": 0
-    },
-    "7": {
-     "cell": "small_7",
-     "size": [
-      18.778,
-      26
-     ],
-     "advance": 20.778,
-     "raise": 0
-    },
-    "8": {
-     "cell": "small_8",
-     "size": [
-      19.158,
-      26
-     ],
-     "advance": 21.158,
-     "raise": 0
-    },
-    "9": {
-     "cell": "small_9",
-     "size": [
-      19.158,
-      26
-     ],
-     "advance": 21.158,
-     "raise": 0
-    }
-   }
-  },
-  "label": {
-   "cap_height": 30,
-   "glyphs": {
-    "0": {
-     "cell": "label_0",
-     "size": [
-      24.545,
-      30
-     ],
-     "advance": 26.545,
-     "raise": 0
-    },
-    "1": {
-     "cell": "label_1",
-     "size": [
-      16.364,
-      30
-     ],
-     "advance": 18.364,
-     "raise": 0
-    },
-    "2": {
-     "cell": "label_2",
-     "size": [
-      21.818,
-      30
-     ],
-     "advance": 23.818,
-     "raise": 0
-    },
-    "3": {
-     "cell": "label_3",
-     "size": [
-      21.818,
-      30
-     ],
-     "advance": 23.818,
-     "raise": 0
-    },
-    "4": {
-     "cell": "label_4",
-     "size": [
-      25.909,
-      30
-     ],
-     "advance": 27.909,
-     "raise": 0
-    },
-    "5": {
-     "cell": "label_5",
-     "size": [
-      21.818,
-      30
-     ],
-     "advance": 23.818,
-     "raise": 0
-    },
-    "6": {
-     "cell": "label_6",
-     "size": [
-      23.182,
-      30
-     ],
-     "advance": 25.182,
-     "raise": 0
-    },
-    "7": {
-     "cell": "label_7",
-     "size": [
-      20.455,
-      30
-     ],
-     "advance": 22.455,
-     "raise": 0
-    },
-    "8": {
-     "cell": "label_8",
-     "size": [
-      22.174,
-      30
-     ],
-     "advance": 24.174,
-     "raise": 0
-    },
-    "9": {
-     "cell": "label_9",
-     "size": [
-      23.182,
-      30
-     ],
-     "advance": 25.182,
-     "raise": 0
-    },
-    "st": {
-     "cell": "label_st",
-     "size": [
-      34.5,
-      30
-     ],
-     "advance": 36.5,
-     "raise": 0
-    },
-    "nd": {
-     "cell": "label_nd",
-     "size": [
-      42.25,
-      30
-     ],
-     "advance": 44.25,
-     "raise": 0
-    },
-    "rd": {
-     "cell": "label_rd",
-     "size": [
-      35.75,
-      30
-     ],
-     "advance": 37.75,
-     "raise": 0
-    },
-    "th": {
-     "cell": "label_th",
-     "size": [
-      35.75,
-      30
-     ],
-     "advance": 37.75,
-     "raise": 0
-    },
-    "&": {
-     "cell": "label_&",
-     "size": [
-      28.636,
-      30
-     ],
-     "advance": 30.636,
-     "raise": 0
-    },
-    "Goal": {
-     "cell": "label_Goal",
-     "size": [
-      108.261,
-      30
-     ],
-     "advance": 110.261,
-     "raise": 0
-    },
-    "GOAL": {
-     "cell": "label_GOAL",
-     "size": [
-      108.261,
-      30
-     ],
-     "advance": 110.261,
-     "raise": 0
-    },
-    "and": {
-     "cell": "label_and",
-     "size": [
-      67.826,
-      30
-     ],
-     "advance": 69.826,
-     "raise": 0
-    },
-    "OT": {
-     "cell": "label_OT",
-     "size": [
-      33.913,
-      30
-     ],
-     "advance": 35.913,
-     "raise": 0
-    },
-    "ST": {
-     "cell": "label_ST",
-     "size": [
-      34.5,
-      30
-     ],
-     "advance": 36.5,
-     "raise": 0
-    },
-    "ND": {
-     "cell": "label_ND",
-     "size": [
-      42.25,
-      30
-     ],
-     "advance": 44.25,
-     "raise": 0
-    },
-    "RD": {
-     "cell": "label_RD",
-     "size": [
-      35.75,
-      30
-     ],
-     "advance": 37.75,
-     "raise": 0
-    },
-    "TH": {
-     "cell": "label_TH",
-     "size": [
-      35.75,
-      30
-     ],
-     "advance": 37.75,
-     "raise": 0
-    },
-    "Inch": {
-     "cell": "label_Inch",
-     "size": [
-      91.957,
-      30
-     ],
-     "advance": 97.174,
-     "raise": 0
-    },
-    "es": {
-     "cell": "label_es",
-     "size": [
-      45.978,
-      30
-     ],
-     "advance": 47.978,
-     "raise": 0
-    },
-    " ": {
-     "cell": "tick",
-     "size": [
-      0,
-      0
-     ],
-     "advance": 11
-    },
-    "~": {
-     "cell": "tick",
-     "size": [
-      22.5,
-      7.5
-     ],
-     "advance": 37.5
-    },
-    "ESPN": {
-     "cell": "espn_plate_mark",
-     "size": [
-      125,
-      30
-     ],
-     "advance": 125,
-     "raise": -1.25
-    },
-    "Down": {
-     "cell": "label_Down",
-     "size": [
-      104.348,
-      28.696
-     ],
-     "advance": 106.348,
-     "raise": 0
-    }
-   }
-  },
-  "ticks": {
-   "cap_height": 6,
-   "glyphs": {
-    "0": {
-     "cell": "timeouts_0",
-     "size": [
-      78,
-      6
-     ],
-     "advance": 78
-    },
-    "1": {
-     "cell": "timeouts_1",
-     "size": [
-      78,
-      6
-     ],
-     "advance": 78
-    },
-    "2": {
-     "cell": "timeouts_2",
-     "size": [
-      78,
-      6
-     ],
-     "advance": 78
-    },
-    "3": {
-     "cell": "timeouts_3",
-     "size": [
-      78,
-      6
-     ],
-     "advance": 78
-    }
-   }
-  },
-  "quarter": {
-   "cap_height": 22,
-   "glyphs": {
-    "1ST": {
-     "cell": "quarter_1ST",
-     "size": [
-      36.473684210526315,
-      22
-     ],
-     "advance": 38.78947368421053
-    },
-    "1st": {
-     "cell": "quarter_1ST",
-     "size": [
-      36.473684210526315,
-      22
-     ],
-     "advance": 38.78947368421053
-    },
-    "2ND": {
-     "cell": "quarter_2ND",
-     "size": [
-      50.36842105263158,
-      22
-     ],
-     "advance": 52.684210526315795
-    },
-    "2nd": {
-     "cell": "quarter_2ND",
-     "size": [
-      50.36842105263158,
-      22
-     ],
-     "advance": 52.684210526315795
-    },
-    "3RD": {
-     "cell": "quarter_3RD",
-     "size": [
-      49.21052631578947,
-      22
-     ],
-     "advance": 51.526315789473685
-    },
-    "3rd": {
-     "cell": "quarter_3RD",
-     "size": [
-      49.21052631578947,
-      22
-     ],
-     "advance": 51.526315789473685
-    },
-    "4TH": {
-     "cell": "quarter_4TH",
-     "size": [
-      49.21052631578947,
-      22
-     ],
-     "advance": 51.526315789473685
-    },
-    "4th": {
-     "cell": "quarter_4TH",
-     "size": [
-      49.21052631578947,
-      22
-     ],
-     "advance": 51.526315789473685
-    },
-    "OT": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT1": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT2": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT3": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT4": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT5": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT6": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT7": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT8": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    },
-    "OT9": {
-     "cell": "quarter_OT",
-     "size": [
-      37.278,
-      22
-     ],
-     "advance": 39.278
-    }
-   }
-  },
-  "record": {
-   "cap_height": 17,
-   "glyphs": {
-    "0": {
-     "cell": "record_d0",
-     "size": [
-      21.0,
-      21.69642857142857
-     ],
-     "advance": 17.0,
-     "raise": 2.4107142857142856
-    },
-    "1": {
-     "cell": "record_d1",
-     "size": [
-      15.0,
-      21.69642857142857
-     ],
-     "advance": 11.0,
-     "raise": 2.4107142857142856
-    },
-    "2": {
-     "cell": "record_d2",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "3": {
-     "cell": "record_d3",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "4": {
-     "cell": "record_d4",
-     "size": [
-      21.0,
-      21.69642857142857
-     ],
-     "advance": 17.0,
-     "raise": 2.4107142857142856
-    },
-    "5": {
-     "cell": "record_d5",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "6": {
-     "cell": "record_d6",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "7": {
-     "cell": "record_d7",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "8": {
-     "cell": "record_d8",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "9": {
-     "cell": "record_d9",
-     "size": [
-      18.0,
-      21.69642857142857
-     ],
-     "advance": 14.0,
-     "raise": 2.4107142857142856
-    },
-    "10": {
-     "cell": "record_d10",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "11": {
-     "cell": "record_d11",
-     "size": [
-      24.0,
-      21.69642857142857
-     ],
-     "advance": 20.0,
-     "raise": 2.4107142857142856
-    },
-    "12": {
-     "cell": "record_d12",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "13": {
-     "cell": "record_d13",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "14": {
-     "cell": "record_d14",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "15": {
-     "cell": "record_d15",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "16": {
-     "cell": "record_d16",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "17": {
-     "cell": "record_d17",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-0": {
-     "cell": "record_m0",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "-1": {
-     "cell": "record_m1",
-     "size": [
-      24.0,
-      21.69642857142857
-     ],
-     "advance": 20.0,
-     "raise": 2.4107142857142856
-    },
-    "-2": {
-     "cell": "record_m2",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-3": {
-     "cell": "record_m3",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-4": {
-     "cell": "record_m4",
-     "size": [
-      30.0,
-      21.69642857142857
-     ],
-     "advance": 26.0,
-     "raise": 2.4107142857142856
-    },
-    "-5": {
-     "cell": "record_m5",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-6": {
-     "cell": "record_m6",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-7": {
-     "cell": "record_m7",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-8": {
-     "cell": "record_m8",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-9": {
-     "cell": "record_m9",
-     "size": [
-      27.0,
-      21.69642857142857
-     ],
-     "advance": 23.0,
-     "raise": 2.4107142857142856
-    },
-    "-10": {
-     "cell": "record_m10",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-11": {
-     "cell": "record_m11",
-     "size": [
-      33.0,
-      21.69642857142857
-     ],
-     "advance": 29.0,
-     "raise": 2.4107142857142856
-    },
-    "-12": {
-     "cell": "record_m12",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-13": {
-     "cell": "record_m13",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-14": {
-     "cell": "record_m14",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-15": {
-     "cell": "record_m15",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-16": {
-     "cell": "record_m16",
-     "size": [
-      39.0,
-      21.69642857142857
-     ],
-     "advance": 35.0,
-     "raise": 2.4107142857142856
-    },
-    "-17": {
-     "cell": "record_m17",
-     "size": [
-      36.0,
-      21.69642857142857
-     ],
-     "advance": 32.0,
-     "raise": 2.4107142857142856
-    }
-   }
-  },
-  "record_tab": {
-   "cap_height": 28.0,
-   "glyphs": {
-    "3": {
-     "cell": "record_band_away",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "4": {
-     "cell": "record_band_away",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "5": {
-     "cell": "record_band_away",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "6": {
-     "cell": "record_band_away",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    }
-   }
-  },
-  "chevron": {
-   "cap_height": 19.0,
-   "glyphs": {
-    "^": {
-     "cell": "chevron",
-     "size": [
-      66.0,
-      19.0
-     ],
-     "advance": 66.0,
-     "raise": 0
-    }
-   }
-  },
-  "timeout_tab": {
-   "cap_height": 21,
-   "glyphs": {
-    "T": {
-     "cell": "timeout_tab",
-     "size": [
-      172,
-      21
-     ],
-     "advance": 172,
-     "raise": 0
-    }
-   }
-  },
-  "record_tab_home": {
-   "cap_height": 28.0,
-   "glyphs": {
-    "3": {
-     "cell": "record_band_home",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "4": {
-     "cell": "record_band_home",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "5": {
-     "cell": "record_band_home",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    },
-    "6": {
-     "cell": "record_band_home",
-     "size": [
-      180.0,
-      28.0
-     ],
-     "advance": 180.0,
-     "raise": 0
-    }
-   }
-  }
- },
- "static": [
-  {
-   "name": "body_left",
-   "box": [
-    437,
-    942,
-    960,
-    1052
-   ],
-   "cell": "away_rim",
-   "material": 3,
-   "tint": "away rim",
-   "z": -18.5
-  },
-  {
-   "name": "body",
-   "box": [
-    437,
-    942,
-    1478,
-    1052
-   ],
-   "cell": "body",
-   "material": 3,
-   "tint": "none",
-   "z": -20
-  },
-  {
-   "name": "body_right",
-   "box": [
-    955,
-    942,
-    1478,
-    1052
-   ],
-   "cell": "home_rim",
-   "material": 3,
-   "tint": "home rim",
-   "z": -18.5
-  },
-  {
-   "name": "capsule",
-   "box": [
-    839,
-    999,
-    1082,
-    1039
-   ],
-   "cell": "capsule",
-   "material": 3,
-   "tint": "none",
-   "z": -20
-  },
-  {
-   "name": "plate",
-   "box": [
-    828,
-    944,
-    1098,
-    990
-   ],
-   "cell": "plate",
-   "material": 4,
-   "tint": "possessing team",
-   "z": -17
-  },
-  {
-   "name": "away_wing",
-   "box": [
-    437,
-    942,
-    777,
-    1052
-   ],
-   "cell": "wing",
-   "material": 9,
-   "tint": "away team",
-   "z": -19
-  },
-  {
-   "name": "home_wing",
-   "box": [
-    1138,
-    942,
-    1478,
-    1052
-   ],
-   "cell": "home_wing",
-   "material": 9,
-   "tint": "home team",
-   "flip_x": true,
-   "z": -19
-  },
-  {
-   "name": "red",
-   "box": [
-    1023,
-    999,
-    1082,
-    1039
-   ],
-   "cell": "red",
-   "material": 9,
-   "tint": "play clock cell",
-   "z": -17
-  },
-  {
-   "name": "away_logo",
-   "box": [
-    437,
-    942,
-    667,
-    1052
-   ],
-   "cell": "logo",
-   "material": 8,
-   "tint": "none",
-   "z": -18
-  },
-  {
-   "name": "home_logo",
-   "box": [
-    1248,
-    942,
-    1478,
-    1052
-   ],
-   "cell": "logo",
-   "material": 5,
-   "tint": "none",
-   "z": -18
-  },
-  {
-   "name": "plate_gloss",
-   "box": [
-    828,
-    944,
-    1098,
-    990
-   ],
-   "cell": "plate_gloss",
-   "material": 3,
-   "tint": "none",
-   "z": -16.8
-  }
- ],
- "fields": [
-  {
-   "name": "away_score",
-   "source": "away score",
-   "box": [
-    696,
-    965,
-    816,
-    1018
-   ],
-   "glyph_set": "score",
-   "slots": 3,
-   "material": 6,
-   "colour": "#FDFDFD",
-   "alignment": "center",
-   "anchor": [
-    756,
-    965
-   ],
-   "size": 56,
-   "z": -15
-  },
-  {
-   "name": "home_score",
-   "source": "home score",
-   "box": [
-    1095,
-    965,
-    1215,
-    1018
-   ],
-   "glyph_set": "score",
-   "slots": 3,
-   "material": 6,
-   "colour": "#FDFDFD",
-   "alignment": "center",
-   "anchor": [
-    1155,
-    965
-   ],
-   "size": 56,
-   "z": -15
-  },
-  {
-   "name": "clock",
-   "source": "clock",
-   "box": [
-    906,
-    1006,
-    1014,
-    1034
-   ],
-   "glyph_set": "clock",
-   "slots": 5,
-   "material": 6,
-   "colour": "#171717",
-   "alignment": "center",
-   "anchor": [
-    960,
-    1006
-   ],
-   "size": 27,
-   "z": -15,
-   "strip_minute": true
-  },
-  {
-   "name": "play_clock",
-   "source": "play clock",
-   "box": [
-    1023,
-    1010,
-    1076,
-    1029
-   ],
-   "glyph_set": "small",
-   "slots": 2,
-   "material": 6,
-   "colour": "#171717",
-   "alignment": "center",
-   "anchor": [
-    1051,
-    1010
-   ],
-   "size": 19,
-   "strip_zero": true,
-   "z": -15
-  },
-  {
-   "name": "quarter",
-   "source": "quarter",
-   "box": [
-    846,
-    1010,
-    900,
-    1028
-   ],
-   "glyph_set": "quarter",
-   "slots": 1,
-   "material": 6,
-   "colour": "#171717",
-   "alignment": "center",
-   "anchor": [
-    871,
-    1010
-   ],
-   "size": 19,
-   "z": -15
-  },
-  {
-   "name": "away_timeouts",
-   "source": "away timeouts",
-   "box": [
-    717,
-    1032,
-    797,
-    1038
-   ],
-   "glyph_set": "ticks",
-   "slots": 1,
-   "material": 7,
-   "colour": "#F6F6F6",
-   "alignment": "left",
-   "anchor": [
-    717,
-    1032
-   ],
-   "size": 6,
-   "timeout": true,
-   "z": -15
-  },
-  {
-   "name": "home_timeouts",
-   "source": "home timeouts",
-   "box": [
-    1120,
-    1032,
-    1200,
-    1038
-   ],
-   "glyph_set": "ticks",
-   "slots": 1,
-   "material": 7,
-   "colour": "#F6F6F6",
-   "alignment": "left",
-   "anchor": [
-    1120,
-    1032
-   ],
-   "size": 6,
-   "timeout": true,
-   "z": -15
-  },
-  {
-   "name": "down",
-   "source": "down and distance",
-   "box": [
-    829,
-    955,
-    1089,
-    979
-   ],
-   "glyph_set": "label",
-   "slots": 8,
-   "material": 7,
-   "colour": "#FFFFFF",
-   "alignment": "center",
-   "anchor": [
-    959,
-    955
-   ],
-   "size": 24,
-   "z": -15
-  },
-  {
-   "name": "away_record_tab",
-   "source": "away record tab",
-   "box": [
-    439.0,
-    1022,
-    619.0,
-    1050.0
-   ],
-   "glyph_set": "record_tab",
-   "slots": 1,
-   "material": 9,
-   "colour": "#FFFFFF",
-   "alignment": "left",
-   "anchor": [
-    439.0,
-    1022
-   ],
-   "size": 28.0,
-   "z": -18.25
-  },
-  {
-   "name": "home_record_tab",
-   "source": "home record tab",
-   "box": [
-    1296.0,
-    1022,
-    1476.0,
-    1050.0
-   ],
-   "glyph_set": "record_tab_home",
-   "slots": 1,
-   "material": 9,
-   "colour": "#FFFFFF",
-   "alignment": "right",
-   "anchor": [
-    1476.0,
-    1022
-   ],
-   "size": 28.0,
-   "z": -18.25
-  },
-  {
-   "name": "away_record",
-   "source": "away record",
-   "box": [
-    444.0,
-    1027,
-    544.0,
-    1044
-   ],
-   "glyph_set": "record",
-   "slots": 3,
-   "material": 7,
-   "colour": "#FFFFFF",
-   "alignment": "left",
-   "anchor": [
-    444.0,
-    1027
-   ],
-   "size": 17,
-   "z": -15
-  },
-  {
-   "name": "home_record",
-   "source": "home record",
-   "box": [
-    1375.0,
-    1027,
-    1475.0,
-    1044
-   ],
-   "glyph_set": "record",
-   "slots": 3,
-   "material": 7,
-   "colour": "#FFFFFF",
-   "alignment": "right",
-   "anchor": [
-    1475.0,
-    1027
-   ],
-   "size": 17,
-   "z": -15
-  },
-  {
-   "name": "possession",
-   "source": "possession",
-   "box": [
-    721.5,
-    943.0,
-    787.5,
-    962.0
-   ],
-   "glyph_set": "chevron",
-   "slots": 1,
-   "material": 4,
-   "colour": "#FFFFFF",
-   "alignment": "center",
-   "anchor": [
-    754.5,
-    943
-   ],
-   "alt_anchor": [
-    1157.75,
-    943
-   ],
-   "size": 19.0,
-   "z": -16
-  },
-  {
-   "name": "timeout_tab",
-   "source": "timeout tab",
-   "box": [
-    458,
-    900,
-    802,
-    942
-   ],
-   "glyph_set": "timeout_tab",
-   "slots": 1,
-   "material": 9,
-   "colour": "#FFFFFF",
-   "alignment": "center",
-   "anchor": [
-    630.0,
-    900
-   ],
-   "alt_anchor": [
-    1291.0,
-    900
-   ],
-   "size": 42,
-   "z": -16
-  }
- ],
- "brand": [
-  {
-   "name": "watermark",
-   "cell": "espn_mnf",
-   "box": [
-    1655,
-    35,
-    1869,
-    64
-   ],
-   "material": 9,
-   "tint": "none",
-   "pin": "top-right",
-   "opacity": 0.72,
-   "z": -20,
-   "source": {
-    "frames": "full Broncos-Chiefs broadcast",
-    "method": "5th percentile luminance, connected static letterforms; alpha normalized by measured 0.72 opacity",
-    "estimated_opacity": 0.72,
-    "colour": [
-     255,
-     255,
-     255
-    ],
-    "samples": 626,
-    "report": "reports/b72_s9/harvest.json"
-   },
-   "variant": "mnf"
-  },
-  {
-   "name": "watermark_nfl",
-   "cell": "espn_nfl",
-   "box": [
-    1655,
-    35,
-    1869,
-    64
-   ],
-   "material": 9,
-   "tint": "none",
-   "pin": "top-right",
-   "opacity": 0.72,
-   "z": -20,
-   "source": {
-    "frames": "Raiders-Texans highlights",
-    "method": "5th percentile luminance, connected static letterforms; alpha normalized by measured 0.72 opacity",
-    "estimated_opacity": 0.72,
-    "colour": [
-     255,
-     255,
-     255
-    ],
-    "samples": 602,
-    "report": "reports/b72_s9/harvest.json"
-   },
-   "variant": "nfl"
-  }
- ],
- "events": [
-  {
-   "name": "FUMBLE",
-   "material": 0,
-   "box": [
-    822,
-    948,
-    1096,
-    986
-   ],
-   "cell": "event",
-   "z": -13
-  },
-  {
-   "name": "ball on",
-   "material": 1,
-   "box": [
-    822,
-    948,
-    1096,
-    986
-   ],
-   "cell": "event",
-   "z": -13
-  },
-  {
-   "name": "FLAG",
-   "material": 2,
-   "box": [
-    822,
-    948,
-    1096,
-    986
-   ],
-   "cell": "flag",
-   "z": -13
-  },
-  {
-   "name": "hang time",
-   "material": 10,
-   "box": [
-    822,
-    948,
-    1096,
-    986
-   ],
-   "cell": "event",
-   "z": -13
-  }
- ],
- "plate_tints": {},
- "wing_tints": {},
- "logo_fit": {
-  "default": {
-   "fill_x": 0.92,
-   "height": 1.0,
-   "zoom": 0.96
-  },
-  "by_team": {
-   "ARI": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "ATL": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "BAL": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "BUF": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 1.1325,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "CAR": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "CHI": {
-    "fill_x": 1.14,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.046875,
-    "shift_y": 0.0
-   },
-   "CIN": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "DAL": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "DEN": {
-    "fill_x": 0.86,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "DET": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "GB": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 1.08,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "IND": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "JAX": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "KC": {
-    "fill_x": 0.9,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.03125,
-    "shift_y": 0.0
-   },
-   "MIA": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "MIN": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "NE": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "NO": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "NYG": {
-    "fill_x": 1.14,
-    "height": 1.0,
-    "zoom": 1.12,
-    "shift_x": -0.0156,
-    "shift_y": 0.0
-   },
-   "NYJ": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "LV": {
-    "fill_x": 1.0,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "PHI": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 1.095,
-    "shift_x": -0.015625,
-    "shift_y": 0.0
-   },
-   "PIT": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "LAR": {
-    "fill_x": 1.1,
-    "height": 1.0,
-    "zoom": 1.03,
-    "shift_x": 0.0469,
-    "shift_y": 0.0
-   },
-   "LAC": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "SF": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "SEA": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.976,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "TB": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "TEN": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "WAS": {
-    "fill_x": 1.02,
-    "height": 1.0,
-    "zoom": 0.94,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "CLE": {
-    "fill_x": 0.92,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   },
-   "HOU": {
-    "fill_x": 1.04,
-    "height": 1.0,
-    "zoom": 1.15,
-    "shift_x": 0.0,
-    "shift_y": 0.0
-   }
-  }
- },
- "reference_boxes": {
-  "bar": [
-   437,
-   942,
-   1478,
-   1052
+  "schema": "nfl2k5_scorebug_sprite/v1",
+  "frame": [
+    1920,
+    1080
   ],
-  "away_score": [
-   736,
-   965,
-   776,
-   1018
+  "atlas": [
+    256,
+    512
   ],
-  "home_score": [
-   1140,
-   965,
-   1180,
-   1018
-  ],
-  "down": [
-   898,
-   955,
-   1021,
-   978
-  ],
-  "clock": [
-   920,
-   1006,
-   1000,
-   1033
-  ],
-  "quarter": [
-   850,
-   1009,
-   892,
-   1028
-  ],
-  "play_clock": [
-   1042,
-   1009,
-   1057,
-   1028
-  ]
- },
- "provenance": {
-  "font": "Broadcast temporal-median contour traces; reconstructed absent glyphs listed in report",
-  "font_distributed": false,
-  "author": "reports/b76_s14/author.py",
-  "rendered_once": true,
-  "brand": "Direct measured MNF and NFL masks from supplied live broadcasts",
-  "team_shapes": "Neutral masks and white pill; validated official team tints",
-  "fidelity_report": "reports/b76_s14/AUTHOR_STEPS.json",
-  "revision": "b76-s14",
-  "geometry_steps": [
-   "marks",
-   "fits",
-   "wing",
-   "housing",
-   "tray",
-   "wingcell",
-   "display"
-  ],
-  "brand_filter": "tools/scorebug_sprite/author_default.py --brand-only: exact-area premultiplied box filter, then rows the measured ink band covers by at least 0.4 are divided by their own coverage",
-  "measured_from": "2026 Giants at Rams Monday Night Football, reports/b76_s12/harvest.json",
-  "base_author": "reports/b76_s12/author.py (cells replaced in place, not regenerated)",
-  "wing_model": {
-   "form": "a1*exp(-x/d1)*(1-v1*y/109) + a2*exp(-y/d2)*exp(-x/d3) + a3*exp(-(109-y)/d4)*exp(-x/d5), clipped to 1",
-   "a1": 0.8761,
-   "d1": 41.19,
-   "v1": 0.2879,
-   "a2": 0.45,
-   "d2": 13.82,
-   "d3": 461.6,
-   "a3": 1.5,
-   "d4": 2.839,
-   "d5": 83.55
-  },
-  "display_layer": "data/nfl2k5_scorebug_sprite/broadcast_display.json (wing and wash)",
-  "sb": {
-   "job": "b76-sb 2026-09-24",
-   "method": "temporal medians of read-only broadcast frames, area-filtered to the 16:9 HUD footprint; no generated art",
-   "sources": {
-    "espn_plate_mark": "2026 MNF Giants at Rams off-air frames with the black ESPN plate",
-    "label_Down": "2026 MNF Broncos at Chiefs, every settled \"3rd Down\" second",
-    "timeout_tab": "2026 MNF Broncos at Chiefs, the two away TIMEOUT popups (3914..3915, 7055..7058)",
-    "flag": "2026 MNF Giants at Rams, every FLAG frame",
-    "dividers": "removed; ESPN capsule has none"
-   }
-  },
-  "sbfix": {
-   "job": "b76-sbfix 2026-09-25",
-   "method": "capitals assembled from the traced broadcast masks in reports/b72_s9/glyphs (I, E from GOAL's L; C from GOAL's G mirrored; N, H, S, T the pill's traced capitals scaled to the cap; O GOAL's O); no generated art",
-   "why": "the 2026 ESPN bar writes its only word distance in capitals (GOAL, 398 s of the full Broncos at Chiefs game) and never showed an Inches plate; the retail \"Inches\" and \"OT%d\" draw as INCHES and OT",
-   "cells": {
-    "label_Inch": [
-     100,
-     300,
-     124,
-     309
-    ],
-    "label_es": [
-     136,
-     300,
-     148,
-     309
-    ],
-    "quarter_OT": [
-     155,
-     300,
-     167,
-     309
-    ]
-   }
-  },
-  "sb2": "reports/b76_sb2/author_receipt.json; PHI/CHI official-mark placement and 24 px down labels; ESPN mark keeps its box",
-  "hu1_corner": {
-   "job": "hu1 2026-10-14",
-   "radius": 21.0,
-   "rendered_radius": 18.5,
-   "layers": [
-    "body",
-    "body_right",
-    "home_wing"
-   ],
-   "method": "rounded-rectangle coverage in layout pixels, box-filtered per source texel through each layer stretch and flip; home rim top-line falloff continued around the curve and down the right side; left and lower-right corners unchanged",
-   "reference": "2026 ESPN MNF Broncos at Chiefs and NFL Raiders at Texans temporal-median contours, R 19.25 and 17.75 px on a 110 px bar (measurement only, no broadcast pixels)",
-   "logo_clearance": {
-    "WAS": {
-     "zoom": 0.94
+  "template": "template.png",
+  "cells": {
+    "away_rim": {
+      "box": [
+        0,
+        0,
+        174,
+        45
+      ]
+    },
+    "body": {
+      "box": [
+        176,
+        0,
+        349,
+        45
+      ]
+    },
+    "home_rim": {
+      "box": [
+        351,
+        0,
+        525,
+        45
+      ]
+    },
+    "capsule": {
+      "box": [
+        1200,
+        360,
+        1281,
+        376
+      ]
+    },
+    "plate": {
+      "box": [
+        1200,
+        404,
+        1290,
+        423
+      ]
+    },
+    "wing": {
+      "box": [
+        774,
+        0,
+        887,
+        45
+      ]
+    },
+    "home_wing": {
+      "box": [
+        889,
+        0,
+        1002,
+        45
+      ]
+    },
+    "red": {
+      "box": [
+        1200,
+        430,
+        1219,
+        446
+      ]
+    },
+    "espn_mnf": {
+      "box": [
+        1026,
+        1,
+        1097,
+        13
+      ]
+    },
+    "espn_nfl": {
+      "box": [
+        1098,
+        1,
+        1169,
+        13
+      ]
+    },
+    "event": {
+      "box": [
+        1173,
+        0,
+        1175,
+        2
+      ]
+    },
+    "flag": {
+      "box": [
+        1177,
+        0,
+        1266,
+        15
+      ]
+    },
+    "score_0": {
+      "box": [
+        1268,
+        0,
+        1280,
+        23
+      ]
+    },
+    "score_1": {
+      "box": [
+        1282,
+        0,
+        1288,
+        23
+      ]
+    },
+    "score_2": {
+      "box": [
+        1290,
+        0,
+        1301,
+        23
+      ]
+    },
+    "score_3": {
+      "box": [
+        1303,
+        0,
+        1315,
+        23
+      ]
+    },
+    "score_4": {
+      "box": [
+        1317,
+        0,
+        1329,
+        23
+      ]
+    },
+    "score_5": {
+      "box": [
+        1331,
+        0,
+        1343,
+        23
+      ]
+    },
+    "score_6": {
+      "box": [
+        1345,
+        0,
+        1357,
+        23
+      ]
+    },
+    "score_7": {
+      "box": [
+        1359,
+        0,
+        1369,
+        23
+      ]
+    },
+    "score_8": {
+      "box": [
+        1371,
+        0,
+        1383,
+        23
+      ]
+    },
+    "score_9": {
+      "box": [
+        1385,
+        0,
+        1397,
+        23
+      ]
+    },
+    "clock_0": {
+      "box": [
+        1399,
+        0,
+        1405,
+        11
+      ]
+    },
+    "clock_1": {
+      "box": [
+        1407,
+        0,
+        1410,
+        11
+      ]
+    },
+    "clock_2": {
+      "box": [
+        1412,
+        0,
+        1418,
+        11
+      ]
+    },
+    "clock_3": {
+      "box": [
+        1420,
+        0,
+        1426,
+        11
+      ]
+    },
+    "clock_4": {
+      "box": [
+        1428,
+        0,
+        1434,
+        11
+      ]
+    },
+    "clock_5": {
+      "box": [
+        1436,
+        0,
+        1442,
+        11
+      ]
+    },
+    "clock_6": {
+      "box": [
+        1444,
+        0,
+        1450,
+        11
+      ]
+    },
+    "clock_7": {
+      "box": [
+        1452,
+        0,
+        1458,
+        11
+      ]
+    },
+    "clock_8": {
+      "box": [
+        1460,
+        0,
+        1466,
+        11
+      ]
+    },
+    "clock_9": {
+      "box": [
+        1468,
+        0,
+        1474,
+        11
+      ]
+    },
+    "colon": {
+      "box": [
+        1476,
+        0,
+        1478,
+        7
+      ]
+    },
+    "small_0": {
+      "box": [
+        1480,
+        0,
+        1486,
+        10
+      ]
+    },
+    "small_1": {
+      "box": [
+        1488,
+        0,
+        1491,
+        10
+      ]
+    },
+    "small_2": {
+      "box": [
+        1493,
+        0,
+        1499,
+        10
+      ]
+    },
+    "small_3": {
+      "box": [
+        1501,
+        0,
+        1507,
+        10
+      ]
+    },
+    "small_4": {
+      "box": [
+        1509,
+        0,
+        1515,
+        10
+      ]
+    },
+    "small_5": {
+      "box": [
+        1517,
+        0,
+        1523,
+        10
+      ]
+    },
+    "small_6": {
+      "box": [
+        1525,
+        0,
+        1531,
+        10
+      ]
+    },
+    "small_7": {
+      "box": [
+        0,
+        47,
+        6,
+        57
+      ]
+    },
+    "small_8": {
+      "box": [
+        8,
+        47,
+        14,
+        57
+      ]
+    },
+    "small_9": {
+      "box": [
+        16,
+        47,
+        22,
+        57
+      ]
+    },
+    "small_st": {
+      "box": [
+        24,
+        47,
+        33,
+        54
+      ]
+    },
+    "small_nd": {
+      "box": [
+        35,
+        47,
+        46,
+        54
+      ]
+    },
+    "small_rd": {
+      "box": [
+        48,
+        47,
+        58,
+        54
+      ]
+    },
+    "small_th": {
+      "box": [
+        60,
+        47,
+        69,
+        54
+      ]
+    },
+    "small_&": {
+      "box": [
+        71,
+        47,
+        79,
+        57
+      ]
+    },
+    "small_Goal": {
+      "box": [
+        81,
+        47,
+        112,
+        57
+      ]
+    },
+    "small_GOAL": {
+      "box": [
+        114,
+        47,
+        145,
+        57
+      ]
+    },
+    "small_and": {
+      "box": [
+        147,
+        47,
+        166,
+        57
+      ]
+    },
+    "small_OT": {
+      "box": [
+        168,
+        47,
+        177,
+        57
+      ]
+    },
+    "small_ST": {
+      "box": [
+        179,
+        47,
+        188,
+        54
+      ]
+    },
+    "small_ND": {
+      "box": [
+        190,
+        47,
+        201,
+        54
+      ]
+    },
+    "small_RD": {
+      "box": [
+        203,
+        47,
+        213,
+        54
+      ]
+    },
+    "small_TH": {
+      "box": [
+        215,
+        47,
+        224,
+        54
+      ]
+    },
+    "small_Inch": {
+      "box": [
+        226,
+        47,
+        248,
+        57
+      ]
+    },
+    "small_es": {
+      "box": [
+        250,
+        47,
+        262,
+        57
+      ]
+    },
+    "label_0": {
+      "box": [
+        264,
+        47,
+        270,
+        56
+      ]
+    },
+    "label_1": {
+      "box": [
+        274,
+        47,
+        278,
+        56
+      ]
+    },
+    "label_2": {
+      "box": [
+        281,
+        47,
+        286,
+        56
+      ]
+    },
+    "label_3": {
+      "box": [
+        290,
+        47,
+        295,
+        56
+      ]
+    },
+    "label_4": {
+      "box": [
+        299,
+        47,
+        305,
+        56
+      ]
+    },
+    "label_5": {
+      "box": [
+        309,
+        47,
+        314,
+        56
+      ]
+    },
+    "label_6": {
+      "box": [
+        318,
+        47,
+        324,
+        56
+      ]
+    },
+    "label_7": {
+      "box": [
+        327,
+        47,
+        332,
+        56
+      ]
+    },
+    "label_8": {
+      "box": [
+        335,
+        47,
+        340,
+        56
+      ]
+    },
+    "label_9": {
+      "box": [
+        344,
+        47,
+        350,
+        56
+      ]
+    },
+    "label_st": {
+      "box": [
+        353,
+        47,
+        362,
+        56
+      ]
+    },
+    "label_nd": {
+      "box": [
+        366,
+        47,
+        377,
+        56
+      ]
+    },
+    "label_rd": {
+      "box": [
+        382,
+        47,
+        391,
+        56
+      ]
+    },
+    "label_th": {
+      "box": [
+        395,
+        47,
+        404,
+        56
+      ]
+    },
+    "label_&": {
+      "box": [
+        408,
+        47,
+        415,
+        56
+      ]
+    },
+    "label_Goal": {
+      "box": [
+        419,
+        47,
+        447,
+        56
+      ]
+    },
+    "label_GOAL": {
+      "box": [
+        457,
+        47,
+        485,
+        56
+      ]
+    },
+    "label_and": {
+      "box": [
+        495,
+        47,
+        513,
+        56
+      ]
+    },
+    "label_OT": {
+      "box": [
+        519,
+        47,
+        528,
+        56
+      ]
+    },
+    "label_ST": {
+      "box": [
+        532,
+        47,
+        541,
+        56
+      ]
+    },
+    "label_ND": {
+      "box": [
+        545,
+        47,
+        556,
+        56
+      ]
+    },
+    "label_RD": {
+      "box": [
+        561,
+        47,
+        570,
+        56
+      ]
+    },
+    "label_TH": {
+      "box": [
+        574,
+        47,
+        583,
+        56
+      ]
+    },
+    "label_Inch": {
+      "box": [
+        100,
+        300,
+        124,
+        309
+      ]
+    },
+    "label_es": {
+      "box": [
+        136,
+        300,
+        148,
+        309
+      ]
+    },
+    "tick": {
+      "box": [
+        631,
+        47,
+        637,
+        49
+      ]
+    },
+    "quarter_1ST": {
+      "box": [
+        639,
+        47,
+        649,
+        56
+      ]
+    },
+    "quarter_2ND": {
+      "box": [
+        651,
+        47,
+        665,
+        56
+      ]
+    },
+    "quarter_3RD": {
+      "box": [
+        667,
+        47,
+        681,
+        56
+      ]
+    },
+    "quarter_4TH": {
+      "box": [
+        683,
+        47,
+        697,
+        56
+      ]
+    },
+    "quarter_OT": {
+      "box": [
+        155,
+        300,
+        167,
+        309
+      ]
+    },
+    "chevron": {
+      "box": [
+        441,
+        65,
+        463,
+        72
+      ]
+    },
+    "timeouts_0": {
+      "box": [
+        465,
+        65,
+        491,
+        67
+      ]
+    },
+    "timeouts_1": {
+      "box": [
+        493,
+        65,
+        519,
+        67
+      ]
+    },
+    "timeouts_2": {
+      "box": [
+        521,
+        65,
+        547,
+        67
+      ]
+    },
+    "timeouts_3": {
+      "box": [
+        549,
+        65,
+        575,
+        67
+      ]
+    },
+    "espn_plate_mark": {
+      "box": [
+        0,
+        300,
+        33,
+        309
+      ]
+    },
+    "label_Down": {
+      "box": [
+        60,
+        300,
+        87,
+        309
+      ]
+    },
+    "timeout_tab": {
+      "box": [
+        0,
+        320,
+        114,
+        337
+      ]
+    },
+    "record_d0": {
+      "box": [
+        1,
+        80,
+        8,
+        89
+      ]
+    },
+    "record_d1": {
+      "box": [
+        10,
+        80,
+        15,
+        89
+      ]
+    },
+    "record_d2": {
+      "box": [
+        17,
+        80,
+        23,
+        89
+      ]
+    },
+    "record_d3": {
+      "box": [
+        25,
+        80,
+        31,
+        89
+      ]
+    },
+    "record_d4": {
+      "box": [
+        33,
+        80,
+        40,
+        89
+      ]
+    },
+    "record_d5": {
+      "box": [
+        42,
+        80,
+        48,
+        89
+      ]
+    },
+    "record_d6": {
+      "box": [
+        50,
+        80,
+        56,
+        89
+      ]
+    },
+    "record_d7": {
+      "box": [
+        58,
+        80,
+        64,
+        89
+      ]
+    },
+    "record_d8": {
+      "box": [
+        66,
+        80,
+        72,
+        89
+      ]
+    },
+    "record_d9": {
+      "box": [
+        74,
+        80,
+        80,
+        89
+      ]
+    },
+    "record_d10": {
+      "box": [
+        82,
+        80,
+        92,
+        89
+      ]
+    },
+    "record_d11": {
+      "box": [
+        94,
+        80,
+        102,
+        89
+      ]
+    },
+    "record_d12": {
+      "box": [
+        104,
+        80,
+        114,
+        89
+      ]
+    },
+    "record_d13": {
+      "box": [
+        116,
+        80,
+        126,
+        89
+      ]
+    },
+    "record_d14": {
+      "box": [
+        128,
+        80,
+        138,
+        89
+      ]
+    },
+    "record_d15": {
+      "box": [
+        140,
+        80,
+        150,
+        89
+      ]
+    },
+    "record_d16": {
+      "box": [
+        152,
+        80,
+        162,
+        89
+      ]
+    },
+    "record_d17": {
+      "box": [
+        164,
+        80,
+        173,
+        89
+      ]
+    },
+    "record_m0": {
+      "box": [
+        175,
+        80,
+        185,
+        89
+      ]
+    },
+    "record_m1": {
+      "box": [
+        187,
+        80,
+        195,
+        89
+      ]
+    },
+    "record_m2": {
+      "box": [
+        197,
+        80,
+        206,
+        89
+      ]
+    },
+    "record_m3": {
+      "box": [
+        208,
+        80,
+        217,
+        89
+      ]
+    },
+    "record_m4": {
+      "box": [
+        219,
+        80,
+        229,
+        89
+      ]
+    },
+    "record_m5": {
+      "box": [
+        231,
+        80,
+        240,
+        89
+      ]
+    },
+    "record_m6": {
+      "box": [
+        242,
+        80,
+        251,
+        89
+      ]
+    },
+    "record_m7": {
+      "box": [
+        253,
+        80,
+        262,
+        89
+      ]
+    },
+    "record_m8": {
+      "box": [
+        264,
+        80,
+        273,
+        89
+      ]
+    },
+    "record_m9": {
+      "box": [
+        275,
+        80,
+        284,
+        89
+      ]
+    },
+    "record_m10": {
+      "box": [
+        286,
+        80,
+        299,
+        89
+      ]
+    },
+    "record_m11": {
+      "box": [
+        301,
+        80,
+        312,
+        89
+      ]
+    },
+    "record_m12": {
+      "box": [
+        314,
+        80,
+        327,
+        89
+      ]
+    },
+    "record_m13": {
+      "box": [
+        329,
+        80,
+        342,
+        89
+      ]
+    },
+    "record_m14": {
+      "box": [
+        344,
+        80,
+        357,
+        89
+      ]
+    },
+    "record_m15": {
+      "box": [
+        359,
+        80,
+        372,
+        89
+      ]
+    },
+    "record_m16": {
+      "box": [
+        374,
+        80,
+        387,
+        89
+      ]
+    },
+    "record_m17": {
+      "box": [
+        389,
+        80,
+        401,
+        89
+      ]
+    },
+    "record_band_away": {
+      "box": [
+        1,
+        92,
+        61,
+        103
+      ]
+    },
+    "record_band_home": {
+      "box": [
+        63,
+        92,
+        123,
+        103
+      ]
+    },
+    "plate_gloss": {
+      "box": [
+        1200,
+        450,
+        1290,
+        469
+      ]
     }
-   },
-   "template_before_sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b"
   },
-  "b778_sb2_logo_zoom": {
-   "job": "b778 sb2 2026-10-22",
-   "request": "Noah 10/21 stream c2-15: logos zoomed in a bit more and slightly cut off",
-   "target": 1.15,
-   "width_margin_texels": 3,
-   "corner_alpha": 64,
-   "reference": "2026 ESPN NFL Raiders at Texans and Bills at Chiefs bars (measurement only, no broadcast pixels)",
-   "zoom": {
-    "ARI": [
-     0.976,
-     1.15
-    ],
-    "ATL": [
-     0.976,
-     1.15
-    ],
-    "BAL": [
-     0.976,
-     0.976
-    ],
-    "BUF": [
-     1.1075,
-     1.1325
-    ],
-    "CAR": [
-     0.976,
-     0.976
-    ],
-    "CHI": [
-     0.976,
-     1.15
-    ],
-    "CIN": [
-     0.976,
-     1.15
-    ],
-    "CLE": [
-     0.976,
-     1.15
-    ],
-    "DAL": [
-     0.976,
-     1.15
-    ],
-    "DEN": [
-     0.976,
-     1.15
-    ],
-    "DET": [
-     0.976,
-     1.15
-    ],
-    "GB": [
-     0.976,
-     1.08
-    ],
-    "HOU": [
-     0.976,
-     1.15
-    ],
-    "IND": [
-     0.976,
-     1.15
-    ],
-    "JAX": [
-     0.976,
-     1.15
-    ],
-    "KC": [
-     0.976,
-     1.15
-    ],
-    "LAC": [
-     0.976,
-     0.976
-    ],
-    "LAR": [
-     0.953,
-     1.03
-    ],
-    "LV": [
-     0.976,
-     1.15
-    ],
-    "MIA": [
-     0.976,
-     1.15
-    ],
-    "MIN": [
-     0.976,
-     1.15
-    ],
-    "NE": [
-     0.976,
-     0.976
-    ],
-    "NO": [
-     0.976,
-     1.15
-    ],
-    "NYG": [
-     0.953,
-     1.12
-    ],
-    "NYJ": [
-     0.976,
-     0.976
-    ],
-    "PHI": [
-     0.976,
-     1.095
-    ],
-    "PIT": [
-     0.976,
-     1.15
-    ],
-    "SEA": [
-     0.976,
-     0.976
-    ],
-    "SF": [
-     0.976,
-     0.976
-    ],
-    "TB": [
-     0.976,
-     1.15
-    ],
-    "TEN": [
-     0.976,
-     1.15
-    ],
-    "WAS": [
-     0.94,
-     0.94
-    ]
-   }
+  "glyph_sets": {
+    "score": {
+      "cap_height": 53,
+      "glyphs": {
+        "0": {
+          "cell": "score_0",
+          "size": [
+            50.9913,
+            53
+          ],
+          "advance": 55.2313,
+          "raise": 0
+        },
+        "1": {
+          "cell": "score_1",
+          "size": [
+            26.01558,
+            53
+          ],
+          "advance": 30.255580000000002,
+          "raise": 0
+        },
+        "2": {
+          "cell": "score_2",
+          "size": [
+            47.8696,
+            53
+          ],
+          "advance": 52.1096,
+          "raise": 0
+        },
+        "3": {
+          "cell": "score_3",
+          "size": [
+            48.910520000000005,
+            53
+          ],
+          "advance": 53.15052000000001,
+          "raise": 0
+        },
+        "4": {
+          "cell": "score_4",
+          "size": [
+            53.07314,
+            53
+          ],
+          "advance": 57.313140000000004,
+          "raise": 0
+        },
+        "5": {
+          "cell": "score_5",
+          "size": [
+            50.9913,
+            53
+          ],
+          "advance": 55.2313,
+          "raise": 0
+        },
+        "6": {
+          "cell": "score_6",
+          "size": [
+            50.9913,
+            53
+          ],
+          "advance": 55.2313,
+          "raise": 0
+        },
+        "7": {
+          "cell": "score_7",
+          "size": [
+            40.58528,
+            53
+          ],
+          "advance": 44.82528,
+          "raise": 0
+        },
+        "8": {
+          "cell": "score_8",
+          "size": [
+            50.9913,
+            53
+          ],
+          "advance": 55.2313,
+          "raise": 0
+        },
+        "9": {
+          "cell": "score_9",
+          "size": [
+            50.9913,
+            53
+          ],
+          "advance": 55.2313,
+          "raise": 0
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0.0,
+            0
+          ],
+          "advance": 6.36
+        }
+      }
+    },
+    "clock": {
+      "cap_height": 27,
+      "glyphs": {
+        "0": {
+          "cell": "clock_0",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "1": {
+          "cell": "clock_1",
+          "size": [
+            13.88016,
+            27
+          ],
+          "advance": 16.02216,
+          "raise": 0
+        },
+        "2": {
+          "cell": "clock_2",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "3": {
+          "cell": "clock_3",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "4": {
+          "cell": "clock_4",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "5": {
+          "cell": "clock_5",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "6": {
+          "cell": "clock_6",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "7": {
+          "cell": "clock_7",
+          "size": [
+            21.97692,
+            27
+          ],
+          "advance": 24.11892,
+          "raise": 0
+        },
+        "8": {
+          "cell": "clock_8",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        "9": {
+          "cell": "clock_9",
+          "size": [
+            23.356368,
+            27
+          ],
+          "advance": 25.498368,
+          "raise": 0
+        },
+        ":": {
+          "cell": "colon",
+          "size": [
+            7.497,
+            18
+          ],
+          "advance": 9.639,
+          "raise": -7
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0.0,
+            0
+          ],
+          "advance": 6.426
+        }
+      }
+    },
+    "small": {
+      "cap_height": 26,
+      "glyphs": {
+        "0": {
+          "cell": "small_0",
+          "size": [
+            20.222,
+            26
+          ],
+          "advance": 22.222,
+          "raise": 0
+        },
+        "1": {
+          "cell": "small_1",
+          "size": [
+            11.556,
+            26
+          ],
+          "advance": 13.556,
+          "raise": 0
+        },
+        "2": {
+          "cell": "small_2",
+          "size": [
+            20.222,
+            26
+          ],
+          "advance": 22.222,
+          "raise": 0
+        },
+        "3": {
+          "cell": "small_3",
+          "size": [
+            20.222,
+            26
+          ],
+          "advance": 22.222,
+          "raise": 0
+        },
+        "4": {
+          "cell": "small_4",
+          "size": [
+            20.222,
+            26
+          ],
+          "advance": 22.222,
+          "raise": 0
+        },
+        "5": {
+          "cell": "small_5",
+          "size": [
+            19.158,
+            26
+          ],
+          "advance": 21.158,
+          "raise": 0
+        },
+        "6": {
+          "cell": "small_6",
+          "size": [
+            20.526,
+            26
+          ],
+          "advance": 22.526,
+          "raise": 0
+        },
+        "7": {
+          "cell": "small_7",
+          "size": [
+            18.778,
+            26
+          ],
+          "advance": 20.778,
+          "raise": 0
+        },
+        "8": {
+          "cell": "small_8",
+          "size": [
+            19.158,
+            26
+          ],
+          "advance": 21.158,
+          "raise": 0
+        },
+        "9": {
+          "cell": "small_9",
+          "size": [
+            19.158,
+            26
+          ],
+          "advance": 21.158,
+          "raise": 0
+        }
+      }
+    },
+    "label": {
+      "cap_height": 30,
+      "glyphs": {
+        "0": {
+          "cell": "label_0",
+          "size": [
+            24.545,
+            30
+          ],
+          "advance": 26.545,
+          "raise": 0
+        },
+        "1": {
+          "cell": "label_1",
+          "size": [
+            16.364,
+            30
+          ],
+          "advance": 18.364,
+          "raise": 0
+        },
+        "2": {
+          "cell": "label_2",
+          "size": [
+            21.818,
+            30
+          ],
+          "advance": 23.818,
+          "raise": 0
+        },
+        "3": {
+          "cell": "label_3",
+          "size": [
+            21.818,
+            30
+          ],
+          "advance": 23.818,
+          "raise": 0
+        },
+        "4": {
+          "cell": "label_4",
+          "size": [
+            25.909,
+            30
+          ],
+          "advance": 27.909,
+          "raise": 0
+        },
+        "5": {
+          "cell": "label_5",
+          "size": [
+            21.818,
+            30
+          ],
+          "advance": 23.818,
+          "raise": 0
+        },
+        "6": {
+          "cell": "label_6",
+          "size": [
+            23.182,
+            30
+          ],
+          "advance": 25.182,
+          "raise": 0
+        },
+        "7": {
+          "cell": "label_7",
+          "size": [
+            20.455,
+            30
+          ],
+          "advance": 22.455,
+          "raise": 0
+        },
+        "8": {
+          "cell": "label_8",
+          "size": [
+            22.174,
+            30
+          ],
+          "advance": 24.174,
+          "raise": 0
+        },
+        "9": {
+          "cell": "label_9",
+          "size": [
+            23.182,
+            30
+          ],
+          "advance": 25.182,
+          "raise": 0
+        },
+        "st": {
+          "cell": "label_st",
+          "size": [
+            34.5,
+            30
+          ],
+          "advance": 36.5,
+          "raise": 0
+        },
+        "nd": {
+          "cell": "label_nd",
+          "size": [
+            42.25,
+            30
+          ],
+          "advance": 44.25,
+          "raise": 0
+        },
+        "rd": {
+          "cell": "label_rd",
+          "size": [
+            35.75,
+            30
+          ],
+          "advance": 37.75,
+          "raise": 0
+        },
+        "th": {
+          "cell": "label_th",
+          "size": [
+            35.75,
+            30
+          ],
+          "advance": 37.75,
+          "raise": 0
+        },
+        "&": {
+          "cell": "label_&",
+          "size": [
+            28.636,
+            30
+          ],
+          "advance": 30.636,
+          "raise": 0
+        },
+        "Goal": {
+          "cell": "label_Goal",
+          "size": [
+            108.261,
+            30
+          ],
+          "advance": 110.261,
+          "raise": 0
+        },
+        "GOAL": {
+          "cell": "label_GOAL",
+          "size": [
+            108.261,
+            30
+          ],
+          "advance": 110.261,
+          "raise": 0
+        },
+        "and": {
+          "cell": "label_and",
+          "size": [
+            67.826,
+            30
+          ],
+          "advance": 69.826,
+          "raise": 0
+        },
+        "OT": {
+          "cell": "label_OT",
+          "size": [
+            33.913,
+            30
+          ],
+          "advance": 35.913,
+          "raise": 0
+        },
+        "ST": {
+          "cell": "label_ST",
+          "size": [
+            34.5,
+            30
+          ],
+          "advance": 36.5,
+          "raise": 0
+        },
+        "ND": {
+          "cell": "label_ND",
+          "size": [
+            42.25,
+            30
+          ],
+          "advance": 44.25,
+          "raise": 0
+        },
+        "RD": {
+          "cell": "label_RD",
+          "size": [
+            35.75,
+            30
+          ],
+          "advance": 37.75,
+          "raise": 0
+        },
+        "TH": {
+          "cell": "label_TH",
+          "size": [
+            35.75,
+            30
+          ],
+          "advance": 37.75,
+          "raise": 0
+        },
+        "Inch": {
+          "cell": "label_Inch",
+          "size": [
+            91.957,
+            30
+          ],
+          "advance": 97.174,
+          "raise": 0
+        },
+        "es": {
+          "cell": "label_es",
+          "size": [
+            45.978,
+            30
+          ],
+          "advance": 47.978,
+          "raise": 0
+        },
+        " ": {
+          "cell": "tick",
+          "size": [
+            0,
+            0
+          ],
+          "advance": 11
+        },
+        "~": {
+          "cell": "tick",
+          "size": [
+            22.5,
+            7.5
+          ],
+          "advance": 37.5
+        },
+        "ESPN": {
+          "cell": "espn_plate_mark",
+          "size": [
+            125,
+            30
+          ],
+          "advance": 125,
+          "raise": -1.25
+        },
+        "Down": {
+          "cell": "label_Down",
+          "size": [
+            104.348,
+            28.696
+          ],
+          "advance": 106.348,
+          "raise": 0
+        }
+      }
+    },
+    "ticks": {
+      "cap_height": 6,
+      "glyphs": {
+        "0": {
+          "cell": "timeouts_0",
+          "size": [
+            78,
+            6
+          ],
+          "advance": 78
+        },
+        "1": {
+          "cell": "timeouts_1",
+          "size": [
+            78,
+            6
+          ],
+          "advance": 78
+        },
+        "2": {
+          "cell": "timeouts_2",
+          "size": [
+            78,
+            6
+          ],
+          "advance": 78
+        },
+        "3": {
+          "cell": "timeouts_3",
+          "size": [
+            78,
+            6
+          ],
+          "advance": 78
+        }
+      }
+    },
+    "quarter": {
+      "cap_height": 22,
+      "glyphs": {
+        "1ST": {
+          "cell": "quarter_1ST",
+          "size": [
+            36.473684210526315,
+            22
+          ],
+          "advance": 38.78947368421053
+        },
+        "1st": {
+          "cell": "quarter_1ST",
+          "size": [
+            36.473684210526315,
+            22
+          ],
+          "advance": 38.78947368421053
+        },
+        "2ND": {
+          "cell": "quarter_2ND",
+          "size": [
+            50.36842105263158,
+            22
+          ],
+          "advance": 52.684210526315795
+        },
+        "2nd": {
+          "cell": "quarter_2ND",
+          "size": [
+            50.36842105263158,
+            22
+          ],
+          "advance": 52.684210526315795
+        },
+        "3RD": {
+          "cell": "quarter_3RD",
+          "size": [
+            49.21052631578947,
+            22
+          ],
+          "advance": 51.526315789473685
+        },
+        "3rd": {
+          "cell": "quarter_3RD",
+          "size": [
+            49.21052631578947,
+            22
+          ],
+          "advance": 51.526315789473685
+        },
+        "4TH": {
+          "cell": "quarter_4TH",
+          "size": [
+            49.21052631578947,
+            22
+          ],
+          "advance": 51.526315789473685
+        },
+        "4th": {
+          "cell": "quarter_4TH",
+          "size": [
+            49.21052631578947,
+            22
+          ],
+          "advance": 51.526315789473685
+        },
+        "OT": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT1": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT2": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT3": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT4": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT5": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT6": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT7": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT8": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        },
+        "OT9": {
+          "cell": "quarter_OT",
+          "size": [
+            37.278,
+            22
+          ],
+          "advance": 39.278
+        }
+      }
+    },
+    "record": {
+      "cap_height": 17,
+      "glyphs": {
+        "0": {
+          "cell": "record_d0",
+          "size": [
+            21.0,
+            21.69642857142857
+          ],
+          "advance": 17.0,
+          "raise": 2.4107142857142856
+        },
+        "1": {
+          "cell": "record_d1",
+          "size": [
+            15.0,
+            21.69642857142857
+          ],
+          "advance": 11.0,
+          "raise": 2.4107142857142856
+        },
+        "2": {
+          "cell": "record_d2",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "3": {
+          "cell": "record_d3",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "4": {
+          "cell": "record_d4",
+          "size": [
+            21.0,
+            21.69642857142857
+          ],
+          "advance": 17.0,
+          "raise": 2.4107142857142856
+        },
+        "5": {
+          "cell": "record_d5",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "6": {
+          "cell": "record_d6",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "7": {
+          "cell": "record_d7",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "8": {
+          "cell": "record_d8",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "9": {
+          "cell": "record_d9",
+          "size": [
+            18.0,
+            21.69642857142857
+          ],
+          "advance": 14.0,
+          "raise": 2.4107142857142856
+        },
+        "10": {
+          "cell": "record_d10",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "11": {
+          "cell": "record_d11",
+          "size": [
+            24.0,
+            21.69642857142857
+          ],
+          "advance": 20.0,
+          "raise": 2.4107142857142856
+        },
+        "12": {
+          "cell": "record_d12",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "13": {
+          "cell": "record_d13",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "14": {
+          "cell": "record_d14",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "15": {
+          "cell": "record_d15",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "16": {
+          "cell": "record_d16",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "17": {
+          "cell": "record_d17",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-0": {
+          "cell": "record_m0",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "-1": {
+          "cell": "record_m1",
+          "size": [
+            24.0,
+            21.69642857142857
+          ],
+          "advance": 20.0,
+          "raise": 2.4107142857142856
+        },
+        "-2": {
+          "cell": "record_m2",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-3": {
+          "cell": "record_m3",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-4": {
+          "cell": "record_m4",
+          "size": [
+            30.0,
+            21.69642857142857
+          ],
+          "advance": 26.0,
+          "raise": 2.4107142857142856
+        },
+        "-5": {
+          "cell": "record_m5",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-6": {
+          "cell": "record_m6",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-7": {
+          "cell": "record_m7",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-8": {
+          "cell": "record_m8",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-9": {
+          "cell": "record_m9",
+          "size": [
+            27.0,
+            21.69642857142857
+          ],
+          "advance": 23.0,
+          "raise": 2.4107142857142856
+        },
+        "-10": {
+          "cell": "record_m10",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-11": {
+          "cell": "record_m11",
+          "size": [
+            33.0,
+            21.69642857142857
+          ],
+          "advance": 29.0,
+          "raise": 2.4107142857142856
+        },
+        "-12": {
+          "cell": "record_m12",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-13": {
+          "cell": "record_m13",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-14": {
+          "cell": "record_m14",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-15": {
+          "cell": "record_m15",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-16": {
+          "cell": "record_m16",
+          "size": [
+            39.0,
+            21.69642857142857
+          ],
+          "advance": 35.0,
+          "raise": 2.4107142857142856
+        },
+        "-17": {
+          "cell": "record_m17",
+          "size": [
+            36.0,
+            21.69642857142857
+          ],
+          "advance": 32.0,
+          "raise": 2.4107142857142856
+        }
+      }
+    },
+    "record_tab": {
+      "cap_height": 28.0,
+      "glyphs": {
+        "3": {
+          "cell": "record_band_away",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "4": {
+          "cell": "record_band_away",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "5": {
+          "cell": "record_band_away",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "6": {
+          "cell": "record_band_away",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        }
+      }
+    },
+    "chevron": {
+      "cap_height": 19.0,
+      "glyphs": {
+        "^": {
+          "cell": "chevron",
+          "size": [
+            66.0,
+            19.0
+          ],
+          "advance": 66.0,
+          "raise": 0
+        }
+      }
+    },
+    "timeout_tab": {
+      "cap_height": 21,
+      "glyphs": {
+        "T": {
+          "cell": "timeout_tab",
+          "size": [
+            172,
+            21
+          ],
+          "advance": 172,
+          "raise": 0
+        }
+      }
+    },
+    "record_tab_home": {
+      "cap_height": 28.0,
+      "glyphs": {
+        "3": {
+          "cell": "record_band_home",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "4": {
+          "cell": "record_band_home",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "5": {
+          "cell": "record_band_home",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        },
+        "6": {
+          "cell": "record_band_home",
+          "size": [
+            180.0,
+            28.0
+          ],
+          "advance": 180.0,
+          "raise": 0
+        }
+      }
+    }
   },
-  "b778_sb2_record_font": {
-   "job": "b778 sb2 2026-10-22",
-   "request": "Noah 10/21 stream c2-15: the font on the records",
-   "digits": "data/nfl2k5_scorebug_assets/espn_glyphs.png traced broadcast digit medians, levels 96..232, smoothstep, area-filtered to 7 rows at 3 layout px per texel",
-   "hyphen": "drawn: a bar of the digit stem weight (source px {\"width\": 8.0, \"height\": 4.6, \"centre\": 11.6, \"bearing\": 2.0})",
-   "band": "drawn: {\"width\": 180.0, \"height\": 28.0, \"top\": 1022, \"outer\": 439.0, \"solid\": 0.5, \"alpha\": 0.5, \"feather_rows\": 2, \"levels\": 32, \"colour\": [8, 10, 14], \"z\": -18.25}; one cell per side, behind the team mark",
-   "reference": "2026 ESPN NFL Bills at Chiefs bar with records (measurement only, no broadcast pixels)",
-   "template_before_sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398"
+  "static": [
+    {
+      "name": "body_left",
+      "box": [
+        437,
+        942,
+        960,
+        1052
+      ],
+      "cell": "away_rim",
+      "material": 3,
+      "tint": "away rim",
+      "z": -18.5
+    },
+    {
+      "name": "body",
+      "box": [
+        437,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "body",
+      "material": 3,
+      "tint": "none",
+      "z": -20
+    },
+    {
+      "name": "body_right",
+      "box": [
+        955,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "home_rim",
+      "material": 3,
+      "tint": "home rim",
+      "z": -18.5
+    },
+    {
+      "name": "capsule",
+      "box": [
+        839,
+        999,
+        1082,
+        1039
+      ],
+      "cell": "capsule",
+      "material": 3,
+      "tint": "none",
+      "z": -20
+    },
+    {
+      "name": "plate",
+      "box": [
+        828,
+        944,
+        1098,
+        990
+      ],
+      "cell": "plate",
+      "material": 4,
+      "tint": "possessing team",
+      "z": -17
+    },
+    {
+      "name": "away_wing",
+      "box": [
+        437,
+        942,
+        777,
+        1052
+      ],
+      "cell": "wing",
+      "material": 9,
+      "tint": "away team",
+      "z": -19
+    },
+    {
+      "name": "home_wing",
+      "box": [
+        1138,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "home_wing",
+      "material": 9,
+      "tint": "home team",
+      "flip_x": true,
+      "z": -19
+    },
+    {
+      "name": "red",
+      "box": [
+        1023,
+        999,
+        1082,
+        1039
+      ],
+      "cell": "red",
+      "material": 9,
+      "tint": "play clock cell",
+      "z": -17
+    },
+    {
+      "name": "away_logo",
+      "box": [
+        437,
+        942,
+        667,
+        1052
+      ],
+      "cell": "logo",
+      "material": 8,
+      "tint": "none",
+      "z": -18
+    },
+    {
+      "name": "home_logo",
+      "box": [
+        1248,
+        942,
+        1478,
+        1052
+      ],
+      "cell": "logo",
+      "material": 5,
+      "tint": "none",
+      "z": -18
+    },
+    {
+      "name": "plate_gloss",
+      "box": [
+        828,
+        944,
+        1098,
+        990
+      ],
+      "cell": "plate_gloss",
+      "material": 3,
+      "tint": "none",
+      "z": -16.8
+    }
+  ],
+  "fields": [
+    {
+      "name": "away_score",
+      "source": "away score",
+      "box": [
+        696,
+        965,
+        816,
+        1018
+      ],
+      "glyph_set": "score",
+      "slots": 3,
+      "material": 6,
+      "colour": "#FDFDFD",
+      "alignment": "center",
+      "anchor": [
+        756,
+        965
+      ],
+      "size": 56,
+      "z": -15
+    },
+    {
+      "name": "home_score",
+      "source": "home score",
+      "box": [
+        1095,
+        965,
+        1215,
+        1018
+      ],
+      "glyph_set": "score",
+      "slots": 3,
+      "material": 6,
+      "colour": "#FDFDFD",
+      "alignment": "center",
+      "anchor": [
+        1155,
+        965
+      ],
+      "size": 56,
+      "z": -15
+    },
+    {
+      "name": "clock",
+      "source": "clock",
+      "box": [
+        906,
+        1006,
+        1014,
+        1034
+      ],
+      "glyph_set": "clock",
+      "slots": 5,
+      "material": 6,
+      "colour": "#171717",
+      "alignment": "center",
+      "anchor": [
+        960,
+        1006
+      ],
+      "size": 27,
+      "z": -15,
+      "strip_minute": true
+    },
+    {
+      "name": "play_clock",
+      "source": "play clock",
+      "box": [
+        1023,
+        1010,
+        1076,
+        1029
+      ],
+      "glyph_set": "small",
+      "slots": 2,
+      "material": 6,
+      "colour": "#171717",
+      "alignment": "center",
+      "anchor": [
+        1051,
+        1010
+      ],
+      "size": 19,
+      "strip_zero": true,
+      "z": -15
+    },
+    {
+      "name": "quarter",
+      "source": "quarter",
+      "box": [
+        846,
+        1010,
+        900,
+        1028
+      ],
+      "glyph_set": "quarter",
+      "slots": 1,
+      "material": 6,
+      "colour": "#171717",
+      "alignment": "center",
+      "anchor": [
+        871,
+        1010
+      ],
+      "size": 19,
+      "z": -15
+    },
+    {
+      "name": "away_timeouts",
+      "source": "away timeouts",
+      "box": [
+        717,
+        1032,
+        797,
+        1038
+      ],
+      "glyph_set": "ticks",
+      "slots": 1,
+      "material": 7,
+      "colour": "#F6F6F6",
+      "alignment": "left",
+      "anchor": [
+        717,
+        1032
+      ],
+      "size": 6,
+      "timeout": true,
+      "z": -15
+    },
+    {
+      "name": "home_timeouts",
+      "source": "home timeouts",
+      "box": [
+        1120,
+        1032,
+        1200,
+        1038
+      ],
+      "glyph_set": "ticks",
+      "slots": 1,
+      "material": 7,
+      "colour": "#F6F6F6",
+      "alignment": "left",
+      "anchor": [
+        1120,
+        1032
+      ],
+      "size": 6,
+      "timeout": true,
+      "z": -15
+    },
+    {
+      "name": "down",
+      "source": "down and distance",
+      "box": [
+        829,
+        955,
+        1089,
+        979
+      ],
+      "glyph_set": "label",
+      "slots": 8,
+      "material": 7,
+      "colour": "#FFFFFF",
+      "alignment": "center",
+      "anchor": [
+        961,
+        955
+      ],
+      "size": 24,
+      "z": -15
+    },
+    {
+      "name": "away_record_tab",
+      "source": "away record tab",
+      "box": [
+        439.0,
+        1022,
+        619.0,
+        1050.0
+      ],
+      "glyph_set": "record_tab",
+      "slots": 1,
+      "material": 9,
+      "colour": "#FFFFFF",
+      "alignment": "left",
+      "anchor": [
+        439.0,
+        1022
+      ],
+      "size": 28.0,
+      "z": -18.25
+    },
+    {
+      "name": "home_record_tab",
+      "source": "home record tab",
+      "box": [
+        1296.0,
+        1022,
+        1476.0,
+        1050.0
+      ],
+      "glyph_set": "record_tab_home",
+      "slots": 1,
+      "material": 9,
+      "colour": "#FFFFFF",
+      "alignment": "right",
+      "anchor": [
+        1476.0,
+        1022
+      ],
+      "size": 28.0,
+      "z": -18.25
+    },
+    {
+      "name": "away_record",
+      "source": "away record",
+      "box": [
+        444.0,
+        1027,
+        544.0,
+        1044
+      ],
+      "glyph_set": "record",
+      "slots": 3,
+      "material": 7,
+      "colour": "#FFFFFF",
+      "alignment": "left",
+      "anchor": [
+        444.0,
+        1027
+      ],
+      "size": 17,
+      "z": -15
+    },
+    {
+      "name": "home_record",
+      "source": "home record",
+      "box": [
+        1375.0,
+        1027,
+        1475.0,
+        1044
+      ],
+      "glyph_set": "record",
+      "slots": 3,
+      "material": 7,
+      "colour": "#FFFFFF",
+      "alignment": "right",
+      "anchor": [
+        1475.0,
+        1027
+      ],
+      "size": 17,
+      "z": -15
+    },
+    {
+      "name": "possession",
+      "source": "possession",
+      "box": [
+        721.5,
+        943.0,
+        787.5,
+        962.0
+      ],
+      "glyph_set": "chevron",
+      "slots": 1,
+      "material": 4,
+      "colour": "#FFFFFF",
+      "alignment": "center",
+      "anchor": [
+        754.5,
+        943
+      ],
+      "alt_anchor": [
+        1157.75,
+        943
+      ],
+      "size": 19.0,
+      "z": -16
+    },
+    {
+      "name": "timeout_tab",
+      "source": "timeout tab",
+      "box": [
+        458,
+        900,
+        802,
+        942
+      ],
+      "glyph_set": "timeout_tab",
+      "slots": 1,
+      "material": 9,
+      "colour": "#FFFFFF",
+      "alignment": "center",
+      "anchor": [
+        630.0,
+        900
+      ],
+      "alt_anchor": [
+        1291.0,
+        900
+      ],
+      "size": 42,
+      "z": -16
+    }
+  ],
+  "brand": [
+    {
+      "name": "watermark",
+      "cell": "espn_mnf",
+      "box": [
+        1655,
+        35,
+        1869,
+        64
+      ],
+      "material": 9,
+      "tint": "none",
+      "pin": "top-right",
+      "opacity": 0.72,
+      "z": -20,
+      "source": {
+        "frames": "full Broncos-Chiefs broadcast",
+        "method": "5th percentile luminance, connected static letterforms; alpha normalized by measured 0.72 opacity",
+        "estimated_opacity": 0.72,
+        "colour": [
+          255,
+          255,
+          255
+        ],
+        "samples": 626,
+        "report": "reports/b72_s9/harvest.json"
+      },
+      "variant": "mnf"
+    },
+    {
+      "name": "watermark_nfl",
+      "cell": "espn_nfl",
+      "box": [
+        1655,
+        35,
+        1869,
+        64
+      ],
+      "material": 9,
+      "tint": "none",
+      "pin": "top-right",
+      "opacity": 0.72,
+      "z": -20,
+      "source": {
+        "frames": "Raiders-Texans highlights",
+        "method": "5th percentile luminance, connected static letterforms; alpha normalized by measured 0.72 opacity",
+        "estimated_opacity": 0.72,
+        "colour": [
+          255,
+          255,
+          255
+        ],
+        "samples": 602,
+        "report": "reports/b72_s9/harvest.json"
+      },
+      "variant": "nfl"
+    }
+  ],
+  "events": [
+    {
+      "name": "FUMBLE",
+      "material": 0,
+      "box": [
+        822,
+        948,
+        1096,
+        986
+      ],
+      "cell": "event",
+      "z": -13
+    },
+    {
+      "name": "ball on",
+      "material": 1,
+      "box": [
+        822,
+        948,
+        1096,
+        986
+      ],
+      "cell": "event",
+      "z": -13
+    },
+    {
+      "name": "FLAG",
+      "material": 2,
+      "box": [
+        822,
+        948,
+        1096,
+        986
+      ],
+      "cell": "flag",
+      "z": -13
+    },
+    {
+      "name": "hang time",
+      "material": 10,
+      "box": [
+        822,
+        948,
+        1096,
+        986
+      ],
+      "cell": "event",
+      "z": -13
+    }
+  ],
+  "plate_tints": {},
+  "wing_tints": {},
+  "logo_fit": {
+    "default": {
+      "fill_x": 0.92,
+      "height": 1.0,
+      "zoom": 0.96
+    },
+    "by_team": {
+      "ARI": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "ATL": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "BAL": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "BUF": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.1325,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "CAR": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "CHI": {
+        "fill_x": 1.14,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.046875,
+        "shift_y": 0.0
+      },
+      "CIN": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "DAL": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "DEN": {
+        "fill_x": 0.86,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "DET": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "GB": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.08,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "IND": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "JAX": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "KC": {
+        "fill_x": 0.9,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.03125,
+        "shift_y": 0.0
+      },
+      "MIA": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "MIN": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "NE": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "NO": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "NYG": {
+        "fill_x": 1.14,
+        "height": 1.0,
+        "zoom": 1.12,
+        "shift_x": -0.0156,
+        "shift_y": 0.0
+      },
+      "NYJ": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "LV": {
+        "fill_x": 1.0,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "PHI": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 1.095,
+        "shift_x": -0.015625,
+        "shift_y": 0.0
+      },
+      "PIT": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "LAR": {
+        "fill_x": 1.1,
+        "height": 1.0,
+        "zoom": 1.03,
+        "shift_x": 0.0469,
+        "shift_y": 0.0
+      },
+      "LAC": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "SF": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "SEA": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.976,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "TB": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "TEN": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "WAS": {
+        "fill_x": 1.02,
+        "height": 1.0,
+        "zoom": 0.94,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "CLE": {
+        "fill_x": 0.92,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      },
+      "HOU": {
+        "fill_x": 1.04,
+        "height": 1.0,
+        "zoom": 1.15,
+        "shift_x": 0.0,
+        "shift_y": 0.0
+      }
+    }
   },
-  "b778_sb3_espn_fidelity": {
-   "job": "b778 sb3 2026-10-23",
-   "request": "Noah 10/23: border/glow, deeper team gradient over the logo, down-and-distance gradient",
-   "wing": {
-    "a1": 0.8761,
-    "d1": 41.19,
-    "v1": 0.2879,
-    "a2": 1.05,
-    "d2": 14.0,
-    "d3": 350.0,
-    "a3": 2.0,
-    "d4": 3.2,
-    "d5": 95.0,
-    "window_start": 250.0,
-    "window_end": 330.0
-   },
-   "plate_rows": [
-    0.34,
-    0.42,
-    0.62,
-    0.84,
-    0.82,
-    0.79,
-    0.77,
-    0.75,
-    0.74,
-    0.73,
-    0.72,
-    0.71,
-    0.71,
-    0.7,
-    0.7,
-    0.7,
-    0.7,
-    0.7,
-    0.69,
-    0.69,
-    0.69,
-    0.69,
-    0.68,
-    0.68,
-    0.68,
-    0.68,
-    0.67,
-    0.67,
-    0.67,
-    0.66,
-    0.66,
-    0.65,
-    0.63,
-    0.6,
-    0.55,
-    0.47,
-    0.36,
-    0.24
-   ],
-   "plate_source": [
-    274,
-    38
-   ],
-   "capsule_source": [
-    183,
-    40
-   ],
-   "rim": {
-    "cells": [
-     "away_rim",
-     "home_rim"
+  "reference_boxes": {
+    "bar": [
+      437,
+      942,
+      1478,
+      1052
     ],
-    "tint": "the runtime lightens the wing shade for the rail; the sourced accent rim stays in the table",
-    "method": "white coverage: outer rail glint, top corners and a centre-weighted lower lip; no new quad"
-   },
-   "buf_zoom": {
-    "before": 1.1075,
-    "after": 1.1325
-   },
-   "buf": "charging primary buffalo from data/nfl2k5_scorebug_assets/logos/buf.png",
-   "reference": "reports/b72_s9/broadcast_away_median.png, broadcast_home_median.png and .b77-scratch/b778/sb2/ref_bars.png (measurement only, no broadcast pixels)"
-  },
-  "b778_sb4_connected_clock": {
-   "job": "b778 sb4 2026-10-23",
-   "request": "Noah 10/23 02:00: one connected clock capsule and a smaller play clock",
-   "layout": [
-    839,
-    999,
-    1082,
-    1039
-   ],
-   "source": [
-    81,
-    16
-   ],
-   "design_source": [
-    240,
-    40
-   ],
-   "dividers_layout": [
-    902.5,
-    1021.5
-   ],
-   "dividers_source": [
-    63.2,
-    180.2
-   ],
-   "ink": {
-    "quarter": [
-     32,
-     18
+    "away_score": [
+      736,
+      965,
+      776,
+      1018
+    ],
+    "home_score": [
+      1140,
+      965,
+      1180,
+      1018
+    ],
+    "down": [
+      898,
+      955,
+      1021,
+      978
     ],
     "clock": [
-     99,
-     26
+      920,
+      1006,
+      1000,
+      1033
+    ],
+    "quarter": [
+      850,
+      1009,
+      892,
+      1028
     ],
     "play_clock": [
-     15,
-     19
+      1042,
+      1009,
+      1057,
+      1028
     ]
-   },
-   "fields": {
-    "quarter": 19,
-    "clock": 27,
-    "play_clock": 19,
-    "scores": 56
-   },
-   "red_cell": "the pill right cap, rim and outline included, drawn only at 5 seconds and under",
-   "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
   },
-  "b778_sb4_plate_tab": {
-   "job": "b778 sb4 2026-10-23",
-   "request": "Noah 10/23 02:00: the down and distance tab grows out of the bar top with a strong gradient",
-   "layout": [
-    828,
-    944,
-    1098,
-    990
-   ],
-   "source": [
-    90,
-    19
-   ],
-   "design_source": [
-    240,
-    48
-   ],
-   "tab_rows": 42,
-   "rows": [
-    1.0,
-    1.0,
-    0.99,
-    0.96,
-    0.9,
-    0.81,
-    0.76,
-    0.8,
-    0.83,
-    0.85,
-    0.86,
-    0.86,
-    0.86,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.87,
-    0.86,
-    0.86,
-    0.86,
-    0.86,
-    0.86,
-    0.85,
-    0.85,
-    0.85,
-    0.84,
-    0.83,
-    0.81,
-    0.78,
-    0.73,
-    0.66,
-    0.57,
-    0.46,
-    0.33,
-    0.2
-   ],
-   "shadow_rows": [
-    0.62,
-    0.48,
-    0.34,
-    0.21,
-    0.1,
-    0.03
-   ],
-   "top_inset": 0,
-   "bottom_inset": 15,
-   "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
-  }
- },
- "layer_order": "increasing-z",
- "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge. The sb3 highlight cell is a white specular mask, not team colour; the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb4 capsule is white body with two measured dividers; its red state is the same right cap, and the plate is a tapered neutral tab.",
- "team_accents": "team_accents.json"
+  "provenance": {
+    "font": "Broadcast temporal-median contour traces; reconstructed absent glyphs listed in report",
+    "font_distributed": false,
+    "author": "reports/b76_s14/author.py",
+    "rendered_once": true,
+    "brand": "Direct measured MNF and NFL masks from supplied live broadcasts",
+    "team_shapes": "Neutral masks and white pill; validated official team tints",
+    "fidelity_report": "reports/b76_s14/AUTHOR_STEPS.json",
+    "revision": "b76-s14",
+    "geometry_steps": [
+      "marks",
+      "fits",
+      "wing",
+      "housing",
+      "tray",
+      "wingcell",
+      "display"
+    ],
+    "brand_filter": "tools/scorebug_sprite/author_default.py --brand-only: exact-area premultiplied box filter, then rows the measured ink band covers by at least 0.4 are divided by their own coverage",
+    "measured_from": "2026 Giants at Rams Monday Night Football, reports/b76_s12/harvest.json",
+    "base_author": "reports/b76_s12/author.py (cells replaced in place, not regenerated)",
+    "wing_model": {
+      "form": "a1*exp(-x/d1)*(1-v1*y/109) + a2*exp(-y/d2)*exp(-x/d3) + a3*exp(-(109-y)/d4)*exp(-x/d5), clipped to 1",
+      "a1": 0.8761,
+      "d1": 41.19,
+      "v1": 0.2879,
+      "a2": 0.45,
+      "d2": 13.82,
+      "d3": 461.6,
+      "a3": 1.5,
+      "d4": 2.839,
+      "d5": 83.55
+    },
+    "display_layer": "data/nfl2k5_scorebug_sprite/broadcast_display.json (wing and wash)",
+    "sb": {
+      "job": "b76-sb 2026-09-24",
+      "method": "temporal medians of read-only broadcast frames, area-filtered to the 16:9 HUD footprint; no generated art",
+      "sources": {
+        "espn_plate_mark": "2026 MNF Giants at Rams off-air frames with the black ESPN plate",
+        "label_Down": "2026 MNF Broncos at Chiefs, every settled \"3rd Down\" second",
+        "timeout_tab": "2026 MNF Broncos at Chiefs, the two away TIMEOUT popups (3914..3915, 7055..7058)",
+        "flag": "2026 MNF Giants at Rams, every FLAG frame",
+        "dividers": "removed; ESPN capsule has none"
+      }
+    },
+    "sbfix": {
+      "job": "b76-sbfix 2026-09-25",
+      "method": "capitals assembled from the traced broadcast masks in reports/b72_s9/glyphs (I, E from GOAL's L; C from GOAL's G mirrored; N, H, S, T the pill's traced capitals scaled to the cap; O GOAL's O); no generated art",
+      "why": "the 2026 ESPN bar writes its only word distance in capitals (GOAL, 398 s of the full Broncos at Chiefs game) and never showed an Inches plate; the retail \"Inches\" and \"OT%d\" draw as INCHES and OT",
+      "cells": {
+        "label_Inch": [
+          100,
+          300,
+          124,
+          309
+        ],
+        "label_es": [
+          136,
+          300,
+          148,
+          309
+        ],
+        "quarter_OT": [
+          155,
+          300,
+          167,
+          309
+        ]
+      }
+    },
+    "sb2": "reports/b76_sb2/author_receipt.json; PHI/CHI official-mark placement and 24 px down labels; ESPN mark keeps its box",
+    "hu1_corner": {
+      "job": "hu1 2026-10-14",
+      "radius": 21.0,
+      "rendered_radius": 18.5,
+      "layers": [
+        "body",
+        "body_right",
+        "home_wing"
+      ],
+      "method": "rounded-rectangle coverage in layout pixels, box-filtered per source texel through each layer stretch and flip; home rim top-line falloff continued around the curve and down the right side; left and lower-right corners unchanged",
+      "reference": "2026 ESPN MNF Broncos at Chiefs and NFL Raiders at Texans temporal-median contours, R 19.25 and 17.75 px on a 110 px bar (measurement only, no broadcast pixels)",
+      "logo_clearance": {
+        "WAS": {
+          "zoom": 0.94
+        }
+      },
+      "template_before_sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b"
+    },
+    "b778_sb2_logo_zoom": {
+      "job": "b778 sb2 2026-10-22",
+      "request": "Noah 10/21 stream c2-15: logos zoomed in a bit more and slightly cut off",
+      "target": 1.15,
+      "width_margin_texels": 3,
+      "corner_alpha": 64,
+      "reference": "2026 ESPN NFL Raiders at Texans and Bills at Chiefs bars (measurement only, no broadcast pixels)",
+      "zoom": {
+        "ARI": [
+          0.976,
+          1.15
+        ],
+        "ATL": [
+          0.976,
+          1.15
+        ],
+        "BAL": [
+          0.976,
+          0.976
+        ],
+        "BUF": [
+          1.1075,
+          1.1325
+        ],
+        "CAR": [
+          0.976,
+          0.976
+        ],
+        "CHI": [
+          0.976,
+          1.15
+        ],
+        "CIN": [
+          0.976,
+          1.15
+        ],
+        "CLE": [
+          0.976,
+          1.15
+        ],
+        "DAL": [
+          0.976,
+          1.15
+        ],
+        "DEN": [
+          0.976,
+          1.15
+        ],
+        "DET": [
+          0.976,
+          1.15
+        ],
+        "GB": [
+          0.976,
+          1.08
+        ],
+        "HOU": [
+          0.976,
+          1.15
+        ],
+        "IND": [
+          0.976,
+          1.15
+        ],
+        "JAX": [
+          0.976,
+          1.15
+        ],
+        "KC": [
+          0.976,
+          1.15
+        ],
+        "LAC": [
+          0.976,
+          0.976
+        ],
+        "LAR": [
+          0.953,
+          1.03
+        ],
+        "LV": [
+          0.976,
+          1.15
+        ],
+        "MIA": [
+          0.976,
+          1.15
+        ],
+        "MIN": [
+          0.976,
+          1.15
+        ],
+        "NE": [
+          0.976,
+          0.976
+        ],
+        "NO": [
+          0.976,
+          1.15
+        ],
+        "NYG": [
+          0.953,
+          1.12
+        ],
+        "NYJ": [
+          0.976,
+          0.976
+        ],
+        "PHI": [
+          0.976,
+          1.095
+        ],
+        "PIT": [
+          0.976,
+          1.15
+        ],
+        "SEA": [
+          0.976,
+          0.976
+        ],
+        "SF": [
+          0.976,
+          0.976
+        ],
+        "TB": [
+          0.976,
+          1.15
+        ],
+        "TEN": [
+          0.976,
+          1.15
+        ],
+        "WAS": [
+          0.94,
+          0.94
+        ]
+      }
+    },
+    "b778_sb2_record_font": {
+      "job": "b778 sb2 2026-10-22",
+      "request": "Noah 10/21 stream c2-15: the font on the records",
+      "digits": "data/nfl2k5_scorebug_assets/espn_glyphs.png traced broadcast digit medians, levels 96..232, smoothstep, area-filtered to 7 rows at 3 layout px per texel",
+      "hyphen": "drawn: a bar of the digit stem weight (source px {\"width\": 8.0, \"height\": 4.6, \"centre\": 11.6, \"bearing\": 2.0})",
+      "band": "drawn: {\"width\": 180.0, \"height\": 28.0, \"top\": 1022, \"outer\": 439.0, \"solid\": 0.5, \"alpha\": 0.5, \"feather_rows\": 2, \"levels\": 32, \"colour\": [8, 10, 14], \"z\": -18.25}; one cell per side, behind the team mark",
+      "reference": "2026 ESPN NFL Bills at Chiefs bar with records (measurement only, no broadcast pixels)",
+      "template_before_sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398"
+    },
+    "b778_sb3_espn_fidelity": {
+      "job": "b778 sb3 2026-10-23",
+      "request": "Noah 10/23: border/glow, deeper team gradient over the logo, down-and-distance gradient",
+      "wing": {
+        "a1": 0.8761,
+        "d1": 41.19,
+        "v1": 0.2879,
+        "a2": 1.05,
+        "d2": 14.0,
+        "d3": 350.0,
+        "a3": 2.0,
+        "d4": 3.2,
+        "d5": 95.0,
+        "window_start": 250.0,
+        "window_end": 330.0
+      },
+      "plate_rows": [
+        0.34,
+        0.42,
+        0.62,
+        0.84,
+        0.82,
+        0.79,
+        0.77,
+        0.75,
+        0.74,
+        0.73,
+        0.72,
+        0.71,
+        0.71,
+        0.7,
+        0.7,
+        0.7,
+        0.7,
+        0.7,
+        0.69,
+        0.69,
+        0.69,
+        0.69,
+        0.68,
+        0.68,
+        0.68,
+        0.68,
+        0.67,
+        0.67,
+        0.67,
+        0.66,
+        0.66,
+        0.65,
+        0.63,
+        0.6,
+        0.55,
+        0.47,
+        0.36,
+        0.24
+      ],
+      "plate_source": [
+        274,
+        38
+      ],
+      "capsule_source": [
+        183,
+        40
+      ],
+      "rim": {
+        "cells": [
+          "away_rim",
+          "home_rim"
+        ],
+        "tint": "the runtime lightens the wing shade for the rail; the sourced accent rim stays in the table",
+        "method": "white coverage: outer rail glint, top corners and a centre-weighted lower lip; no new quad"
+      },
+      "buf_zoom": {
+        "before": 1.1075,
+        "after": 1.1325
+      },
+      "buf": "charging primary buffalo from data/nfl2k5_scorebug_assets/logos/buf.png",
+      "reference": "reports/b72_s9/broadcast_away_median.png, broadcast_home_median.png and .b77-scratch/b778/sb2/ref_bars.png (measurement only, no broadcast pixels)"
+    },
+    "b778_sb4_connected_clock": {
+      "job": "b778 sb4 2026-10-23",
+      "request": "Noah 10/23 02:00: one connected clock capsule and a smaller play clock",
+      "layout": [
+        839,
+        999,
+        1082,
+        1039
+      ],
+      "source": [
+        81,
+        16
+      ],
+      "design_source": [
+        240,
+        40
+      ],
+      "dividers_layout": [
+        902.5,
+        1021.5
+      ],
+      "dividers_source": [
+        63.2,
+        180.2
+      ],
+      "ink": {
+        "quarter": [
+          32,
+          18
+        ],
+        "clock": [
+          99,
+          26
+        ],
+        "play_clock": [
+          15,
+          19
+        ]
+      },
+      "fields": {
+        "quarter": 19,
+        "clock": 27,
+        "play_clock": 19,
+        "scores": 56
+      },
+      "red_cell": "the pill right cap, rim and outline included, drawn only at 5 seconds and under",
+      "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
+    },
+    "b778_sb4_plate_tab": {
+      "job": "b778 sb4 2026-10-23",
+      "request": "Noah 10/23 02:00: the down and distance tab grows out of the bar top with a strong gradient",
+      "layout": [
+        828,
+        944,
+        1098,
+        990
+      ],
+      "source": [
+        90,
+        19
+      ],
+      "design_source": [
+        240,
+        48
+      ],
+      "tab_rows": 42,
+      "rows": [
+        1.0,
+        1.0,
+        0.99,
+        0.96,
+        0.9,
+        0.81,
+        0.76,
+        0.8,
+        0.83,
+        0.85,
+        0.86,
+        0.86,
+        0.86,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.87,
+        0.86,
+        0.86,
+        0.86,
+        0.86,
+        0.86,
+        0.85,
+        0.85,
+        0.85,
+        0.84,
+        0.83,
+        0.81,
+        0.78,
+        0.73,
+        0.66,
+        0.57,
+        0.46,
+        0.33,
+        0.2
+      ],
+      "shadow_rows": [
+        0.62,
+        0.48,
+        0.34,
+        0.21,
+        0.1,
+        0.03
+      ],
+      "top_inset": 0,
+      "bottom_inset": 15,
+      "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
+    }
+  },
+  "layer_order": "increasing-z",
+  "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge. The sb3 highlight cell is a white specular mask, not team colour; the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb4 capsule is white body with two measured dividers; its red state is the same right cap, and the plate is a tapered neutral tab.",
+  "team_accents": "team_accents.json"
 }
