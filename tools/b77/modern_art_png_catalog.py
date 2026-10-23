@@ -31,10 +31,12 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
            "data/nfl2k5_hair_styles/art/",  # b775-hs1
            "data/nfl2k5_rookie_faces/",  # b778-rh1: the authored rookie face bank atlases
            "data/nfl2k5_classic_teams/",  # b778-ss1: the Seamen card, field and face art
+           "data/nfl2k5_alien_prospect/",  # b778-ee1: the gray alien portrait and face textures
            "data/nfl2k5_glyph_fixes_2026/")  # b776-fn2 (int2)
 CLASSIFICATION = ("b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
                   "reviewed face by face; no photograph or retail-extracted pixels. "
                   "b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. "
+                  "b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. "
                   "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
