@@ -31,7 +31,8 @@ TOMBSTONE = b"CRIB_MOVIES_DISABLED_V1\0".ljust(2048, b"\0")
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: The Crib includes 23 movies. "
     "Patch: Disables those movies and rebuilds the archive to save space. "
-    "The Trophy Room, awards, saved profiles, room, games and furniture stay."
+    "The Trophy Room, awards, saved profiles, room and furniture stay. With the Crib Trophy Room cut, the four "
+    "arcade games (which can no longer be opened) are removed too."
 )
 # The native MOV opener is fastcall with two stack arguments (ret 8). Its
 # zero return already selects state 6, the screen-pop path, without a MOV
