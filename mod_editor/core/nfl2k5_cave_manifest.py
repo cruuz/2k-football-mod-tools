@@ -253,7 +253,7 @@ class Recorder:
             for reservation in rookie_faces.reservations(final):
                 self.reserve(int(reservation["start"], 0), reservation["size"],
                              reservation["owner"], reservation["basis"])
-        from . import nfl2k5_alien_prospect as alien_prospect  # b778-ee1: in-place coin-block rewrite, 4 hooks, string
+        from . import nfl2k5_alien_prospect as alien_prospect  # b778-ee1/ee2: in-place coin-block rewrite, 6 hooks, string
         if alien_prospect.xbe_status(final) == "applied":
             for reservation in alien_prospect.reservations(final):
                 self.reserve(int(reservation["start"], 0), reservation["size"],

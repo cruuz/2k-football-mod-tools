@@ -1,6 +1,7 @@
-"""b778-ee1 alien prospect: the in-place code under Unicorn (the roll, once per franchise, the rate over 100 seasons,
-the gray lookups, the wrapper), the executable spans, the art pins; with NFL2K5_RETAIL_XBE, the rewritten coin blocks
-against retail's own bytes; with NFL2K5_RELEASED_ISO, the image plan on the released disc."""
+"""b778-ee1/ee2 alien prospect: the in-place code under Unicorn (the roll, once per franchise, the rate over 100
+seasons, the five lookups, the wrapper), the executable spans, the art pins, the released disc textures; with
+NFL2K5_RETAIL_XBE, the rewritten coin blocks against retail's own bytes; with NFL2K5_RELEASED_ISO, the image plan
+on the released disc."""
 from __future__ import annotations
 
 import os
@@ -83,11 +84,13 @@ class Code(unittest.TestCase):
         self.assertTrue(0.47 < hundred < 0.50, hundred)
 
     def test_spans_are_relative_calls(self):
+        sites = (ap.CALL_SITE, ap.HAND_SITE, ap.ARM_SITE, ap.NECK_SITE, ap.SF_SITE, ap.SIDE_SITE)
+        targets = (ap.WRAP_VA, ap.HAND_VA, ap.ARM_VA, ap.NECK_VA, ap.SF_VA, ap.SIDE_VA)
         for va, data, _label in ap._spans():
-            if va in (ap.CALL_SITE, ap.HAND_SITE, ap.ARM_SITE, ap.NECK_SITE):
+            if va in sites:
                 self.assertEqual(data[0], 0xE8)
                 target = va + 5 + struct.unpack_from("<i", data, 1)[0]
-                self.assertIn(target, (ap.WRAP_VA, ap.HAND_VA, ap.ARM_VA, ap.NECK_VA))
+                self.assertIn(target, targets)
                 self.assertTrue(all(b == 0x90 for b in data[5:]))
         self.assertEqual(len(ap.RECORD_NAME), len(ap.RETAIL_RECORD))
 
@@ -150,12 +153,17 @@ class Roll(unittest.TestCase):
         self.assertEqual(struct.unpack_from("<H", out, 6)[0], ap.ALIEN_ID)
         d18, d1c, d20 = (struct.unpack_from("<I", out, k)[0] for k in (0x18, 0x1C, 0x20))
         self.assertEqual(d18 & 0xF85, 0, "skin 0, arm variant 0, no Dreads, no eye black")
+        self.assertEqual(d18 & 0x18, 0, "body type 0 (the thinnest weight profile)")
         self.assertEqual((d1c >> 5) & 0x1FF, 0, "bare hands, no mouthpiece")
         self.assertEqual(d20 & 0xF8000, 0, "no visor, face shape 0")
         self.assertEqual(out[0x0D] & 0x0F, 13, "no hair model")
         self.assertEqual(out[0x0D] >> 4, rec[0x0D] >> 4)
+        self.assertEqual(out[0x2B], ap.HEIGHT_INCHES, "7'11\"")
+        self.assertEqual(out[0x2B], 95)
+        self.assertEqual(out[0x2A], ap.WEIGHT_RAW, "150 lb is weight raw 0 (the record's floor)")
+        self.assertEqual(ap.WEIGHT_LB, 150)
         changed = {k for k in range(0x54) if out[k] != rec[k]}
-        self.assertLessEqual(changed, {6, 7, 0x0D, 0x18, 0x19, 0x1C, 0x1D, 0x21, 0x22})
+        self.assertLessEqual(changed, {6, 7, 0x0D, 0x18, 0x19, 0x1C, 0x1D, 0x21, 0x22, 0x2A, 0x2B})
         self.assertEqual((mu.reg_read(UC_X86_REG_EAX), mu.reg_read(UC_X86_REG_ECX), mu.reg_read(UC_X86_REG_EDX)),
                          (0x1111, 0x2222, 0x3333), "the roll keeps every register")
 
@@ -184,6 +192,7 @@ class Gray(unittest.TestCase):
         mu.mem_write(ap.CODE_VA, ap.code_bytes())
         mu.mem_write(0x449E0, self.FIND_STUB)
         mu.mem_write(0xB65428, struct.pack("<I", 0x12345678) * 0x200)
+        mu.mem_write(0xBA8280, struct.pack("<I", 0x87654321) * 0x200)
         rec = 0x2000100
         mu.mem_write(rec + 6, struct.pack("<H", photo))
         sp = 0x2080000
@@ -195,7 +204,7 @@ class Gray(unittest.TestCase):
         return mu.reg_read(UC_X86_REG_EAX), {r: mu.reg_read(r) for r in regs}, mu.reg_read(UC_X86_REG_ESP) - sp
 
     def test_lookups(self):
-        from unicorn.x86_const import UC_X86_REG_EBP, UC_X86_REG_EBX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESI
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EBP, UC_X86_REG_EBX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_EDI, UC_X86_REG_ESI
 
         def hand(glove):
             def setup(mu, rec):
@@ -219,6 +228,16 @@ class Gray(unittest.TestCase):
             mu.reg_write(UC_X86_REG_ECX, 0x5555)
             return (UC_X86_REG_ECX, UC_X86_REG_EBX)
 
+        def sf(mu, rec):
+            mu.reg_write(UC_X86_REG_EBX, rec)
+            mu.reg_write(UC_X86_REG_EAX, 3)
+            return (UC_X86_REG_ECX, UC_X86_REG_EBX)
+
+        def side(mu, rec):
+            mu.reg_write(UC_X86_REG_EDI, rec)
+            mu.reg_write(UC_X86_REG_EAX, 3)
+            return (UC_X86_REG_EDI,)
+
         for photo, want in ((ap.ALIEN_ID, 0x0BADBEEF), (1946, 0x12345678), (0, 0x12345678)):
             eax, regs, esp = self._run(ap.HAND_VA, photo, hand(0))
             self.assertEqual((eax, esp, regs[UC_X86_REG_ECX]), (want, 4, 0x4444))
@@ -226,21 +245,44 @@ class Gray(unittest.TestCase):
             self.assertEqual((eax, esp), (want, 4))
             eax, regs, esp = self._run(ap.NECK_VA, photo, neck)
             self.assertEqual((eax, esp, regs[UC_X86_REG_ECX]), (want, 4, 0x5555))
+            _eax, regs, esp = self._run(ap.SF_VA, photo, sf)
+            self.assertEqual((regs[UC_X86_REG_ECX], esp, regs[UC_X86_REG_EBX]), (want, 4, 0x2000100))
+            eax, regs, esp = self._run(ap.SIDE_VA, photo, side)
+            want_side = 0x0BADBEEF if photo == ap.ALIEN_ID else 0x87654321
+            self.assertEqual((eax, esp, regs[UC_X86_REG_EDI]), (want_side, 4, 0x2000100))
+        _eax, regs, _esp = self._run(ap.SF_VA, ap.ALIEN_ID, sf)
+        self.assertEqual(regs[UC_X86_REG_ECX], 0x0BADBEEF)
+        eax, regs, _esp = self._run(ap.SIDE_VA, ap.ALIEN_ID, side)
+        self.assertEqual(eax, 0x0BADBEEF)
         eax, _regs, _esp = self._run(ap.HAND_VA, ap.ALIEN_ID, hand(3))
         self.assertEqual(eax, 0x12345678, "a gloved hand keeps its glove")
 
     def test_missing_texture_keeps_retail(self):
-        from unicorn.x86_const import UC_X86_REG_EBX, UC_X86_REG_EDX
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EBX, UC_X86_REG_ECX, UC_X86_REG_EDI, UC_X86_REG_EDX
 
         def neck(mu, rec):
             mu.reg_write(UC_X86_REG_EBX, rec)
             mu.reg_write(UC_X86_REG_EDX, 2)
+            return ()
+
+        def sf(mu, rec):
+            mu.reg_write(UC_X86_REG_EBX, rec)
+            mu.reg_write(UC_X86_REG_EAX, 3)
+            return (UC_X86_REG_ECX,)
+
+        def side(mu, rec):
+            mu.reg_write(UC_X86_REG_EDI, rec)
+            mu.reg_write(UC_X86_REG_EAX, 3)
             return ()
         old = Gray.FIND_STUB
         try:
             Gray.FIND_STUB = bytes.fromhex("31c0c20400")    # a disc without the gray textures: nothing found
             eax, _r, _e = self._run(ap.NECK_VA, ap.ALIEN_ID, neck)
             self.assertEqual(eax, 0x12345678)
+            _eax, regs, _e = self._run(ap.SF_VA, ap.ALIEN_ID, sf)
+            self.assertEqual(regs[UC_X86_REG_ECX], 0x12345678)
+            eax, _r, _e = self._run(ap.SIDE_VA, ap.ALIEN_ID, side)
+            self.assertEqual(eax, 0x87654321)
         finally:
             Gray.FIND_STUB = old
 
@@ -266,6 +308,63 @@ class Wrapper(unittest.TestCase):
         self.assertEqual(struct.unpack_from("<H", out, 6)[0], ap.ALIEN_ID, "the roll runs after the generator")
         self.assertEqual(mu.reg_read(UC_X86_REG_ESP), sp + 8, "ret 4, like the generator")
         self.assertEqual(mu.reg_read(UC_X86_REG_ESI), 0x7777)
+
+
+class Size(unittest.TestCase):
+    def test_height_and_weight_are_the_game_s_own_limits(self):
+        self.assertEqual(ap.HEIGHT_INCHES, 95)
+        self.assertEqual((ap.HEIGHT_INCHES // 12, ap.HEIGHT_INCHES % 12), (7, 11), "the card prints 7'11\"")
+        self.assertEqual(ap.WEIGHT_RAW, 0)
+        self.assertEqual(ap.WEIGHT_LB, 150, "weight_raw is pounds - 150 in an unsigned byte: 150 lb is the floor")
+        self.assertEqual(ap.BODY_TYPE, 0, "profile 0 is the thinnest weight profile")
+
+
+@unittest.skipUnless(RELEASED_ISO and Path(RELEASED_ISO).is_file(), "set NFL2K5_RELEASED_ISO to the v0.6.1 disc image")
+class Textures(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_music_archive as archive, nfl2k5_hair_styles as hair
+        with archive.Disc(RELEASED_ISO, descriptors=()) as disc:
+            cls.outer3 = hair._outer3(disc)[1]
+
+    def _texture(self, data, name):
+        from tools import nfl_txtr as tx
+        for c in tx.parse_chunks(data, allow_trailing=True):
+            if c.kind != "TXTR" or c.compressed:
+                continue
+            decoded, _ = tx.decode_chunk(data, c)
+            t = tx.parse_texture(decoded, c)
+            if t.name == name:
+                return t
+        self.fail(f"no {name}")
+
+    def test_five_gray_textures(self):
+        out, receipt = ap.gray_collection(self.outer3)
+        want = ["alien_arm", "alien_hand", "alien_neck", ap.SF_TEXTURE, ap.SIDE_TEXTURE]
+        self.assertEqual([t["name"] for t in receipt["textures"]], want)
+        self.assertEqual(ap.gray_status(out), "applied")
+        self.assertEqual(self._texture(out, ap.SF_TEXTURE).width, 32)
+        self.assertEqual(self._texture(out, ap.SF_TEXTURE).height, 32)
+        self.assertEqual(self._texture(out, ap.SIDE_TEXTURE).width, 128)
+        self.assertEqual(self._texture(out, ap.SIDE_TEXTURE).height, 128)
+        self.assertEqual(self._texture(out, ap.SIDE_TEXTURE).mip_levels, 5)
+        for name in want:
+            self.assertEqual(self._texture(out, name).format_name, "P8")
+
+    def test_far_face_is_the_alien_portrait(self):
+        from tools import nfl_txtr as tx
+        raw = ap.portrait_sf_texture(self.outer3)
+        c = tx.parse_chunks(raw)[0]
+        decoded, _ = tx.decode_chunk(raw, c)
+        t = tx.parse_texture(decoded, c)
+        self.assertEqual((t.name, t.width, t.height, t.mip_levels, t.format_name),
+                         (ap.SF_TEXTURE, 32, 32, 1, "P8"))
+        rgba = tx.texture_to_rgba(decoded, c, t)
+        # the portrait's eyes are black holes in a gray face: the darkest texel is much darker than the face
+        lum = [0.2126 * rgba[i] + 0.7152 * rgba[i + 1] + 0.0722 * rgba[i + 2]
+               for i in range(0, len(rgba), 4) if rgba[i + 3]]
+        self.assertLess(min(lum), 40)
+        self.assertGreater(sorted(lum)[len(lum) // 2], 70)
 
 
 class Art(unittest.TestCase):
@@ -353,6 +452,43 @@ class RetailBytes(unittest.TestCase):
         for seed in range(400):
             self.assertEqual(run(a, seed), run(b, seed), seed)
 
+
+    def test_height_scale_and_weight_profile_do_not_crash(self):
+        """Run the real 0x918B0 (height -> model scale) on the retail XBE at 7'11", and check the real 0x93850
+        profile table the weight/body fields select: the values are in range and every scale is finite."""
+        from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+        from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_ESP
+
+        mu = Uc(UC_ARCH_X86, UC_MODE_32)
+        mu.mem_map(0, 0x1600000)
+        for va, raw, rsize, _h in ap._section_map(self.retail):
+            mu.mem_write(va, self.retail[raw:raw + rsize])
+        mu.mem_map(0x2000000, 0x2000000)
+        mu.mem_write(0x2100000, bytes(0x54))
+        mu.mem_write(0x2100000 + 0x2B, bytes([ap.HEIGHT_INCHES]))
+        # a tiny fstp stub stores the x87 return (ST0) at 0x2600000; HLT ends the run
+        mu.mem_write(0x2500000, bytes.fromhex("d91d00006002f4"))
+        mu.mem_write(0x2300000, struct.pack("<I", 0x2500000))
+        mu.reg_write(UC_X86_REG_ESP, 0x2300000)
+        mu.reg_write(UC_X86_REG_ECX, 0x2100000)
+        mu.emu_start(0x918B0, 0x2500000)
+        mu.emu_start(0x2500000, 0x2500007)
+        value = struct.unpack("<f", bytes(mu.mem_read(0x2600000, 4)))[0]
+        self.assertAlmostEqual(value, 95 * 0.012927484698593616, places=4)
+        self.assertAlmostEqual(value, 1.228111, places=4)
+
+        # 0x93850 reads these exact tables; 150 lb clamps to 150 and profile 0 is the thinnest of the four
+        for body in range(4):
+            for weight in (ap.WEIGHT_RAW, 255):
+                doc = struct.unpack_from("<52f", self.retail, ap._offset(self.retail, 0x4EF018 + body * 0xD0, 208))
+                scalar = min(450.0, max(150.0, weight + 150.0))
+                t = (scalar - doc[0]) * doc[1]
+                scales = [doc[2 + 2 * i] + (doc[3 + 2 * i] - doc[2 + 2 * i]) * t for i in range(25)]
+                self.assertTrue(all(abs(v) < 10 for v in scales), (body, weight))
+        doc0 = struct.unpack_from("<52f", self.retail, ap._offset(self.retail, 0x4EF018, 208))
+        t0 = (150.0 - doc0[0]) * doc0[1]
+        self.assertLess(sum(doc0[2 + 2 * i] + (doc0[3 + 2 * i] - doc0[2 + 2 * i]) * t0 for i in range(25)),
+                        sum(doc0[2 + 2 * i] for i in range(25)), "150 lb profile 0 is thinner than its reference")
 
 @unittest.skipUnless(RELEASED_ISO and Path(RELEASED_ISO).is_file(), "set NFL2K5_RELEASED_ISO to the v0.6.1 disc image")
 class ReleasedDisc(unittest.TestCase):

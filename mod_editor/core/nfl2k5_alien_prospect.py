@@ -1,4 +1,4 @@
-"""The once-in-a-century gray alien prospect (job b778-ee1, Noah 2026-10-22). EXPERIMENTAL.
+"""The once-in-a-century gray alien prospect (jobs b778-ee1/ee2, Noah 2026-10-22/23). EXPERIMENTAL.
 
 Noah: "you should make this happen very rarely. Very, very, very rarely. Like less than 1% of the time. And it should
 never show up again. It only has a chance of showing up once throughout an entire franchise over 100 seasons. But one
@@ -12,9 +12,14 @@ How it works
   FUN_000E6780 from FUN_002BE6F0's call at 0x2BE7CE; that call now goes through a short wrapper that runs the generator
   and then the roll: one draw of the game's own RNG (0x48B50, 32-bit) per prospect with p = 1 - (149/150)^(1/380), so a
   380-prospect class holds him one time in 150 (0.67 % a season, 48 % over 99 rollover classes). On a hit the prospect
-  becomes him: photo id 1947, bare hands, no hair model (style 13), no Dreads, eye black or visor, generic face shape 0.
-  Name, position, height, weight, ratings, college and age are the generator's own, so he is drafted, signed, played,
-  developed, saved and retired like anybody else.
+  becomes him: photo id 1947, bare hands, no hair model (style 13), no Dreads, eye black or visor, generic face shape 0,
+  7'11" (95 inches) and 150 lb (weight raw 0: the game stores pounds - 150 in an unsigned byte and every reader adds
+  150 again, so 150 is the lightest representable weight; the weight profile clamps at the same floor), body type 0
+  (the thinnest of the four weight profiles). Name, position, ratings, college and age are the generator's own, so he
+  is drafted, signed, played, developed, saved and retired like anybody else. The game scales a player's model by
+  height (0x918B0: height * 0.0129275 is stored as the entity scale at +8 and applied to the transform's +0x48), so
+  95 inches makes him 22.8 % taller than the 77.35-inch reference, and the weight-profile matrices (0x93850) get
+  thinner with the low weight.
 * Once per franchise. The flag is bit 0 of byte +0x0F of draft template record 2 (``[[0xB72918]+0x0C] + 0xB7``): the
   template table travels inside the roster arena, so the franchise save carries it with no save hook. No code of the
   game reads or writes that byte (the templates are only read by FUN_002BD200/FUN_002BD230 for the generator, which
@@ -34,10 +39,14 @@ How it works
     and neck images with a gray palette, made on the user's own disc) added to the common player collection (outer 3,
     before any hair-style textures), and three 7-byte lookups in the player builder (0x8ED1F hands, 0x8EDDE arms,
     0x8F2FC neck) that hand a player with photo id 1947 the gray texture. Every other player gets the retail texture.
+  - gray far face and gray sideline bench body (ee2): alien_sf, the alien's own portrait cut to the 32 x 32 P8
+    placeholder-face layout, and alien_sideline, a 128 x 128 P8 skin in the retail sideline-skin layout, both added to
+    outer 3. Two more 7-byte lookups, keyed on photo id 1947: 0x8F152 (the player builder's far-LOD sf0..sf5 face,
+    record in EBX) and 0x119B35 (the sideline-person builder's sideline_skin_00..05 body, record in EDI).
 * Space: none from the allocator. The seventeen "copy a field from the low or the high template on a coin" blocks of
   FUN_000E6780 (0xE696E..0xE6D15, 935 bytes) are rewritten as one table loop that makes the same 17 calls of the float
   rand in the same order with the same compares (bit for bit the same prospect, proved under Unicorn on the retail
-  bytes); the 437 bytes it frees hold the wrapper, the roll and the three lookups.
+  bytes); the bytes it frees hold the wrapper, the roll, the five lookups and the record fields.
 * Test build: ``apply(payload, test=True)`` (or ``tools/nfl2k5_alien_prospect.py test-build``) makes every class roll
   hit, the first class included, so the once-only flag and the look can be shown in a new franchise. Never shipped.
 """
@@ -55,8 +64,9 @@ ROOT = Path(__file__).resolve().parents[2]
 OWNER = "nfl2k5_alien_prospect"
 UI_LABEL = BUILD_CAPTION = "Alien prospect (once in a hundred seasons)"
 HELP_TEXT = ("EXPERIMENTAL. Very rarely (one draft class in 150, and never again in that franchise once he has appeared) "
-             "a generated prospect is a gray alien: his own draft headshot, an alien face and gray skin in game. He is "
-             "otherwise an ordinary prospect of any position. Needs Rookie faces and a disc image.")
+             "a generated prospect is a 7'11\", 150 lb gray alien: his own draft headshot, an alien face, gray skin, and "
+             "a gray far face and sideline body. He is otherwise an ordinary prospect of any position. Needs Rookie "
+             "faces and a disc image.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_alien_prospect"
 ART = {"portrait": "portrait.png", "f": "face_f.png", "h": "face_h.png", "n": "face_n.png"}
@@ -76,6 +86,13 @@ HAND_SITE, ARM_SITE, NECK_SITE = 0x8ED1F, 0x8EDDE, 0x8F2FC
 HAND_RETAIL = bytes.fromhex("8b04952854b600")      # mov eax,[edx*4+0xB65428]
 ARM_RETAIL = bytes.fromhex("8b048d2854b600")       # mov eax,[ecx*4+0xB65428]
 NECK_RETAIL = bytes.fromhex("8b04952055b600")      # mov eax,[edx*4+0xB65520]
+SF_SITE, SIDE_SITE = 0x8F152, 0x119B35
+SF_RETAIL = bytes.fromhex("8b0c850855b600")        # mov ecx,[eax*4+0xB65508]  (far face sf0..sf5)
+SIDE_RETAIL = bytes.fromhex("8b04858082ba00")      # mov eax,[eax*4+0xBA8280]  (sideline_skin_00..05)
+HEIGHT_INCHES = 95            # 7'11"; the card formats [0x2B] / 12 and % 12, and 0x918B0 scales the model by it
+WEIGHT_RAW = 0                # the record stores pounds - 150 unsigned: 0 = 150 lb, the smallest the game reads/shows
+WEIGHT_LB = WEIGHT_RAW + 150
+BODY_TYPE = 0                 # the record's +0x18 bits 3-4: weight profile 0, the thinnest of the four
 FACES_STRING_VA = 0xE62E78    # UTF-16 "igfaces.iff": the FaceTextures registry's record file (read at 0x73F45, 0x749C8)
 RETAIL_RECORD = "igfaces.iff"
 RECORD_NAME = "igface2.iff"   # same length
@@ -83,6 +100,10 @@ CDF_NAME = "igface2.cdf"
 PF_NAME = f"pf{ALIEN_NAME}.iff"
 SHAPE_SOURCE = "pf9001.iff"   # the generic face shape the alien's record selects (skin 0, face 0) and its package
 GRAY_TEXTURES = (("alien_arm", "arm_00_00"), ("alien_hand", "hand_00_01"), ("alien_neck", "neck_00_00"))
+SF_TEXTURE = "alien_sf"           # the 32 x 32 P8 far-LOD face (the alien portrait quantised onto the sf0 layout)
+SIDE_TEXTURE = "alien_sideline"   # the 128 x 128 P8 sideline bench body (flat gray, the arm texture's layout)
+SF_SOURCE = "sf0"                 # the retail far face whose raw TXTR layout alien_sf reuses
+SIDE_SOURCE = "arm_00_00"         # the retail TSET whose 128 x 128 5-mip P8 layout alien_sideline reuses
 # The alien skin (CIE L*a*b*, OpenCV 8-bit scale), measured on his headshot's de-lit cheeks; the arms, hands and neck
 # are mapped onto it with the retail Lightest texture's own light-dark range.
 BASE_LAB = (132.0, 130.0, 132.0)
@@ -121,7 +142,7 @@ CODE = bytes.fromhex(_CODE_DOC["code"])
 SYMBOLS = {k: int(v, 16) for k, v in _CODE_DOC["symbols"].items()}
 OFF_FIRST_SEASON_JMP = SYMBOLS["first_season"] - CODE_VA
 OFF_THRESH = _CODE_DOC["thresh_imm_offset"]
-WRAP_VA, HAND_VA, ARM_VA, NECK_VA = (SYMBOLS[k] for k in ("wrap", "hand", "arm", "neck"))
+WRAP_VA, HAND_VA, ARM_VA, NECK_VA, SF_VA, SIDE_VA = (SYMBOLS[k] for k in ("wrap", "hand", "arm", "neck", "sf", "side"))
 RETAIL_CODE_SHA256 = _CODE_DOC["retail_region_sha256"]
 require(CODE[OFF_FIRST_SEASON_JMP] == 0xEB and struct.unpack_from("<I", CODE, OFF_THRESH)[0] == THRESH,
         "the alien code's patch points moved")
@@ -145,12 +166,14 @@ def _spans(test: bool = False) -> list[tuple[int, bytes, str]]:
             (HAND_SITE, _rel(HAND_SITE, HAND_VA), "hand texture lookup -> gray for photo 1947"),
             (ARM_SITE, _rel(ARM_SITE, ARM_VA), "arm texture lookup -> gray for photo 1947"),
             (NECK_SITE, _rel(NECK_SITE, NECK_VA), "neck texture lookup -> gray for photo 1947"),
+            (SF_SITE, _rel(SF_SITE, SF_VA), "far-face sf0..sf5 lookup -> alien_sf for photo 1947"),
+            (SIDE_SITE, _rel(SIDE_SITE, SIDE_VA), "sideline_skin_00..05 lookup -> alien_sideline for photo 1947"),
             (FACES_STRING_VA, RECORD_NAME.encode("utf-16-le"), "FaceTextures record file name")]
 
 
 def _retail() -> dict[int, bytes]:
     return {CALL_SITE: CALL_RETAIL, HAND_SITE: HAND_RETAIL, ARM_SITE: ARM_RETAIL, NECK_SITE: NECK_RETAIL,
-            FACES_STRING_VA: RETAIL_RECORD.encode("utf-16-le")}
+            SF_SITE: SF_RETAIL, SIDE_SITE: SIDE_RETAIL, FACES_STRING_VA: RETAIL_RECORD.encode("utf-16-le")}
 
 
 def _section_map(payload: bytes) -> list[tuple[int, int, int, int]]:
@@ -398,9 +421,20 @@ def gray_palette(palette_bgra: bytes, pixels: bytes) -> bytes:
     return out.tobytes()
 
 
-def gray_texture(outer3: bytes, name: str, source: str, template_span: bytes) -> bytes:
+def _gray_ramp() -> bytes:
+    """256 BGRA entries, a neutral 96..159 ramp (the flat sideline skin's albedo)."""
+    out = bytearray(1024)
+    for i in range(256):
+        v = 96 + (i * 63) // 255
+        out[4 * i:4 * i + 4] = bytes((v, v, v, 255))
+    return bytes(out)
+
+
+def gray_texture(outer3: bytes, name: str, source: str, template_span: bytes, *,
+                 flat: int | None = None) -> bytes:
     """A raw TXTR ``name``: the TSET texture ``source``'s own pixels (every mip, as stored) with a gray palette, in
-    the raw-resource layout of the retail ``dread`` texture (hair styles' recipe)."""
+    the raw-resource layout of the retail ``dread`` texture (hair styles' recipe). ``flat`` replaces every pixel with
+    that palette index (the sideline skin: a neutral albedo the model's own lighting shades)."""
     from . import nfl2k5_modern_officials as officials  # noqa: PLC0415 - tset_refs
     tx = _tx()
     for c in tx.parse_chunks(outer3, allow_trailing=True):
@@ -421,6 +455,10 @@ def gray_texture(outer3: bytes, name: str, source: str, template_span: bytes) ->
     pixels = video[ref["pixel_offset"]:ref["pixel_offset"] + pixel_bytes]
     palette = video[ref["palette_offset"]:ref["palette_offset"] + 1024]
     require(len(pixels) == pixel_bytes and len(palette) == 1024, f"{source} is truncated")
+    if flat is not None:
+        pixels, gray = bytes([flat & 0xFF]) * pixel_bytes, _gray_ramp()
+    else:
+        gray = gray_palette(palette, pixels[:w * h])
     # the descriptor words of the TSET entry (format, mips, size) with the raw layout's offsets
     desc_at = None
     for index in range(struct.unpack_from("<I", decoded, 4)[0]):
@@ -448,7 +486,7 @@ def gray_texture(outer3: bytes, name: str, source: str, template_span: bytes) ->
     struct.pack_into("<6I", system, descriptor, u0, 0, pal_at, packed, packed_size, flags)
     struct.pack_into("<i", system, 0x10, 32 - 0x10 + 1)
     struct.pack_into("<i", system, 0x14, descriptor - 0x14 + 1)
-    body = bytes(system) + pixels + bytes(pal_at - pixel_bytes) + gray_palette(palette, pixels[:w * h])
+    body = bytes(system) + pixels + bytes(pal_at - pixel_bytes) + gray
     raw = struct.pack("<4s7I", b"TXTR", len(body), 128, len(body) - 128, 0, 0, 0, 0) + body
     check = tx.parse_chunks(raw)[0]
     out, _ = tx.decode_chunk(raw, check)
@@ -569,8 +607,68 @@ def appended(path: Path | str) -> list[tuple[str, bytes]]:
     return [(RECORD_NAME, p["record"]), (CDF_NAME, p["cdf"]), (PF_NAME, p["pf"])]
 
 
+def _raw_txtr(decoded: bytes, chunk, name: str, video: bytes) -> bytes:
+    """A raw TXTR copying ``decoded``'s system buffer (with ``name`` moved into it) and a caller-supplied video."""
+    tx = _tx()
+    t = tx.parse_texture(decoded, chunk)
+    system = bytearray(decoded[:chunk.system_bytes])
+    raw_name = (name + "\0").encode("utf-16-le")
+    name_at = 0x20
+    desc_at = (name_at + len(raw_name) + 3) & ~3
+    require(desc_at + 0x18 <= chunk.system_bytes, f"{name}: the name is too long")
+    descriptor = bytes(decoded[t.descriptor_offset:t.descriptor_offset + 0x18])
+    system[name_at:desc_at] = bytes(desc_at - name_at)
+    system[name_at:name_at + len(raw_name)] = raw_name
+    system[desc_at:desc_at + 0x18] = descriptor
+    struct.pack_into("<I", system, 0x10, name_at - 0x0F)
+    struct.pack_into("<I", system, 0x14, desc_at - 0x13)
+    body = bytes(system) + bytes(video)
+    raw = struct.pack("<4s7I", b"TXTR", len(body), chunk.system_bytes, len(body) - chunk.system_bytes, 0, 0, 0, 0) + body
+    check = tx.parse_chunks(raw)[0]
+    out, _ = tx.decode_chunk(raw, check)
+    info = tx.parse_texture(out, check)
+    require(info.name == name and info.format_name == t.format_name
+            and (info.width, info.height, info.mip_levels) == (t.width, t.height, t.mip_levels),
+            f"{name}: the raw texture does not read back")
+    return raw
+
+
+def portrait_sf_texture(outer3: bytes) -> bytes:
+    """alien_sf: the alien's own portrait (128 x 128) cut to the retail sf0 far-face layout (32 x 32 P8, one mip).
+    The far face is a front-facing picture on the low-LOD head, not a UV atlas, so the headshot is the right source."""
+    tx = _tx()
+    for c in tx.parse_chunks(outer3, allow_trailing=True):
+        if c.kind != "TXTR" or c.compressed:
+            continue
+        span = outer3[c.offset:c.offset + 32 + c.stored_size]
+        decoded, _ = tx.decode_chunk(span, tx.parse_chunks(span)[0])
+        t = tx.parse_texture(decoded, c)
+        if t.name != SF_SOURCE:
+            continue
+        require(t.format_name == "P8" and (t.width, t.height, t.mip_levels) == (32, 32, 1),
+                "the far-face template changed")
+        video = bytearray(decoded[c.system_bytes:])
+        require(len(video) == 2048 and t.pixel_offset + 1024 <= len(video) and t.palette_offset + 1024 <= len(video),
+                "the far-face template is truncated")
+        from PIL import Image  # noqa: PLC0415
+        w, h, rgb = art_rgb("portrait")
+        im = Image.frombytes("RGB", (w, h), rgb).resize((32, 32), Image.LANCZOS)
+        q = im.quantize(colors=256, method=Image.Quantize.MEDIANCUT)
+        pal = q.getpalette() or []
+        idx = tx.swizzle_2d(q.tobytes(), 32, 32, 1)
+        require(len(idx) == 1024, "the far face does not quantise to 32 x 32")
+        palette = bytearray(1024)
+        for i in range(256):
+            r, g, b = (pal[3 * i], pal[3 * i + 1], pal[3 * i + 2]) if 3 * i + 3 <= len(pal) else (0, 0, 0)
+            palette[4 * i:4 * i + 4] = bytes((b, g, r, 255))
+        video[t.pixel_offset:t.pixel_offset + 1024] = idx
+        video[t.palette_offset:t.palette_offset + 1024] = palette
+        return _raw_txtr(decoded, c, SF_TEXTURE, bytes(video))
+    raise AlienProspectError(f"outer 3 has no {SF_SOURCE}")
+
+
 def gray_collection(outer3: bytes) -> tuple[bytes, dict[str, Any]]:
-    """Outer 3 with the three gray textures added after every resource except trailing hair-style textures."""
+    """Outer 3 with the five gray textures added after every resource except trailing hair-style textures."""
     from . import nfl2k5_hair_styles as hair  # noqa: PLC0415
     tx = _tx()
     chunks = tx.parse_chunks(outer3, allow_trailing=True)
@@ -589,10 +687,13 @@ def gray_collection(outer3: bytes) -> tuple[bytes, dict[str, Any]]:
     template = outer3[chunks[hair.DREAD_CHUNK].offset:chunks[hair.DREAD_CHUNK].offset + 32
                       + chunks[hair.DREAD_CHUNK].stored_size]
     new = [gray_texture(outer3, name, source, template) for name, source in GRAY_TEXTURES]
+    new.append(portrait_sf_texture(outer3))
+    new.append(gray_texture(outer3, SIDE_TEXTURE, SIDE_SOURCE, template, flat=128))
     at = chunks[insert].offset if insert < len(chunks) else chunks[-1].offset + 32 + chunks[-1].stored_size
     out = bytes(outer3[:at]) + b"".join(new) + bytes(outer3[at:])
     require(gray_status(out) == "applied", "the gray textures do not read back")
-    return out, {"textures": [{"name": n, "bytes": len(d), "sha256": sha(d)} for (n, _s), d in zip(GRAY_TEXTURES, new)],
+    labels = [n for n, _s in GRAY_TEXTURES] + [SF_TEXTURE, SIDE_TEXTURE]
+    return out, {"textures": [{"name": n, "bytes": len(d), "sha256": sha(d)} for n, d in zip(labels, new)],
                  "inserted_before_chunk": insert, "growth": len(out) - len(outer3)}
 
 
@@ -609,7 +710,8 @@ def gray_status(outer3: bytes) -> str:
                 found.add(n)
     if not found:
         return "retail"
-    return "applied" if found == {n for n, _s in GRAY_TEXTURES} else "foreign"
+    want = {n for n, _s in GRAY_TEXTURES} | {SF_TEXTURE, SIDE_TEXTURE}
+    return "applied" if found == want else "foreign"
 
 
 def apply_collection_to_image(path: Path | str, *, progress: Callable[[str], None] | None = None) -> dict[str, Any]:

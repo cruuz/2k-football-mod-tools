@@ -1,6 +1,7 @@
-# ee1 alien prospect: everything lives in the 935 bytes of FUN_000E6780's seventeen "copy a field from the low or the
-# high template on a coin" blocks (0xE696E..0xE6D15), which the first part rewrites as one table-driven loop that makes
-# the same 17 calls of the float rand 0x48B90 in the same order with the same compares (bit-for-bit the same prospect).
+# ee1/ee2 alien prospect: everything lives in the 935 bytes of FUN_000E6780's seventeen "copy a field from the low or
+# the high template on a coin" blocks (0xE696E..0xE6D15), which the first part rewrites as one table-driven loop that
+# makes the same 17 calls of the float rand 0x48B90 in the same order with the same compares (bit-for-bit the same
+# prospect). ee2 adds the 7'11" 150 lb record fields, the far-face sf lookup and the sideline-skin lookup.
 # Linked at 0xE696E.   as --32 -o x.o x.S && ld -m elf_i386 -Ttext=0xE696E --oformat binary -o x.bin x.o
 .intel_syntax noprefix
 .set RESUME, 0xE6D15        # retail code after the last coin block
@@ -122,7 +123,7 @@ first_season:
     jae 9f
     or byte ptr [eax+FLAG], 1       # once in this franchise, never again
     mov word ptr [esi+6], ALIEN_ID  # his own portrait and face package (portrait 1947, f/h/n/s1947)
-    and dword ptr [esi+0x18], 0xFFFFF07A   # no Dreads, no eye black, skin 0 / arm variant 0 under the gray
+    and dword ptr [esi+0x18], 0xFFFFF062   # no Dreads, no eye black, skin 0, body type 0 (profile 0: the thinnest)
     and dword ptr [esi+0x1C], 0xFFFFC01F   # bare hands (gloves 0) and no mouthpiece
     and dword ptr [esi+0x20], 0xFFF07FFF   # no visor (his eyes show through the face mask); generic face shape 0
                                            # (skin 0, face 0: s9001, the shape his close-up package carries)
@@ -130,6 +131,9 @@ first_season:
     and al, 0xF0
     or al, 13                       # hair style 13: no hair model
     mov [esi+0x0D], al
+    mov byte ptr [esi+0x2B], 95     # 7'11": the record's height byte, any value 0-255; the card divides by 12
+    mov byte ptr [esi+0x2A], 0      # 150 lb: weight_raw is pounds - 150 unsigned, so this is the lightest the game
+                                    # reads and shows (0x2A + 150); the weight profile clamps it at 150 (profile 0)
 9:  pop edx
     pop ecx
     pop eax
@@ -175,6 +179,43 @@ neck:                               # 0x8F2FC in the player builder (record in e
     pop ecx
     ret
 
+sf:                                 # 0x8F152 in the player builder: the far-LOD placeholder face is
+                                    # [eax*4+0xB65508] (sf0..sf5 by LOD pass and skin; record in ebx) -> ecx
+    cmp word ptr [ebx+6], ALIEN_ID
+    jne 1f
+    push eax
+    push OFFSET n_sf
+    mov edx, 0x52545854             # 'TXTR'
+    xor ecx, ecx                    # every resident container
+    call FIND
+    pop ecx                         # the sf slot index
+    test eax, eax
+    jz 2f
+    mov ecx, eax                    # the alien's own far face
+    ret
+2:  mov ecx, [ecx*4+0xB65508]       # no alien_sf on this disc: retail
+    ret
+1:  mov ecx, [eax*4+0xB65508]
+    ret
+
+side:                               # 0x119B35 in the sideline-person builder: the bench body is
+                                    # [eax*4+0xBA8280] (sideline_skin_00..05 by skin; record in edi) -> eax
+    cmp word ptr [edi+6], ALIEN_ID
+    jne 1f
+    push eax
+    push OFFSET n_side
+    mov edx, 0x52545854             # 'TXTR'
+    xor ecx, ecx
+    call FIND
+    pop edx                         # the skin slot index
+    test eax, eax
+    jz 2f
+    ret                             # the alien's own gray sideline skin
+2:  mov eax, [edx*4+0xBA8280]       # no alien_sideline on this disc: retail
+    ret
+1:  mov eax, [eax*4+0xBA8280]
+    ret
+
     .balign 2
 n_arm:
     .short 'a','l','i','e','n','_','a','r','m',0
@@ -182,4 +223,8 @@ n_hand:
     .short 'a','l','i','e','n','_','h','a','n','d',0
 n_neck:
     .short 'a','l','i','e','n','_','n','e','c','k',0
+n_sf:
+    .short 'a','l','i','e','n','_','s','f',0
+n_side:
+    .short 'a','l','i','e','n','_','s','i','d','e','l','i','n','e',0
 end:
