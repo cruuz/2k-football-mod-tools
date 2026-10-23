@@ -270,7 +270,7 @@ class RoutineTests(unittest.TestCase):
                 yards = rng.choice((0, 1199, 1200, 1599, 1600, 2000))
                 for emu, vas in zip(emus, flat):
                     emu.stats[(vas[i], 2)], emu.stats[(vas[i], 13)] = yards - yards // 4, yards // 4
-        checked = 0
+        checked, qb_capped = 0, []
         for i, rec in enumerate(recs):
             years = (struct.unpack_from("<I", rec, 0x24)[0] >> 8) & 31
             old, new = min(years - 1, 20), min(years, 20)
@@ -287,6 +287,13 @@ class RoutineTests(unittest.TestCase):
                 if not table or rating == 0x51 or a[rating] in (0, 100) or b[rating] in (0, 100):
                     continue
                 want = dd[(cls, p.GROUPS[group])][max(0, max(old, new) - shift)] if group < len(p.GROUPS) and old != new else 0
+                if cls == "QB" and group != 0 and old != new:      # a quarterback's skills: at most -cap a year
+                    cap = 1 + sum(max(old, new) >= y for y in p.QB_CAP_STEP_YEARS)
+                    total = max(a[rating] - rec[rating] + want, -cap)
+                    if rec[rating] in (0, 100) or not -128 <= rec[rating] + total <= 127:
+                        continue
+                    want = total - (a[rating] - rec[rating])
+                    qb_capped.append(want)
                 self.assertEqual(b[rating] - a[rating], want, f"player {i} {cls} rating {rating:#x} years {years}")
                 checked += 1
             # the Player Progress screen un-ages (y, y - 1) and re-ages: the record comes back exactly
@@ -295,6 +302,31 @@ class RoutineTests(unittest.TestCase):
                 emus[1].call(0x000E63F0, ecx=flat[1][i], edx=old, args=(new,))
                 self.assertEqual(emus[1].record(flat[1][i]), b)
         self.assertGreater(checked, 3000)
+        self.assertTrue(qb_capped)
+
+    def test_veteran_quarterback_skills_drop_at_most_the_cap(self):
+        rng = random.Random(21)
+        recs = []
+        for _ in range(300):                       # quarterbacks of every archetype, years pro 5..20
+            rec = synthetic_player(rng, p.POS["QB"], self.profiles)
+            w = struct.unpack_from("<I", rec, 0x24)[0]
+            struct.pack_into("<I", rec, 0x24, (w & ~(0x1F << 8)) | (rng.randrange(5, 21) << 8))
+            recs.append(rec)
+        emu = Emu(self.applied)
+        vas = emu.league([recs[k:k + 50] for k in range(0, len(recs), 50)])
+        flat = [va for team in vas for va in team]
+        worst = {}
+        for va, rec in zip(flat, recs):
+            years = (struct.unpack_from("<I", rec, 0x24)[0] >> 8) & 31
+            emu.call(0x000E63F0, ecx=va, edx=years - 1, args=(years,))
+            after = emu.record(va)
+            cap = 1 + sum(years >= y for y in p.QB_CAP_STEP_YEARS)
+            for rating, table, family in p.RATING_ENTRIES:
+                # aggression (0x51) is aged twice (families 5 and 6), so it can move two capped steps
+                if table and rating != 0x51 and p.GROUP_OF_FAMILY[family] != 0 and rec[rating] not in (0, 100):
+                    self.assertGreaterEqual(after[rating] - rec[rating], -cap, f"years {years} rating {rating:#x}")
+                    worst[years] = min(worst.get(years, 0), after[rating] - rec[rating])
+        self.assertTrue(all(v >= -1 for y, v in worst.items() if y < 17))
 
     def test_generation_and_retail_aging_untouched_for_rookies(self):
         rng, teams = self.league(3, teams=2, size=30)

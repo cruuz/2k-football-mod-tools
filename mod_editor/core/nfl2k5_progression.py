@@ -363,7 +363,11 @@ QB_YOUNG_MAX_YEARS = 4            # years pro after the rollover: seasons 1..3 j
 QB_LEVEL_EDGES = (-8, 3, 12)      # adjusted yards per attempt x10 above the league: level 0 below -0.8, 3 from +1.2
 # QB form mini-curves, laid out like the retail ones at 0x4F27A4 (mental-ish, skill, physical) for levels 0..3
 QB_MINI = ((-3, 0, 1, 3), (-5, 0, 2, 5), (0, 0, 0, 0))
-RB_PRODUCTION_SHIFT = (1200, 1600)  # scrimmage yards last season -> ages like a back 1 / 2 years younger
+RB_PRODUCTION_SHIFT = (1200, 1600)
+# Quarterbacks' non-physical ratings (accuracy, reads, arm, consistency, composure...): the yearly change is at least
+# -1 until years pro 16 (age about 36), -2 at 17 and -3 from 18 (NFL QB efficiency: about -0.2 ANY/A a year to 35 against
+# a 1.2 year-to-year spread, a cliff from 37). Physical ratings age by the table.
+QB_CAP_STEP_YEARS = (17, 18)  # scrimmage yards last season -> ages like a back 1 / 2 years younger
 
 CLASSES = ("QB", "KP", "WR", "CB", "S", "RB", "FB", "TE", "LB", "OL", "DL")
 CLASS_OF = {"QB": "QB", "K": "KP", "P": "KP", "WR": "WR", "CB": "CB", "FS": "S", "SS": "S", "RB": "RB", "FB": "FB",
@@ -628,16 +632,16 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
     # ---- aging_ext: replaces call 0xE5890 at 0xE6488 (al = new years, bl = old, dl = value, ecx = curve;
     #      ebp = player, esi = rating entry). Returns al = value, as 0xE5890 does.
     a.label("aging_ext")
-    a("50"); a.call(FN_AGING_CURVE); a("59")
+    a("52" "50"); a.call(FN_AGING_CURVE); a("59" "5a")   # cl = new years, dl = the rating before the curve step
     a("80fbff"); a.j8("74", "a_ret0")      # generation (old = 0xFF): untouched
     a("3acb"); a.j8("75", "a_go")          # same year (both clamped at 20): untouched
     a.label("a_ret0")
     a("c3")
     a.label("a_go")
-    a("57" "56" "51" "50")                 # [esp] = value, [esp+4] = new
+    a("57" "56" "52" "51" "50")            # [esp] = value, [esp+4] = new, [esp+8] = value before, [esp+0xC] = entry
     a("8b560c" "83fa09"); a.j32("0f87", "a_done")
     a("0fb692"); a.abs32("group_tab")      # movzx edx, byte [edx + group_tab]
-    a("83fa%02x" % len(GROUPS)); a.j32("0f83", "a_done")
+    a("83fa%02x" % len(GROUPS)); a.j32("0f83", "a_qb")    # mental ratings: no table step (QB cap below)
     a("0fb67d35" "83ff10"); a.j32("0f87", "a_done")
     a("0fb6bf"); a.abs32("class_tab")      # movzx edi, byte [edi + class_tab]
     a("8d3c7a")                            # edi = 2 * class + group
@@ -651,7 +655,7 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
     a.label("ns")
     a("0fb6442404" "0fb6cb" "3bc1"); a.j8("73", "m"); a("8bc1")   # eax = max(new, old)
     a.label("m")
-    a("2bc6" "83e8%02x" % DD_FIRST_YEAR); a.j32("0f88", "a_done")   # minus the shift; nothing before year 4
+    a("2bc6" "83e8%02x" % DD_FIRST_YEAR); a.j32("0f88", "a_qb")     # minus the shift; nothing before year 4
     a("8bc8" "d1e8" "0fbe1407" "f6c101"); a.j8("74", "lo")
     a("c1fa04"); a.j8("eb", "sx")
     a.label("lo")
@@ -664,8 +668,27 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
     a("83f87f"); a.j8("7e", "c2"); a("b07f")
     a.label("c2")
     a("880424")
+    # quarterbacks: a non-physical rating moves at most QB_CAP per year (curve + table together), symmetric so the
+    # Player Progress un-aging restores it exactly
+    a.label("a_qb")
+    a("807d3500"); a.j8("75", "a_done")
+    a("8b44240c" "8b400c" "83f809"); a.j8("77", "a_done")
+    a("80b8"); a.abs32("group_tab"); a("00"); a.j8("74", "a_done")    # physical: declines as the table says
+    a("0fb6542404" "0fb6cb" "3bd1"); a.j8("73", "q1"); a("8bd1")      # edx = max(new, old)
+    a.label("q1")
+    a("33c941")                            # cap 1
+    for year in QB_CAP_STEP_YEARS:
+        a("83fa%02x" % year); a.j8("72", "q2"); a("41")
+    a.label("q2")
+    a("0fbe0424" "0fbe542408" "2bc2")      # eax = this year's change
+    a("8a542404" "3ad3"); a.j8("77", "qf")
+    a("3bc1"); a.j8("7e", "a_done"); a("8bc1"); a.j8("eb", "qs")       # un-aging: at most +cap
+    a.label("qf")
+    a("f7d9" "3bc1"); a.j8("7d", "a_done"); a("8bc1")                 # aging: at least -cap
+    a.label("qs")
+    a("02442408" "880424")
     a.label("a_done")
-    a("58" "59" "5e" "5f" "c3")
+    a("58" "59" "59" "5e" "5f" "c3")
     # ---- qb_mini: replaces mov ecx, [esi+4]; mov dl, al at 0xE63C8 (edi = player)
     a.label("qb_mini")
     a("8ad0" "8b4e04" "807f3500"); a.j8("75", "qm_r")
