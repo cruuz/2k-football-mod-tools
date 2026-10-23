@@ -77,7 +77,8 @@ class BuildIntegrationTests(unittest.TestCase):
                                                             apply_overlaps=lambda target: {'state': 'retail'},
                                                             apply_chiefs=lambda target: {'state': 'retail'},
                                                             apply_swooshes=lambda target: {'state': 'retail'},
-                                                            apply_nameplates=lambda target: {'state': 'retail'})}
+                                                            apply_nameplates=lambda target: {'state': 'retail'}),
+                           'nfl2k5_nameplate_fixes_2026':SimpleNamespace(apply_to_image=lambda target, retail=None: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.
@@ -96,7 +97,7 @@ class BuildIntegrationTests(unittest.TestCase):
                     else:
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
-                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','menu_icon_orientation'])
+                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])
                         # macOS temp paths resolve under /private/var: compare resolved paths.
                         self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])

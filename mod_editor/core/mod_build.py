@@ -4667,6 +4667,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["moment_kits"] = moment_kits.image_status(target)
             if receipt["result"]["moment_kits"] != "applied":
                 raise ValueError("the Anniversary moment kits failed their read-back on the copy")
+        # b778-uf2 (Noah 10/22): the 2026 Jaguars nameplates on the retail letter structure (white letters with the
+        # black outline on the teal home kit, black letters with their counters on the road and Bold City kits), then
+        # every kit's nameplate hyphen solid; after the Anniversary moment kits, which copy kit packages.
+        nameplate_fixes = _core_module("nfl2k5_nameplate_fixes_2026")
+        if nameplate_fixes is None:
+            raise RuntimeError("the 2026 nameplate fixes module is not available in this build")
+        nameplate_receipt = nameplate_fixes.apply_to_image(
+            target, lambda: require_step_source(source if _retail_source is None else _retail_source,
+                                                "Jaguars nameplates"))
+        receipt["steps"].append({"step": "nameplate_fixes_2026", **nameplate_receipt})
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.

@@ -627,6 +627,8 @@ data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_jersey_7.png
+mod_editor/core/nfl2k5_nameplate_fixes_2026.py
+data/nfl2k5_nameplate_fixes_2026.json
 mod_editor/core/nfl2k5_menu_chiefs_2026.py
 data/nfl2k5_menu_chiefs_2026.json
 mod_editor/core/nfl2k5_menu_helmet_w2026.py
