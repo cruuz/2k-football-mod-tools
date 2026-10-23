@@ -14,9 +14,25 @@ and its height error by the QB's own Pass Accuracy (k_acc curve in the cave: 0.5
 grades, ball flight, catching and interceptions are untouched; a throw with no miss (a set QB) is byte-for-byte
 retail. Settings are build-time only.
 
-It also makes screen passes lead the receiver (SCREEN_LEAD, one operand byte): retail aims a screen (route kind 9) at the
-spot where the back is at the release, so a back still moving out to his screen spot turns and comes back for the ball
-(Noah 10/20: "HB screen, he starts running backwards"); now the ball is led along his route, which ends at his spot.
+b778 qa1: screen passes are retail again. b777 qb3 had changed one operand (0x226834, cmp edx,9 -> 0x20) so a screen
+receiver (route kind 9) was led along his route to his screen spot. That rested on a fixture whose receiver never had
+the moving animation flag, so retail looked like "aim at his release spot". In the game retail leads a MOVING screen
+receiver: the kind-9 shortcut returns 0 for a moving player and the target routine 0x2F43E0 then extrapolates his
+root-motion velocity (0x2F4350) over the flight time. With the operand changed, a back or bubble receiver who keeps
+running at or past his spot was thrown to the spot itself, behind him (native: 5.3 yd behind a back running 7 yd/s
+through his spot, 7.7 yd when 2 yd past it; on the released v0.6.1 disc a live CPU screen release was aimed at the
+back's release x where retail led him 1.24 yd along his run). The operand is no longer touched; the predictor span
+stays a guarded prerequisite.
+
+b778 qa1 (follow-up) adds two pieces, both inside the solver/predictor spans already guarded here:
+- BACK (0x2DAE12): for a target at or behind the line of scrimmage retail moves a moving receiver's aim 1 yd downfield,
+  so a back on a swing or flat is thrown a yard upfield of his path and reaches back for it. For a halfback or fullback
+  (field role byte [player+0x2C] 10 or 11) the yard is dropped; every other receiver, and every target past the line,
+  keeps retail's offset. The receiver comes from the release frame ([ebp+0x34] inside the solver; both solver calls in
+  the release 0x2DAF10 leave it there; the release span is a guard).
+- SCREEN (the route-kind-9 "je" at 0x226837): a MOVING screen back whose downfield velocity is below -0.5 yd/s (drifting
+  back toward the QB: the b776 "HB screen, he starts running backwards") is aimed at his screen spot (the predictor's
+  route path); a back running out, through or past his spot, or standing, keeps retail (velocity lead / his spot).
 
 b777 qb4 adds quick-throw placement (LEAD hook, same cave): when a moving receiver runs within 45 degrees of the throw
 line (quick outs, flats, bubbles), the lead solver 0x2DA8E0 moves the target 1.5 yd sideways off his path toward the
@@ -32,30 +48,34 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_qb_accuracy"
-CODE_SIZE = 384
+CODE_SIZE = 448                     # b778 qa1: +64 (back offset, screen drift; was 384)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Accurate short throws and throws on the run (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Quarterbacks stop overthrowing drags, outs, slants and digs, above all on the run: a miss "
              "on a throw under 40 yards now shrinks with the passer's own Pass Accuracy (a 90 passer misses by about a "
              "third of what he did, a 55 passer about as before) and lands behind the receiver as often as ahead of "
-             "him. Screen passes lead the back toward his spot instead of pulling him backwards, and quick outs, flats "
-             "and bubbles are thrown on the receiver's path instead of a yard and a half underneath him, so he can "
-             "catch them in stride. Ratings and grades are unchanged; deep balls and throws from a set pocket keep "
-             "their native accuracy and placement.")
+             "him. Quick outs, flats and bubbles are thrown on the receiver's path instead of a yard and a half "
+             "underneath him, so he can catch them in stride. Swings and flats to backs behind the line arrive on "
+             "his path, and a screen back drifting back toward the quarterback is thrown his screen spot. Ratings and "
+             "grades are unchanged; deep balls and throws from a set pocket keep their native accuracy and placement.")
 HOOK = ("miss_store", 0x002D9F18, bytes.fromhex("d95c24148b5d08"), "place")
-# b777 coordinator ask (screens): the route predictor 0x2266A0 (callers: the throw target 0x2F43E0 and the CPU QB read
-# grid 0x19A3FA) returns a screen receiver's (route kind 9) CURRENT spot instead of leading him, so a back still moving
-# to his screen spot has to come back for the ball. The kind-9 shortcut test "cmp edx, 9" (0x226832) gets an
-# impossible operand (kinds are masked to 0..31), so kind 9 takes the predictor's ordinary path: he is led along his
-# route segments, which end at his screen spot (1.5 yd behind the line). Stem-block kind 10 keeps the shortcut.
-SCREEN_LEAD = ("screen_lead", 0x00226834, b"\x09", b"\x20")
+# b777 qb3 changed the screen-route shortcut operand at 0x226834 (09 -> 20); b778 qa1 dropped that edit (see the module
+# docstring). A disc built with it reads as foreign here; rebuild from a supported source.
 # b777 qb4: the lead solver's placement tail (fld sin; fmul [0x4F0F74]; fadd x; fstp x; fld cos; ...; fstp z) at
 # 0x2DAD97..0x2DADBB becomes a jmp to the cave's depth-scaled copy, which returns to 0x2DADBB.
 LEAD = ("quick_lead", 0x002DAD97, bytes.fromhex("d9442434d80d740f4f00d8442450d95c2450d9442430d80d740f4f00d8442458d95c2458"),
         "lead")
-SYMBOLS = dict(resume=0x002D9F1F, curve=0x001B0AE0, rng=0x00048B90, lead_resume=0x002DADBB)
+# b778 qa1: swings and flats to backs at or behind the line meet the back on his path (BACK), and a screen back drifting
+# back toward the QB is aimed at his screen spot (SCREEN). See tools/nfl2k5_qb_accuracy.S for both.
+BACK = ("back_offset", 0x002DAE12, bytes.fromhex("c744241c48e1b642eb40"), "back")
+SCREEN = ("screen_drift", 0x00226837, bytes.fromhex("0f8425020000"), "screen")
+SYMBOLS = dict(resume=0x002D9F1F, curve=0x001B0AE0, rng=0x00048B90, lead_resume=0x002DADBB, back_resume=0x002DAE5C,
+               screen_route=0x0022683D, screen_shortcut=0x00226A62)
 GUARDS = (
     (0x002DA8E0, 1580, "2fa96051127785d54f6c44946bd3e12e0081c9cfd5a8a00a401423bedbb68c93"),   # lead solver (qb4)
+    (0x002DAF10, 0x190, "753df0b4caf2b63bd882e33f59e285689590c151cf65b476458ed1e016410b58"),                                               # release: receiver slot (qa1)
+    (0x004E4180, 4, "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"),                                                    # retail 0.0 (qa1)
+    (0x004E419C, 4, "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"),                                                    # retail 1.0 (qa1)
     (0x002266A0, 1065, "e2801e152a366ce1276175628d2c40b801d0195a600ed16df846c32f3d10bc87"),   # route predictor
     (0x002D9700, 2970, "280d1b3ea95293545b304cea962c13058060f4fc170146918a140860383c3243"),   # accuracy routine
     (0x001B0AE0, 122, "11b02ee0ad143dd1a8ad979ef069c120ce71498014efd893b68a40aca8a7f6c5"),    # curve interpolator
@@ -99,10 +119,12 @@ def code_for(code_va):
 def sites(code_va=0):
     from . import nfl2k5_qb_accuracy_code as assembly
     edits = []
-    for name, va, before, label in (HOOK, LEAD):
+    for name, va, before, label in (HOOK, LEAD, BACK):
         jump = b"\xe9" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
         edits.append((name, va, before, jump.ljust(len(before), b"\x90")))
-    return edits + [SCREEN_LEAD]
+    name, va, before, label = SCREEN                      # keep the conditional: je rel32 into the cave
+    edits.append((name, va, before, b"\x0f\x84" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 6)))
+    return edits
 
 
 def _recognize(payload):
@@ -182,4 +204,4 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "LEAD", "SCREEN_LEAD", "apply", "status", "read_settings", "allocation", "code_for", "sites"]
+__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "LEAD", "BACK", "SCREEN", "apply", "status", "read_settings", "allocation", "code_for", "sites"]

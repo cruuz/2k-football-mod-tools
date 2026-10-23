@@ -48,23 +48,27 @@ class AccuracyMachine(NativeMachine):
         # operand in the first (screen lead) and the solver's placement tail in the second (b777 qb4 quick lead).
         # Load retail bytes for the pin check, then the payload's own bytes (retail or the owner's exact edit).
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        from mod_editor.core.nfl2k5_qb_accuracy import LEAD
+        from mod_editor.core.nfl2k5_qb_accuracy import BACK, LEAD, SCREEN
         image = XbeImage(payload)
         buf = bytearray(payload)
         restore = []
         offset = image.offset(SCREEN_LEAD_VA, 1)
         operand = payload[offset:offset + 1]
-        if operand not in (b"\x09", b"\x20"):
+        if operand not in (b"\x09", b"\x20"):          # 0x20: b777 qb3's screen operand (v0.6.1 disc)
             raise ValueError("foreign screen-lead operand")
         buf[offset:offset + 1] = b"\x09"
         restore.append((SCREEN_LEAD_VA, operand))
-        _name, lead_va, lead_retail, _label = LEAD
-        offset = image.offset(lead_va, len(lead_retail))
-        tail = payload[offset:offset + len(lead_retail)]
-        if tail != lead_retail and not (tail[0] == 0xE9 and tail[5:] == b"\x90" * (len(lead_retail) - 5)):
-            raise ValueError("foreign quick-lead placement tail")
-        buf[offset:offset + len(lead_retail)] = lead_retail
-        restore.append((lead_va, tail))
+        # b777 qb4 / b778 qa1 owner sites inside the pinned solver and predictor spans: pin-check retail, then load the
+        # payload's own bytes (retail or the owner's jump).
+        for _name, va, retail, _label in (LEAD, BACK, SCREEN):
+            offset = image.offset(va, len(retail))
+            site = payload[offset:offset + len(retail)]
+            jump = site[:1] == b"\xe9" and site[5:] == b"\x90" * (len(retail) - 5)
+            cond = site[:2] == b"\x0f\x84" and len(retail) == 6
+            if site != retail and not (jump or cond):
+                raise ValueError(f"foreign owner site at {va:#x}")
+            buf[offset:offset + len(retail)] = retail
+            restore.append((va, site))
         super().__init__(bytes(buf))
         self.uc.mem_protect(0x11000, 0x410000, __import__("unicorn").UC_PROT_ALL)
         for va, raw in restore:
@@ -88,6 +92,22 @@ class AccuracyMachine(NativeMachine):
         else:
             self.capture["exit"] = dict(regs=regs, top=(fpsw >> 11) & 7, miss_cm=self.rf(esp + 0x14),
                                         height_error=self.rf(esp + 0x18), heading=regs["ESI"] & 0xFFFF)
+
+    def solver_args(self, hold):
+        """The lead solver's eight arguments, then the release frame's receiver slot (b778 qa1): both release call
+        sites 0x2DB00B/0x2DB08E leave the receiver 0x34 above the solver's EBP, where the owner's back cave reads it."""
+        return (self.BALL, 0., self.OUT + 0x20, self.OUT, self.OUT + 0x30, float(hold), self.OUT + 0x34, 0,
+                0, 0, 0, self.P)
+
+    def target(self, hold=.5):
+        time = self.call(0x2DA8E0, self.solver_args(hold), ecx=self.Q, edx=self.P, fp=True)
+        return {"time": time, "point": self.vector(self.OUT), "heading": self.get(self.OUT + 0x30),
+                "predictor_calls": self.counts[0x2266A0], "fallback_calls": self.counts[0x2F4350]}
+
+    def field_role(self, role):
+        """The game's field role byte [player+0x2C] (b778 qa1): 9 wide receiver, 8 tight end, 10 halfback, 11 fullback.
+        The fixture's dword role (1 HB, 2 FB, 3 WR) shares the address; only the low byte is read by the owner."""
+        self.uc.mem_write(self.P + 0x2C, bytes([role]))
 
     def seed_complete_rng(self, seed):
         self.put(0xE5FCA0, 54)
@@ -140,8 +160,7 @@ class AccuracyMachine(NativeMachine):
         self.put(0xE5FC00, self.BALL)
         self.seed_complete_rng(seed)
         self.capture = {}
-        time = self.call(0x2DA8E0, (self.BALL, 0., self.OUT + 0x20, self.OUT, self.OUT + 0x30, float(hold),
-                                    self.OUT + 0x34, 0), ecx=self.Q, edx=self.P, fp=True)
+        time = self.call(0x2DA8E0, self.solver_args(hold), ecx=self.Q, edx=self.P, fp=True)
         aim = self.vector(self.OUT)
         radius = self.rf(self.OUT + 0x20)
         self.put(self.TEAM + 12, self.TEAM + 0x1000)
@@ -163,20 +182,34 @@ class AccuracyMachine(NativeMachine):
                 "launch": launch, "raw": (time, *end[:3]), "capture": dict(self.capture)}
 
 
-def screen_target(machine, position, velocity, hold=1.):
-    """A screen receiver (route kind 9, HB role) at ``position`` yd moving ``velocity`` yd/s; QB set 9 yd deep."""
+def screen_target(machine, position, velocity, hold=1., *, spot=None, due=None, field_role=None):
+    """A screen receiver (route kind 9, HB role) at ``position`` yd moving ``velocity`` yd/s; QB set 9 yd deep.
+
+    b778 qa1: a moving receiver carries the game's moving animation flag (0x08 at [P+0x14]), as every running player
+    does in the game; the retail kind-9 shortcut then leaves the lead to the target routine's root-motion velocity
+    fallback 0x2F4350 (the clip velocity this fixture sets equals ``velocity``). ``spot`` (yd) and ``due`` (seconds from
+    now) replace the default far straight route segment with one that ends at his screen spot."""
     machine.ratings()
     machine.quarterback("set")
     machine.vec(machine.Q + 0x530, (0., 0., -9 * YD, 1.))
     machine.vec(machine.BALL + 0x100, (0., 180., -9 * YD, 1.))
     machine.route((position[0] * YD, position[1] * YD), (velocity[0] * YD, velocity[1] * YD), kind=9, role=1,
                   direction=1, line=0.)
+    if spot is not None:
+        record = 0xC16590
+        machine.f(record + 12, 1. + due)
+        machine.f(record + 16, spot[0] * YD)
+        machine.f(record + 20, spot[1] * YD)
     machine.put(machine.P + 0x2C, 1)
     machine.uc.mem_write(machine.P + 0x1035, bytes([1]))
+    if field_role is not None:
+        machine.field_role(field_role)
+    machine.uc.mem_write(machine.P + 0x400, bytes([0x08 if any(velocity) else 0x00]))
     result = machine.target(hold)
     time = result["time"]
     return {"flight_s": time, "aim": (result["point"][0] / YD, result["point"][2] / YD),
-            "receiver": (position[0] + velocity[0] * time, position[1] + velocity[1] * time)}
+            "receiver": (position[0] + velocity[0] * time, position[1] + velocity[1] * time),
+            "velocity_fallback": result["fallback_calls"]}
 
 
 def summary(rows):

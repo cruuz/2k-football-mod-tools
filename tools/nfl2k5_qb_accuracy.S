@@ -32,12 +32,27 @@
  * At w = 1 the arithmetic is the retail sequence (x 1.0 is exact), so intermediate and deep leads are byte-for-byte
  * retail. Only EAX (reloaded at 0x2DADBB), EFLAGS (dead there) and the two target floats change; x87 stack empty on
  * entry and exit, as in retail.
+ *
+ * back (b778 qa1; jmp at 0x2DAE12, replacing "mov [esp+0x1c], 91.44; jmp 0x2DAE5C" in the solver's second placement
+ * block): for a target at or behind the line of scrimmage retail adds 1 yd downfield (along the offense direction) to a
+ * moving receiver's target, so a back on a swing or flat is thrown a yard upfield of his path and reaches back for it.
+ * When the receiver is a backfield player (field role byte [player+0x2C] = 10 halfback or 11 fullback) the offset is
+ * 0; every other receiver, and every target past the line, keeps retail's 91.44 cm. The receiver is read from the
+ * release frame: both solver calls in the release 0x2DAF10 pass it at the same slot, [ebp+0x34] inside the solver
+ * (guarded span). Only EAX (reloaded at 0x2DAE5C) and EFLAGS change.
+ *
+ * screen (b778 qa1; the "je" at 0x226837 for route kind 9 in the route predictor 0x2266A0 now jumps here): retail
+ * sends kind 9 (screen) and 10 (stem block) to a shortcut that aims at the receiver's spot when he stands and leaves
+ * a moving receiver to the target routine's velocity lead. A screen back thrown to while he drifts back toward the QB
+ * (b776 HB screen: "he starts running backwards") is then led further back. Here a MOVING kind-9 receiver whose
+ * downfield velocity is below -0.5 yd/s takes the predictor's ordinary route path (his screen spot) instead; every
+ * other case goes to the retail shortcut. EAX, ECX, EDX, EBX and the x87 stack are preserved.
  */
 .intel_syntax noprefix
 .code32
 .text
-.global place, lead, code_end
-.extern resume, curve, rng, lead_resume
+.global place, lead, back, screen, code_end
+.extern resume, curve, rng, lead_resume, back_resume, screen_route, screen_shortcut
 
 place:
     fstp dword ptr [esp+0x14]                /* retail: D */
@@ -45,18 +60,18 @@ place:
     pushad
     sub esp, 16                              /* [esp] = w; routine locals at esp+52 */
     fld dword ptr [esp+52+0x14]
-    fcomp dword ptr [k_zero]
+    fcomp dword ptr ds:0x4e4180
     fnstsw ax
     test ah, 0x45
     jnz place_done                           /* no miss (D <= 0) or unordered: retail */
     fld dword ptr [k_far]
     fsub dword ptr [ebp+0x0c]                /* 40 yd - radius */
     fmul dword ptr [k_band_inv]
-    fcom dword ptr [k_zero]
+    fcom dword ptr ds:0x4e4180
     fnstsw ax
     test ah, 0x45
     jnz place_pop                            /* deep (w <= 0) or unordered: retail */
-    fcom dword ptr [k_one]
+    fcom dword ptr ds:0x4e419c
     fnstsw ax
     test ah, 0x01
     jnz place_w
@@ -68,9 +83,9 @@ place_w:
     mov ecx, offset k_acc_points
     mov edx, 6
     call curve                               /* 0x1B0AE0, ret 4: ST0 = K */
-    fsub dword ptr [k_one]
+    fsub dword ptr ds:0x4e419c
     fmul dword ptr [esp]
-    fadd dword ptr [k_one]                   /* Keff */
+    fadd dword ptr ds:0x4e419c                   /* Keff */
     fld st(0)
     fmul dword ptr [esp+52+0x14]
     fstp dword ptr [esp+52+0x14]             /* D * Keff */
@@ -111,7 +126,7 @@ lead:                                        /* jmp at 0x2DAD97; EDI (lead flag)
     fldz
     jmp lead_apply
 lead_upper:
-    fcom dword ptr [k_one]
+    fcom dword ptr ds:0x4e419c
     fnstsw ax
     test ah, 0x01
     jnz lead_apply                           /* < 1 */
@@ -131,9 +146,42 @@ lead_apply:                                  /* ST0 = w */
     fstp st(0)
     jmp lead_resume                          /* 0x2DADBB */
 
+back:                                        /* jmp at 0x2DAE12: target at/behind the line, ESI = offense heading */
+    mov eax, dword ptr [ebp+0x34]            /* the receiver (release frame) */
+    mov al, byte ptr [eax+0x2c]              /* field role */
+    and al, 0xfe
+    cmp al, 10                               /* 10 halfback, 11 fullback */
+    mov eax, 0x42b6e148                      /* retail: 91.44 cm downfield */
+    jne back_store
+    xor eax, eax                             /* a back: no downfield offset, the ball meets him on his path */
+back_store:
+    mov dword ptr [esp+0x1c], eax
+    jmp back_resume                          /* 0x2DAE5C */
+
+screen:                                      /* je at 0x226837: route kind 9; EDI = receiver */
+    push eax
+    mov eax, dword ptr [edi+0x14]
+    test byte ptr [eax], 0x38
+    jz screen_retail                         /* standing: retail shortcut (his spot) */
+    mov eax, dword ptr [edi+0x38]            /* his team: offense direction +1/-1 */
+    mov eax, dword ptr [eax+8]
+    mov eax, dword ptr [eax+0xc]
+    fld dword ptr [eax+4]
+    mov eax, dword ptr [edi+0x18]
+    fmul dword ptr [eax+0x48]                /* downfield velocity, cm/s */
+    fcomp dword ptr [k_back]
+    fnstsw ax
+    sahf
+    jp screen_retail                         /* unordered: retail */
+    jae screen_retail                        /* not drifting back: retail velocity lead */
+    pop eax
+    jmp screen_route                         /* 0x22683D: the ordinary route path, his screen spot */
+screen_retail:
+    pop eax
+    jmp screen_shortcut                      /* 0x226A62 */
+
 .balign 4
-k_zero: .float 0.0
-k_one: .float 1.0
+k_back: .float -45.72                        /* -0.5 yd/s */
 k_far: .float 3657.6                         /* 40 yd */
 k_band_inv: .float 0.000546806649            /* 1 / 20 yd */
 k_flip: .float 0.5

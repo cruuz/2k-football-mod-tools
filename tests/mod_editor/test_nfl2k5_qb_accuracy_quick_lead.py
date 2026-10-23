@@ -106,7 +106,7 @@ class QuickLeadTests(unittest.TestCase):
         self.assertAlmostEqual(off_path(old, geom), 1.5, delta=0.02)
         self.assertTrue(0.3 < off_path(new, geom) < 1.2, off_path(new, geom))
 
-    def test_screen_targets_keep_qb3s_lead(self):
+    def test_screen_targets_are_untouched_by_the_quick_lead(self):
         from nfl2k5_qb_accuracy_native import screen_target
         for position, velocity in (((4., -4.5), (7., 2.)), ((6., -3.), (6., 2.)), ((9., -2.), (4., 1.)),
                                    ((8., -2.6), (7., 0.)), ((2.5, -5.3), (0., 0.))):

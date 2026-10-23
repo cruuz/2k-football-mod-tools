@@ -38,9 +38,14 @@ class StaticTests(unittest.TestCase):
     def test_template_shape_and_symbols(self):
         self.assertLessEqual(len(assembly.CODE), accuracy.CODE_SIZE)
         self.assertEqual(assembly.LABELS["place"], 0)
-        self.assertEqual({r[2] for r in assembly.RELOCATIONS}, {"code", "curve", "rng", "resume", "lead_resume"})
+        self.assertEqual({r[2] for r in assembly.RELOCATIONS}, {"code", "curve", "rng", "resume", "lead_resume",
+                                                                 "back_resume", "screen_route", "screen_shortcut"})
         self.assertEqual(accuracy.SYMBOLS, {"resume": 0x2D9F1F, "curve": 0x1B0AE0, "rng": 0x48B90,
-                                            "lead_resume": 0x2DADBB})
+                                            "lead_resume": 0x2DADBB, "back_resume": 0x2DAE5C,
+                                            "screen_route": 0x22683D, "screen_shortcut": 0x226A62})
+        self.assertEqual(accuracy.BACK[1] + len(accuracy.BACK[2]), 0x2DAE1C)                        # b778 qa1
+        self.assertEqual(accuracy.SCREEN[1] + len(accuracy.SCREEN[2]), accuracy.SYMBOLS["screen_route"])
+        self.assertEqual(accuracy.CODE_SIZE, 448)                                    # the owner's request (qa1: +64)
         self.assertEqual(accuracy.LEAD[1] + len(accuracy.LEAD[2]), accuracy.SYMBOLS["lead_resume"])   # b777 qb4
         self.assertEqual(accuracy.HOOK[1] + len(accuracy.HOOK[2]), accuracy.SYMBOLS["resume"])
         # the cave's rating curve is monotone: a better passer never misses by more
@@ -87,11 +92,18 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(0x2D9F18 + 5 + struct.unpack_from("<i", raw, 1)[0], code + assembly.LABELS["place"])
         self.assertEqual(raw[5:], b"\x90\x90")
         self.assertEqual(self.receipt["runtime_witnessed"], False)
-        self.assertEqual([e["label"] for e in self.receipt["edits"]], ["miss_store", "quick_lead", "screen_lead"])
+        self.assertEqual([e["label"] for e in self.receipt["edits"]],
+                         ["miss_store", "quick_lead", "back_offset", "screen_drift"])
+        back = image.read(0x2DAE12, 10)                                       # b778 qa1: backs behind the line
+        self.assertEqual(0x2DAE12 + 5 + struct.unpack_from("<i", back, 1)[0], code + assembly.LABELS["back"])
+        self.assertEqual((back[0], back[5:]), (0xE9, b"\x90" * 5))
+        drift = image.read(0x226837, 6)                                       # b778 qa1: screen drift, still a je
+        self.assertEqual(drift[:2], b"\x0f\x84")
+        self.assertEqual(0x226837 + 6 + struct.unpack_from("<i", drift, 2)[0], code + assembly.LABELS["screen"])
         lead = image.read(0x2DAD97, 36)                                       # b777 qb4: quick-throw placement
         self.assertEqual(0x2DAD97 + 5 + struct.unpack_from("<i", lead, 1)[0], code + assembly.LABELS["lead"])
         self.assertEqual((lead[0], lead[5:]), (0xE9, b"\x90" * 31))
-        self.assertEqual(image.read(0x226832, 3), bytes.fromhex("83fa20"))   # cmp edx, 0x20: kind 9 takes the lead path
+        self.assertEqual(image.read(0x226832, 3), bytes.fromhex("83fa09"))   # b778 qa1: the screen shortcut stays retail
         self.assertEqual(space.status(self.final), "applied")
 
     def test_replay_and_foreign_refusal_before_mutation(self):
@@ -102,6 +114,11 @@ class WriterTests(unittest.TestCase):
         for label, (va, content) in {"hook": (0x2D9F18, b"\xe9\x00\x00\x00\x00"),
                                      "nops": (0x2D9F1D, b"\xcc"),
                                      "screen operand": (0x226834, b"\x0a"),
+                                     "v0.6.1 screen operand": (0x226834, b"\x20"),   # b778 qa1: no longer this owner's
+                                     "back offset nops": (0x2DAE17, b"\xcc"),
+                                     "screen drift": (0x226838, b"\x85"),
+                                     "release frame": (0x2DB07B, b"\x90"),
+                                     "retail 1.0": (0x4E419C, struct.pack("<f", 0.5)),
                                      "quick lead nops": (0x2DADBA, b"\xcc"),
                                      "lead solver": (0x2DAC90, b"\x90"),
                                      "predictor": (0x226840, b"\x90"),
