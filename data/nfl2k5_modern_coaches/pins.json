@@ -1661,14 +1661,16 @@
     "jacket": "42e0c1ccd216401ee23d915d187a2a6754e0da467f396e6473c7b389753d2f9b",
     "logo": "e3dc0056d8d80c87f60b811234727feca6059309c2debb0c6682863509ebf265",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "ef44d8d778d0acdc20f14a29fe4ebe4b1dcf1090d0b259096747fa10656edb69",
+    "head": "b1f95dd44a4d777bbdb7b61d03d389f19f86b0724035ec5126ccd8c433df0228",
     "sideline_dry": "6a3dd3c68a37dd9614169d61a5eb1171413862313b57d5d76e4964e7a43c365c",
     "sideline_rain": "52591df1a5de87ed37f5399ca584ab1f342eda0ace80b1d7453648735da7a79f"
    },
-   "geometry": "f7964c065fc751b792005a4c462cb69525a55ae72542f6aeae9d7498a414a573",
+   "geometry": "2dc15dc44f4c26eb41575c1cd116704d5500969ef95d66c9b3cc159be21bb41f",
    "palette_max": 256,
-   "applied_sha256": "449b63d129b96dd0726ef4ea122fb90cfb6aa577661208221f3fcd845a4ec2b6",
+   "applied_sha256": "03addc2cc884167fa9f9fbaec49204cb49b15b8a90a967d819d3438c1bd3c005",
    "superseded_sha256": [
+    "f0412ec4ee91aa623c0c9e7e0a43b84ddf3b8a9c1715389923e533674fbd0409",
+    "449b63d129b96dd0726ef4ea122fb90cfb6aa577661208221f3fcd845a4ec2b6",
     "f1dd689f7771d47da7ee49f86060511775bd4f9151b2c0c763cdc415a6b7a480",
     "2a763b9cfb5b82f71375645af205f8883eddf108ba5edf8815a271fd87e58d97",
     "5496ad94359b862cd688fbf33ad480f0615b96f2ac354ed773c5d303d34553d3",
@@ -1681,9 +1683,9 @@
     "stream_bytes": 216832,
     "stored_size": 216832,
     "padding_bytes": 0,
-    "scratch_needed": 76,
+    "scratch_needed": 75,
     "scratch_retail": 80,
-    "matches_expanded": 741
+    "matches_expanded": 535
    },
    "sideline": [
     {
@@ -3071,14 +3073,15 @@
     "jacket": "79f2f97a7c084d86b477a78e140eda7fa8246b8deca64500a76798f678d02c0d",
     "logo": "041a01a7b483b572eaab2a1ce285a60eeb9edde8a520575cc1ac5f30ade8c23e",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "d8d658a331870b57ac9f1c9e43e36da3c51d59e62b7514a1e0d3eb889fd9226e",
+    "head": "5c1c1e9d429d16bf49688dcb0aa73b2cda45cd52e8f92faeaf5882d637d21487",
     "sideline_dry": "9461c39915248b23f7f50b9e6b42c391fb15b72b523c7b8fdbd7e78f1f2875aa",
     "sideline_rain": "bd9f8f9a1d68aacc757e5cb14e47f1f06cf85f3e5b18bb6b235b5b1e5fb2fd2f"
    },
-   "geometry": "e0e9bd2a26cbf644bd8533497caffb6c4532dd5e9a48dbf3d37ab1ab852604f6",
+   "geometry": "7e9d5e3b594c2ff0d68d9c2f98fe654edaeba10cd9c2024e74a3b0bed94f4eae",
    "palette_max": 256,
-   "applied_sha256": "fe39aca0bb9b227481fa843020122959345eba74bccca0e27279f14917d9e8b5",
+   "applied_sha256": "ffd76eba793f11c837534430b48ee954daa14f839030c324a98353c5c8fd5f89",
    "superseded_sha256": [
+    "fe39aca0bb9b227481fa843020122959345eba74bccca0e27279f14917d9e8b5",
     "8231fc044d89309ecfb55e4f0ab4884fc4a3e9ccf2526a5c9d81149e70b70082",
     "9fbeb91115e21d4cbbd3bfb0352268cea9c2af0517eb1dfc36b4976a1ffb8ff0",
     "0bcf4ca04ac09361486f7924aa5126cf1aa56bdd947c79b892a997c7a90abee2",
@@ -3091,9 +3094,9 @@
     "stream_bytes": 226256,
     "stored_size": 226256,
     "padding_bytes": 0,
-    "scratch_needed": 75,
+    "scratch_needed": 77,
     "scratch_retail": 96,
-    "matches_expanded": 870
+    "matches_expanded": 1014
    },
    "sideline": [
     {
@@ -3764,13 +3767,15 @@
     "jacket": "398da5557c0fdfbd8c93548732efecfaa0af79db5dbb33eda4cc70515758bad7",
     "logo": "7e5692c7289541e8da5f12bf5b7bbb7846cb519c71272cb9b54151ef3196a919",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "d5636470554c5cae6ba4d1d23ac5031a6f585ca2c777fec9cdd9e1d0b1c64a5a",
+    "head": "df363f24bc693f89f99086161c50251f5e93957cbbd4f9bc15b3da06cc824215",
     "sideline_dry": "4adabce58aa58a304e0c9581b37df840df69689564265db388f75a410c161600",
     "sideline_rain": "6b6478d770d48f5821d94b2dca9f892e56e09720709d570c230b2a58328cc340"
    },
+   "geometry": "f6bc30421d47d07e68574113e7fe8945ceabffe1cfe29b005abeba997f68b968",
    "palette_max": 256,
-   "applied_sha256": "07743518f9ef73064df3c677df7115e1345670dcac023a11156370ec6f8a601b",
+   "applied_sha256": "8cfb220d7e7f3d69ff41192f1d24f36f98885ae3efb86886846af615d904d797",
    "superseded_sha256": [
+    "07743518f9ef73064df3c677df7115e1345670dcac023a11156370ec6f8a601b",
     "0a78cb479fbc87aa7a5138c2f6fe6b6d02de517bc6add36d79473580c13626e5",
     "f4e9a17cfde7c0030f7d2804b592873f89a7994d37fb86d36c3f98b2c5ea58eb",
     "be724bac281f8c3be3316ce1e8e59b8dddbed1a067f0737db9186b33ae39bedd",
@@ -3784,9 +3789,9 @@
     "stream_bytes": 222464,
     "stored_size": 222464,
     "padding_bytes": 0,
-    "scratch_needed": 73,
+    "scratch_needed": 70,
     "scratch_retail": 96,
-    "matches_expanded": 634
+    "matches_expanded": 345
    },
    "sideline": [
     {
@@ -4182,14 +4187,15 @@
     "jacket": "c1272d11eb34dd35eb92b3f4b5b85de3661bd47971ca9fa252495cd5ac51649e",
     "logo": "fd0f0703cce0b2ad0bc1d8b7fb427b30a543ea0fddd37c61db23854d43595a38",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "de565cb8cc068ae133e50c1740edc242ea9f62b1c236f4267d7c835a39d0cd4b",
+    "head": "ccc3493f6a89c04cb4e170c80487d9fc664b49841806977c3c18fff75a724687",
     "sideline_dry": "a8cd7b8eb5350d27cd6feb70f13797df8cc45a355bd08064cccc71a984818e9e",
     "sideline_rain": "fce2a6fcae653bdd4e0c206dec52bc24cf2dcaeac936b254b39a624b4f1c0f0c"
    },
-   "geometry": "2389e650ac570fc408329c04b30c4aa400dac0f00e845f5f01f5c8e9b1fede3f",
+   "geometry": "c1321f5242729621f9f41be10e8f05c3f54c4c200223137fcf869f3586ee88f2",
    "palette_max": 256,
-   "applied_sha256": "d1d7fef17e3f8867569702c1a83d161739eac5b70d4ca238b4d7d5317c48e991",
+   "applied_sha256": "22255b37ea2bbbc807065317fea8a506428fbe119fe9815b48b0095e0145857d",
    "superseded_sha256": [
+    "d1d7fef17e3f8867569702c1a83d161739eac5b70d4ca238b4d7d5317c48e991",
     "c6cd30b0f49c57031f16484bedbe7b31e79ff0289455c292585e3b71d1d6d2d0",
     "7ab6357ff090dccca290a06926648ed44ca4e84a9605c200d2c4d09dbc86ba77",
     "f55a6344dbc33a2418b12635cf85dc0e9444e581442786c999f0884133a5e6b3"
@@ -4200,9 +4206,9 @@
     "stream_bytes": 230384,
     "stored_size": 230384,
     "padding_bytes": 0,
-    "scratch_needed": 66,
+    "scratch_needed": 86,
     "scratch_retail": 128,
-    "matches_expanded": 848
+    "matches_expanded": 743
    },
    "sideline": [
     {

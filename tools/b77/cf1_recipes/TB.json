@@ -1,0 +1,8 @@
+{
+ "who": "Todd Bowles",
+ "notes": "dark brown skin; shaved head; a short grey-black stubble beard and moustache; brown eyes; a broad smile with teeth in the official headshot (mouth closed here)",
+ "eyes": [70, 46, 32],
+ "mouth": "close",
+ "hair_colour": [52, 46, 44],
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "density": 0.3, "colour": [58, 52, 50], "light": 0.25, "light_colour": [140, 136, 132]}]
+}

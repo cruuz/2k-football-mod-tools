@@ -1485,6 +1485,7 @@ data/nfl2k5_modern_coaches/SF/logo.png
 data/nfl2k5_modern_coaches/SF/shirt.png
 data/nfl2k5_modern_coaches/TB/headset.png
 data/nfl2k5_modern_coaches/TB/head.png
+data/nfl2k5_modern_coaches/TB/geometry.json
 data/nfl2k5_modern_coaches/TB/jacket.png
 data/nfl2k5_modern_coaches/TB/logo.png
 data/nfl2k5_modern_coaches/TB/shirt.png
