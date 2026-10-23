@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import nfl2k5_highmark_model_art as base  # noqa: E402
@@ -113,22 +113,84 @@ def steel(size=32):
     return im
 
 
+#: the modern LED-board face (Chakra Petch Bold, OFL); the authored PNG ships, so a machine without the face falls
+#: back to the venue's plain Roboto Condensed Bold when the art is regenerated
+CHAKRA_FONT = "/home/noah/.local/share/fonts/Chakra Petch/ChakraPetch-Bold.ttf"
+
+
+def board_font(px):
+    try:
+        return ImageFont.truetype(CHAKRA_FONT, px)
+    except OSError:
+        return font(px)
+
+
+def _board_text(word, colour, px):
+    f = board_font(px)
+    w = int(ImageDraw.Draw(Image.new("L", (1, 1))).textlength(word, font=f))
+    im = Image.new("RGBA", (w + 8, int(px * 1.3)), (0, 0, 0, 0))
+    ImageDraw.Draw(im).text((4, 0), word, font=f, fill=colour + (255,))
+    return im.crop(im.getbbox())
+
+
+def _board_fit(im, max_w, max_h):
+    s = min(max_w / im.width, max_h / im.height)
+    return im.resize((max(1, int(im.width * s)), max(1, int(im.height * s))), Image.LANCZOS)
+
+
+def _board_spaced(word, colour, px, gap):
+    f = board_font(px)
+    parts = []
+    for ch in word:
+        w = int(ImageDraw.Draw(Image.new("L", (1, 1))).textlength(ch, font=f))
+        im = Image.new("RGBA", (w + 8, int(px * 1.3)), (0, 0, 0, 0))
+        ImageDraw.Draw(im).text((4, 0), ch, font=f, fill=colour + (255,))
+        parts.append(im.crop(im.getbbox()))
+    total = sum(p.width for p in parts) + gap * (len(parts) - 1)
+    h = max(p.height for p in parts)
+    out = Image.new("RGBA", (total, h), (0, 0, 0, 0))
+    x = 0
+    for p in parts:
+        out.paste(p, (x, 0), p)
+        x += p.width + gap
+    return out
+
+
 def board_panels(size=(128, 128)):
-    """The boards' stat panels, lit like the rest of the board: a teal field with a gold rule, a black window where the
-    game's digits sit, the club's name and the down and distance as plain type."""
+    """The boards' stat panels as modern LED screens (the 2014 Daktronics boards): a dark teal screen with a fine unlit
+    LED lattice, a gold top rule, the black live-digit window (kept exactly where ``adjust_digits`` puts the score and
+    clock), then the club's name and the venue's own name in a modern LED-board face. Plain type only: no club or bank
+    mark is drawn. The old fake down and distance is gone; it never changed with the game."""
     W, H = size[0] * SCALE, size[1] * SCALE
     a = np.zeros((H, W, 3), np.float32)
     g = np.linspace(0.0, 1.0, H)[:, None]
-    for k, (lo, hi) in enumerate(zip((0, 103, 120), (0, 44, 54))):
+    for k, (lo, hi) in enumerate(zip((0, 27, 35), (0, 10, 14))):
         a[..., k] = lo + (hi - lo) * g
     im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
-    d.rectangle([0, 0, W, int(H * 0.06)], fill=JAGS["gold"])
-    d.rectangle([int(W * 0.06), int(H * 0.14), int(W * 0.94), int(H * 0.50)], fill=(12, 12, 14))
-    word = _row([_text("JAGUARS", JAGS["gold"])], W, int(H * 0.16), SCALE * 8, 0.8)
-    im.paste(word, (0, int(H * 0.54)), word)
-    down = _row([_text("1ST & 10", JAGS["white"])], W, int(H * 0.12), SCALE * 8, 0.8)
-    im.paste(down, (0, int(H * 0.72)), down)
+    # the unlit LED lattice: a low-contrast 4-native-pixel pitch, so the panel reads as a screen up close and as a
+    # smooth dark field at broadcast distance
+    for x in range(0, W, SCALE * 4):
+        d.line([x, 0, x, H], fill=(0, 33, 41), width=1)
+    for y in range(0, H, SCALE * 4):
+        d.line([0, y, W, y], fill=(0, 33, 41), width=1)
+    d.rectangle([0, 0, W, int(H * 0.045)], fill=JAGS["gold"])
+    d.rectangle([0, int(H * 0.045), W, int(H * 0.055)], fill=(0, 84, 98))
+    # the live window (adjust_digits: the score and clock at 0.66 of the board's height, inside 0.14 .. 0.50)
+    d.rectangle([int(W * 0.06), int(H * 0.14), int(W * 0.94), int(H * 0.50)], fill=(3, 4, 6),
+                outline=(0, 105, 120), width=SCALE)
+    for x in range(int(W * 0.06), int(W * 0.94), SCALE * 4):
+        d.line([x, int(H * 0.14), x, int(H * 0.50)], fill=(6, 8, 11), width=1)
+    for y in range(int(H * 0.14), int(H * 0.50), SCALE * 4):
+        d.line([int(W * 0.06), y, int(W * 0.94), y], fill=(6, 8, 11), width=1)
+    word = _board_fit(_board_text("JAGUARS", JAGS["white"], int(H * 0.20)), int(W * 0.86), int(H * 0.18))
+    y0 = int(H * 0.555)
+    im.paste(word, ((W - word.width) // 2, y0), word)
+    d.rectangle([int(W * 0.20), y0 + word.height + int(H * 0.012), int(W * 0.80),
+                 y0 + word.height + int(H * 0.020)], fill=JAGS["gold"])
+    sub = _board_fit(_board_spaced("EVERBANK STADIUM", (196, 214, 219), int(H * 0.080), int(W * 0.010)),
+                     int(W * 0.80), int(H * 0.075))
+    im.paste(sub, ((W - sub.width) // 2, y0 + word.height + int(H * 0.040)), sub)
     return im
 
 
