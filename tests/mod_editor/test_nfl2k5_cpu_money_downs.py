@@ -31,13 +31,34 @@ class PolicyTests(unittest.TestCase):
         self.assertIn(list(patch.REQUESTS[0]), rows)
 
     def test_late_protection_and_trailing_limits(self):
+        # b778 ai6: Modern 2 trailing in the last two minutes goes at any distance; a field goal only ties/takes the
+        # lead. Modern (the older level) keeps its late protection.
         for margin in (-3, -2, -1, 0, 1, 8, 9, 28):
             self.assertEqual(patch.decision(quarter=4, seconds=120, score_margin=margin), "retail")
-        self.assertEqual(patch.decision(quarter=2, seconds=30), "retail")
-        self.assertEqual(patch.decision(quarter=4, seconds=121, score_margin=-9, distance=4), "go")
-        self.assertEqual(patch.decision(quarter=4, seconds=120, score_margin=-4, distance=6), "go")
-        self.assertEqual(patch.decision(quarter=4, seconds=120, score_margin=-4, distance=7), "retail")
-        self.assertEqual(patch.decision(quarter=4, seconds=240, score_margin=9, distance=2), "retail")
+        for margin in (-1, -2, -3):
+            self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=margin), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-3, own_yard=80,
+                                        distance=2, kick_range=38), "fg")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-4, own_yard=80,
+                                        distance=7, kick_range=38), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-10, distance=27), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=2, seconds=30), "retail")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=121, score_margin=-9, distance=4), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-4, distance=6), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-4, distance=7), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=240, score_margin=9, distance=2), "go")
+        # The rare punt needs all three timeouts, more than 1:30, a defense that allowed 7 or fewer second-half
+        # points and a one-in-three roll; otherwise it is go.
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-7, distance=27,
+                                        timeouts=3, defense_points=0, punt_roll=0.1), "punt")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-7, distance=27,
+                                        timeouts=3, defense_points=8, punt_roll=0.1), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-7, distance=27,
+                                        timeouts=3, defense_points=0, punt_roll=0.5), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=90, score_margin=-7, distance=27,
+                                        timeouts=3, defense_points=0, punt_roll=0.1), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-7, distance=27,
+                                        timeouts=2, defense_points=0, punt_roll=0.1), "go")
 
     def test_invalid_and_non_cpu_states_retain_retail(self):
         for changes in ({"down": 3}, {"quarter": 5}, {"cpu": False}, {"phase": 3},

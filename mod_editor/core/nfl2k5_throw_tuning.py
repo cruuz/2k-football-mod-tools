@@ -1459,6 +1459,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (coverage_trail_patch.REQUESTS if coverage_trail else ())
         + (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())
         + (cpu_money_downs_patch.REQUESTS if cpu_money_downs != "retail" or coach_ai else ())
+        + (cpu_money_downs_patch.LATE_REQUESTS if cpu_money_downs == "modern2" else ())
         + (accelerated_clock_patch.REQUESTS if accelerated_clock else ())
         + (coin_defer_patch.REQUESTS if coin_defer else ())
         + (decided_clock_patch.REQUESTS if decided_clock else ())

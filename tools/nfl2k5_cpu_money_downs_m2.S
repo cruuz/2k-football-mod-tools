@@ -22,6 +22,9 @@
 .ifdef VIP_AWARE
 .extern native_vip, two_point_tail
 .endif
+.ifdef LATE_HELPER
+.extern late_decision
+.endif
 
 fourth:
     pushfd
@@ -49,6 +52,13 @@ fourth_kick:
  * Locals: [esp] yards to goal, +4 yards to go, +8 seconds (then game seconds), +12 yard index, +16 period,
  * +20 limit, +24 region (0 own side of the 40, 1 middle, 2 opponent 40 and in). */
 policy:
+.ifdef LATE_HELPER
+    call late_decision             /* b778 ai6: the late-trailing rule lives in its own late owner */
+    cmp eax, 4
+    jae p_late_continue
+    ret                             /* 0 retail / 1 go / 2 field goal / 3 punt */
+p_late_continue:
+.endif
 .ifdef VIP_AWARE
     call vip_active
     test eax, eax

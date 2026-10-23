@@ -91,7 +91,8 @@ class Modern2PolicyTests(unittest.TestCase):
         self.assertEqual(d(own_yard=50, distance=6, quarter=4, seconds=200, score_margin=9), "retail")
         self.assertEqual(d(own_yard=50, distance=6, quarter=4, seconds=200, score_margin=-9), "go")
         # tied or trailing by a field goal near the goal: prefer the kick
-        self.assertEqual(d(own_yard=80, distance=3, quarter=4, seconds=100, score_margin=-3), "retail")
+        self.assertEqual(d(own_yard=80, distance=3, quarter=4, seconds=100, score_margin=-3), "go")
+        self.assertEqual(d(own_yard=80, distance=3, quarter=4, seconds=100, score_margin=-3, kick_range=40), "fg")
 
     def test_late_lead_field_goal_rule(self):
         base = dict(level="modern2", quarter=4, seconds=90, quarter_seconds=300, score_margin=3, own_yard=70, kick_range=45)
@@ -214,7 +215,9 @@ class Modern2OwnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.retail = retail_xbe()
-        cls.outputs = {level: patch.apply(cls.retail, level=level)[0] for level in patch.LEVELS[1:]}
+        # Reserve the complete ai6 owner union (Modern 2 + its late companion), as the integration build does.
+        cls.allocated, _ = space.apply(cls.retail, patch.REQUESTS + patch.LATE_REQUESTS, scaleout=True)
+        cls.outputs = {level: patch.apply(cls.allocated, level=level)[0] for level in patch.LEVELS[1:]}
 
     def test_apply_status_sites_and_untouched_shotgun_rule(self):
         out = self.outputs["modern2"]
@@ -224,7 +227,7 @@ class Modern2OwnerTests(unittest.TestCase):
         row = next(a for a in space.layout(out)["allocations"] if a["owner"] == patch.OWNER)
         self.assertEqual((row["kind"], row["size"], row["align"]), ("code", 2048, 16))
         image, base = XbeImage(out), XbeImage(self.retail)
-        sites = patch.sites(row["va"], "modern2")
+        sites = patch.sites(row["va"], "modern2", variant="b778_late")
         self.assertEqual([s[0] for s in sites], ["fourth", "play", "target", "two_point", "fg_dispatch", "fg_commit", "exponent_front", "exponent_cover",
                                                  "timeout_window"])
         # b778: the first-half timeout predicate compares the half clock with 0.0 instead of 15.0 (fcomp operand)
@@ -301,10 +304,10 @@ class Modern2OwnerTests(unittest.TestCase):
         # and section digests. A fresh build and the bounded upgrade are identical.
         # b778: +4 code bytes (team flag test), +8 (sign-only direction test), the 2-byte timeout operand edit,
         # plus derived digests.
-        self.assertEqual(len(changed), 2139)
+        self.assertEqual(len(changed), 2523)
 
     def test_v061_modern2_upgrade_and_foreign_refusal(self):
-        allocated, _ = space.apply(self.retail, patch.REQUESTS, scaleout=True)
+        allocated, _ = space.apply(self.retail, patch.REQUESTS + patch.LATE_REQUESTS, scaleout=True)
         old, _ = patch.lever.apply(allocated, patch._adapter("modern2", variant="p9"))
         self.assertEqual(patch.status(old), "applied")
         self.assertFalse(patch.read_settings(old)["vip_policy"])
@@ -316,7 +319,8 @@ class Modern2OwnerTests(unittest.TestCase):
         v061, _ = patch.lever.apply(allocated, patch._adapter("modern2", variant="v061"))
         self.assertEqual(patch.status(v061), "applied")
         self.assertEqual(patch.read_settings(v061), {"level": "modern2", "vip_policy": True, "clock_policy": False,
-                                                     "variant": "v061", "experimental": True, "runtime_witnessed": False})
+                                                     "late_policy": False, "variant": "v061", "experimental": True,
+                                                     "runtime_witnessed": False})
         self.assertEqual(XbeImage(v061).read(0x207202, 4), bytes.fromhex("74694e00"))
         upgraded, receipt = patch.apply(v061, level="modern2")
         self.assertEqual(upgraded, self.outputs["modern2"])
@@ -441,7 +445,8 @@ class Modern2NativeTests(unittest.TestCase):
         cells = mismatches = 0
         for q, secs, margin, qs in itertools.product((1, 2, 3, 4), (3, 95, 125, 400, 1100), (-20, -8, -3, 0, 3, 9), (300, 900)):
             for own, dist in itertools.product((5, 20, 33, 50, 62, 80, 95), (0.5, 1, 3, 6, 7, 12, 20)):
-                state = dict(quarter=q, seconds=secs, score_margin=margin, own_yard=own, distance=dist, quarter_seconds=qs)
+                state = dict(quarter=q, seconds=secs, score_margin=margin, own_yard=own, distance=dist,
+                             quarter_seconds=qs, timeouts=0)
                 got = self.CODE[self.m.policy(**state)]
                 want = patch.decision(level="modern2", kick_range=self.RANGE, hail_mary=self.native_hail_mary(**state), **state)
                 cells += 1
