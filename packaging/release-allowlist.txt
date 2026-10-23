@@ -3622,6 +3622,7 @@ tests/mod_editor/test_b778_rh1_rookie_faces.py
 tools/b77/rh1_names.py
 tools/b77/rh1_bank.py
 tools/b77/rh1_rookie_faces.S
+tools/b77/rh2_names.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md

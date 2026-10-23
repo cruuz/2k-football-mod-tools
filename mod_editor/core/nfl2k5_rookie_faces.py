@@ -22,7 +22,7 @@ What this option does
    one; no real person, no reference photo ships), each labelled with its skin tone (0..5, the generic head tones),
    build (lean < LEAN_MAX_LB, heavy >= HEAVY_MIN_LB, else medium) and whether its hair hangs (locs, long braids).
    The bank is grouped into 18 buckets (tone x build), each a contiguous run of portrait ids that no roster on the
-   image uses and no portrait occupies.
+   image uses and no portrait occupies (b778-rh2: 24 rows in the five-digit run from 10000, see ID_MIN / ID_END).
 2. The portraits are added, not replaced: the game's PORTRAIT context reads the record named by the UTF-16 string at
    0xE6A3B4 ("Portrait.iff", outer 10, CACR) and streams slot ``sorted-hash index x 0x4500`` from the aggregate the
    record names ("portrait.cdf", outer 3105).  This option appends a new record ("Portrai2.iff") and aggregate
@@ -48,6 +48,18 @@ What this option does
      nickname is kept one time in (NICKMASK + 1), else redrawn from the ordinary names, about 1 % of prospects.
    The surname, its commentary cue and every rating are left exactly as the generator made them.
 
+b778-rh2 (Noah 10/22: "max out the number", "more types", rare East / South Asian prospects with fitting names, "some
+genuinely ugly people", "it's very rare you stumble onto the same face twice"):
+   * rows hold up to 511 faces (count | hanging << 9), so the big cells reach 1.5x the faces alive at once in a fully
+     generated league; a face in use is redrawn up to 24 times (was 8).
+   * three rare surnames (Nguyen, Chen, Patel: rows RS0..RS0+2 of the shipped pool, US Census 2010 Asian shares above
+     94 %) take their own rows 18..23 (East Asian, tone 1 / South Asian, tone 2, by build) and one of four fitting
+     first names from the pool tail (RFIRST0..), which an ordinary draw never keeps.  Drawn like any surname (1 in 485
+     per prospect): about 0.9 East Asian and 0.5 South Asian prospects per class of 224.  Ratings never read any of it.
+   * an older save's pool (canary mismatch) gets neither the first-name term nor the rare rows.
+   * code: region B grows by the 9 nop bytes of padding after its ret 4 (0xE7117..0xE7120, no reference lands there);
+     the lean / heavy cut-offs are code immediates; still zero allocator bytes.
+
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
 differs).  Players already in a save keep their portrait ids.
@@ -71,23 +83,24 @@ BUILD_CAPTION = "Rookie faces (draft prospects)"
 HELP_TEXT = ("EXPERIMENTAL. Generated draft prospects get new fictional draft headshots instead of the 2004 stock "
              "photos: the face matches his in-game skin tone and build (his weight), his name and position make his "
              "skin tone as likely as in the real NFL, and a face an active player already wears is avoided. A few "
-             "prospects get a nickname first name. Disc images only. Not yet tested in a long franchise.")
+             "prospects get a nickname first name, and now and then an East Asian or South Asian prospect appears "
+             "with a fitting name. Disc images only. Not yet tested in a long franchise.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
 BANK_JSON = DATA_DIR / "bank.json"
 NAMES_JSON = DATA_DIR / "name_odds.json"
-SCHEMA_BANK = "nfl2k5_rookie_faces_bank/v1"
+SCHEMA_BANK = "nfl2k5_rookie_faces_bank/v2"
 SCHEMA_NAMES = "nfl2k5_rookie_faces_names/v1"
 
 # ------------------------------------------------------------------------------------------------ the executable
 IMAGE_BASE = 0x10000
 REGION_A = 0xE67EA            # retail skin/face draw, 132 bytes up to the weight code at 0xE686E
 REGION_A_END = 0xE686E
-REGION_B = 0xE7019            # retail portrait pick and epilogue, up to the next routine's padding at 0xE7117
-REGION_B_END = 0xE7117
+REGION_B = 0xE7019            # retail portrait pick and epilogue, plus the 9 nop bytes of padding after its ret 4
+REGION_B_END = 0xE7120        # (0xE7117..0xE7120 is inter-routine padding, no reference lands there; next routine 0xE7120)
 TABLE_VA = 0x4F4F40           # retail generic-portrait range table (41 rows + sentinel), only read by REGION_B
 TABLE_END = 0x4F5138          # the next table (read by FUN_000E6680) starts here
-TABLE_DATA = 0x12C            # tables, then code
+TABLE_DATA = 0x142            # tables, then code
 ROSTER_VA = 0xB72918          # -> the live roster object
 RAND_VA = 0x48B50             # u32 rand(ecx = generator at 0xE5FCA0)
 STRING_VA = 0xE6A3B4          # UTF-16 "Portrait.iff", the PORTRAIT context's record file (only reference 0xE714F)
@@ -95,32 +108,51 @@ RECORD_NAME = "Portrai2.iff"
 CDF_NAME = "portrai2.cdf"
 RETAIL_RECORD_NAME = "Portrait.iff"
 RETAIL_CDF_NAME = "portrait.cdf"
-# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA); the listing is in that file.
+# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b778-rh2 version); the listing is in that file.
 CODE_A = bytes.fromhex(
-    "e97f000000b9a0fce500e95723f6ff31ff39cf73083904fb740347ebf4c356518b4d008b750485c9740c663946067409"
-    "83c65449ebf083c901595ec33a02720543424975f7c3")
+    "e97f00000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
+    "85c9740c66394206740983c25449ebf083c901c30fb705a04f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"
+    "ff8405a24f4f0074140fb70da04f4f00e890ffffff89d78b04fb894610c3")
 CODE_B = bytes.fromhex(
-    "89068b2d1829b7008b5d548b4d508b4610e8caf7ffff0fb705a24f4f0039c7722939cf7325e8acf7ffff8405a44f4f00"
-    "7418e89ff7ffff31d20fb70da24f4f00f7f189d78b04fb89461031d28b03668b00663b056a504f00751f89f8c1e0050f"
-    "b70da24f4f00f7f18b4d5031d283f81f77070fbe90544f4f008954241083c3048b4614e858f7ffff39cf732389f8c1e8"
-    "020fb680f04f4f0089f983e103d1e1d3e883e0030fbe80744f4f00014424100fb6463583f810770b0fbe80404f4f0001"
-    "4424108b4424100580000000c1f803790231c083f81f7605b81f0000000fb6b8784f4f00e8edf6ffff0fb6c039f819ff"
-    "e95edf4000")
+    "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
+    "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe8bcf7ffff8b03668b00663b"
+    "05a54f4f00752289f8c1e0050fb70da04f4f0031d2f7f183f81f77120fbe90544f4f0001542410eb05834c2414ff0fb6"
+    "463583f810770b0fbe80404f4f00014424108b4424100580000000c1f803790231c083f81f7602b01f0fb6b8784f4f00"
+    "e81df7ffff0fb6c039f819ffe811f7ffffba9c4f4f0031c94131db85ff7408ba984f4f00b104433a02720543424975f7"
+    "0fb6462a31d23c4a7606423c7d720142e964df4000")
 CODE_D = bytes.fromhex(
-    "e87e17bfffba9c4f4f0031c94131db85ff7408ba984f4f00b10443e89a17bfff0fb6462a8d1c5b3a05a04f4f00760a43"
-    "3a05a14f4f007201438d3c9da84f4f00bb08000000e83917bfff31d20fb64f02f7f1895424140fb70701d066c74606ff"
-    "ffe83617bfff75034b75da668946068b4e1881e17efcffff89f82da84f4f00c1e802b303f6f30fb6c0c1e00709c18b44"
-    "24143a4703730383c901894e18e8e116bfff31d2b907000000f7f1c1e2118b462025fffff1ff09d08946205f5e5d5b83"
-    "c408c20400")
+    "895c24108b442414662b05a34f4f0083f803732c31c93c020f93c18a99514f4f00895c24108d59068b0e83e1038d0481"
+    "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff895424140f"
+    "b70701d0e82917bfff75034b75e1668946068b4e1881e17efcffff8b442410c1e00709c10fb64703d1e8394424147301"
+    "41894e186a0759e8d116bfff01d2806622f10856225f5e5d5b83c408c20400")
 
 # table layout (offsets from TABLE_VA)
-T_POS, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x14, 0x34, 0x38
-T_TCB, T_TCO = 0x58, 0x5C
-T_LEANMAX, T_HEAVYMIN, T_NICK0, T_NICKMASK = 0x60, 0x61, 0x62, 0x64
-T_BUCKETS, T_LASTBITS = 0x68, 0xB0
-T_CANARY = 0x12A               # UTF-16 first letter of pool first name 0: an older save's own pool keeps its name term neutral
+T_POS, T_TONES, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x11, 0x14, 0x34, 0x38
+T_TCB, T_TCO, T_RFIRST0 = 0x58, 0x5C, 0x5D
+T_NICK0, T_NICKMASK, T_RS0 = 0x60, 0x62, 0x63
+T_CANARY = 0x65                # UTF-16 first letter of pool first name 0: an older save's own pool keeps its name term neutral
+T_BUCKETS, T_LASTBITS = 0x68, 0xC8
 BUCKETS = 18                  # tone 0..5 x build 0..2, bucket = tone * 3 + build
+ROWS = 24                     # + the rare rows: 18 + 3 * group + build (group 0 East Asian, 1 South Asian)
+ROW_COUNT_MAX = 511           # row word = count | hanging << 9
+ROW_HANGING_MAX = 127
 POOL_COUNT = 485
+# b778-rh2 rare groups (Noah 10/22: "super Asian every now and then", South Asian "maybe one or two appear every few
+# years"): three surnames at adjacent pool rows, drawn like any other surname (1/485 each per prospect), carry their
+# own face rows and a fitting first name (four per surname at the pool tail, never drawn otherwise).
+RARE_SURNAMES = ("Nguyen", "Chen", "Patel")         # East, East, South (US Census 2010: 96.5 / 96.1 / 94.8 % Asian)
+RARE_FIRSTS = ("Minh", "Tuan", "Huy", "Vinh",       # Nguyen
+               "Wei", "Jun", "Ming", "Hao",          # Chen
+               "Raj", "Nikhil", "Ravi", "Neil")      # Patel
+RARE_GROUPS = ("east", "south")
+RARE_TONES = (1, 2)            # generic-head tone of the East / South rows
+RS0_OFF = 0x8000              # T_RS0 when the pool has no rare surnames: no surname index matches
+# Portrait ids: u16 at player +0x06, formatted "%04d" (so 10000..65535 print five digits) into 16-byte stack buffers by
+# the only three portrait loaders (0xE7170 player, 0xE71E0, 0xE7240; 25 + 7 + 2 call sites, no other consumer), then
+# looked up by name hash; a missing name falls back to "nophoto".  No code compares a portrait id with 9999/10000, and
+# shipped rosters already carry ids from 21696 up (shown as "nophoto").  b778-rh2 puts the bank in 10000..21695: one
+# free contiguous run, clear of every 4-digit id other options and players use.
+ID_MIN, ID_END = 1000, 21696
 
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 # P(Black | position): TIDES, "The 2013 Racial and Gender Report Card: National Football League" (2012 season),
@@ -162,11 +194,17 @@ def load_names(path: Path | None = None) -> dict[str, Any]:
 def load_bank(path: Path | None = None) -> dict[str, Any]:
     doc = json.loads(Path(path or BANK_JSON).read_text(encoding="utf-8"))
     require(doc.get("schema") == SCHEMA_BANK, "unknown rookie-face bank document")
-    require(len(doc["buckets"]) == BUCKETS, "the bank needs 18 buckets")
+    require(len(doc["buckets"]) == ROWS, f"the bank needs {ROWS} rows")
     for b, row in enumerate(doc["buckets"]):
-        require(row["tone"] * 3 + row["build"] == b, f"bucket {b} is out of order")
-        require(1 <= row["count"] <= 255 and 0 <= row["hanging"] <= row["count"], f"bucket {b} has a bad count")
-        require(1000 <= row["start"] and row["start"] + row["count"] <= 10000, f"bucket {b} ids must stay 4-digit")
+        if b < BUCKETS:
+            require(row["tone"] * 3 + row["build"] == b and not row.get("group"), f"bucket {b} is out of order")
+        else:
+            g, build = divmod(b - BUCKETS, 3)
+            require(row.get("group") == RARE_GROUPS[g] and row["build"] == build and row["tone"] == RARE_TONES[g],
+                    f"rare row {b} is out of order")
+        require(1 <= row["count"] <= ROW_COUNT_MAX and 0 <= row["hanging"] <= min(row["count"], ROW_HANGING_MAX),
+                f"row {b} has a bad count")
+        require(ID_MIN <= row["start"] and row["start"] + row["count"] <= ID_END, f"row {b} ids must stay in {ID_MIN}..{ID_END - 1}")
     return doc
 
 
@@ -196,10 +234,27 @@ def _cdf(weights: Sequence[float]) -> list[int]:
     return out
 
 
+def rare_layout(firsts: Sequence[str], lasts: Sequence[str]) -> tuple[int, int]:
+    """(RS0, RFIRST0): the pool row of the three rare surnames and of the twelve rare first names at the tail, or
+    (RS0_OFF, POOL_COUNT) when this pool does not carry them (a user CSV): the rare groups are then off."""
+    tail = len(firsts) - len(RARE_FIRSTS)
+    keys = [_key(n) for n in lasts]
+    want = [_key(n) for n in RARE_SURNAMES]
+    for i in range(len(lasts) - len(want) + 1):
+        if keys[i:i + len(want)] == want and [_key(n) for n in firsts[tail:]] == [_key(n) for n in RARE_FIRSTS]:
+            if not any(_key(n) in want for n in lasts[:i] + lasts[i + len(want):]):
+                return i, tail
+    return RS0_OFF, len(firsts)
+
+
 def nick0(firsts: Sequence[str], names: Mapping[str, Any]) -> int:
-    """First index of the trailing run of nickname first names (POOL_COUNT when there is none)."""
+    """First index of the trailing run of nickname first names (POOL_COUNT when there is none); the rare first names
+    at the very end (rare_layout) belong to that run: neither is ever kept from an ordinary draw's band."""
     nick = {_key(n) for n in names["nicknames"]}
     index = len(firsts)
+    rare = [_key(n) for n in RARE_FIRSTS]
+    if [_key(n) for n in firsts[index - len(rare):]] == rare:
+        index -= len(rare)
     while index > 0 and _key(firsts[index - 1]) in nick:
         index -= 1
     return max(1, index)
@@ -221,6 +276,7 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
     first_lr = {_key(k): v for k, v in names["first"].items()}
     last_lr = {_key(k): v for k, v in names["last"].items()}
     n0 = nick0(firsts, names)
+    rs0, rfirst0 = rare_layout(firsts, lasts)
     for band in range(32):
         lo, hi = (band * n0 + 31) // 32, ((band + 1) * n0 + 31) // 32
         vals = [first_lr.get(_key(firsts[i]), 0) for i in range(lo, hi)] or [0]
@@ -239,7 +295,7 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
     # the pool's own (uniform, independent) first-name and surname draws: the pool is NFL names, so the names alone
     # would push every position above its share.
     first_w = collections.Counter()
-    nick_kept = (POOL_COUNT - n0) / POOL_COUNT / (NICKMASK + 1)
+    nick_kept = (rfirst0 - n0) / POOL_COUNT / (NICKMASK + 1)
     for i in range(n0):
         first_w[struct.unpack_from("<b", out, T_FIRST + (i * 32) // n0)[0]] += (1 - nick_kept) / n0
     first_w[0] += nick_kept
@@ -260,12 +316,15 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
         struct.pack_into("<b", out, T_POS + i, best)
     out[T_TCB:T_TCB + 4] = bytes(_cdf(TONE_BLACK))
     out[T_TCO] = _cdf(TONE_OTHER)[0]
-    out[T_LEANMAX] = LEAN_MAX_LB - WEIGHT_BASE
-    out[T_HEAVYMIN] = HEAVY_MIN_LB - WEIGHT_BASE
     struct.pack_into("<H", out, T_NICK0, n0)
     out[T_NICKMASK] = NICKMASK
+    struct.pack_into("<H", out, T_RS0, rs0)
+    struct.pack_into("<H", out, T_RFIRST0, rfirst0)
+    out[T_TONES:T_TONES + 2] = bytes(RARE_TONES)
+    require(len(bank["buckets"]) == ROWS, f"the bank needs {ROWS} rows")
     for b, row in enumerate(bank["buckets"]):
-        struct.pack_into("<HBB", out, T_BUCKETS + 4 * b, row["start"], row["count"], row["hanging"])
+        require(row["count"] <= ROW_COUNT_MAX and row["hanging"] <= ROW_HANGING_MAX, f"row {b} is too large")
+        struct.pack_into("<HH", out, T_BUCKETS + 4 * b, row["start"], row["count"] | row["hanging"] << 9)
     struct.pack_into("<H", out, T_CANARY, ord(firsts[0][0]))
     return bytes(out)
 
@@ -301,7 +360,7 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
 
 RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1 checked) carry these bytes
     REGION_A: "6e6acd5a0be9dbac8fa24161f92fe29b314117851773a9577534a498e73165c6",
-    REGION_B: "1364e556dc1b2a66adfeeaad3b1f1062ec497b982431e6ef890f005b8ce49adc",
+    REGION_B: "8c8c09860c0f31519aa72f0293c805c646f84ca632611890705977d32f317692",
     TABLE_VA: "e6ec955562c16009edf4ca8790a0b310d685f3c04443ff1106323fc5514567fd",
     STRING_VA: "8d322c825fff63a505e786350f7fe8da17d68dd292769f9f5146c2605ea14ae2",
 }
