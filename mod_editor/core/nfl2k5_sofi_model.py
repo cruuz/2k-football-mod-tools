@@ -1486,13 +1486,14 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
 
 
 def led_segment(size=32):
-    """The digit segment texture: one lit LED bar (warm white, a soft one-texel edge) where the retail texture had its
-    2 x 2 light bulbs, black around it, so each segment of the game's digits reads as a modern LED segment."""
-    y, x = np.mgrid[0:size, 0:size].astype(float) + 0.5
-    x0, x1, y0, y1 = 8.0, 24.0, 3.0, 29.0
-    edge = np.minimum.reduce([x - x0, x1 - x, y - y0, y1 - y])
-    lit = np.clip(edge, 0.0, 1.0)[..., None]
-    rgb = lit * np.array([255.0, 250.0, 236.0]) + (1 - lit) * np.array([6.0, 6.0, 8.0])
+    """The digit cell texture: a modern fine-pitch LED panel. The whole cell is lit (warm white) with a 4-texel dot
+    grid, so neighbouring cells of the game's digit matrix merge into continuous strokes; there is no dark border and
+    no 2 x 2 light bulb. The grid is periodic across the cell edge (32 is a multiple of 4), so tiled cells line up."""
+    y, x = np.mgrid[0:size, 0:size].astype(int)
+    dot = (((x % 4) == 1) | ((x % 4) == 2)) & (((y % 4) == 1) | ((y % 4) == 2))
+    base = np.array([224.0, 220.0, 208.0])
+    bright = np.array([255.0, 251.0, 240.0])
+    rgb = np.where(dot[..., None], bright, base)
     return np.dstack([rgb, np.full((size, size), 255.0)]).astype(np.uint8)
 
 

@@ -12979,11 +12979,11 @@
         "format": "In-place fixed-span SCNE resources in the nine s12 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s12 row of the main ROST",
         "hash_pins": [
           "3baabdf9e98ed284216cc27445856f7f8a9060dd1356ab033ad079327f90e587",
-          "53e2d176a6fd6e2ede498270693fd4f5794c4f725ce72217342d78b7b4561460",
-          "a3459bf6cc03ca360dedab7beef8b618a12514b046cfafef66eec120ffdafee9",
+          "b84ae658bb7d0ea346e3ae577be278cb7eaf4a1d037821841519bf713fb8554a",
+          "73756ddf342ac29e980fa9c4edf345301a7ebe54c4b8a52346d0dc92c741a021",
           "e5c6be1dc68e0e1719c31e846c7c797aff0af967f75381e803a66b55c00151e5",
-          "dea85133c9e5d99fc5ab59f51aa378c08217a217d99537ffd9a9176eb5459183",
-          "1df00e400a9ca84a3e6aed9f24f2c745a6aaa55089b86bca9c4b177db515cbd7"
+          "f7bfe724c974be0beeafa6425cd06dc6065a82618928da3df53be107fcf9d2bb",
+          "5ccc5a5af79ed74181a0eb1c7accace1ae3cdee607e026c53e3b7211374cd42b"
         ],
         "resource": "archive entries s12{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s12",
         "retail_file": "the vc_53450030 archive packs holding the Jaguars stadium bundles, and the main roster"
@@ -13051,9 +13051,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s16 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s16 row of the main ROST",
         "hash_pins": [
           "9cfb084ca94003169c95a177498beb6f884495cd4625e1bd80d7bb11b9811c48",
-          "03af1c9e0ff9bc9aef59603abbcf6815746e2849e34e4104c56a66ee8418fac5",
+          "775949c744cadaa6a7d133632e3fc05e521dc5f4c7fe6e8914cdfc2700f75cbb",
           "1bf261ef9dc96dbcdd5530eb671ee94e16a7712f5ab304e53473678024f6a1de",
-          "1be771fcb2dbc21cb5d7c42051c66e750d8de0644db7ae9796c64f11c17c32f6"
+          "b94d43360ade7fbfdd6bc9f5c73e96aa417816537786370adc5a8e92e41f5189"
         ],
         "resource": "archive entries s16{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s16",
         "retail_file": "the vc_53450030 archive packs holding the Patriots stadium bundles, and the main roster"
@@ -13188,9 +13188,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s14 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s14 row of the main ROST",
         "hash_pins": [
           "41adaee558a90e06cbbd3a47753fea8339f09e728347dc1d0b0684e76e6f1173",
-          "d29c999227fd52e95320ba0b9a912c6da49b672ef3c9212c4ec6ce831f20802c",
+          "bb18b866651e51c9a49f6eda7b764677ec5296cd3234e42d20cefb26377ae589",
           "1cc8ec3ca37e416eec9ac2d50a787e5f3a94361e2a3d227577ee167d7131b173",
-          "994039bdeeddb601e58a5e47dbd76976e6ac571135c59538eafa1b0dd575f1e7"
+          "c9463dc3d769e2f4fe4bec1e978e24cdccd7a4352a87e78232e78b3e02158f20"
         ],
         "resource": "archive entries s14{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s14",
         "retail_file": "the vc_53450030 archive packs holding the Dolphins stadium bundles, and the main roster"
@@ -13261,9 +13261,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s03 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s03 row of the main ROST",
         "hash_pins": [
           "7b103d8845e69c49bceea39b00d350aa20d8e57d06a08b4f1c4ca56a2882b4a1",
-          "67254d8c923ba5809df8b83798a38585980cb6b2b0bfee893f0a8b100811b582",
+          "8bd487c7d92fe27247d65ac1653415063072066487311086ec8d7a9e8fb204fe",
           "011740844a7e4237e1aefe2953a1813ca64e09091e7c33e56bbc87a60a7ee37d",
-          "2468930aaf76238cf3e167020d46b57dbf4615c90e328f463ae9af5059f3f1d6"
+          "ed821e876db33c32202322d8059653600b9a31244edf4143c7d09d60d3b72546"
         ],
         "resource": "archive entries s03{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s03",
         "retail_file": "the vc_53450030 archive packs holding the Bills stadium bundles, and the main roster"
@@ -13334,9 +13334,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s10 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s10 row of the main ROST",
         "hash_pins": [
           "c7bdff363dcb2957dd9b8d3aef990ea9a1b0369e3343334168daaf370f1aba6d",
-          "df4facdb12331cdd129b93ccff0eee48ef3f59e3e99c1ff9cc4b516ecef19f2f",
+          "3a2a9364c2d2a6f7be7ba723b32f199239f861d1d23f558aca0defba5f18397d",
           "13cca2066764a2909442b3066bdf37d98e4bb7df521a371f9fe4925b09f2d40b",
-          "5e68b43b9c6be8492c92f4d8a43d20695cd8f636d6235d5694f0a65c926dc163"
+          "2030c58fce03739becce15b08c129a87ab3dfca117562a585f3a1aafbde0ac89"
         ],
         "resource": "archive entries s10{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s10",
         "retail_file": "the vc_53450030 archive packs holding the Packers stadium bundles, and the main roster"
@@ -13407,9 +13407,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s25 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s25 row of the main ROST",
         "hash_pins": [
           "ba0e1c95200155c602eea10b8395378d4c75989f0bbef11546bae1af3f668aec",
-          "824040de44febb12912bb21515bf30d1f4067612f00f1a1c55a9f80a797e7a6b",
+          "b225b4d1ea9c5bed5f69989318a84925fa78e8958d03abc1fffb625162e42aa0",
           "dd23e78790ce5fea1dad06fc6fd6b7c8669efc684f75b33d3ef5625c15f5f96e",
-          "0343067522b86a7e50791fcd5c2a344320dd9e7d8f27f6b7b98a17e99a86a2bf"
+          "88804e7bda7cf3f875827b790218efa748925fd6f1d2469f16c5571cfc787f27"
         ],
         "resource": "archive entries s25{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s25",
         "retail_file": "the vc_53450030 archive packs holding the 49ers stadium bundles, and the main roster"
@@ -13480,9 +13480,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s11 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s11 row of the main ROST",
         "hash_pins": [
           "73b6108105c258909ac0f587d98eaf9f82f3f7af5931e6009b58918ecc94933d",
-          "cb10fe03971377b043d3d52808ea474fd94492949b8120706c66a81c2105b700",
+          "d612b1eacaecde479cdf328465bbd5e7a739802dc219d7f4c987d3d65359a481",
           "9bf537ba551091dbb0d6b2798237556cd46b4fece64262b8d96e3e748bed83ca",
-          "778aacb62e61d7647b5eb4506f9330201779c425f08c93d2f3d6be1bb20facf9"
+          "81a492db32c3a755778f41572de03d0e45cc76d0a0abf53897fcdaaebc43113f"
         ],
         "resource": "archive entries s11{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s11",
         "retail_file": "the vc_53450030 archive packs holding the Colts stadium bundles, and the main roster"
@@ -13553,9 +13553,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s01 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s01 row of the main ROST",
         "hash_pins": [
           "63ba9409e1330aed7dca26f82b4b85ad108579f85f57e4f898b2732b43bba2a6",
-          "6087d77ce736c95d72858ae98ffc494cf37f4b5d2771684a11bbd19bea53e256",
+          "d655e62a39afbb64a8f4880f2b333bd2f6988b51e9a8483cb7d319c5eaf68325",
           "58e71859906ced218a934f61a5f36c822bad97cda028c1a40f347c04a179ed11",
-          "afdbea426ef7aa9b805c0f3add21ab6ee9261d1c480bd6e2a315cbc4b19fc446"
+          "8819031218c31247f390c4e6a5af0502ea245c396153eb921f96ba8a289f8384"
         ],
         "resource": "archive entries s01{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s01",
         "retail_file": "the vc_53450030 archive packs holding the Falcons stadium bundles, and the main roster"
@@ -13847,9 +13847,9 @@
         "format": "In-place fixed-span SCNE resources in the eighteen s23/s24 bundles of the vc_53450030 archive packs (field, stadium, intro_cameras and s24 cityscape chunks), the s23 and s24 rows of the main ROST and the four crowd outers",
         "hash_pins": [
           "152de2b2a9e11e6c881ae6fb40934975768cbaec303d11ea39543766bfdd9a67",
-          "d2da07f5801702e62ff74264af5a03957094e4a84cf52b2b2852cdf98233445e",
+          "8cc10d818ecbbf6f4fbf21cee3d11c9d532b7ba49be56ee88d2e4338e7caf3e3",
           "7016f66823744c23cafb2c62a6cb3776ab3fc9f0648aaed9b62dd0aa4af8933c",
-          "4b6dc14980ff71256a6abb6b45101e86a3fdeb551fc51b6146316a540d748207"
+          "2225f145e475a7610b336d2fb6ebee39fc6f2003eab6dbaa75694a794221a13c"
         ],
         "resource": "archive entries s23, s24 and s40{d,a,n}{d,r,s}.iff: the field, stadium, intro_cameras and cityscape scenes; the main ROST stadium rows s23, s24 and s40; outers 2555, 2850, 2556 and 2851: the crowds23 and crowds24 superfan atlases",
         "retail_file": "the vc_53450030 archive packs holding the Rams and Chargers stadium bundles and crowd scenes, and the main roster"
@@ -13920,9 +13920,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s00 bundles of the vc_53450030 archive packs (field, cityscape, stadium and intro_cameras chunks) and the s00 row of the main ROST",
         "hash_pins": [
           "a09d2f3c7ec3d4655b77dde36088f5cd8e01148219c91273171acfc3614a5376",
-          "a43e9e3715c1d96d5789c3518c0273463618506f440bf6a4a013234bfb1b9ed8",
+          "0c5cef126f4c64a8fd2f8189ce3f03fb4616c918e5763ce6727f1b3f02244df5",
           "5256e590b35c2c529651551efc67651785b0cb626d476b69715bed51b71da620",
-          "709e14c3858cf40c8c1e2aad9c1053cfa9da0b96bbb558688d7dede8e5b1b1d7"
+          "bd693bbe14cc32810872738313e16c1b3f2c71e9633e4c8d8401b6944dcf1205"
         ],
         "resource": "archive entries s00{d,a,n}{d,r,s}.iff: the field, cityscape, stadium and intro_cameras scenes; the main ROST stadium row s00",
         "retail_file": "the vc_53450030 archive packs holding the Cardinals stadium bundles, and the main roster"
@@ -14065,9 +14065,9 @@
         "format": "In-place fixed-span SCNE resources in the nine s15 bundles of the vc_53450030 archive packs (field, stadium and intro_cameras chunks) and the s15 row of the main ROST",
         "hash_pins": [
           "e0e6744e35f064142a90a493fe306f511c1ee7855e55752076ad8caeef699376",
-          "379abb01b3a412fc2b523c2e913ea0fe781224756058309447ee9c20ddeb6182",
+          "fe64378eeafa82c95cd8efd301ce6565bf2540ec5f38809aeb6cce85cbe81895",
           "81f415d012a8294c5aa9ee1e1705fca97bdfbed943c7ac0cadfc64f942be75ec",
-          "2e278904c6570cf1565d981b436d9f984c3695bee622b0a831a955f2be5eb27b"
+          "0ad914341d82c8688d6387b29a522a987f2b5368e709873c1340591ca63c48d3"
         ],
         "resource": "archive entries s15{d,a,n}{d,r,s}.iff: the field, stadium and intro_cameras scenes; the main ROST stadium row s15",
         "retail_file": "the vc_53450030 archive packs holding the Vikings stadium bundles, and the main roster"

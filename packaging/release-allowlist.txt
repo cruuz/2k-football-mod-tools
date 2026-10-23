@@ -3698,3 +3698,4 @@ data/nfl2k5_classic_teams/cards/mini_a.png
 data/nfl2k5_classic_teams/cards/mini_h.png
 data/nfl2k5_classic_teams/cards/unif_a.png
 data/nfl2k5_classic_teams/cards/unif_h.png
+tests/mod_editor/test_b778_sd3_digits.py
