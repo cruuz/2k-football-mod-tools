@@ -580,7 +580,9 @@ class Modern2PairTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.seed, _ = space.apply(prerequisites(retail_xbe()), stack.REQUESTS, scaleout=True)
+        # b778-int2: a build that selects Modern 2 reserves its two late companion owners too (ai6); seed the pair
+        # matrix with the same complete union so the first install is the final bytes and replay is a no-op.
+        cls.seed, _ = space.apply(prerequisites(retail_xbe()), stack.REQUESTS + patch.LATE_REQUESTS, scaleout=True)
 
     def check_pair(self, other):
         class Modern2:
