@@ -23,16 +23,13 @@ from mod_editor.core import nfl2k5_team_sleeves as sleeves
 
 RETAIL_XBE = Path(os.environ.get(
     "NFL2K5_RETAIL_XBE",
-    "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe",
+    str(ROOT / "extracted" / "ESPN NFL 2K5 (USA)" / "default.xbe"),
 ))
 RETAIL_INDEX = Path(os.environ.get(
     "NFL2K5_RETAIL_INDEX",
-    "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+    str(ROOT / "extracted" / "ESPN NFL 2K5 (USA)" / "vc_53450030" / "0"),
 ))
-RELEASE_DISC = Path(os.environ.get(
-    "NFL2K5_RELEASE_DISC",
-    "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso",
-))
+RELEASE_DISC = Path(os.environ.get("NFL2K5_RELEASE_DISC") or os.environ.get("NFL2K5_V061_DISC") or "/nonexistent")
 COLOUR_CASES = (
     # team style is not black -> keep the game's Team colour
     (((10, 20, 50), (200, 10, 10), None, 0), ((10, 20, 50), "team-style")),
