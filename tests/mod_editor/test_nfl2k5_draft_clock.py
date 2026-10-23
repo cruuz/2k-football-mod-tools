@@ -54,7 +54,7 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(dc.REQUESTS, ((dc.OWNER, "code", dc.CODE_SIZE, 16),))   # code only: no state bytes
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-2:], (dc.OWNER, "nfl2k5_module_loader"))  # b778-int2: the module loader stays last
+        self.assertEqual(space.LATE_OWNERS[-3:], (dc.OWNER, "nfl2k5_weekly_progression", "nfl2k5_module_loader"))  # b778-int2: the module loader stays last
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).franchise_draft_clock, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["franchise_draft_clock"], name in ("softdrink_advanced", "softdrink_experimental"), name)

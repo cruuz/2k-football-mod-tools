@@ -61,7 +61,8 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Full disc required", check.toolTip())
                         continue
-                    if key in ("weather_haze", "chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
+                    # b778-pg1: progression's native career sites (0x2BE0F0, 0xE6488, 0xE63C8, 0xACEDE0) are not modelled
+                    if key in ("weather_haze", "chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star", "progression"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Haze reader unavailable; choose a supported USA source"
                                       if key == "weather_haze" else "neither retail nor this patch", check.toolTip())

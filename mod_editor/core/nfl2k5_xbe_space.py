@@ -727,6 +727,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_cpu_money_downs_late",  # b778-ai6: after every other b778 late owner
                "nfl2k5_cpu_money_downs_late_state",  # b778-ai6: the helper's runtime state
                "nfl2k5_draft_clock",  # b778-dr1: after the ai6 pair
+               "nfl2k5_weekly_progression",  # b778-pg1: after the draft clock
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the

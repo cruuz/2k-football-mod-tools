@@ -87,9 +87,13 @@ PATCHES = (
      "FB can return."),
     ("progression", "NFL-shaped player development",
      "Retail: development is a hidden archetype per player driving flat aging curves (+2 or +3 from rookie "
-     "year to the prime), so the draft-day rating is the career. Patch (data only): the ten aging-curve tables "
-     "grow over years 1-5 by rating family and decline harder after year 9-12 (speed first), and each "
-     "position's archetype mix is widened so more prospects become stars or busts. Draft-day ratings are "
+     "year to the prime), every position ages alike, and a veteran quarterback loses skill after any season "
+     "under 1,000 yards. Patch: the aging curves grow over years 1-5 by rating family and each position's "
+     "archetype mix is widened so more prospects become stars or busts; each position then ages on its own "
+     "NFL curve (running backs first, quarterbacks, kickers and punters last; a back with 1,200+ scrimmage "
+     "yards ages a year slower); quarterbacks in their first three seasons rise or fall with their passing "
+     "efficiency against the league while a veteran never drops for a down year; retirement ages follow NFL "
+     "career lengths. Every other position's season-form rule is the original. Draft-day ratings are "
      "unchanged."),
     ("team_column", "TEAM column on the franchise Player Card",
      "Retail: the Player Card lists a player's stats season by season (Yr, Games, ...) but never which team a "
@@ -313,7 +317,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "accel_ramp": ("Legacy acceleration ramp", "A separate rating-based envelope for controller-driven players.", ""),
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
     "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
-    "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
+    "progression": ("Change player growth & decline", "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.", ""),
     "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
     "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "

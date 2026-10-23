@@ -150,6 +150,7 @@ from . import nfl2k5_play_art_routes as play_art_routes_patch  # noqa: F401  b77
 from . import nfl2k5_formation_art_spacing as formation_art_spacing_patch  # noqa: F401  b777-tp1: late owner installed with play_art_routes; imported so the cave manifest recorder observes it
 from . import nfl2k5_ball_carrier_ai as ball_carrier_patch  # noqa: F401  b778-ai5: late owner (CPU ball carriers); imported so the cave manifest recorder observes it
 from . import nfl2k5_star_retention as star_retention_patch  # noqa: F401  b778-fa1: late owner (CPU clubs keep their stars); imported so the cave manifest recorder observes it
+from . import nfl2k5_weekly_progression as weekly_progression_patch  # noqa: F401  b778-pg1: late owner (weekly progression); imported so the cave manifest recorder observes it
 from . import nfl2k5_force_out as force_out_patch  # noqa: F401  b778-fo1: late owner (modern sideline catches); imported so the cave manifest recorder observes it
 from . import nfl2k5_practice_injuries as practice_injuries_patch  # noqa: F401  b778-pi1: late owner (franchise practice injuries); imported so the cave manifest recorder observes it
 from . import nfl2k5_star_career as star_career_patch  # noqa: F401  b778-st2: late owner (rookie/career stars); imported so the cave manifest recorder observes it
@@ -2183,7 +2184,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # so does the franchise economy (revision 1, before the b778 veteran-cut surplus fix);
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
+        # b778-pg1: so does progression (the beta-77 curves-only patch gains the NFL career layer in place)
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}

@@ -559,6 +559,12 @@ class BuildPlan:
     # Pick / Simulate My Pick (on the user's clock), X = Advance to Next User Pick. No state bytes. On in
     # the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
     franchise_draft_clock: bool = False
+    # b778-pg1: franchise in-season weekly progression: after each franchise regular-season game a young player with a
+    # good game gains a point on his key ratings every other good game, an older player who sat out or played poorly
+    # loses a point of speed one week in four. A late executable owner (nfl2k5_weekly_progression) wraps the
+    # per-player stat merge at 0x134E05 (after the game's weekly-prep cleanup). EXPERIMENTAL: off in every preset until
+    # the second scale-out (job xs1) gives the combined build its 608 code bytes.
+    weekly_progression: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -764,6 +770,8 @@ for _preset in PRESETS.values():
     _preset["modern_force_out"] = False
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
+for _preset in PRESETS.values():  # b778-pg1: weekly progression is off until the combined layout has room (xs1)
+    _preset["weekly_progression"] = False
 del _preset
 # b778-xs1: the Crib, Trophy Room only (Noah 10/22: "The only thing I want in the crib is the trophy room"): on in
 # every SOFTDRINK preset; retail-style builds keep the Crib whole.
@@ -1127,6 +1135,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
+    ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1478,6 +1487,36 @@ def _apply_draft_clock(plan: "BuildPlan", target: Path, receipt: dict, progress)
         raise RuntimeError("The franchise draft clock: the output does not read back as applied")
     receipt["steps"].append({"step": "franchise_draft_clock", **{k: v for k, v in clock_receipt.items() if k != "reservations"}})
     receipt["result"]["franchise_draft_clock"] = "applied"
+def _weekly_progression_preflight(source: Path, progress) -> None:
+    """b778-pg1: refuse a source whose post-game merge call is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_weekly_progression")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Weekly player progression is not available in this installation.")
+    progress("Checking the post-game stat merge for weekly progression", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Weekly player progression cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The post-game stat merge in this source is not retail or Weekly player progression. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
+def _apply_weekly_progression(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pg1: franchise in-season weekly progression, the last late allocator owner."""
+    if not plan.weekly_progression:
+        return
+    module = _core_module("nfl2k5_weekly_progression")
+    if module is None:
+        raise RuntimeError("Weekly player progression needs nfl2k5_weekly_progression.")
+    progress("Franchise: weekly player progression", 0, 0)
+    payload, weekly_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Weekly player progression: the output does not read back as applied")
+    receipt["steps"].append({"step": "weekly_progression", **{k: v for k, v in weekly_receipt.items() if k != "reservations"}})
+    receipt["result"]["weekly_progression"] = "applied"
 
 
 def _hair_styles_available() -> bool:  # b775-hs1
@@ -1600,6 +1639,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
+                               ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1831,6 +1871,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
     draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
     out["franchise_draft_clock"] = draft_clock.status(_xbe_bytes(source)) if draft_clock is not None else "unavailable"
+    weekly = _core_module("nfl2k5_weekly_progression")  # b778-pg1
+    out["weekly_progression"] = weekly.status(_xbe_bytes(source)) if weekly is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3475,6 +3517,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Full-length play art routes must be Off or On.")
     if type(plan.run_blocking) is not bool:  # b777-ol1
         raise ValueError("Run blocking must be Off or On.")
+    if type(plan.weekly_progression) is not bool:  # b778-pg1
+        raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
     if type(plan.crib_trophy_room) is not bool:  # b778-xs1
@@ -4248,6 +4292,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
         _draft_clock_preflight(source, progress)
+    if plan.weekly_progression:  # b778-pg1: like fo1, before any write
+        _weekly_progression_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5819,6 +5865,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_star_career(plan, target, receipt, progress)
     # b778-dr1: the franchise draft clock, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_draft_clock(plan, target, receipt, progress)
+    # b778-pg1: franchise weekly progression, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_weekly_progression(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
     # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
     _apply_inbox_standings(plan, target, receipt, progress)
@@ -5886,6 +5934,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("SportsCenter highlight lineups did not survive the final passes")
     if plan.franchise_draft_clock and _core_module("nfl2k5_draft_clock").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the franchise draft clock did not survive the final passes")  # b778-dr1
+    if plan.weekly_progression and _core_module("nfl2k5_weekly_progression").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("weekly player progression did not survive the final passes")  # b778-pg1
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

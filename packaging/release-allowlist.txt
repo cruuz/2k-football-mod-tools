@@ -571,6 +571,7 @@ mod_editor/core/nfl2k5_position_pools.py
 mod_editor/core/nfl2k5_lineup_iterator.py
 mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_draft_clock.py
+mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
@@ -3716,3 +3717,5 @@ tests/mod_editor/test_b778_ai4_cpu_clock.py
 tests/mod_editor/test_b778_ai6_late_fourth.py
 tests/mod_editor/test_nfl2k5_sportscenter_lineup.py
 tests/mod_editor/test_nfl2k5_draft_clock.py
+tests/mod_editor/test_nfl2k5_weekly_progression.py
+tests/mod_editor/test_nfl2k5_progression_careers.py

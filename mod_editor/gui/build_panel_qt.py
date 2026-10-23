@@ -249,6 +249,8 @@ from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
 # b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
+# b778-pg1: franchise in-season weekly progression (off in every preset until the second scale-out).
+from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -270,7 +272,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
-                 ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT))  # b778-dr1
+                 ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT),  # b778-dr1
+                 ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT))  # b778-pg1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
@@ -944,9 +947,14 @@ class BuildPanel(QWidget):
                                                    "slot 0 (often a QB). Returners are now tracked by player, starters stay off the units unless nobody "
                                                    "else is eligible, and only WR, CB, S, RB and FB can return.")
         self.progression_check = self._option(f, "progression", "Change player growth & decline",
-                                              "Growth over years 1-5, harder decline after years 9-12; more stars and busts.",
-                                              details="The ten aging-curve tables grow by rating family and decline harder after year 9-12 (speed first); each "
-                                                      "position's archetype mix is widened. Draft-day ratings are unchanged.")
+                                              "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.",
+                                              details="Growth over the first five years by rating family, with each position's archetype mix widened, then "
+                                                      "each position ages on its own NFL curve (running backs from about 25, corners and "
+                                                      "receivers from 27, linemen later, quarterbacks, kickers and punters into their late "
+                                                      "30s); a back with 1,200+ scrimmage yards ages a year slower. Quarterbacks in their "
+                                                      "first three seasons move up or down on their passing efficiency; a veteran QB never "
+                                                      "loses ratings for a down year. Retirement ages follow NFL career lengths. Draft-day "
+                                                      "ratings are unchanged.")
         self.franchise_economy_check = self._option(
             f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
             "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",

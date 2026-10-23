@@ -57,8 +57,8 @@ class StaticTests(unittest.TestCase):
         self.assertAlmostEqual(ys[0], 1.0)
 
     def test_late_owner_last_and_off_outside_the_experimental_preset(self):
-        self.assertEqual(space.LATE_OWNERS[-11:], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
-                                                  "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_module_loader"))  # b778-xs1: the module loader last  # b778-fo1 last
+        self.assertEqual(space.LATE_OWNERS[-12:], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
+                                                  "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_module_loader"))  # b778-xs1: the module loader last  # b778-fo1 last
         self.assertIs(mod_build.BuildPlan(Path('source.iso'), Path('target.iso')).qb_accuracy, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["qb_accuracy"], name == "softdrink_experimental", name)
