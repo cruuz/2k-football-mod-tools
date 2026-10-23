@@ -546,13 +546,17 @@ def _outer(archive, name: str):
     return None
 
 
-def plan(path: Path | str, bank: Mapping[str, Any] | None = None) -> dict[str, Any]:
-    """Everything apply_to_image writes, read from the image (nothing written)."""
+def plan(path: Path | str, bank: Mapping[str, Any] | None = None,
+         extra_faces: Sequence[tuple[int, bytes]] = ()) -> dict[str, Any]:
+    """Everything apply_to_image writes, read from the image (nothing written). ``extra_faces`` (b778-ee1: the alien
+    prospect's portrait) are added to the new record like bank faces."""
     bank = bank or load_bank()
     firsts, lasts = _pool(path)
     table = tables(firsts, lasts, bank)
     ids = bank_ids(bank)
     require(len(ids) == len(set(ids)) == len(bank["faces"]), "bank ids and faces disagree")
+    ids = ids + [pid for pid, _rgb in extra_faces]
+    require(len(ids) == len(set(ids)), "an extra portrait id is also a bank id")
     used = roster_photo_ids(path)
     clash = sorted(set(ids) & used)
     require(not clash, f"rosters on this image already use portrait ids {clash[:8]}: the rookie bank cannot take them")
@@ -564,7 +568,7 @@ def plan(path: Path | str, bank: Mapping[str, Any] | None = None) -> dict[str, A
         present = {e.name_id for e in archive.entries}
     taken = set(parse_record(record)[2])
     require(not ({member_hash(f"{i:04d}") for i in ids} & taken), "a bank id already has a portrait on this image")
-    new_record, new_cdf, added = build_portraits(record, cdf, bank_faces(bank))
+    new_record, new_cdf, added = build_portraits(record, cdf, [*bank_faces(bank), *extra_faces])
     return dict(table=table, record=new_record, cdf=new_cdf, added=added,
                 exists=(name_id(RECORD_NAME) in present, name_id(CDF_NAME) in present),
                 pool_nick0=nick0(firsts, load_names()))
@@ -572,17 +576,20 @@ def plan(path: Path | str, bank: Mapping[str, Any] | None = None) -> dict[str, A
 
 def apply_to_image(path: Path | str, read_xbe: Callable[[Path], bytes], write_xbe: Callable[[Path, bytes], None], *,
                    bank: Mapping[str, Any] | None = None,
-                   progress: Callable[[str], None] | None = None) -> dict[str, Any]:
-    """Add the bank to a disc image COPY: new portrait record + aggregate, then the executable."""
+                   progress: Callable[[str], None] | None = None,
+                   extra_faces: Sequence[tuple[int, bytes]] = (),
+                   extra_appended: Sequence[tuple[str, bytes]] = ()) -> dict[str, Any]:
+    """Add the bank to a disc image COPY: new portrait record + aggregate, then the executable. b778-ee1: ``extra_faces``
+    join the bank in the new record and ``extra_appended`` outers ride the same archive rewrite."""
     from . import nfl2k5_historic_styles as hs  # noqa: PLC0415
     say = progress or (lambda _m: None)
     path = Path(path)
     payload = read_xbe(path)
     require(xbe_status(payload) == "retail", f"the generator bytes are {xbe_status(payload)}; rebuild from a clean image")
     say("Rookie faces: reading rosters and portraits")
-    p = plan(path, bank)
+    p = plan(path, bank, extra_faces)
     require(not any(p["exists"]), "the image already carries a rookie-face record or aggregate")
-    appended = [(RECORD_NAME, p["record"]), (CDF_NAME, p["cdf"]), (FILLER, bytes(2048))]
+    appended = [(RECORD_NAME, p["record"]), (CDF_NAME, p["cdf"]), *extra_appended, (FILLER, bytes(2048))]
     say(f"Rookie faces: writing {p['added']} new portraits")
     disc = hs.rewrite_archive(path, {}, appended)
     patched, xbe_receipt = xbe_apply(payload, p["table"])

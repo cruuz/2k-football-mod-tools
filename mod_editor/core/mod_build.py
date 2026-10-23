@@ -506,6 +506,12 @@ class BuildPlan:
     # plus the bank) and the class generator's skin/portrait code rewritten in place (nfl2k5_rookie_faces). Images
     # only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
     rookie_faces: bool = False
+    # b778-ee1: the once-in-a-century gray alien prospect: one draft class in 150 (never the first, never again in that
+    # franchise once he appeared) makes one prospect a gray alien: portrait 1947, a new live face (igface2.iff / .cdf,
+    # pf1947.iff), gray arms/hands/neck textures in outer 3, the class generator's coin blocks compacted in place to
+    # hold the roll and three texture lookups (nfl2k5_alien_prospect). Needs rookie_faces. Images only. EXPERIMENTAL:
+    # on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+    alien_prospect: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -714,6 +720,11 @@ del _preset
 for _preset in PRESETS.values():
     _preset["rookie_faces"] = False
 PRESETS["softdrink_experimental"]["rookie_faces"] = True
+del _preset
+# b778-ee1: the alien prospect rides on rookie faces: the same preset.
+for _preset in PRESETS.values():
+    _preset["alien_prospect"] = False
+PRESETS["softdrink_experimental"]["alien_prospect"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -973,6 +984,27 @@ def _force_out_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _alien_prospect_preflight(plan, source: Path, is_image: bool, progress) -> None:
+    """b778-ee1: the alien prospect needs rookie faces (his portrait joins its record), a disc image, the art and the
+    retail generator, builder and face-record bytes."""
+    if not plan.rookie_faces:
+        raise ValueError("The alien prospect needs Rookie faces (his draft headshot joins its portrait record). Turn on "
+                         "Rookie faces or turn off the alien prospect.")
+    if not is_image:
+        raise ValueError("The alien prospect adds face files to the disc archive: build from a disc image (.iso).")
+    if not _alien_prospect_available():
+        raise ValueError("The alien prospect is not available in this installation (its art is missing).")
+    module = _core_module("nfl2k5_alien_prospect")
+    progress("Checking the draft class generator for the alien prospect", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The alien prospect cannot read default.xbe: {exc}") from exc
+    if module.xbe_status(payload) != "retail":
+        raise ValueError("The draft class generator or the player builder in this source is not retail (an earlier "
+                         "build added the alien prospect or something else changed it)." + _REBUILD_HINT)
+
+
 def _rookie_faces_preflight(source: Path, is_image: bool, progress) -> None:
     """b778-rh1: rookie faces need a disc image, the bank data and the retail class-generator bytes."""
     if not is_image:
@@ -1128,6 +1160,11 @@ def _rookie_faces_available() -> bool:  # b778-rh1
             and _core_module("nfl2k5_historic_styles") is not None)
 
 
+def _alien_prospect_available() -> bool:  # b778-ee1
+    module = _core_module("nfl2k5_alien_prospect")
+    return module is not None and module.available() and _rookie_faces_available()
+
+
 def _modern_coaches_available() -> bool:  # b77-co1
     module = _core_module("nfl2k5_modern_coaches")
     return module is not None and module.available()  # the pins and the shipped art must agree
@@ -1188,6 +1225,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
         "rookie_faces": _rookie_faces_available(),  # b778-rh1
+        "alien_prospect": _alien_prospect_available(),  # b778-ee1
         "hair_styles": _hair_styles_available(),  # b775-hs1
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1435,6 +1473,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     rookie_faces = _core_module("nfl2k5_rookie_faces")  # b778-rh1
     out["rookie_faces"] = rookie_faces.xbe_status(_xbe_bytes(source)) if rookie_faces is not None else "unavailable"
+    alien = _core_module("nfl2k5_alien_prospect")  # b778-ee1
+    out["alien_prospect"] = alien.xbe_status(_xbe_bytes(source)) if alien is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3057,6 +3097,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern sideline catches must be Off or On.")
     if type(plan.rookie_faces) is not bool:  # b778-rh1
         raise ValueError("Rookie faces must be Off or On.")
+    if type(plan.alien_prospect) is not bool:  # b778-ee1
+        raise ValueError("The alien prospect must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3777,6 +3819,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _force_out_preflight(source, progress)
     if plan.rookie_faces:  # b778-rh1: before any write
         _rookie_faces_preflight(source, is_image, progress)
+    if plan.alien_prospect:  # b778-ee1: before any write
+        _alien_prospect_preflight(plan, source, is_image, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5161,10 +5205,20 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # checked against every roster on the copy.
         faces = _core_module("nfl2k5_rookie_faces")
         progress("Rookie faces: new draft headshots", 0, 0)
+        alien = _core_module("nfl2k5_alien_prospect") if plan.alien_prospect else None  # b778-ee1
+        extras = {} if alien is None else dict(extra_faces=[alien.portrait_face()], extra_appended=alien.appended(target))
         faces_receipt = faces.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
-                                             progress=lambda message: progress(message, 0, 0))
+                                             progress=lambda message: progress(message, 0, 0), **extras)
         receipt["steps"].append({"step": "rookie_faces", **faces_receipt})
         receipt["result"]["rookie_faces"] = faces_receipt["state"]
+        if alien is not None:
+            # b778-ee1: his portrait and face outers rode the rookie-faces rewrite above; now the gray skin textures
+            # (outer 3, before any hair-style textures) and the executable (in place, zero allocator bytes).
+            progress("Alien prospect", 0, 0)
+            alien_receipt = alien.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
+                                                 progress=lambda message: progress(message, 0, 0))
+            receipt["steps"].append({"step": "alien_prospect", **alien_receipt})
+            receipt["result"]["alien_prospect"] = alien_receipt["state"]
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
@@ -5336,6 +5390,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
             target, _xbe_bytes) != "applied":  # b778-rh1
         raise ValueError("rookie faces did not survive the final passes")
+    if plan.alien_prospect and is_image and _core_module("nfl2k5_alien_prospect").image_status(
+            target, _xbe_bytes) != "applied":  # b778-ee1
+        raise ValueError("the alien prospect did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
