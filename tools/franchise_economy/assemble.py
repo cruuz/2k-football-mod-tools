@@ -19,7 +19,23 @@ from tools.franchise_economy.contracts import fit_schedule
 TARGET = ROOT / "mod_editor/core/nfl2k5_franchise_economy_code.py"
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
-           "money": (0x31E580, 198), "reconcile": (0x2BFBE0, 370)}
+           "money": (0x31E580, 198), "reconcile": (0x2BFBE0, 370),
+           # b778 fa2: the retail weekly CPU signing pass 0x323870..0x323A5F (one caller, 0x248010),
+           # rebuilt in "week", and five unreferenced retail library functions (no encoding of any
+           # address inside them anywhere in the image; tools/franchise_economy/dead_code.py).
+           "week": (0x323870, 496), "roster_a": (0x396F50, 448), "roster_b": (0x3B9F60, 400),
+           "roster_c": (0x3D2890, 352), "roster_d": (0x3BA4B0, 352), "roster_e": (0x3975F0, 224)}
+# b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
+NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
+          "n_teams": 0xC4BE0, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
+          "n_prorated": 0xE6020, "n_frand": 0x48B90, "n_rand": 0x48B50, "n_trunc": 0x322260,
+          "n_release": 0x2BD900, "n_cpu_sign": 0x322BB0, "n_cut_to": 0x2BF9A0, "n_need_low": 0x2BD880,
+          "n_need_want": 0x2BD8C0, "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410,
+          "n_wanted_at": 0x2BD400}
+# Entry points that must sit at their window's first byte.
+ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
+           "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,
+           "economy_reconcile": 0x2BFBE0}
 # PROVED OFFLINE: the first seven words at the retail pick-index base also
 # belong to Player Contracts' last action row. Only retire the values after it.
 ROOKIE_TABLE_VA = 0x521598
@@ -82,11 +98,16 @@ def generate():
         script = script.replace("*(.contracts_rodata)", "*(.offer_gate) *(.renew_gate)")
         script = script.replace("*(.money_rodata)", "*(.fill_gate)")
         script += "\n/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }\n"
+        # fastcall/stdcall decorations: @name@N / _name@N / plain cdecl names.
+        script += "".join(f"{name} = {address:#x};\n" for name, address in NATIVE.items())
         (d / "link.ld").write_text(script)
         subprocess.run(["ld", "-m", "elf_i386", "-T", str(d / "link.ld"), "-o", str(elf), str(obj)], check=True)
         symbol_text = subprocess.check_output(["nm", "-n", str(elf)], text=True)
         symbols = {line.split()[2]: int(line.split()[0], 16) for line in symbol_text.splitlines()
                    if len(line.split()) == 3}
+        for name, address in ENTRIES.items():
+            if symbols.get(name) != address:
+                raise ValueError(f"{name} must start its window at {address:#x}")
         blobs = {}
         for name, (_address, limit) in WINDOWS.items():
             path = d / (name + ".bin")
