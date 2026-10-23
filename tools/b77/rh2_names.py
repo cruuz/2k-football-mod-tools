@@ -33,6 +33,16 @@ from mod_editor.core import nfl2k5_prospect_names as pn  # noqa: E402
 from mod_editor.core import nfl2k5_rookie_faces as rf  # noqa: E402
 
 RARE_ROW = 347            # rows 347..349 (Hairston, Heath, Herron): adjacent replacement surnames
+# Name suffixes (Noah 10/22: "Make sure some rookies are II or Jr etc"). nflverse players.parquet, players whose last
+# season is 2025 or 2026: 166 of 3,306 (5.0 %) carry a suffix: Jr. 60.8 %, III 17.5 %, II 15.7 %, IV 3.6 %, Sr. 1.8 %,
+# V 0.6 %.  The pool's fixed byte budget (162 spare bytes) holds 21 suffixed rows (4.3 % of draws), mixed like the
+# source: 13 Jr., 3 III, 3 II, 1 IV, 1 Sr.  Each goes on a modern replacement surname (announced by number, so no
+# recorded call-out changes and the announcer never reads the suffix); the surname keeps its row.  Retail rosters
+# already carried "St. Clair" and "Randle El", so the nameplate letters and menus take a space and a period.
+SUFFIXES = {"Bolden": "Jr.", "Rivers": "Jr.", "Gaines": "Jr.", "Pryor": "Jr.", "Booker": "Jr.", "Golden": "Jr.",
+            "Milton": "Jr.", "Battle": "Jr.", "Boykin": "Jr.", "Dotson": "Jr.", "Hinton": "Jr.", "Charles": "Jr.",
+            "Mathews": "Jr.", "Wynn": "III", "Strong": "III", "Mays": "III", "Bullock": "II", "Felton": "II",
+            "Durant": "II", "Lovett": "IV", "Rush": "Sr."}
 PRIOR = dict(whi=0.60, bla=0.13, his=0.18, asi=0.06, oth=0.03)   # US male population shares, for P(Asian | name)
 
 
@@ -68,13 +78,17 @@ def main() -> int:
         first, last = r.first, r.last
         if RARE_ROW <= r.index < RARE_ROW + len(rf.RARE_SURNAMES):
             last = rf.RARE_SURNAMES[r.index - RARE_ROW]
+        elif last in SUFFIXES:
+            assert not r.retained, f"{last}: suffixes go on replacement rows only"
+            last = f"{last} {SUFFIXES[last]}"
+            assert len(last) <= pn.MAX_NAME_CHARS
         if r.index >= tail:
             first = rf.RARE_FIRSTS[r.index - tail]
         new.append(pn.NameRow(index=r.index, first=first, last=last))
     layout = pn.plan_layout(new)
     nick = [n for n in names["nicknames"]][: tail - 445]
-    head = [line for line in text.splitlines() if line.startswith("#") and not line.startswith("# Pool bytes")]
-    head.append("# b778-rh2 (tools/b77/rh2_names.py): surnames 347..349 = Nguyen, Chen, Patel (rare East / South Asian "
+    head = [line for line in text.splitlines() if line.startswith("#") and not line.startswith("# Pool bytes") and "b778-rh2" not in line]
+    head.append("# b778-rh2 (tools/b77/rh2_names.py): surnames 347..349 = Nguyen, Chen, Patel; 21 modern surnames carry a Jr./II/III/IV/Sr. suffix (4.3 %) (rare East / South Asian "
                 "prospects, US Census 2010 surname shares); first names 473..484 = four fitting first names per rare "
                 "surname (Rosenman et al., CC0), only ever given with that surname; nicknames 445..472.")
     head.append(f"# Pool bytes: {layout.bytes_used} of {pn.BUDGET} (UTF-16LE with terminators); boundary body offset "
@@ -88,7 +102,10 @@ def main() -> int:
     odds = dict(names)
     odds["nicknames"] = nick
     odds["first"] = {k: v for k, v in names["first"].items() if k in {r.first for r in new[:tail]}}
-    odds["last"] = {r.last: names["last"].get(r.last, 0) for r in new}
+    odds["last"] = {r.last: names["last"].get(r.last.split(" ")[0], 0) for r in new}
+    odds["suffixes"] = {"source": "nflverse-data players.parquet (CC-BY-4.0), last_season 2025-2026: 166 of 3,306 players "
+                        "(5.0 %) have a suffix; Jr. 60.8 %, III 17.5 %, II 15.7 %, IV 3.6 %, Sr. 1.8 %, V 0.6 %",
+                        "rows": {f"{k} {v}": v for k, v in SUFFIXES.items()}, "share_of_draws": round(len(SUFFIXES) / rf.POOL_COUNT, 4)}
     odds["rare"] = {
         "surnames": list(rf.RARE_SURNAMES), "groups": ["east", "east", "south"], "first_names": list(rf.RARE_FIRSTS),
         "surname_source": "US Census Bureau, Frequently Occurring Surnames from the 2010 Census (Names_2010Census.csv)",

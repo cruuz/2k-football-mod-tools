@@ -858,7 +858,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_franchise_economy.py": "3de240d43af25e13f0f92fd7ec6bb5b80a223b4653f36dbed2c5d82b6c18a2d1",
         "mod_editor/core/nfl2k5_franchise_economy_code.py": "0fbd627f1b7aa64b2dab6e72a1d01a8d44db32bf9b08d58c76bc44c717873a45",
         "mod_editor/core/nfl2k5_progression.py": "a4e978a251fb9a747819c09c3563540229a41afca92458990496915f772d6b94",
-        "mod_editor/core/nfl2k5_prospect_names.py": "ddf56a4baa59415ca5a9b2b7e8966512c0a0fa35d2bbf47da6019abbec2d22d4",
+        "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
         "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "759ee92ee3bac1d79d80ac6d6ae539ea6f0e3cef658dc945548a8c7db35c468f",
         "mod_editor/core/nfl2k5_rdata_sites.py": "cb422ad49c38a233a8d0e855beae0a9748b1dfef809472bdae84c459865762af",

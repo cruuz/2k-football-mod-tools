@@ -112,6 +112,19 @@ class Names(unittest.TestCase):
             self.assertEqual(pn.validate_name(nick, "nickname"), nick)
             self.assertLessEqual(len(nick), pn.MAX_NAME_CHARS)
 
+    def test_suffixes(self):
+        """b778-rh2: about 4 % of surname draws carry a suffix (nflverse 2025-26 rosters: 5.0 %), mostly Jr., all on
+        number-announced rows, every name within the 12-character limit."""
+        rows = pn.read_csv(pn.SHIPPED_CSV.read_text(encoding="utf-8"))
+        suffixed = [r for r in rows if r.last.split(" ")[-1] in ("Jr.", "Sr.", "II", "III", "IV")]
+        self.assertEqual(len(suffixed), 21)
+        self.assertTrue(all(not r.retained and len(r.last) <= pn.MAX_NAME_CHARS for r in suffixed))
+        kinds = collections.Counter(r.last.split(" ")[-1] for r in suffixed)
+        self.assertEqual(kinds, collections.Counter({"Jr.": 13, "III": 3, "II": 3, "IV": 1, "Sr.": 1}))
+        names = rf.load_names()
+        for r in suffixed:
+            self.assertEqual(names["last"][r.last], names["last"].get(r.last.split(" ")[0], names["last"][r.last]))
+
     def test_space_rules(self):
         self.assertEqual(pn.validate_name("Riff Raff", "x"), "Riff Raff")
         with self.assertRaises(pn.ProspectNamesError):
@@ -445,11 +458,20 @@ class Bank(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(sorted(ids), sorted(f["id"] for f in self.bank["faces"]))
         for f in self.bank["faces"]:
-            b = f["tone"] * 3 + f["build"]
+            b = (rf.BUCKETS + 3 * rf.RARE_GROUPS.index(f["rare"]) + f["build"]) if f.get("rare") else f["tone"] * 3 + f["build"]
             row = self.bank["buckets"][b]
             self.assertTrue(row["start"] <= f["id"] < row["start"] + row["count"])
             self.assertEqual(f["hanging"], f["id"] - row["start"] < row["hanging"])
         self.assertTrue(all(rf.ID_MIN <= i < rf.ID_END for i in ids))
+
+    def test_rare_rows_and_tags(self):
+        rows = self.bank["buckets"]
+        for g, group in enumerate(rf.RARE_GROUPS):
+            for build in range(3):
+                row = rows[rf.BUCKETS + 3 * g + build]
+                self.assertEqual((row["group"], row["tone"], row["build"], row["hanging"]), (group, rf.RARE_TONES[g], build, 0))
+        for f in self.bank["faces"]:
+            self.assertIn(f.get("look"), ("striking", "good", "ordinary", "plain", "homely", "ugly", "extreme", "novelty"))
 
     def test_atlases(self):
         faces = dict(rf.bank_faces(self.bank))

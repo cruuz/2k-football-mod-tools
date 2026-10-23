@@ -108,8 +108,8 @@ LEGACY_NUMBER_AUDIO_ID = 0x238C             # 9100 exists: its clips say "double
 # sha256 of body[0x90:0x98] + the entry array + the string span, see pool_digest()
 RETAIL_POOL_SHA256 = "1a4900797b05ecc9858f2663cf1afbce9d4dc1d33dd803559e3350b008d204ab"
 SHIPPED_CSV = ROOT / "data" / "nfl2k5_modern_names.csv"
-SHIPPED_CSV_SHA256 = "a0867d5d6f6eaa4bc4d79715cd77304af630aaeb9aa145b8c01820332e2926e1"   # b778-rh2: rare East / South Asian names (tools/b77/rh2_names.py) on rh1's re-ordered pool
-SHIPPED_POOL_SHA256 = "605e6afd164ebcb2dd32923d44db38cca2167f35498b17a0e344a1513b98854d"  # the pool digest after the shipped CSV is applied to the retail roster
+SHIPPED_CSV_SHA256 = "4cf70073a81db0217c7852030be0d03b8092934685ee401c5d232a25226bc147"   # b778-rh2: rare East / South Asian names + 21 suffixed surnames (tools/b77/rh2_names.py)
+SHIPPED_POOL_SHA256 = "2e9953b583a376e269ea50c6c5cd9e7f17b5a13d5f3576df9dc7188fc07d86b9"  # the pool digest after the shipped CSV is applied to the retail roster
 SHIPPED_BOUNDARY = 0x8CFAA             # body offset of the first replacement surname under the shipped CSV
 ATTRIBUTION = "nflverse-data (https://github.com/nflverse/nflverse-data), CC-BY-4.0"
 
