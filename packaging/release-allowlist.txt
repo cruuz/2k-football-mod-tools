@@ -3652,8 +3652,8 @@ tests/mod_editor/test_nfl2k5_module_loader.py
 tests/mod_editor/test_nfl2k5_crib_trophy_room.py
 tests/mod_editor/test_nfl2k5_allocator_pool.py
 tests/mod_editor/test_b778_ee1_alien_prospect.py
-tools/b77/ee1_alien_prospect.S
 tools/b77/ee1_build_code.py
+tools/nfl2k5_alien_palette.py
 tests/mod_editor/test_b778_rh1_rookie_faces.py
 tools/b77/rh1_names.py
 tools/b77/rh1_bank.py
