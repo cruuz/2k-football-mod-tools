@@ -101,7 +101,11 @@ class AutomaticCoachDeferral(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         retail = cls.retail = retail_xbe()
-        base = money.apply(retail, level="modern2")[0]
+        # b778-ai6: reserve the canonical build union first. The late fourth-down companion sorts after
+        # nfl2k5_coach_ai in LATE_OWNERS, so appending coach_ai to an image that already carries the companion
+        # would move it; the allocator refuses that by design (as the Studio build does with one request set).
+        allocated, _ = space.apply(retail, money.REQUESTS + money.LATE_REQUESTS + ai.REQUESTS, scaleout=True)
+        base = money.apply(allocated, level="modern2")[0]
         cls.payloads = {}
         current, _ = ai.apply(base)
         cls.payloads["b778"] = current

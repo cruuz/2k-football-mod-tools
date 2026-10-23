@@ -47,7 +47,7 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed. Modern 2: the real dispatcher, commit and try routines replay on a real book over grids of fourth-down, two-point and overtime states; defensive coverage variety is measured under the same fixture. No game, emulator or played-game result exists.",
+    "scope": "Bounded native decision, loaded PLAY, actual play selector/roulette and target ranking replay with supplied state. Kicker range is supplied for category replay. Trajectory generation, actual throws/catches, full game scheduling and conversion outcomes remain unwitnessed. Modern 2: the real dispatcher, commit and try routines replay on a real book over grids of fourth-down, two-point and overtime states; defensive coverage variety is measured under the same fixture. No game, emulator or played-game result exists. b778 ai6: the Modern 2 pair is the 2,048-byte main template (2,044 used) plus the 368-byte late owner nfl2k5_cpu_money_downs_late, which reads the live second-half points through 250DD0 and a 1-in-3 state hash of the play count, drive index and clock bits. Bounded Unicorn replay covers both; a played game remains UNWITNESSED.",
     "evidence": [
       "ASTRA_CPU_MONEY_DOWNS_REPORT.md",
       "docs/mod_editor/nfl2k5_cpu_money_downs_replays.json",
@@ -62,17 +62,17 @@
         "allowed": "retail | modern | aggressive | modern2; retail in Basic, modern2 in Advanced and Experimental"
       }
     ],
-    "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line. Modern 2: a wider fourth-down table from published analytics that reads score and clock, the modern overtime rules, a modern two-point chart and more varied defensive coverage calls."
+    "notes": "Retail: original CPU choices. Patch: more measured fourth-down attempts and stronger preferences for supported primary routes and viable receivers reaching the first-down line. Modern 2: a wider fourth-down table from published analytics that reads score and clock, the modern overtime rules, a modern two-point chart and more varied defensive coverage calls. b778 ai6: trailing in the last two minutes of the fourth quarter goes at any distance; a field goal only ties or takes the lead and only in range; a punt is rare."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
     "hash_pins": [
       "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
     ],
-    "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); Modern 2 adds 206E70 (5), 20B1A4 (5), 20B6DD (5), 20AA1F (1) and 20AC4E (1); 2048 RX bytes, immutable constants, zero runtime state.",
+    "resource": "Pinned live hooks 20B180 (5 bytes), 20980D (6 bytes), 1987B5 (6 bytes); Modern 2 adds 206E70 (5), 20B1A4 (5), 20B6DD (5), 20AA1F (1) and 20AC4E (1); 2048 RX bytes, immutable constants, zero runtime state.; b778 ai6 adds the late owner 368 RX bytes (late placement after every b778 owner, before xs1's module loader)",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Opt-in fourth-down attempts, a sourced fourth-down, two-point and overtime policy (Modern 2) and stronger third/fourth-down route and viable receiver preferences for reaching the first-down line.",
+  "summary": "Opt-in fourth-down attempts, a sourced fourth-down, two-point and overtime policy (Modern 2), a late-game trailing rule (go at any distance; kick only to tie/lead in range; rare punt that trusts a defense held to 7 or fewer second-half points) and stronger third/fourth-down route and recipient preferences.",
   "surface": "gameplay_tuning_sliders",
   "title": "CPU fourth downs, two-point tries and overtime (experimental, unwitnessed)",
   "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"

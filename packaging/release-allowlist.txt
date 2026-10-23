@@ -3621,3 +3621,4 @@ tests/mod_editor/test_2k5_native_safe_palette_ladder.py
 tests/mod_editor/test_b778_stadium_squares.py
 # b778 ai4: CPU clock management (end-of-half timeouts, automatic coach profiles defer 4th downs and clock windows)
 tests/mod_editor/test_b778_ai4_cpu_clock.py
+tests/mod_editor/test_b778_ai6_late_fourth.py

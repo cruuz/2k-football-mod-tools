@@ -683,7 +683,10 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_run_blocking",  # b777-ol1 (int7: after the jersey number sizes)
                "nfl2k5_qb_accuracy",  # b777-qb3/qb4 (int7: after run blocking)
                "nfl2k5_formation_art_spacing",  # b777-tp1: after QB accuracy
-               "nfl2k5_force_out")  # b778-fo1: last, after the formation art spacing; the build applies it last
+               "nfl2k5_force_out",  # b778-fo1: after the formation art spacing; the build applies it last
+               "nfl2k5_cpu_money_downs_late",  # b778-ai6: after every other late owner (and after pi1's
+                                                # nfl2k5_practice_injuries at integration); it lands in xs1's pool
+               "nfl2k5_cpu_money_downs_late_state")  # b778-ai6: the helper's 4-byte punt-cycle counter
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -750,6 +753,7 @@ def dormant_union():
             + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS
             + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS
             + espn25.REQUESTS + coverage_trail.REQUESTS + edit_player.REQUESTS + money_downs.REQUESTS
+            + money_downs.LATE_REQUESTS
             + weekly_prep.REQUESTS + playbook_pair.REQUESTS + deep_zone.REQUESTS
             + accelerated_clock.REQUESTS
             + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS
