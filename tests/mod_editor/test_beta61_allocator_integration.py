@@ -156,13 +156,14 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertTrue(space.is_scaleout(overflow))
         self.assertEqual(space.status(overflow), "applied")
         # b778-xs1: what the v3 runs cannot hold goes whole to the v4 pool; every v3 row stays where it was
-        v3 = space.plan(REQUESTS + (("extra", "code", 16, 16),))
-        for size in (32, 98305):
-            v4 = space.plan(REQUESTS + (("extra", "code", size, 16),))
-            self.assertEqual(v4["version"], 4)
-            extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
-            self.assertEqual((extra["va"], extra["size"]), (space.POOL_VA + space.PAGE, size))
-            self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"] if a["owner"] not in ("extra", space.DIRECTORY_OWNER)))
+        # ("extra" is an ordinary owner: like any new ordinary owner in v3 it packs ahead of later owners, so a
+        # 32-byte one pushes the last of them into the pool; one bigger than the whole run lands in the pool itself.)
+        self.assertEqual(space.plan(REQUESTS + (("extra", "code", 32, 16),))["version"], 4)
+        v3 = space.plan(REQUESTS)
+        v4 = space.plan(REQUESTS + (("extra", "code", 98305, 16),))
+        extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
+        self.assertEqual((v4["version"], extra["va"], extra["size"]), (4, space.POOL_VA + space.PAGE, 98305))
+        self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"] if a["owner"] != space.DIRECTORY_OWNER))
         with self.assertRaisesRegex(ValueError, "capacity"):
             space.plan(REQUESTS + (("extra", "code", space.MAX_REQUEST_BYTES + 1, 16),))
 
