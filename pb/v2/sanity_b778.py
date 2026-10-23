@@ -44,7 +44,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
-RULES = ("page_one", "pa_backfield", "direct_snap", "spot_out")
+RULES = ("page_one", "pa_backfield", "direct_snap", "spot_out", "pa_reversal")
 
 # Native lottery curve A (0x207EF0): weight of a situation rating r at x = r - 2.
 CURVE_A = {0: 0.5, 1: 2.0, 2: 1.0, 3: 0.5, 4: 0.1}
@@ -270,6 +270,22 @@ def share_fits(play: dict, row: dict, home: dict, form: dict, listed: list) -> b
     return True
 
 
+def reverses_in(form: dict, play: dict) -> bool:
+    """b778 pb6: does a non-target route runner of ``play`` double back (route kinds 9 / 10 end on a native depth
+    behind the line) when it runs from ``form``?  A back in a gun set starts 5.3 yd deep, 1.7 yd shallower than under
+    centre, so a stem written for the under-centre backfield overshoots the native block endpoint and he turns
+    round.  The generator checks this when it links a play (``generator.py`` "route reversal"); pb5's refill did not."""
+    from mod_editor.core import nfl2k5_offense_concepts as oc
+    from mod_editor.core import nfl2k5_route_reversal as rr
+    if play.get("play_type") not in ("pass", "pa_pass"):
+        return False
+    ctx = oc.FormationContext.build([(float(x), float(z)) for x, z in form["slot_positions"]], form["position_codes"])
+    chains = [[(int(n[0]), list(n[1])) for n in a] for a in play["assignments"]]
+    qb = next((n for n in play["assignments"][0] if int(n[0]) == 6), None)
+    primary = None if qb is None else (int(qb[1][1]) + 5 if int(qb[1][1]) else 7)
+    return any(q.slot != primary and chains[q.slot] and rr.reversals(q.z, chains[q.slot]) for q in ctx.players)
+
+
 def lint_clean(form: dict, play: dict) -> bool:
     """The playbook linter on this one pairing, as authored and as the Studio compiler writes it (the shipped packs
     lint clean: tests/mod_editor/test_nfl2k5_playbook_lint.py)."""
@@ -314,6 +330,8 @@ def refill_candidates(doc: dict, catalog: dict, fid: str, uses: Counter, checker
             continue                                  # additions never take a rollout out of its backfield
         if not share_fits(p, row, by_name[row["home"]], form, listed) or not lint_clean(form, p):
             continue
+        if reverses_in(form, p):
+            continue                                  # pb6: never refill a pairing whose runner turns round
         if checker is not None and not checker(form, p):
             continue
         out.append((uses[pid], n, pid))
@@ -476,6 +494,20 @@ def fix_spot_out(doc: dict) -> list:
 # driver
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# rule 5: play-action back that doubles back (b778 pb6)
+# ---------------------------------------------------------------------------
+
+def fix_pa_reversal(doc: dict) -> list:
+    """Clamp the stem of every route that reverses (``repair_reversals``, the b777 sc1 rule, which fits the stem to the
+    shallowest start among all formations listing the play).  pb5 filed plain play-action passes into gun and pistol
+    sets, where the back starts 5.3 yd deep, and the under-centre 6 yd stem + block overshot the native endpoint."""
+    from pb.v2 import repair_reversals as rv
+    before = {p["id"]: json.dumps(p["assignments"]) for p in doc["plays"]}
+    rv.repair_doc(doc)
+    return [(p["id"], p["custom_name"]) for p in doc["plays"] if json.dumps(p["assignments"]) != before[p["id"]]]
+
+
 def fix_doc(doc: dict, catalog: dict, rules=RULES, ranking=None, checker=None) -> dict:
     out = {}
     if "page_one" in rules:
@@ -488,6 +520,8 @@ def fix_doc(doc: dict, catalog: dict, rules=RULES, ranking=None, checker=None) -
         out["direct_snap"] = fix_direct_snap(doc)
     if "spot_out" in rules:
         out["spot_out"] = fix_spot_out(doc)
+    if "pa_reversal" in rules:
+        out["pa_reversal"] = fix_pa_reversal(doc)
     return out
 
 

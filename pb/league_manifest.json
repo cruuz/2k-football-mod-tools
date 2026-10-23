@@ -8,7 +8,7 @@
       "pack": "data/playbooks/softdrink_arz_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "e5575154757c3300a041bcd7332b9d0508672f684a0a50efe0d9704f6e5a4b18"
+      "semantic_sha256": "5af5933a831803526ff02bc7181658a36aa3f1d70a86ac6c6d0a49d4cf3d3de3"
     },
     {
       "team": "ATL",
@@ -218,7 +218,7 @@
       "pack": "data/playbooks/softdrink_ten_modern.2k5book",
       "plays": 143,
       "formations": 32,
-      "semantic_sha256": "8357db4c0e9bafccd9e8dc7be2977a9b72fa096e58c4b9c8a4047ce8edbbfd24"
+      "semantic_sha256": "27c71f396dbd49418facc3fbb85a561277beb362fb6a9f9db6018c9df5b8f259"
     },
     {
       "team": "WAS",

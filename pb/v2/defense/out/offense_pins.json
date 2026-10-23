@@ -1,11 +1,11 @@
 {
  "schema": "b77.p48d.offense-pins.v1",
- "league_manifest_sha256": "e4483d0874e3af0bfbb2a1e41471625d19a94911887194d5dff80d370919e895",
- "offense_digest": "1b4477b9ef778f556976b99be1e3c5fbd5716d1569aaa284547e03fc81ae17c9",
+ "league_manifest_sha256": "289cd23ea3af9f0bcad1dc4f1a6053e864c4057b39b30ecd51aa2573fff1d506",
+ "offense_digest": "5ea6d4108f6ff2e0d9ea8a088f14b445be819c90182a00eeeea1d3f702236415",
  "teams": {
   "ARZ": {
    "pack": "data/playbooks/softdrink_arz_modern.2k5book",
-   "sha256": "dd7ed86c3be041f8629186972f9bd873cb30a217eacf0c41416fa20d9f617ee9"
+   "sha256": "df26d6a85c192219f08aa1289ca888b33948edc2ebf51999b9ae75831d2fa218"
   },
   "ATL": {
    "pack": "data/playbooks/softdrink_atl_modern.2k5book",
@@ -125,12 +125,12 @@
   },
   "TEN": {
    "pack": "data/playbooks/softdrink_ten_modern.2k5book",
-   "sha256": "c99772d8203b38d6a5107a85b75838be2d1d8d7f1847a75ec51f050c43681e34"
+   "sha256": "e3a3bf8008b995d0bf3373017ec098130e5abfd7f463a95a61d1cf7f6a896193"
   },
   "WAS": {
    "pack": "data/playbooks/softdrink_was_modern.2k5book",
    "sha256": "9c06636e093261f20420f575859a1a24129299585fcbe33237e3250e4d671d07"
   }
  },
- "generated_at_head": "cebc9cddfc539bcab4eced8fdb75607bcbad7efe"
+ "generated_at_head": "0954fc3b5fc8748726b5b870de17913621ae7dfd"
 }
