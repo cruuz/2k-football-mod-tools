@@ -515,11 +515,12 @@ class BuildPlan:
     # plus the bank) and the class generator's skin/portrait code rewritten in place (nfl2k5_rookie_faces). Images
     # only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
     rookie_faces: bool = False
-    # b778-ee1: the once-in-a-century gray alien prospect: one draft class in 150 (never the first, never again in that
-    # franchise once he appeared) makes one prospect a gray alien: portrait 1947, a new live face (igface2.iff / .cdf,
-    # pf1947.iff), gray arms/hands/neck textures in outer 3, the class generator's coin blocks compacted in place to
-    # hold the roll and three texture lookups (nfl2k5_alien_prospect). Needs rookie_faces. Images only. EXPERIMENTAL:
-    # on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+    # b778-ee1/ee2: the once-in-a-century gray alien prospect: one draft class in 150 (never the first, never again in
+    # that franchise once he appeared) makes one prospect a 7'11", 150 lb gray alien: portrait 1947, a new live face
+    # (igface2.iff / .cdf, pf1947.iff), gray arms/hands/neck/far-face/sideline-skin textures in outer 3, the class
+    # generator's coin blocks compacted in place to hold the roll and five texture lookups (nfl2k5_alien_prospect).
+    # Needs rookie_faces. Images only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds
+    # from it).
     alien_prospect: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
