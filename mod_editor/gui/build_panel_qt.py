@@ -238,6 +238,7 @@ from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 from mod_editor.core import nfl2k5_module_loader as _module_loader  # noqa: E402  b778-xs1
 from mod_editor.core import nfl2k5_crib_trophy_room as _crib_trophy_room  # noqa: E402  b778-xs1
 from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
+from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -251,7 +252,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
-                 ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT))  # b778-rh1
+                 ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT),  # b778-rh1
+                 ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT))  # b778-ee1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",

@@ -1968,6 +1968,14 @@ docs/mod_editor/overlay_modules.md
 mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
 data/nfl2k5_rookie_faces/bank.json
+# b778-ee1: the alien prospect (code, art pins, portrait and face art)
+mod_editor/core/nfl2k5_alien_prospect.py
+data/nfl2k5_alien_prospect/code.json
+data/nfl2k5_alien_prospect/art.json
+data/nfl2k5_alien_prospect/portrait.png
+data/nfl2k5_alien_prospect/face_f.png
+data/nfl2k5_alien_prospect/face_h.png
+data/nfl2k5_alien_prospect/face_n.png
 data/nfl2k5_rookie_faces/faces_00.png
 data/nfl2k5_rookie_faces/faces_00_pal.png
 data/nfl2k5_rookie_faces/faces_01.png
@@ -3632,6 +3640,9 @@ tests/mod_editor/test_nfl2k5_force_out.py
 tests/mod_editor/test_nfl2k5_module_loader.py
 tests/mod_editor/test_nfl2k5_crib_trophy_room.py
 tests/mod_editor/test_nfl2k5_allocator_pool.py
+tests/mod_editor/test_b778_ee1_alien_prospect.py
+tools/b77/ee1_alien_prospect.S
+tools/b77/ee1_build_code.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md
