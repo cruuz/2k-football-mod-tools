@@ -188,7 +188,7 @@ class PairedBuildIntegration(unittest.TestCase):
             payload=build._xbe_bytes(target)
             self.assertEqual(tt.screen_hooks_patch.status(payload),'applied')
             self.assertFalse(tt.guardian_overlay_patch.read_settings(payload)['guardian_everyone_practice'])
-            self.assertEqual([row['step'] for row in receipt['steps']],['copy','guardian_overlay','xbe_space','unc_bowl_uniforms','menu_icon_orientation'])
+            self.assertEqual([row['step'] for row in receipt['steps']],['copy','guardian_overlay','xbe_space','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])
             self.assertEqual(g.image_status(source),'retail')
 
     def test_modern_naming_build_writes_both_halves_and_off_refuses_named_source(self):
@@ -218,7 +218,7 @@ class PairedBuildIntegration(unittest.TestCase):
         self.assertEqual(tt.practice_squad_screen_patch.status(payload),'applied')
         settings=tt.roster_arena_patch.read_settings(payload)
         self.assertTrue(settings['reserves_16']);self.assertEqual(settings['created_teams_extra'],2)
-        self.assertEqual([row['step'] for row in receipt['steps'][-3:]], ['roster_arena_growth','unc_bowl_uniforms','menu_icon_orientation'])
+        self.assertEqual([row['step'] for row in receipt['steps'][-4:]], ['roster_arena_growth','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])
         self.assertEqual(writer.image_status(fixture.source),'retail')
 
 

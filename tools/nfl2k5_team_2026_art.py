@@ -920,7 +920,40 @@ def name_metrics(selector: str) -> list[dict]:
     return _NAME_METRICS[f"{selector.upper()}.IFF"]
 
 
-def render_font_box(font_file: str, char: str, width: int, height: int) -> np.ndarray:
+def fill_enclosed_holes(glyph: np.ndarray) -> np.ndarray:
+    """Fill every enclosed background region of a thresholded (white ink on black) glyph.
+
+    The Seahawks' nameplate font draws ``-`` as a hollow rectangle (Noah 10/22: "it's like a hollow hyphen. It
+    should be filled in the same fill color as the letters"), so the nameplate hyphen is made solid here while the
+    letter glyphs keep their own counters.
+    """
+    ink = glyph > 127
+    seen = np.zeros_like(ink, bool)
+    stack = []
+    height, width = ink.shape
+    for x in range(width):
+        for y in (0, height - 1):
+            if not ink[y, x] and not seen[y, x]:
+                seen[y, x] = True
+                stack.append((y, x))
+    for y in range(height):
+        for x in (0, width - 1):
+            if not ink[y, x] and not seen[y, x]:
+                seen[y, x] = True
+                stack.append((y, x))
+    while stack:
+        y, x = stack.pop()
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            yy, xx = y + dy, x + dx
+            if 0 <= yy < height and 0 <= xx < width and not ink[yy, xx] and not seen[yy, xx]:
+                seen[yy, xx] = True
+                stack.append((yy, xx))
+    out = glyph.copy()
+    out[~ink & ~seen] = 255
+    return out
+
+
+def render_font_box(font_file: str, char: str, width: int, height: int, fill_holes: bool = False) -> np.ndarray:
     """A font glyph's ink stretched to exactly ``width`` x ``height`` pixels (the name-atlas cells are fixed boxes
     the game packs by advance, so the glyph fills its cell the way the retail letters do)."""
     from PIL import ImageFont
@@ -932,8 +965,10 @@ def render_font_box(font_file: str, char: str, width: int, height: int) -> np.nd
     ys, xs = np.nonzero(arr > 127)
     if len(ys) == 0 or width < 1 or height < 1:
         return np.zeros((max(height, 1), max(width, 1)), np.float32)
-    ink = Image.fromarray(arr[ys.min():ys.max() + 1, xs.min():xs.max() + 1])
-    return np.asarray(ink.resize((width, height), Image.LANCZOS), dtype=np.float32) / 255.0
+    ink = arr[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    if fill_holes:
+        ink = fill_enclosed_holes(ink)
+    return np.asarray(Image.fromarray(ink).resize((width, height), Image.LANCZOS), dtype=np.float32) / 255.0
 
 
 def font_name_strip(font_file: str, selector: str, donor_cov: np.ndarray, inset: float) -> np.ndarray:
@@ -964,7 +999,7 @@ def font_name_strip(font_file: str, selector: str, donor_cov: np.ndarray, inset:
         bx0, bx1 = int(x0 + side), int(x0 + width - side)
         if bx1 - bx0 < 2 or y1 - y0 < 2:
             continue
-        out[y0:y1, bx0:bx1] = render_font_box(font_file, char, bx1 - bx0, y1 - y0)
+        out[y0:y1, bx0:bx1] = render_font_box(font_file, char, bx1 - bx0, y1 - y0, fill_holes=(char == "-"))
     return out
 
 
