@@ -891,7 +891,6 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_loader_wakeup.py": "5472678b2d69adf05cafde4df80ae24fbba5d67397367f4195ec241e099aad6a",
         "mod_editor/core/nfl2k5_formation_art_spacing.py": "288fa57184b01a1980d706e66d099b8c7e95c77753d1c2d93d05b061f9571e99",
         "mod_editor/core/nfl2k5_force_out.py": "9498bc3bc5ecb8dc7bc40ddb0a821b1402b9162efb167a1d020a4fb9dc9ed574",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "a94aac6d2f050465d47973cdc239a26975fa5bc3f7bf4b13eba7d844d188847c",
         "mod_editor/core/nfl2k5_name_keyboard.py": "f1ffd4fa4d820cde1834c14d9ee6853f2f2c54598029b1e08807dce4a32ace04",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",

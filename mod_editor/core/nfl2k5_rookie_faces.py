@@ -431,18 +431,23 @@ def face_pixels(rgb: bytes) -> tuple[bytes, bytes]:
 
 
 def bank_faces(bank: Mapping[str, Any]) -> Iterable[tuple[int, bytes]]:
-    """(portrait id, 128x128 RGB) for every bank face, read from the atlas PNGs (sha256 pinned in bank.json)."""
+    """(portrait id, 128x128 RGB) for every bank face. Each atlas ``faces_NN.png`` holds 16 x 16 cells of 8-bit palette
+    indices and ``faces_NN_pal.png`` one 256-colour RGB palette row per cell (both sha256-pinned in bank.json)."""
+    import io  # noqa: PLC0415
     from PIL import Image  # noqa: PLC0415
-    cache: dict[str, Any] = {}
+    files = {}
     for sheet in bank["atlases"]:
         data = (DATA_DIR / sheet["file"]).read_bytes()
         require(sha(data) == sheet["sha256"], f"{sheet['file']} does not match its pin")
-        import io  # noqa: PLC0415
-        cache[sheet["file"]] = Image.open(io.BytesIO(data)).convert("RGB")
+        files[sheet["file"]] = Image.open(io.BytesIO(data))
     for face in bank["faces"]:
-        atlas = cache[face["atlas"]]
+        index = files[face["atlas"]]
+        palette = files[face["atlas"][:-4] + "_pal.png"].convert("RGB")
         col, row = face["cell"]
-        yield face["id"], atlas.crop((col * 128, row * 128, col * 128 + 128, row * 128 + 128)).tobytes()
+        require(index.mode == "L", "a face atlas must be 8-bit indices")
+        cell = index.crop((col * 128, row * 128, col * 128 + 128, row * 128 + 128)).tobytes()
+        pal = palette.crop((0, row * 16 + col, 256, row * 16 + col + 1)).tobytes()
+        yield face["id"], b"".join(pal[3 * i:3 * i + 3] for i in cell)
 
 
 def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]]) -> tuple[bytes, bytes, int]:

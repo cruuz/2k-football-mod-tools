@@ -7,7 +7,8 @@ the faces that passed review), and the free portrait-id runs of the target image
 
 What it does: grades each crop lightly toward the retail portraits (saturation x1.10, gain x1.04), quantises it to
 the 256-colour P8 palette the game stores (the Studio's deterministic quantiser, nfl_tset_png_import), groups the
-faces into the 18 (tone, build) buckets, gives each bucket one contiguous id run (largest bucket first, first fit;
+faces into the 18 (tone, build) buckets (atlas = 8-bit palette indices of 16 x 16 faces, luma-sorted per face; the
+_pal image holds each cell's 256-colour palette as one row), gives each bucket one contiguous id run (largest bucket first, first fit;
 faces with hanging hair first inside a bucket, so the native Dreads rule is "index < hanging"), and writes atlases of
 16 x 16 faces (each cell keeps its own <= 256 colours exactly) plus bank.json.
 
@@ -89,21 +90,30 @@ def main() -> int:
     with ProcessPoolExecutor(args.jobs) as pool:
         pixels = list(pool.map(grade_quantise, [str(args.crops / f"{f}.png") for _b, _k, f in order]))
     from PIL import Image
+    import numpy as np
     per = CELLS * CELLS
     atlases, faces = [], []
     for a in range(0, len(order), per):
-        sheet = Image.new("RGB", (CELLS * 128, CELLS * 128), (0, 0, 0))
-        name = f"faces_{a // per:02d}.png"
-        for c, ((b, k, f), rgb) in enumerate(zip(order[a:a + per], pixels[a:a + per])):
+        chunk = list(zip(order[a:a + per], pixels[a:a + per]))
+        index = np.zeros((CELLS * 128, CELLS * 128), np.uint8)
+        palettes = np.zeros((len(chunk), 256, 3), np.uint8)
+        name = f"faces_{a // per:02d}"
+        for c, ((b, k, f), rgb) in enumerate(chunk):
             col, row = c % CELLS, c // CELLS
-            sheet.paste(Image.frombytes("RGB", (128, 128), rgb), (col * 128, row * 128))
+            arr = np.frombuffer(rgb, np.uint8).reshape(-1, 3)
+            colours, inverse = np.unique(arr, axis=0, return_inverse=True)
+            order_l = np.argsort(colours.astype(np.int64) @ np.array([299, 587, 114]), kind="stable")
+            rank = np.empty_like(order_l); rank[order_l] = np.arange(len(order_l))
+            index[row * 128:(row + 1) * 128, col * 128:(col + 1) * 128] = rank[inverse.ravel()].reshape(128, 128)
+            palettes[c, :len(colours)] = colours[order_l]
             lab = labels[f]
             faces.append(dict(id=starts[b] + k, face=f, tone=lab["tone"], build=lab["build"],
                               hanging=bool(lab["hanging"]), look=lab.get("look"), traits=lab.get("traits", []),
-                              novelty=lab.get("novelty"), atlas=name, cell=[col, row]))
-        buf = io.BytesIO()
-        sheet.save(buf, "PNG", optimize=True)
-        atlases.append((name, buf.getvalue()))
+                              novelty=lab.get("novelty"), atlas=name + ".png", cell=[col, row]))
+        for suffix, img in ((".png", Image.fromarray(index, "L")), ("_pal.png", Image.fromarray(palettes, "RGB"))):
+            buf = io.BytesIO()
+            img.save(buf, "PNG", optimize=True)
+            atlases.append((name + suffix, buf.getvalue()))
     bank = {
         "schema": rf.SCHEMA_BANK,
         "note": "Fictional draft-style headshots generated for this mod (ChatGPT image generation through the Codex CLI, "
