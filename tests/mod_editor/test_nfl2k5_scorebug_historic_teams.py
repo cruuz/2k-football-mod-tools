@@ -106,8 +106,9 @@ class NativeEngineTests(unittest.TestCase):
                     self.assertEqual(logos, {'hscore_buga': 'sb%sh0' % home, 'zscore_buga': 'sb%sh0' % away})
                     self.assertEqual(colours['home_wing'], 0xFF000000 | int(rows[home]['wing'][1:], 16))
                     self.assertEqual(colours['away_wing'], 0xFF000000 | int(rows[away]['wing'][1:], 16))
-                    # Possession is home: the plate wears the home team's plate accent.
-                    self.assertEqual(colours['plate'], 0xFF000000 | int(rows[home]['plate'][1:], 16))
+                    # Possession is home: the tab wears the home team's wing/plate midpoint (b778 sb5).
+                    w, p = int(rows[home]['wing'][1:], 16), int(rows[home]['plate'][1:], 16)
+                    self.assertEqual(colours['plate'], 0xFF000000 | (((w & 0xFEFEFE) >> 1) + ((p & 0xFEFEFE) >> 1)))
                     self.assertNotIn(GREY, colours.values())
         finally:
             capture['machine'].close()

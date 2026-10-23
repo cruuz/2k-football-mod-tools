@@ -27,6 +27,13 @@ plate    sb4 replaces the rounded 91x15 cell with a measured 240x48 trapezoid, a
          bottom carries a dark lower edge and drop shadow. The row profile keeps a bright crest, deepens the
          body and drives the lower edge dark, so the strong vertical gradient survives the possession tint. A
          second untinted white-coverage cell (plate_gloss) lays the still's desaturated top bevel over the tint.
+tab      sb5 (Noah 10/23 ~03:40: "a weird shape ... not the actual shape on the ESPN one with its smooth curves, and
+         it doesn't blend into the gradient of the team possessing the ball") replaces sb4's trapezoid. The tab
+         hangs from the rail with S-curved shoulders fitted to the still's edge, vertical sides, rounded lower
+         corners and a flat bottom; the multiplier lights the sides and darkens the centre under the label, with
+         a glint row and bright band across the top. plate_gloss now carries the glint and the thin desaturated
+         rim light. The runtime tints the tab with the midpoint of the possessing team's wing display shade and
+         its sourced plate accent, so the tab continues that team's side of the bar (TAB_* below).
 capsule  sb4 replaces the 183 px capsule with one 243x40 pill spanning quarter, game clock and play clock, with
          the still's 2 px gray dividers at x 902.5 and 1021.5. The play-clock red state is the pill's own right
          cap (white rim and outline included) so it cannot read as a second box. The quarter label shrinks to the
@@ -73,6 +80,36 @@ PLATE_ROWS = [1.00, 1.00, 0.99, 0.96, 0.90, 0.81, 0.76, 0.80, 0.83, 0.85, 0.86,
               0.87, 0.87, 0.86, 0.86, 0.86, 0.86, 0.86, 0.85, 0.85, 0.85, 0.84,
               0.83, 0.81, 0.78, 0.73, 0.66, 0.57, 0.46, 0.33, 0.20]
 PLATE_SHADOW_ROWS = [0.62, 0.48, 0.34, 0.21, 0.10, 0.03]
+# sb5 (Noah 10/23 ~03:40): "the down and distance above it looks bad. It's like a weird shape. It's not the
+# actual shape on the ESPN one with its smooth curves, and it doesn't blend into the gradient of the team
+# possessing the ball." Measured on the read-only Broncos at Chiefs still (sb3/ds/work/ref_full.png) and the
+# b72 broadcast away median. The tab hangs from the bar's top rail: an S-curved shoulder flares out of the rail
+# on each side (box-local layout px; a cubic fitted to the still's 50% edge rows 2..19, RMS 0.1 px), the sides
+# are vertical 246 px apart, the lower corners are 7 px arcs and the flat bottom sits at 39.5 px (bar y 983.5).
+# Colour: the lit sides are the brightest part (the peak ~13 px in from each edge) and the centre under the
+# label falls to 0.56 of it; across the top a glint row, a darker row and a bright band run the full width;
+# a thin desaturated rim light outlines the shoulders, sides and bottom. The sb4 records below stay frozen.
+TAB_DESIGN = (270, 46)
+TAB_SUPERSAMPLE = 8
+TAB_FLARE = ((-1.5, 0.0), (0.5, 0.0), (11.8, 16.5), (11.8, 18.0))
+TAB_SIDE = 11.8
+TAB_CORNER = 7.0
+TAB_BOTTOM = 39.5
+TAB_PEAK = 0.80
+TAB_ACROSS = ((0, 0.76), (1, 0.78), (4, 0.88), (7, 0.95), (10, 0.99), (13, 1.0), (16, 0.99), (19, 0.95),
+              (22, 0.90), (25, 0.87), (28, 0.85), (31, 0.81), (34, 0.78), (37, 0.75), (40, 0.735), (43, 0.70),
+              (46, 0.68), (49, 0.655), (52, 0.64), (55, 0.62), (58, 0.60), (61, 0.58), (64, 0.565), (70, 0.555))
+TAB_DOWN = ((0, 0.70), (1.5, 0.70), (2.5, 0.58), (3.5, 0.62), (4.5, 0.95), (5.5, 1.04), (6.5, 0.98), (8, 0.97),
+            (10, 1.0), (28, 1.03), (31, 1.0), (33, 0.95), (35, 0.91), (37, 0.90), (38.5, 0.95), (39.5, 0.90))
+TAB_BAND = ((0, 0.56), (1.5, 0.54), (2.5, 0.42), (3.5, 0.44), (4.5, 0.70), (5.5, 0.86), (6.5, 0.76), (7.5, 0.60),
+            (8.5, 0.0), (36.5, 0.0), (38.0, 0.62), (39.5, 0.60))
+TAB_GLINT = ((0, 0.40), (1.5, 0.42), (2.5, 0.06), (4.5, 0.0), (5.5, 0.12), (6.5, 0.08), (7.5, 0.0))
+TAB_RIM = 0.40
+TAB_HALO = 0.55
+TAB_HALO_WHITE = 0.24
+TAB_HALO_SHADE = 0.62
+TAB_EDGE_SOFT = 1.1
+TAB_RECORD = 'b778_sb5_tab_shape'
 # sb3's frozen provenance, kept so re-running this author does not rewrite history.
 SB3_PLATE_ROWS = [0.34, 0.42, 0.62, 0.84, 0.82, 0.79, 0.77, 0.75, 0.74, 0.73, 0.72,
                   0.71, 0.71, 0.70, 0.70, 0.70, 0.70, 0.70, 0.69, 0.69, 0.69, 0.69,
@@ -163,50 +200,86 @@ def _profile(values, height):
     return np.interp(np.arange(height), np.arange(len(values)), values)
 
 
-def _trapezoid_mask(width, height, inset, radius=9, supersample=4):
-    """Rounded-top tab: the wide edge at the top, the sides tapering into the bar."""
-    w, h = width * supersample, height * supersample
-    points = []
-    for i in range(9):
-        a = np.pi / 2 * i / 8
-        points.append((radius * supersample * (1 - np.cos(a)), radius * supersample * (1 - np.sin(a))))
-    points.append((w - radius * supersample, 0))
-    for i in range(9):
-        a = np.pi / 2 * i / 8
-        points.append((w - radius * supersample + radius * supersample * np.sin(a),
-                       radius * supersample * (1 - np.cos(a))))
-    points.append((w - inset * supersample, h - 1))
-    points.append((inset * supersample, h - 1))
-    image = Image.new('L', (w, h), 0)
-    ImageDraw.Draw(image).polygon(points, fill=255)
-    return np.asarray(image.resize((width, height), Image.Resampling.BOX), dtype=float) / 255
+def _bezier(points, steps=4001):
+    t = np.linspace(0.0, 1.0, steps)[:, None]
+    p0, p1, p2, p3 = (np.asarray(point, float) for point in points)
+    return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t * t * p2 + t ** 3 * p3
+
+
+def tab_left_edge(y):
+    """Left edge of the sb5 tab in box-local layout px at row(s) y; nan where the tab has ended.
+
+    The shoulder is the measured S curve out of the rail (TAB_FLARE), the side is vertical, and the
+    lower corner is a TAB_CORNER radius arc into the flat bottom. The right edge is the mirror image."""
+    y = np.asarray(y, float)
+    curve = _bezier(TAB_FLARE)
+    flare_end = TAB_FLARE[-1][1]
+    x = np.where(y < flare_end, np.interp(y, curve[:, 1], curve[:, 0]), TAB_SIDE)
+    cy = TAB_BOTTOM - TAB_CORNER
+    dy = np.clip(y - cy, 0, None)
+    arc = TAB_SIDE + TAB_CORNER - np.sqrt(np.clip(TAB_CORNER ** 2 - dy ** 2, 0, None))
+    x = np.where(y > cy, arc, x)
+    return np.where(y <= TAB_BOTTOM, x, np.nan)
+
+
+def _tab_fields(supersample=TAB_SUPERSAMPLE):
+    """Supersampled tab coverage, tint multiplier, halo and rim-light coverage in layout space."""
+    from PIL import ImageFilter
+    width, height = TAB_DESIGN
+    xs = (np.arange(width * supersample) + 0.5) / supersample
+    ys = (np.arange(height * supersample) + 0.5) / supersample
+    left = tab_left_edge(ys)[:, None]
+    right = width - left
+    x = xs[None, :]
+    with np.errstate(invalid='ignore'):
+        inside = (x >= left) & (x <= right)
+        across = np.where(inside, np.minimum(x - left, right - x), 0.0)
+    inside = inside & ~np.isnan(left)
+    mask = inside.astype(float)
+    # The shoulder tips meet the rail at the quad's own edge; fade them over 2.5 px so the
+    # quad boundary never shows as a vertical cut through the rail.
+    mask *= np.clip(np.minimum(x, width - x) / 2.5, 0, 1)
+    shade = np.interp(across, *zip(*TAB_ACROSS)) * np.interp(ys, *zip(*TAB_DOWN))[:, None]
+    band = np.interp(ys, *zip(*TAB_BAND))[:, None]
+    value = TAB_PEAK * np.maximum(shade, band)
+
+    def blur(field, radius):
+        image = Image.fromarray(np.rint(np.clip(field, 0, 1) * 255).astype('uint8'), 'L')
+        return np.asarray(image.filter(ImageFilter.GaussianBlur(radius * supersample)), float) / 255
+
+    solid = inside.astype(float)
+    # Pad above the box with the first row, so the blur does not invent an edge along the rail.
+    pad = 4 * supersample
+    padded = np.vstack([np.repeat(solid[:1], pad, axis=0), solid])
+    soft = blur(padded, TAB_EDGE_SOFT)[pad:]
+    halo = TAB_HALO * np.clip(soft * 2.0, 0, 1) * (1 - solid)
+    halo[ys < TAB_FLARE[-1][1] * 0.5] = 0
+    rim = TAB_RIM * np.clip((1 - soft) * 2.2, 0, 1) * solid
+    # The still's outline is a light, desaturated line straddling the edge: white coverage over the halo too.
+    rim = np.maximum(rim, TAB_HALO_WHITE / TAB_HALO * halo)
+    return mask, value, halo, rim, ys
 
 
 def plate_cell(size):
-    width, height = PLATE_SOURCE
-    tab = _trapezoid_mask(width, PLATE_TAB_ROWS, 15)
-    mask = np.zeros((height, width), float)
-    mask[:PLATE_TAB_ROWS] = tab
-    shadow = np.zeros((height - PLATE_TAB_ROWS, width))
-    for i in range(len(shadow)):
-        inset = 15 + i
-        shadow[i, inset:width - inset] = 1
-    shadow_rows = _profile(PLATE_SHADOW_ROWS, len(shadow))
-    mask[PLATE_TAB_ROWS:] = np.maximum(mask[PLATE_TAB_ROWS:], shadow * shadow_rows[:, None])
-    # The tab's top edge fades into the rail over three rows instead of ending in a hard line.
-    mask[0] *= 0.55
-    mask[1] *= 0.85
-    rows = _profile(PLATE_ROWS, PLATE_TAB_ROWS)
-    rgb = np.full((height, width), 64.0)
-    rgb[:PLATE_TAB_ROWS] = rows[:, None] * 255
-    # The still's tab carries a dark outline down its slanted sides and lower
-    # edge; the top two rows stay at the possession tint for the crest.
-    edge = np.clip(mask - np.minimum(np.roll(mask, 1, 0), np.roll(mask, -1, 0)), 0, 1)
-    edge = np.maximum(edge, np.clip(mask - np.minimum(np.roll(mask, 1, 1), np.roll(mask, -1, 1)), 0, 1))
-    edge[:3] = 0
-    rgb = np.where(edge > .35, np.minimum(rgb, 70), rgb)
-    pixels = np.dstack([rgb, rgb, rgb, mask * 255]).astype('uint8')
-    return _filter(Image.fromarray(pixels, 'RGBA'), size)
+    """sb5: the possession tab, a neutral multiplier the runtime tints with the possessing team's shade.
+
+    Coverage and colour are built in layout space at TAB_SUPERSAMPLE x, then area-filtered with
+    premultiplied alpha down to the HUD footprint so the curves stay anti-aliased."""
+    mask, value, halo, _rim, _ys = _tab_fields()
+    alpha = np.clip(mask + halo, 0, 1)
+    colour = np.where(mask > 0, value, TAB_PEAK * TAB_HALO_SHADE)
+    premultiplied = colour * alpha
+
+    def down(field):
+        return np.asarray(Image.fromarray(field.astype('float32'), 'F').resize(size, Image.Resampling.BOX), float)
+
+    a = down(alpha)
+    c = down(premultiplied)
+    plain = down(colour)
+    rgb = np.where(a > 1e-4, c / np.maximum(a, 1e-4), plain)
+    rgb = np.rint(np.clip(rgb, 0, 1) * 255)
+    pixels = np.dstack([rgb, rgb, rgb, np.rint(np.clip(a, 0, 1) * 255)]).astype('uint8')
+    return Image.fromarray(pixels, 'RGBA')
 
 
 def _capsule_rgb(width, height, dividers=()):
@@ -228,18 +301,15 @@ def capsule_cell(size):
 
 
 def gloss_cell(size):
-    """White top bevel for the plate: the still's crest is a desaturated pink-white light, not tint."""
-    width, height = PLATE_SOURCE
-    tab = _trapezoid_mask(width, PLATE_TAB_ROWS, 15)
-    alpha = np.zeros((height, width))
-    profile = _profile([0.30, 0.48, 0.40, 0.28, 0.16, 0.07], 8)
-    for y in range(len(profile)):
-        alpha[y] = tab[y] * profile[y]
-    edge = np.clip(tab - np.minimum(np.roll(tab, 1, 1), np.roll(tab, -1, 1)), 0, 1)
-    for y in range(3, 18):
-        alpha[y] = np.maximum(alpha[y], edge[y] * 0.30)
-    pixels = np.dstack([np.full((height, width, 3), 255.0), alpha * 255]).astype('uint8')
-    return _filter(Image.fromarray(pixels, 'RGBA'), size)
+    """sb5: untinted white light on the tab: the rail glint across its top rows, a faint crest on the
+    top band and the thin rim light that runs down the shoulders, sides and bottom (desaturated, so
+    it cannot come from the team tint)."""
+    mask, _value, _halo, rim, ys = _tab_fields()
+    top = np.interp(ys, *zip(*TAB_GLINT))[:, None] * mask
+    alpha = np.clip(np.maximum(top, rim), 0, 1)
+    a = np.asarray(Image.fromarray(alpha.astype('float32'), 'F').resize(size, Image.Resampling.BOX), float)
+    pixels = np.dstack([np.full(a.shape + (3,), 255.0), np.rint(np.clip(a, 0, 1) * 255)]).astype('uint8')
+    return Image.fromarray(pixels, 'RGBA')
 
 
 def rim_cell(size, side):
@@ -444,6 +514,18 @@ def apply(folder=DEFAULT_FOLDER, check=False):
         layout=list(PLATE_LAYOUT), source=[90, 19], design_source=list(PLATE_SOURCE), tab_rows=PLATE_TAB_ROWS,
         rows=PLATE_ROWS, shadow_rows=PLATE_SHADOW_ROWS, top_inset=0, bottom_inset=15,
         reference='read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)')
+    spec['provenance'][TAB_RECORD] = dict(
+        job='b778 sb5 2026-10-23',
+        request="Noah 10/23 03:40: the down and distance tab is a weird shape, not ESPN's smooth curves, and it "
+                "does not blend into the possessing team's gradient",
+        layout=list(PLATE_LAYOUT), source=[90, 19], design=list(TAB_DESIGN), supersample=TAB_SUPERSAMPLE,
+        shoulder_bezier=[list(point) for point in TAB_FLARE], side_inset=TAB_SIDE, corner_radius=TAB_CORNER,
+        bottom=TAB_BOTTOM, peak=TAB_PEAK, across=[list(row) for row in TAB_ACROSS],
+        down=[list(row) for row in TAB_DOWN], band=[list(row) for row in TAB_BAND],
+        glint=[list(row) for row in TAB_GLINT], rim=TAB_RIM, halo=TAB_HALO, halo_white=TAB_HALO_WHITE,
+        tint='the possessing team: the midpoint of its wing display shade and its sourced plate accent (runtime)',
+        reference='read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png, and '
+                  'reports/b72_s9/broadcast_away_median.png (measurement only, no broadcast pixels)')
     note = ('The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing '
             'and plate remain coverage cells the native tints multiply. The sb4 capsule is white body with two '
             'measured dividers; its red state is the same right cap, and the plate is a tapered neutral tab.')

@@ -41,7 +41,7 @@ DOWN, INTERIM, TIMEOUTS, TAB, TAB_SIDE, RED = 96, 100, 104, 108, 112, 116      #
 PHASE, QUARTER, CLOCK, DOWN_OBJECT = 0xE602B4, 0xE602C4, 0xE6028C, 0xE602EC
 HOME_SCORE, AWAY_SCORE = 0xE5FC28, 0xE5FC68
 HANG_TIME, FLAG, BALL_ON, FUMBLE = 0xA95AA8, 0xA95B18, 0xA95B88, 0xA95BF8
-ESPN_PLATE, PLAY_CLOCK_RED = 0xFF181719, 0xFFDD0038
+ESPN_PLATE, PLAY_CLOCK_RED = 0xFF322F34, 0xFFDD0038   # b778 sb5: black plate x the darker tab centre
 
 
 def bits(value):
@@ -162,8 +162,9 @@ class LayoutTests(unittest.TestCase):
             self.assertGreater(plate[3], bar[1], wide)
         x0, y0, x1, y1 = self.spec['cells']['plate']['box']
         alpha = self.image.crop((x0, y0, x1, y1)).getchannel('A')
-        top = [x for x in range(alpha.width) if alpha.getpixel((x, 2)) > 128]
-        bottom = [x for x in range(alpha.width) if alpha.getpixel((x, alpha.height - 3)) > 32]
+        # b778 sb5: the shoulders flare out of the rail in the top rows and the lower corners round off.
+        top = [x for x in range(alpha.width) if alpha.getpixel((x, 0)) > 128]
+        bottom = [x for x in range(alpha.width) if alpha.getpixel((x, alpha.height - 3)) > 128]
         self.assertGreater(len(top), len(bottom) + 8)                         # wider at the top
 
     def test_receipts_name_their_sources(self):

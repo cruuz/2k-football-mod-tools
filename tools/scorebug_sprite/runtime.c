@@ -29,7 +29,7 @@ struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_pla
 typedef union {u32 u;float f;} Bits;
 #define INTERIM_SECONDS 0x40e00000u /* 7.0: ESPN's median "3rd Down" (52 in the full Broncos-Chiefs game, p25 5, p75 10) */
 #define TAB_SECONDS 0x40800000u     /* 4.0: ESPN's TIMEOUT popups ran 2, 4 and 5 s in the same game */
-#define ESPN_PLATE 0xff181719u      /* x plate cell ~0.9 = the measured black plate (22,21,23) */
+#define ESPN_PLATE 0xff322f34u      /* x the sb5 tab centre 0.44 = the measured black plate (22,21,23) */
 #define PLAY_CLOCK_RED 0xffdd0038u  /* x white cell 246 = the measured red cell (213,0,54) */
 struct Accent {u32 code,kind,wing,rim,plate;};
 
@@ -142,8 +142,6 @@ NOINLINE void sprite_setup(struct State *s) {
  s->away_wing=s->away?V(s->away-4):0xff4a4e58;
  s->home_plate=s->home?V(s->home-8):0xff3a3f48;
  s->away_plate=s->away?V(s->away-8):0xff3a3f48;
- s->home_rim=0xff000000|(((s->home_wing&0xfefefe)>>1)+0x7f7f7f);
- s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);
  accents(b,0xb30864,&s->home_wing,&s->home_rim,&s->home_plate);
  accents(b,0xb30a58,&s->away_wing,&s->away_rim,&s->away_plate);
  /* b778 sb3: the 2026 bars' bright reflected rail. The rim is the wing's own lightened shade (the pre-accent
@@ -151,6 +149,12 @@ NOINLINE void sprite_setup(struct State *s) {
   * rather than flat dark. The sourced accent rim stays in the table for the record and older scenes. */
  s->home_rim=0xff000000|(((s->home_wing&0xfefefe)>>1)+0x7f7f7f);
  s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);
+ /* b778 sb5: ESPN's down-and-distance tab continues the possessing team's wing gradient (KC red, DEN blue in
+  * the 2026 stills). Its tint is the midpoint of the wing's display shade and the sourced plate accent: the
+  * wing's hue, a step deeper, as the stills draw it. The tab cell supplies the lit sides and the darker centre
+  * under the label. (The rim was also set before accents(); that store was dead and is dropped.) */
+ s->home_plate=0xff000000|(((s->home_wing&0xfefefe)>>1)+((s->home_plate&0xfefefe)>>1));
+ s->away_plate=0xff000000|(((s->away_wing&0xfefefe)>>1)+((s->away_plate&0xfefefe)>>1));
  V(material(b,5)+0x30)=s->home;V(material(b,8)+0x30)=s->away;
  /* Keep retail descriptor/slot words. Empty callbacks submit no bar glyphs. */
  for(u32 i=0;i<5;i++)V(0xa95884+i*40)=(u32)sprite_blank;

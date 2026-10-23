@@ -1,4 +1,4 @@
-"""b778 sb3/sb4: the measured wing glow, connected clock pill, plate tab and Buffalo's primary mark.
+"""b778 sb3/sb4/sb5: the measured wing glow, connected clock pill, ESPN down & distance tab and Buffalo's primary mark.
 
 Offline checks on the shipped template, layout and runtime source. The emulator stills are produced by
 tools/scorebug_sprite/espn_fidelity.py and the native preview, not by this module.
@@ -65,28 +65,20 @@ class PlateTests(unittest.TestCase):
     def setUpClass(cls):
         cls.spec, cls.sheet = load()
 
-    def test_plate_has_the_measured_top_bevel_and_dark_lower_edge(self):
-        box = self.spec['cells']['plate']['box']
-        cell = self.sheet.crop(tuple(box))
-        rows = [cell.getpixel((cell.width // 2, y))[0] for y in range(cell.height)]
-        self.assertGreaterEqual(rows[1], rows[cell.height // 2] + 10)
-        self.assertGreaterEqual(rows[cell.height // 2], rows[-2] + 10)
-        self.assertLess(rows[-1], 120)
-        self.assertGreater(rows[cell.height // 2], 120)
-        for pixel in cell.getdata():
-            if pixel[3] > 128:
-                self.assertLessEqual(max(pixel[:3]) - min(pixel[:3]), 1)
-
     def test_plate_tint_is_the_possessing_team_and_red_blue_references_exist(self):
         static = next(row for row in self.spec['static'] if row['name'] == 'plate')
         self.assertEqual(static['tint'], 'possessing team')
         accents = json.loads((FOLDER / 'team_accents.json').read_text(encoding='utf-8'))['teams']
-        def rgb(name):
-            value = accents[name]['plate']
-            return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
-        kc, den = rgb('KC'), rgb('DEN')
-        self.assertGreater(kc[0], kc[2] * 2)       # red possession plate
-        self.assertGreater(den[2], den[0] * 2)     # blue possession plate
+        kc, den = tab_tint(accents['KC']), tab_tint(accents['DEN'])
+        self.assertGreater(kc[0], kc[2] * 2)       # red possession tab
+        self.assertGreater(den[2], den[0] * 2)     # blue possession tab
+
+
+def tab_tint(team):
+    """sb5: the runtime's possession tint, the midpoint of the wing display shade and the plate accent."""
+    def rgb(value):
+        return [int(value[i:i + 2], 16) for i in (1, 3, 5)]
+    return [((w & 0xfe) >> 1) + ((p & 0xfe) >> 1) for w, p in zip(rgb(team['wing']), rgb(team['plate']))]
 
 
 class RimTests(unittest.TestCase):
@@ -195,42 +187,126 @@ class ConnectedCapsuleTests(unittest.TestCase):
 
 
 class PlateTabTests(unittest.TestCase):
-    """sb4: the down-and-distance plate is a tapered tab on the bar's top rail."""
+    """sb5: ESPN's down-and-distance tab hangs from the bar's top rail: S-curved shoulders, vertical sides,
+    rounded lower corners, lit sides over a darker centre, and a light rim, tinted by the team with the ball."""
+
+    # The read-only Broncos at Chiefs still (sb3/ds/work/ref_full.png): the tab's 50% edge, box-local
+    # layout px from the quad's left edge (x 828), averaged over the left and right sides, by box row.
+    STILL_INSET = {2: 0.9, 4: 2.4, 6: 4.1, 8: 5.5, 10: 6.7, 12: 8.0, 14: 9.3, 16: 10.5, 18: 11.2,
+                   22: 11.5, 26: 11.5, 30: 11.5}
 
     @classmethod
     def setUpClass(cls):
+        import numpy as np
+        cls.np = np
         cls.spec, cls.sheet = load()
         cls.statics = {row['name']: row for row in cls.spec['static']}
+        x0, y0, x1, y1 = cls.spec['cells']['plate']['box']
+        cls.cell = np.asarray(cls.sheet.crop((x0, y0, x1, y1)), dtype=float)
+        x0, y0, x1, y1 = cls.spec['cells']['plate_gloss']['box']
+        cls.gloss = np.asarray(cls.sheet.crop((x0, y0, x1, y1)), dtype=float)
+        x0, y0, x1, y1 = cls.statics['plate']['box']
+        cls.sx = (x1 - x0) / cls.cell.shape[1]          # layout px per texel
+        cls.sy = (y1 - y0) / cls.cell.shape[0]
 
-    def test_tab_top_sits_on_the_bar_and_taper_faces_the_bar(self):
+    def edge(self, row):
+        """50% alpha crossing on the left side of one texel row, in layout px from the quad edge."""
+        alpha = [0.0] + list(self.cell[row, :, 3] / 255)     # transparent beyond the quad's edge
+        for i in range(1, len(alpha) // 2):
+            if alpha[i - 1] < .5 <= alpha[i]:
+                return (i - 2 + (.5 - alpha[i - 1]) / (alpha[i] - alpha[i - 1]) + .5) * self.sx
+        return None
+
+    def test_tab_shares_the_quad_and_the_gloss(self):
         self.assertEqual(self.statics['plate']['box'], [828, 944, 1098, 990])
         self.assertEqual(self.statics['plate_gloss']['box'], self.statics['plate']['box'])
-        x0, y0, x1, y1 = self.spec['cells']['plate']['box']
-        alpha = self.sheet.crop((x0, y0, x1, y1)).getchannel('A')
-        top = sum(alpha.getpixel((x, 2)) > 128 for x in range(alpha.width))
-        bottom = sum(alpha.getpixel((x, alpha.height - 4)) > 128 for x in range(alpha.width))
-        self.assertGreater(top, bottom + 8)
+        self.assertEqual(self.statics['plate']['tint'], 'possessing team')
+        self.assertEqual(self.statics['plate_gloss']['tint'], 'none')
 
-    def test_strong_vertical_gradient_and_dark_lower_edge(self):
-        x0, y0, x1, y1 = self.spec['cells']['plate']['box']
-        cell = self.sheet.crop((x0, y0, x1, y1))
-        middle = cell.width // 2
-        rows = [cell.getpixel((middle, y))[0] for y in range(cell.height)]
-        self.assertGreaterEqual(rows[1], 230)             # the crest is the full possession tint
-        self.assertGreaterEqual(rows[1], rows[cell.height // 2] + 10)
-        self.assertGreater(rows[cell.height // 2], rows[cell.height - 4] + 40)
-        self.assertLess(rows[-2], 120)                    # drop shadow over the bar
-        for pixel in cell.getdata():
+    def test_shoulders_follow_the_still(self):
+        # Texel row j covers layout rows [j*sy, (j+1)*sy]; compare its edge with the still at its centre.
+        checked = 0
+        for row in range(self.cell.shape[0]):
+            y = (row + .5) * self.sy
+            if y > 30:
+                break
+            keys = sorted(self.STILL_INSET)
+            expected = self.np.interp(y, keys, [self.STILL_INSET[k] for k in keys])
+            got = self.edge(row)
+            self.assertIsNotNone(got, row)
+            self.assertLess(abs(got - expected), 1.6, (row, y, got, expected))
+            checked += 1
+        self.assertGreaterEqual(checked, 12)
+        # The shoulder flares out of the rail and is finished by bar y ~964 (sb4's taper ran the whole height).
+        side = self.edge(10)
+        self.assertGreater(side - self.edge(0), 9.5)
+        self.assertLess(abs(self.edge(int(19 / self.sy)) - side), 0.3)
+
+    def test_symmetric_vertical_sides_and_rounded_lower_corners(self):
+        alpha = self.cell[..., 3]
+        self.assertTrue(self.np.allclose(alpha, alpha[:, ::-1], atol=3))
+        body = [self.edge(r) for r in range(8, 13)]
+        self.assertLess(max(body) - min(body), 0.8)          # vertical sides
+        last = max(r for r in range(alpha.shape[0]) if alpha[r].max() > 128)
+        self.assertLessEqual((last + 1) * self.sy, 43)        # flat bottom near bar y 984
+        self.assertGreater(self.edge(last), self.edge(10) + 1.5)   # the corner arc pulls the edge in
+        self.assertLess(alpha[-1].max(), 40)                  # no sb4 drop-shadow slab under the bar
+
+    def test_lit_sides_over_a_darker_centre(self):
+        row = self.cell[self.cell.shape[0] // 2]
+        centre = row[row.shape[0] // 2, 0]
+        side = max(row[i, 0] for i in range(2, 9))           # ~6..27 layout px in from the edge
+        self.assertGreaterEqual(side, 190)
+        self.assertLessEqual(centre, 125)
+        self.assertGreater(side, centre * 1.6)
+        values = [row[i, 0] for i in range(row.shape[0] // 2)]
+        values = values[values.index(max(values)):]          # from the lit side inward to the centre
+        self.assertTrue(all(b <= a + 2 for a, b in zip(values, values[1:])), values)
+        for pixel in self.cell.reshape(-1, 4):
             if pixel[3] > 128:
                 self.assertLessEqual(max(pixel[:3]) - min(pixel[:3]), 1)
 
-    def test_gloss_is_an_untinted_white_bevel(self):
-        self.assertEqual(self.statics['plate_gloss']['tint'], 'none')
-        x0, y0, x1, y1 = self.spec['cells']['plate_gloss']['box']
-        cell = self.sheet.crop((x0, y0, x1, y1))
-        self.assertGreaterEqual(cell.getchannel('A').getextrema()[1], 100)
-        opaque = [p[:3] for p in cell.getdata() if p[3] > 64]
-        self.assertTrue(all(min(p) >= 250 for p in opaque))
+    def test_gloss_is_an_untinted_rail_glint_and_rim_light(self):
+        alpha = self.gloss[..., 3]
+        opaque = self.gloss[alpha > 64][:, :3]
+        self.assertTrue((opaque >= 250).all())
+        middle = alpha.shape[1] // 2
+        self.assertGreaterEqual(alpha[0, middle], 80)         # the rail glint across the top
+        self.assertLess(alpha[alpha.shape[0] // 2, middle], 8)    # nothing over the label
+        side = alpha[alpha.shape[0] // 2, :8]
+        self.assertGreaterEqual(side.max(), 20)               # rim light down the side (sub-texel line)
+
+    def test_white_label_stays_legible_for_every_team(self):
+        """The label's ink stays inside the tab's darker centre; 4.5:1 against white for every team.
+
+        The widest label, "4th & GOAL", inks 180 layout px (bar x 432..611 on the native preview), centred."""
+        from mod_editor.core import nfl2k5_scorebug_teams as teams
+        accents = json.loads((FOLDER / 'team_accents.json').read_text(encoding='utf-8'))['teams']
+        x0, _y0, x1, _y1 = self.statics['plate']['box']
+        half = 180 / 2 / self.sx
+        centre = self.cell.shape[1] / 2
+        lo, hi = int(centre - half), int(self.np.ceil(centre + half))
+        rows = range(int(11 / self.sy), int(35 / self.sy))   # the label's rows, bar y 955..979
+        brightest = max(self.cell[r, i, 0] for r in rows for i in range(lo, hi)) / 255
+        self.assertLess(brightest, 0.72)
+        for name, team in sorted(accents.items()):
+            if team.get('kind', 0) != 0:
+                continue
+            tint = tab_tint(team)
+            colour = '#%02X%02X%02X' % tuple(round(c * brightest) for c in tint)
+            self.assertGreaterEqual(teams.contrast_white(colour), 4.5, (name, colour))
+
+
+class RuntimeTintTests(unittest.TestCase):
+    def test_runtime_tints_the_tab_with_the_wing_and_plate_midpoint(self):
+        source = (ROOT / 'tools/scorebug_sprite/runtime.c').read_text(encoding='utf-8')
+        for side in ('home', 'away'):
+            self.assertIn('s->%s_plate=0xff000000|(((s->%s_wing&0xfefefe)>>1)+((s->%s_plate&0xfefefe)>>1));'
+                          % (side, side, side), source)
+        self.assertIn('#define ESPN_PLATE 0xff322f34u', source)
+        setup = source[source.index('NOINLINE void sprite_setup'):]
+        setup = setup[:setup.index('\n}\n')]
+        self.assertLess(setup.index('accents(b,0xb30a58'), setup.index('s->away_plate=0xff000000|'))
 
 
 class ProvenanceTests(unittest.TestCase):
@@ -247,6 +323,11 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(capsule['dividers_layout'], [902.5, 1021.5])
         plate = spec['provenance']['b778_sb4_plate_tab']
         self.assertEqual(plate['layout'], [828, 944, 1098, 990])
+        self.assertEqual(plate['bottom_inset'], 15)               # sb4 history stays sb4
+        tab = spec['provenance']['b778_sb5_tab_shape']
+        self.assertEqual(tab['layout'], [828, 944, 1098, 990])
+        self.assertEqual(tab['source'], [90, 19])
+        self.assertIn('ref_full.png', tab['reference'])
         self.assertIn('ref_full.png', capsule['reference'])
 
     def test_template_pin_matches_the_catalog(self):

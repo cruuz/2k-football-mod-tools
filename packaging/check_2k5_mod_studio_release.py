@@ -318,7 +318,7 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "f6055955e1c5b6c2acc44e1fab1f7450f1b0af69a8988ca0bc6518dd5a092d8c"  # b778 sb4: connected clock pill and attached plate tab
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "4da8788d85d1691c39291e0ee6858c3e8787f1e1cec385f90e11152facdfd248"  # b778 sb5: ESPN-shaped down & distance tab; sb4: connected clock pill
 
 # Anniversary paint is authored or cropped from publicly sourced references.
 # Retail wordmarks/shields/scenes are read from the user's disc at compile time
