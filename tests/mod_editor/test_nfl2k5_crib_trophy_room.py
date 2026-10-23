@@ -1,5 +1,6 @@
 """b778-xs1: the Crib keeps only the Trophy Room side (catalog popup skipped, the two shop rows removed)."""
 from pathlib import Path
+import importlib.util
 import struct
 import sys
 import unittest
@@ -34,9 +35,64 @@ class CribTrophyRoomTests(unittest.TestCase):
         digests = [(x.header_offset + 36, x.header_offset + 56) for x in _sections(self.applied)]
         lo = image.offset(crib.OPTIONS, 6 * crib.ROW)
         sites = {image.offset(0x277185), image.offset(0x277185) + 1, image.offset(0x2771FF), image.offset(0x2771FF) + 1}
+        sites |= {image.offset(va) + k for va in crib.OWNED_CALLS for k in range(5)}
+        sites |= {image.offset(crib.SET_STATE[1]) + k for k in range(6)}
+        sites |= {image.offset(crib.GATE_VA) + k for k in range(len(crib.gate_code()))}
         for i, (a, b) in enumerate(zip(self.retail, self.applied)):
             if a != b:
                 self.assertTrue(i in sites or lo <= i < lo + 6 * crib.ROW or any(x <= i < y for x, y in digests), hex(i))
+
+    def test_crib_owns_nothing_but_the_unlockables_check_is_kept(self):
+        retail, applied = XbeImage(self.retail), XbeImage(self.applied)
+        for va in crib.OWNED_CALLS:
+            self.assertEqual(retail.read(va, 5), crib.owned_call(va))      # call 0x13FBA0 in retail
+            self.assertEqual(applied.read(va, 5), bytes.fromhex("83c40431c0"))  # add esp, 4 ; xor eax, eax
+            self.assertTrue(0x26C000 <= va < 0x27E000)                       # all inside the Crib module
+        self.assertEqual(applied.read(0x10E912, 5), retail.read(0x10E912, 5))  # teams/stadiums/movies unlock check
+        self.assertEqual(len(crib.OWNED_CALLS), 16)
+
+    @unittest.skipUnless(importlib.util.find_spec("unicorn"), "Unicorn absent")
+    def test_state_gate_turns_every_item_screen_into_the_room(self):
+        import unicorn as uc
+        from unicorn import x86_const as x86
+        image = XbeImage(self.applied)
+        hook = image.read(crib.SET_STATE[1], 6)
+        self.assertEqual(crib.SET_STATE[1] + 5 + struct.unpack_from("<i", hook, 1)[0], crib.GATE_VA)
+        body = image.read(crib.GATE_VA, len(crib.gate_code()))
+        resume = crib.SET_STATE_RESUME
+        for state in range(0, 40):
+            m = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
+            m.mem_map(0x274000, 0x1000); m.mem_write(crib.GATE_VA, body)
+            m.mem_map(0x276000, 0x1000); m.mem_write(resume, b"\xf4")
+            m.mem_map(0x3000000, 0x10000)
+            esp = 0x3008000
+            m.mem_write(esp, struct.pack("<II", 0x11223344, state))     # return address, the requested state
+            m.reg_write(x86.UC_X86_REG_ESP, esp)
+            m.reg_write(x86.UC_X86_REG_EAX, 0xCAFE0000 + state)
+            m.reg_write(x86.UC_X86_REG_ECX, 0x5150)
+            m.reg_write(x86.UC_X86_REG_EBP, 0x77)
+            try:
+                m.emu_start(crib.GATE_VA, resume, count=40)
+            except uc.UcError:
+                pass
+            self.assertEqual(m.reg_read(x86.UC_X86_REG_EIP), resume, state)
+            # after the replayed prologue: [ebp] = saved ebp, [ebp+4] = return address, [ebp+8] = the state
+            ebp = m.reg_read(x86.UC_X86_REG_EBP)
+            got = struct.unpack("<I", bytes(m.mem_read(ebp + 8, 4)))[0]
+            self.assertEqual(got, 3 if state in crib.CUT_STATES else state, state)
+            self.assertEqual(struct.unpack("<I", bytes(m.mem_read(ebp, 4)))[0], 0x77)
+            self.assertEqual((m.reg_read(x86.UC_X86_REG_EAX), m.reg_read(x86.UC_X86_REG_ECX)), (0xCAFE0000 + state, 0x5150))
+        self.assertEqual(set(crib.CUT_STATES) & {6, 7, 10, 11, 17}, set())   # trophies, user card, milestones stay
+
+    def test_rebuild_drops_the_four_game_files_only_with_the_cut(self):
+        from mod_editor.core import nfl2k5_crib_reclaim as reclaim
+        self.assertEqual(set(reclaim._cuts(False)), {i for i, *_ in reclaim.MOVIES})
+        cuts = reclaim._cuts(True)
+        self.assertEqual(set(cuts) - {i for i, *_ in reclaim.MOVIES}, {4249, 4250, 4264, 4271})
+        self.assertTrue(all(cuts[i] == reclaim.GAME_TOMBSTONE for i in (4249, 4250, 4264, 4271)))
+        self.assertEqual(sum(size for _i, _n, size, _d in reclaim.GAMES), 7274432)
+        self.assertFalse(reclaim._games_wanted(self.retail))
+        self.assertTrue(reclaim._games_wanted(self.applied))
 
     def test_options_keep_user_card_milestones_and_exit(self):
         retail, applied = XbeImage(self.retail), XbeImage(self.applied)

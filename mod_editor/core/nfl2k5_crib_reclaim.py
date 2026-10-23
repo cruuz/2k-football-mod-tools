@@ -70,7 +70,49 @@ MOVIES = (
     (4319, 'crib_steveo.mov', 25849856, '05691391d2399e709a8e452f5e8039520f00b6b5c9449dcf53c540015e7eaf7d'),
     (4320, 'crib_towens.mov', 6549504, 'c0a3505c0ed4e68d02c804665b752cc2d85ff61c527cc727ecb052ef8193ccb6'),
 )
+# b778-xs1: the four Crib arcade games. With nfl2k5_crib_trophy_room applied (the Crib owns nothing, so no game
+# hotspot exists; the game screens are pushed only from Crib state 5, 0x2719C8/0x2719D6) they are never loaded, and
+# the rebuild replaces them with tombstones too. Without it they stay. The jukebox (81 KB) and intro stay either way.
+GAME_TOMBSTONE = b"CRIB_GAMES_DISABLED_V1\0".ljust(2048, b"\0")
+GAMES = (
+    (4249, 'cribah.iff', 924336, 'd7570e9769be21cd756d2c6049dcaaf1c7fcae1721e82cea580ac501f70ca4c4'),
+    (4250, 'cribpf.iff', 1747568, 'f049edd24c829a077bbc81191011b2e81f09f45aeb4d1039fcc92c28e7bc82fb'),
+    (4264, 'crib_darts.iff', 1950976, '66358d19380b9a70b0cd888747e68fd3b86cff19794e49fef56e8e6968aaded9'),
+    (4271, 'crib_triviagame.iff', 2651552, '5c5f4c5bd476f5334523558882d3fdbc031547710a42942c90e3f9819ff451dd'),
+)
 require = archive.require
+
+
+def _games_wanted(payload):
+    from . import nfl2k5_crib_trophy_room as trophy
+    return trophy.status(payload) == "applied"
+
+
+def _games_state(disc, payload):
+    """'retail' or 'applied' for the four game outers. They are inspected only alongside the Trophy Room cut; their
+    content is discarded, so any content is accepted (Studio texture passes may have changed it), but each outer must
+    carry its own resource ID and the four must agree."""
+    if not _games_wanted(payload):
+        return "retail", []
+    states, rows = set(), []
+    tomb = hashlib.sha256(GAME_TOMBSTONE).hexdigest()
+    for index, name, _size, _digest in GAMES:
+        require(index < len(disc.archive_entries), "Crib game inventory is incomplete")
+        entry = disc.archive_entries[index]
+        require(entry.name_id == zlib.crc32(name.upper().encode("utf-16le")), "foreign Crib game resource ID")
+        actual = disc.outer_hash(index)
+        states.add("applied" if entry.size == len(GAME_TOMBSTONE) and actual == tomb else "retail")
+        rows.append(dict(index=index, name=name, before_size=entry.size, after_size=len(GAME_TOMBSTONE),
+                         before_sha256=actual))
+    require(len(states) == 1, "mixed Crib game resource states")
+    return states.pop(), rows
+
+
+def _cuts(games):
+    cut = {i: TOMBSTONE for i, *_ in MOVIES}
+    if games:
+        cut.update({i: GAME_TOMBSTONE for i, *_ in GAMES})
+    return cut
 
 
 def status(payload):
@@ -125,10 +167,10 @@ def _inspect(disc):
     return payload, state, rows
 
 
-def _geometry(disc):
+def _geometry(disc, games=False):
     # spill: on a source whose pack F already shrank (a custom intro or the intro
     # trim), the packs before F give up the rest of the cut (b76-f2).
-    geometry = archive.layout(disc, {i: len(TOMBSTONE) for i, *_ in MOVIES}, spill=True)
+    geometry = archive.layout(disc, {i: len(data) for i, data in _cuts(games).items()}, spill=True)
     # Directories remain fixed. Compact ordinary files after the last directory
     # while preserving the video partition/header and any earlier fixed files.
     root_sector, root_size = struct.unpack("<II", disc.read(8, disc.partition + 0x10014))
@@ -164,13 +206,19 @@ def plan(source):
     before = archive.identity(source)
     with archive.Disc(source, descriptors=()) as disc:
         payload, state, rows = _inspect(disc)
-        geometry = None if state == "applied" else _geometry(disc)
+        games_state, game_rows = _games_state(disc, payload)
+        # b778-xs1: the games go with the Trophy Room cut (its executable edits are already in this payload)
+        games = _games_wanted(payload) and games_state == "retail"
+        geometry = None if state == "applied" and not games else _geometry(disc, games)
         receipt = dict(schema=SCHEMA, experimental=True, runtime_witnessed=False,
                        source_sha256=archive.file_hash(source), source_bytes=disc.image_size,
                        already_applied=state == "applied", movies=rows, layout=geometry,
+                       games_removed=games, games=game_rows if games else [],
+                       game_bytes_reclaimed=sum(r["before_size"] - r["after_size"] for r in game_rows) if games else 0,
                        gross_movie_bytes=sum(row[2] for row in MOVIES),
                        retained_movie_markers=23 * len(TOMBSTONE),
-                       archive_bytes_reclaimed=0 if geometry is None else sum(r["before_size"] - r["after_size"] for r in rows),
+                       archive_bytes_reclaimed=0 if geometry is None else (0 if state == "applied" else sum(r["before_size"] - r["after_size"] for r in rows))
+                       + (sum(r["before_size"] - r["after_size"] for r in game_rows) if games else 0),
                        disc_bytes_reclaimed=0 if geometry is None else disc.image_size - geometry["image_size"],
                        scratch_bytes=disc.image_size + 16 * archive.BLOCK,
                        trophy_room_preserved=True, profile_edits=0,
@@ -186,7 +234,9 @@ def verify(source, output, planned, *, progress=None):
         new_xbe, state, _ = _inspect(result)
         require(state == "applied" and new_xbe == apply(old_xbe)[0], "Crib consumer readback differs")
         require(len(original.archive_entries) == len(result.archive_entries), "outer count changed")
-        changed = {i for i, *_ in MOVIES}
+        changed = {i for i, *_ in MOVIES} | ({i for i, *_ in GAMES} if planned.get("games_removed") else set())
+        if planned.get("games_removed"):
+            require(_games_state(result, new_xbe)[0] == "applied", "Crib games were not removed")
         retained = []
         for old, new in zip(original.archive_entries, result.archive_entries):
             i = old.table_index
@@ -231,12 +281,12 @@ def rebuild(source, output, *, expected_plan=None, overwrite=False, progress=Non
                 f"{free / 1024**3:.1f} GiB free")
 
     def build(_directory, staged):
-        if planned["already_applied"]:
+        if planned["already_applied"] and not planned.get("games_removed"):
             return {}
         with archive.Disc(source, descriptors=()) as disc:
             original_xbe, _, _ = _inspect(disc)
             replacement, hook_receipt = apply(original_xbe)
-            geometry = _geometry(disc)
+            geometry = _geometry(disc, planned.get("games_removed", False))
             require(geometry == planned["layout"], "source geometry changed")
             fd = os.open(staged, os.O_RDWR | getattr(os, "O_BINARY", 0))
             try:
@@ -248,7 +298,7 @@ def rebuild(source, output, *, expected_plan=None, overwrite=False, progress=Non
                             data = disc.read(min(archive.BLOCK, item["size"] - at), item["old_offset"] + at)
                             archive.write_all(fd, data, item["offset"] + at)
                     archive.write_all(fd, struct.pack("<II", item["sector"], item["size"]), item["node"])
-                banks._write_archive(fd, disc, geometry, {i: TOMBSTONE for i, *_ in MOVIES}, {}, progress,
+                banks._write_archive(fd, disc, geometry, _cuts(planned.get("games_removed", False)), {}, progress,
                                      populated=archive.PACK_NAMES)
                 archive.write_named(fd, lambda n, at: io.pread(fd, n, at), disc.partition, "default.xbe",
                                     lambda n, at: replacement[at:at+n], len(replacement))

@@ -4462,6 +4462,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.reserves_16 or plan.created_teams_extra:
         rec = tt._finish_roster_arena_image(target, plan.reserves_16, plan.created_teams_extra, progress)
         receipt["steps"].append({"step": "roster_arena_growth", **rec})
+    # b778-xs1: the Crib Trophy Room cut goes in before the Crib rebuild, which then also drops the four arcade game
+    # files (nothing can open them any more); in place, no allocation.
+    _apply_crib_trophy_room(plan, target, receipt, progress)
     if plan.crib_reclaim:
         rec = tt._finish_crib_image(target, progress)
         receipt["steps"].append({"step": "crib_reclaim", **rec})
@@ -5301,7 +5304,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_force_out(plan, target, receipt, progress)
     # b778-xs1: the on-demand Career Home gate, after every other late allocator owner (it is last in LATE_OWNERS)
     _apply_module_loader(plan, target, receipt, progress)
-    _apply_crib_trophy_room(plan, target, receipt, progress)  # b778-xs1: in place, no allocation
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.

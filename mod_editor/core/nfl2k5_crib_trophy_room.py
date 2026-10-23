@@ -21,8 +21,12 @@ What this owner changes (three in-place edits, no allocation):
 * 0x2771FF ``6A 0C`` -> ``6A 03``: the first-visit screen continues to the room, not the catalog popup.
 * The options list becomes User Card, Milestone Info, Exit (the two shop rows removed, the table ends after Exit;
   the freed rows are zero). Nothing left on screen leads to a removed screen.
-Kept: the room, the trophy cabinets and TROPHY VIEWER, User Card, Milestone Info, Exit. Items a profile already
-bought stay where they are (their hotspots still work); a new profile never gets any. Crib Credits still accrue
+* The Crib's 16 calls of the item-ownership test (OWNED_CALLS) answer "not owned", and a gate on SetCribState
+  (CUT_STATES) turns every item screen into the plain room: arcade games, bobbleheads, catalogs, Crib Items,
+  celebrity phone, movies and the LED ticker can no longer open, whatever a profile bought. Decor placed earlier stays
+  as static props (see CUT_STATES). The save is untouched (switching this off shows the items again), and the game's
+  own unlockables check outside the Crib keeps every team, stadium, movie, cheat and celebration bought earlier.
+Kept: the room, the trophy cabinets and TROPHY VIEWER, User Card, Milestone Info, Exit. Crib Credits still accrue
 (harmless). The 23 Crib movies are cut separately by ``nfl2k5_crib_reclaim`` (417 MB of disc).
 """
 from __future__ import annotations
@@ -40,11 +44,73 @@ ROW = 0x34
 OPTIONS = 0x00524CA0                 # User Card, Catalogs, Crib Items, Milestone Info, Exit, end
 RETAIL_OPTIONS_SHA256 = "84676015b6b79fab7f54ec158c0de81ee2ce73f54d79b2848d2057451f1d05ab"   # 6 rows
 ENTRY = ("crib_entry_skips_catalog_popup", 0x00277185, bytes.fromhex("740e"), bytes.fromhex("eb0e"))
+# The Crib's own calls of the profile's item-ownership test 0x13FBA0 (stdcall, one stack argument; per-profile 64-bit
+# variant masks at 0xBC7150 + item * 8). Each becomes "add esp, 4 / xor eax, eax": inside the Crib nothing bought is
+# owned, so bought furniture, games, jukebox, theater, bobbleheads and phone are neither drawn nor offered as hotspots.
+# The game's other caller (0x10E912, the unlockables check for teams, stadiums, movies, cheats, celebrations and
+# soundtracks bought earlier) is NOT touched, so nothing unlocked outside the Crib is lost.
+OWNED_CALLS = (0x0026FED1, 0x0026FF31, 0x0026FF89, 0x00270424, 0x00270456, 0x002706D0, 0x00271E90, 0x00272171,
+               0x002721D0, 0x00272270, 0x00272381, 0x002723E2, 0x00272489, 0x0027352B, 0x00274AE1, 0x00277C3D)
+IS_OWNED = 0x0013FBA0
+NOT_OWNED = bytes.fromhex("83c40431c0")   # add esp, 4 ; xor eax, eax
+# Every Crib screen change goes through SetCribState 0x276810 (state on the stack). A gate in front of it turns every
+# item screen into the plain room (state 3): 5 arcade games, 8/9 bobblehead case and viewer, 12..16 catalog popup,
+# catalogs, catalog items and Crib Items, 18..20 celebrity phone / challenge / recap, 21/22 movies, 23 LED ticker.
+# Kept: 1/2 loading and first visit, 3 room, 4 zoom, 6/7 trophy cabinets and TROPHY VIEWER, 10/11 User Card and its
+# milestone pages, 17 MILESTONE INFO, 24/25 exit. Placed decor stays as static room props (the room is built from the
+# profile's placement table, which also holds the default furniture, walls and floors; nothing in the save changes).
+CUT_STATES = (5, 8, 9, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23)
+STATE_MASK = sum(1 << n for n in CUT_STATES)
+SET_STATE = ("crib_state_gate", 0x00276810, bytes.fromhex("558bec83e4f0"), None)   # push ebp; mov ebp, esp; and esp, -16
+SET_STATE_RESUME = 0x00276816
+# The gate lives in the catalog popup's draw routine (state 12, 0x274400..0x274502, 258 bytes), called only from the
+# draw table entry for state 12 (0x275DE2). The gate makes state 12 impossible, so that routine is dead code.
+GATE_VA, GATE_ROOM = 0x00274400, 0x102
+RETAIL_GATE_ROOM = bytes.fromhex(
+    "558bec83e4f081ec9002000068cce3e8006a01e818fdffff8d4c2410e8ff24ddffb902000000e825b4e7ff8bd08d4c24"
+    "10e87a25ddffbac0c0c0ff8d4c2410e80c27ddffba030000008d4c2410e8ae25ddff8b0d5474ac00e8a328f2ff85c068"
+    "0000a041680000b8428d4c2418680000a0430f848a000000e8f325ddff8b0d5474ac00e818e2f1ff8944240c8d44240c"
+    "50baf8e3e8008d8c2494000000e85e5fddff8d9424900000008d4c2410e8bed7e7ff680000a041680000f042680000a0"
+    "438d4c241ce8a625ddffba40e4e8008d4c2410e898d7e7ff680000a041680000bc43680000a0438d4c241ce88025ddff"
+    "baa0e4e8008d4c2410e872d7e7ff8be55dc3")
+
+
+def gate_code():
+    from .nfl2k5_draft_ai import _Asm
+    a = _Asm(GATE_VA)
+    a.b("50")                                        # push eax (SetCribState's eax input)
+    a.b("8b442408")                                  # mov eax, [esp+8]  (the requested state)
+    a.b("83f81f")                                    # cmp eax, 31
+    a.j8("77", "keep")                               # ja keep
+    a.b("51")                                        # push ecx
+    a.b("b9" + struct.pack("<I", STATE_MASK).hex())  # mov ecx, mask
+    a.b("0fa3c1")                                    # bt ecx, eax
+    a.b("59")                                        # pop ecx (flags kept)
+    a.j8("73", "keep")                               # jnc keep
+    a.b("c744240803000000")                          # mov dword [esp+8], 3  (the room)
+    a.label("keep")
+    a.b("58")                                        # pop eax
+    a.b("558bec83e4f0")                              # the replaced prologue
+    a.jmp_abs(SET_STATE_RESUME)
+    body = a.assemble()
+    require(len(body) <= GATE_ROOM, "Crib state gate exceeds its dead routine")
+    return body
+
+
+def gate_sites(payload=None):
+    """The hook at SetCribState and the gate body over the dead state-12 draw routine (its retail bytes pinned)."""
+    hook = (b"\xe9" + struct.pack("<i", GATE_VA - SET_STATE[1] - 5)).ljust(len(SET_STATE[2]), b"\x90")
+    body = gate_code()
+    return [(SET_STATE[0], SET_STATE[1], SET_STATE[2], hook),
+            ("crib_state_gate_code", GATE_VA, RETAIL_GATE_ROOM[:len(body)], body)]
+
+
 INTRO = ("crib_first_visit_skips_catalog_popup", 0x002771FF, bytes.fromhex("6a0c"), bytes.fromhex("6a03"))
 GUARDS = (
     (0x002770E0, 0xF0, "1c329d177f236ac354cdcd35376cf5b81ec6b7260cb8a66c89d6f8edf89037eb"),   # state 1 input (entry)
     (0x002771D0, 0x40, "23a092b0d903136ae09434262125f0843e1e990638727ce6da5db19cf5bda4d9"),   # state 2 input (first visit)
     (0x00276810, 0x20, "c765078fa79d8f475d9c0869a37fb43c3183b34ff38d89f3e16e5da92f8fcfbd"),   # SetCribState
+    (0x00275DE2, 0x05, "e9697da8dc4e23db1173594afa782a49e2c43df75752c8e45bcb18d664a94868"),   # state 12 draw call
 )
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError)
 
@@ -66,8 +132,16 @@ def options_after(retail_rows):
     return out + bytes(6 * ROW - len(out))
 
 
+def owned_call(va):
+    return b"\xe8" + struct.pack("<i", IS_OWNED - va - 5)
+
+
+def owned_sites():
+    return [(f"crib_owns_nothing_{va:x}", va, owned_call(va), NOT_OWNED) for va in OWNED_CALLS]
+
+
 def sites(retail_rows):
-    return [ENTRY, INTRO, ("crib_options_rows", OPTIONS, bytes(retail_rows), options_after(retail_rows))]
+    return [ENTRY, INTRO, *gate_sites(), *owned_sites(), ("crib_options_rows", OPTIONS, bytes(retail_rows), options_after(retail_rows))]
 
 
 def _recognize(payload):
@@ -79,7 +153,7 @@ def _recognize(payload):
     if hashlib.sha256(current).hexdigest() != RETAIL_OPTIONS_SHA256:
         retail_rows = None  # not retail: only the exact applied form is accepted below
     edits = []
-    for name, va, before, after in (ENTRY, INTRO):
+    for name, va, before, after in (ENTRY, INTRO, *gate_sites(), *owned_sites()):
         raw = image.read(va, len(before))
         states.add("retail" if raw == before else "applied" if raw == after else "foreign")
         edits.append((va, before))
@@ -142,4 +216,4 @@ def apply(payload):
                         edits=[dict(label=n, va=hex(v), size=len(o)) for n, v, o, _w in edits])
 
 
-__all__ = ["OWNER", "REQUESTS", "OPTIONS", "ENTRY", "INTRO", "GUARDS", "options_after", "sites", "status", "apply"]
+__all__ = ["OWNER", "REQUESTS", "OPTIONS", "ENTRY", "INTRO", "OWNED_CALLS", "CUT_STATES", "owned_sites", "gate_code", "gate_sites", "GUARDS", "options_after", "sites", "status", "apply"]
