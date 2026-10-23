@@ -53,6 +53,44 @@ def evidence(payload):
 
 
 class TeamHistoryUpgradeTests(unittest.TestCase):
+    def test_chronological_ring_keeps_trade_and_signing_order_without_inventing_dates(self):
+        before, disc = fixture()
+        payload = bytearray(before)
+        office = fs.FranchiseSave(payload).front_office_block
+        payload[office + fs.F_LEDGER:office + fs.F_LEDGER + 600 * 12] = bytes(600 * 12)
+        struct.pack_into("<I", payload, office + fs.F_LEDGER_CURSOR, 1)
+        # Trade followed by a signing, across the ring boundary. These events
+        # identify clubs at events, but there is no season/week in either.
+        for index, kind, club in ((598, 7, 0), (599, 7, 1), (0, 1, 2)):
+            struct.pack_into("<IHHB", payload, office + fs.F_LEDGER + index * 12,
+                             0x80000000 | kind, 0, 0, club)
+        ordered = fs.FranchiseSave(payload).ledger_in_write_order()
+        self.assertEqual([r["index"] for r in ordered], [598, 599, 0])
+        self.assertTrue(all(r["season"] is None and r["week"] is None for r in ordered))
+        after, receipt = up.infer_played_clubs(bytes(payload), disc)
+        self.assertEqual([c["season"] for c in receipt["changes"]], [2025])
+        row = next(r for r in receipt["unresolved"] if r["season"] == 2026)
+        self.assertTrue(row["inferred"])
+        self.assertFalse(row["week_by_week_coverage"])
+        self.assertEqual(row["native_event_slots"], [598, 599, 0])
+        self.assertEqual(len(row["undated_event_clubs"]), 3)
+        self.assertEqual(receipt["native_evidence"]["ordered_events"], ordered)
+        self.assertEqual(up.infer_played_clubs(after, disc)[0], after)
+
+    def test_compatibility_command_accepts_counter_pinned_season_evidence(self):
+        before, disc = fixture()
+        claims = evidence(before)
+        after, receipt = up.infer_played_clubs(before, disc, claims)
+        self.assertEqual([(c["season"], c["after"]) for c in receipt["changes"]], [(2025, "TEN"), (2026, "BUF")])
+        self.assertEqual(up.infer_played_clubs(after, disc, claims)[0], after)
+
+    def test_invalid_ring_cursor_refuses(self):
+        payload = bytearray(synthetic_franchise())
+        office = fs.FranchiseSave(payload).front_office_block
+        struct.pack_into("<I", payload, office + fs.F_LEDGER_CURSOR, fs.F_LEDGER_CAPACITY)
+        with self.assertRaises(fs.FranchiseSaveError):
+            fs.FranchiseSave(payload).ledger_in_write_order()
+
     def test_wrapped_event_ring_reads_past_cursor_and_skips_cleared_slots(self):
         payload = bytearray(synthetic_franchise())
         office = fs.FranchiseSave(payload).front_office_block

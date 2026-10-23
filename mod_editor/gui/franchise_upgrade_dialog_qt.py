@@ -61,14 +61,17 @@ def preview_text(plan):
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
         elif step["operation"] == "played_clubs":   # b778-pc2
-            lines.append(f"First-season clubs inferred from the disc roster: {len(step['changes'])} players"
-                         + (f"; oldest seasons of {len(step['folded_players'])} veterans merged" if step["folded_players"] else ""))
+            lines.append(f"Historical teams restored: {len(step['changes'])}; "
+                         f"rows without dated club evidence: {step['unresolved_rows']}")
             lines += [f"  {c['player']}: {c['season']} {c['after']}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
+            if any(row.get("inferred") for row in step["unresolved"]):
+                lines.append("The transaction log has no season dates. Missing played-season clubs stay blank; "
+                             "inferred candidates are listed in the receipt.")
     warnings = len(receipt["validation"]["after"]["findings"])
     lines += [f"Structural checks passed; {warnings} existing notices retained in the receipt.",
               f"Total changed fields: {receipt['changed_fields']}", "",

@@ -364,6 +364,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_qb_accuracy as qb_accuracy  # b777-qb3: observed on the same late-owner probe copy, last
     from . import nfl2k5_formation_art_spacing as art_spacing  # b777-tp1: observed on the same probe copy
     from . import nfl2k5_force_out as force_out  # b778-fo1: observed on the same probe copy, last
+    from . import nfl2k5_inbox_standings as inbox_standings  # b778-pc3: existing descriptor pointer only
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_indicator_names as indicator_names
@@ -423,6 +424,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     recorder = Recorder(retail)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
+    modules[inbox_standings.__name__] = inbox_standings
     modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music, momentum, defensive_try, zone_drop, roster_storage)})
     from . import nfl2k5_my_career_home as career_home
     # b775-int1: the image steps' own executable writers (classic teams' Quick Game helpers, the franchise Super Bowl hosts'

@@ -500,6 +500,8 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-pc3: retail inbox story 23 omits its single-row standings setup.
+    inbox_standings: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -704,6 +706,9 @@ for _preset in PRESETS.values():
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
 del _preset
+for _name, _preset in PRESETS.items():
+    _preset["inbox_standings"] = _name.startswith("softdrink_")
+del _name, _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
 for _preset in PRESETS.values():
@@ -1072,6 +1077,21 @@ def _apply_formation_art_spacing(plan: "BuildPlan", target: Path, receipt: dict,
     receipt["result"]["formation_art_spacing"] = "applied"
 
 
+def _apply_inbox_standings(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    if not plan.inbox_standings:
+        return
+    module = _core_module("nfl2k5_inbox_standings")
+    if module is None:
+        raise RuntimeError("Inbox standings needs nfl2k5_inbox_standings.")
+    progress("Repairing the inbox standings table", 0, 0)
+    patched, detail = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, patched)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Inbox standings did not read back as applied")
+    receipt["steps"].append({"step": "inbox_standings", **detail})
+    receipt["result"]["inbox_standings"] = "applied"
+
+
 def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-fo1: the modern sideline catch owner (no force-out from 2008), the last late allocator owner."""
     if not plan.modern_force_out:
@@ -1188,6 +1208,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1398,6 +1419,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    inbox = _core_module("nfl2k5_inbox_standings")
+    out["inbox_standings"] = inbox.status(_xbe_bytes(source)) if inbox is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3018,6 +3041,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.inbox_standings) is not bool:
+        raise ValueError("Inbox standings must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3736,6 +3761,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
+    if plan.inbox_standings:
+        inbox = _core_module("nfl2k5_inbox_standings")
+        if inbox is None or inbox.status(_xbe_bytes(source)) == "foreign":
+            raise ValueError("Inbox standings needs a supported last-undefeated story and its retail callbacks.")
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5242,6 +5271,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-pc3: pointer-only final executable edit; integration places this after
+    # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
+    _apply_inbox_standings(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5282,6 +5314,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.inbox_standings and _core_module("nfl2k5_inbox_standings").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("inbox standings did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
