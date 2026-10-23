@@ -32,14 +32,107 @@ class DataTests(unittest.TestCase):
     def setUpClass(cls):
         cls.data = ct.Data.load()
 
-    def test_twenty_four_team_seasons_within_the_identity_and_list_ceilings(self):
-        self.assertEqual(len(self.data.teams), 24)
-        self.assertLessEqual(len(self.data.teams), ct.LAST_ID - ct.FIRST_ID + 1)
+    def test_twenty_five_team_seasons_within_the_identity_and_list_ceilings(self):
+        self.assertEqual(len(self.data.teams), 25)
+        self.assertLessEqual(len(self.data.teams), len(ct.IDENTITIES))
         self.assertLessEqual(len(self.data.teams), ct.MAX_ROWS)
         self.assertTrue(NOAH <= set(self.data.teams), "Noah's 10/17 picks")
         seasons = [self.data.teams[k]["season"] for k in self.data.order()]
         self.assertEqual(seasons, sorted(seasons))
         self.assertTrue(all(2005 <= s <= 2025 for s in seasons))
+
+    def test_seamen_2006_matches_the_video_roster(self):
+        key = "seamen_2006"
+        self.assertIn(key, self.data.teams)
+        self.assertEqual((self.data.teams[key]["city"], self.data.teams[key]["nickname"]), ("Sarasota", "Seamen"))
+        rows = self.data.rosters[key]
+        by_name = {f"{r['first']} {r['last']}": r for r in rows}
+        bus = by_name["Bus Jibber"]
+        self.assertEqual((bus["position"], bus["jersey"], bus["weight"]), ("QB", "1", "405"))  # 2K5's byte limit
+        self.assertEqual((bus["speed"], bus["strength"], bus["agility"], bus["pass_arm_strength"]), ("97", "99", "98", "97"))
+        self.assertEqual((bus["pass_accuracy"], bus["consistency"]), ("66", "50"))  # Finale 60:00-60:17
+        peter = by_name["John Mike Peter"]
+        self.assertEqual((peter["position"], peter["catch"], peter["speed"]), ("TE", "77", "61"))
+        # the latest 2006 roster (Finale 0:59:51-1:02:00), not the week-one 53
+        finals = {"Rohan Davey": ("QB", 76), "Aveion Cason": ("HB", 72), "J.D. Runnels": ("FB", 85),
+                  "Az-Zahir Hakim": ("WR", 76), "Antonio Brown": ("WR", 65), "Ron Dixon": ("WR", 72),
+                  "Patrick Johnson": ("WR", 70), "Boo Williams": ("TE", 76), "Ryan Young": ("T", 85),
+                  "Matt Stinchcomb": ("G", 83), "Ron Stone": ("G", 85), "Tom Nutten": ("C", 82),
+                  "Jason Fisk": ("DT", 86), "Edward Jasper": ("DT", 83), "Rocky Calmus": ("OLB", 82),
+                  "James Anderson": ("OLB", 68), "Ronald McKinnon": ("ILB", 84), "DeMario Minter": ("CB", 76),
+                  "Jason Bell": ("CB", 68), "Kevin House": ("CB", 68), "Garnell Wilds": ("CB", 67),
+                  "Pat Watkins": ("FS", 79), "Eric Smith": ("FS", 63), "Greg Blue": ("SS", 77),
+                  "Joseph Jefferson": ("SS", 76), "Stephen Gostkowski": ("K", 75), "Rodney Williams": ("P", 77)}
+        manifest = json.loads((ct.DATA_DIR / "manifest.json").read_text())["teams"][key]
+        shown = {p["name"]: (p["position"], p["video_overall"]) for p in manifest["players"]}
+        for name, value in finals.items():
+            self.assertEqual(shown[name], value, name)
+            self.assertEqual(by_name[name]["position"], value[0], name)
+        self.assertEqual(len({r["jersey"] for r in rows}), 53)
+        self.assertNotIn("G. Wilson", by_name)     # the two 2K5 53-man omissions
+        self.assertNotIn("J. Spielman", by_name)
+
+    def test_the_seamen_cards_are_authored(self):
+        from mod_editor.core import nfl2k5_classic_art as art
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        if _main_roster() is None:
+            self.skipTest("private retail roster archive is absent")
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        kit = ct.authored_kits()["kits"][0]
+        self.assertEqual(set(kit["card_art"]), {"logo", "logo_s", "helm_h", "helm_a", "unif_h", "unif_a",
+                                                "mini_h", "mini_a", "flipchip"})
+        with hs.Source(XBE.parent) as src:
+            rec = src.get(identity=hs.AGGREGATES[0]["record"])
+            cdf = src.get(identity=hs.AGGREGATES[0]["cdf"])
+            slot = hs.member_slot(rec, cdf, "logo_14_0")
+        authored, receipt = art.authored_slot(slot, "logo", "logo.png", "logo_14_14")
+        self.assertEqual(receipt["size"], [256, 256])
+        self.assertEqual(hs.slot_name(authored), "logo_14_14")
+        self.assertEqual(len(authored), len(slot))
+        self.assertNotEqual(authored, slot)
+
+    def test_the_seamen_field_art_fits_the_retail_venue(self):
+        from mod_editor.core import nfl2k5_classic_field as field
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        if _main_roster() is None:
+            self.skipTest("private retail roster archive is absent")
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        with hs.Source(XBE.parent) as src:
+            retail = src.get("s48dd.iff")
+        authored, receipt = field.authored(retail)
+        self.assertEqual(receipt["cap"], 256)
+        self.assertEqual(len(authored), len(retail))
+        self.assertNotEqual(authored, retail)
+        self.assertEqual(field.BUNDLES, tuple(f"s48{tod}{weather}.iff" for tod in "dan" for weather in "drs"))
+
+    def test_the_bus_face_patch_ships_the_authored_four_spans(self):
+        import json
+        from pathlib import Path
+        doc = json.loads((ct.DATA_DIR / "face/patch.json").read_text())
+        self.assertEqual(doc["schema"], "nfl2k5_classic_face_patch/v1")
+        self.assertEqual(doc["face_id"], 304)
+        self.assertEqual({(t["kind"], t.get("family")) for t in doc["targets"]},
+                         {("live_face", "f"), ("live_face", "h"), ("live_face", "n"), ("player_portrait", None)})
+        for row in doc["targets"]:
+            span = (ct.DATA_DIR / "face" / row["span_file"]).read_bytes()
+            self.assertEqual(len(span), row["size"])
+            self.assertEqual(len(row["replacement_sha256"]), 64)
+
+    def test_the_seamen_authored_kit_is_the_video_look(self):
+        doc = ct.authored_kits()
+        self.assertEqual([k["id"] for k in doc["kits"]], ["K14"])
+        kit = doc["kits"][0]
+        self.assertEqual((kit["team"], kit["code"], kit["style"]), ("MIA", "14", 14))
+        self.assertEqual(set(kit["sides"]), {"H", "A"})
+        self.assertEqual(kit["cards"]["H"], "14H0")
+        self.assertEqual(kit["sides"]["H"]["base"], "14H0")
+        self.assertEqual(kit["sides"]["A"]["base"], "14A0")
+        self.assertEqual(kit["sides"]["H"]["chunks"]["2"], "14A0")     # green pants at home
+        self.assertEqual(kit["sides"]["A"]["chunks"]["2"], "14H0")     # white pants away
+        self.assertIn("30H0", [kit["sides"][s]["chunks"][c] for s in "HA" for c in ("11", "12")])
+        colours = {m["to"] for row in kit["sides"]["H"]["art"] if row["kind"] == "palette_map" for m in row["map"]}
+        self.assertIn("#10B984", colours)
+        self.assertIn("#101820", colours)
 
     def test_no_classic_team_duplicates_an_anniversary_team_season(self):
         moments = mm.Data.load()
@@ -121,9 +214,11 @@ class HelperCodeTests(unittest.TestCase):
         # sm1: the union's read-only pages are nearly full: the classic block may grow 16 bytes at most (a synthetic
         # 16-byte constant is kept in the scale-out tests).
         self.assertEqual(ct.RO_SIZE, 288)
-        self.assertEqual(ct.ROWS_OFFSET + 4 * ct.MAX_ROWS, 276)
+        self.assertEqual(ct.ROWS_OFFSET + 4 * ct.MAX_ROWS, 280)
         self.assertLessEqual(ct.ROWS_OFFSET + 4 * ct.MAX_ROWS, ct.RO_SIZE)
-        self.assertEqual(ct.MAX_ROWS, ct.LAST_ID - ct.FIRST_ID + 1)
+        self.assertEqual(ct.MAX_ROWS, len(ct.IDENTITIES))
+        self.assertEqual(ct.IDENTITIES, tuple([*range(226, 250), 252]))
+        self.assertFalse({250, 251} & set(ct.IDENTITIES), "the two created teams keep their identities")
         self.assertEqual(len(ct.Data.load().teams), ct.MAX_ROWS)
         rows = [a for a in space._scale_allocations(space.dormant_union()) if a["owner"] == ct.OWNER]
         self.assertEqual([(r["kind"], r["size"]) for r in rows], [("read_only", ct.RO_SIZE)])
@@ -269,8 +364,8 @@ class SortedEntryEmulationTests(unittest.TestCase):
         keys = [storage[j][:2] for j in seen]
         self.assertEqual(keys, sorted(keys))
 
-    def test_full_list_149_entries(self):
-        self._check(50, 24)
+    def test_full_list_150_entries(self):
+        self._check(50, 25)
 
     def test_shorter_lists(self):
         self._check(0, 0)
@@ -316,7 +411,7 @@ class NativeTests(unittest.TestCase):
     def test_receipt(self):
         self.assertEqual(self.receipt["status"], "applied")
         self.assertEqual((self.receipt["moment_teams"], self.receipt["classic_rows"], self.receipt["list_length"]),
-                         (50, 24, 149))
+                         (50, 25, 150))
 
     def _storage_names(self):
         """File names in STORAGE order: the retail 75, the moments, the classic rows."""
@@ -335,32 +430,32 @@ class NativeTests(unittest.TestCase):
         user1, _user2 = cpu.spare_slots()[:2]
         start = cpu.pool()["used"]
         cpu.team_select(cpu.last_resident(), cpu.team(15))
-        steps = [cpu.press("home", +1) for _ in range(150)]
-        loaded = [s["loaded"][0] for s in steps[:149]]
+        steps = [cpu.press("home", +1) for _ in range(151)]
+        loaded = [s["loaded"][0] for s in steps[:150]]
         storage = self._storage_names()
-        self.assertEqual(len(storage), 149)
-        self.assertEqual(sorted(loaded), sorted(storage))                  # the same 149 team-seasons, none twice
-        self.assertEqual(len(set(loaded)), 149)
+        self.assertEqual(len(storage), 150)
+        self.assertEqual(sorted(loaded), sorted(storage))                  # the same 150 team-seasons, none twice
+        self.assertEqual(len(set(loaded)), 150)
         seasons = [self._key(name)[0] for name in loaded]
         self.assertEqual(seasons, sorted(seasons), "Team Select must run oldest to newest")
         self.assertEqual((seasons[0], seasons[-1]), (1953, 2025))
         # the whole order is the documented key: season, franchise asset code, storage index
-        expected = sorted(range(149), key=lambda i: (*self._key(storage[i]), i))
+        expected = sorted(range(150), key=lambda i: (*self._key(storage[i]), i))
         self.assertEqual(loaded, [storage[i] for i in expected])
-        for step in steps[:149]:
+        for step in steps[:150]:
             self.assertEqual(step["home"]["index"], cpu.index(user1))
             self.assertEqual((step["home"]["category"], step["home"]["players"]), (4, 53))
             self.assertEqual(step["pool"]["used"], start + 53)
-        self.assertEqual((steps[149]["home"]["index"], steps[149]["loaded"]), (0, []))   # wraps to the 49ers
-        self.assertEqual(steps[149]["pool"]["used"], start)
+        self.assertEqual((steps[150]["home"]["index"], steps[150]["loaded"]), (0, []))   # wraps to the 49ers
+        self.assertEqual(steps[150]["pool"]["used"], start)
 
     def test_one_backward_lap_is_the_forward_lap_reversed(self):
         cpu = self.cpu
         cpu.team_select(cpu.team(0), cpu.team(15))
-        back = [cpu.press("home", -1)["loaded"][0] for _ in range(149)]
+        back = [cpu.press("home", -1)["loaded"][0] for _ in range(150)]
         other = self.make()            # a fresh machine: the harness caps archive events per run
         other.team_select(other.last_resident(), other.team(15))
-        forward = [other.press("home", +1)["loaded"][0] for _ in range(149)]
+        forward = [other.press("home", +1)["loaded"][0] for _ in range(150)]
         self.assertEqual(back, list(reversed(forward)))
 
     def test_each_classic_team_imports_with_its_identity_home_row_and_kit(self):
@@ -369,7 +464,7 @@ class NativeTests(unittest.TestCase):
         cpu.team_select(cpu.team(0), cpu.team(15))
         by_file = {r["file"]: r for r in self.receipts.values()}
         seen = set()
-        for _ in range(149):
+        for _ in range(150):
             step = cpu.press("home", -1)
             receipt = by_file.get(step["loaded"][0])
             if receipt is None:
@@ -379,6 +474,27 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(cpu.stadium_id(user1), receipt["stadium_id"])
             self.assertEqual(cpu.style(user1), receipt["style"])
         self.assertEqual(seen, set(by_file))
+
+    def test_the_seamen_label_says_seamen_on_both_sides(self):
+        from tests.nfl2k5_classic_teams_native import build as _build  # noqa: F401
+        name = [n for n, _raw in self.files if n.endswith("-2006-dolphins-8.iff")]
+        self.assertEqual(len(name), 1)
+        cpu = self.make()
+        cpu.team_select(cpu.team(0), cpu.team(15))
+        seen = []
+        for _ in range(151):
+            step = cpu.press("home", -1)
+            if step["loaded"] and step["loaded"][0] == name[0]:
+                seen.append(step["home"]["label"])
+        self.assertEqual(seen, [["SEAMEN", "SEA"]])
+        away = self.make()
+        away.team_select(away.team(0), away.team(0))
+        seen = []
+        for _ in range(151):
+            step = away.press("away", -1)
+            if step["loaded"] and step["loaded"][0] == name[0]:
+                seen.append(step["away"]["label"])
+        self.assertEqual(seen, [["SEAMEN", "SEA"]])
 
     def test_both_sides_hold_classic_teams_and_never_the_same_slot(self):
         cpu = self.cpu
@@ -424,7 +540,7 @@ class NativeTests(unittest.TestCase):
                                          by_id[mm.name_id(self.data.teams[k]["template"])].size)
                          for k in self.data.order()}
         files, receipts = ct.compile_files(relabelled, templates, self.data, spares={}, has_kit=lambda c, s: True)
-        self.assertEqual(len(files), 24)
+        self.assertEqual(len(files), 25)
         self.assertEqual(receipts["colts_2014"]["template_colleges"], ["Tennessee-Martin"])
         self.assertEqual({k for k, r in receipts.items() if r["template_colleges"]}, {"colts_2014"})
         with self.assertRaisesRegex(ValueError, "resolve exactly once"):

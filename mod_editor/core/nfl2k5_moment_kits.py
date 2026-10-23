@@ -54,9 +54,11 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def document(path=None):
-    doc = json.loads(Path(path or DATA).read_text(encoding="utf-8"))
-    require(doc.get("schema") == SCHEMA, "unexpected data schema")
+def validate_document(doc):
+    """Validate a moment/classic-kit document in the shared shape and return it."""
+    require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "unexpected data schema")
+    doc.setdefault("selections", [])
+    doc.setdefault("classic_defaults", [])
     ids = [k["id"] for k in doc["kits"]]
     require(len(set(ids)) == len(ids), "duplicate kit ids")
     seen = set()
@@ -69,6 +71,9 @@ def document(path=None):
         require(set(kit["sides"]) == {"H", "A"}, kit["id"] + ": needs H and A")
         require(set(kit["cards"]) <= set(CARD_KEYS) | {"H", "A"} and {"H", "A", "logo"} <= set(kit["cards"]),
                 kit["id"] + ": cards")
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            art.card_art(kit)
     by_id = {k["id"]: k for k in doc["kits"]}
     rows = set()
     for s in doc["selections"]:
@@ -86,6 +91,10 @@ def document(path=None):
     for c in doc.get("classic_defaults", []):
         require(type(c["style"]) is int and 1 <= c["style"] <= MAX_STYLE, c["file"] + ": classic default style")
     return doc
+
+
+def document(path=None):
+    return validate_document(json.loads(Path(path or DATA).read_text(encoding="utf-8")))
 
 
 def pins():
@@ -384,15 +393,25 @@ def expected(doc, inputs):
     packages = compose(doc, inputs["packages"])
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
+        authored = {}
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            authored = art.card_art(kit)
         for new, (aggregate, old) in card_sources(kit).items():
             record, cdf = inputs["members"][aggregate]
-            members[aggregate][new] = hs.rename_slot(hs.member_slot(record, cdf, old), new)
+            donor = hs.member_slot(record, cdf, old)
+            if new in authored:
+                key, filename = authored[new]
+                members[aggregate][new], _receipt = art.authored_slot(donor, key, filename, new)
+            else:
+                members[aggregate][new] = hs.rename_slot(donor, new)
     labels = wanted_labels(doc, inputs["main"], inputs["files"])
     defaults = {c["file"]: c["style"] for c in doc.get("classic_defaults", [])}
     files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
     situ = bytearray(inputs["situ"])
     fields = _situ_fields(inputs["situ"])
-    require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
+    if doc.get("selections"):
+        require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
     for s in doc["selections"]:
         struct.pack_into("<I", situ, fields[(s["row"], s["side"])][1], s["style"])
     return packages, members, files, bytes(situ)
@@ -434,7 +453,7 @@ def image_status(path, doc=None):
     try:
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
-            if len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
+            if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
             return state_of(doc, read_inputs(target, doc), target)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
@@ -456,7 +475,8 @@ def compile_edits(target, doc, inputs):
     for name, data in files.items():
         if data != inputs["files"][name]:
             edits[target.outer(name)] = data
-    edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
+    if situ != inputs["situ"]:
+        edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
     appended = sorted(packages.items())
     if len(appended[-1][1]) % 2048:
         appended.append((FILLER, bytes(2048)))

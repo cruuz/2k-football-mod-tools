@@ -65,15 +65,17 @@ def build(retail_dir, *, season_route=False, payload=None):
         by_id = {x.name_id: x for x in archive.entries}
         read = lambda name: archive.read(by_id[mm.name_id(name)].virtual_offset, by_id[mm.name_id(name)].size)  # noqa: E731
         main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
+        holder = ct.label_holder(main)
         moment_templates = {k: read(t["template"]) for k, t in moments.teams.items()}
         templates = {k: read(data.teams[k]["template"]) for k in data.order()}
         kits = {e2.name_id for e2 in archive.entries}
     moment_files = mm.compile_files(main, moment_templates, moments)
     has_kit = lambda code, style: all(mm.name_id(f"{code}{s}{style}.iff") in kits for s in "ha")  # noqa: E731
     prefix = "HTS-" if season_route else ""
-    files, receipts = ct.compile_files(main, templates, data, spares={}, has_kit=has_kit, prefix=prefix)
-    payload, receipt = ct.apply_xbe(payload, ct.rows_for(main, data))
+    files, receipts = ct.compile_files(holder, templates, data, spares={}, has_kit=has_kit, prefix=prefix)
+    payload, receipt = ct.apply_xbe(payload, ct.rows_for(holder, data))
     resources, context, ids = disc_evidence(retail_dir)
+    resources[5] = holder
     extra = dict(moment_files)
     extra.update(files)
     if season_route:     # the retail 75 under their season-route names (the ht bank serves its own rosters there)

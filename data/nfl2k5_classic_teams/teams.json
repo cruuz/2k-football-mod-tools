@@ -265,6 +265,18 @@
       "selector": "titans",
       "template": "h-28-1999-titans-0.iff",
       "why": "Noah: peak Tannehill/Henry/A.J. Brown; 2019 = AFC Championship Game run (2020 is the swap)"
+    },
+    "seamen_2006": {
+      "abbreviation": "SEA",
+      "asset_code": "14",
+      "city": "Sarasota",
+      "nickname": "Seamen",
+      "retail_same_season": null,
+      "season": 2006,
+      "selector": "dolphins",
+      "key": "seamen_2006",
+      "template": "h-14-1984-dolphins-3.iff",
+      "why": "Noah: recreate the 2006 Sarasota Seamen from the SOFTDRINKTV Madden 07 series as a classic team"
     }
   }
 }

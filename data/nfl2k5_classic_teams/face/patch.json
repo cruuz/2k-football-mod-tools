@@ -1,0 +1,52 @@
+{
+ "schema": "nfl2k5_classic_face_patch/v1",
+ "face_id": 304,
+ "note": "Bus Jibber (b778-ss1): authored from the Finale 0:59:51 View Rosters headshot (episode d_AM0_2ccBU); free retail face/portrait id 304, no other player references it in the released v0.6.1 roster.",
+ "source": "data/nfl2k5_classic_teams/face/*.png",
+ "targets": [
+  {
+   "kind": "live_face",
+   "family": "f",
+   "pack_path": "vc_53450030/3",
+   "pack_offset": 115145344,
+   "size": 43872,
+   "retail_sha256": "a77034f941b3024b16b70a3261e8cfa1ea7a71e77afb1bf535a34beb7806460d",
+   "replacement_sha256": "361b21bf35efc642b4b27d32d38aa781d0d36a6484975267a59f31b7f890423f",
+   "span_file": "f0304.span",
+   "png": "f0304.png"
+  },
+  {
+   "kind": "live_face",
+   "family": "h",
+   "pack_path": "vc_53450030/2",
+   "pack_offset": 55638016,
+   "size": 27744,
+   "retail_sha256": "1e28017271ea74a070f8b361fbbe564eaf65985285bfb2f037d81d43da0f607b",
+   "replacement_sha256": "6b1db7c98afe8572fdad992069f6a7716172cce4be88a0f2f4ba276589eb03de",
+   "span_file": "h0304.span",
+   "png": "h0304.png"
+  },
+  {
+   "kind": "live_face",
+   "family": "n",
+   "pack_path": "vc_53450030/2",
+   "pack_offset": 55665760,
+   "size": 27072,
+   "retail_sha256": "bbda50e068e5bb5db95ae379ef40465f66780474e89b06fc442182b43ec616a0",
+   "replacement_sha256": "07bee9b6f4e7c4f869fced98042e667a8d3609fc03c82dc04c6a1fa64edad67d",
+   "span_file": "n0304.span",
+   "png": "n0304.png"
+  },
+  {
+   "kind": "player_portrait",
+   "portrait_id": 304,
+   "pack_path": "vc_53450030/3",
+   "pack_offset": 257986304,
+   "size": 17568,
+   "retail_sha256": "767bc0cd5782ee519b4fe0326258ca8b3902e197dccf8e62ab41ba236b422c2d",
+   "replacement_sha256": "6ac381e47f28a40f6a3a19b35144f32d1932dce59d6ab6226472296b5b4bd867",
+   "span_file": "portrait_0304.span",
+   "png": "portrait_0304.png"
+  }
+ ]
+}
