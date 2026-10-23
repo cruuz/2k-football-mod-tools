@@ -124,7 +124,8 @@ class B776Tests(unittest.TestCase):
         self.assertLessEqual(va + rb.CODE_SIZE, section.start + section.raw_size)   # inside an already loaded section
         self.assertIn(rb.OWNER, space.LATE_OWNERS)
         # fx1 (review pr68 nit): qb_accuracy is the last late owner, directly after run blocking
-        self.assertEqual(space.LATE_OWNERS[-4:], (rb.OWNER, "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 last
+        _start = space.LATE_OWNERS.index(rb.OWNER)
+        self.assertEqual(space.LATE_OWNERS[_start:_start + 4], (rb.OWNER, "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 after
 
 
 class PlanTests(unittest.TestCase):

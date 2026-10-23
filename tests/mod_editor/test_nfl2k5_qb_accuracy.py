@@ -52,7 +52,8 @@ class StaticTests(unittest.TestCase):
         self.assertAlmostEqual(ys[0], 1.0)
 
     def test_late_owner_last_and_off_outside_the_experimental_preset(self):
-        self.assertEqual(space.LATE_OWNERS[-3:], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 last
+        _start = space.LATE_OWNERS.index(accuracy.OWNER)
+        self.assertEqual(space.LATE_OWNERS[_start:_start + 3], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 after
         self.assertIs(mod_build.BuildPlan(Path('source.iso'), Path('target.iso')).qb_accuracy, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["qb_accuracy"], name == "softdrink_experimental", name)

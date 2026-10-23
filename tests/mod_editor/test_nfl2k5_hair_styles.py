@@ -132,7 +132,8 @@ class CatalogueTests(unittest.TestCase):
             self.assertEqual(name, hs.texture_name(style.texture))
         self.assertEqual(hs.REQUESTS, (("nfl2k5_hair_styles", "code", 768, 16),))
         # b776-ai2, b776-pa2, b776-ns1, b777-ol1 and b777-qb3 code owners follow the hair styles (int7 order; none moves this allocation)
-        self.assertEqual(space.LATE_OWNERS[-9:], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 last
+        _start = space.LATE_OWNERS.index(hs.OWNER)
+        self.assertEqual(space.LATE_OWNERS[_start:_start + 9], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out"))  # b778-fo1 after
 
     def test_assignments_only_set_hair_style_and_carry_sources(self):
         document = json.loads(EDITS.read_text(encoding="utf-8"))
