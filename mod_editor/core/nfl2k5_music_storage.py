@@ -29,8 +29,8 @@ def _slots(extended):
             if extended else (HEADER, NAME, REFS))
 
 
-def _descriptor(data, extended=False, *, scaleout=False):
-    _header, name, refs = space.scale_music_slots() if scaleout else _slots(extended)
+def _descriptor(data, extended=False, *, scaleout=False, payload=None):
+    _header, name, refs = space.scale_music_slots(payload) if scaleout else _slots(extended)
     return struct.pack('<9I20s', 0x3A, VA, CAPACITY, RAW, CAPACITY,
                        0x10000 + name, 0, 0x10000 + refs, 0x10000 + refs + 2,
                        space._digest(data))
@@ -54,15 +54,15 @@ def unwrap(payload):
         space.validate_scale_structure(payload)
         block = payload[RAW:RAW + CAPACITY]
         data = _block_data(block)
-        header, name, refs = space.scale_music_slots()
-        space._require(payload[header:header + 56] == _descriptor(block, scaleout=True),
+        header, name, refs = space.scale_music_slots(payload)
+        space._require(payload[header:header + 56] == _descriptor(block, scaleout=True, payload=payload),
                        'foreign scale-out music descriptor/digest')
         base = bytearray(payload)
         base[RAW:RAW + CAPACITY] = bytes(CAPACITY)
-        header, name, refs = space.scale_music_slots()
         base[header:header + 56] = bytes(56)
-        base[name:refs + 4] = space._scale_names()[-12:]
-        struct.pack_into('<I', base, 0x11C, space.SCALE_COUNT)
+        v4 = space.scale_version(payload) == 4  # b778-xs1: the v4 extra name slot is zero when unused
+        base[name:refs + 4] = bytes(12) if v4 else space._scale_names()[-12:]
+        struct.pack_into('<I', base, 0x11C, space.scale_base_count(payload))
         return bytes(base), data
     extended = len(payload) == space.EXT_FILE_SIZE
     space._require(len(payload) in (FILE_SIZE, space.EXT_FILE_SIZE), 'foreign music allocation extent')
@@ -108,9 +108,10 @@ def install(payload, data):
         space._require(space.status(base) == 'applied' and old == data, 'foreign/different music allocation')
         return payload, {'status': 'already_applied', 'changed_bytes': 0}
     scaleout = space.is_scaleout(payload)
-    space._require(count in (24, 25, space.SCALE_COUNT) and space.status(payload) == 'applied', 'music requires established XBE allocator')
-    extended = count == 25
-    header, name, refs = space.scale_music_slots() if scaleout else _slots(extended)
+    space._require((count == space.scale_base_count(payload) if scaleout else count in (24, 25))
+                   and space.status(payload) == 'applied', 'music requires established XBE allocator')
+    extended = count == 25 and not scaleout
+    header, name, refs = space.scale_music_slots(payload) if scaleout else _slots(extended)
     block = bytearray(CAPACITY)
     block[:8] = MAGIC
     struct.pack_into('<I', block, 8, len(data))
@@ -118,10 +119,11 @@ def install(payload, data):
     block[PREFIX:PREFIX+len(data)] = data
     buf = bytearray(payload) if extended or scaleout else bytearray(payload) + block
     buf[RAW:RAW + CAPACITY] = block
-    buf[header:header+56] = _descriptor(block, extended, scaleout=scaleout)
+    buf[header:header+56] = _descriptor(block, extended, scaleout=scaleout, payload=payload)
     buf[name:refs+4] = b'.ASTRAr\0' + bytes(4)
-    struct.pack_into('<I', buf, 0x11C, space.SCALE_COUNT + 1 if scaleout else 26 if extended else 25)
-    struct.pack_into('<I', buf, 0x10C, space.SCALE_IMAGE_SIZE if scaleout else space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000)
+    struct.pack_into('<I', buf, 0x11C, space.scale_base_count(payload) + 1 if scaleout else 26 if extended else 25)
+    if not scaleout:  # a scale-out image already maps past the music section (v3 or v4 pool): keep its size
+        struct.pack_into('<I', buf, 0x10C, space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000)
     result = bytes(buf)
     space._require(space.status(result) == 'applied', 'music allocation postcondition failed')
     return result, {'status': 'applied', 'file_growth': len(result) - len(payload), 'reservations': reservations()}

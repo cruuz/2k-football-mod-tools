@@ -86,7 +86,10 @@ class FixedSlots(unittest.TestCase):
             with patch.object(space.zlib,'compress',return_value=b'x'*(budget-76)):
                 self.assertEqual(len(space._scale_directory([request],seals)),4096)
             with patch.object(space.zlib,'compress',return_value=b'x'*(budget-75)):
-                with self.assertRaisesRegex(ValueError, 'directory capacity'):
+                # b778-xs1: one byte over the v3 page moves the list to the v4 pool's document page
+                self.assertEqual(space._scale_directory([request],seals)[:8], space.POOL_BLOCK_MAGIC)
+            with patch.object(space.zlib,'compress',return_value=b'x'*(space.PAGE-11)):
+                with self.assertRaisesRegex(ValueError, 'document capacity'):
                     space._scale_directory([request],seals)
 
 

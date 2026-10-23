@@ -63,8 +63,12 @@ class PlanningTests(unittest.TestCase):
                         (mode.EXTRA_OWNER, 'data', 4096, 32)):
             with self.subTest(request=request), self.assertRaises(ValueError):
                 space.plan((request,))
-        with self.assertRaises(ValueError):
-            space.plan(mode.REQUESTS + (('other_large_state', 'data', 80*1024, 16),))
+        # b778-xs1: a large RW owner never borrows M3's fixed page: it lands whole in the v4 pool instead
+        report = space.plan(mode.REQUESTS + (('other_large_state', 'data', 80*1024, 16),))
+        other = next(a for a in report['allocations'] if a['owner'] == 'other_large_state')
+        m3 = next(a for a in report['allocations'] if a['owner'] == mode.EXTRA_OWNER)
+        self.assertGreaterEqual(other['va'], space.POOL_VA)
+        self.assertEqual((m3['va'], m3['size']), (mode.EXTRA_VA, 4096))
 
     def test_full_reservations_cannot_overlap_m3_runtime_state(self):
         rows = space.plan(REQUESTS)['allocations']

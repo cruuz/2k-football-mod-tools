@@ -42,7 +42,8 @@ def main(argv=None):
         print(json.dumps(report, indent=2))
     else:
         print("EXPERIMENTAL / UNWITNESSED: owned XBE space, beta 62")
-        print("Realize this v3 map with apply(payload, requests, scaleout=True).")
+        print(f"Realize this v{report['version']} map with apply(payload, requests, scaleout=True)."
+              + (" The v4 pool grows a page at a time up to its maximum." if report["version"] == 4 else ""))
         print("Kind       Page  VA          Raw         Free bytes  Children")
         for page in report["pages"]:
             owners = ", ".join(child["owner"] for child in page["children"]) or "reserved padding"

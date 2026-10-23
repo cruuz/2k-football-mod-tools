@@ -97,8 +97,9 @@ for _name, _owner in GAMEPLAY:
 class CeilingTests(unittest.TestCase):
     def test_complete_gate_union_is_at_the_request_ceiling(self):
         seed, _ = space.apply(prerequisites(retail_xbe()), stack.REQUESTS, scaleout=True)
-        with self.assertRaisesRegex(ValueError, "request count"):
-            reads.apply(seed, recheck=True)
+        # b778-xs1: the 97th entry no longer refuses; the v4 directory document in the pool holds the list
+        grown = reads.apply(seed, recheck=True)[0]
+        self.assertEqual((space.status(grown), space.scale_version(grown)), ("applied", 4))
         # the data-only option needs no allocation, so it still installs on the complete union
         self.assertEqual(reads.read_settings(reads.apply(seed, zone_windows=True)[0])["zone_windows"], True)
 

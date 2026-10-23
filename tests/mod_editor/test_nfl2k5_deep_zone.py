@@ -55,7 +55,7 @@ class OwnerTests(unittest.TestCase):
                 self.assertFalse(receipt['runtime_witnessed'])
                 self.assertTrue(receipt['experimental'])
                 self.assertTrue(all(not v for v in receipt['presets'].values()))
-                self.assertEqual(len(result), space.SCALE_FILE_SIZE)
+                self.assertEqual(len(result), space.SCALE3_FILE_SIZE)  # b778-xs1: v3 extent
                 self.assertEqual(patch.apply(result, facing=f, bail=b)[1]['changed_bytes'], 0)
                 with self.assertRaises(ValueError):
                     patch.apply(result, facing=not f, bail=not b)

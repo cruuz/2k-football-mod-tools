@@ -199,8 +199,9 @@ def _recognize(payload):
     if pooled_cycles:
         require(pools.status(payload) in ("applied", "needs_fix"), "foreign position-pool editor companion")
         require(all(image.read(s.va, s.size) == s.after for s in cycles), "foreign position cycles")
+    from . import nfl2k5_module_loader as module_loader  # b778-xs1: its screen-push gate at 0x6E39A
     for va, size, digest in GUARDS:
-        blob = bytearray(image.read(va, size))
+        blob = bytearray(module_loader.canonical_context(payload, va, image.read(va, size)))
         for _, at, before, after in [*edits, *companions]:
             if va <= at and at + len(before) <= va + size:
                 require(bytes(blob[at-va:at-va+len(before)]) in (before, after), "foreign editor prerequisite site")
