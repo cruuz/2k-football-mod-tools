@@ -72,6 +72,7 @@ FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module lo
 FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost over a career, late executable owner
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
+FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity lookup, no allocation
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform
 FEATURE_KEYS += ("modern_venues_2026",)  # b76-u4: folder of 2026 team venue art, "" = off

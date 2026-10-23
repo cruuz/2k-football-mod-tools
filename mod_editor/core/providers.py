@@ -595,7 +595,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "c4fb7e2e56726a790f590de90e7bce21fcb2a17bfa2ab18e02320bf5f232e764",
+        "mod_editor/core/mod_build.py": "9f755388e11049b6376e792b2ca384787cea459039c7493b80dbda71fa92ee18",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
         "mod_editor/core/modpack_files.py": "98ea2e4df1bd860aeb34b038998329d37cdc042d08dcfc140ce2e59f2e00cfc2",
@@ -627,7 +627,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
-        "mod_editor/core/nfl2k5_build_settings.py": "3d8489d33abc1efc580b60c3db2656c40a7be06284b3c87401660999a9c05289",
+        "mod_editor/core/nfl2k5_build_settings.py": "424b06db9189f30aea066cf87f3503e8351cd88aeb8327883ed630d5e4620d55",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -842,6 +842,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playoff_picture.py": "69bc099bd9a75d9132cc2a38723c0c6803a676f53828377bd9161dbfbee9fcfb",
         "mod_editor/core/nfl2k5_playoffs14.py": "d8c490d6d37d118355db80de95c924db52f03ba897b4fbd85432d1840a14051d",
         "mod_editor/core/nfl2k5_lineup_iterator.py": "b8b0c21ca736d411fb1288a6f4cddd5c84929b1c57962c455756e51f1eae7c0c",
+        "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",
         "mod_editor/core/nfl2k5_disc_extents.py": "2a1c1fe06a67139bcac469fd2cbc3cced1f523bac96b226094a296793bce3625",
         "mod_editor/core/nfl2k5_position_pools.py": "40943665dcb4b7083079941ed24cf14b0b59a73ca87990f7ab572e9ceecf6cca",
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
@@ -901,6 +902,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "9d340302650510dede5db01f8a2cbae31807394f57ff9ef38db3998f7660ed7e",  # b778-ai5
         "mod_editor/core/nfl2k5_star_career.py": "a1cf7e142a1448a872d0ef5d92eb330bebff25d942663aaee44d1f51276dac5d",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
+        "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_module_loader.py": "68333ccc3301a8f124d2e899f7e225d4acb92106bed87c84ccc09593ae98839c",
         "mod_editor/core/nfl2k5_crib_trophy_room.py": "7be0b1c26f63345e352b4a7d2ab11af02bab222557cd0ac193a89778879fb04c",
         "mod_editor/core/nfl2k5_name_keyboard.py": "f1ffd4fa4d820cde1834c14d9ee6853f2f2c54598029b1e08807dce4a32ace04",

@@ -569,6 +569,7 @@ mod_editor/core/nfl2k5_playoffs14.py
 mod_editor/core/nfl2k5_position_pools.py
 # Beta 76 sd2 (ig): the finite CPU lineup iterator and the final disc-extent gate load with the Build plan
 mod_editor/core/nfl2k5_lineup_iterator.py
+mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py

@@ -245,6 +245,7 @@ from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: 
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
+from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -262,9 +263,9 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
                  ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
                  ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
-                 ("cpu_ball_carriers", _ball_carrier_ai.BUILD_CAPTION, _ball_carrier_ai.HELP_TEXT))  # b778-ai5
+                 ("cpu_ball_carriers", _ball_carrier_ai.BUILD_CAPTION, _ball_carrier_ai.HELP_TEXT),  # b778-ai5
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
-                 ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT))  # b778-rh1
+                 ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT))  # b778-sc2
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
