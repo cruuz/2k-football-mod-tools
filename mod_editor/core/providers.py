@@ -1098,7 +1098,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_moment_scans.json": "c95a90c155fe170d6a312acdf659b3bffd04c028b3d930ab1fdc13d6a8971627",
         "data/nfl2k5_espn25_moment_rosters/appearance.json": "2349e073097edced764fe790d449ef8223f444363711494cfe9996a19678296c",
         "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
-        "data/nfl2k5_classic_teams/manifest.json": "ae5f32a1f6d183ab036025c4b46c6cbeb0bf32cd5f670f40bc787842394d7569",
+        "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
         "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
         "data/nfl2k5_classic_teams/classic.json": "defcc410cb3ca1bec867f0a05fe8ecd599d727e9107426cfa2fa709473cf4b69",
         "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",

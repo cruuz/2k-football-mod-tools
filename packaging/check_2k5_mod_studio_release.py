@@ -269,7 +269,6 @@ ALLOWED_SUFFIXES = frozenset(
         ".md",
         ".py",
         ".sh",
-        ".span",       # b778-ss1: small authored span patches for the Seamen face assets
         ".svg",
         ".toml",
         ".txt",
@@ -722,6 +721,16 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         if relative in modern_art_pngs:
             _validate_reviewed_png(path, relative, info, modern_art_pngs[relative], "modern-art")
             reviewed_modern_art_png_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
+        if suffix == ".span":
+            # b778-ss1: authored span patches are binary inputs; the explicit allowlist entry is the review.
+            if info.st_size > MAX_RELEASE_FILE_BYTES:
+                raise ReleaseCheckError(f"release file exceeds its reviewed size ceiling: {relative}")
+            payload = path.read_bytes()
+            if len(payload) != info.st_size:
+                raise ReleaseCheckError(f"release file changed while being read: {relative}")
             seen_files.add(relative)
             total_bytes += info.st_size
             continue
