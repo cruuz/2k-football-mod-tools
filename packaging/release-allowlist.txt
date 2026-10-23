@@ -590,6 +590,9 @@ mod_editor/core/nfl2k5_resource_load_guard.py
 mod_editor/core/nfl2k5_loader_wakeup.py
 mod_editor/core/nfl2k5_rb_rename.py
 mod_editor/core/nfl2k5_trophy_room.py
+# b778 pg2: the authored TROPHY ROOM emblem and its one-edit Crib texture project
+data/trophy_room_logo/logo.png
+data/trophy_room_logo/project.json
 mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_classic_teams.py
