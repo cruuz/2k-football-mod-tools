@@ -146,6 +146,11 @@ NOINLINE void sprite_setup(struct State *s) {
  s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);
  accents(b,0xb30864,&s->home_wing,&s->home_rim,&s->home_plate);
  accents(b,0xb30a58,&s->away_wing,&s->away_rim,&s->away_plate);
+ /* b778 sb3: the 2026 bars' bright reflected rail. The rim is the wing's own lightened shade (the pre-accent
+  * default); the rim cell's white coverage lays it over the wing and body, so the rail reads team-coloured
+  * rather than flat dark. The sourced accent rim stays in the table for the record and older scenes. */
+ s->home_rim=0xff000000|(((s->home_wing&0xfefefe)>>1)+0x7f7f7f);
+ s->away_rim=0xff000000|(((s->away_wing&0xfefefe)>>1)+0x7f7f7f);
  V(material(b,5)+0x30)=s->home;V(material(b,8)+0x30)=s->away;
  /* Keep retail descriptor/slot words. Empty callbacks submit no bar glyphs. */
  for(u32 i=0;i<5;i++)V(0xa95884+i*40)=(u32)sprite_blank;
