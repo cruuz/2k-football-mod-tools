@@ -524,6 +524,7 @@ class BuildPlan:
     # Practice. A late executable owner (nfl2k5_practice_injuries) hooks 0x61550 so practice (modes 0..2) with a
     # season or franchise loaded keeps the copies' injuries; the native lineup check then benches them, as on game day.
     # On in the Advanced and Experimental presets (the ones with the Coach's Desk Practice row).
+    practice_injuries: bool = False
 
     # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
     # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
