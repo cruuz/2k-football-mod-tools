@@ -587,6 +587,7 @@ mod_editor/core/nfl2k5_classic_teams.py
 mod_editor/core/nfl2k5_classic_field.py
 mod_editor/core/nfl2k5_classic_face.py
 mod_editor/core/nfl2k5_classic_art.py
+mod_editor/core/nfl2k5_classic_kit_art.py
 mod_editor/core/nfl2k5_front_schemes.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code.py
 mod_editor/core/nfl2k5_espn25_more_moments.py

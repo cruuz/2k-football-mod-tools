@@ -174,10 +174,16 @@ def compose_side(side, packages):
             other = packages[row["donor"]]
             overlays.append((decode_chunk(other, parse_chunks(other)[51])[0], row["boxes"]))
         mixed = era._native_atlas(decoded, c, overlays, atlas["format"])
+        if atlas.get("ops"):
+            from . import nfl2k5_classic_kit_art as classic_art      # b778-ss2: finish the far-player atlas
+            mixed = classic_art.atlas_edit(mixed, c, atlas["ops"])
         spans[51] = era._encoded_span(span, mixed, len(mixed) - c.system_bytes)
     out = bytearray(b"".join(spans))
     if side.get("unif"):
         out[UNIF_COLOURS:UNIF_COLOURS + 8] = packages[side["unif"]][UNIF_COLOURS:UNIF_COLOURS + 8]
+    if side.get("unif_colours"):
+        from . import nfl2k5_classic_kit_art as classic_art          # b778-ss2: authored facemask/turtleneck
+        out[UNIF_COLOURS:UNIF_COLOURS + 8] = classic_art.unif_words(side["unif_colours"])
     out = bytes(out)
     parsed = parse_chunks(out)
     require(len(parsed) == 53, "composed package chunk count")
