@@ -224,7 +224,8 @@ SYMBOLS = dict(source_continue=0x161E37, resource_continue=0xE0D95,
                defense_native=0x17DFC0, category_native=0xE1A80, vip_native=0xF71E0,
                offense_publish=0x20B7C0, offense_special=0x20B76D,
                offense_continue=0x20B694, defense_publish=0x20B977,
-               defense_ordinary=0x20B8D0, defense_continue=0x20B843)
+               defense_ordinary=0x20B8D0, defense_continue=0x20B843,
+               late_native=0x205FE0, half_time_native=0x205F80)  # b778: clock-window deferral
 
 
 def allocations(payload):
@@ -241,11 +242,24 @@ def career_state_va(payload):
                  if r["owner"] == "nfl2k5_my_career" and r["kind"] == "data"), 0)
 
 
-def code_for(code_va, data_va, career_va=0):
+# b778: the current kernel defers fourth downs and the clock windows to the native CPU caller; the beta-77.1 kernel
+# ("v061") is kept as an exact recognizer so neighbors and the upgrade path accept a v0.6.1 executable.
+VARIANTS = ("b778", "v061")
+
+
+def _template(variant):
     from . import nfl2k5_coach_ai_code as assembly
+    require(variant in VARIANTS, f"Unknown coach AI kernel {variant!r}")
+    suffix = "" if variant == "b778" else "_V061"
+    return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
+            getattr(assembly, "LABELS" + suffix))
+
+
+def code_for(code_va, data_va, career_va=0, variant="b778"):
+    code, relocations, _ = _template(variant)
     symbols = dict(SYMBOLS, code=code_va, state=data_va, career_state=career_va)
-    out = bytearray(assembly.CODE)
-    for off, kind, symbol, value in assembly.RELOCATIONS:
+    out = bytearray(code)
+    for off, kind, symbol, value in relocations:
         target = symbols[symbol] + value + struct.unpack_from("<I", out, off)[0]
         if kind == 2:
             target -= code_va + off
@@ -254,24 +268,24 @@ def code_for(code_va, data_va, career_va=0):
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
 
-def sites(code_va=0):
-    from . import nfl2k5_coach_ai_code as assembly
+def sites(code_va=0, variant="b778"):
+    labels = _template(variant)[2]
     result = []
     for name, va, pin, op in HOOKS:
         before = bytes.fromhex(pin)
-        after = bytes((op,)) + struct.pack("<i", code_va + assembly.LABELS[name] - va - 5)
+        after = bytes((op,)) + struct.pack("<i", code_va + labels[name] - va - 5)
         result.append((name, va, before, after.ljust(len(before), b"\x90")))
     return result
 
 
-def _owned(payload):
+def _owned(payload, variant="b778"):
     """Validate complete owned spans without recursively checking neighbors."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocations(payload) if present else None
-    edits = sites(owned["code"]["va"] if owned else 0)
+    edits = sites(owned["code"]["va"] if owned else 0, variant)
     states = set()
     for name, va, before, after in edits:
         raw = image.read(va, len(before))
@@ -281,7 +295,7 @@ def _owned(payload):
         require(image.read(d, DATA_SIZE) == bytes(DATA_SIZE), "Foreign initialized coach AI state")
         raw = image.read(c, CODE_SIZE)
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else
-                   "applied" if raw == code_for(c, d, career_state_va(payload)) else "foreign")
+                   "applied" if raw == code_for(c, d, career_state_va(payload), variant) else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed coach AI hooks/code")
     return next(iter(states)), edits
 
@@ -292,15 +306,20 @@ def normalized_sites(payload):
     image = XbeImage(payload)
     if all(image.read(va, len(bytes.fromhex(pin))) == bytes.fromhex(pin) for _, va, pin, _ in HOOKS):
         return []
-    state, edits = _owned(payload)
-    require(state == "applied", "Foreign coach AI neighbor")
-    return edits
+    for variant in VARIANTS:
+        try:
+            state, edits = _owned(payload, variant)
+        except CoachAIError:
+            continue
+        if state == "applied":
+            return edits
+    raise CoachAIError("Foreign coach AI neighbor")
 
 
-def _recognize(payload):
+def _recognize(payload, variant="b778"):
     from . import nfl2k5_playbook_pair as pair
     from .nfl2k5_cave_oracle import XbeImage
-    state, edits = _owned(payload)
+    state, edits = _owned(payload, variant)
     image = XbeImage(payload)
     neighbors = []
     for name, va, pin, _ in pair.HOOKS:
@@ -326,12 +345,54 @@ def status(payload):
         return "foreign"
 
 
+def installed_variant(payload):
+    """'b778', 'v061' (the beta-77.1 kernel) or None."""
+    for variant in VARIANTS:
+        try:
+            if _recognize(payload, variant) == "applied":
+                return variant
+        except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
+            continue
+    return None
+
+
+def upgrade(payload):
+    """b778 native repair: a verified beta-77.1 kernel becomes the current kernel in its own allocation (code bytes,
+    hook displacements and the .text digest only). Idempotent; refuses anything else. Returns (payload, receipt)."""
+    from .nfl2k5_bump_strength import _sections, section_digest
+    from .nfl2k5_cave_oracle import XbeImage
+    variant = installed_variant(payload)
+    if variant == "b778":
+        return payload, dict(owner=OWNER, status="already_applied", changed_bytes=0)
+    require(variant == "v061", "Coach AI upgrade needs the verified beta-77.1 kernel")
+    owned = allocations(payload)
+    c, d = owned["code"]["va"], owned["data"]["va"]
+    image = XbeImage(payload)
+    buf = bytearray(payload)
+    code_off = image.offset(c, CODE_SIZE)
+    buf[code_off:code_off + CODE_SIZE] = code_for(c, d, career_state_va(payload))
+    for (_, va, _, old), (_, _, _, new) in zip(sites(c, "v061"), sites(c)):
+        off = image.offset(va, len(old))
+        require(bytes(buf[off:off + len(old)]) == old, "Coach AI upgrade: foreign hook bytes")
+        buf[off:off + len(new)] = new
+    from . import nfl2k5_xbe_space as space
+    space._seal_scaleout(buf, space._read_scale_directory(payload))
+    for section in _sections(buf):
+        buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+    result = bytes(buf)
+    require(status(result) == "applied", "Coach AI upgrade postcondition failed")
+    return result, dict(owner=OWNER, status="upgraded", from_variant="v061",
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                        before_sha256=hashlib.sha256(payload).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest())
+
+
 def apply(payload):
     from . import nfl2k5_xbe_space as space, nfl2k5_cpu_money_downs as money
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
     state = _recognize(payload)
     policy = money.read_settings(payload)
+    # b778: the beta-77.1 VIP-aware template is still accepted; with it, deferred fourth downs use the retail chart.
     require(policy and policy["level"] == "modern2" and policy["vip_policy"],
             "Coach AI requires VIP-aware Modern 2; install/upgrade it first")
     before = payload

@@ -70,6 +70,18 @@ cannot reach. Earlier playback evidence recorded Bear 46 becoming 4-3 Over.
 Automatic calls now use the ordinary publication tail, while explicit VIPs
 retain that menu behavior. Authored pools remain unchanged.
 
+Clock situations (b778, beta-78 / pack v0.6.2). The playback pools only know
+down, distance and tempo; the native selector they bypass also carries the
+kneel-down (`206F10`), the Hail Mary (`206DD0`), the fourth-down caller and the
+clock urgency. The automatic offense therefore hands four kinds of snap to the
+ordinary native CPU caller: every fourth down, the last two minutes of the
+first half, and the game's own late window (`205FE0`, the last five minutes of
+the fourth quarter). The coach profile still calls every other snap. Fourth
+downs then follow VIP-aware Modern 2, which now delegates to the retail chart
+only for a user VIP (team `+0x38` virtual-controller flag set); an automatic
+profile clears that flag, so Modern 2 decides. The beta-77.1 kernel is kept as
+an exact recognizer and `nfl2k5_coach_ai.upgrade` replaces it in place.
+
 The owner reserves 5,120 RX bytes and 128 RW bytes. It allocates at most two
 8,608-byte playback contexts through the native heap. Neither uses a resident
 USR slot or changes a save format. Published owned pointers are cleared before

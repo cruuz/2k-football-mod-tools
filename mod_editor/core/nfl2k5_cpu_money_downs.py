@@ -13,6 +13,16 @@ never run as a fake, and defensive lottery exponents 3 -> 2. Levels Modern and A
 The VIP-aware revision delegates fourth-down, two-point and field-goal policy
 to retail while a matching CPU user VIP is in playback mode. The v0.6.1
 Modern 2 template remains recognizable and upgrades within the same allocation.
+
+b778 (beta-78 / pack v0.6.2) clock revision, still inside the same 2048 bytes: only a user VIP (the native
+virtual-controller flag, team +0x38) delegates; automatic 2026 coach profiles clear that flag, so their fourth downs,
+two-point tries and late-lead kicks use Modern 2. One 4-byte operand edit in the native timeout predicate 207050 lets a
+CPU offense call its timeouts in the last 15 seconds of the first half whenever the game's own time estimate says it
+still has a play to run (retail stopped at 15 seconds unless it was already in field goal range). The fourth-down
+policy reads only the sign of the native direction value, as native 209CA0 does: a live game stores the end-line z
+there (+/-5486.4 cm), and the beta-77.1 test that accepted only +/-1.0 sent every real fourth down back to the retail
+chart (seen in the emulator, b778 ai4). The beta-77.1 templates (pre-VIP and VIP-aware) stay recognizable and
+upgrade in place.
 """
 from __future__ import annotations
 
@@ -42,7 +52,8 @@ HELP_TEXT = (
     "fourth-down table from published analytics (ESPN Analytics chart, nfl4th model) that also reads the "
     "score and clock, an overtime branch for the modern both-teams-possess rule, a kick when a late "
     "lead of 1 to 3 faces a long fourth down inside field-goal range, a modern two-point chart, "
-    "and more varied defensive coverage calls. Catches and conversions are not "
+    "more varied defensive coverage calls, and end-of-half timeouts for a CPU offense that can still "
+    "run a play. Automatic coach profiles follow it too. Catches and conversions are not "
     "guaranteed. Retail is the default in the Basic preset; Advanced and Experimental use Modern 2."
 )
 HOOKS = {
@@ -60,6 +71,12 @@ HOOKS2 = {
     "exponent_front": (0x20AA1F, b"\x03"),
     "exponent_cover": (0x20AC4E, b"\x03"),
 }
+# b778: the native CPU timeout predicate 207050, first-half branch: "fcomp [15.0]" at 2071FC..207205 becomes
+# "fcomp [0.0]", so the first-half offense always takes the time-estimate test (half clock < estimate) that retail
+# applied only above 15 seconds. The estimate (20A4D0) is non-zero only inside about 55 to 65 yards of the goal.
+HOOKS3 = {"timeout_window": (0x207202, bytes.fromhex("74694e00"))}
+HOOK3_AFTER = {"timeout_window": bytes.fromhex("80414e00")}
+M2_VARIANTS = ("b778", "v061", "p9")      # current, beta-77.1 VIP-aware, b77 p9 (pre-VIP)
 HOOK2_LABEL = {"fourth": "fourth", "play": "play", "target": "target", "two_point": "two_point",
                "fg_dispatch": "fg_guard", "fg_commit": "fg_guard"}
 EXPONENT_AFTER = b"\x02"
@@ -79,6 +96,8 @@ GUARDS = (
     (0x20a7f0, 570, "839344edda804dc83f1cf3d19f8bf19b2e9f2f823ef44a29b75938427b30a538"),
     (0x20aa40, 551, "ff89b39078bb4a2d99b30b24d41059b54476ebb5153278aed43f5a01cf904901"),
     (0x0f71e0, 19, "5c08a7153ba0c9a94ddeb94b8a76215462a00393acb1b490c146c15397ef10d5"),
+    # b778: the timeout predicate whose 15-second operand the clock revision edits.
+    (0x207050, 544, "145d564c5b6b184a9f8caef42314b5f1c355d22e787a22daa53724e3f6661f6b"),
 )
 FIELD_BANDS = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 95), (95, 100))
 GO_LIMITS = {"modern": (0, 1, 2, 3, 2, 2), "aggressive": (0, 2, 3, 5, 3, 3)}
@@ -98,9 +117,18 @@ def _f32(value):
     return struct.unpack("<f", struct.pack("<f", value))[0]
 
 
+def _m2(variant="b778"):
+    """(code, relocations, labels) of a Modern 2 template variant."""
+    if variant not in M2_VARIANTS:
+        raise ValueError(f"Unknown Modern 2 variant {variant!r}")
+    suffix = {"b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
+    return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
+            getattr(assembly, "LABELS" + suffix))
+
+
 def m2_tables():
     """(limit_x[81], shift[126], thr10[33]) exactly as the Modern 2 machine code reads them."""
-    code, labels = assembly.CODE2, assembly.LABELS2
+    code, _, labels = _m2()
     limit = tuple(code[labels["limit_x"]:labels["limit_x"] + 81])
     shift = tuple(b - 256 if b > 127 else b for b in code[labels["shift"]:labels["shift"] + 126])
     thr = tuple(code[labels["thr"]:labels["thr"] + 33])
@@ -259,12 +287,15 @@ def mapping(level="modern"):
             overtime="Possession byte E602A8: first possession typical table, no early field goal; last possession behind: go",
             late_lead_field_goal="Fourth quarter, <= 120 s, leading by 1 to 3, 7+ yards to go, inside kicker range - 5 yd: kick",
             defensive_lottery_exponent={"front": 2, "coverage": 2, "retail": 3},
-            vip_policy="Matching CPU VIP playback: retail fourth-down/two-point/FG policy, with native VIP optional rolls",
+            vip_policy="Matching CPU user VIP playback (virtual-controller flag set): retail fourth-down/two-point/FG policy, "
+                       "with native VIP optional rolls. Automatic coach profiles (flag clear) use Modern 2 (b778)",
+            timeout_window="First half: a CPU offense with time left on the native estimate calls its timeouts below 15 s "
+                           "too (207050 operand 15.0 -> 0.0, b778)",
             sources=SOURCES_FILE)
     return out
 
 
-def code_for(va, level="modern", *, legacy_modern2=False):
+def code_for(va, level="modern", *, variant="b778"):
     if _level(level) == "retail":
         raise ValueError("Retail has no installed code")
     symbols = {"code": va, "fourth_tail": 0x20B185, "play_tail": 0x209813,
@@ -272,8 +303,8 @@ def code_for(va, level="modern", *, legacy_modern2=False):
                "native_fg": 0x20AF80, "kicker_range": 0x18B120, "margin_fn": 0x205F40, "hail_mary": 0x206DD0,
                "native_vip": 0xF71E0, "two_point_tail": 0x206E75}
     if level == "modern2":
-        code, relocations = ((bytearray(assembly.CODE2_LEGACY), assembly.RELOCATIONS2_LEGACY) if legacy_modern2
-                             else (bytearray(assembly.CODE2), assembly.RELOCATIONS2))
+        code, relocations, _ = _m2(variant)
+        code = bytearray(code)
     else:
         code, relocations = bytearray(assembly.CODE), assembly.RELOCATIONS
     for offset, kind, symbol, value in relocations:
@@ -288,9 +319,9 @@ def code_for(va, level="modern", *, legacy_modern2=False):
     return bytes(code).ljust(CODE_SIZE, b"\xcc")
 
 
-def sites(va, level="modern", *, legacy_modern2=False):
+def sites(va, level="modern", *, variant="b778"):
     if level == "modern2":
-        labels = assembly.LABELS2_LEGACY if legacy_modern2 else assembly.LABELS2
+        labels = _m2(variant)[2]
         rows = []
         for name, (hook, before) in HOOKS2.items():
             if name in HOOK2_LABEL:
@@ -300,6 +331,8 @@ def sites(va, level="modern", *, legacy_modern2=False):
             else:
                 after = EXPONENT_AFTER
             rows.append((name, hook, before, after))
+        if variant == "b778":
+            rows += [(name, hook, before, HOOK3_AFTER[name]) for name, (hook, before) in HOOKS3.items()]
         return rows
     return [(name, hook, before,
              b"\xe9" + struct.pack("<i", va + assembly.LABELS[name] - hook - 5) +
@@ -331,19 +364,24 @@ def _neighbors(payload):
     return tuple(neighbors)
 
 
-def _adapter(level, *, legacy_modern2=False):
+def _adapter(level, *, variant="b778"):
     return SimpleNamespace(OWNER=OWNER, CODE_SIZE=CODE_SIZE, REQUESTS=REQUESTS,
-                           GUARDS=GUARDS, sites=lambda va: sites(va, level, legacy_modern2=legacy_modern2),
+                           GUARDS=GUARDS, sites=lambda va: sites(va, level, variant=variant),
                            mapping=lambda: mapping(level),
-                           code_for=lambda va: code_for(va, level, legacy_modern2=legacy_modern2), neighbors=_neighbors)
+                           code_for=lambda va: code_for(va, level, variant=variant), neighbors=_neighbors)
 
 
 def read_settings(payload):
+    """Installed level. Modern 2 also names its template: ``vip_policy`` (a user VIP delegates) and ``clock_policy``
+    (b778: automatic coach profiles use Modern 2, end-of-half timeout window)."""
     for level in LEVELS[1:]:
         if lever.status(payload, _adapter(level)) == "applied":
-            return {"level": level, "vip_policy": level == "modern2", "experimental": True, "runtime_witnessed": False}
-    if lever.status(payload, _adapter("modern2", legacy_modern2=True)) == "applied":
-        return {"level": "modern2", "vip_policy": False, "experimental": True, "runtime_witnessed": False}
+            return {"level": level, "vip_policy": level == "modern2", "clock_policy": level == "modern2",
+                    "experimental": True, "runtime_witnessed": False}
+    for variant, vip in (("v061", True), ("p9", False)):
+        if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
+            return {"level": "modern2", "vip_policy": vip, "clock_policy": False, "variant": variant,
+                    "experimental": True, "runtime_witnessed": False}
     return None
 
 
@@ -352,7 +390,11 @@ def status(payload):
         state = lever.status(payload, _adapter(level))
         if state != "foreign":
             return state
-    return lever.status(payload, _adapter("modern2", legacy_modern2=True))
+    for variant in ("v061", "p9"):
+        state = lever.status(payload, _adapter("modern2", variant=variant))
+        if state != "foreign":
+            return state
+    return "foreign"
 
 
 def apply(payload, *, level="modern"):
@@ -363,7 +405,7 @@ def apply(payload, *, level="modern"):
         return payload, {"owner": OWNER, "level": "retail", "changed_bytes": 0,
                          "edits": [], "experimental": True, "runtime_witnessed": False}
     adapter = _adapter(level)
-    if level == "modern2" and lever.status(payload, _adapter(level, legacy_modern2=True)) == "applied":
+    if level == "modern2" and any(lever.status(payload, _adapter(level, variant=v)) == "applied" for v in ("v061", "p9")):
         return upgrade_to_modern2(payload)
     # A standalone new owner can still fit the allocator's legacy pages.
     # Explicitly request v3 as required by this owner's integration contract.
@@ -394,14 +436,14 @@ def upgrade_to_modern2(payload):
     space._require(space.is_scaleout(payload), "CPU money downs upgrade needs the sealed scale-out allocator")
     a = lever.allocation(payload, OWNER, CODE_SIZE)
     requests = space._read_scale_directory(payload)
-    legacy = old["level"] == "modern2" and not old["vip_policy"]
+    variant = old.get("variant", "b778")
     old_sites = {name: (hook, before, after) for name, hook, before, after
-                 in sites(a["va"], old["level"], legacy_modern2=legacy)}
+                 in sites(a["va"], old["level"], variant=variant)}
     new_sites = sites(a["va"], "modern2")
     buf = bytearray(payload)
     code = code_for(a["va"], "modern2")
     space._require(bytes(buf[a["raw"]:a["raw"] + a["size"]]) ==
-                   code_for(a["va"], old["level"], legacy_modern2=legacy), "foreign owner code")
+                   code_for(a["va"], old["level"], variant=variant), "foreign owner code")
     buf[a["raw"]:a["raw"] + a["size"]] = code
     edits, touched = [], set()
     sections = _sections(payload)
@@ -421,8 +463,9 @@ def upgrade_to_modern2(payload):
     result = bytes(buf)
     space._require(lever.status(result, _adapter("modern2")) == "applied" and space.status(result) == "applied",
                    "CPU money downs upgrade postcondition failed")
-    return result, {"owner": OWNER, "level": "modern2", "vip_policy": True, "from_level": old["level"],
-                    "from_vip_policy": old["vip_policy"], "already_applied": False,
+    return result, {"owner": OWNER, "level": "modern2", "vip_policy": True, "clock_policy": True,
+                    "from_level": old["level"], "from_vip_policy": old["vip_policy"],
+                    "from_variant": old.get("variant"), "already_applied": False,
                     "edits": edits, "changed_bytes": sum(x != y for x, y in zip(payload, result)),
                     "before_sha256": hashlib.sha256(payload).hexdigest(), "after_sha256": hashlib.sha256(result).hexdigest(),
                     "sections_repinned": sorted(touched), "experimental": True, "runtime_witnessed": False}

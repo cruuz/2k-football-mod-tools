@@ -83,6 +83,10 @@ class Machine(BaseMachine):
 
     def policy(self, **settings):
         self.configure(**settings)
+        return self.run_policy()
+
+    def run_policy(self):
+        """The policy entry on the state already configured (b778: callers may set team flags in between)."""
         self.run(self.owner+self.labels["policy"])
         return self.uc.reg_read(x86.UC_X86_REG_EAX)
 

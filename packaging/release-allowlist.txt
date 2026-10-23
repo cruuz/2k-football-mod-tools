@@ -3684,6 +3684,7 @@ tests/mod_editor/test_2k5_helmet_locked_palette.py
 tests/mod_editor/test_2k5_native_safe_palette_ladder.py
 # b778 sd1: stadium squares (model portals) and the Raymond James fascia clocks
 tests/mod_editor/test_b778_stadium_squares.py
+<<<<<<< HEAD
 data/nfl2k5_classic_teams/kits.json
 data/nfl2k5_classic_teams/seamen_2006.csv
 data/nfl2k5_classic_teams/face/pins.json
@@ -3709,3 +3710,7 @@ data/nfl2k5_classic_teams/cards/mini_h.png
 data/nfl2k5_classic_teams/cards/unif_a.png
 data/nfl2k5_classic_teams/cards/unif_h.png
 tests/mod_editor/test_b778_sd3_digits.py
+=======
+# b778 ai4: CPU clock management (end-of-half timeouts, automatic coach profiles defer 4th downs and clock windows)
+tests/mod_editor/test_b778_ai4_cpu_clock.py
+>>>>>>> job/b778-ai4

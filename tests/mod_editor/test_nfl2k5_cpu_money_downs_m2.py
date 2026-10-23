@@ -225,7 +225,12 @@ class Modern2OwnerTests(unittest.TestCase):
         self.assertEqual((row["kind"], row["size"], row["align"]), ("code", 2048, 16))
         image, base = XbeImage(out), XbeImage(self.retail)
         sites = patch.sites(row["va"], "modern2")
-        self.assertEqual([s[0] for s in sites], ["fourth", "play", "target", "two_point", "fg_dispatch", "fg_commit", "exponent_front", "exponent_cover"])
+        self.assertEqual([s[0] for s in sites], ["fourth", "play", "target", "two_point", "fg_dispatch", "fg_commit", "exponent_front", "exponent_cover",
+                                                 "timeout_window"])
+        # b778: the first-half timeout predicate compares the half clock with 0.0 instead of 15.0 (fcomp operand)
+        self.assertEqual(base.read(0x207200, 6), bytes.fromhex("d81d74694e00"))
+        self.assertEqual(image.read(0x207200, 6), bytes.fromhex("d81d80414e00"))
+        self.assertEqual(base.read(0x4E4180, 4), bytes(4))
         for name, va, before, after in sites:
             self.assertEqual(base.read(va, len(before)), before, name)
             self.assertEqual(image.read(va, len(after)), after, name)
@@ -265,9 +270,9 @@ class Modern2OwnerTests(unittest.TestCase):
             image = XbeImage(source)
             for va, _size, _digest in patch.GUARDS:
                 self.assert_refused(repin_edit(source, va, bytes([image.read(va, 1)[0] ^ 1])))
-            for va, _before in patch.HOOKS2.values():
+            for va, _before in (*patch.HOOKS2.values(), *patch.HOOKS3.values()):
                 self.assert_refused(repin_edit(source, va, bytes([image.read(va, 1)[0] ^ 1])))
-        for va, before in patch.HOOKS2.values():
+        for va, before in (*patch.HOOKS2.values(), *patch.HOOKS3.values()):
             self.assert_refused(repin_edit(active, va, before))
 
     def assert_refused(self, payload):
@@ -294,17 +299,29 @@ class Modern2OwnerTests(unittest.TestCase):
         changed = [i for i in range(len(a)) if a[i] != b[i]]
         # VIP-aware revision: owner code/hooks plus the derived allocator seals
         # and section digests. A fresh build and the bounded upgrade are identical.
-        self.assertEqual(len(changed), 2107)
+        # b778: +4 code bytes (team flag test), +8 (sign-only direction test), the 2-byte timeout operand edit,
+        # plus derived digests.
+        self.assertEqual(len(changed), 2139)
 
     def test_v061_modern2_upgrade_and_foreign_refusal(self):
         allocated, _ = space.apply(self.retail, patch.REQUESTS, scaleout=True)
-        old, _ = patch.lever.apply(allocated, patch._adapter("modern2", legacy_modern2=True))
+        old, _ = patch.lever.apply(allocated, patch._adapter("modern2", variant="p9"))
         self.assertEqual(patch.status(old), "applied")
         self.assertFalse(patch.read_settings(old)["vip_policy"])
         upgraded, receipt = patch.apply(old, level="modern2")
         self.assertEqual(upgraded, self.outputs["modern2"])
         self.assertTrue(patch.read_settings(upgraded)["vip_policy"])
         self.assertFalse(receipt["from_vip_policy"])
+        # b778: the beta-77.1 VIP-aware template (what v0.6.1 players have) is recognized and upgrades in place
+        v061, _ = patch.lever.apply(allocated, patch._adapter("modern2", variant="v061"))
+        self.assertEqual(patch.status(v061), "applied")
+        self.assertEqual(patch.read_settings(v061), {"level": "modern2", "vip_policy": True, "clock_policy": False,
+                                                     "variant": "v061", "experimental": True, "runtime_witnessed": False})
+        self.assertEqual(XbeImage(v061).read(0x207202, 4), bytes.fromhex("74694e00"))
+        upgraded, receipt = patch.apply(v061, level="modern2")
+        self.assertEqual(upgraded, self.outputs["modern2"])
+        self.assertTrue(patch.read_settings(upgraded)["clock_policy"])
+        self.assertEqual((receipt["from_variant"], receipt["from_vip_policy"]), ("v061", True))
         a = patch.lever.allocation(old, patch.OWNER, patch.CODE_SIZE)
         damaged = repin_edit(old, a["va"] + 20, b"\x90")
         with self.assertRaises(ValueError):
@@ -376,12 +393,19 @@ class Modern2NativeTests(unittest.TestCase):
         context = m.SOURCE + 0x1E000
         try:
             for home in (False, True):
-                for mode, match, expected in ((0, 1, 1), (1, 1, 1), (2, 0, 1), (2, 1, 0)):
+                team = m.HOME if home else m.OFF
+                # b778: the team's virtual-controller flag (+0x38) separates a user VIP (1) from an automatic coach
+                # profile (0, set by the coach AI presentation hook); only the user VIP delegates.
+                for mode, match, flag, expected in ((0, 1, 1, 1), (1, 1, 1, 1), (2, 0, 1, 1), (2, 1, 1, 0),
+                                                    (2, 1, 0, 1)):
                     m.u32(0xBA04B0, context if home else 0)
                     m.u32(0xBA04B4, 0 if home else context)
                     m.u32(context + 0x38, mode)
                     m.u32(context + 0x10, match)
-                    self.assertEqual(m.policy(home=home), expected, (home, mode, match))
+                    m.configure(home=home)
+                    m.u32(team + 0x38, flag)
+                    self.assertEqual(m.run_policy(), expected, (home, mode, match, flag))
+                    m.u32(team + 0x38, 0)
                 # Selecting a human's learning VIP never changes CPU policy.
                 self.assertEqual(m.policy(home=home, cpu=False), 0)
         finally:
@@ -398,13 +422,20 @@ class Modern2NativeTests(unittest.TestCase):
             for margin, quarter, seconds in itertools.product((-10, -8, -5, -2, -1, 0, 1, 4, 5), (2, 4), (100, 400)):
                 state = dict(score_margin=margin, quarter=quarter, seconds=seconds)
                 m.configure(**state)
+                m.u32(m.OFF + 0x38, 1)               # user VIP: virtual-controller flag set
                 self.base.configure(**state)
                 m.run(0x206E70, ecx=m.OFF)
                 self.base.run(0x206E70, ecx=self.base.OFF)
                 self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EAX), self.base.uc.reg_read(x86.UC_X86_REG_EAX), state)
                 self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ECX), self.base.uc.reg_read(x86.UC_X86_REG_ECX))
+                # b778: an automatic coach profile (flag clear) gets the Modern 2 chart
+                m.u32(m.OFF + 0x38, 0)
+                m.run(0x206E70, ecx=m.OFF)
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EAX),
+                                 int(patch.two_point_decision(margin=margin, quarter=quarter, seconds=seconds)), state)
         finally:
             m.u32(0xBA04B4, 0)
+            m.u32(m.OFF + 0x38, 0)
 
     def test_regulation_grid_matches_the_oracle(self):
         cells = mismatches = 0
@@ -430,7 +461,9 @@ class Modern2NativeTests(unittest.TestCase):
                              state)
         for state in ({"down": 1}, {"down": 2}, {"down": 3}, {"cpu": False}, {"phase": 3}, {"quarter": 0}, {"distance": 0},
                       {"distance": 26}, {"distance": float("nan")}, {"own_yard": float("nan")}, {"own_yard": -1},
-                      {"own_yard": 101}, {"seconds": 10001}, {"direction": 0}, {"direction": 2}, {"direction": float("nan")}):
+                      {"own_yard": 101}, {"seconds": 10001}, {"direction": 0}, {"direction": float("inf")}, {"direction": float("nan")}):
+            # b778: only the sign of the native direction is read (a live game stores +/-5486.4 there; see
+            # test_b778_ai4_cpu_clock), so zero, infinite and NaN directions refuse while any finite magnitude works.
             self.assertEqual(self.m.policy(**state), 0, state)
 
     def test_late_lead_range_edge_is_inclusive_for_every_kicker_range(self):

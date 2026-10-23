@@ -204,4 +204,14 @@ defense_miss:
     popfd
     jne defense_ordinary
     jmp defense_continue
+.ifdef B778
+/* b778: native 205F80 (half clock, x87 ST0) as raw float bits in EAX for the C kernel. */
+.global half_bits_native
+half_bits_native:
+    push eax
+    call half_time_native
+    fstp dword ptr [esp]
+    pop eax
+    ret
+.endif
 .section .note.GNU-stack,"",@progbits
