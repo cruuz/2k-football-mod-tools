@@ -50,7 +50,8 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(bc.REQUESTS, (("nfl2k5_ball_carrier_ai", "code", 176, 16),))
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-1], bc.OWNER)
+        # b778-int2: fa1's star retention and xs1's module loader follow this owner; the loader stays last.
+        self.assertEqual(space.LATE_OWNERS[-3:], (bc.OWNER, "nfl2k5_star_retention", "nfl2k5_module_loader"))
         self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_force_out")
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).cpu_ball_carriers, False)
         for name, preset in mod_build.PRESETS.items():
