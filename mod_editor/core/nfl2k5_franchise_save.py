@@ -941,6 +941,19 @@ class FranchiseSave:
             out.append({"index": index, "offset": offset, "kind": raw[0], "raw": bytes(raw)})
         return out
 
+    def ledger_in_write_order(self) -> list[dict[str, Any]]:
+        """Retained events from oldest to newest, with unknown season/week.
+
+        The next-write cursor splits the native ring. Unused/cleared slots
+        are skipped by ledger(); they cannot be treated as evidence that no
+        move happened. The writer (0x2BFDF0) has no date arguments. In
+        particular, draft round/pick and contract status are not week/year.
+        """
+        cursor = self.u32(self.front_office_block + F_LEDGER_CURSOR)
+        _require(cursor < F_LEDGER_CAPACITY, "ledger write cursor outside native ring")
+        rows = sorted(self.ledger(), key=lambda row: (row["index"] - cursor) % F_LEDGER_CAPACITY)
+        return [{**row, "order": order, "season": None, "week": None} for order, row in enumerate(rows)]
+
     def fa_bids(self) -> list[dict[str, Any]]:
         """The 100 x 12-byte free-agent bid slots at F+0x17D2 (FUN_002d05b0; player index in the first word)."""
 

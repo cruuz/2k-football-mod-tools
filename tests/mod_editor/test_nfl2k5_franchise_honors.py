@@ -193,7 +193,7 @@ class SyncHonorsTests(unittest.TestCase):
 
 
 class PlayedClubsTests(unittest.TestCase):
-    """b778-pc2 (opt-in): the first franchise season has no club on a card when it was played before the recorder."""
+    """b778-pc3: opening membership must not be written as a played-season fact."""
 
     def placed(self, abbreviation):
         save, disc = club_fixture()
@@ -205,22 +205,25 @@ class PlayedClubsTests(unittest.TestCase):
         struct.pack_into("<i", data, pointer, document.players[0].offset - pointer + 1)
         return save, bytes(data)
 
-    def test_the_first_season_club_comes_from_the_disc_roster_and_says_so(self):
+    def test_opening_club_is_only_an_inferred_candidate_in_the_receipt(self):
         save, disc = self.placed("BUF")
         result, receipt = up.infer_played_clubs(save, disc)
         _s, roster = up.franchise(result)
         player = roster.players[0]
         clubs = [t.abbreviation for t in roster.teams[:32]]
         team = [w for w in roster.history_words[player.key] if (w >> 16) & 127 == 87 and not w & 0x30000000]
-        self.assertEqual([((w >> 23) & 31, (w & 0xFFFF) - 1) for w in team], [(2, clubs.index("BUF"))])
-        self.assertEqual([(c["player"], c["season"], c["after"], c["basis"]["inferred"]) for c in receipt["changes"]],
-                         [("Test Player", 2026, "BUF", True)])
+        # The source does prove 2025 TEN, but cannot prove a club for 2026.
+        self.assertEqual([((w >> 23) & 31, (w & 0xFFFF) - 1) for w in team], [(1, clubs.index("TEN"))])
+        self.assertEqual([(c["season"], c["after"]) for c in receipt["changes"]], [(2025, "TEN")])
+        row = next(r for r in receipt["unresolved"] if r["season"] == 2026)
+        self.assertTrue(row["inferred"])
+        self.assertEqual(row["inferred_opening_clubs"], ["BUF"])
         self.assertTrue(receipt["outside_declared_fields_identical"])
         self.assertEqual(up.infer_played_clubs(result, disc)[1]["changes"], [])        # idempotent
 
     def test_nothing_is_guessed_without_a_disc_club_a_games_row_or_a_completed_season(self):
         save, disc = club_fixture()
-        self.assertEqual(up.infer_played_clubs(save, disc)[1]["changes"], [])         # on no disc club
+        self.assertFalse(any(c["season"] == 2026 for c in up.infer_played_clubs(save, disc)[1]["changes"]))
         save, disc = self.placed("BUF")
         data = bytearray(save)
         roster = sr.decode(bytes(data))
@@ -229,7 +232,7 @@ class PlayedClubsTests(unittest.TestCase):
             struct.pack_into("<i", data, player.offset + 0x2C, 0)
         self.assertEqual(up.infer_played_clubs(bytes(data), disc)[1]["changes"], [])
 
-    def test_it_is_a_command_and_not_part_of_upgrade(self):
+    def test_compatibility_command_uses_the_upgrade_club_step(self):
         self.assertIn("played-clubs", service.COMMANDS)
         save, disc = self.placed("BUF")
         with tempfile.TemporaryDirectory() as td:
@@ -243,7 +246,7 @@ class PlayedClubsTests(unittest.TestCase):
         self.assertEqual([s["operation"] for s in plan.receipt["steps"]], ["played_clubs"])
         from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
         plan.receipt["validation"] = {"after": {"findings": []}}
-        self.assertIn("First-season clubs inferred from the disc roster: 1 players", preview_text(plan))
+        self.assertIn("Historical teams restored: 1", preview_text(plan))
 
 
 @unittest.skipUnless(native.NativeTests.__dict__.get("__unittest_skip__") is None and native.XBE.is_file()

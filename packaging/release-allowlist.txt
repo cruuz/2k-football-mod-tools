@@ -409,6 +409,7 @@ mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/franchise_panel_qt.py
 mod_editor/gui/franchise_upgrade_dialog_qt.py
 mod_editor/core/nfl2k5_franchise_upgrade.py
+mod_editor/core/nfl2k5_inbox_standings.py
 mod_editor/core/nfl2k5_franchise_upgrade_io.py
 mod_editor/data/f12_cohort.json
 tools/nfl2k5_franchise_upgrade.py

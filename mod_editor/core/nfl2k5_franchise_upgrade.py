@@ -75,7 +75,7 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     # absence of intervening moves. The native writer wraps at 600 entries,
     # clears kinds independently, and stores event arguments rather than a
     # season/date. A draft or signing plus today's membership is insufficient.
-    native_events = save.ledger()
+    native_events = save.ledger_in_write_order()
     events_by_player = defaultdict(list)
     for event in native_events:
         events_by_player[event["player_index"]].append(event["index"])
@@ -86,6 +86,9 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
         "ledger_capacity": fs.F_LEDGER_CAPACITY,
         "retained_events": len(native_events),
         "retained_event_kinds": dict(sorted(Counter(e["kind"] for e in native_events).items())),
+        "retained_slots_full": len(native_events) == fs.F_LEDGER_CAPACITY,
+        "ordered_events": native_events,
+        "event_dates_available": False,
         "news_log_entries": len(save.transactions()),
         "full_season_coverage_proved": False,
         "limitation": "Native event slots can wrap or be cleared and carry no season coverage marker. "
@@ -138,6 +141,16 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
             explicit[target] = value, {"kind": "supplied_evidence", "source": row["source"],
                                        "description": source["description"], "sha256": source["sha256"]}
 
+    # Opening membership is useful as a labelled candidate for a missing
+    # 2026 row, never as a played-season fact. Retained native events are
+    # undated and cannot assign a trade/signing to a season or a week.
+    opening_clubs = defaultdict(set)
+    disc_by_offset = {p.offset: p for p in disc.players}
+    for team in disc.teams[:32]:
+        for offset in team.player_offsets:
+            source_player = disc_by_offset.get(offset)
+            if source_player is not None:
+                opening_clubs[identity(source_player)].add(team.abbreviation)
     additions = defaultdict(list)
     changes, unresolved = [], []
     for player in roster.players:
@@ -176,7 +189,18 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
                 reason = ("pre_franchise_source_missing_or_mismatched" if year < BASE_YEAR else
                           "retained_events_without_season_coverage" if event_slots else
                           "no_retained_player_event_or_season_coverage")
-                unresolved.append({**common, "reason": reason, "native_event_slots": event_slots})
+                row = {**common, "reason": reason, "native_event_slots": event_slots}
+                if year >= BASE_YEAR:
+                    row["inferred"] = True
+                    row["week_by_week_coverage"] = False
+                    row["undated_event_clubs"] = sorted({e["team_name"] for e in native_events
+                        if player.pool == "primary" and e["player_index"] == player.index and e["team_name"]})
+                    key = identity(player)
+                    if (year == BASE_YEAR and key[2] and len(by_identity[key]) == 1
+                            and len(disc_identity[key]) == 1):
+                        row["inferred_opening_clubs"] = sorted(opening_clubs[key])
+                    row["note"] = "Candidates are not a dated season history; no TEAM word was written."
+                unresolved.append(row)
                 continue
             value, basis = found
             additions[player.key].append((slot << 23) | (87 << 16) | value)
@@ -971,97 +995,17 @@ def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                     "used_before": used, "used_after": used_after, "capacity": capacity, "changes": changes, **scope}
 
 
-def infer_played_clubs(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
-    """OPT-IN. Fill the Player Card TEAM column for the first franchise season from the disc's starting clubs.
+def infer_played_clubs(payload: bytes, disc_body: bytes, evidence: Mapping | None = None) -> tuple[bytes, dict]:
+    """Compatibility command for the verified club step used by Upgrade.
 
-    b778-pc2: a franchise that played its first season on a disc without the per-game club recorder (the recorder
-    writes field 87 after every game, so every season played on v0.6.1 has it) shows ``--`` for that season on every
-    card. The save cannot say who played for whom, so ``team-history`` refuses to guess. This step is the guess:
-    the franchise started from the disc's rosters, so a player's club for BASE_YEAR (2026) is the club he is on in
-    the disc's roster, when his (first, last, birth date) is unique in both rosters and the save has a games row for
-    that season and no club for it. A player who changed clubs during that first season keeps the wrong (starting)
-    club; the receipt says so on every row. Later seasons are never inferred. Fits by folding like ``sync_honors``.
+    Older releases guessed 2026 from opening membership and wrote that guess
+    as a fact into field 87. Native transactions cannot date those guesses:
+    their bounded ring can wrap or be cleared and contains no season/week.
+    Keep candidates in the receipt, restore only counter-pinned evidence,
+    and leave missing clubs blank. Existing TEAM words are preserved.
     """
-    save, roster = franchise(payload)
-    season_now = save.header.display_year
-    require(season_now > BASE_YEAR, "no completed first season to fill")
-    try:
-        target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
-    except sr.SaveRostError as exc:
-        raise UpgradeRefused(f"club source must be a disc ROST: {exc}") from exc
-    require(target.layout.version in (17, 18), "club source must be a disc ROST")
-    clubs = {team.abbreviation: team.index for team in roster.teams[:32]}
-    require(len(clubs) == 32, "requires unique NFL club abbreviations")
-    streams, shared = _history_streams(roster)
-    disc_ids = Counter(identity(p) for p in target.players if p.first or p.last)
-    disc_by_offset = {p.offset: p for p in target.players}
-    disc_club = {}
-    for team in target.teams[:32]:
-        for offset in team.player_offsets:
-            if offset in disc_by_offset and team.abbreviation in clubs:
-                disc_club.setdefault(identity(disc_by_offset[offset]), team.abbreviation)
-    saved = defaultdict(list)
-    for player in roster.players:
-        if player.first or player.last:
-            saved[identity(player)].append(player)
-    wanted, shared_skipped = {}, set()         # save key -> (slot, club index + 1, club)
-    for key, abbreviation in disc_club.items():
-        players = saved.get(key, [])
-        if not key[2] or disc_ids[key] != 1 or len(players) != 1:
-            continue
-        player = players[0]
-        slot = player.record.values["years_pro"] - (season_now - BASE_YEAR)
-        words = roster.history_words[player.key]
-        live = [w for w in words if _live_regular(w) and (w >> 23) & 31 == slot]
-        if slot < 1 or not any((w >> 16) & 127 == 0 and w & 0xFFFF for w in live) \
-                or any((w >> 16) & 127 == TEAM_FIELD for w in live):
-            continue
-        if player.key in shared:
-            shared_skipped.add(f"{player.first} {player.last}")
-            continue
-        wanted[player.key] = (slot, clubs[abbreviation] + 1, abbreviation)
-    by_key = roster.by_key
-
-    def build(depth):
-        out, folded = {}, []
-        for key, words in roster.history_words.items():
-            player = by_key[key]
-            if depth and words and key not in shared:
-                after = fold_words(words, player.record.values["years_pro"], depth)
-                if after != words:
-                    folded.append(key)
-                words = after
-            out[key] = tuple(words)
-        for key, (slot, value, _club) in wanted.items():
-            new = (slot << 23) | (TEAM_FIELD << 16) | value
-            out[key] = tuple(_with_end([new, *out[key]]))
-        return out, folded, roster.pool_used + sum(
-            len(words) - len(roster.history_words[key]) for key, words in out.items())
-
-    chosen = None
-    for depth in (0, *SYNC_FOLD_DEPTHS):
-        built = build(depth)
-        if built[2] <= roster.pool_capacity - HISTORY_RESERVE:
-            chosen = (depth, built)
-            break
-    require(chosen is not None, "the clubs do not fit the history pool even after folding old seasons")
-    depth, (new_streams, folded, used_after) = chosen
-    if not wanted and not folded:
-        return payload, {"operation": "played_clubs", "before_sha256": sha(payload), "after_sha256": sha(payload),
-                         "disc_roster_sha256": sha(disc_body), "season": BASE_YEAR, "fold_depth": 0,
-                         "folded_players": [], "shared_history_skipped": sorted(shared_skipped), "changes": [],
-                         "used_before": roster.pool_used, "used_after": roster.pool_used,
-                         "capacity": roster.pool_capacity, "outside_declared_fields_identical": True,
-                         "changed_bytes": 0}
-    result, scope = _rewrite_history(payload, roster, streams, shared, new_streams, used_after)
-    changes = [{"pool": by_key[key].pool, "index": by_key[key].index,
-                "player": f"{by_key[key].first} {by_key[key].last}", "season": BASE_YEAR, "slot": slot,
-                "field": "team_history", "before": None, "after": club,
-                "basis": {"kind": "disc_starting_club", "inferred": True,
-                          "note": "the club on the disc roster; a trade or signing during the season is not visible"}}
-               for key, (slot, _value, club) in sorted(wanted.items())]
-    return result, {"operation": "played_clubs", "before_sha256": sha(payload), "after_sha256": sha(result),
-                    "disc_roster_sha256": sha(disc_body), "season": BASE_YEAR, "fold_depth": depth,
-                    "folded_players": [f"{by_key[k].first} {by_key[k].last}" for k in folded],
-                    "shared_history_skipped": sorted(shared_skipped), "used_before": roster.pool_used,
-                    "used_after": used_after, "capacity": roster.pool_capacity, "changes": changes, **scope}
+    result, receipt = upgrade_team_history(payload, disc_body, evidence)
+    return result, {**receipt, "operation": "played_clubs", "season": BASE_YEAR,
+                    "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "fold_depth": 0,
+                    "folded_players": [], "shared_history_skipped": []}
