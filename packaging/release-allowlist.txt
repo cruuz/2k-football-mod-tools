@@ -572,9 +572,11 @@ mod_editor/core/nfl2k5_lineup_iterator.py
 mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_draft_clock.py
 mod_editor/core/nfl2k5_weekly_progression.py
+mod_editor/core/nfl2k5_player_progress_screen.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
+mod_editor/core/nfl2k5_player_progression.py
 mod_editor/core/nfl2k5_returner_fix.py
 mod_editor/core/nfl2k5_season_length.py
 mod_editor/core/nfl2k5_team_column.py
@@ -587,6 +589,7 @@ mod_editor/core/nfl2k5_display_list_stability.py
 mod_editor/core/nfl2k5_resource_load_guard.py
 mod_editor/core/nfl2k5_loader_wakeup.py
 mod_editor/core/nfl2k5_rb_rename.py
+mod_editor/core/nfl2k5_trophy_room.py
 mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_classic_teams.py
@@ -3718,4 +3721,6 @@ tests/mod_editor/test_b778_ai6_late_fourth.py
 tests/mod_editor/test_nfl2k5_sportscenter_lineup.py
 tests/mod_editor/test_nfl2k5_draft_clock.py
 tests/mod_editor/test_nfl2k5_weekly_progression.py
+tests/mod_editor/test_nfl2k5_player_progress_screen.py
+tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py

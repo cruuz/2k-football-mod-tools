@@ -347,6 +347,8 @@ class BuildPlan:
     loader_wakeup_fix: bool = False
     # b777-rb2: Halfback/HB display text reads Running Back/RB (in-place UTF-16 strings, no codes or caves).
     rb_rename: bool = False
+    # b778-pg2: "The Crib" reads "Trophy Room" (in-place UTF-16 strings, no codes or caves).
+    trophy_room: bool = False
     # b77-k1: First/Last Name keyboards also accept space, period, apostrophe and hyphen (data only, no code).
     name_keyboard: bool = False
     # penalties at NFL rates + a working Chop Block toggle: "" = off, "nfl" = the ESTIMATED first-cut profile
@@ -565,6 +567,12 @@ class BuildPlan:
     # per-player stat merge at 0x134E05 (after the game's weekly-prep cleanup). EXPERIMENTAL: off in every preset until
     # the second scale-out (job xs1) gives the combined build its 608 code bytes.
     weekly_progression: bool = False
+    # b778-pg2: the Front Office Player Progress screen stays available every week of the regular season and
+    # playoffs, compares each rating with the season-opening baseline, and a toggle shows last week's change.
+    # The snapshot record is a 5,232-byte PPG2 table in the roster arena tail (no save growth). A late executable
+    # owner (nfl2k5_player_progress_screen) that needs the growable pool from b778-xs1. EXPERIMENTAL: on in the
+    # Advanced and Experimental presets; Basic keeps the retail offseason-only screen.
+    player_progress: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -626,6 +634,7 @@ class BuildPlan:
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.team_sleeves or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.trophy_room or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star or self.star_career
@@ -824,6 +833,13 @@ for _preset in PRESETS.values():
 PRESETS["softdrink_advanced"]["franchise_draft_clock"] = True
 PRESETS["softdrink_experimental"]["franchise_draft_clock"] = True
 del _preset
+# b778-pg2: the Player Progress screen is OFF in every preset. The native screen and weekly capture work, but the
+# provisional save host (roster arena tail 0x8FCF4) is used by the running Front Office: the emulator froze the Front
+# Office after the record was written (the same save decodes correctly offline and stays 720,044 bytes). A versioned
+# franchise footer or an owned arena reserve is required before this can ship. The option stays available for tests.
+for _preset in PRESETS.values():
+    _preset["player_progress"] = False
+del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
 for _preset in PRESETS.values():
@@ -934,6 +950,8 @@ for _preset_values in PRESETS.values():
     _preset_values["loader_wakeup_fix"] = True
     # b777-rb2 (Noah 10/20: "rename halfback to running back (RB) everywhere"): display text only.
     _preset_values["rb_rename"] = True
+    # b778-pg2 (Noah 10/22: "the crib in my NFL should be renamed to Trophy Room"): display text only.
+    _preset_values["trophy_room"] = True
     # b77-k1: typing space, period, apostrophe and hyphen in player names changes no gameplay; it is a Create/Edit Player
     # fix that every build should carry (real rosters already hold all four).
     _preset_values["name_keyboard"] = True
@@ -1136,6 +1154,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
+    ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress),  # b778-pg2
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1517,6 +1536,37 @@ def _apply_weekly_progression(plan: "BuildPlan", target: Path, receipt: dict, pr
         raise RuntimeError("Weekly player progression: the output does not read back as applied")
     receipt["steps"].append({"step": "weekly_progression", **{k: v for k, v in weekly_receipt.items() if k != "reservations"}})
     receipt["result"]["weekly_progression"] = "applied"
+def _player_progress_preflight(source: Path, progress) -> None:
+    """b778-pg2: refuse a source whose Player Progress bytes are foreign, before any write."""
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The Player Progress screen is not available in this installation.")
+    progress("Checking the Player Progress screen bytes", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The Player Progress screen cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The Player Progress screen bytes in this source are not retail or this owner. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _apply_player_progress(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pg2: install the Player Progress screen/snapshot owner (a late allocator owner)."""
+    if not plan.player_progress:
+        return
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None:
+        raise RuntimeError("The Player Progress screen needs nfl2k5_player_progress_screen.")
+    progress("Franchise: Player Progress screen", 0, 0)
+    payload, progress_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The Player Progress screen: the output does not read back as applied")
+    receipt["steps"].append({"step": "player_progress", **{k: v for k, v in progress_receipt.items()
+                                                            if k not in ("reservations", "edits")}})
+    receipt["result"]["player_progress"] = "applied"
 
 
 def _hair_styles_available() -> bool:  # b775-hs1
@@ -1640,6 +1690,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
+                               ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1704,6 +1755,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "resource_load_guard": _core_module("nfl2k5_resource_load_guard") is not None,
         "loader_wakeup_fix": _core_module("nfl2k5_loader_wakeup") is not None,
         "rb_rename": _core_module("nfl2k5_rb_rename") is not None,
+        "trophy_room": _core_module("nfl2k5_trophy_room") is not None,
         "name_keyboard": _core_module("nfl2k5_name_keyboard") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
@@ -1798,6 +1850,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "resource_load_guard": report.get("resource_load_guard", "unknown"),
         "loader_wakeup_fix": report.get("loader_wakeup_fix", "unknown"),
         "rb_rename": report.get("rb_rename", "unknown"),
+        "trophy_room": report.get("trophy_room", "unknown"),
         "name_keyboard": report.get("name_keyboard", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
@@ -1873,6 +1926,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["franchise_draft_clock"] = draft_clock.status(_xbe_bytes(source)) if draft_clock is not None else "unavailable"
     weekly = _core_module("nfl2k5_weekly_progression")  # b778-pg1
     out["weekly_progression"] = weekly.status(_xbe_bytes(source)) if weekly is not None else "unavailable"
+    player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2
+    out["player_progress"] = player_progress.status(_xbe_bytes(source)) if player_progress is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3543,6 +3598,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
         raise ValueError("The franchise draft clock must be Off or On.")
+    if type(plan.player_progress) is not bool:  # b778-pg2
+        raise ValueError("The Player Progress screen must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -4294,6 +4351,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _draft_clock_preflight(source, progress)
     if plan.weekly_progression:  # b778-pg1: like fo1, before any write
         _weekly_progression_preflight(source, progress)
+    if plan.player_progress:  # b778-pg2: like qb3, before any write
+        _player_progress_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -4454,6 +4513,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "the1wam_lineman_rating": plan.the1wam_lineman_rating,
                                   "xemu_display_list_fix": plan.xemu_display_list_fix,
                                   "resource_load_guard": plan.resource_load_guard, "loader_wakeup_fix": plan.loader_wakeup_fix, "rb_rename": plan.rb_rename,
+                                  "trophy_room": plan.trophy_room,
                                   "name_keyboard": plan.name_keyboard,
                                   "flatter_deep_ball": plan.flatter_deep_ball, "chop_block_toggle": plan.chop_block_toggle,
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
@@ -4469,7 +4529,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["source_sha256"] = step.get("source_sha256")
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "trophy_room", "trophy_room_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -5867,11 +5927,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_draft_clock(plan, target, receipt, progress)
     # b778-pg1: franchise weekly progression, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_weekly_progression(plan, target, receipt, progress)
+    # b778-pg2: the Player Progress screen, after weekly progression (LATE_OWNERS order)
+    _apply_player_progress(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
     # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
     _apply_inbox_standings(plan, target, receipt, progress)
     # b778-xs1: the on-demand Career Home gate, after every other late allocator owner (it is last in LATE_OWNERS)
     _apply_module_loader(plan, target, receipt, progress)
+    # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5936,6 +5999,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the franchise draft clock did not survive the final passes")  # b778-dr1
     if plan.weekly_progression and _core_module("nfl2k5_weekly_progression").status(_xbe_bytes(target)) != "applied":
         raise ValueError("weekly player progression did not survive the final passes")  # b778-pg1
+    if plan.player_progress and _core_module("nfl2k5_player_progress_screen").status(_xbe_bytes(target)) != "applied":  # b778-pg2
+        raise ValueError("the Player Progress screen did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

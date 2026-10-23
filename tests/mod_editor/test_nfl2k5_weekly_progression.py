@@ -100,7 +100,7 @@ class StaticTests(unittest.TestCase):
 
     def test_presets_options_and_late_owner_order(self):
         # b778-int2: xs1's on-demand module loader is the last late owner; weekly progression sits before it.
-        self.assertEqual(space.LATE_OWNERS[-2:], (wp.OWNER, "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-3:], (wp.OWNER, "nfl2k5_player_progress_screen", "nfl2k5_module_loader"))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).weekly_progression, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["weekly_progression"], False, name)    # off until the second scale-out lands

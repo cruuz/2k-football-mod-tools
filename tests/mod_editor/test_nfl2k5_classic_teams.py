@@ -271,7 +271,7 @@ class HelperCodeTests(unittest.TestCase):
         # b775-int1: the last read-only late owner; only code owners (no read-only bytes) follow it: hs1's hair styles,
         # b776-ai2's two CPU AI owners, b776-pa2's play art routes and b776-ns1's jersey number sizes (int2 order), then
         # b777-ol1's run blocking and b777-qb3's QB accuracy (int7 order)
-        self.assertEqual(space.LATE_OWNERS[-19:-1], (ct.OWNER, "nfl2k5_hair_styles", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression"))  # b778-fo1 last
+        self.assertEqual(space.LATE_OWNERS[-20:-1], (ct.OWNER, "nfl2k5_hair_styles", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen"))  # b778-fo1 last
         self.assertIn(ct.REQUESTS[0], space.dormant_union())
         rows = [a for a in space._scale_allocations(space.dormant_union()) if a["owner"] == ct.OWNER]
         self.assertEqual(len(rows), 1)
