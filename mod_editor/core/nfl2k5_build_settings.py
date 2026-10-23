@@ -64,6 +64,7 @@ FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late execu
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("modern_force_out",)  # b778-fo1: modern sideline catches (no force-out from 2008), late executable owner
+FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost over a career, late executable owner
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
 FEATURE_KEYS += ("modern_officials",)  # b77-rf1: the 2025-26 NFL officials' uniform

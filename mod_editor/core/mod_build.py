@@ -500,6 +500,13 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
+    # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
+    # before the Preseason aging, players gain a star for a top-tier overall/production season or lose it after a down
+    # year (an 85..89 hysteresis band and pg1's veteran-QB rule keep the league total near today's). Right-stick moves
+    # stay star-only. A late executable owner (nfl2k5_star_career). EXPERIMENTAL: on in the Advanced and Experimental
+    # presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps retail draft classes and tags.
+    star_career: bool = False
     # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
     # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
     # skin, generic head and Dreads bit follow the face. New Portrai2.iff / portrai2.cdf outers (every existing portrait
@@ -567,7 +574,7 @@ class BuildPlan:
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
-                or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
+                or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star or self.star_career
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
@@ -709,6 +716,13 @@ for _preset in PRESETS.values():
     _preset["modern_force_out"] = False
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
+del _preset
+# b778-st2: rookie stars and career stars: a modern NFL feature like progression, so on in the Advanced and
+# Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps retail draft classes.
+for _preset in PRESETS.values():
+    _preset["star_career"] = False
+PRESETS["softdrink_advanced"]["star_career"] = True
+PRESETS["softdrink_experimental"]["star_career"] = True
 del _preset
 # b778-rh1: rookie faces are experimental: on only in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
 for _preset in PRESETS.values():
@@ -973,6 +987,21 @@ def _force_out_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _star_career_preflight(source: Path, progress) -> None:
+    """b778-st2: refuse a source whose class generator, aging loop or overall/stat code is foreign, before any write."""
+    module = _core_module("nfl2k5_star_career")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Rookie and career stars is not available in this installation.")
+    progress("Checking the draft class generator and offseason code for stars", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Rookie and career stars cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The draft class generator, the Preseason aging loop or the overall/stat code in this source "
+                         "is not retail or Rookie and career stars. Turn it off or rebuild from a supported USA source.")
+
+
 def _rookie_faces_preflight(source: Path, is_image: bool, progress) -> None:
     """b778-rh1: rookie faces need a disc image, the bank data and the retail class-generator bytes."""
     if not is_image:
@@ -1009,6 +1038,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1115,6 +1145,23 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
         raise RuntimeError("Modern sideline catches: the output does not read back as applied")
     receipt["steps"].append({"step": "modern_force_out", **{k: v for k, v in force_receipt.items() if k != "reservations"}})
     receipt["result"]["modern_force_out"] = "applied"
+
+
+def _apply_star_career(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-st2: the rookie/career star owner, after the last b778 late owner (nfl2k5_star_career)."""
+    if not plan.star_career:
+        return
+    module = _core_module("nfl2k5_star_career")
+    if module is None:
+        raise RuntimeError("Rookie and career stars needs nfl2k5_star_career.")
+    progress("Stars: rookie classes and career gains and losses", 0, 0)
+    payload, star_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Rookie and career stars: the output does not read back as applied")
+    receipt["steps"].append({"step": "star_career", **{k: v for k, v in star_receipt.items() if k != "reservations"}})
+    receipt["result"]["star_career"] = "applied"
 
 
 def _hair_styles_available() -> bool:  # b775-hs1
@@ -1299,6 +1346,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                            and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "player_star": _core_module("nfl2k5_player_star") is not None,
         "player_tags": _core_module("nfl2k5_player_tags") is not None,
+        "star_career": _core_module("nfl2k5_star_career") is not None,  # b778-st2
         "roster_edits": _core_module("nfl2k5_roster_records") is not None,
         # the plan-dependent status function is never called without a selected plan; Build probes
         # the image with Catalog.load and reports available / foreign (a bare XBE: requires image)
@@ -3775,6 +3823,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
+    if plan.star_career:  # b778-st2: like qb3, before any write
+        _star_career_preflight(source, progress)
     if plan.rookie_faces:  # b778-rh1: before any write
         _rookie_faces_preflight(source, is_image, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
@@ -5293,6 +5343,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-st2: rookie stars and career stars, after every b778 late owner (at integration after pi1's practice injuries)
+    _apply_star_career(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.

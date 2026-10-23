@@ -236,6 +236,7 @@ CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP
 # b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
+from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -247,6 +248,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
                  ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
+                 ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT))  # b778-rh1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
