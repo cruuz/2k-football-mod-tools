@@ -52,7 +52,7 @@ class TemplateTests(unittest.TestCase):
 
     def test_late_owner_is_last(self):
         # b778-int2: xs1's module loader stays last; the guard is immediately before it.
-        self.assertEqual(space.LATE_OWNERS[-4:], (guard.OWNER, "nfl2k5_sim_cb_tackles", "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-4:], ("nfl2k5_player_progress_screen", guard.OWNER, "nfl2k5_sim_cb_tackles", "nfl2k5_module_loader"))
         self.assertEqual(space.LATE_OWNERS[-13], "nfl2k5_force_out")
 
     def test_relocations(self):
