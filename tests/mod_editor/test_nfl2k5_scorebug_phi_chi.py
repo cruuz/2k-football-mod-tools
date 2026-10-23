@@ -68,7 +68,9 @@ class NativeTests(unittest.TestCase):
     g,c,colours,tokens=self.inspect(wide,possession=side,down=1,distance=10,play_clock=6)
     try:
      self.assertEqual(colours['away_wing'],0xFF1FB0C4);self.assertEqual(colours['home_wing'],0xFFFB6930)
-     self.assertEqual(colours['plate'],int('FF'+EXPECTED[name][1][1:],16))
+     # b778 sb5: the tab is the midpoint of the possessing team's wing and plate accent.
+     w,p=int(EXPECTED[name][0][1:],16),int(EXPECTED[name][1][1:],16)
+     self.assertEqual(colours['plate'],0xFF000000|(((w&0xFEFEFE)>>1)+((p&0xFEFEFE)>>1)))
      from mod_editor.core import nfl2k5_scorebug_ingame as scene
      materials={m['name']:m for m in g['materials']}
      for material,expected in [('hscore_buga','sb05h0'),('zscore_buga','sb21h0')]:

@@ -260,7 +260,13 @@ class NativeTests(unittest.TestCase):
    word=struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+row['vertex']*10)[0]
    team=home if possessing=='home' else away
    tint=self.preview.compiled.spec.get('plate_tints',{}).get(team)
-   self.assertEqual(word,0xff000000|int(tint[1:],16) if tint else exact.plate_argb(team))
+   wing=self.preview.compiled.spec.get('wing_tints',{}).get(team)
+   if tint and wing:
+    # b778 sb5: the tab takes the midpoint of the wing display shade and the plate accent.
+    w,p=int(wing[1:],16),int(tint[1:],16)
+    self.assertEqual(word,0xff000000|(((w&0xfefefe)>>1)+((p&0xfefefe)>>1)))
+   else:
+    self.assertEqual(word,0xff000000|int(tint[1:],16) if tint else exact.plate_argb(team))
    names={r['name']:r for r in g['materials']}
    for name,team in (('hscore_buga',home),('zscore_buga',away)):
     span=c['texture_spans'][names[name]['texture']];chunk,body,_=scene.decode(span)
