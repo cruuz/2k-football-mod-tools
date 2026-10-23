@@ -53,6 +53,19 @@ def preview_text(plan):
             lines += [f"  {c['player']}: hair style {c['before']} → {c['after']}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "honors":   # b778-pc2
+            lines.append(f"Award history from the disc: {len(step['changes'])} honors for {step['matched_players']} players"
+                         + (f"; oldest seasons of {len(step['folded_players'])} veterans merged ({step['fold_depth']}+ seasons back)"
+                            if step["folded_players"] else ""))
+            lines += [f"  {c['player']}: {c['field'].split('.')[1]} {c['season'] or 'pre-fold'}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "played_clubs":   # b778-pc2
+            lines.append(f"First-season clubs inferred from the disc roster: {len(step['changes'])} players"
+                         + (f"; oldest seasons of {len(step['folded_players'])} veterans merged" if step["folded_players"] else ""))
+            lines += [f"  {c['player']}: {c['season']} {c['after']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
@@ -74,7 +87,7 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks, coach appearances and hair styles. "
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles and award history. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)

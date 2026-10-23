@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Upgrade an older SOFTDRINK 2026 franchise, or sync coach art or hair styles from a disc.
+"""Upgrade an older SOFTDRINK 2026 franchise, or sync coach art, hair styles or award history from a disc
+(played-clubs is the opt-in guess for the first season's TEAM column).
 
 Inputs are read only. Output is a new signed save directory; --dry-run writes
 only the requested receipt. The receipt includes input/output SHA-256 hashes
