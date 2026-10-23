@@ -275,7 +275,7 @@
     "PA X Post Go Snag",
     "Y Slot Fade Seams",
     "Z Go Shot Deep Go",
-    "Z Dagger Whip",
+    "Z Slant Flat",
     "BAL Shallow Cross",
     "PA X Sail Return",
     "PA X Double Move",
@@ -385,7 +385,7 @@
    "menu": [
     "RB Seam Shot",
     "Y Y Trail Return",
-    "Z Bench Steep In"
+    "RB Double Slants"
    ],
    "cpu_situation": [
     4,
@@ -410,7 +410,7 @@
     "Y Seam Shot Curls",
     "RB Levels",
     "Y Sail Out and Up",
-    "PA Post Corner Shot"
+    "Y Y Trail"
    ],
    "cpu_situation": [
     0,
@@ -761,7 +761,7 @@
     "BAL Hank",
     "PA Post Wheel",
     "Slot Whip",
-    "RB Texas",
+    "Z Slant Flat",
     "Slot Mills Seams",
     "BAL Curl Flat",
     "PA Y Y Trail",
@@ -1575,28 +1575,27 @@
   {
    "play": "p022",
    "play_index": 75,
-   "name": "PA Post Corner Shot",
-   "concept": "PA Z Post Corner Shot Seams",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "12",
-   "home": "Singleback Ace",
+   "name": "Z Slant Flat",
+   "concept": "Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
    "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Go",
-    "Hitch",
-    "Post Corner",
-    "Stem Block"
+    "Arrow",
+    "Slant"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace"
-   ]
+    "Pistol Doubles",
+    "Pistol Wing"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p023",
@@ -1626,7 +1625,6 @@
     "Gun Trey Open",
     "Gun Y Off Trio Close",
     "Gun Tight Slots",
-    "Pistol Wing",
     "Gun Y Off Trips",
     "Pistol Trey"
    ]
@@ -1758,7 +1756,6 @@
    "formations": [
     "Gun Doubles",
     "Gun Bunch X Nasty",
-    "Pistol Doubles",
     "Gun Trey Open",
     "Gun Y Off Trio Close",
     "Gun Tight Slots",
@@ -3471,6 +3468,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Singleback Ace",
     "Pistol Deuce Close",
     "Gun Ace Wing"
    ]
@@ -4585,28 +4583,27 @@
   {
    "play": "p138",
    "play_index": 219,
-   "name": "Z Bench Steep In",
-   "concept": "Z Bench Steep In Whip",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Curl",
-    "Out",
-    "Steep In",
-    "Whip"
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p139",

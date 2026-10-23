@@ -1,0 +1,360 @@
+{
+ "schema": "softdrink_ol_grades/v1",
+ "source": "SOFTDRINK 2K28 v0.6.1 shipped roster (disc of 2026-10-20), read with mod_editor.core.nfl2k5_roster_records (b778 pb7)",
+ "method": "Per club: the two best tackles, two best guards and best centre by overall (long snappers listed at C never count); mean of their Pass Blocking and Run Blocking ratings.",
+ "weak_rule": "pass_block below 79.0 (pb/v2/hurry_b778.py WEAK_OL_PASS_BLOCK): the bottom 13 of 32, league median 80.4",
+ "teams": {
+  "ARI": {
+   "pass_block": 80.4,
+   "run_block": 77.4,
+   "starters": [
+    "C Hjalte Froholdt 86",
+    "G Isaac Seumalo 85",
+    "T Jedrick Wills 82",
+    "T Elijah Wilkinson 77",
+    "G Jon Gaines 72"
+   ]
+  },
+  "ATL": {
+   "pass_block": 85.4,
+   "run_block": 88.6,
+   "starters": [
+    "T Jake Matthews 92",
+    "G Chris Lindstrom 90",
+    "C Ryan Neuzil 84",
+    "G Matthew Bergeron 83",
+    "T Jawaan Taylor 78"
+   ]
+  },
+  "BAL": {
+   "pass_block": 84.6,
+   "run_block": 88.8,
+   "starters": [
+    "T Roger Rosengarten 90",
+    "C Cam Jurgens 88",
+    "T Ronnie Stanley 84",
+    "G Andrew Vorhees 82",
+    "G John Simpson 79"
+   ]
+  },
+  "BUF": {
+   "pass_block": 89.2,
+   "run_block": 90.8,
+   "starters": [
+    "T Dion Dawkins 95",
+    "C Connor McGovern 89",
+    "G O'Cyrus Torrence 92",
+    "T Spencer Brown 87",
+    "G Austin Corbett 83"
+   ]
+  },
+  "CAR": {
+   "pass_block": 80.8,
+   "run_block": 80.0,
+   "starters": [
+    "T Rasheed Walker 91",
+    "G Damien Lewis 82",
+    "T Stone Forsythe 80",
+    "G Torricelli Simpkins 79",
+    "C Luke Fortner 72"
+   ]
+  },
+  "CHI": {
+   "pass_block": 88.8,
+   "run_block": 88.6,
+   "starters": [
+    "T Darnell Wright 96",
+    "G Joe Thuney 93",
+    "C Garrett Bradbury 94",
+    "G Jonah Jackson 82",
+    "T Ozzy Trapilo 79"
+   ]
+  },
+  "CIN": {
+   "pass_block": 81.0,
+   "run_block": 86.8,
+   "starters": [
+    "T Amarius Mims 95",
+    "C Ted Karras 86",
+    "T Orlando Brown 82",
+    "G Dalton Risner 75",
+    "G Dylan Fairchild 67"
+   ]
+  },
+  "CLE": {
+   "pass_block": 76.6,
+   "run_block": 75.8,
+   "starters": [
+    "G Zion Johnson 82",
+    "T Tytus Howard 88",
+    "C Elgton Jenkins 73",
+    "G Teven Jenkins 69",
+    "T Spencer Fano 71"
+   ]
+  },
+  "DAL": {
+   "pass_block": 82.0,
+   "run_block": 82.6,
+   "starters": [
+    "T Terence Steele 96",
+    "T Broderick Jones 83",
+    "C Cooper Beebe 77",
+    "G Tyler Smith 79",
+    "G Tyler Booker 75"
+   ]
+  },
+  "DEN": {
+   "pass_block": 90.4,
+   "run_block": 87.6,
+   "starters": [
+    "T Garett Bolles 99",
+    "G Quinn Meinerz 94",
+    "T Mike McGlinchey 96",
+    "C Luke Wattenberg 85",
+    "G Ben Powers 78"
+   ]
+  },
+  "DET": {
+   "pass_block": 77.4,
+   "run_block": 79.0,
+   "starters": [
+    "T Penei Sewell 99",
+    "T Larry Borom 76",
+    "G Christian Mahogany 73",
+    "G Tate Ratledge 72",
+    "C Juice Scruggs 67"
+   ]
+  },
+  "GB": {
+   "pass_block": 78.2,
+   "run_block": 79.0,
+   "starters": [
+    "T Jordan Morgan 79",
+    "G Kevin Zeitler 79",
+    "G Laken Tomlinson 79",
+    "C Sean Rhyan 75",
+    "T Anthony Belton 79"
+   ]
+  },
+  "HOU": {
+   "pass_block": 79.2,
+   "run_block": 75.4,
+   "starters": [
+    "C Evan Brown 79",
+    "G Ed Ingram 86",
+    "T Aireontae Ersery 82",
+    "G Wyatt Teller 75",
+    "T Trent Brown 74"
+   ]
+  },
+  "IND": {
+   "pass_block": 83.4,
+   "run_block": 85.0,
+   "starters": [
+    "G Quenton Nelson 90",
+    "T Bernhard Raimann 88",
+    "C Tanor Bortolini 84",
+    "G Matt Goncalves 82",
+    "T Jalen Travis 73"
+   ]
+  },
+  "JAX": {
+   "pass_block": 81.6,
+   "run_block": 79.6,
+   "starters": [
+    "G Ezra Cleveland 91",
+    "C Robert Hainsey 77",
+    "T Walker Little 82",
+    "G Daniel Faalele 83",
+    "T Cole Van Lanen 75"
+   ]
+  },
+  "KC": {
+   "pass_block": 83.2,
+   "run_block": 83.0,
+   "starters": [
+    "C Creed Humphrey 98",
+    "G Trey Smith 88",
+    "G Kingsley Suamataia 78",
+    "T Jaylon Moore 79",
+    "T Josh Simmons 73"
+   ]
+  },
+  "LAC": {
+   "pass_block": 74.0,
+   "run_block": 74.4,
+   "starters": [
+    "T Joe Alt 95",
+    "G Cole Strange 76",
+    "T Branson Taylor 72",
+    "G Kayode Awosika 64",
+    "C Jacob Spomer 63"
+   ]
+  },
+  "LAR": {
+   "pass_block": 90.2,
+   "run_block": 92.8,
+   "starters": [
+    "C Coleman Shelton 97",
+    "T Alaric Jackson 98",
+    "G Steve Avila 86",
+    "G Kevin Dotson 87",
+    "T Warren McClendon 83"
+   ]
+  },
+  "LV": {
+   "pass_block": 78.6,
+   "run_block": 78.2,
+   "starters": [
+    "C Tyler Linderbaum 90",
+    "T DJ Glaze 86",
+    "T Kolton Miller 79",
+    "G Spencer Burford 71",
+    "G Jackson Powers-Johnson 67"
+   ]
+  },
+  "MIA": {
+   "pass_block": 78.6,
+   "run_block": 78.6,
+   "starters": [
+    "C Aaron Brewer 97",
+    "T Patrick Paul 80",
+    "G Jonah Savaiinaea 79",
+    "T Austin Jackson 73",
+    "G Jarrett Kingston 64"
+   ]
+  },
+  "MIN": {
+   "pass_block": 73.6,
+   "run_block": 78.4,
+   "starters": [
+    "T Brian O'Neill 83",
+    "G Will Fries 80",
+    "T Christian Darrisaw 72",
+    "C Blake Brandel 68",
+    "G Trevor Keegan 65"
+   ]
+  },
+  "NE": {
+   "pass_block": 76.2,
+   "run_block": 77.0,
+   "starters": [
+    "T Morgan Moses 86",
+    "G Matt Pryor 79",
+    "T Will Campbell 76",
+    "G Alijah Vera-Tucker 68",
+    "C Jared Wilson 72"
+   ]
+  },
+  "NO": {
+   "pass_block": 77.6,
+   "run_block": 79.2,
+   "starters": [
+    "G David Edwards 88",
+    "T Taliese Fuaga 83",
+    "G Cesar Ruiz 79",
+    "C Erik McCoy 70",
+    "T Mason Murphy 68"
+   ]
+  },
+  "NYG": {
+   "pass_block": 76.0,
+   "run_block": 78.4,
+   "starters": [
+    "T Jermaine Eluemunor 81",
+    "G Jon Runyan 82",
+    "T Andrew Thomas 83",
+    "C John Michael Schmitz 75",
+    "G Francis Mauigoa 59"
+   ]
+  },
+  "NYJ": {
+   "pass_block": 80.4,
+   "run_block": 82.6,
+   "starters": [
+    "C Josh Myers 81",
+    "T Olumuyiwa Fashanu 83",
+    "G Joe Tippmann 81",
+    "T Armand Membou 78",
+    "G Kohl Levao 79"
+   ]
+  },
+  "PHI": {
+   "pass_block": 80.2,
+   "run_block": 79.8,
+   "starters": [
+    "T Lane Johnson 95",
+    "T Jordan Mailata 95",
+    "G Tyler Steen 75",
+    "G Micah Morris 67",
+    "C Drew Kendall 69"
+   ]
+  },
+  "PIT": {
+   "pass_block": 85.0,
+   "run_block": 81.8,
+   "starters": [
+    "G Mason McCormick 94",
+    "T Troy Fautanu 93",
+    "C Zach Frazier 87",
+    "G Brock Hoffman 76",
+    "T Dylan Cook 75"
+   ]
+  },
+  "SEA": {
+   "pass_block": 78.8,
+   "run_block": 76.4,
+   "starters": [
+    "T Abraham Lucas 88",
+    "T Charles Cross 87",
+    "G Grey Zabel 78",
+    "C Jalen Sundell 74",
+    "G Beau Stephens 67"
+   ]
+  },
+  "SF": {
+   "pass_block": 87.0,
+   "run_block": 85.4,
+   "starters": [
+    "T Trent Williams 96",
+    "T Colton McKivitz 99",
+    "G Dominick Puni 90",
+    "C Jake Brendel 84",
+    "G Connor Colby 66"
+   ]
+  },
+  "TB": {
+   "pass_block": 81.0,
+   "run_block": 83.0,
+   "starters": [
+    "T Tristan Wirfs 96",
+    "C Graham Barton 80",
+    "T Luke Goedeke 79",
+    "G Cody Mauch 75",
+    "G Ben Bredeson 75"
+   ]
+  },
+  "TEN": {
+   "pass_block": 78.8,
+   "run_block": 77.2,
+   "starters": [
+    "T Dan Moore 89",
+    "G Peter Skoronski 85",
+    "G Garrett Dellinger 79",
+    "T JC Latham 77",
+    "C Austin Schlottmann 64"
+   ]
+  },
+  "WAS": {
+   "pass_block": 77.2,
+   "run_block": 81.0,
+   "starters": [
+    "G Sam Cosmi 76",
+    "G Chris Paul 81",
+    "T Josh Conerly 77",
+    "T Andrew Wylie 81",
+    "C Nick Allegretti 71"
+   ]
+  }
+ }
+}

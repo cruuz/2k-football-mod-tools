@@ -390,7 +390,7 @@
    "tag": "empty",
    "menu": [
     "Bubble Screen",
-    "Y Deep Over",
+    "Double Slants",
     "RB Choice Out",
     "RB Sail",
     "Steep In Seam",
@@ -1683,28 +1683,27 @@
   {
    "play": "p023",
    "play_index": 81,
-   "name": "Y Deep Over",
-   "concept": "Y Deep Over Out Slant Flat",
-   "family": "deep",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Y",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Out",
-    "Over",
-    "Post",
+    "Hitch",
     "Slant"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p024",

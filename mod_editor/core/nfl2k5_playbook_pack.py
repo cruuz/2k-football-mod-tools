@@ -503,6 +503,10 @@ class PlaybookPack:
     plays: tuple[PackPlay, ...]
     schema: str = SCHEMA
     menus: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    #: b778 pb7: the five offensive No Huddle plays, as (formation id, play id) in the book header's
+    #: table order (PLAY body 0x4C, five (formation, menu link) byte pairs; the native No Huddle panel's
+    #: buttons). Empty keeps the old behaviour (retail formation indices, links 0, 1, 2, 2, 2).
+    no_huddle: tuple[tuple[str, str], ...] = ()
 
     def to_json(self) -> dict[str, Any]:
         document = {
@@ -515,6 +519,8 @@ class PlaybookPack:
         }
         if self.schema == OFFENSE_SCHEMA:
             document["menus"] = {key: list(plays) for key, plays in self.menus}
+            if self.no_huddle:
+                document["no_huddle"] = [[fid, pid] for fid, pid in self.no_huddle]
         return document
 
     def dumps(self) -> str:
@@ -699,7 +705,7 @@ def book_fingerprint(resource_or_body: bytes) -> str:
 def pack_from_json(document: object) -> PlaybookPack:
     if not isinstance(document, Mapping):
         raise PlaybookPackError("A playbook pack must be a JSON object.")
-    extra = set(document) - {"schema", "book", "base", "budget", "formations", "plays", "menus"}
+    extra = set(document) - {"schema", "book", "base", "budget", "formations", "plays", "menus", "no_huddle"}
     if extra:
         raise PlaybookPackError(f"The pack has unsupported top-level fields {sorted(extra)}.")
     schema = document.get("schema")
@@ -756,6 +762,12 @@ def pack_from_json(document: object) -> PlaybookPack:
         raise PlaybookPackError("Complete offense menus require schema v4")
     if any(not isinstance(v, list) or any(not isinstance(p, str) for p in v) for v in menus.values()):
         raise PlaybookPackError("Every offense menu must be a list of play IDs")
+    no_huddle = document.get("no_huddle", [])
+    if no_huddle and schema != OFFENSE_SCHEMA:
+        raise PlaybookPackError("No Huddle plays require schema v4")
+    if not isinstance(no_huddle, list) or any(
+            not isinstance(e, list) or len(e) != 2 or any(not isinstance(v, str) for v in e) for e in no_huddle):
+        raise PlaybookPackError("“no_huddle” must be a list of [formation id, play id] pairs")
     result = PlaybookPack(
         pack_book,
         PackBase.from_json(document.get("base")),
@@ -763,6 +775,7 @@ def pack_from_json(document: object) -> PlaybookPack:
         plays,
         schema,
         tuple((str(k), tuple(v)) for k, v in menus.items()),
+        tuple((e[0], e[1]) for e in no_huddle),
     )
     if schema == OFFENSE_SCHEMA:
         from .nfl2k5_complete_offense import validate_structure

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Aden Durde (Macdonald / Quinn multiple); 2025 baseline SEA. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "4c05e5de07137667874e69b6e9e634fa623c13d1384ed54fba5fe143c3a64275",
+  "book_fingerprint": "b73b17d3cbb13292cd2bbf42dcc0bc2872e7de6701184dca3294f2c87fc5ba40",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2309
+  "donor_node_count": 2313
  },
  "budget": {
   "formations": 50,

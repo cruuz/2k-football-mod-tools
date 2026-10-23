@@ -104,7 +104,7 @@
     "Slot Curl Combo",
     "QB Keep",
     "End Around",
-    "Z Sluggo Seam",
+    "RB Spacing",
     "Bubble Screen"
    ],
    "cpu_situation": [
@@ -679,7 +679,7 @@
    "tag": "base",
    "menu": [
     "PA Y Smash",
-    "Z Out Seam",
+    "PA X Double Move",
     "FB Dagger Whip"
    ],
    "cpu_situation": [
@@ -3381,7 +3381,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Gun Bunch X Nasty",
     "Gun Y Off Trips"
    ]
@@ -3583,7 +3582,8 @@
    "lane": null,
    "formations": [
     "Wing T",
-    "I-Form Y Off Close"
+    "I-Form Y Off Close",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -4016,28 +4016,27 @@
   {
    "play": "p119",
    "play_index": 216,
-   "name": "Z Out Seam",
-   "concept": "Z Out Seam Seam Out Post Dig",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "RB Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "21",
-   "home": "Singleback FB Wing",
-   "primary": "Z",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Back In",
-    "Dig",
-    "Out",
-    "Post",
-    "Seam Out"
+    "Flat",
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback FB Wing"
-   ]
+    "Empty Trey"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p120",

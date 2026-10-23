@@ -480,7 +480,7 @@
     "RB Slip Screen",
     "U Comeback Seam",
     "Inside Trap",
-    "U Dagger",
+    "Y Pivot",
     "PA U Out Seam",
     "Y Bubble Screen"
    ],
@@ -4019,27 +4019,29 @@
   {
    "play": "p120",
    "play_index": 172,
-   "name": "U Dagger",
-   "concept": "U Dagger Seam Out Slant Flat",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "12",
    "home": "Gun Wing Slot Offset",
-   "primary": "U",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Dig",
-    "Seam Out",
-    "Slant"
+    "Go",
+    "Hitch",
+    "Slant",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Wing Slot Offset"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p121",

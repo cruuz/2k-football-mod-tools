@@ -271,7 +271,7 @@
     "PA Boot Y Smash",
     "Y Smash Levels",
     "Post Corner Shot",
-    "RB Texas",
+    "PHI Quick Outs",
     "RB Toss",
     "Y Whip",
     "PA X Bench",
@@ -389,7 +389,7 @@
     "Y Stick Out",
     "RB Post Wheel",
     "Bubble Screen",
-    "Z Dagger",
+    "Spacing",
     "Y Drive Out",
     "X Slip Screen"
    ],
@@ -416,7 +416,7 @@
     "RB Slip Screen Wk",
     "RB Stick",
     "X Bench Snag",
-    "PA Steep In Seam"
+    "X Bench Steep In"
    ],
    "cpu_situation": [
     2,
@@ -629,7 +629,7 @@
     "Z Spot Deep Fade",
     "PA X Deep Post",
     "PA Z Zig Flat Out",
-    "RB Texas",
+    "Slot Hitch Seam",
     "Smash Post",
     "Y Whip Out",
     "Y Deep Flood"
@@ -1538,11 +1538,9 @@
    "lane": null,
    "formations": [
     "Gun Bunch X Nasty",
-    "Pistol Doubles",
     "Gun Y Off Trio Close",
     "Gun Tight Y Off",
     "Pistol Bunch",
-    "Pistol Bunch TE",
     "Gun Spread Y-Slot",
     "Gun Y Off Trips",
     "Gun Tight Slots"
@@ -2376,6 +2374,7 @@
    "formations": [
     "Singleback Doubles",
     "Gun Tight Y Off",
+    "Pistol Bunch TE",
     "Gun Spread Y-Slot",
     "Gun Y Off Trips",
     "Gun Tight Slots"
@@ -4143,27 +4142,27 @@
   {
    "play": "p121",
    "play_index": 178,
-   "name": "Z Dagger",
-   "concept": "Z Dagger Angle Cross Slants",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle Cross",
-    "Dig",
     "Flat",
-    "Slant"
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p122",
@@ -4415,6 +4414,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Singleback Ace",
     "Gun Y Trips"
    ]
   },
@@ -4672,27 +4672,26 @@
   {
    "play": "p144",
    "play_index": 227,
-   "name": "PA Steep In Seam",
-   "concept": "PA U Steep In Seam Whip Slants",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "12",
-   "home": "Singleback Ace",
-   "primary": "U",
+   "name": "PHI Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Slant",
-    "Steep In",
-    "Stem Block",
-    "Whip"
+    "Out",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace"
-   ]
+    "Pistol Doubles"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p145",

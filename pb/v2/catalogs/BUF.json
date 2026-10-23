@@ -924,7 +924,7 @@
     "Slot Stick",
     "RB Toss",
     "X Comeback Seam",
-    "Max Slot Switch",
+    "Double Slants",
     "X Hitch Seam"
    ],
    "cpu_situation": [
@@ -993,7 +993,7 @@
     "PA Post Corner Shot",
     "X Steep In Seam",
     "X Snag Slant",
-    "Z Steep In Seam"
+    "PA Y Seam Shot"
    ],
    "cpu_situation": [
     4,
@@ -1481,7 +1481,8 @@
    "lane": null,
    "formations": [
     "Wing T",
-    "I-Form Y Off Close"
+    "I-Form Y Off Close",
+    "Strong I"
    ]
   },
   {
@@ -3729,8 +3730,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Spread",
-    "Gun Trips Open"
+    "Gun Spread"
    ]
   },
   {
@@ -4660,27 +4660,27 @@
   {
    "play": "p140",
    "play_index": 229,
-   "name": "Z Steep In Seam",
-   "concept": "Z Steep In Seam Spot Out Crossing Dig",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "Double Slants",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "21",
-   "home": "Strong I",
-   "primary": "Z",
+   "personnel": "10",
+   "home": "Gun Trips Open",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Crossing Dig",
-    "Spot Out",
-    "Steep In"
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Strong I"
-   ]
+    "Gun Trips Open"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p141",

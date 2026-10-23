@@ -202,7 +202,7 @@
     "Slot Stick Nod",
     "RB Flood",
     "RB Dive Wk",
-    "Slot Zig Flat Out",
+    "Slot Hitch Seam",
     "Y Stick",
     "CHI Bench"
    ],
@@ -756,7 +756,7 @@
     "Z Steep In Seam",
     "Y Sail",
     "X Spot Out",
-    "Y Sail Out and Up",
+    "Y Spacing",
     "Y Stick Out",
     "PA Z Deep Post",
     "Z Double Move"
@@ -831,7 +831,7 @@
     "Zone Toss",
     "PA Post Corner Shot",
     "Z Steep In Seam",
-    "Y Sail",
+    "Y Spacing",
     "X Spot Out",
     "Z Double Move"
    ],
@@ -1002,7 +1002,7 @@
     "01 Trap Wk",
     "Z Hitch Seam",
     "PA Y Sail",
-    "PA Z Double Move",
+    "PA Y Seam Shot",
     "Z Double Move",
     "Y Sail",
     "Z Steep In Seam",
@@ -1483,7 +1483,8 @@
    "lane": null,
    "formations": [
     "Wing T",
-    "I-Form Close"
+    "I-Form Close",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -1881,7 +1882,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles Y Off",
     "Gun Trips",
@@ -2390,7 +2390,6 @@
    "formations": [
     "I-Form Pro",
     "Wing T",
-    "Gun Split Pro",
     "Gun Split Y Off",
     "I-Form Close"
    ]
@@ -2419,7 +2418,6 @@
    "formations": [
     "Wing T",
     "Gun Split Pro",
-    "Gun Split Y Off",
     "I-Form Close",
     "Singleback FB Wing"
    ]
@@ -2537,6 +2535,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Trips",
     "Gun Trey",
     "Gun Doubles Clamp Stack",
@@ -4794,28 +4793,28 @@
   {
    "play": "p145",
    "play_index": 224,
-   "name": "PA Z Double Move",
-   "concept": "PA Z Double Move Whip Curls",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
+   "name": "Y Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
    "personnel": "21",
-   "home": "Singleback FB Wing",
-   "primary": "Z",
+   "home": "Gun Split Pro",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Back Wheel",
-    "Curl",
-    "Out",
-    "Out and Up",
-    "Whip"
+    "Arrow",
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback FB Wing"
-   ]
+    "Gun Split Pro",
+    "Gun Split Y Off"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p146",

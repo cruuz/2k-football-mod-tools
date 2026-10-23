@@ -101,7 +101,7 @@
    "tag": "empty",
    "menu": [
     "RB Choice Out",
-    "Z Deep Post",
+    "Z Snag",
     "QB Keep",
     "End Around",
     "Slot Stick Out",
@@ -194,8 +194,8 @@
     "PA Slot Y Trail",
     "RB Draw",
     "X Deep Post",
-    "Slot Y Trail",
-    "Z Cross Dig",
+    "Y Double Slants",
+    "Y Seam Shot Slants",
     "Slot Bubble Screen",
     "Slot China",
     "IND Shallow Cross"
@@ -435,7 +435,7 @@
     "Slot Cross Dig",
     "Slot Y Trail",
     "Slot Sail",
-    "Z Dagger Whip",
+    "IND Spacing",
     "Z Cluster Wheel",
     "X Sail Skinny Post",
     "RB Switch Hitches"
@@ -882,7 +882,7 @@
     "Slot Sail Return",
     "RB Whip Return",
     "Z Dagger Whip",
-    "X Dagger Whip",
+    "IND Spacing",
     "X Sail Skinny Post"
    ],
    "cpu_situation": [
@@ -1527,6 +1527,7 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Gun Trips TE",
     "Pistol Doubles",
     "Pistol Wing",
     "Gun Y Off Trio Close",
@@ -1586,10 +1587,10 @@
   {
    "play": "p022",
    "play_index": 74,
-   "name": "Z Deep Post",
-   "concept": "Z Deep Post Angle Cross Outs",
-   "family": "deep",
-   "header": "dropback",
+   "name": "Z Snag",
+   "concept": "Snag",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Empty Trey",
@@ -1597,17 +1598,18 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Angle Cross",
-    "Flat",
-    "Out",
-    "Post",
-    "Stick"
+    "Arrow",
+    "Flag",
+    "Hitch",
+    "Slant",
+    "Snag"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey"
-   ]
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p023",
@@ -1666,7 +1668,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Pistol Wing",
@@ -1916,6 +1917,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Pistol Doubles",
     "Pistol Wing",
     "Gun Y Off Trio Close",
@@ -3172,7 +3174,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Spread",
     "Pistol Spread",
     "Gun Trips Open"
    ]
@@ -3281,8 +3282,7 @@
    "lane": null,
    "formations": [
     "Gun Spread",
-    "Pistol Spread",
-    "Gun Trips Open"
+    "Pistol Spread"
    ]
   },
   {
@@ -4805,28 +4805,28 @@
   {
    "play": "p147",
    "play_index": 224,
-   "name": "Z Cross Dig",
-   "concept": "Z Cross Dig Out and Up Hitch and Go",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "IND Spacing",
+   "concept": "Spacing",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trips TE",
-   "primary": "Z",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
-    "Back Cross",
-    "Crossing Dig",
-    "Flat",
-    "Hitch and Go",
-    "Out and Up"
+    "Arrow",
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE"
-   ]
+    "Gun Spread",
+    "Gun Trips Open"
+   ],
+   "added_by": "b778 pb7"
   },
   {
    "play": "p148",

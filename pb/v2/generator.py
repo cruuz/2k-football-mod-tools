@@ -1580,6 +1580,9 @@ def semantic_digest(pack) -> str:
              [(by_play[p].concept, by_play[p].play_flags, by_play[p].assignments) for p in menu])
             for f, menu in pack.menus]
     rows.append([(p.custom_name, p.assignments) for p in pack.plays if p.play_type == "special"])
+    if getattr(pack, "no_huddle", ()):
+        # b778 pb7: the five No Huddle plays (packs without them keep their old digest)
+        rows.append([list(e) for e in pack.no_huddle])
     return hashlib.sha256(json.dumps(rows, sort_keys=True, default=list).encode()).hexdigest()
 
 
@@ -1603,6 +1606,13 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
                 catalog["cpu_fit"] = fit
                 for row, f in zip(catalog["formations"], pack.formations):
                     row["cpu_situation"] = list(f.situation) if f.situation else None
+            # b778 pb7: quick game on every normal-down menu (more for weak lines) and the five No Huddle plays
+            # (pb/v2/hurry_b778.py, the same pass the shipped packs took)
+            from pb.v2 import hurry_b778 as hurry
+            doc = json.loads(pack.dumps())
+            catalog["hurry_b778"] = hurry.fix_doc(doc, catalog, checker=sanity.native_route_checker(xbe) if xbe else None)
+            doc.pop("_pool_credit", None)
+            pack = packs.loads_pack(json.dumps(doc))
             check = packs.check_pack(pack)
             if not check.ok:
                 raise SystemExit(f"{team}: {check.text()}")

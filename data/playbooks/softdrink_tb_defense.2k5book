@@ -9,10 +9,10 @@
   "notes": "DESIGN: Todd Bowles (Bowles / Arians pressure); 2025 baseline TB. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "0121e6c0b4c131d889bb50ce23b9906a184d004e192d83545b4f74918dfdf4d6",
+  "book_fingerprint": "e1cb79a73700677ad5ec9034f5f0f8ca6347a80b80fec13c74c7cb6b855e0761",
   "donor_formation_count": 49,
   "donor_play_count": 262,
-  "donor_node_count": 2236
+  "donor_node_count": 2239
  },
  "budget": {
   "formations": 50,
