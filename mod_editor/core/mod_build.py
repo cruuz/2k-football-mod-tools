@@ -583,6 +583,11 @@ class BuildPlan:
     # record. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
     # Experimental).
     sim_cb_tackles: bool = False
+    # b778-sd4: modern clock digits: the stadium loader's generated 6x7 bulb font for the play clock, game clock and
+    # scores is rewritten in place as a solid warm-white LED matrix. A late executable owner (nfl2k5_clock_led) hooks
+    # the end of the clock-font lookup loop at 0x9999A. Every stadium and weather variant uses the same atlas.
+    # EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    modern_clock_led: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -863,6 +868,13 @@ for _preset in PRESETS.values():
     _preset["sim_cb_tackles"] = False
 PRESETS["softdrink_advanced"]["sim_cb_tackles"] = True
 PRESETS["softdrink_experimental"]["sim_cb_tackles"] = True
+del _preset
+# b778-sd4: modern LED clock digits are a presentation fix like the modern goalposts and the 2026 boards, so on in the
+# Advanced and Experimental presets; Basic keeps the retail bulbs.
+for _preset in PRESETS.values():
+    _preset["modern_clock_led"] = False
+PRESETS["softdrink_advanced"]["modern_clock_led"] = True
+PRESETS["softdrink_experimental"]["modern_clock_led"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -1180,6 +1192,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
     ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress),  # b778-pg2
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
+    ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1622,6 +1635,36 @@ def _apply_sim_cb_tackles(plan: "BuildPlan", target: Path, receipt: dict, progre
         raise RuntimeError("Cornerback tackle credit: the output does not read back as applied")
     receipt["steps"].append({"step": "sim_cb_tackles", **{k: v for k, v in cb_receipt.items() if k != "reservations"}})
     receipt["result"]["sim_cb_tackles"] = "applied"
+def _clock_led_preflight(source: Path, progress) -> None:
+    """b778-sd4: refuse a source whose stadium-loader clock-font loop is foreign, before any write."""
+    module = _core_module("nfl2k5_clock_led")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Modern clock digits are not available in this installation.")
+    progress("Checking the clock-font loader for modern clock digits", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Modern clock digits cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The clock-font loader in this source is not retail or Modern clock digits. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _apply_clock_led(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-sd4: the modern LED clock digits owner, after modern sideline catches in the late-owner order."""
+    if not plan.modern_clock_led:
+        return
+    module = _core_module("nfl2k5_clock_led")
+    if module is None:
+        raise RuntimeError("Modern clock digits need nfl2k5_clock_led.")
+    progress("Presentation: modern LED clock digits", 0, 0)
+    payload, led_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Modern clock digits: the output does not read back as applied")
+    receipt["steps"].append({"step": "modern_clock_led", **{k: v for k, v in led_receipt.items() if k != "reservations"}})
+    receipt["result"]["modern_clock_led"] = "applied"
 
 
 def _hair_styles_available() -> bool:  # b775-hs1
@@ -1748,6 +1791,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
                                ("contract_college_guard", "nfl2k5_contract_college_guard"),  # b778-cr1
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
+                               ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1989,6 +2033,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
+    clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
+    out["modern_clock_led"] = clock_led.status(_xbe_bytes(source)) if clock_led is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3665,6 +3711,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
+    if type(plan.modern_clock_led) is not bool:  # b778-sd4
+        raise ValueError("Modern clock digits must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -4418,6 +4466,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _weekly_progression_preflight(source, progress)
     if plan.player_progress:  # b778-pg2: like qb3, before any write
         _player_progress_preflight(source, progress)
+    if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
+        _clock_led_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5998,6 +6048,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_contract_college_guard(plan, target, receipt, progress)  # b778-cr1: after the other late owners
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
+    # b778-sd4: the LED clock, after the cornerback tackle owner (LATE_OWNERS order)
+    _apply_clock_led(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
     # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
     _apply_inbox_standings(plan, target, receipt, progress)
@@ -6005,6 +6057,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_module_loader(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
+    # b778-sd4: modern clock digits, after modern sideline catches
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -6075,6 +6128,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
+    if plan.modern_clock_led and _core_module("nfl2k5_clock_led").status(_xbe_bytes(target)) != "applied":  # b778-sd4
+        raise ValueError("modern clock digits did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

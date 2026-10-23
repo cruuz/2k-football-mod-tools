@@ -575,6 +575,7 @@ mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_player_progress_screen.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
+mod_editor/core/nfl2k5_clock_led.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
@@ -3729,5 +3730,6 @@ tests/mod_editor/test_nfl2k5_weekly_progression.py
 tests/mod_editor/test_nfl2k5_player_progress_screen.py
 tests/mod_editor/test_nfl2k5_contract_college_guard.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
+tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py

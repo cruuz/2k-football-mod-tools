@@ -157,6 +157,7 @@ from . import nfl2k5_star_career as star_career_patch  # noqa: F401  b778-st2: l
 from . import nfl2k5_draft_clock as draft_clock_patch  # noqa: F401  b778-dr1: late owner (franchise draft clock); imported so the cave manifest recorder observes it
 from . import nfl2k5_player_progress_screen as player_progress_patch  # noqa: F401  b778-pg2: late owner; imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_cb_tackles as sim_cb_tackles_patch  # noqa: F401  b778-cb1: late owner (cornerback tackle credit); imported so the cave manifest recorder observes it
+from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
 from . import nfl2k5_resource_load_guard as resource_load_guard_patch  # b76-dn

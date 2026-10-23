@@ -254,6 +254,7 @@ from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # 
 from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
+from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -279,7 +280,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT),  # b778-pg1
                  ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
-                 ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT))  # b778-cb1
+                 ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
+                 ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
