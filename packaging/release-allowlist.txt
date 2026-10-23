@@ -2001,6 +2001,7 @@ data/nfl2k5_rookie_faces/faces_07_pal.png
 data/nfl2k5_rookie_faces/faces_08.png
 data/nfl2k5_rookie_faces/faces_08_pal.png
 mod_editor/core/nfl2k5_star_retention.py
+mod_editor/core/nfl2k5_practice_injuries.py
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
@@ -3659,6 +3660,7 @@ tools/b77/rh1_names.py
 tools/b77/rh1_bank.py
 tools/b77/rh2_names.py
 tests/mod_editor/test_nfl2k5_star_retention.py
+tests/mod_editor/test_nfl2k5_practice_injuries.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md

@@ -720,6 +720,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_qb_accuracy",  # b777-qb3/qb4 (int7: after run blocking)
                "nfl2k5_formation_art_spacing",  # b777-tp1: after QB accuracy
                "nfl2k5_force_out",  # b778-fo1: after the formation art spacing
+               "nfl2k5_practice_injuries",  # b778-pi1: after force-out
                "nfl2k5_star_retention",  # b778-fa1: after modern sideline catches
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
