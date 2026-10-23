@@ -1016,6 +1016,10 @@ class BuildPanel(QWidget):
             f, "rb_rename", tt.rb_rename_patch.BUILD_CAPTION,
             "Halfback and HB read Running Back and RB on every screen (text only).",
             badge=NOT_TESTED, details=tt.rb_rename_patch.HELP_TEXT)
+        self.trophy_room_check = self._option(  # b778-pg2
+            f, "trophy_room", tt.trophy_room_patch.BUILD_CAPTION,
+            "The Crib and its menu entry points read Trophy Room (text only).",
+            badge=NOT_TESTED, details=tt.trophy_room_patch.HELP_TEXT)
         self.name_keyboard_check = self._option(  # b77-k1
             f, "name_keyboard", tt.name_keyboard_patch.UI_LABEL,
             "Create Player and Edit Player keyboards take space, period, apostrophe and hyphen.",
@@ -2353,6 +2357,7 @@ class BuildPanel(QWidget):
         gate(self.resource_load_guard_check, "resource_load_guard")
         gate(self.loader_wakeup_fix_check, "loader_wakeup_fix")
         gate(self.rb_rename_check, "rb_rename")
+        gate(self.trophy_room_check, "trophy_room")
         gate(self.name_keyboard_check, "name_keyboard")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
@@ -2595,6 +2600,7 @@ class BuildPanel(QWidget):
             "resource_load_guard": self.resource_load_guard_check,
             "loader_wakeup_fix": self.loader_wakeup_fix_check,
             "rb_rename": self.rb_rename_check,
+            "trophy_room": self.trophy_room_check,
             "name_keyboard": self.name_keyboard_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
             "kick_laces": self.kick_laces_check, "punter_holder": self.punter_holder_check,
@@ -2734,6 +2740,7 @@ class BuildPanel(QWidget):
             resource_load_guard=self.resource_load_guard_check.isChecked(),
             loader_wakeup_fix=self.loader_wakeup_fix_check.isChecked(),
             rb_rename=self.rb_rename_check.isChecked(),
+            trophy_room=self.trophy_room_check.isChecked(),
             name_keyboard=self.name_keyboard_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
