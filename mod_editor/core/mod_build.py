@@ -767,7 +767,6 @@ PRESETS["softdrink_experimental"]["star_retention"] = True
 for _preset in PRESETS.values():
     _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))
 del _preset
-del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
     _preset["alien_prospect"] = False
