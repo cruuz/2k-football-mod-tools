@@ -509,6 +509,12 @@ class BuildPlan:
     crib_trophy_room: bool = False
     # b778-pc3: retail inbox story 23 omits its single-row standings setup.
     inbox_standings: bool = False
+    # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
+    # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
+    # skin, generic head and Dreads bit follow the face. New Portrai2.iff / portrai2.cdf outers (every existing portrait
+    # plus the bank) and the class generator's skin/portrait code rewritten in place (nfl2k5_rookie_faces). Images
+    # only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+    rookie_faces: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -724,6 +730,11 @@ del _preset, _name
 for _name, _preset in PRESETS.items():
     _preset["inbox_standings"] = _name.startswith("softdrink_")
 del _name, _preset
+# b778-rh1: rookie faces are experimental: on only in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+for _preset in PRESETS.values():
+    _preset["rookie_faces"] = False
+PRESETS["softdrink_experimental"]["rookie_faces"] = True
+del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
 for _preset in PRESETS.values():
@@ -982,6 +993,23 @@ def _force_out_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _rookie_faces_preflight(source: Path, is_image: bool, progress) -> None:
+    """b778-rh1: rookie faces need a disc image, the bank data and the retail class-generator bytes."""
+    if not is_image:
+        raise ValueError("Rookie faces adds portrait files to the disc archive: build from a disc image (.iso).")
+    if not _rookie_faces_available():
+        raise ValueError("Rookie faces is not available in this installation (its face bank is missing).")
+    module = _core_module("nfl2k5_rookie_faces")
+    progress("Checking the draft class generator for rookie faces", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Rookie faces cannot read default.xbe: {exc}") from exc
+    if module.xbe_status(payload) != "retail":
+        raise ValueError("The draft class generator in this source is not retail (an earlier build added rookie faces "
+                         "or something else changed it)." + _REBUILD_HINT)
+
+
 # fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
 _LATE_OWNER_OPTIONS = (
     ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
@@ -1164,6 +1192,12 @@ def _hair_styles_available() -> bool:  # b775-hs1
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
 
 
+def _rookie_faces_available() -> bool:  # b778-rh1
+    module = _core_module("nfl2k5_rookie_faces")
+    return (module is not None and module.BANK_JSON.is_file() and module.NAMES_JSON.is_file()
+            and _core_module("nfl2k5_historic_styles") is not None)
+
+
 def _modern_coaches_available() -> bool:  # b77-co1
     module = _core_module("nfl2k5_modern_coaches")
     return module is not None and module.available()  # the pins and the shipped art must agree
@@ -1223,6 +1257,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
+        "rookie_faces": _rookie_faces_available(),  # b778-rh1
         "hair_styles": _hair_styles_available(),  # b775-hs1
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1473,6 +1508,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     inbox = _core_module("nfl2k5_inbox_standings")
     out["inbox_standings"] = inbox.status(_xbe_bytes(source)) if inbox is not None else "unavailable"
+    rookie_faces = _core_module("nfl2k5_rookie_faces")  # b778-rh1
+    out["rookie_faces"] = rookie_faces.xbe_status(_xbe_bytes(source)) if rookie_faces is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3101,6 +3138,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("On-demand Career Home needs MyCareer with Career Home (and no jukebox music library).")
     if type(plan.inbox_standings) is not bool:
         raise ValueError("Inbox standings must be Off or On.")
+    if type(plan.rookie_faces) is not bool:  # b778-rh1
+        raise ValueError("Rookie faces must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3823,6 +3862,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         inbox = _core_module("nfl2k5_inbox_standings")
         if inbox is None or inbox.status(_xbe_bytes(source)) == "foreign":
             raise ValueError("Inbox standings needs a supported last-undefeated story and its retail callbacks.")
+    if plan.rookie_faces:  # b778-rh1: before any write
+        _rookie_faces_preflight(source, is_image, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5204,6 +5245,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         icons = _core_module("nfl2k5_menu_icon_orientation")
         icon_receipt = icons.apply_to_image(target)
         receipt["steps"].append({"step": "menu_icon_orientation", **icon_receipt})
+    if plan.rookie_faces and is_image:
+        # b778-rh1: after every portrait and roster writer above (project art, coaches, moment scans, classic teams,
+        # the final commentary pass): the new aggregate copies every portrait as it now stands, and the bank ids are
+        # checked against every roster on the copy.
+        faces = _core_module("nfl2k5_rookie_faces")
+        progress("Rookie faces: new draft headshots", 0, 0)
+        faces_receipt = faces.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
+                                             progress=lambda message: progress(message, 0, 0))
+        receipt["steps"].append({"step": "rookie_faces", **faces_receipt})
+        receipt["result"]["rookie_faces"] = faces_receipt["state"]
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
@@ -5383,6 +5434,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the on-demand Career Home gate did not survive the final passes")
     if plan.inbox_standings and _core_module("nfl2k5_inbox_standings").status(_xbe_bytes(target)) != "applied":
         raise ValueError("inbox standings did not survive the final passes")
+    if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
+            target, _xbe_bytes) != "applied":  # b778-rh1
+        raise ValueError("rookie faces did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

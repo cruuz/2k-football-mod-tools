@@ -1964,6 +1964,26 @@ mod_editor/core/nfl2k5_force_out.py
 mod_editor/core/nfl2k5_module_loader.py
 mod_editor/core/nfl2k5_crib_trophy_room.py
 docs/mod_editor/overlay_modules.md
+# b778-rh1: rookie faces (new draft headshots by skin tone, build and name; in-place generator rewrite)
+mod_editor/core/nfl2k5_rookie_faces.py
+data/nfl2k5_rookie_faces/name_odds.json
+data/nfl2k5_rookie_faces/bank.json
+data/nfl2k5_rookie_faces/faces_00.png
+data/nfl2k5_rookie_faces/faces_00_pal.png
+data/nfl2k5_rookie_faces/faces_01.png
+data/nfl2k5_rookie_faces/faces_01_pal.png
+data/nfl2k5_rookie_faces/faces_02.png
+data/nfl2k5_rookie_faces/faces_02_pal.png
+data/nfl2k5_rookie_faces/faces_03.png
+data/nfl2k5_rookie_faces/faces_03_pal.png
+data/nfl2k5_rookie_faces/faces_04.png
+data/nfl2k5_rookie_faces/faces_04_pal.png
+data/nfl2k5_rookie_faces/faces_05.png
+data/nfl2k5_rookie_faces/faces_05_pal.png
+tests/mod_editor/test_b778_rh1_rookie_faces.py
+tools/b77/rh1_names.py
+tools/b77/rh1_bank.py
+tools/b77/rh1_rookie_faces.S
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
