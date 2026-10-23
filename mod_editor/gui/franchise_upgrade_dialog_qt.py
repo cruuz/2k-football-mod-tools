@@ -66,6 +66,14 @@ def preview_text(plan):
             lines += [f"  {c['player']}: {c['season']} {c['after']}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "free_agents":   # b778-fa3
+            lines.append(f"New free agents from the disc: {len(step['changes'])}"
+                         f" ({step['vacant_records_after']} empty player records left for Create Player)")
+            lines += [f"  {c['player']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+            if step["no_room"]:
+                lines.append(f"  No room for {len(step['no_room'])} more: the save has no empty player records left.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
@@ -91,6 +99,7 @@ class FranchiseUpgradeDialog(QDialog):
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
                       "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles and award history. "
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles and the free-agent pool. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)
