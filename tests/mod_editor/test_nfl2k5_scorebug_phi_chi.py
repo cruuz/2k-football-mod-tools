@@ -42,7 +42,7 @@ class DataTests(unittest.TestCase):
   self.assertEqual((f['size'],f['anchor']), (24,[959,955]))
   self.assertEqual([v*factor for v in e['size']],[100,24])
   self.assertEqual(f['anchor'][1]-e['raise']*factor,956)
-  self.assertEqual(sprite.probe_sizes(),(34,327904,327680))
+  self.assertEqual(sprite.probe_sizes(),(34,327264,327680))
 
 NATIVE=(ROOT/'extracted/ESPN NFL 2K5 (USA)/default.xbe').is_file() and importlib.util.find_spec('unicorn') is not None
 @unittest.skipUnless(NATIVE,'pinned retail game and Unicorn needed')

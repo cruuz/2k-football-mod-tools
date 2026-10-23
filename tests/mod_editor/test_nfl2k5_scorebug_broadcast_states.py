@@ -81,7 +81,7 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(sum(used[k] for k in sprite.ATLAS_MATERIALS), 44)
         for k, n in used.items():
             self.assertLessEqual(n, capacity[k], k)
-        self.assertEqual(sprite.probe_sizes(), (34, 327904, 327680))    # +128 B (sb), +384 B the OT tokens (sbfix): same HUD sectors
+        self.assertEqual(sprite.probe_sizes(), (34, 327264, 327680))    # sb4 drops 20 unreachable small-set tokens (-640 B)
         code, _ = owner.code_for(CODE_VA, DATA_VA)
         self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5376, 14))
         self.assertLess(len(code.rstrip(b'\xcc')), owner.CODE_SIZE - 8)
@@ -101,10 +101,15 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual((fields['timeout_tab']['anchor'], fields['timeout_tab']['alt_anchor'], fields['timeout_tab']['size']),
                          ([630.0, 900], [1291.0, 900], 42))
         self.assertTrue(fields['clock']['strip_minute'])
-        self.assertEqual(fields['clock']['box'], [906, 1006, 1014, 1033])
+        # b778 sb4: the clock field is 27 px and the pill is one 243 px capsule.
+        self.assertEqual(fields['clock']['box'], [906, 1006, 1014, 1034])
+        self.assertEqual(fields['clock']['size'], 27)
+        self.assertEqual((fields['quarter']['size'], fields['play_clock']['size']), (19, 19))
         statics = {r['name']: r for r in self.spec['static']}
         self.assertEqual(statics['red']['tint'], 'play clock cell')
-        self.assertEqual(statics['capsule']['box'], [839, 999, 1022, 1039])
+        self.assertEqual(statics['capsule']['box'], [839, 999, 1082, 1039])
+        self.assertEqual(statics['red']['box'], [1023, 999, 1082, 1039])
+        self.assertNotIn('housing', statics)
 
     def test_cells_are_traced_masks_at_the_hud_footprint(self):
         for name, size in (('espn_plate_mark', (33, 9)), ('label_Down', (27, 9)), ('timeout_tab', (114, 17))):
@@ -120,26 +125,46 @@ class LayoutTests(unittest.TestCase):
         self.assertLess(max(tab.getpixel((4, tab.height // 2))[:3]), 50)      # the near-black tab (22,18,18) on air
         self.assertIn('sb', self.spec['provenance'])
 
-    def test_flag_yellow_and_no_capsule_dividers(self):
+    def test_flag_yellow_and_capsule_dividers(self):
         flag = self.image.crop(tuple(self.spec['cells']['flag']['box']))
         r, g, b, a = flag.getpixel((3, flag.height // 2))
         self.assertTrue(abs(r - 205) <= 6 and abs(g - 198) <= 6 and b < 20, (r, g, b))
-        for name in ('capsule', 'red'):
-            x0, y0, x1, y1 = self.spec['cells'][name]['box']
-            row = [self.image.getpixel((x, (y0 + y1) // 2))[:3] for x in range(x0 + 1 if name == 'red' else x0 + 3, x1 - 3)]
-            self.assertGreater(min(min(p) for p in row), 240, name)            # one white run, no dark column
+        # b778 sb4: the still's capsule is one white pill with two 2 px gray
+        # dividers at layout x 902.5 and 1021.5, not the old 183 px pill plus
+        # a black housing and a separate play-clock box.
+        x0, y0, x1, y1 = self.spec['cells']['capsule']['box']
+        width, height = x1 - x0, y1 - y0
+        row = [self.image.getpixel((x0 + x, y0 + height // 2))[0] for x in range(width)]
+        self.assertGreaterEqual(max(row), 244)                                # white body
+        for divider in (902.5, 1021.5):
+            column = int((divider - 839) * width / 243)
+            self.assertLess(min(row[max(0, column - 1):column + 2]), 235)      # a thin gray line
+        # The red state is the pill's own right cap, so it cannot read as a second box.
+        rx0, ry0, rx1, ry1 = self.spec['cells']['red']['box']
+        red = self.image.crop((rx0, ry0, rx1, ry1))
+        self.assertEqual(red.size, (19, 16))
+        self.assertGreaterEqual(red.getpixel((red.width // 2, red.height // 2))[0], 244)
+        cap = self.image.crop((x0 + width - red.width, y0, x1, y1))
+        diff = max(abs(a - b) for a, b in zip(red.getchannel('A').getdata(), cap.getchannel('A').getdata()))
+        self.assertLessEqual(diff, 2)                                         # the same right cap as the pill
 
-    def test_plate_sits_below_the_bar_rim(self):
-        # Noah on the candidate disc: the black ESPN plate "appears above the scorebug barely". On air the plate's top
-        # edge is row 948, under the bar's rim glow (944..947), and it ends at 985. The plate and the event plates that
-        # cover it start there, at least two HUD rows under the bar's top edge in both aspects.
+    def test_plate_tab_grows_out_of_the_bar_top(self):
+        # b778 sb4 (Noah 10/23): the still's down-and-distance tab is attached
+        # to the bar's top rail, wider at the top and tapering into the body,
+        # with a white bevel over the team tint and a drop shadow under it.
         statics = {r['name']: r for r in self.spec['static']}
-        self.assertEqual(statics['plate']['box'], [822, 948, 1096, 986])
-        self.assertTrue(all(e['box'] == [822, 948, 1096, 986] for e in self.spec['events']))
+        self.assertEqual(statics['plate']['box'], [828, 944, 1098, 990])
+        self.assertEqual(statics['plate_gloss']['box'], statics['plate']['box'])
+        self.assertEqual(statics['plate_gloss']['tint'], 'none')
         for wide in (False, True):
             bar, plate = sprite.hud_box(statics['body']['box'], wide), sprite.hud_box(statics['plate']['box'], wide)
-            self.assertGreaterEqual(plate[1] - bar[1], 2.4, wide)
-            self.assertLessEqual(plate[3], sprite.hud_box(statics['housing']['box'], wide)[1] + 1e-6, wide)
+            self.assertLessEqual(plate[1] - bar[1], 2.0, wide)                 # grows out of the top rail
+            self.assertGreater(plate[3], bar[1], wide)
+        x0, y0, x1, y1 = self.spec['cells']['plate']['box']
+        alpha = self.image.crop((x0, y0, x1, y1)).getchannel('A')
+        top = [x for x in range(alpha.width) if alpha.getpixel((x, 2)) > 128]
+        bottom = [x for x in range(alpha.width) if alpha.getpixel((x, alpha.height - 3)) > 32]
+        self.assertGreater(len(top), len(bottom) + 8)                         # wider at the top
 
     def test_receipts_name_their_sources(self):
         receipts = json.loads((ROOT / 'reports/b76_sb/author_receipts.json').read_text())

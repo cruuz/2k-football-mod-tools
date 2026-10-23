@@ -26,8 +26,11 @@ class ContractTests(unittest.TestCase):
   for digit in '0123456789':self.assertEqual(scores[digit]['size'][1],53)
   # The live face is proportional: a narrow 1 and broad rounded 0. The old
   # generic 40-column fit erased exactly this distinction.
-  self.assertAlmostEqual(scores['0']['size'][0]/53,49/54,delta=.01)
-  self.assertAlmostEqual(scores['1']['size'][0]/53,25/54,delta=.01)
+  # b778 sb4: the traced cells are widened 6% so the rendered ink matches the
+  # still's 49 x 54 score; the cell keeps its 2 px advance bearing.
+  self.assertAlmostEqual(scores['0']['size'][0],51.0,delta=.6)
+  self.assertAlmostEqual(scores['1']['size'][0],26.0,delta=.6)
+  self.assertAlmostEqual(scores['0']['size'][1],53.0,delta=.01)
   self.assertLess(scores['7']['size'][0],scores['0']['size'][0])
   self.assertGreater(len(set(c.atlas.getchannel('A').getdata())),64)
   self.assertFalse(list(sprite.DEFAULT_FOLDER.glob('*.ttf')))
@@ -130,7 +133,7 @@ class DisplayModelTests(unittest.TestCase):
   boxes={r['name']:r['box'] for r in spec['static']}
   boxes['bar']=spec['reference_boxes']['bar']
   for wide in (False,True):
-   for name in ('bar','capsule','plate','away_logo','home_logo','housing'):
+   for name in ('bar','capsule','plate','away_logo','home_logo','red'):
     src=boxes[name];shown=sprite.display_box(sprite.contracted(sprite.hud_box(src,wide),wide),wide)
     want=(src[2]-src[0])/(src[3]-src[1]);have=(shown[2]-shown[0])/(shown[3]-shown[1])
     self.assertAlmostEqual(have/want,1,delta=.005,msg=(name,wide))
