@@ -51,8 +51,8 @@ class StaticTests(unittest.TestCase):
 
     def test_presets_options_and_late_owner_order(self):
         # b778-int2: fa1's star retention and xs1's module loader follow this owner; the loader stays last.
-        self.assertEqual(space.LATE_OWNERS[-3:], (bc.OWNER, "nfl2k5_star_retention", "nfl2k5_module_loader"))
-        self.assertEqual(space.LATE_OWNERS[-5], "nfl2k5_force_out")  # b778-int2: pi1, ai5, fa1 and xs1 follow
+        self.assertEqual(space.LATE_OWNERS[-5:], (bc.OWNER, "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_draft_clock", "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-7], "nfl2k5_force_out")  # b778-int2: pi1, ai5, fa1 and xs1 follow
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).cpu_ball_carriers, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["cpu_ball_carriers"], name in ("softdrink_advanced", "softdrink_experimental"), name)

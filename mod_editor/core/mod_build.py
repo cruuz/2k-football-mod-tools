@@ -553,6 +553,12 @@ class BuildPlan:
     alien_prospect: bool = False
     # b778-sc2: in-place SportsCenter featured-player lookup; no cave request.
     sportscenter_lineup: bool = False
+    # b778-dr1: franchise draft on a broadcast clock. Retail makes every CPU pick before the user's in one frame ("it
+    # goes super fast straight to your pick", Noah 10/22). A late executable owner (nfl2k5_draft_clock) hooks the draft
+    # screen's step (call at 0x326DBC): each CPU club is on the game's own draft clock for 60 s; Y = Advance to Next
+    # Pick / Simulate My Pick (on the user's clock), X = Advance to Next User Pick. No state bytes. On in
+    # the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    franchise_draft_clock: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -804,6 +810,11 @@ PRESETS["softdrink_experimental"]["alien_prospect"] = True
 # b778-sc2: repair featured-player identity lookup in every SOFTDRINK preset.
 for _preset in PRESETS.values():
     _preset["sportscenter_lineup"] = True
+# b778-dr1: the broadcast-paced franchise draft, on with the other SOFTDRINK franchise features (Advanced, Experimental).
+for _preset in PRESETS.values():
+    _preset["franchise_draft_clock"] = False
+PRESETS["softdrink_advanced"]["franchise_draft_clock"] = True
+PRESETS["softdrink_experimental"]["franchise_draft_clock"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -1076,6 +1087,19 @@ def _practice_injuries_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The practice injury code in this source is not retail or Franchise practice injuries. Turn "
                          "it off or build from your unmodified retail dump.")
+def _draft_clock_preflight(source: Path, progress) -> None:
+    """b778-dr1: refuse a source whose franchise draft step is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_draft_clock")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The franchise draft clock is not available in this installation.")
+    progress("Checking the franchise draft screen for the draft clock", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The franchise draft clock cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The franchise draft code in this source is not retail or the draft clock. Turn it off or "
+                         "build from your unmodified retail dump.")
 
 
 # fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
@@ -1102,6 +1126,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
+    ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1299,7 +1324,7 @@ def _apply_inbox_standings(plan: "BuildPlan", target: Path, receipt: dict, progr
 
 
 def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b778-fo1: the modern sideline catch owner (no force-out from 2008), the last late allocator owner."""
+    """b778-fo1: the modern sideline catch owner (no force-out from 2008), a late allocator owner."""
     if not plan.modern_force_out:
         return
     module = _core_module("nfl2k5_force_out")
@@ -1438,6 +1463,21 @@ def _apply_sportscenter_lineup(plan: "BuildPlan", target: Path, receipt: dict, p
         raise RuntimeError("SportsCenter highlight lineup output failed verification")
     receipt["steps"].append({"step": "sportscenter_lineup", **step})
     receipt["result"]["sportscenter_lineup"] = "applied"
+def _apply_draft_clock(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-dr1: the broadcast-paced franchise draft, the last late allocator owner."""
+    if not plan.franchise_draft_clock:
+        return
+    module = _core_module("nfl2k5_draft_clock")
+    if module is None:
+        raise RuntimeError("The franchise draft clock needs nfl2k5_draft_clock.")
+    progress("Franchise: draft on a broadcast clock", 0, 0)
+    payload, clock_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The franchise draft clock: the output does not read back as applied")
+    receipt["steps"].append({"step": "franchise_draft_clock", **{k: v for k, v in clock_receipt.items() if k != "reservations"}})
+    receipt["result"]["franchise_draft_clock"] = "applied"
 
 
 def _hair_styles_available() -> bool:  # b775-hs1
@@ -1559,6 +1599,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
+                               ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1788,6 +1829,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
     sportscenter = _core_module("nfl2k5_sportscenter_lineup")
     out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
+    draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
+    out["franchise_draft_clock"] = draft_clock.status(_xbe_bytes(source)) if draft_clock is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3454,6 +3497,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU ball carriers must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
+    if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
+        raise ValueError("The franchise draft clock must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -4201,6 +4246,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _ball_carrier_preflight(source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
+    if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
+        _draft_clock_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5770,6 +5817,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_star_retention(plan, target, receipt, progress)
     # b778-st2: rookie stars and career stars, after the last b778 late owner
     _apply_star_career(plan, target, receipt, progress)
+    # b778-dr1: the franchise draft clock, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_draft_clock(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
     # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
     _apply_inbox_standings(plan, target, receipt, progress)
@@ -5835,6 +5884,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the alien prospect did not survive the final passes")
     if plan.sportscenter_lineup and _core_module("nfl2k5_sportscenter_lineup").status(_xbe_bytes(target)) != "applied":
         raise ValueError("SportsCenter highlight lineups did not survive the final passes")
+    if plan.franchise_draft_clock and _core_module("nfl2k5_draft_clock").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the franchise draft clock did not survive the final passes")  # b778-dr1
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

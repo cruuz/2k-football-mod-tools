@@ -54,7 +54,7 @@ class StaticTests(unittest.TestCase):
         self.assertTrue(all(seasons[r] >= 2008 for r in set(seasons) - set(OLD_RULE_ROWS)))
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-6:], (fo.OWNER, "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_module_loader"))  # b778-xs1: the module loader is last
+        self.assertEqual(space.LATE_OWNERS[-7:], (fo.OWNER, "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_draft_clock", "nfl2k5_module_loader"))  # b778-xs1: the module loader is last
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).modern_force_out, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["modern_force_out"], name in ("softdrink_advanced", "softdrink_experimental"), name)

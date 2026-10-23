@@ -247,6 +247,8 @@ from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E4
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
 from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
+# b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -267,7 +269,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("cpu_ball_carriers", _ball_carrier_ai.BUILD_CAPTION, _ball_carrier_ai.HELP_TEXT),  # b778-ai5
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
-                 ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT))  # b778-pc3
+                 ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
+                 ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT))  # b778-dr1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
