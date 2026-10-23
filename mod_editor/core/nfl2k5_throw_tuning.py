@@ -152,6 +152,7 @@ from . import nfl2k5_ball_carrier_ai as ball_carrier_patch  # noqa: F401  b778-a
 from . import nfl2k5_star_retention as star_retention_patch  # noqa: F401  b778-fa1: late owner (CPU clubs keep their stars); imported so the cave manifest recorder observes it
 from . import nfl2k5_force_out as force_out_patch  # noqa: F401  b778-fo1: late owner (modern sideline catches); imported so the cave manifest recorder observes it
 from . import nfl2k5_practice_injuries as practice_injuries_patch  # noqa: F401  b778-pi1: late owner (franchise practice injuries); imported so the cave manifest recorder observes it
+from . import nfl2k5_star_career as star_career_patch  # noqa: F401  b778-st2: late owner (rookie/career stars); imported so the cave manifest recorder observes it
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
 from . import nfl2k5_resource_load_guard as resource_load_guard_patch  # b76-dn

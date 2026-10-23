@@ -1970,6 +1970,8 @@ mod_editor/core/nfl2k5_force_out.py
 mod_editor/core/nfl2k5_module_loader.py
 mod_editor/core/nfl2k5_crib_trophy_room.py
 docs/mod_editor/overlay_modules.md
+mod_editor/core/nfl2k5_star_career.py
+mod_editor/core/nfl2k5_star_career_code.py
 # b778-rh1: rookie faces (new draft headshots by skin tone, build and name; in-place generator rewrite)
 mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
@@ -3663,6 +3665,8 @@ tools/b77/rh2_names.py
 tests/mod_editor/test_nfl2k5_star_retention.py
 tests/mod_editor/test_nfl2k5_practice_injuries.py
 tests/mod_editor/test_nfl2k5_ball_carrier_ai.py
+tests/mod_editor/test_nfl2k5_star_career.py
+tools/b77/st2_star_career_assemble.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md

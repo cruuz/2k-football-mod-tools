@@ -723,6 +723,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_practice_injuries",  # b778-pi1: after force-out
                "nfl2k5_ball_carrier_ai",  # b778-ai5: after practice injuries
                "nfl2k5_star_retention",  # b778-fa1: after modern sideline catches
+               "nfl2k5_star_career",  # b778-st2: after star retention
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
@@ -782,6 +783,7 @@ def dormant_union():
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
     from . import nfl2k5_team_ratings as team_ratings
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
+    from . import nfl2k5_star_career as star_career  # b778-st2: late owner
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
@@ -803,6 +805,7 @@ def dormant_union():
             # Fixed directory slots do not move any earlier owner.
             + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
             + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS
+            + star_career.REQUESTS  # b778-st2
             + classic_teams.REQUESTS)  # b775-ct1 after b775-mo2
 
 

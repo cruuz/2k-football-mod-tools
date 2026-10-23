@@ -69,6 +69,7 @@ FEATURE_KEYS += ("cpu_ball_carriers",)  # b778-ai5: CPU ball carriers stay in bo
 FEATURE_KEYS += ("modern_force_out",)  # b778-fo1: modern sideline catches (no force-out from 2008), late executable owner
 FEATURE_KEYS += ("crib_trophy_room",)  # b778-xs1: the Crib keeps only the Trophy Room side (shop cut), in place
 FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module loader prototype), late executable owner, off
+FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost over a career, late executable owner
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
