@@ -82,8 +82,16 @@ policy:
     jz p_exit_no
     mov eax, [edx+4]
     and eax, 0x7fffffff
+.ifdef CLOCK_AWARE
+    jz p_exit_no
+    cmp eax, 0x7f800000
+    jae p_exit_no                   /* b778: only the sign is read (as native 209CA0 does); a live game stores the end
+                                       line z there (+/-5486.4 cm), so the beta-77.1 "+/-1 only" test sent every real
+                                       fourth down back to retail */
+.else
     cmp eax, 0x3f800000
     jne p_exit_no                   /* native direction must be +/-1 */
+.endif
     fld dword ptr [esi+0x18]
     fdiv dword ptr yard
     test dword ptr [edx+4], 0x80000000

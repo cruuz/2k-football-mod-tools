@@ -18,8 +18,11 @@ b778 (beta-78 / pack v0.6.2) clock revision, still inside the same 2048 bytes: o
 virtual-controller flag, team +0x38) delegates; automatic 2026 coach profiles clear that flag, so their fourth downs,
 two-point tries and late-lead kicks use Modern 2. One 4-byte operand edit in the native timeout predicate 207050 lets a
 CPU offense call its timeouts in the last 15 seconds of the first half whenever the game's own time estimate says it
-still has a play to run (retail stopped at 15 seconds unless it was already in field goal range). The beta-77.1
-templates (pre-VIP and VIP-aware) stay recognizable and upgrade in place.
+still has a play to run (retail stopped at 15 seconds unless it was already in field goal range). The fourth-down
+policy reads only the sign of the native direction value, as native 209CA0 does: a live game stores the end-line z
+there (+/-5486.4 cm), and the beta-77.1 test that accepted only +/-1.0 sent every real fourth down back to the retail
+chart (seen in the emulator, b778 ai4). The beta-77.1 templates (pre-VIP and VIP-aware) stay recognizable and
+upgrade in place.
 """
 from __future__ import annotations
 

@@ -299,8 +299,9 @@ class Modern2OwnerTests(unittest.TestCase):
         changed = [i for i in range(len(a)) if a[i] != b[i]]
         # VIP-aware revision: owner code/hooks plus the derived allocator seals
         # and section digests. A fresh build and the bounded upgrade are identical.
-        # b778: +4 code bytes (team flag test) and the 2-byte timeout operand edit, plus derived digests.
-        self.assertEqual(len(changed), 2114)
+        # b778: +4 code bytes (team flag test), +8 (sign-only direction test), the 2-byte timeout operand edit,
+        # plus derived digests.
+        self.assertEqual(len(changed), 2139)
 
     def test_v061_modern2_upgrade_and_foreign_refusal(self):
         allocated, _ = space.apply(self.retail, patch.REQUESTS, scaleout=True)
@@ -460,7 +461,9 @@ class Modern2NativeTests(unittest.TestCase):
                              state)
         for state in ({"down": 1}, {"down": 2}, {"down": 3}, {"cpu": False}, {"phase": 3}, {"quarter": 0}, {"distance": 0},
                       {"distance": 26}, {"distance": float("nan")}, {"own_yard": float("nan")}, {"own_yard": -1},
-                      {"own_yard": 101}, {"seconds": 10001}, {"direction": 0}, {"direction": 2}, {"direction": float("nan")}):
+                      {"own_yard": 101}, {"seconds": 10001}, {"direction": 0}, {"direction": float("inf")}, {"direction": float("nan")}):
+            # b778: only the sign of the native direction is read (a live game stores +/-5486.4 there; see
+            # test_b778_ai4_cpu_clock), so zero, infinite and NaN directions refuse while any finite magnitude works.
             self.assertEqual(self.m.policy(**state), 0, state)
 
     def test_late_lead_range_edge_is_inclusive_for_every_kicker_range(self):

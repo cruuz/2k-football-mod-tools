@@ -100,7 +100,7 @@ class AutomaticCoachDeferral(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        retail = retail_xbe()
+        retail = cls.retail = retail_xbe()
         base = money.apply(retail, level="modern2")[0]
         cls.payloads = {}
         current, _ = ai.apply(base)
@@ -162,6 +162,25 @@ class AutomaticCoachDeferral(unittest.TestCase):
             for variant in ("b778", "v061"):
                 self.assertTrue(self.choose(variant, down=down, quarter=quarter, seconds=seconds)[0],
                                 (variant, down, quarter, seconds))
+
+    def test_live_game_direction_magnitude_reaches_the_modern2_table(self):
+        """The live game keeps the end-line z (+/-5486.4 cm, 60 yards) in the direction slot that native 209CA0
+        reads only for its sign (seen in the emulator at the policy exit, EAX 0x45AB7333). The beta-77.1 template
+        accepted only +/-1.0, so every real fourth down fell back to the retail chart."""
+        state = dict(down=4, quarter=1, seconds=280, score_margin=0, own_yard=48, distance=2, quarter_seconds=300)
+        self.assertEqual(money.decision(level="modern2", **state), "go")
+        allocated, _ = space.apply(self.retail, money.REQUESTS, scaleout=True)
+        templates = {"b778": money.apply(self.retail, level="modern2")[0],
+                     "v061": money.lever.apply(allocated, money._adapter("modern2", variant="v061"))[0]}
+        for variant, expected in (("b778", 1), ("v061", 0)):
+            m = Machine(templates[variant])
+            m.supply_fg_range(50)
+            for direction in (-1, 1):
+                m.configure(**state, direction=direction)
+                m.f32(m.DIR + 4, 5486.4 * direction)
+                self.assertEqual(m.run_policy(), expected, (variant, direction))
+                m.configure(**state, direction=direction)          # the unit fixture value still works
+                self.assertEqual(m.run_policy(), 1, (variant, direction))
 
     def test_automatic_profile_fourth_down_uses_modern2_user_vip_keeps_retail(self):
         m = Machine(self.payloads["b778"])
