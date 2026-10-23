@@ -66,7 +66,7 @@ YD_CM = 91.44
 OUTSIDE_KINDS = (5, 6, 7)      # route kinds that break toward the sideline (codec.ROUTE_OUTSIDE_KINDS)
 TEAM_ALIAS = {"ARZ": "ARI", "STL": "LAR", "SD": "LAC", "OAK": "LV"}
 
-# No Huddle roles in table order. Entries 1-4 sit on A, B, L, R (stream stills); entry 0 is the panel's first page.
+# No Huddle roles in table order = buttons X, A, B, L, R (stream stills and the pb7 emulator run; the panel opens on A).
 NH_ROLES = ("inside_run", "quick", "sideline", "screen", "shot")
 NH_FORM_TAGS = ("pass", "spread", "empty", "base")       # never goal / short (or the wildcat set)
 

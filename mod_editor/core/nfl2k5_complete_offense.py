@@ -121,8 +121,9 @@ def validate_structure(pack):
 
 #: b778 pb7: the PLAY body header table at 0x4C is ten (formation index, menu link) byte pairs: five offense
 #: then five defense (0xFEFA0 -> 0xFF09C: entry (side * 5 + button) when the open panel has five buttons; the
-#: three-button panel is the audible list, which lives elsewhere). The No Huddle panel shows them on A, B, L, R
-#: and entry 0 (Noah's 10/21 stream: A = entry 1 X Slant Flat, B = 2, L = 3 Bubble Screen, R = 4).
+#: three-button panel is the audible list, which lives elsewhere). The No Huddle panel (hold Y after the whistle)
+#: shows entries 0-4 on X, A, B, L, R and opens on A (0xFEE70 sets the page to 1): Noah's 10/21 stream showed
+#: A, B, L, R = entries 1-4 of the shipped table, and the b778 pb7 emulator run showed X = entry 0.
 NO_HUDDLE_TABLE = 0x4C
 NO_HUDDLE_ENTRIES = 5
 
