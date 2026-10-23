@@ -34,6 +34,11 @@ RELEASED_DISC = DISCS / "SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso"
 REFRESH_PLAN = SCRATCH / "rt1/out/roster-edits-b778-rt1.json"
 NOAH_SAVE = SCRATCH / "fa1/noah_save/w9"
 KAEPERNICK = "00-0027974"
+# b778-fa3: the players the earlier work found retired or under contract (selection_rule). They must stay out even
+# though nflverse players.csv does not yet mark them RET.
+RETIRED_OR_SIGNED = {"00-0034281", "00-0031936", "00-0036957", "00-0031852", "00-0035145", "00-0032383",
+                     "00-0034436", "00-0029263", "00-0032053", "00-0036294", "00-0032971", "00-0034203",
+                     "00-0034791", "00-0034834", "00-0036151", "00-0036261"}
 
 
 def tiny_plan():
@@ -45,7 +50,7 @@ class DataTests(unittest.TestCase):
     def test_every_player_is_sourced_rated_and_kaepernick_is_first(self):
         data = depth.load()
         players = data["players"]
-        self.assertGreaterEqual(len(players), 20)
+        self.assertGreaterEqual(len(players), 500)                    # the whole plausible pool, not a few dozen
         self.assertEqual(players[0]["gsis_id"], KAEPERNICK)
         self.assertEqual(players[0]["fields"]["hand"], 0)            # he throws left-handed
         for p in players:
@@ -55,6 +60,25 @@ class DataTests(unittest.TestCase):
                 self.assertIn(rr.POSITIONS[p["fields"]["position"]], rr.POSITIONS)
                 self.assertTrue(all(0 <= p["fields"][k] <= 99 for k in rr.RATING_BYTE_ORDER))
                 self.assertGreaterEqual(p["fields"]["years_pro"], 1)
+
+    def test_retired_or_signed_players_are_absent(self):
+        data = depth.load()
+        ids = {p["gsis_id"] for p in data["players"]}
+        self.assertFalse(ids & RETIRED_OR_SIGNED)
+
+    def test_the_hand_verified_players_ship_first_and_the_tail_is_flagged(self):
+        data = depth.load()
+        players = data["players"]
+        self.assertEqual([p["priority"] for p in players], list(range(1, len(players) + 1)))
+        self.assertEqual(len({p["gsis_id"] for p in players}), len(players))
+        self.assertEqual(len({(p["first"], p["last"]) for p in players}), len(players))
+        verified = [p for p in players if p["status_confidence"] in ("high", "medium")]
+        tail = [p for p in players if p["status_confidence"] == "nflverse"]
+        self.assertGreaterEqual(len(verified), 26)
+        self.assertEqual(len(verified) + len(tail), len(players))
+        self.assertEqual([p["priority"] for p in verified], list(range(1, len(verified) + 1)))
+        self.assertTrue(all(p["appearance_reviewed"] is False for p in tail))
+        self.assertTrue(all(p["appearance_reviewed"] is not False for p in verified))
 
     def test_a_retired_or_unsourced_player_is_refused(self):
         data = depth.load()

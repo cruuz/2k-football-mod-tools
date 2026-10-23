@@ -134,7 +134,8 @@ def fit(base, plan, data, margin=DEFAULT_MARGIN):
                 body, receipt = apply_with_floor(base, extend_plan(plan, data, n, base))
                 floor = receipt["roster_refresh"]["import_floor"]
                 cache[n] = (floor["vacancies_after"] >= want, body, floor)
-            except (rr.RosterRecordError, capacity.SpareCapacityError) as exc:
+            except (rr.RosterRecordError, capacity.SpareCapacityError, DepthError) as exc:
+                # DepthError also means "no room": a pool larger than the vacant records must not break the search.
                 cache[n] = (False, None, {"refused": str(exc)})
         return cache[n]
 
