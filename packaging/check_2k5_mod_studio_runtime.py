@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ced1c64174d1ecd531c34fb0c8320a9e6fdaa11a900a498ee4f33464b6a6ae10",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "d3ac529e78f85e26e9a59b92b99f64ea2a18fb789af79814e3d57070bd9a69c5",
+    "mod_editor/gui/build_panel_qt.py": "6b8c2930ca0b47d3f537a73b85d46febb39bec1ff7bb55161bce3080c85bd520",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "d3ac529e78f85e26e9a59b92b99f64ea2a18fb789af79814e3d57070bd9a69c5",
+    "mod_editor/gui/build_panel_qt.py": "6b8c2930ca0b47d3f537a73b85d46febb39bec1ff7bb55161bce3080c85bd520",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2028,6 +2028,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_formation_art_spacing",           # b777-tp1
         "mod_editor.core.nfl2k5_force_out",                       # b778-fo1
+        "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1
