@@ -78,12 +78,20 @@ class Code(unittest.TestCase):
         # the coin loop ends by jumping back into retail code right after the 17 blocks
         self.assertIn(b"\xe9" + struct.pack("<i", ap.CODE_END - (ap.SYMBOLS["table"])), ap.CODE)
 
-    def test_length_hook_is_not_applied(self):
-        """ee2 follow-up: the 0x93850 hook is built but disabled (it hangs the practice loader)."""
-        spans = {va for va, _d, _l in ap._spans()}
-        self.assertNotIn(ap.SKEL_SITE, spans)
+    def test_length_hook_is_applied(self):
+        """ee3: the 0x93850 hook is applied with a 6-byte jump that leaves the retail body at 0x93856 intact."""
+        spans = {va: d for va, d, _l in ap._spans()}
+        self.assertIn(ap.SKEL_SITE, spans)
         self.assertIn(ap.GIRTH_SITE, spans)
         self.assertIn(ap.GIRTH_NOP_SITE, spans)
+        jump = spans[ap.SKEL_SITE]
+        self.assertEqual(len(jump), ap.SKEL_SPAN)
+        self.assertEqual(jump[0], 0xE9)
+        self.assertEqual(jump[5], 0x90)
+        self.assertEqual(ap.SKEL_SITE + 5 + struct.unpack_from("<i", jump, 1)[0], ap.SKEL_VA)
+        self.assertEqual(ap.SKEL_RESUME, ap.SKEL_SITE + ap.SKEL_SPAN)
+        # the hook must never overwrite the first byte of `sub esp,0x74` at the resume address
+        self.assertNotIn(ap.SKEL_RESUME, spans)
 
     def test_odds(self):
         self.assertAlmostEqual(ap.per_class_probability(), 1 / 150, delta=2e-5)
@@ -377,14 +385,40 @@ class Lanky(unittest.TestCase):
         rec[0x2A], rec[0x2B] = ap.WEIGHT_RAW, height
         return bytes(rec)
 
+    SENTINELS = {"eax": 0x0BADF00D, "ebx": 0x12345678, "esi": 0xDEADBEEF, "edi": 0xCAFEBABE, "ebp": 0x87654321}
+
     def _run_skel(self, mu):
-        from unicorn.x86_const import UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESP
+        from unicorn.x86_const import (UC_X86_REG_EAX, UC_X86_REG_EBX, UC_X86_REG_EBP, UC_X86_REG_ECX,
+                                       UC_X86_REG_EDX, UC_X86_REG_EDI, UC_X86_REG_ESI, UC_X86_REG_ESP)
+        regs = {"eax": UC_X86_REG_EAX, "ebx": UC_X86_REG_EBX, "ebp": UC_X86_REG_EBP, "edi": UC_X86_REG_EDI,
+                "esi": UC_X86_REG_ESI}
         mu.mem_write(self.STACK, struct.pack("<II", self.EXIT, self.LOW))
         mu.reg_write(UC_X86_REG_ECX, self.RECORD)
         mu.reg_write(UC_X86_REG_EDX, 0x1FFFFFF)
         mu.reg_write(UC_X86_REG_ESP, self.STACK)
+        for name, value in self.SENTINELS.items():
+            mu.reg_write(regs[name], value)
         mu.emu_start(ap.SKEL_VA, self.EXIT, count=200000)
         return mu
+
+    def test_caller_registers_are_preserved(self):
+        """The loader's render walker keeps its entity in ESI and reads [ESI+0x30] after 0x93850; the hook must
+        save ESI before reusing it as the low-matrix base (regression: access violation at 0x1D2D70)."""
+        from unicorn.x86_const import (UC_X86_REG_EAX, UC_X86_REG_EBX, UC_X86_REG_EBP, UC_X86_REG_ECX,
+                                       UC_X86_REG_EDX, UC_X86_REG_EDI, UC_X86_REG_ESI)
+        for photo in (ap.ALIEN_ID, 1946):
+            mu = self._machine()
+            mu.mem_write(self.RECORD, self._record(photo))
+            self._run_skel(mu)
+            got = {"eax": mu.reg_read(UC_X86_REG_EAX), "ebx": mu.reg_read(UC_X86_REG_EBX),
+                   "ecx": mu.reg_read(UC_X86_REG_ECX), "edx": mu.reg_read(UC_X86_REG_EDX),
+                   "esi": mu.reg_read(UC_X86_REG_ESI), "edi": mu.reg_read(UC_X86_REG_EDI)}
+            # EBP is the function's own frame pointer after the retail prologue (restored by its epilogue at
+            # 0x93B33); this test stops at the resume address, so only the caller-saved-in-practice registers
+            # the loader walker relies on are checked here.
+            want = {k: v for k, v in self.SENTINELS.items() if k != "ebp"}
+            want.update(ecx=self.RECORD, edx=0x1FFFFFF)
+            self.assertEqual(got, want, photo)
 
     def _translation(self, mu, base, index):
         return struct.unpack("<4f", bytes(mu.mem_read(base + index * 64 + 0x30, 16)))
