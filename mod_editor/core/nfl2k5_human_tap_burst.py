@@ -1,10 +1,11 @@
-"""Speed-scaled human ordinary tap bursts, layered over the sp1 return fix.
+"""Speed-scaled ordinary tap bursts, layered over the sp1 return fix.
 
 Requested full-condition bonus: 4% at 65, 6% at 75, 10% at 90+, linear between.
 Duration grows from 0.25s at 65 to 0.5s at 90. Each genuine human tap refreshes
 expiry without resetting native elapsed time or removing native repeat extra.
-CPU bursts and charged bursts retain native behavior. Max stores preserve
-existing star benefits. No rating, permission, charge or Speedster field changes.
+The historical apply() preserves CPU behavior; Studio uses apply_shared()
+to give genuine CPU sprint commands the same curve. Charged arithmetic stays
+native. Max stores preserve existing star benefits. No rating, permission, charge or Speedster field changes.
 The successful initializer tail and native throttle call are the only hooks.
 New builds use the allocator's bounded directory-tail code reservation, leaving
 the moment-coach gap available. The earlier gap owner remains readable and
@@ -38,7 +39,7 @@ CALCULATOR = bytes.fromhex(
 )
 
 
-def code_for(base):
+def code_for(base, *, shared=False):
     a=_Asm(base)
     a.label('initialize')
     a.b('9c6089cf31d2') # flags/registers; entity=ECX; initial
@@ -53,8 +54,15 @@ def code_for(base):
     a.label('boost')
     a.b('833db802e6000e') # live phase
     a.j32('0f85','done')
-    a.b('8b470c833803') # unsigned controller 0..3
-    a.j32('0f87','done')
+    a.b('8b470c')
+    a.b('833803') # unsigned human controller 0..3
+    if shared:
+        a.j8('76', 'controller_ok')
+        a.b('8338ff') # the native CPU sentinel is -1
+        a.j32('0f85', 'done')
+        a.label('controller_ok')
+    else:
+        a.j32('0f87','done')
     a.b('83781c16') # genuine decoded tap, not synthesized EBX
     a.j32('0f85','done')
     a.b('8b77108b869000000083e00383f801') # charged selector
@@ -105,8 +113,11 @@ def _inspect(payload):
         a = rows[0]
         code, labels, _ = code_for(a["va"])
         actual = image.read(a["va"], CODE_SIZE)
-        space._require(actual in (code, b"\xcc" * CODE_SIZE), "foreign human tap owner code")
-        state = "applied" if actual == code else "retail"
+        shared_code, shared_labels, _ = code_for(a["va"], shared=True)
+        space._require(actual in (code, shared_code, b"\xcc" * CODE_SIZE), "foreign human tap owner code")
+        state = "applied" if actual in (code, shared_code) else "retail"
+        if actual == shared_code:
+            labels = shared_labels
     for name, va, before in HOOKS:
         expected = before if state == "retail" else next(r[3] for r in sites(labels) if r[0] == name)
         space._require(image.read(va, len(before)) == expected, "foreign or partial human tap hook")
@@ -171,3 +182,45 @@ def apply(payload):
                         edits=edits, allocation=allocation, code_bytes=length,
                         reserved_bytes=CODE_SIZE, rating_and_speedster_rules_unchanged=True,
                         charge_rules_unchanged=True, human_only=True)
+
+
+def apply_shared(payload):
+    """Upgrade only a verified sp2 owner to the same curve for CPU commands.
+
+    The native AI chooses when to request command 22. Never synthesize a tap
+    from throttle, position, a frame clock, or the burst state's held-input bit.
+    This reuses the complete existing 512-byte allocation and the two hooks.
+    """
+    space._require(status(payload) == "applied", "verified sp2 is required")
+    a = next(r for r in space.layout(payload)["allocations"] if r["owner"] in (OWNER, LEGACY_OWNER))
+    code, labels, length = code_for(a["va"], shared=True)
+    image = XbeImage(payload)
+    if image.read(a["va"], CODE_SIZE) == code:
+        return payload, dict(status="already_applied", changed_bytes=0, edits=[])
+    buf = bytearray(payload)
+    buf[a["raw"]:a["raw"] + CODE_SIZE] = code
+    edits = [dict(label="shared_tap_curve", va=hex(a["va"]), size=CODE_SIZE)]
+    for name, va, before, after in sites(labels):
+        off = image.offset(va, len(before))
+        buf[off:off + len(after)] = after
+        edits.append(dict(label="shared_tap_" + name, va=hex(va), size=len(after)))
+    _seal_upgrade(payload, buf)
+    result = bytes(buf)
+    space._require(status(result) == "applied", "shared tap postcondition failed")
+    return result, dict(status="applied", changed_bytes=space.count_differing_bytes(payload, result),
+                        edits=edits, code_bytes=length, additional_code_bytes=0,
+                        additional_data_bytes=0, additional_read_only_bytes=0,
+                        cpu_decisions_unchanged=True, shared_speed_curve=True)
+
+
+def _seal_upgrade(payload, buf):
+    """Reseal a verified, same-size owner upgrade in either allocator format."""
+    space._require(len(payload) == len(buf), "sprint upgrade must keep its extent")
+    if space.is_scaleout(payload):
+        space._seal_scaleout(buf, space._read_scale_directory(payload))
+    else:
+        requests = space._read_directory(payload)
+        buf[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+            requests, space._code_bytes(buf, requests))
+    for section in _sections(buf):
+        buf[section.header_offset+36:section.header_offset+56] = section_digest(buf, section)

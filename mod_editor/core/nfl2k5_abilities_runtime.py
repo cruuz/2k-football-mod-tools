@@ -264,7 +264,7 @@ def _star_classes(blob, stars, *, legacy=False):
         blob[at] = 0xEB
 
 
-def _star_charge(blob):
+def _star_charge(blob, *, superstar=False):
     """Replace maintain's policy in its existing slot; keep every hook/label.
 
     carrier() validates the entity/state/steer pointers even for a defender.
@@ -293,6 +293,14 @@ def _star_charge(blob):
     code.extend(bytes.fromhex("837b1c01"))       # cmp [entity+1c],1 (player)
     branch(0x75, "maintain_yes")
     code.extend(bytes.fromhex("8b4b3c"))         # mov ecx,[entity+3c] (record)
+    if superstar:
+        # A movement superstar also needs the existing star charge grant.
+        # Raw signed rating bytes 128..255 are invalid, never elite ratings.
+        for offset, minimum in ((0x36, 90), (0x37, 85)):
+            code.extend(bytes((0x80, 0x79, offset, minimum)))
+            branch(0x72, "maintain_clear")
+            code.extend(bytes((0x80, 0x79, offset, 128)))
+            branch(0x73, "maintain_clear")
     call("effective")
     code.extend(bytes((0xA8, GRANT_CHARGE)))     # test al,charge grant
     branch(0x75, "maintain_yes")
@@ -326,7 +334,7 @@ def _read_stars(content):
 def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
              lock_special_moves=False, lock_speedster=True, right_stick_stars_only=False,
              charge_stars_only=False, button_moves_stars_only=False, star_access=DEFAULT_STAR_ACCESS,
-             _legacy_g2=False):
+             _legacy_g2=False, _superstar_charge=False):
     _week(abilities_off_week)
     locks = _locks(lock_right_stick=lock_right_stick,
                    lock_special_moves=lock_special_moves, lock_speedster=lock_speedster)
@@ -344,6 +352,8 @@ def code_for(code_va, abilities_off_week=None, *, lock_right_stick=False,
     struct.pack_into("<I", blob, assembly.LABELS["unlocked_mask"],
                      sum(LOCK_MASKS[key] for key, locked in locks.items() if not locked))
     _star_classes(blob, stars, legacy=_legacy_g2)
+    if _superstar_charge and charge_stars_only:
+        _star_charge(blob, superstar=True)
     blob.extend(b"\xcc" * (CODE_SIZE - len(blob)))
     return bytes(blob), {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
@@ -461,6 +471,9 @@ def _inspect_revision(payload):
             if expected is not None and content == expected:
                 settings.update(stars)
                 revision = "universal-sprint"
+            elif stars is not None and content == code_for(a["va"], **{**settings, **stars}, _superstar_charge=True)[0]:
+                settings.update(stars)
+                revision = "superstar-charge"
             elif stars is not None and content == code_for(a["va"], **{**settings, **stars}, _legacy_g2=True)[0]:
                 settings.update(stars)
                 revision = "star-gate"
@@ -482,7 +495,7 @@ def _inspect(payload):
 
 
 def revision(payload):
-    """retail | universal-sprint | star-gate | beta-76.5 | foreign."""
+    """retail | universal-sprint | superstar-charge | star-gate | beta-76.5 | foreign."""
     try:
         return _inspect_revision(payload)[2]
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
@@ -619,6 +632,36 @@ def apply(payload, **settings):
                     "edits": receipt.get("edits", []) + human["edits"],
                     "reservations": reservations(result),
                     "changed_bytes": space.count_differing_bytes(payload, result) + len(result) - len(payload),
+                    "result_sha256": hashlib.sha256(result).hexdigest()}
+
+
+def apply_shared(payload, **settings):
+    """Studio sprint parity, retaining the historical apply() for pinned repairs.
+
+    With the star-charge option enabled, a movement superstar is a roster star
+    with raw Speed 90..127 and Agility 85..127 AND the existing charge grant.
+    This narrows permission; it never adds Speedster, a star, or a tier grant.
+    No new allocation, runtime timer, native decision or charged math is added.
+    """
+    native, receipt = apply(payload, **settings)
+    wanted = _inspect(native)[1]
+    edits = list(receipt.get("edits", []))
+    if wanted["charge_stars_only"] and revision(native) != "superstar-charge":
+        a = allocation(native)
+        content, _ = code_for(a["va"], **wanted, _superstar_charge=True)
+        buf = bytearray(native)
+        buf[a["raw"]:a["raw"] + a["size"]] = content
+        human_tap_burst._seal_upgrade(native, buf)
+        native = bytes(buf)
+        _require(revision(native) == "superstar-charge", "superstar charge postcondition failed")
+        edits.append(dict(label="superstar_charge", va=hex(a["va"]), size=a["size"]))
+    result, burst = human_tap_burst.apply_shared(native)
+    _require(status(result) == "applied", "shared sprint postcondition failed")
+    return result, {**receipt, "status": "applied" if result != payload else "already_applied",
+                    "shared_tap_burst": burst, "superstar_charge": wanted["charge_stars_only"],
+                    "edits": edits + burst["edits"], "reservations": reservations(result),
+                    "changed_bytes": space.count_differing_bytes(payload, result) + len(result) - len(payload),
+                    "file_growth": len(result) - len(payload),
                     "result_sha256": hashlib.sha256(result).hexdigest()}
 
 

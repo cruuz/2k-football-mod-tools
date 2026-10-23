@@ -1727,7 +1727,7 @@ class _abilities_adapter:
         return abilities_patch.status(payload)
 
     def apply(self, payload):
-        return abilities_patch.apply(payload, **self.settings)
+        return abilities_patch.apply_shared(payload, **self.settings)
 
 
 class _qb_spy_adapter:
