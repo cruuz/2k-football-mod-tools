@@ -50,10 +50,73 @@ class DataTests(unittest.TestCase):
         bus = by_name["Bus Jibber"]
         self.assertEqual((bus["position"], bus["jersey"], bus["weight"]), ("QB", "1", "405"))  # 2K5's byte limit
         self.assertEqual((bus["speed"], bus["strength"], bus["agility"], bus["pass_arm_strength"]), ("97", "99", "98", "97"))
-        self.assertEqual((bus["pass_accuracy"], bus["consistency"]), ("60", "50"))
+        self.assertEqual((bus["pass_accuracy"], bus["consistency"]), ("66", "50"))  # Finale 60:00-60:17
         peter = by_name["John Mike Peter"]
         self.assertEqual((peter["position"], peter["catch"], peter["speed"]), ("TE", "77", "61"))
+        # the latest 2006 roster (Finale 0:59:51-1:02:00), not the week-one 53
+        finals = {"Rohan Davey": ("QB", 76), "Aveion Cason": ("HB", 72), "J.D. Runnels": ("FB", 85),
+                  "Az-Zahir Hakim": ("WR", 76), "Antonio Brown": ("WR", 65), "Ron Dixon": ("WR", 72),
+                  "Patrick Johnson": ("WR", 70), "Boo Williams": ("TE", 76), "Ryan Young": ("T", 85),
+                  "Matt Stinchcomb": ("G", 83), "Ron Stone": ("G", 85), "Tom Nutten": ("C", 82),
+                  "Jason Fisk": ("DT", 86), "Edward Jasper": ("DT", 83), "Rocky Calmus": ("OLB", 82),
+                  "James Anderson": ("OLB", 68), "Ronald McKinnon": ("ILB", 84), "DeMario Minter": ("CB", 76),
+                  "Jason Bell": ("CB", 68), "Kevin House": ("CB", 68), "Garnell Wilds": ("CB", 67),
+                  "Pat Watkins": ("FS", 79), "Eric Smith": ("FS", 63), "Greg Blue": ("SS", 77),
+                  "Joseph Jefferson": ("SS", 76), "Stephen Gostkowski": ("K", 75), "Rodney Williams": ("P", 77)}
+        manifest = json.loads((ct.DATA_DIR / "manifest.json").read_text())["teams"][key]
+        shown = {p["name"]: (p["position"], p["video_overall"]) for p in manifest["players"]}
+        for name, value in finals.items():
+            self.assertEqual(shown[name], value, name)
+            self.assertEqual(by_name[name]["position"], value[0], name)
         self.assertEqual(len({r["jersey"] for r in rows}), 53)
+        self.assertNotIn("G. Wilson", by_name)     # the two 2K5 53-man omissions
+        self.assertNotIn("J. Spielman", by_name)
+
+    def test_the_seamen_cards_are_authored(self):
+        from mod_editor.core import nfl2k5_classic_art as art
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        if _main_roster() is None:
+            self.skipTest("private retail roster archive is absent")
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        kit = ct.authored_kits()["kits"][0]
+        self.assertEqual(set(kit["card_art"]), {"logo", "logo_s", "helm_h", "helm_a", "unif_h", "unif_a",
+                                                "mini_h", "mini_a", "flipchip"})
+        with hs.Source(XBE.parent) as src:
+            rec = src.get(identity=hs.AGGREGATES[0]["record"])
+            cdf = src.get(identity=hs.AGGREGATES[0]["cdf"])
+            slot = hs.member_slot(rec, cdf, "logo_14_0")
+        authored, receipt = art.authored_slot(slot, "logo", "logo.png", "logo_14_14")
+        self.assertEqual(receipt["size"], [256, 256])
+        self.assertEqual(hs.slot_name(authored), "logo_14_14")
+        self.assertEqual(len(authored), len(slot))
+        self.assertNotEqual(authored, slot)
+
+    def test_the_seamen_field_art_fits_the_retail_venue(self):
+        from mod_editor.core import nfl2k5_classic_field as field
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        if _main_roster() is None:
+            self.skipTest("private retail roster archive is absent")
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        with hs.Source(XBE.parent) as src:
+            retail = src.get("s48dd.iff")
+        authored, receipt = field.authored(retail)
+        self.assertEqual(receipt["cap"], 256)
+        self.assertEqual(len(authored), len(retail))
+        self.assertNotEqual(authored, retail)
+        self.assertEqual(field.BUNDLES, tuple(f"s48{tod}{weather}.iff" for tod in "dan" for weather in "drs"))
+
+    def test_the_bus_face_patch_ships_the_authored_four_spans(self):
+        import json
+        from pathlib import Path
+        doc = json.loads((ct.DATA_DIR / "face/patch.json").read_text())
+        self.assertEqual(doc["schema"], "nfl2k5_classic_face_patch/v1")
+        self.assertEqual(doc["face_id"], 304)
+        self.assertEqual({(t["kind"], t.get("family")) for t in doc["targets"]},
+                         {("live_face", "f"), ("live_face", "h"), ("live_face", "n"), ("player_portrait", None)})
+        for row in doc["targets"]:
+            span = (ct.DATA_DIR / "face" / row["span_file"]).read_bytes()
+            self.assertEqual(len(span), row["size"])
+            self.assertEqual(len(row["replacement_sha256"]), 64)
 
     def test_the_seamen_authored_kit_is_the_video_look(self):
         doc = ct.authored_kits()
@@ -409,6 +472,27 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(cpu.stadium_id(user1), receipt["stadium_id"])
             self.assertEqual(cpu.style(user1), receipt["style"])
         self.assertEqual(seen, set(by_file))
+
+    def test_the_seamen_label_says_seamen_on_both_sides(self):
+        from tests.nfl2k5_classic_teams_native import build as _build  # noqa: F401
+        name = [n for n, _raw in self.files if n.endswith("-2006-dolphins-8.iff")]
+        self.assertEqual(len(name), 1)
+        cpu = self.make()
+        cpu.team_select(cpu.team(0), cpu.team(15))
+        seen = []
+        for _ in range(151):
+            step = cpu.press("home", -1)
+            if step["loaded"] and step["loaded"][0] == name[0]:
+                seen.append(step["home"]["label"])
+        self.assertEqual(seen, [["SEAMEN", "SEA"]])
+        away = self.make()
+        away.team_select(away.team(0), away.team(0))
+        seen = []
+        for _ in range(151):
+            step = away.press("away", -1)
+            if step["loaded"] and step["loaded"][0] == name[0]:
+                seen.append(step["away"]["label"])
+        self.assertEqual(seen, [["SEAMEN", "SEA"]])
 
     def test_both_sides_hold_classic_teams_and_never_the_same_slot(self):
         cpu = self.cpu

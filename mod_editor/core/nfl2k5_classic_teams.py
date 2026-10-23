@@ -51,6 +51,7 @@ from pathlib import Path
 import struct
 
 from . import nfl2k5_front_schemes as front
+from . import nfl2k5_classic_face as classic_face
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
@@ -135,10 +136,46 @@ class Data:
             require(kit in ("modern", "retail") or (type(kit) is int and 0 <= kit <= 14)
                     or (isinstance(kit, dict) and set(kit) == {"prefer", "fallback"}), f"{key}: kit")
             require(self.presentation[key]["stadium"] == "franchise", f"{key}: stadium")
+            if "stadium_id" in self.presentation[key]:
+                require(type(self.presentation[key]["stadium_id"]) is int
+                        and 0 <= self.presentation[key]["stadium_id"] <= 255, f"{key}: stadium_id")
+            if "stadium_info" in self.presentation[key]:
+                require(isinstance(self.presentation[key]["stadium_info"], dict), f"{key}: stadium_info")
 
     def filename(self, key, prefix=""):
         t = self.teams[key]
         return f"{prefix}h-{t['asset_code']}-{t['season']}-{t['selector']}-{FILE_NUMBER}.iff"
+
+
+
+def label_holder(main):
+    """The main roster with the two empty created-team rows made into the Seamen's label holder. Quick Game's
+    historic import copies the label of the resident team with the entry's asset code; both user rows take code 14,
+    their own name as the label pair (nickname/abbreviation), so the last matching row names the imported team SEAMEN
+    (Sarasota's abbreviation is SEA, whose playbook exists) without renaming any real team. The rows stay category 2
+    with no players, so they remain hidden; only the label lookup sees them."""
+    from . import nfl2k5_roster_records as rr
+    body = bytearray(main[32:])
+    doc = rr.RosterDocument(bytes(body))
+    require(len(doc.teams) >= 34, "the main roster has no two created-team rows")
+    for index in (32, 33):
+        t = doc.teams[index].offset
+        for field, text, capacity in ((0x104, "SEAMEN", 34), (0x108, "SEA", 12), (0x10C, "14", 6)):
+            at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+            require(0 < at < len(body) - capacity, f"created-team row {index}: text outside the roster")
+            raw = text.encode("utf-16le") + b"\0\0"
+            require(len(raw) <= capacity, "created-team label text does not fit")
+            body[at:at + capacity] = raw + bytes(capacity - len(raw))
+        struct.pack_into("<i", body, t + 0x110, -11)   # label pair = this row's nickname and abbreviation
+    result = main[:32] + bytes(body)
+    check = rr.RosterDocument(result[32:])
+    for index in (32, 33):
+        t = check.teams[index].offset
+        require(struct.unpack_from("<i", result, 32 + t + 0x110)[0] == -11, "label holder read-back")
+        for field, text in ((0x104, "SEAMEN"), (0x108, "SEA"), (0x10C, "14")):
+            at = 32 + t + field + struct.unpack_from("<i", result, 32 + t + field)[0] - 1
+            require(result[at:at + 2 * len(text)] == text.encode("utf-16le"), "label holder text read-back")
+    return result
 
 
 # ------------------------------------------------------------------------------------------------- the executable
@@ -398,6 +435,31 @@ def finish_file(raw, team, *, identity, stadium_id, style):
     return bytes(out)
 
 
+
+def finish_stadium(raw, info):
+    """The one-team file's stadium record with the named venue's asset code and text. The importer resolves the
+    venue through this record, so both the id byte and the asset string must name the chosen venue."""
+    if not info:
+        return raw
+    require(set(info) <= {"asset", "name", "location", "display", "secondary"}, "stadium_info fields")
+    body = bytearray(raw[32:])
+    off = _stadium_offset(raw) - 32
+    fields = ((0x00, info.get("name", "")), (0x08, info.get("location", "")),
+              (0x0C, info.get("asset", "")), (0x10, info.get("display", info.get("name", ""))),
+              (0x14, info.get("secondary", "")))
+    for field, text in fields:
+        if not text:
+            continue
+        require(isinstance(text, str) and text.isascii() and "\0" not in text, "stadium text")
+        at = len(body)
+        body.extend(text.encode("utf-16le") + b"\0\0")
+        struct.pack_into("<i", body, off + field, at - (off + field) + 1)
+    body.extend(bytes(-len(body) % 16))
+    out = bytearray(raw[:32])
+    struct.pack_into("<II", out, 4, len(body), len(body))
+    out.extend(body)
+    return bytes(out)
+
 def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool=False):
     """[(file name, bytes)] in list order, plus per-team receipts."""
     from . import nfl2k5_espn25_more_moments as more
@@ -418,10 +480,12 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
             raw = more._one_pool(raw, front.mapping_scheme("classic", key, team["abbreviation"], team["season"]))
         code = team["asset_code"]
         style, how = resolve_kit(data.presentation[key]["kit"], code, spares, has_kit)
-        raw = finish_file(raw, team, identity=identity, stadium_id=homes[code], style=style)
+        stadium_id = data.presentation[key].get("stadium_id", homes[code])
+        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style)
+        raw = finish_stadium(raw, data.presentation[key].get("stadium_info"))
         files.append((data.filename(key, prefix), raw))
         receipts[key] = dict(file=data.filename(key, prefix), identity=identity, style=style, kit=how,
-                             stadium_id=homes[code], template=team["template"], sha256=sha(raw),
+                             stadium_id=stadium_id, template=team["template"], sha256=sha(raw),
                              template_colleges=missing)
     return files, receipts
 
@@ -472,6 +536,7 @@ def image_status(path, source, data=None):
     from . import nfl2k5_historic_teams_quick_game as h1
     from . import nfl2k5_music_archive as archive
     from . import nfl2k5_position_pools as pools
+    from . import nfl2k5_classic_field as field
     data = Data.load() if data is None else data
     try:
         payload = e.read_xbe(path)
@@ -479,19 +544,25 @@ def image_status(path, source, data=None):
         authored = authored_kits_status(path)
         if authored == "foreign":
             return "foreign"
+        field_state = field.status(path, source)
+        if field_state == "foreign":
+            return "foreign"
         main, templates, spares, has_kit, present = _inputs(path, source, data)
         if not present and state == "retail":
-            return "retail"
+            return "retail" if field_state == "retail" and authored in ("retail", "not_applicable") else "foreign"
+        holder = label_holder(main)
         prefix = "HTS-" if h1.season_routing_status(payload) else ""
-        files, _ = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+        files, _ = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                  one_pool=pools.status(payload) == "applied")
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
             same = all(target.has(name) and target.get(name) == raw for name, raw in files)
+            same = same and target.get(identity=hs.ROSTER_OUTER_ID) == holder
         rows_ok = state == "applied" and XbeImage(payload).read(allocation(payload)["va"] + ROWS_OFFSET,
                                                                 4 * len(files)) == b"".join(
             struct.pack("<HBB", *r) for r in rows_for(main, data))
-        return "applied" if same and rows_ok and present == {n for n, _ in files} and authored == "applied" else "foreign"
+        return "applied" if (same and rows_ok and present == {n for n, _ in files}
+                              and authored == "applied" and field_state == "applied") else "foreign"
     except (ValueError, OSError, KeyError, IndexError, struct.error):
         return "foreign"
 
@@ -513,14 +584,24 @@ def apply_to_image(path, source, data=None):
     require(h1.status(payload) == "applied", "classic teams need historic teams in Quick Game")
     require(xbe_status(payload) == "retail", "classic teams: the executable is not clean")
     authored_receipt = install_authored_kits(path)
+    from . import nfl2k5_classic_field as field
+    field_edits, field_receipts = field.edits(path, source)
     prefix = "HTS-" if h1.season_routing_status(payload) else ""
     main, templates, spares, has_kit, _present = _inputs(path, source, data)
-    files, receipts = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+    holder = label_holder(main)
+    files, receipts = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                     one_pool=pools.status(payload) == "applied")
     rows = rows_for(main, data)
     patched, xbe_receipt = apply_xbe(payload, rows)      # computed before any disc write
-    receipt = hs.rewrite_archive(path, {}, files + [(FILLER, bytes(2048))])
+    edits = {hs.ROSTER_OUTER_ID: holder, **field_edits}
+    receipt = hs.rewrite_archive(path, edits, files + [(FILLER, bytes(2048))])
     seasons_bank.write_xbe(path, patched)
+    try:
+        face_receipt = dict(classic_face.patch_image(path), status="applied")
+    except (ValueError, OSError) as exc:
+        # The authored spans target the retail pack layout. A build whose face/portrait packs were rebuilt by the
+        # face pipeline cannot take the raw spans; the PNGs and the fragment are delivered for that pipeline.
+        face_receipt = dict(status="not_applied", reason=str(exc))
     require(image_status(path, source, data) == "applied", "classic teams read-back failed")
     return dict(status="applied", experimental=True, runtime_witnessed=False, teams=receipts, xbe=xbe_receipt,
-                authored_kits=authored_receipt, file_prefix=prefix, **receipt)
+                authored_kits=authored_receipt, field=field_receipts, face=face_receipt, file_prefix=prefix, **receipt)

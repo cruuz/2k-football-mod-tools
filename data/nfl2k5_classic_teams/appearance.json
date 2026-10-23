@@ -8635,34 +8635,36 @@
   ],
   "seamen_2006": [
    {
+    "name": "Bus Jibber",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51 View Rosters headshot; authored live face + portrait id 304)",
+    "retail": null,
+    "match": "authored from the video roster headshot (b778-ss1)",
+    "photo_id": 304,
+    "face": 0
+   },
+   {
+    "name": "Rohan Davey",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
     "name": "Torrance Styles",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "Bus Jibber",
-    "tone": 1,
+    "name": "Aveion Cason",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "R. Hilton",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "O. Hendrickson",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
@@ -8670,7 +8672,7 @@
     "name": "G. Jones",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
@@ -8678,63 +8680,63 @@
     "name": "W. Wells",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "E. Lyle",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "Q. Matthews",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "R. Hayden",
+    "name": "J.D. Runnels",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "I. Pharr",
+    "name": "Quinton Matthews",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "R. Valentine",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "C. Shields",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "J. Spikes",
+    "name": "Az-Zahir Hakim",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ron Dixon",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Patrick Johnson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Antonio Brown",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Roman Valentine",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
@@ -8742,39 +8744,39 @@
     "name": "John Mike Peter",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Boo Williams",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
     "name": "K. Monroe",
-    "tone": 1,
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "C. Grandmont",
+    "name": "Xavier Gold",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "X. Gold",
-    "tone": 1,
+    "name": "Ryan Young",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "G. Miles",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
@@ -8782,279 +8784,279 @@
     "name": "R. Sitrin",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "K. Justice",
-    "tone": 1,
+    "name": "Gary Miles",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "A. Moore",
+    "name": "Matt Stinchcomb",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "B. Spires",
+    "name": "Ron Stone",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "V. Atkinson",
-    "tone": 1,
+    "name": "Alvin Moore",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "G. Walker",
-    "tone": 1,
+    "name": "Brent Spires",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
     "name": "S. Harris",
-    "tone": 1,
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "I. Collins",
+    "name": "Tom Nutten",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "L. Wall",
+    "name": "Lamar Wall",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "O. Bowers",
-    "tone": 1,
+    "name": "Marcus Addis",
+    "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "M. Addis",
+    "name": "Ty Nelson",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "T. Nelson",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "A. Dorsey",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
     "name": "E. Graham",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "A. Dorsey",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Jason Fisk",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "M. King",
+    "name": "Edward Jasper",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Maurice King",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Travaris Lewis",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Rocky Calmus",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "T. Lewis",
+    "name": "James Anderson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Kurt Price",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Marquise Schultz",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "J. Spielman",
+    "name": "Ronald McKinnon",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "J. Holmes",
+    "name": "Eli Nixon",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "M. Schultz",
+    "name": "DeMario Minter",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Jason Bell",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Kevin House",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Garnell Wilds",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Rick Davis",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Pat Watkins",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Eric Smith",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Greg Blue",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Joseph Jefferson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Charles Cottrell",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Stephen Gostkowski",
     "tone": 1,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    },
    {
-    "name": "K. Price",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "G. Wilson",
+    "name": "Rodney Williams",
     "tone": 4,
     "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "T. Moore",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "E. Nixon",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "P. Adams",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "R. Davis",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "J. Burns",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "K. Harry",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "D. Grimm",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "O. Schwartz",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "M. Henson",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "L. Fraser",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "C. Cottrell",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "R. McNeal",
-    "tone": 4,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "G. McClain",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
-    "retail": null,
-    "match": "inferred from the video player card"
-   },
-   {
-    "name": "R. Tripp",
-    "tone": 1,
-    "dreads": 0,
-    "source": "headshot_review (video player card, SOFTDRINKTV Madden 07 episode 1; skin tone inferred)",
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
     "retail": null,
     "match": "inferred from the video player card"
    }

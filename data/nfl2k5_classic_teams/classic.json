@@ -190,7 +190,14 @@
    "kit_quality": "close",
    "kit_note": "The video's created-team set: teal jersey and pants at home, white jersey and pants on the road, white helmet with a teal/black stripe, black facemask, plain chest and sleeves. Authored as new MIA style 14 from the 2026 Dolphins cut: aqua -> the video's teal (#10B984), orange -> black, pants chunks swapped for green-on-green home and white-on-white away; the Dolphins chest/sleeve wordmarks and helmet logos are painted out. The helmet shell is the plain Browns shell (no side logo) recoloured white. Fallback: the modern Dolphins kit.",
    "stadium": "franchise",
-   "stadium_note": "Borrowed Dolphins home row (Hard Rock Stadium) as the closest existing Florida venue; 2K5 has no Sarasota stadium and the classic-team file borrows a retail franchise's venue row."
+   "stadium_note": "ESPN Stadium (s48, asset 48): a neutral venue no NFL team uses; its field scene carries the authored Seamen end zones and midfield anchor.",
+   "stadium_id": 48,
+   "stadium_info": {
+    "asset": "s48",
+    "name": "ESPN Stadium",
+    "location": "Bristol, CT",
+    "display": "ESPN Stadium"
+   }
   }
  }
 }

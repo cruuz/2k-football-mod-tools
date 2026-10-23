@@ -441,7 +441,7 @@ release_slot:
     mov ecx, ebx
     call team_release
     mov byte ptr [ebx+ACTIVE], 0
-    mov dword ptr [ebx+CAT], 2
+    mov byte ptr [ebx+CAT], 2
     lea eax, [esi+0x5a]
     mov word ptr [ebx+IDENT], ax
     mov word ptr [state+esi*8+4], 0      /* this side no longer shows a list entry */
@@ -499,7 +499,7 @@ load_entry:
     call team_import
     test eax, eax
     jz import_failed
-    mov dword ptr [ebx+CAT], 4
+    mov byte ptr [ebx+CAT], 4
     lea ecx, [esp+0x10]                  /* the label of the team with the same asset code */
     push ecx
     mov edx, FMT_CODE
@@ -519,6 +519,8 @@ label_loop:
     call text_equal
     test eax, eax
     jz label_next
+    cmp esi, ebx                         /* b778-ss1: the slot itself must not overwrite its own custom label */
+    je label_next
     mov eax, dword ptr [esi+LABEL]
     mov dword ptr [ebx+LABEL], eax
 label_next:
@@ -531,7 +533,7 @@ label_done:
     jmp load_out
 import_failed:
     mov byte ptr [ebx+ACTIVE], 0         /* an empty created-team slot, hidden from every list */
-    mov dword ptr [ebx+CAT], 2
+    mov byte ptr [ebx+CAT], 2
     mov eax, dword ptr [esp+0xd0]
     add eax, 0x5a
     mov word ptr [ebx+IDENT], ax

@@ -71,6 +71,9 @@ def validate_document(doc):
         require(set(kit["sides"]) == {"H", "A"}, kit["id"] + ": needs H and A")
         require(set(kit["cards"]) <= set(CARD_KEYS) | {"H", "A"} and {"H", "A", "logo"} <= set(kit["cards"]),
                 kit["id"] + ": cards")
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            art.card_art(kit)
     by_id = {k["id"]: k for k in doc["kits"]}
     rows = set()
     for s in doc["selections"]:
@@ -390,9 +393,18 @@ def expected(doc, inputs):
     packages = compose(doc, inputs["packages"])
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
+        authored = {}
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            authored = art.card_art(kit)
         for new, (aggregate, old) in card_sources(kit).items():
             record, cdf = inputs["members"][aggregate]
-            members[aggregate][new] = hs.rename_slot(hs.member_slot(record, cdf, old), new)
+            donor = hs.member_slot(record, cdf, old)
+            if new in authored:
+                key, filename = authored[new]
+                members[aggregate][new], _receipt = art.authored_slot(donor, key, filename, new)
+            else:
+                members[aggregate][new] = hs.rename_slot(donor, new)
     labels = wanted_labels(doc, inputs["main"], inputs["files"])
     defaults = {c["file"]: c["style"] for c in doc.get("classic_defaults", [])}
     files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
