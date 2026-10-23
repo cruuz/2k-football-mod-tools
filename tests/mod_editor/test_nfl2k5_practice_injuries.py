@@ -41,7 +41,8 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(0x61555 + struct.unpack_from("<i", after, 1)[0], 0x14EC5D0)
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-1], pi.OWNER)
+        # b778-int2: fa1's star retention and xs1's module loader follow this owner; the loader stays last.
+        self.assertEqual(space.LATE_OWNERS[-3:], (pi.OWNER, "nfl2k5_star_retention", "nfl2k5_module_loader"))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).practice_injuries, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["practice_injuries"], preset["franchise_practice"], name)
