@@ -1,0 +1,9 @@
+{
+ "who": "Jeff Hafley",
+ "notes": "fair skin; short brown hair receding at the temples, close-cropped sides; a light brown-grey stubble; brown eyes; a broad smile with teeth (mouth closed here); c14",
+ "eyes": [96, 72, 54],
+ "mouth": "close",
+ "hair_colour": [96, 76, 60],
+ "hair": {"front": 47.0, "recede": 1.7, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks"], "density": 0.22, "colour": [112, 100, 92]}]
+}

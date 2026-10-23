@@ -1429,6 +1429,7 @@ data/nfl2k5_modern_coaches/LV/logo.png
 data/nfl2k5_modern_coaches/LV/shirt.png
 data/nfl2k5_modern_coaches/MIA/headset.png
 data/nfl2k5_modern_coaches/MIA/head.png
+data/nfl2k5_modern_coaches/MIA/geometry.json
 data/nfl2k5_modern_coaches/MIA/jacket.png
 data/nfl2k5_modern_coaches/MIA/logo.png
 data/nfl2k5_modern_coaches/MIA/shirt.png
