@@ -18,6 +18,10 @@ import struct
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_inbox_standings"
+BUILD_CAPTION = "Inbox standings: last-undefeated story"
+HELP_TEXT = ("Restores the missing single-team standings setup for the last-undefeated inbox story, so its "
+             "table opens with the fallen club instead of an empty or stale list. One existing descriptor "
+             "pointer is repaired; no new code or save field.")
 REQUESTS = ()
 STORY = 23
 DESCRIPTOR = 0xAED1AC
