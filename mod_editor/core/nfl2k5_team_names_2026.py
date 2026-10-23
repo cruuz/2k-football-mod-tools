@@ -224,7 +224,7 @@ def _shift(body: bytes) -> int:
         return 0
     # b775: the import floor (spare.restore_import_floor) may add up to MAX_FLOOR_RECORDS more blank records at the
     # same insertion point; its reclaimed gap lies in the player-name pool, after every team-name run.
-    if spare.PRIMARY_AFTER <= count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS:
+    if count >= spare.PRIMARY_AFTER:
         return (count - spare.PRIMARY_BEFORE) * 84
     return 0
 

@@ -120,6 +120,26 @@ class PairedArchiveTests(unittest.TestCase):
         self.assertEqual(archive.file_hash(self.source), self.before)
         self.assertFalse(list(self.directory.glob('.archive-*')))
 
+    def test_capacity_growth_pairs_with_the_wider_arena(self):
+        destination = self.directory/'capacity.iso'
+        receipt = writer.build_image(self.source, destination, reserves_16=False,
+                                     created_teams_extra=0, capacity_records=612)
+        self.assertEqual(writer.image_status(destination), 'applied')
+        self.assertEqual(receipt['verification']['status'], 'verified')
+        self.assertEqual(receipt['rost']['capacity_records'], 612)
+        self.assertEqual(receipt['rost']['arena_size'], arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(receipt['xbe']['capacity'], True)
+        with archive.Disc(destination, descriptors=()) as disc:
+            entry = disc.archive_entries[5]
+            self.assertEqual(entry.size, arena.CAPACITY_ARENA_SIZE + 0x60)
+            from mod_editor.core.nfl2k5_save_rost import decode
+            resource = disc.read_entry_range(entry, 0, entry.size)
+            grown = decode(resource)
+            self.assertEqual(grown.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+            self.assertEqual(grown.tables['primary'].count, 2479 + 612)
+            self.assertIsNotNone(arena.capacity_descriptor(resource, grown.layout))
+        self.assertEqual(self.before, archive.file_hash(self.source))
+
     def test_retail_geometry_inspectors_read_the_grown_roster_as_migrated(self):
         # The roster writers that run before the growth (2026 team names, team history, prospect names,
         # star tags) pin the retail 0x90F80 roster. After the growth their inspectors read the roster the

@@ -44,14 +44,14 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 def _wrapped(body):
-    require(len(body) == BODY_SIZE, 'spare capacity requires the fixed native main ROST size')
+    require(len(body) in (BODY_SIZE, 0xB0040), 'spare capacity requires a native main ROST size')
     return b'ROST' + struct.pack('<7I', len(body), len(body), 0, 0, 0, 0, 0) + bytes(body)
 
 def _decode(body):
     from . import nfl2k5_save_rost as saved
     document = saved.decode(_wrapped(body), reference_year=2026)
-    require(document.layout.version == 17 and document.layout.root == 0x60,
-            'spare capacity requires the native version-17 main ROST')
+    require((document.layout.version, document.layout.root) in ((17, 0x60), (18, 0x60)),
+            'spare capacity requires the native main ROST')
     require(document.tables['secondary'].count == SECONDARY_COUNT,
             'spare capacity requires the audited 68 secondary records')
     return document
@@ -74,7 +74,10 @@ def _table_layout(document, *, extended, extra=0, typed_free_agents=False):
 
 def extended_layout(body):
     """Seal the declared native table relocation; allow subsequent typed edits."""
-    return _table_layout(_decode(body), extended=True)
+    document = _decode(body)
+    count = document.tables['primary'].count
+    require(count >= PRIMARY_AFTER, 'the spare-capacity extension is not installed')
+    return _table_layout(document, extended=True, extra=count - PRIMARY_AFTER, typed_free_agents=True)
 
 
 def _initial_extension(body):
@@ -123,6 +126,9 @@ def status(body):
         if count == PRIMARY_AFTER:
             _initial_extension(body)
             return 'applied'
+        if count > PRIMARY_AFTER:
+            _table_layout(document, extended=True, extra=count - PRIMARY_AFTER, typed_free_agents=True)
+            return 'applied'
         return 'foreign'
     except (ValueError, KeyError, TypeError, IndexError, struct.error, OverflowError):
         return 'foreign'
@@ -139,6 +145,13 @@ def apply_body(body):
                             primary_count=PRIMARY_AFTER, secondary_count=SECONDARY_COUNT,
                             before_sha256=sha(before), after_sha256=sha(before),
                             arena_size_unchanged=True, roster_schema_unchanged=True)
+    if primary.count >= PRIMARY_AFTER:
+        _table_layout(document, extended=True, extra=primary.count - PRIMARY_AFTER, typed_free_agents=True)
+        return bytes(body), dict(owner=OWNER, already_applied=True, changed_bytes=0,
+                                 primary_count=primary.count, secondary_count=SECONDARY_COUNT,
+                                 before_sha256=sha(body), after_sha256=sha(body),
+                                 arena_size_unchanged=True, roster_schema_unchanged=True,
+                                 grown_body=primary.count > PRIMARY_AFTER)
     require(primary.count == PRIMARY_BEFORE and primary.offset is not None,
             'spare capacity requires the audited 2479 primary records')
     source = rr.load_body(before, scheme='one_pool', reference_year=2026)
@@ -311,7 +324,7 @@ def restore_import_floor(body, *, floor=IMPORT_FLOOR, target=RETAIL_VACANCIES):
     before = bytes(body)
     document = _decode(before)
     primary = document.tables['primary']
-    require(PRIMARY_AFTER <= primary.count <= PRIMARY_AFTER + MAX_FLOOR_RECORDS,
+    require(PRIMARY_AFTER <= primary.count,
             'the import floor follows the restored historic spare capacity (2619 primary records)')
     _table_layout(document, extended=True, extra=primary.count - PRIMARY_AFTER, typed_free_agents=True)
     have = import_vacancies(before)
@@ -326,7 +339,8 @@ def restore_import_floor(body, *, floor=IMPORT_FLOOR, target=RETAIL_VACANCIES):
     require(all(t.offset is None or t.name == 'primary' or t.offset >= point
                 or t.offset + t.count * t.stride <= primary.offset for t in document.tables.values()),
             'primary insertion crosses another table')
-    room = MAX_FLOOR_RECORDS - (primary.count - PRIMARY_AFTER)
+    room = (MAX_FLOOR_RECORDS - (primary.count - PRIMARY_AFTER) if document.layout.version == 17
+            else 8000 - primary.count)
     extra, gap = _floor_fit(source.names.free, point, min(target - have, room))
     require(have + extra >= floor,
             f'the main roster keeps {have} import vacancies and unused name space fits {extra} more; '

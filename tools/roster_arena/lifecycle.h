@@ -71,8 +71,10 @@ void FC arena_load(u8 *w) {
     if(aux>ARENA_SIZE-BLOCK_OFFSET-352) return;
     root=w+52+U32(w,52)-1;
     if(ver==1 || ver==18) {
-        if(root!=w+(ver==1?64:96) || declared!=(ver==1?0x92020:0x92040)) return;
+        u32 full=ver==1?ARENA_SIZE+0x20:ARENA_SIZE+0x40;
+        if(root!=w+(ver==1?64:96) || declared>full || declared<(ver==1?0x92020:0x92040)) return;
         b=root+BLOCK_OFFSET;
+        if(U32(b,0)!=0x52354b32 && ARENA_CAPACITY && declared<full) b=root+0x91c00U;
         if(U32(b,0)!=0x52354b32 || U32(b,4)!=0x00325653 ||
            U32(b,8)!=0x00200002 || U32(b,12)!=0x00020005 ||
            (U32(b,28)&~0x102U) || crc(b)!=U32(b,20)) return;
@@ -89,6 +91,14 @@ void FC arena_load(u8 *w) {
         copy(root+ARENA_SIZE-aux,root+old_size-aux,aux);
         zero(root+old_size,ARENA_SIZE-old_size-aux);
         initialize(root);
+    } else if(ARENA_CAPACITY && old_size<ARENA_SIZE) {
+        /* A 0x92000 save or disc loaded into the capacity arena: preserve its auxiliary tail and move the
+         * overflow block to its new, fixed position. Capacity builds never combine reserves with the
+         * capacity growth, but an older save may still carry an empty reserve block. */
+        copy(root+ARENA_SIZE-aux,root+old_size-aux,aux);
+        zero(root+old_size,ARENA_SIZE-old_size-aux);
+        b=root+0x91c00U;
+        if(U32(b,0)==0x52354b32 && U32(b,4)==0x00325653) copy(root+BLOCK_OFFSET,b,352);
     }
     U32((u8 *)0xB7280C,0)=ARENA_SIZE-aux;
     if(aux) U32((u8 *)0xBDB758,0)=(u32)root+ARENA_SIZE-aux;

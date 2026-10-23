@@ -355,9 +355,13 @@ class FranchiseSave:
                 self.career_offset = native_size
             except ValueError as exc:
                 raise FranchiseSaveError(str(exc)) from exc
-        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000),
-                 f"unsupported franchise container length: {len(data):,}; expected "
-                 "720,044 or 724,140 native bytes, optionally followed by a 128-byte career block")
+        from . import nfl2k5_roster_arena as arena
+        capacity_growth = arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
+        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000,
+                                 FRANCHISE_SAVE_SIZE + capacity_growth),
+                 f"unsupported franchise container length: {len(data):,}; expected a 720,044-byte "
+                 "native save, the 724,140-byte 16-reserve save or the capacity-grown save, optionally "
+                 "followed by a 128-byte career block")
         growth = native_size - FRANCHISE_SAVE_SIZE
         self.arena_end = ARENA_END + growth
         self.season_block = SEASON_BLOCK + growth

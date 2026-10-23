@@ -81,7 +81,7 @@ class Scan:
 
 
 def _data_end(layout: codec.Layout) -> int:
-    return layout.root + arena.BLOCK_OFFSET if layout.version in (1, 18) else layout.end
+    return arena.data_end(layout) if layout.version in (1, 18) else layout.end
 
 
 def _span(layout: codec.Layout, offset: int, size: int, label: str) -> None:
@@ -139,8 +139,9 @@ def _frame(data: bytes) -> tuple[codec.Layout, dict[str, codec.Table]]:
                     end = base + declared
                     _require(end <= len(data), 'truncated declared ROST resource')
                 else:
-                    expected = {0: 0x91020, 1: 0x92020, 17: 0x90F60, 18: 0x92040}[version]
-                    _require(base == 0 and len(data) == expected, 'unframed ROST has unknown boundaries')
+                    expected = {0: (0x91020,), 1: (0x92020,), 17: (0x90F60,),
+                                18: (0x92040, 0xB0040)}[version]
+                    _require(base == 0 and len(data) in expected, 'unframed ROST has unknown boundaries')
                     end = len(data)
                 layout = codec.Layout(version, wrapper, base, root, end)
                 candidates.append((layout, _tables(data, layout)))

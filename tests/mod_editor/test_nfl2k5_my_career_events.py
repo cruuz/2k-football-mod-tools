@@ -237,7 +237,7 @@ class HostBudgetTests(unittest.TestCase):
             # b778 mc6: inline_stage compares the portrait half of record +4 (not the play-by-play cue) and
             # inline_decode lets resolve_team derive the saved stage (test_nfl2k5_my_career_mc6).
             'tools/mycareer_mode/runtime.c':
-                '97db42cd7e781b2d2ec4f2f2f809e1e057a3b4890c501a10a2918b4d4af123a5',
+                '7401d8c37390fd874d7038a44a543e5f8d5cd5b384f2913995d988919df803a6',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
@@ -247,7 +247,7 @@ class HostBudgetTests(unittest.TestCase):
                 # nl1: drafted-notice format in the M3 pool, Team Select side guard.
                 # ui1: Career Home Apartment descriptor words and the Upgrades back flag (Career Home variant only).
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
-                '4730e54e7ddfe45f8199017e07ca626cf353954d461fdf899dd9df474f421c8a',
+                '8d184276e7d7b6c33f3b9e024e2d123cbb94d5190c9ada2e5255b97177ca3e74',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':
