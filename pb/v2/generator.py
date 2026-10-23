@@ -112,7 +112,23 @@ MENU_MIX = {
 # formations every book carries when its personnel exists (the must-have families)
 MUST_FORMATIONS = ("Goal Line Sneak", "Goal Line", "Gun Wildcat", "Empty Trey", "Singleback Doubles",
                    "Gun Doubles", "Gun Trips TE", "Gun Bunch X Nasty", "Pistol Doubles", "I-Form Pro",
-                   "I-Form Tight", "Full House", "Wing T", "Gun Empty Trey", "Singleback Ace", "Gun Spread")
+                   "I-Form Tight", "Full House", "Full House Sneak", "Wing T", "Gun Empty Trey", "Singleback Ace", "Gun Spread")
+
+# b778 ai7: the QB Sneak and the tush push live only in the full-house set. The native play scorer weights a
+# one-yard QB run by distance alone, not by down, so a sneak in the 23-personnel goal-line set is still a legal
+# 1st/2nd-down call (the category lottery's 1st/2nd target is 23/13 personnel; see pb/v2/selection_model.py).
+# The 22-personnel full house is the heavy group that target asks for least often: the target is 23/13, and while
+# the native category distance curve still reaches code 2 (one code from 13), the one-yard play weight is low and
+# the full CPU commit measured 0/2000 such calls. The 23 and 13 groups are the deliberate 1st/2nd targets and no
+# longer hold a sneak at all. Keeping both plays in the full house preserves the allowed 3rd/4th-and-1 call.
+SNEAK_FORMATION = "Full House Sneak"
+
+
+def _sneak_formation(name: str) -> bool:
+    """May this formation carry a QB sneak / tush push? Only the 22-personnel under-centre full house."""
+    spec = oc.FORMATIONS.get(name)
+    return name == SNEAK_FORMATION and spec is not None and spec.personnel == "22" and spec.align == "uc"
+
 
 LONG_SETS = ("Trips", "Empty", "Trey", "Y-Slot", "Tight Open", "Spread")
 GROUP_NAMES = {"Pistol": "Pistol", "Kings Long": "Kings Long", "13": "Jumbo", "P2": "Pony"}
@@ -582,7 +598,7 @@ def candidates(info, prof: Profile, fname: str, checker: Checker, rng: random.Ra
             d = fn(ctx, codes) if fn in (om.tush_push, om.qb_keep, om.qb_power) else fn(ctx)
         except oc.ConceptUnavailable:
             continue
-        if must == "tush" and fname != "Goal Line Sneak":
+        if must in ("tush", "sneak") and not _sneak_formation(fname):
             continue
         add(d, fam, w, must)
     # screens
@@ -1035,13 +1051,13 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
     def first(f, pred):
         return next((c for c in cands.get(f, []) if pred(c)), None)
     musts = []
+    # b778 ai7: the full house keeps both one-yard QB runs; the 23/13 goal-line and short-yardage sets the 1st/2nd
+    # category target deliberately picks keep none.
     for f in forms:
-        if f == "Goal Line Sneak":
+        if _sneak_formation(f):
             musts += [(f, first(f, lambda c: c.must == "tush")), (f, first(f, lambda c: c.must == "sneak"))]
-    for f in forms:
-        if oc.FORMATIONS[f].tag in ("goal", "short") and f != "Goal Line Sneak":
-            musts.append((f, first(f, lambda c: c.must == "sneak")))
-            break
+            if any(c is not None for _f, c in musts[-2:]):
+                break
     for f in ("Empty Trey", "Singleback Doubles", "Singleback Ace"):
         if f in forms:
             musts.append((f, first(f, lambda c: c.must == "keep")))
@@ -1085,6 +1101,8 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         if team_plays >= 8 or row["formation"] not in forms or row["concept"] not in oc.CONCEPTS:
             continue
         spec = oc.FORMATIONS[row["formation"]]
+        if row["concept"] == "QB Sneak" and not (spec.personnel == "22" and spec.align == "uc"):
+            continue                          # b778 ai7: never a sneak outside the 22-personnel under-centre sets
         try:
             d = oc.design(row["concept"], spec.context(), dict(row["overrides"], name=row["name"]))
         except (oc.ConceptUnavailable, KeyError, ValueError, TypeError):
