@@ -319,6 +319,100 @@ class FrameTests(unittest.TestCase):
         d.frame(dt=0.25)
         self.assertAlmostEqual(d.clock, 59.75, places=4)
 
+    def test_first_pick_round_boundary_and_final_pick(self):
+        # Reposition the real loaded draft cursor to each boundary. The existing undrafted pool and order are
+        # retained; this checks the screen's control flow, not a regenerated rookie class from an earlier date.
+        for at, after in (((0, 0), (0, 1)), ((0, 31), (1, 0)), ((6, 31), (7, 0))):
+            for press in (0, Y, X):
+                with self.subTest(at=at, press=press):
+                    d = self.draft()
+                    d.m.put(dc.ROUND, at[0])
+                    d.m.put(0xE3C0A4, at[1])
+                    d.m.f32(dc.CLOCK, dc.RETAIL_CLOCK)
+                    self.assertFalse(d.human())
+                    d.frame(dt=1.0, press=press)
+                    if press == X:
+                        self.assertTrue(d.at[0] >= 7 or d.human())
+                    elif press == Y:
+                        self.assertEqual(d.at, after)
+                        self.assertEqual(d.made, 1)
+                        if after[0] < 7:
+                            self.assertEqual(d.clock, dc.CPU_SECONDS)
+                        else:
+                            d.frame()
+                            self.assertIn("end of draft", d.events)
+                    else:
+                        self.assertEqual(d.at, at)
+                        self.assertEqual(d.made, 0)
+                        self.assertEqual(d.clock, 59.0)
+
+    def test_next_user_with_no_user_picks_left_finishes_the_draft(self):
+        d = self.draft()
+        d.m.put(dc.ROUND, 6)
+        d.m.put(0xE3C0A4, 17)  # last round, immediately after this save's final user pick
+        self.assertFalse(d.human())
+        d.frame(press=X)
+        self.assertEqual(d.at, (7, 0))
+        self.assertIn("end of draft", d.events)
+
+    def test_next_user_refreshes_the_same_native_phone_recommendations(self):
+        recommendations = []
+        for payload, entry, press in ((self.retail, 0x326980, 0), (self.final, None, X)):
+            d = self.draft(payload, entry)
+            d.m.put(0xE3C0A4, 17)  # a CPU pick immediately after the saved user's pick
+            d.m.f32(dc.CLOCK, dc.RETAIL_CLOCK)
+            d.frame(press=press)
+            self.assertTrue(d.human())
+            self.assertIn("pda", d.events)
+            self.assertEqual(d.m.get(0xC95C20), 6)  # native backing list for the phone recommendations
+            players = struct.unpack("<6I", d.m.uc.mem_read(0xC95C08, 24))
+            self.assertEqual(len(set(players)), 6)
+            self.assertNotIn(0, players)
+            recommendations.append(players)
+        self.assertEqual(*recommendations)
+
+    def test_exhausted_draft_ends_with_either_shortcut(self):
+        for press in (0, Y, X):
+            with self.subTest(press=press):
+                d = self.draft()
+                d.m.leaf(dc.PLAYERS_LEFT, lambda: d.m.ret(0), reason="exhausted undrafted pool")
+                d.frame(press=press)
+                self.assertEqual(d.made, 0)
+                self.assertIn("end of draft", d.events)
+
+    def test_native_saved_cursor_and_clock_resume_without_private_state(self):
+        for cpu in (False, True):
+            with self.subTest(cpu=cpu):
+                d = self.draft()
+                if cpu:
+                    self.to_cpu(d)
+                d.frame(dt=10.0)
+                at, seconds = d.at, d.clock
+                m = d.m
+                front = m.ARENA + 0x996FC
+                # Execute the native serializer's draft-field prefix, then its full native loader. The rest of
+                # the serializer needs the game's save-pointer relocation table, outside this screen fixture.
+                m.call(0x2D0790, ecx=front, stop=0x2D07D1)
+                self.assertEqual(m.f32(front + 0x700), seconds)
+                self.assertEqual(bytes(m.uc.mem_read(front + 0x704, 2)), bytes((at[1], at[0])))
+                m.put(dc.ROUND, 0)
+                m.put(0xE3C0A4, 0)
+                m.f32(dc.CLOCK, dc.RETAIL_CLOCK)
+                m.call(0x2D0CE0, ecx=front, budget=3_000_000)
+                self.assertEqual(d.at, at)
+                self.assertEqual(d.clock, seconds)
+                self.assertEqual(d.human(), not cpu)
+                d.frame(dt=0.25)
+                self.assertAlmostEqual(d.clock, seconds - 0.25, places=4)
+
+    def test_step_preserves_callee_saved_registers_and_stack(self):
+        d = self.draft()
+        for press in (0, Y, 0, Y, X):
+            d.frame(press=press)
+            for register, value in (("ESI", 0x22222222), ("EDI", 0x33333333), ("EBX", 0x11111111),
+                                    ("EBP", 0x44444444), ("ESP", d.m.STACK + 4)):
+                self.assertEqual(d.m.reg(register), value, (press, register))
+
     def test_cpu_complete_draft_stays_retail(self):
         d = self.draft()
         d.m.put(0xC94480, 1)
@@ -342,8 +436,7 @@ class FrameTests(unittest.TestCase):
             frames += 1
         self.assertEqual(d.events.count("end of draft"), 1)
         self.assertEqual(r.events.count("end of draft"), 1)
-        self.assertEqual([p[:2] for p in d.picks], [p[:2] for p in r.picks])
-        self.assertEqual([p[3] for p in d.picks], [p[3] for p in r.picks])
+        self.assertEqual(d.picks, r.picks)  # round, pick, club AND player, including the signing records
 
 
 

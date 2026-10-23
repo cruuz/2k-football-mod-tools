@@ -503,7 +503,7 @@ class BuildPlan:
     # b778-dr1: franchise draft on a broadcast clock. Retail makes every CPU pick before the user's in one frame ("it
     # goes super fast straight to your pick", Noah 10/22). A late executable owner (nfl2k5_draft_clock) hooks the draft
     # screen's step (call at 0x326DBC): each CPU club is on the game's own draft clock for 60 s; Y = Advance to Next
-    # Pick, White = Advance to Next User Pick (the retail fast draft), Black = Simulate My Pick. No state bytes. On in
+    # Pick / Simulate My Pick (on the user's clock), X = Advance to Next User Pick. No state bytes. On in
     # the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
     franchise_draft_clock: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
