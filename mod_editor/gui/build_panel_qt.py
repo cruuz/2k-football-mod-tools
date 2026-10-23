@@ -236,6 +236,7 @@ CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP
 # b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 from mod_editor.core import nfl2k5_module_loader as _module_loader  # noqa: E402  b778-xs1
+from mod_editor.core import nfl2k5_crib_trophy_room as _crib_trophy_room  # noqa: E402  b778-xs1
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -247,7 +248,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
                  ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
-                 ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT))  # b778-xs1
+                 ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
+                 ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT))  # b778-xs1
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
