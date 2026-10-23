@@ -1,4 +1,4 @@
-"""b778 sb3: the reference-measured wing glow, plate bevel and rail light, and Buffalo's primary mark.
+"""b778 sb3/sb4: the measured wing glow, connected clock pill, plate tab and Buffalo's primary mark.
 
 Offline checks on the shipped template, layout and runtime source. The emulator stills are produced by
 tools/scorebug_sprite/espn_fidelity.py and the native preview, not by this module.
@@ -148,6 +148,91 @@ class BuffaloTests(unittest.TestCase):
         self.assertGreater(spec['logo_fit']['by_team']['BUF']['zoom'], 1.10)
 
 
+class ConnectedCapsuleTests(unittest.TestCase):
+    """sb4: the still has one 243 px pill, not a pill plus a play-clock box."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.spec, cls.sheet = load()
+        cls.statics = {row['name']: row for row in cls.spec['static']}
+        cls.fields = {row['name']: row for row in cls.spec['fields']}
+
+    def test_one_capsule_holds_quarter_clock_and_play_clock(self):
+        self.assertEqual(self.statics['capsule']['box'], [839, 999, 1082, 1039])
+        self.assertEqual(self.statics['red']['box'], [1023, 999, 1082, 1039])
+        self.assertNotIn('housing', self.statics)
+        for name in ('quarter', 'clock', 'play_clock'):
+            box = self.fields[name]['box']
+            self.assertGreaterEqual(box[0], 839, name)
+            self.assertLessEqual(box[2], 1082, name)
+        self.assertLess(self.fields['play_clock']['box'][0], 1082)
+        x0, y0, x1, y1 = self.spec['cells']['capsule']['box']
+        self.assertEqual((x1 - x0, y1 - y0), (81, 16))
+
+    def test_two_measured_dividers_inside_the_white_body(self):
+        x0, y0, x1, y1 = self.spec['cells']['capsule']['box']
+        width, height = x1 - x0, y1 - y0
+        rgb = [self.sheet.getpixel((x0 + x, y0 + height // 2))[0] for x in range(width)]
+        self.assertGreaterEqual(max(rgb), 244)
+        for divider in (902.5, 1021.5):
+            column = round((divider - 839) * width / 243)
+            self.assertLess(min(rgb[column - 1:column + 2]), 235)
+        self.assertGreater(rgb[width // 2], 240)          # the body returns between dividers
+
+    def test_play_clock_is_smaller_than_the_game_clock(self):
+        self.assertEqual((self.fields['clock']['size'], self.fields['quarter']['size'],
+                          self.fields['play_clock']['size']), (27, 19, 19))
+        self.assertLessEqual(self.fields['play_clock']['box'][3] - self.fields['play_clock']['box'][1], 19)
+
+    def test_red_state_uses_the_pill_itself(self):
+        x0, y0, x1, y1 = self.spec['cells']['capsule']['box']
+        rx0, ry0, rx1, ry1 = self.spec['cells']['red']['box']
+        cap = self.sheet.crop((x1 - (rx1 - rx0), y0, x1, y1))
+        red = self.sheet.crop(tuple([rx0, ry0, rx1, ry1]))
+        diff = max(abs(a - b) for a, b in zip(cap.getchannel('A').getdata(), red.getchannel('A').getdata()))
+        self.assertLessEqual(diff, 2)
+        self.assertEqual(self.statics['red']['tint'], 'play clock cell')
+
+
+class PlateTabTests(unittest.TestCase):
+    """sb4: the down-and-distance plate is a tapered tab on the bar's top rail."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.spec, cls.sheet = load()
+        cls.statics = {row['name']: row for row in cls.spec['static']}
+
+    def test_tab_top_sits_on_the_bar_and_taper_faces_the_bar(self):
+        self.assertEqual(self.statics['plate']['box'], [828, 944, 1098, 990])
+        self.assertEqual(self.statics['plate_gloss']['box'], self.statics['plate']['box'])
+        x0, y0, x1, y1 = self.spec['cells']['plate']['box']
+        alpha = self.sheet.crop((x0, y0, x1, y1)).getchannel('A')
+        top = sum(alpha.getpixel((x, 2)) > 128 for x in range(alpha.width))
+        bottom = sum(alpha.getpixel((x, alpha.height - 4)) > 128 for x in range(alpha.width))
+        self.assertGreater(top, bottom + 8)
+
+    def test_strong_vertical_gradient_and_dark_lower_edge(self):
+        x0, y0, x1, y1 = self.spec['cells']['plate']['box']
+        cell = self.sheet.crop((x0, y0, x1, y1))
+        middle = cell.width // 2
+        rows = [cell.getpixel((middle, y))[0] for y in range(cell.height)]
+        self.assertGreaterEqual(rows[1], 230)             # the crest is the full possession tint
+        self.assertGreaterEqual(rows[1], rows[cell.height // 2] + 10)
+        self.assertGreater(rows[cell.height // 2], rows[cell.height - 4] + 40)
+        self.assertLess(rows[-2], 120)                    # drop shadow over the bar
+        for pixel in cell.getdata():
+            if pixel[3] > 128:
+                self.assertLessEqual(max(pixel[:3]) - min(pixel[:3]), 1)
+
+    def test_gloss_is_an_untinted_white_bevel(self):
+        self.assertEqual(self.statics['plate_gloss']['tint'], 'none')
+        x0, y0, x1, y1 = self.spec['cells']['plate_gloss']['box']
+        cell = self.sheet.crop((x0, y0, x1, y1))
+        self.assertGreaterEqual(cell.getchannel('A').getextrema()[1], 100)
+        opaque = [p[:3] for p in cell.getdata() if p[3] > 64]
+        self.assertTrue(all(min(p) >= 250 for p in opaque))
+
+
 class ProvenanceTests(unittest.TestCase):
     def test_record_names_the_measurements(self):
         spec = json.loads((FOLDER / 'layout.json').read_text(encoding='utf-8'))
@@ -156,6 +241,13 @@ class ProvenanceTests(unittest.TestCase):
         self.assertIn('wing', record)
         self.assertIn('plate_rows', record)
         self.assertEqual(record['rim']['cells'], ['away_rim', 'home_rim'])
+        self.assertEqual(record['plate_source'], [274, 38])       # sb3 history stays sb3
+        capsule = spec['provenance']['b778_sb4_connected_clock']
+        self.assertEqual(capsule['layout'], [839, 999, 1082, 1039])
+        self.assertEqual(capsule['dividers_layout'], [902.5, 1021.5])
+        plate = spec['provenance']['b778_sb4_plate_tab']
+        self.assertEqual(plate['layout'], [828, 944, 1098, 990])
+        self.assertIn('ref_full.png', capsule['reference'])
 
     def test_template_pin_matches_the_catalog(self):
         catalog = json.loads((ROOT / 'packaging/nfl2k5_scorebug_template_pngs.json').read_text(encoding='utf-8'))

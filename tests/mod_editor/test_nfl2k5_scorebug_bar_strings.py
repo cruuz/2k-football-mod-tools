@@ -144,7 +144,7 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(new_image.tobytes(), self.image.tobytes())
 
     def test_the_budget_keeps_the_hud_sectors(self):
-        self.assertEqual(sprite.probe_sizes(), (34, 327904, 327680))       # the overtime tokens: +384 B, same sectors
+        self.assertEqual(sprite.probe_sizes(), (34, 327264, 327680))       # sb4 prunes 20 unreachable small-set tokens
 
 
 @unittest.skipUnless(XBE.is_file(), 'the pinned USA XBE is required')
