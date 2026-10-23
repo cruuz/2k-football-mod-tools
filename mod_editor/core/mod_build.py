@@ -502,6 +502,12 @@ class BuildPlan:
     # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
     # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
     modern_force_out: bool = False
+    # b778-pg2: the Front Office Player Progress screen stays available every week of the regular season and
+    # playoffs, compares each rating with the season-opening baseline, and a toggle shows last week's change.
+    # The snapshot record is a 5,232-byte PPG2 table in the roster arena tail (no save growth). A late executable
+    # owner (nfl2k5_player_progress_screen) that needs the growable pool from b778-xs1. EXPERIMENTAL: on in the
+    # Advanced and Experimental presets; Basic keeps the retail offseason-only screen.
+    player_progress: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -705,6 +711,13 @@ for _preset in PRESETS.values():
     _preset["modern_force_out"] = False
 PRESETS["softdrink_advanced"]["modern_force_out"] = True
 PRESETS["softdrink_experimental"]["modern_force_out"] = True
+del _preset
+# b778-pg2: the Player Progress screen is OFF in every preset. The native screen and weekly capture work, but the
+# provisional save host (roster arena tail 0x8FCF4) is used by the running Front Office: the emulator froze the Front
+# Office after the record was written (the same save decodes correctly offline and stays 720,044 bytes). A versioned
+# franchise footer or an owned arena reserve is required before this can ship. The option stays available for tests.
+for _preset in PRESETS.values():
+    _preset["player_progress"] = False
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -985,6 +998,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress),  # b778-pg2
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1093,6 +1107,39 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
     receipt["result"]["modern_force_out"] = "applied"
 
 
+def _player_progress_preflight(source: Path, progress) -> None:
+    """b778-pg2: refuse a source whose Player Progress bytes are foreign, before any write."""
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The Player Progress screen is not available in this installation.")
+    progress("Checking the Player Progress screen bytes", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The Player Progress screen cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The Player Progress screen bytes in this source are not retail or this owner. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _apply_player_progress(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pg2: install the Player Progress screen/snapshot owner (a late allocator owner)."""
+    if not plan.player_progress:
+        return
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None:
+        raise RuntimeError("The Player Progress screen needs nfl2k5_player_progress_screen.")
+    progress("Franchise: Player Progress screen", 0, 0)
+    payload, progress_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The Player Progress screen: the output does not read back as applied")
+    receipt["steps"].append({"step": "player_progress", **{k: v for k, v in progress_receipt.items()
+                                                            if k not in ("reservations", "edits")}})
+    receipt["result"]["player_progress"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
@@ -1192,6 +1239,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1404,6 +1452,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2
+    out["player_progress"] = player_progress.status(_xbe_bytes(source)) if player_progress is not None else "unavailable"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -3024,6 +3074,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
         raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.player_progress) is not bool:  # b778-pg2
+        raise ValueError("The Player Progress screen must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3742,6 +3794,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
+    if plan.player_progress:  # b778-pg2: like qb3, before any write
+        _player_progress_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
     if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
         unc = _core_module("nfl2k5_unc_bowl_uniforms")
@@ -5249,6 +5303,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_formation_art_spacing(plan, target, receipt, progress)
     # b778-fo1: modern sideline catches, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_force_out(plan, target, receipt, progress)
+    # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
+    _apply_player_progress(plan, target, receipt, progress)
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5289,6 +5345,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
     if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
         raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.player_progress and _core_module("nfl2k5_player_progress_screen").status(_xbe_bytes(target)) != "applied":  # b778-pg2
+        raise ValueError("the Player Progress screen did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

@@ -1959,6 +1959,11 @@ mod_editor/core/nfl2k5_qb_accuracy.py
 mod_editor/core/nfl2k5_qb_accuracy_code.py
 mod_editor/core/nfl2k5_formation_art_spacing.py
 mod_editor/core/nfl2k5_force_out.py
+# b778 pg2: Player Progress screen and weekly snapshot (late owner)
+mod_editor/core/nfl2k5_player_progress_screen.py
+# b778 pg2: authored TROPHY ROOM emblem and its one-edit Crib texture project
+data/trophy_room_logo/logo.png
+data/trophy_room_logo/project.json
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
@@ -3604,6 +3609,8 @@ mod_editor/core/nfl2k5_run_blocking_code.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
 tests/mod_editor/test_nfl2k5_force_out.py
+tests/mod_editor/test_nfl2k5_player_progress_screen.py
+tests/mod_editor/test_trophy_room_logo.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md
