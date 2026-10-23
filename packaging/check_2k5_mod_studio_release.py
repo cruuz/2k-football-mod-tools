@@ -269,6 +269,7 @@ ALLOWED_SUFFIXES = frozenset(
         ".md",
         ".py",
         ".sh",
+        ".span",       # b778-ss1: small authored span patches for the Seamen face assets
         ".svg",
         ".toml",
         ".txt",
@@ -386,7 +387,9 @@ def _modern_art_pngs(root: Path) -> dict:
 
 def _validate_reviewed_png(path: Path, relative: str, info, contract: dict, label: str) -> None:
     import struct
-    if info.st_size != contract["size"] or info.st_size > 512 * 1024:
+    # b778-rh1/rh2: the rookie face banks are 2048x2048 atlases, much larger than a single authored texture.
+    limit = MAX_RELEASE_FILE_BYTES if relative.startswith("data/nfl2k5_rookie_faces/") else 512 * 1024
+    if info.st_size != contract["size"] or info.st_size > limit:
         raise ReleaseCheckError(f"reviewed {label} PNG size changed: {relative}")
     with path.open("rb") as stream:
         data = stream.read(info.st_size + 1)
