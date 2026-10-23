@@ -95,7 +95,7 @@ HISTORIC_ROST_ENTRIES = range(113, 188)
 # after that growth, so the scan has to read the grown shape; nothing else about it changes.
 ROST_VERSION_RETAIL = 17
 ROST_VERSION_GROWN = 18
-GROWN_ARENA_SIZE = 0x92000
+GROWN_ARENA_SIZES = (0x92000, 0xB0000)
 PURE_THREE_FOUR_BOOKS = ("BAL", "HOU", "NE", "PIT", "SD")
 DUAL_BOOKS = ("DAL", "MIN", "NYJ", "OAK", "GEN", "WCO", "reference")
 
@@ -186,7 +186,7 @@ def parse_resource(entry_index: int, virtual_offset: int, raw: bytes) -> Resourc
     root = nr.relative_pointer(body, 0x14, "root")
     _require(root == 0x40, f"outer {entry_index}: root at 0x{root:x}")
     # a grown main roster is only the arena writer's exact shape; any other version-18 file is foreign
-    _require(nr.u32(body, 0x10) != ROST_VERSION_GROWN or len(body) - root == GROWN_ARENA_SIZE,
+    _require(nr.u32(body, 0x10) != ROST_VERSION_GROWN or len(body) - root in GROWN_ARENA_SIZES,
              f"outer {entry_index}: ROST preamble")
     label = nr.utf16z(body, 0x20, "label") or ""
     tables = nr.parse_tables(body, root, entry_index)

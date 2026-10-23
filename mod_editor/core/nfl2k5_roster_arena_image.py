@@ -22,18 +22,21 @@ ROST_INDEX = 5
 ROST_NAME_ID = 1245141021
 
 
-def _prepare(source, reserves_16, created_teams_extra):
+def _prepare(source, reserves_16, created_teams_extra, capacity_records=0, capacity=False):
+    archive.require(not capacity or capacity_records > 0, 'capacity growth needs its record count')
     before = archive.identity(source)
     with archive.Disc(source, descriptors=()) as disc:
         archive.require(len(disc.archive_entries) > ROST_INDEX, 'missing main ROST resource')
         entry = disc.archive_entries[ROST_INDEX]
         archive.require(entry.name_id == ROST_NAME_ID and entry.size <= 1024*1024, 'foreign main ROST entry')
         original = disc.read_entry_range(entry, 0, entry.size)
-        rost, migration = arena.migrate(original, reserves_16=reserves_16, created_teams_extra=created_teams_extra)
+        rost, migration = arena.migrate(original, reserves_16=reserves_16, created_teams_extra=created_teams_extra,
+                                        capacity_records=capacity_records)
         executable = disc.entries.get('default.xbe')
         archive.require(executable is not None and executable.size <= 16*1024*1024, 'missing/oversized default.xbe')
         xbe, patch = growth.apply(disc.read(executable.size, executable.byte_offset),
-                                  reserves_16=reserves_16, created_teams_extra=created_teams_extra)
+                                  reserves_16=reserves_16, created_teams_extra=created_teams_extra,
+                                  capacity=capacity or bool(capacity_records))
         geometry = archive.layout(disc, {ROST_INDEX: len(rost)})
         final_size = (archive.align_up(geometry['image_size']) + len(xbe)
                       if len(xbe) > executable.size else geometry['image_size'])
@@ -46,8 +49,9 @@ def _prepare(source, reserves_16, created_teams_extra):
     return rost, xbe, geometry, receipt
 
 
-def plan(source, *, reserves_16=True, created_teams_extra=0):
-    return _prepare(Path(source).resolve(), reserves_16, created_teams_extra)[3]
+def plan(source, *, reserves_16=True, created_teams_extra=0, capacity_records=0, capacity=False):
+    return _prepare(Path(source).resolve(), reserves_16, created_teams_extra,
+                    capacity_records, capacity)[3]
 
 
 def image_status(path):
@@ -61,10 +65,12 @@ def image_status(path):
             executable = disc.entries['default.xbe']
             archive.require(executable.size <= 16*1024*1024, 'oversized executable')
             settings = growth.read_settings(disc.read(executable.size, executable.byte_offset))
+            capacity = arena.capacity_descriptor(disc.read_entry_range(entry, 0, entry.size), doc.layout) is not None
         if doc.overflow is None:
             return 'retail' if settings['status'] == 'retail' else 'foreign'
         return 'applied' if settings == dict(status='applied', reserves_16=doc.overflow.reserves_enabled,
-                                             created_teams_extra=doc.overflow.extra_teams) else 'foreign'
+                                             created_teams_extra=doc.overflow.extra_teams,
+                                             capacity=capacity) else 'foreign'
     except (ValueError, OSError, IndexError, KeyError):
         return 'foreign'
 
@@ -98,9 +104,11 @@ def _verify(source, output, rost, xbe, geometry, receipt):
                 'xbe_sha256': receipt['xbe_sha256'], 'output_sha256': archive.digest(new.read, new.image_size)}
 
 
-def build_image(source, output, *, reserves_16=True, created_teams_extra=0, overwrite=False, progress=None):
+def build_image(source, output, *, reserves_16=True, created_teams_extra=0, capacity_records=0, capacity=False,
+                overwrite=False, progress=None):
     source = Path(source).resolve()
-    rost, xbe, geometry, receipt = _prepare(source, reserves_16, created_teams_extra)
+    rost, xbe, geometry, receipt = _prepare(source, reserves_16, created_teams_extra,
+                                            capacity_records, capacity)
     progress = progress or (lambda *_: None)
     def build(_directory, staged):
         with archive.Disc(source, descriptors=()) as disc:
@@ -129,9 +137,11 @@ def main(argv=None):
     parser.add_argument('--output', type=Path)
     parser.add_argument('--created-teams-extra', type=int, choices=(0, 2), default=0)
     parser.add_argument('--reserves-16', action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument('--capacity-records', type=int, default=0)
     args = parser.parse_args(argv)
     try:
-        kwargs = dict(reserves_16=args.reserves_16, created_teams_extra=args.created_teams_extra)
+        kwargs = dict(reserves_16=args.reserves_16, created_teams_extra=args.created_teams_extra,
+                      capacity_records=args.capacity_records)
         if args.command == 'plan':
             result = plan(args.source, **kwargs)
         else:

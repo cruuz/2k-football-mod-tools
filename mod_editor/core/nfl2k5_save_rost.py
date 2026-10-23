@@ -121,8 +121,7 @@ class SaveRost:
 
     def span(self, offset: int, size: int, label: str) -> None:
         from . import nfl2k5_roster_arena as arena
-        end = (self.layout.root + arena.BLOCK_OFFSET if self.layout.version in (1, 18)
-               else self.layout.end)
+        end = arena.data_end(self.layout)
         _require(size >= 0 and self.layout.root + 0x70 <= offset
                  and offset + size <= end, f'{label}: range outside ROST arena data')
 
@@ -179,7 +178,7 @@ class SaveRost:
         for left, right in zip(occupied, occupied[1:]):
             _require(left[1] <= right[0], f'overlapping {left[2]}/{right[2]} tables')
         if self.overflow is not None:
-            _require(all(end <= root + arena.BLOCK_OFFSET for _, end, _ in occupied),
+            _require(all(end <= arena.data_end(self.layout) for _, end, _ in occupied),
                      'table overlaps reserve overflow')
 
         try:
@@ -375,8 +374,9 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
                 _require(end <= len(data), 'truncated declared ROST resource')
             else:
                 wrapper = None
-                expected = {0: 0x91020, 1: 0x92020, 17: 0x90F60, 18: 0x92040}[version]
-                _require(base == 0 and len(data) == expected, 'unframed ROST has unknown boundaries')
+                expected = {0: (0x91020,), 1: (0x92020,), 17: (0x90F60,),
+                            18: (0x92040, 0xB0040)}[version]
+                _require(base == 0 and len(data) in expected, 'unframed ROST has unknown boundaries')
                 end = len(data)
             candidates.append(SaveRost(data, Layout(version, wrapper, base, root, end),
                                        reference_year=reference_year, base_year=base_year))

@@ -159,10 +159,16 @@ u32 FC inline_stage(const u8 *file,u32 size) {
 }
 /* Metadata admission is independent of the currently loaded career. */
 u32 FC inline_admit(u32 size) {
-    u32 max=G(0xB72808);
-    return size==720044 || size==720172 ||
-           (max>=0x92000 && (size==724140 || size==724268));
+    u32 max=G(0xB72808), base=720044;
+    if(max>=0xB0000) base=847020;
+    else if(max>=0x92000) base=724140;
+    return size==720044 || size==720172 || size==base || size==base+128;
 }
+
+
+
+
+
 
 /* Consumer-only play-call eligibility. The field unit and identity are
  * revalidated by the bounded binder, independently of menu/navigation club

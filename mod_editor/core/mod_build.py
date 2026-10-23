@@ -2864,7 +2864,8 @@ def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
                "team_logo_swap", "period_goalposts"}
-    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup"
+                     else False if key == "roster_capacity" else getattr(plan, key))
                for key in tt.R62_RUNTIME_KEYS}
     # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
     # the music library wins and MyCareer keeps its Classic Apartment.
@@ -3071,6 +3072,24 @@ def _apply_run_blocking(plan, target, receipt, progress):
     receipt["result"]["run_blocking"] = "applied"
 
 
+def _roster_capacity_records(plan):
+    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
+    if not plan.roster_edits:
+        return 0
+    records = _core_module("nfl2k5_roster_records")
+    if records is None:
+        return 0
+    try:
+        document = records.read_edits(Path(plan.roster_edits))
+    except (OSError, ValueError):
+        return 0
+    request = document.get("free_agent_capacity")
+    if not isinstance(request, dict):
+        return 0
+    value = request.get("records", 0)
+    return value if type(value) is int and value > 0 else 0
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -3111,7 +3130,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or type(plan.music_userlist) is not bool or (plan.music_userlist and plan.music_policy != "jukebox_menus")):
         raise ValueError("Music policies require retail or jukebox_menus, boolean switches, and jukebox menus for UserList")
     r62 = _validated_r62_plan_options(plan) if r62_options is None else dict(r62_options)
-    if plan.reserves_16 or plan.created_teams_extra:
+    capacity_records = _roster_capacity_records(plan)
+    if capacity_records and (plan.reserves_16 or plan.created_teams_extra):
+        raise ValueError("Capacity growth composes with neither 16 reserves nor extra created teams")
+    if capacity_records and not plan.k128_memory:
+        raise ValueError("Capacity growth needs the 128 MB memory option (K128)")
+    if capacity_records:
+        r62["roster_capacity"] = True
+    if plan.reserves_16 or plan.created_teams_extra or capacity_records:
         plan = replace(plan, xbe_space=True, practice_squad=True, franchise_practice=True,
                        practice_squad_screen=plan.practice_squad_screen or plan.reserves_16)
     tt.momentum_patch._settings(plan.momentum, plan.momentum_contact, plan.momentum_collisions, plan.momentum_collision_level)
@@ -4670,8 +4696,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_naming:
         rec = tt._finish_naming_image(target, naming_digest, progress)
         receipt["steps"].append({"step": "modern_naming", **rec})
-    if plan.reserves_16 or plan.created_teams_extra:
-        rec = tt._finish_roster_arena_image(target, plan.reserves_16, plan.created_teams_extra, progress)
+    if plan.reserves_16 or plan.created_teams_extra or capacity_records:
+        rec = tt._finish_roster_arena_image(target, plan.reserves_16, plan.created_teams_extra, progress,
+                                            capacity_records=capacity_records)
         receipt["steps"].append({"step": "roster_arena_growth", **rec})
     # b778-xs1: the Crib Trophy Room cut goes in before the Crib rebuild, which then also drops the four arcade game
     # files (nothing can open them any more); in place, no allocation.

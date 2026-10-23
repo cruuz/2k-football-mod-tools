@@ -209,8 +209,10 @@ class NativeBoundaryTests(unittest.TestCase):
 
     def test_metadata_admission_rejects_ledger_in_both_native_save_formats(self):
         with Machine(self.payload) as m:
-            m.put(0xB72808, arena.ARENA_SIZE)
             for size in career_save.BASE_SIZES + career_save.SIZES:
+                # b778 fa4: a capacity save admits against the 0xB0000 arena; the retail and 16-reserve
+                # sizes retain their own capacity, exactly as the native arena loader sets 0xB72808.
+                m.put(0xB72808, arena.CAPACITY_ARENA_SIZE if size >= 847020 else arena.ARENA_SIZE)
                 self.assertEqual(m.call('inline_admit', ecx=size), 1)
                 for extra in (1, f.DATA_SIZE, f.COMPANION_SIZE):
                     # Retail +4096 already names arena v1; that is not a ledger.

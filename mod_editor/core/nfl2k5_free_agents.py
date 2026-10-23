@@ -47,10 +47,11 @@ def apply_body(body, data=None):
                 "Unsupported free-agent plan.")
     doc = rr.RosterDocument(bytes(body), scheme="one_pool", reference_year=2026)
     primary_count = len(doc.by_pool("primary"))
-    if primary_count == 2619:
-        from . import nfl2k5_spare_capacity
+    from . import nfl2k5_spare_capacity
+    if primary_count >= 2619:
         nfl2k5_spare_capacity.extended_layout(body)
-    rr._require(primary_count in (2479, 2619) and len(doc.by_pool("secondary")) == 68,
+    rr._require((primary_count in (2479, 2619) or (primary_count > 2619 and doc.version == 18))
+                and len(doc.by_pool("secondary")) == 68,
                 "Free-agent plan requires the audited 2479/68 tables or their exact 2619 spare-capacity extension.")
     by = {(p.pool, p.index): p for p in doc.players}
     old = data["existing"]

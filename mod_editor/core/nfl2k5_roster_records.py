@@ -2542,7 +2542,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size in (RESOURCE_SIZE, 0x92060),
+    _require(entry.size in (RESOURCE_SIZE, 0x92060, 0xB0060),
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2580,7 +2580,8 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060), "the roster resource is foreign")
+    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060, 0xB0060),
+             "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
                               reference_year=reference_year)
@@ -2593,7 +2594,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) not in (RESOURCE_SIZE, 0x92060) or resource[:4] != b"ROST":
+    if len(resource) not in (RESOURCE_SIZE, 0x92060, 0xB0060) or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:

@@ -18,7 +18,7 @@ import struct
 
 MAGIC = b"MCPL0001"
 SIZE = 128
-BASE_SIZES = (720044, 724140)
+BASE_SIZES = (720044, 724140, 847020)
 SIZES = tuple(n + SIZE for n in BASE_SIZES)
 BALANCE_CAP = 1000000
 BIRTH_MASK = 0x0FFFF000
@@ -54,7 +54,7 @@ def seal(block):
     return bytes(result)
 
 
-def validate(block, *, arena_size=0x92000):
+def validate(block, *, arena_size=0xB0000):
     require(isinstance(block, (bytes, bytearray)) and len(block) == SIZE,
             "career block must contain 128 bytes")
     require(block[:8] == MAGIC and block[8:12] == struct.pack("<HH", 1, SIZE),

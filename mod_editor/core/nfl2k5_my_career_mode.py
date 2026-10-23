@@ -247,8 +247,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     out = bytearray(assembly.CODE)
     labels = {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
-    def reserve(name, size):
-        out.extend(bytes((-len(out)) % 4))
+    def reserve(name, size, align=4):
+        out.extend(bytes((-len(out)) % align))
         at = len(out)
         labels[name] = code_va + at
         out.extend(bytes(size))
@@ -269,7 +269,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
             text_pool.extend((value + "\0").encode("ascii"))
             return
         content = (value + "\0").encode("utf-16le")
-        at = reserve(name, len(content))
+        at = reserve(name, len(content), align=2)
         out[at:at + len(content)] = content
 
     for name, value in (
@@ -349,11 +349,11 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     at = reserve("m3_caps", 17 * len(progression.FIELDS))
     out[at:at + 17 * len(progression.FIELDS)] = bytes(v for row in progression.CAPS for v in row)
     legacy.require(2 * len(text_pool) <= 1152, "MyCareer text RW exceeds 1408..2559")
-    at = reserve("text_template", len(text_pool))
+    at = reserve("text_template", len(text_pool), align=2)
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
     legacy.require(2160 + 2 * len(text_pool2) <= 2700, "MyCareer M3 text RW exceeds 2160..2699")
-    at = reserve("text2_template", len(text_pool2))
+    at = reserve("text2_template", len(text_pool2), align=2)
     out[at:at + len(text_pool2)] = text_pool2
     labels["text2_bytes"] = len(text_pool2)
     menu = bytearray()
@@ -371,7 +371,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         extra_menu.extend(bytes(size))
         return at
 
-    menu_reserve("club_menu", 56)
+    menu_reserve("club_menu", 44)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
     for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu", "m3_settings_menu"):
@@ -422,7 +422,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                          else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
     compressed = _encode_menu(extra_menu)
-    at = reserve("m3_menu_template", len(compressed))
+    at = reserve("m3_menu_template", len(compressed), align=2)
     out[at:at + len(compressed)] = compressed
     labels["m3_menu_bytes"] = len(extra_menu)
     # mc2: flag 0x10 lets B reach mode_event (native event 10) on these two.
@@ -452,7 +452,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                      0x5016C8, 0, 0xE7D7E0, 0xAC9800, 0x02400044, 0x018D0052, 0x55)
     legacy.require(len(menu) <= 1080, "MyCareer menu RW exceeds 200..1279")
     encoded = _encode_menu(menu)
-    at = reserve("menu_template", len(encoded))
+    at = reserve("menu_template", len(encoded), align=2)
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
     symbols = {"code": code_va, "state": data_va, "m3": EXTRA_VA, "": 0,

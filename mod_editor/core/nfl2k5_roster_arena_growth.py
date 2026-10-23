@@ -21,6 +21,10 @@ OWNER = 'nfl2k5_roster_arena_growth'
 CODE_SIZE = 8192
 REQUESTS = ((OWNER, 'code', CODE_SIZE, 16),)
 OPTION_OFFSET = (len(assembly.CODE) + 3) & ~3
+CAPACITY_OPTION_OFFSET = (len(assembly.CAPACITY_CODE) + 3) & ~3
+CAPACITY_FLAG = 0x200
+RESOURCE_BODY_LIMIT = arena.ARENA_SIZE + 0x40
+CAPACITY_RESOURCE_BODY_LIMIT = arena.CAPACITY_ARENA_SIZE + 0x40
 # The disc ROST handler C1EA0 reads the declared body size (resource header +4) into EDI and
 # refuses a body that does not fit: retail `cmp [0xB72808], edi / jb refuse` (capacity 0x91000,
 # retail body 0x90F60). A body is the 0x40-byte resource object followed by the arena, so the
@@ -32,7 +36,6 @@ OPTION_OFFSET = (len(assembly.CODE) + 3) & ~3
 # (`cmp edi, 0x92060`) and kept the retail `jb`, which refused every body below 0x92060, the
 # grown roster included: the load never ran, the roster root stayed 0, and the first boot reader
 # (C7530 -> 133B80 -> C4C50, `cmp ecx, [eax+0x18]` at C4C6A) faulted at the SEGA logo.
-RESOURCE_BODY_LIMIT = arena.ARENA_SIZE + 0x40
 HELP_TEXT = ('EXPERIMENTAL / UNWITNESSED. Retail: 65 player slots and two created teams. '
              'Patch: a larger roster save supports 16 reserves, an explicitly eligible 17th, '
              'and two optional extra created teams. Requires a migrated save.')
@@ -62,11 +65,14 @@ def require(ok, message):
         raise ArenaGrowthError(message)
 
 
-def options(reserves_16=True, created_teams_extra=0):
+def options(reserves_16=True, created_teams_extra=0, capacity=False):
     require(type(reserves_16) is bool and type(created_teams_extra) is int
-            and created_teams_extra in (0, 2), 'select 16 reserves and/or zero or two extra teams')
-    require(reserves_16 or created_teams_extra, 'select at least one arena growth option')
-    return (0x100 if reserves_16 else 0) | created_teams_extra
+            and created_teams_extra in (0, 2) and type(capacity) is bool,
+            'select 16 reserves, zero or two extra teams, and/or capacity growth')
+    require(reserves_16 or created_teams_extra or capacity, 'select at least one arena growth option')
+    require(not (capacity and (reserves_16 or created_teams_extra)),
+            'capacity growth composes with neither 16 reserves nor extra created teams')
+    return (0x100 if reserves_16 else 0) | created_teams_extra | (CAPACITY_FLAG if capacity else 0)
 
 
 def allocation(payload):
@@ -79,13 +85,16 @@ def allocation(payload):
 
 
 def code_for(va, flags):
-    options(bool(flags & 0x100), flags & 255)
-    require(flags & ~0x102 == 0, 'unknown arena executable options')
-    out = bytearray(assembly.CODE)
-    out.extend(b'\xcc' * (OPTION_OFFSET - len(out)))
+    capacity = bool(flags & CAPACITY_FLAG)
+    options(bool(flags & 0x100), flags & 255, capacity)
+    require(flags & ~0x302 == 0, 'unknown arena executable options')
+    blob = assembly.CAPACITY_CODE if capacity else assembly.CODE
+    option_offset = CAPACITY_OPTION_OFFSET if capacity else OPTION_OFFSET
+    out = bytearray(blob)
+    out.extend(b'\xcc' * (option_offset - len(out)))
     out.extend(struct.pack('<I', flags))
-    symbols = {'code': va, 'arena_options': va + OPTION_OFFSET, '': 0}
-    for off, kind, symbol, value in assembly.RELOCATIONS:
+    symbols = {'code': va, 'arena_options': va + option_offset, '': 0}
+    for off, kind, symbol, value in (assembly.CAPACITY_RELOCATIONS if capacity else assembly.RELOCATIONS):
         addend = struct.unpack_from('<I', out, off)[0]
         target = symbols[symbol] + value + addend
         if kind == 2:
@@ -99,9 +108,12 @@ def _jump(va, target, size):
     return b'\xe9' + struct.pack('<i', target - va - 5) + b'\x90' * (size - 5)
 
 
-def sites(va):
+def sites(va, capacity=False):
     from . import nfl2k5_practice_reserves as pr
-    labels = {name: va + offset for name, offset in assembly.LABELS.items()}
+    labels = {name: va + offset for name, offset in
+              (assembly.CAPACITY_LABELS if capacity else assembly.LABELS).items()}
+    arena_size = arena.CAPACITY_ARENA_SIZE if capacity else arena.ARENA_SIZE
+    block_offset = arena.CAPACITY_BLOCK_OFFSET if capacity else arena.BLOCK_OFFSET
     result = []
     for old_name, new_name in BRIDGES.items():
         address = ps.SYMBOLS[old_name]
@@ -120,10 +132,12 @@ def sites(va):
         before = bytes.fromhex(pin)
         result.append((name, address, before, _jump(address, labels[target], len(before))))
     result.extend((
-        ('arena_capacity', 0xC1F2D, bytes.fromhex('c7050828b70000100900'), bytes.fromhex('c7050828b70000200900')),
-        ('arena_allocation', 0xC1F3C, bytes.fromhex('ba00100900'), bytes.fromhex('ba00200900')),
+        ('arena_capacity', 0xC1F2D, bytes.fromhex('c7050828b70000100900'),
+         bytes.fromhex('c7050828b700') + struct.pack('<I', arena_size)),
+        ('arena_allocation', 0xC1F3C, bytes.fromhex('ba00100900'),
+         b'\xba' + struct.pack('<I', arena_size)),
         ('resource_admission', 0xC1EB3, bytes.fromhex('393d0828b7007233'),
-         b'\x81\xff' + struct.pack('<I', RESOURCE_BODY_LIMIT) + b'\x77\x33'),
+         b'\x81\xff' + struct.pack('<I', arena_size + 0x40) + b'\x77\x33'),
         ('practice_projection', pr.STAGE_VA, pr.sites()[0][3], _jump(pr.STAGE_VA, labels['arena_stage'], pr.STAGE_SIZE)),
     ))
     return tuple(result)
@@ -151,8 +165,8 @@ def _owned_state(payload):
     layout = space.layout(payload)
     found = [a for a in layout['allocations'] if a['owner'] == OWNER]
     image = XbeImage(payload)
-    _check_guards(image, sites(found[0]["va"] if found else 0), payload)
     if not found:
+        _check_guards(image, sites(0), payload)
         # Only our new hook sites are relevant before the base PS prerequisites
         # exist; their runtime caves remain the original owner's responsibility.
         for _name, address, before, _after in sites(0):
@@ -163,17 +177,30 @@ def _owned_state(payload):
         return 'retail', None, None
     site = allocation(payload)
     blob = image.read(site['va'], CODE_SIZE)
-    edits = sites(site['va'])
     if blob == b'\xcc' * CODE_SIZE:
+        _check_guards(image, sites(site['va'], False), payload)
+        edits = sites(site['va'])
         for name, address, before, _after in edits:
             if name not in BRIDGES and name != 'practice_projection':
                 require(image.read(address, len(before)) == before, 'arena hook with empty allocation')
         require(ps._base_status(payload) != 'foreign', 'reserve bridge installed with empty arena allocation')
         return 'retail', site, None
-    flags = struct.unpack_from('<I', blob, OPTION_OFFSET)[0]
-    require(blob == code_for(site['va'], flags), 'foreign arena runtime code/options')
-    require(rdata.status(payload, edits) == 'applied', 'mixed arena runtime bridges/hooks')
-    return 'applied', site, flags
+    for capacity, offset in ((False, OPTION_OFFSET), (True, CAPACITY_OPTION_OFFSET)):
+        if offset + 4 > CODE_SIZE:
+            continue
+        flags = struct.unpack_from('<I', blob, offset)[0]
+        if flags & ~0x302 or bool(flags & CAPACITY_FLAG) != capacity:
+            continue
+        try:
+            candidate = code_for(site['va'], flags)
+        except ValueError:
+            continue
+        if blob == candidate:
+            _check_guards(image, sites(site['va'], capacity), payload)
+            edits = sites(site['va'], capacity)
+            require(rdata.status(payload, edits) == 'applied', 'mixed arena runtime bridges/hooks')
+            return 'applied', site, flags
+    require(False, 'foreign arena runtime code/options')
 
 
 def project(payload):
@@ -181,11 +208,11 @@ def project(payload):
 
     Never normalize a partial/foreign installation or bypass the allocator seals.
     """
-    state, site, _ = _owned_state(payload)
+    state, site, flags = _owned_state(payload)
     if state == 'retail':
         return payload
     out = bytearray(payload)
-    for _, address, before, _after in sites(site['va']):
+    for _, address, before, _after in sites(site['va'], bool(flags & CAPACITY_FLAG)):
         at = rdata.offset_of(payload, address)
         out[at:at + len(before)] = before
     for section in _sections(out):
@@ -207,20 +234,23 @@ def status(payload):
 def read_settings(payload):
     state = status(payload)
     if state != 'applied':
-        return {'status': state, 'reserves_16': False, 'created_teams_extra': 0}
+        return {'status': state, 'reserves_16': False, 'created_teams_extra': 0, 'capacity': False}
     flags = _owned_state(payload)[2]
-    return {'status': state, 'reserves_16': bool(flags & 0x100), 'created_teams_extra': flags & 255}
+    return {'status': state, 'reserves_16': bool(flags & 0x100), 'created_teams_extra': flags & 255,
+            'capacity': bool(flags & CAPACITY_FLAG)}
 
 
-def apply(payload, *, reserves_16=True, created_teams_extra=0):
-    flags = options(reserves_16, created_teams_extra)
+def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
+    flags = options(reserves_16, created_teams_extra, capacity)
     state = status(payload)
     require(state != 'foreign', 'foreign/mixed arena growth executable; refusing')
+    arena_size = arena.CAPACITY_ARENA_SIZE if capacity else arena.ARENA_SIZE
+    block_offset = arena.CAPACITY_BLOCK_OFFSET if capacity else arena.BLOCK_OFFSET
     common = {'owner': OWNER, 'experimental': True, 'runtime_witnessed': False,
               'reserves_16': reserves_16, 'created_teams_extra': created_teams_extra,
-              'arena_size': arena.ARENA_SIZE, 'overflow_offset': arena.BLOCK_OFFSET,
+              'capacity': capacity, 'arena_size': arena_size, 'overflow_offset': block_offset,
               'active_limit': 53, 'reserve_limit': 16 if reserves_16 else 12,
-              'eligible_reserve_limit': 17 if reserves_16 else 12, 'code_bytes': len(assembly.CODE),
+              'eligible_reserve_limit': 17 if reserves_16 else 12, 'code_bytes': len(assembly.CAPACITY_CODE if capacity else assembly.CODE),
               'code_capacity': CODE_SIZE, 'runtime_state_bytes': 0,
               'requires_paired_rost_resource': True, 'requires_save_migration': True}
     if state == 'applied':
@@ -239,13 +269,14 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0):
         # replaced Coach's Desk table) is kept as is; only a retail one is installed here
         if prerequisite.status(payload) == 'retail':
             payload, _ = prerequisite.apply(payload)
-    require(rdata.status(payload, sites(site['va'])) == 'retail', 'foreign arena prerequisites')
+    require(rdata.status(payload, sites(site['va'], capacity)) == 'retail', 'foreign arena prerequisites')
     result, code_receipt = space.install_code(payload, OWNER, code_for(site['va'], flags))
-    result, receipt = rdata.apply(result, sites(site['va']), OWNER)
+    result, receipt = rdata.apply(result, sites(site['va'], capacity), OWNER)
     require(status(result) == 'applied', 'arena growth postcondition failed')
     return result, {**common, **receipt, 'already_applied': False, 'code_install': code_receipt,
                     'before_sha256': hashlib.sha256(payload_before).hexdigest(),
                     'after_sha256': hashlib.sha256(result).hexdigest(),
                     'file_growth': len(result) - len(payload_before),
                     'changed_bytes': sum(a != b for a, b in zip(payload_before, result)) + len(result) - len(payload_before),
-                    'consumers': [{'name': name, 'address': hex(address)} for name, address, _, _ in sites(site['va'])]}
+                    'consumers': [{'name': name, 'address': hex(address)}
+                                  for name, address, _, _ in sites(site['va'], capacity)]}
