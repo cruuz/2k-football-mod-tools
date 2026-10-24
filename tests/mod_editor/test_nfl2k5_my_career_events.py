@@ -238,8 +238,10 @@ class HostBudgetTests(unittest.TestCase):
             # inline_decode lets resolve_team derive the saved stage (test_nfl2k5_my_career_mc6).
             # b778 fa6: inline_stage admits the capacity 847,020/847,148-byte saves and stages the 128-byte
             # footer at the capacity base, so a new capacity save reloads with MyCareer installed.
+            # b778 pg3: inline_stage derives the native size from the ROST wrapper and also admits the
+            # Player Progress footer (34,320 B) on top of the career footer.
             'tools/mycareer_mode/runtime.c':
-                'e4b477f6a5eec42e86c8b76125b6f4aaf2989fe8eb299186044301e1146c6eaf',
+                '0454c82b381dbc75b63b760fad15fb72a36838a708aad57a50c0a6cf3f94fc4b',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

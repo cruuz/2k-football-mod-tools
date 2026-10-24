@@ -132,17 +132,21 @@ static NI u32 relative(const u8 *root,u32 arena,u32 field,u32 n) {
  * +2660 is pending footer, +2664 records the SOURCE ROST extent for load.
  */
 u32 FC inline_stage(const u8 *file,u32 size) {
-    u32 base,growth,arena,pool,p,i,ref;
+    u32 base,growth,arena,pool,p,i,ref,declared,native;
     const u8 *b,*r;
     S(2660)=0; S(2664)=0;
     /* b778 fa6: a capacity (0xB0000) arena writes 847,020-byte saves (847,148 with the MyCareer
-     * footer). Admit both so a new capacity save reloads; the computed wrapper size follows the
-     * same 0x91040+growth formula and equals the build's BFE50 capacity answer. */
-    if(size!=720044 && size!=724140 && size!=720172 && size!=724268 &&
-       size!=847020 && size!=847148) return 0;
-    base=(size==720172 || size==724268 || size==847148)?size-128:size;
+     * footer). b778-pg3: the Player Progress footer (34,320 B) follows the MyCareer footer when
+     * both are present. The native size follows the ROST wrapper the save itself declares, so the
+     * three geometries need no size list. */
+    declared=W(file,0x2e4);
+    if(declared!=0x91020 && declared!=0x92020 && declared!=0xb0020) return 0;
+    native=declared+0x1ec8c;
+    if(size==native+34320 || size==native+128+34320) size-=34320;
+    if(size!=native && size!=native+128) return 0;
+    base=(size==native+128)?native:size;
     growth=base-720044; arena=0x91000+growth;
-    if(W(file,0x2e0)!=0x54534f52 || W(file,0x2e4)!=0x91020+growth ||
+    if(W(file,0x2e4)!=0x91020+growth ||
        W(file,0x30c)!=0x54534f52 || W(file,0x310)!=(growth!=0) ||
        W(file,0x314)!=13 || B(file,0x91320+growth)!=2 || G(0xB72808)<arena) return 0;
     S(2664)=0x91040+growth;

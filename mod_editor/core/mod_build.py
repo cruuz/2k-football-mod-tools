@@ -573,6 +573,10 @@ class BuildPlan:
     # owner (nfl2k5_player_progress_screen) that needs the growable pool from b778-xs1. EXPERIMENTAL: on in the
     # Advanced and Experimental presets; Basic keeps the retail offseason-only screen.
     player_progress: bool = False
+    # b778-pg3: the safe visibility-only half of the Player Progress screen. The Front Office row is
+    # available in every regular-season and playoff week (retail showed it only in the offseason); no
+    # snapshot, no save growth and no roster-arena tail. This can ship without nfl2k5_player_progress.
+    player_progress_visible: bool = False
     # b778-cr1: the Player Contracts panel reads the player's college word without a null check (0x6E11F). One late
     # executable owner (nfl2k5_contract_college_guard) hooks it and uses the panel's own N/A fallback, so an existing
     # franchise with a null college opens without a roster repair. On in every SOFTDRINK preset (a crash fix).
@@ -857,6 +861,12 @@ del _preset
 # franchise footer or an owned arena reserve is required before this can ship. The option stays available for tests.
 for _preset in PRESETS.values():
     _preset["player_progress"] = False
+# b778-pg3: the visibility-only half is safe (it is the pg2 control run): on in Advanced and
+# Experimental, off in Basic. The snapshot half stays off until its footer has emulator proof.
+for _preset in PRESETS.values():
+    _preset["player_progress_visible"] = False
+PRESETS["softdrink_advanced"]["player_progress_visible"] = True
+PRESETS["softdrink_experimental"]["player_progress_visible"] = True
 del _preset
 # b778-cr1: the Player Contracts null-college crash guard is a safety fix, not a taste option: on in every preset.
 for _preset in PRESETS.values():
@@ -1190,7 +1200,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
-    ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress),  # b778-pg2
+    ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress or p.player_progress_visible),  # b778-pg2/pg3
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
 )
@@ -1590,21 +1600,23 @@ def _player_progress_preflight(source: Path, progress) -> None:
 
 
 def _apply_player_progress(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b778-pg2: install the Player Progress screen/snapshot owner (a late allocator owner)."""
-    if not plan.player_progress:
+    """b778-pg2/pg3: install the Player Progress owner (full snapshot or visibility-only)."""
+    if not (plan.player_progress or plan.player_progress_visible):
         return
     module = _core_module("nfl2k5_player_progress_screen")
     if module is None:
         raise RuntimeError("The Player Progress screen needs nfl2k5_player_progress_screen.")
-    progress("Franchise: Player Progress screen", 0, 0)
-    payload, progress_receipt = module.apply(_xbe_bytes(target))
+    visible_only = not plan.player_progress
+    progress("Franchise: Player Progress row" if visible_only else "Franchise: Player Progress screen", 0, 0)
+    payload, progress_receipt = module.apply(_xbe_bytes(target), visible_only=visible_only)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
-    if final != payload or module.status(final) != "applied":
-        raise RuntimeError("The Player Progress screen: the output does not read back as applied")
+    expected = "visible" if visible_only else "applied"
+    if final != payload or module.status(final) != expected:
+        raise RuntimeError(f"The Player Progress screen: the output does not read back as {expected}")
     receipt["steps"].append({"step": "player_progress", **{k: v for k, v in progress_receipt.items()
                                                             if k not in ("reservations", "edits")}})
-    receipt["result"]["player_progress"] = "applied"
+    receipt["result"]["player_progress"] = expected
 def _apply_contract_college_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-cr1: the Player Contracts null-college screen guard, after every other late owner."""
     if not plan.contract_college_guard:
@@ -2027,8 +2039,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["franchise_draft_clock"] = draft_clock.status(_xbe_bytes(source)) if draft_clock is not None else "unavailable"
     weekly = _core_module("nfl2k5_weekly_progression")  # b778-pg1
     out["weekly_progression"] = weekly.status(_xbe_bytes(source)) if weekly is not None else "unavailable"
-    player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2
+    player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2/pg3
     out["player_progress"] = player_progress.status(_xbe_bytes(source)) if player_progress is not None else "unavailable"
+    out["player_progress_visible"] = out["player_progress"]
     college_guard = _core_module("nfl2k5_contract_college_guard")  # b778-cr1
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
@@ -3707,6 +3720,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The franchise draft clock must be Off or On.")
     if type(plan.player_progress) is not bool:  # b778-pg2
         raise ValueError("The Player Progress screen must be Off or On.")
+    if type(plan.player_progress_visible) is not bool:  # b778-pg3
+        raise ValueError("The Player Progress row must be Off or On.")
     if type(plan.contract_college_guard) is not bool:  # b778-cr1
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
@@ -4464,7 +4479,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _draft_clock_preflight(source, progress)
     if plan.weekly_progression:  # b778-pg1: like fo1, before any write
         _weekly_progression_preflight(source, progress)
-    if plan.player_progress:  # b778-pg2: like qb3, before any write
+    if plan.player_progress or plan.player_progress_visible:  # b778-pg2/pg3: like qb3, before any write
         _player_progress_preflight(source, progress)
     if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
         _clock_led_preflight(source, progress)
@@ -4972,7 +4987,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
         star_retention=plan.star_retention, star_career=plan.star_career,
         franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
-        player_progress=plan.player_progress, contract_college_guard=plan.contract_college_guard,
+        player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams)
     if plan.read_option_runtime or plan.qb_spy:
@@ -5045,7 +5060,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
             star_retention=plan.star_retention, star_career=plan.star_career,
             franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
-            player_progress=plan.player_progress, contract_college_guard=plan.contract_college_guard,
+            player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})

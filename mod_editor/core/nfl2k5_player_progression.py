@@ -2,42 +2,52 @@
 
 Noah, 2026-10-22: "a player progression section where you could click on it. And then it would
 show you your roster and just week by week how much a player has progressed." This module defines
-the save-resident record that the native week-advance capture (``nfl2k5_player_progress_screen``)
-writes and the native Front Office Player Progress screen reads. The module is pure Python so the
-record can be built, read and tested without an executable.
+the versioned franchise footer that the native week-advance capture
+(``nfl2k5_player_progress_screen``) writes and the native Front Office Player Progress screen
+reads. The module is pure Python so the record can be built, read and tested without an executable.
 
-Record (``PPG2`` v1), 5,232 bytes in a fixed, all-zero tail of the roster arena
-------------------------------------------------------------------------------
-The record is at file offset ``RECORD_FILE_OFFSET`` of ``SAVEGAME.DAT`` (720,044 bytes), which is
-the roster object plus ``RECORD_RUNTIME_DELTA`` in memory. It stays inside the existing arena, so
-the save size never changes and an old save (all zeros there) reads as "no record" and still
-loads. The 5,232-byte record fits the 5,453-byte zero run observed in real franchise saves.
+Footer (``PPGF0001``) and record (``PPG3`` v1)
+----------------------------------------------
+The footer follows the complete native franchise container (all four retail blocks) and, when the
+MyCareer footer is present, follows that too. It is part of the same signed ``SAVEGAME.DAT``; the
+native save transaction writes and signs it. An old save without the footer reads as "no record"
+and is never modified. The footer is fixed size (``FOOTER_SIZE``), so the save size only depends
+on the native arena geometry and whether the MyCareer block is present:
 
-**The host is a HYPOTHESIS that failed its runtime check.** b778-pg2's emulator wrote the record and
-the Front Office stopped responding to the Player Progress row; a control run with only the row
-visibility patch opens it. The live game uses the tail while those screens are open. Use a versioned
-franchise footer or an owned arena reserve (native save/load hooks) before enabling the snapshot.
+===============  ============================================================
+native container  size with the Player Progress footer
+===============  ============================================================
+720,044         754,364
+720,172 (career) 754,492
+724,140         758,460
+724,268 (career) 758,588
+847,020         881,340
+847,148 (career) 881,468
+===============  ============================================================
 
-Header (32 bytes): magic ``PPG2``, version, flags, season year, team index, week, reserved.
-Each of the 65 roster slots (80 bytes, in the team's pointer-list order):
+Footer header (32 bytes): magic ``PPGF0001``, u16 version, u16 header size, u32 record size,
+then reserved zero bytes. The record follows at +32.
+
+Record header (32 bytes): magic ``PPG3``, version, flags, u16 season year, u8 team index,
+u8 last completed week, u8 stored week count, u8 ring head (next write), 20 reserved bytes.
+
+Each of the 65 roster slots (527 bytes, team pointer-list order):
 
 ===============  ===========================================================================
 ``+0x00``        identity: u16 pbp_id, u8 position, u8 jersey (7-bit field)
-``+0x04``        season-start overall
-``+0x05``        previous-week overall (end of the last completed week)
-``+0x06``        flags: 1 identity, 2 baseline, 4 previous, 8 last-week
-``+0x08``        28 season-start ratings, player record offsets ``0x36..0x51``
-``+0x24``        28 previous-week ratings
-``+0x40``        14 bytes: 28 four-bit signed last-week rating changes (low nibble first)
-``+0x4E``        last-week overall change, signed byte
+``+0x04``        flags: 1 identity, 2 baseline
+``+0x05``        season-start overall
+``+0x06``        28 season-start ratings, player record offsets ``0x36..0x51``
+``+0x22``        ``HISTORY_WEEKS`` snapshots, 29 bytes each: 28 ratings then the overall
 ===============  ===========================================================================
 
-The three snapshots are: **baseline** (regular-season week 0, after the offseason), **previous**
-(the end of the week before the last completed week) and the **live** player record. The screen
-shows ``Previously`` = baseline, ``Currently`` = live, ``Change`` = live - baseline (season), and a
-toggle switches ``Change`` to ``Last Week`` = live - previous (or the stored four-bit changes).
-The last-week changes are clamped to ``-7..7`` because the weekly progression owner moves ratings
-by at most a few points; larger offseason movement never reaches this field.
+A snapshot is written when the game's week setter moves the week forward by one. The ring keeps
+the most recent 17 weeks (a regular season). The screen's change row can show the season change
+(week 0) or the change since any stored week, selected with the toggle; ``Previously`` shows the
+same week's ratings and ``Currently`` is the live rating.
+
+The footer is outside every native block: the arena, season and front-office offsets do not move,
+so old saves and the capacity arena grow path are untouched.
 """
 
 from __future__ import annotations
@@ -45,34 +55,46 @@ from __future__ import annotations
 import struct
 from typing import Iterable, Mapping, Sequence
 
-SCHEMA = "nfl2k5_player_progression/v2"
-SCREEN_SCHEMA = "nfl2k5_player_progression/screen-v2"
+SCHEMA = "nfl2k5_player_progression/v3"
+SCREEN_SCHEMA = "nfl2k5_player_progression/screen-v3"
 OWNER = "nfl2k5_player_progression"
 TEAM_SLOTS = 65
 RATING_OFFSET = 0x36
 RATING_COUNT = 28
 MAX_OVERALL = 100
+HISTORY_WEEKS = 17
 
-MAGIC = b"PPG2"
+RECORD_MAGIC = b"PPG3"
 VERSION = 1
-HEADER = struct.Struct("<4sBBHBBH20s")       # magic, version, flags, year, team, week, reserved, reserved
-HEADER_SIZE = HEADER.size                    # 32
-SLOT_SIZE = 80
-RECORD_SIZE = HEADER_SIZE + TEAM_SLOTS * SLOT_SIZE   # 5,232
-assert HEADER_SIZE == 32 and RECORD_SIZE == 5232
+RECORD_HEADER = struct.Struct("<4sBBHBBBB20s")   # magic, version, flags, year, team, week, count, head, reserved
+RECORD_HEADER_SIZE = RECORD_HEADER.size           # 32
+SNAPSHOT_SIZE = RATING_COUNT + 1                  # 28 ratings + overall
+SLOT_SIZE = 4 + 1 + 1 + RATING_COUNT + HISTORY_WEEKS * SNAPSHOT_SIZE   # 527
+RECORD_SIZE = RECORD_HEADER_SIZE + TEAM_SLOTS * SLOT_SIZE              # 34,287
 
-# Fixed save host: a real-save zero run starting at file 0x8FCF4; the runtime address is
-# [0xB72918] + RECORD_RUNTIME_DELTA (the roster object is at file 0x320).
-RECORD_FILE_OFFSET = 0x8FCF4
-RECORD_RUNTIME_DELTA = RECORD_FILE_OFFSET - 0x320   # 0x8F9D4
-SAVE_SIZE = 720_044
+FOOTER_MAGIC = b"PPGF0001"
+FOOTER_VERSION = 1
+FOOTER_HEADER = struct.Struct("<8sHHI4I")         # magic, version, header size, record size, 4 reserved dwords
+FOOTER_HEADER_SIZE = FOOTER_HEADER.size           # 32
+FOOTER_SIZE = (FOOTER_HEADER_SIZE + RECORD_SIZE + 15) & ~15   # 34,320
+assert FOOTER_HEADER_SIZE == 32 and RECORD_SIZE == 34287 and FOOTER_SIZE == 34320
+assert SNAPSHOT_SIZE == 29 and SLOT_SIZE == 527
 
 FLAG_IDENTITY = 1
 FLAG_BASELINE = 2
-FLAG_PREVIOUS = 4
-FLAG_LAST = 8
-HEADER_BASELINE = 3          # native baseline sets bits 0+1 (baseline present, previous present)
-HEADER_LAST = 4              # native week advance adds bit 2 (last-week snapshot present)
+HEADER_BASELINE = 1
+HEADER_HISTORY = 2
+
+# Native geometry: the native save size before any footer for each supported arena.
+RETAIL_SAVE_SIZE = 720_044
+RESERVE_SAVE_SIZE = 724_140
+CAPACITY_SAVE_SIZE = 847_020
+MYCAREER_FOOTER_SIZE = 128
+NATIVE_SAVE_SIZES = (RETAIL_SAVE_SIZE, RESERVE_SAVE_SIZE, CAPACITY_SAVE_SIZE)
+SAVE_SIZES = tuple(size + footer for size in NATIVE_SAVE_SIZES
+                   for footer in (FOOTER_SIZE, MYCAREER_FOOTER_SIZE + FOOTER_SIZE))
+PPG_SAVE_SIZES = tuple(size + FOOTER_SIZE for size in NATIVE_SAVE_SIZES)
+PPG_CAREER_SAVE_SIZES = tuple(size + MYCAREER_FOOTER_SIZE + FOOTER_SIZE for size in NATIVE_SAVE_SIZES)
 
 # The screen's attribute columns are the position-page group base ([list record + 0x64]) times 26
 # plus the row; these are the player-record offsets each row reads (retail getters 0x365160..).
@@ -109,183 +131,228 @@ def _ratings(player: Mapping[str, object]) -> list[int]:
     return list(values)
 
 
-def _clamp4(value: int) -> int:
-    return -8 if value < -8 else 7 if value > 7 else value
+def footer_start(payload: bytes) -> int | None:
+    """Offset of a valid Player Progress footer, or ``None`` for every native save."""
+    if len(payload) < FOOTER_SIZE:
+        return None
+    at = len(payload) - FOOTER_SIZE
+    if payload[at:at + 8] != FOOTER_MAGIC:
+        return None
+    magic, version, header_size, record_size, *_ = FOOTER_HEADER.unpack_from(payload, at)
+    if (magic, version, header_size, record_size) != (FOOTER_MAGIC, FOOTER_VERSION,
+                                                      FOOTER_HEADER_SIZE, RECORD_SIZE):
+        return None
+    return at
 
 
-def _pack4(values: Iterable[int]) -> bytes:
-    values = list(values)
-    _require(len(values) == RATING_COUNT, "28 four-bit values are needed")
-    out = bytearray(14)
-    for index, value in enumerate(values):
-        _require(type(value) is int and -8 <= value <= 7, "four-bit change out of range")
-        out[index // 2] |= (value & 0xF) << (4 * (index & 1))
-    return bytes(out)
+def read_footer(payload: bytes) -> dict[str, object]:
+    """Read a footer; an old native save returns ``present=False``."""
+    at = footer_start(payload)
+    if at is None:
+        return {"present": False, "header": None, "slots": [], "footer_offset": None}
+    record = payload[at + FOOTER_HEADER_SIZE:at + FOOTER_HEADER_SIZE + RECORD_SIZE]
+    return {**read_record(record), "footer_offset": at}
 
 
-def _unpack4(raw: bytes) -> list[int]:
-    _require(len(raw) == 14, "14 packed bytes are needed")
-    out = []
-    for index in range(RATING_COUNT):
-        value = (raw[index // 2] >> (4 * (index & 1))) & 0xF
-        out.append(value - 16 if value >= 8 else value)
-    return out
+def empty_footer(*, year: int = 0, team: int = 0) -> bytes:
+    _require(0 <= year <= 0xFFFF and 0 <= team <= 0xFF, "header field out of range")
+    record = bytearray(RECORD_SIZE)
+    RECORD_HEADER.pack_into(record, 0, RECORD_MAGIC, VERSION, 0, year, team, 0, 0, 0, bytes(20))
+    return _wrap(bytes(record))
 
 
-def empty_record(*, year: int = 0, team: int = 0, week: int = 0) -> bytes:
-    _require(0 <= year <= 0xFFFF and 0 <= team <= 0xFF and 0 <= week <= 0xFF, "header field out of range")
-    buf = bytearray(RECORD_SIZE)
-    HEADER.pack_into(buf, 0, MAGIC, VERSION, 0, year, team, week, 0, bytes(20))
-    return bytes(buf)
+def _wrap(record: bytes) -> bytes:
+    _require(len(record) == RECORD_SIZE and record[:4] == RECORD_MAGIC, "wrong record")
+    footer = bytearray(FOOTER_HEADER_SIZE + RECORD_SIZE)
+    FOOTER_HEADER.pack_into(footer, 0, FOOTER_MAGIC, FOOTER_VERSION, FOOTER_HEADER_SIZE,
+                            RECORD_SIZE, 0, 0, 0, 0)
+    footer[FOOTER_HEADER_SIZE:] = record
+    return bytes(footer).ljust(FOOTER_SIZE, b"\0")
 
 
-def is_present(record: bytes) -> bool:
-    return len(record) == RECORD_SIZE and record[:4] == MAGIC
-
-
-def decode_header(record: bytes) -> dict[str, int]:
+def read_record(record: bytes) -> dict[str, object]:
     _require(len(record) == RECORD_SIZE, "wrong record size")
-    magic, version, flags, year, team, week, _reserved, _tail = HEADER.unpack_from(record, 0)
-    _require(magic == MAGIC, "not a player-progression record")
-    _require(version == VERSION, "unknown record version")
-    return {"magic": magic, "version": version, "flags": flags, "year": year, "team": team, "week": week}
-
-
-def read_record(payload: bytes, *, offset: int = RECORD_FILE_OFFSET) -> dict[str, object]:
-    """Read the record from a save; an old save (zeros) returns ``present=False``."""
-    _require(0 <= offset and offset + RECORD_SIZE <= len(payload), "record region is outside the save")
-    raw = payload[offset:offset + RECORD_SIZE]
-    if not is_present(raw):
+    magic, version, flags, year, team, week, count, head, _reserved = RECORD_HEADER.unpack_from(record, 0)
+    if magic != RECORD_MAGIC or version != VERSION:
         return {"present": False, "header": None, "slots": []}
-    header = decode_header(raw)
+    _require(count <= HISTORY_WEEKS and head < HISTORY_WEEKS, "history ring is outside its bounds")
     slots = []
     for slot in range(TEAM_SLOTS):
-        at = HEADER_SIZE + slot * SLOT_SIZE
-        identity, base_overall, prev_overall, flags = struct.unpack_from("<IBBb", raw, at + 0x04)
-        # struct B B b: flags is the fourth byte but the layout has identity u32 at +0, then three bytes.
-        # Re-read explicitly to avoid an endianness/size mistake.
-        identity = struct.unpack_from("<I", raw, at)[0]
-        base_overall = raw[at + 4]
-        prev_overall = raw[at + 5]
-        flags = raw[at + 6]
-        baseline = list(raw[at + 0x08:at + 0x08 + RATING_COUNT])
-        previous = list(raw[at + 0x24:at + 0x24 + RATING_COUNT])
-        last_deltas = _unpack4(raw[at + 0x40:at + 0x40 + 14])
-        last_overall = struct.unpack_from("<b", raw, at + 0x4E)[0]
-        slots.append({"identity": identity, "baseline_overall": base_overall,
-                      "previous_overall": prev_overall, "flags": flags, "baseline": baseline,
-                      "previous": previous, "last_deltas": last_deltas, "last_overall": last_overall})
-    return {"present": True, "header": header, "slots": slots}
+        at = RECORD_HEADER_SIZE + slot * SLOT_SIZE
+        identity, slot_flags, base_overall = struct.unpack_from("<IBB", record, at)
+        baseline = list(record[at + 6:at + 6 + RATING_COUNT])
+        snapshots = []
+        for index in range(HISTORY_WEEKS):
+            snap = at + 0x22 + index * SNAPSHOT_SIZE
+            snapshots.append({"ratings": list(record[snap:snap + RATING_COUNT]),
+                              "overall": record[snap + RATING_COUNT]})
+        slots.append({"identity": identity, "flags": slot_flags, "baseline_overall": base_overall,
+                      "baseline": baseline, "snapshots": snapshots})
+    return {"present": True,
+            "header": {"magic": magic, "version": version, "flags": flags, "year": year, "team": team,
+                       "week": week, "count": count, "head": head},
+            "slots": slots}
 
 
 def encode_record(header: Mapping[str, int], slots: Sequence[Mapping[str, object]]) -> bytes:
     _require(len(slots) == TEAM_SLOTS, "65 roster slots are needed")
     buf = bytearray(RECORD_SIZE)
-    HEADER.pack_into(buf, 0, MAGIC, VERSION, int(header.get("flags", 0)) & 0xFF,
-                     int(header.get("year", 0)) & 0xFFFF, int(header.get("team", 0)) & 0xFF,
-                     int(header.get("week", 0)) & 0xFF, 0, bytes(20))
+    RECORD_HEADER.pack_into(buf, 0, RECORD_MAGIC, VERSION, int(header.get("flags", 0)) & 0xFF,
+                            int(header.get("year", 0)) & 0xFFFF, int(header.get("team", 0)) & 0xFF,
+                            int(header.get("week", 0)) & 0xFF, int(header.get("count", 0)) & 0xFF,
+                            int(header.get("head", 0)) & 0xFF, bytes(20))
     for slot, entry in enumerate(slots):
-        at = HEADER_SIZE + slot * SLOT_SIZE
-        struct.pack_into("<IBBb", buf, at, int(entry["identity"]) & 0xFFFFFFFF,
-                         int(entry["baseline_overall"]) & 0xFF, int(entry["previous_overall"]) & 0xFF,
-                         int(entry["flags"]) & 0xFF)
-        buf[at + 0x08:at + 0x08 + RATING_COUNT] = bytes(int(v) & 0xFF for v in entry["baseline"])
-        buf[at + 0x24:at + 0x24 + RATING_COUNT] = bytes(int(v) & 0xFF for v in entry["previous"])
-        buf[at + 0x40:at + 0x40 + 14] = _pack4(entry["last_deltas"])
-        struct.pack_into("<b", buf, at + 0x4E, _clamp4(int(entry.get("last_overall", 0))))
+        at = RECORD_HEADER_SIZE + slot * SLOT_SIZE
+        struct.pack_into("<IBB", buf, at, int(entry["identity"]) & 0xFFFFFFFF,
+                         int(entry.get("flags", 0)) & 0xFF, int(entry.get("baseline_overall", 0)) & 0xFF)
+        buf[at + 6:at + 6 + RATING_COUNT] = bytes(int(v) & 0xFF for v in entry["baseline"])
+        snapshots = entry.get("snapshots") or [{"ratings": [0] * RATING_COUNT, "overall": 0}] * HISTORY_WEEKS
+        _require(len(snapshots) == HISTORY_WEEKS, "17 weekly snapshots are needed")
+        for index, snapshot in enumerate(snapshots):
+            snap = at + 0x22 + index * SNAPSHOT_SIZE
+            buf[snap:snap + RATING_COUNT] = bytes(int(v) & 0xFF for v in snapshot["ratings"])
+            buf[snap + RATING_COUNT] = int(snapshot.get("overall", 0)) & 0xFF
     return bytes(buf)
 
 
-def write_record(payload: bytes, record: bytes, *, offset: int = RECORD_FILE_OFFSET) -> tuple[bytes, dict[str, object]]:
-    _require(len(record) == RECORD_SIZE, "wrong record size")
-    _require(0 <= offset and offset + RECORD_SIZE <= len(payload), "record region is outside the save")
-    _require(len(payload) == SAVE_SIZE, "not a retail-sized franchise save")
-    buf = bytearray(payload)
-    buf[offset:offset + RECORD_SIZE] = record
-    result = bytes(buf)
-    _require(len(result) == len(payload), "save size changed")
-    return result, {"owner": OWNER, "schema": SCHEMA, "save_growth": 0,
-                    "changed_bytes": sum(1 for a, b in zip(payload, result) if a != b)}
+def _slot_for(player: Mapping[str, object], entry: Mapping[str, object] | None) -> dict[str, object]:
+    ratings = _ratings(player)
+    overall = int(player["overall"]) & 0xFF
+    snapshots = [{"ratings": [0] * RATING_COUNT, "overall": 0} for _ in range(HISTORY_WEEKS)]
+    return {"identity": _identity(player), "flags": FLAG_IDENTITY | FLAG_BASELINE,
+            "baseline_overall": overall, "baseline": ratings, "snapshots": snapshots}
 
 
-def baseline(payload: bytes, players: Sequence[Mapping[str, object]], *, year: int, team: int,
-             offset: int = RECORD_FILE_OFFSET) -> bytes:
-    """Write a new season-start baseline for the user team's roster (slot order)."""
+def baseline(players: Sequence[Mapping[str, object]], *, year: int, team: int) -> bytes:
+    """A new season-start baseline for the user team's roster (slot order)."""
     _require(len(players) == TEAM_SLOTS, "65 players are needed")
-    slots = []
-    for player in players:
-        ratings = _ratings(player)
-        slots.append({"identity": _identity(player), "baseline_overall": int(player["overall"]) & 0xFF,
-                      "previous_overall": int(player["overall"]) & 0xFF, "flags": 7,
-                      "baseline": ratings, "previous": ratings, "last_deltas": [0] * RATING_COUNT,
-                      "last_overall": 0})
-    record = encode_record({"flags": HEADER_BASELINE, "year": year, "team": team, "week": 0}, slots)
-    return write_record(payload, record, offset=offset)[0]
+    _require(0 <= year <= 0xFFFF and 0 <= team <= 0xFF, "header field out of range")
+    slots = [_slot_for(player, None) for player in players]
+    return _wrap(encode_record({"flags": HEADER_BASELINE, "year": year, "team": team, "week": 0,
+                                "count": 0, "head": 0}, slots))
 
 
-def advance_week(payload: bytes, players: Sequence[Mapping[str, object]], *, week: int,
-                 offset: int = RECORD_FILE_OFFSET) -> bytes:
-    """Capture the end of week ``week`` (the new week counter minus one) for the user team."""
+def advance_week(footer: bytes, players: Sequence[Mapping[str, object]], *, week: int,
+                 team: int | None = None, year: int | None = None) -> bytes:
+    """Append the end of ``week`` for the user team; start (or reset) a baseline when needed."""
     _require(len(players) == TEAM_SLOTS, "65 players are needed")
-    current = read_record(payload, offset=offset)
-    if not current["present"] or not (current["header"]["flags"] & HEADER_BASELINE):
-        return baseline(payload, players, year=int(current["header"]["year"]) if current["present"] else 0,
-                        team=int(current["header"]["team"]) if current["present"] else 0, offset=offset)
+    _require(len(footer) == FOOTER_SIZE, "wrong footer size")
+    current = read_footer(footer)
+    if not current["present"]:
+        return baseline(players, year=int(year or 0), team=int(team or 0))
     header = dict(current["header"])
-    slots = list(current["slots"])
+    if year is not None and header["year"] != year:
+        return baseline(players, year=year, team=int(team if team is not None else header["team"]))
+    if team is not None and header["team"] != team:
+        return baseline(players, year=header["year"], team=team)
+    slots = [dict(entry) for entry in current["slots"]]
+    head = header["head"]
+    count = header["count"]
     for slot, player in enumerate(players):
-        entry = dict(slots[slot])
+        entry = slots[slot]
         identity = _identity(player)
         ratings = _ratings(player)
         overall = int(player["overall"]) & 0xFF
         if entry["identity"] != identity or not (entry["flags"] & FLAG_BASELINE):
-            entry.update({"identity": identity, "baseline_overall": overall, "previous_overall": overall,
-                          "flags": FLAG_IDENTITY | FLAG_BASELINE | FLAG_PREVIOUS,
-                          "baseline": ratings, "previous": ratings,
-                          "last_deltas": [0] * RATING_COUNT, "last_overall": 0})
-        else:
-            last = [_clamp4(a - b) for a, b in zip(ratings, entry["previous"])]
-            entry.update({"last_deltas": last, "last_overall": _clamp4(overall - entry["previous_overall"]),
-                          "previous": ratings, "previous_overall": overall,
-                          "flags": entry["flags"] | FLAG_IDENTITY | FLAG_PREVIOUS | FLAG_LAST})
+            slots[slot] = _slot_for(player, None)
+            continue
+        snapshots = [dict(snap) for snap in entry["snapshots"]]
+        snapshots[head] = {"ratings": ratings, "overall": overall}
+        entry["snapshots"] = snapshots
         slots[slot] = entry
-    header.update({"flags": HEADER_BASELINE | HEADER_LAST, "week": week & 0xFF})
-    return write_record(payload, encode_record(header, slots), offset=offset)[0]
+    header.update({"flags": header["flags"] | HEADER_HISTORY, "week": week & 0xFF,
+                   "head": (head + 1) % HISTORY_WEEKS, "count": min(count + 1, HISTORY_WEEKS)})
+    return _wrap(encode_record(header, slots))
 
 
-def screen_rows(record: Mapping[str, object], roster: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
-    """The screen contract: one row per live roster player with season and last-week changes.
+def snapshot_index(record: Mapping[str, object], weeks_ago: int) -> int | None:
+    """Ring index for ``weeks_ago`` weeks before the last completed week (1 = last week)."""
+    _require(record.get("present") is True, "no snapshot record")
+    header = record["header"]
+    if weeks_ago < 1 or weeks_ago > int(header["count"]):
+        return None
+    return (int(header["head"]) - weeks_ago) % HISTORY_WEEKS
 
-    ``roster`` entries carry ``slot`` and the player fields. The live ``current`` and ``overall``
-    values are supplied by the caller; this function joins them with the stored snapshots.
+
+def screen_rows(record: Mapping[str, object], roster: Sequence[Mapping[str, object]], *,
+                weeks_ago: int = 1) -> list[dict[str, object]]:
+    """The screen contract: one row per live roster player with season and selected-week changes.
+
+    ``weeks_ago=0`` is the season baseline; 1 is the last completed week; up to 17 weeks are kept.
+    ``roster`` entries carry ``slot`` and the live player fields.
     """
     _require(record.get("present") is True, "no snapshot record")
-    slots = record["slots"]
+    header = record["header"]
+    _require(0 <= weeks_ago <= HISTORY_WEEKS, "history week out of range")
+    if weeks_ago > int(header["count"]):
+        weeks_ago = int(header["count"])
+    index = (int(header["head"]) - weeks_ago) % HISTORY_WEEKS if weeks_ago else None
     rows = []
     for entry in roster:
         slot = int(entry["slot"])
         _require(0 <= slot < TEAM_SLOTS, "roster slot out of range")
-        stored = slots[slot]
+        stored = record["slots"][slot]
         identity_ok = stored["identity"] == _identity(entry)
         current = _ratings(entry)
         overall = int(entry["overall"]) & 0xFF
+        empty = {"slot": slot, "identity": identity_ok, "season": [0] * RATING_COUNT,
+                 "last_week": [0] * RATING_COUNT, "season_overall": 0, "last_overall": 0,
+                 "baseline": [0] * RATING_COUNT, "baseline_overall": 0,
+                 "previous": [0] * RATING_COUNT, "previous_overall": 0, "change": [0] * RATING_COUNT,
+                 "change_overall": 0, "weeks_ago": weeks_ago}
         if not identity_ok or not (stored["flags"] & FLAG_BASELINE):
-            rows.append({"slot": slot, "identity": identity_ok, "season": [0] * RATING_COUNT,
-                         "last_week": [0] * RATING_COUNT, "season_overall": 0, "last_overall": 0,
-                         "baseline": [0] * RATING_COUNT, "baseline_overall": 0})
+            rows.append(empty)
             continue
-        season = [a - b for a, b in zip(current, stored["baseline"])]
-        last = stored["last_deltas"] if stored["flags"] & FLAG_LAST else [0] * RATING_COUNT
-        rows.append({"slot": slot, "identity": True, "season": season, "last_week": last,
+        baseline = list(stored["baseline"])
+        if weeks_ago:
+            snapshot = stored["snapshots"][index]
+            shown = list(snapshot["ratings"])
+            shown_overall = snapshot["overall"]
+            if weeks_ago < int(header["count"]):
+                before = stored["snapshots"][(index - 1) % HISTORY_WEEKS]
+                previous, previous_overall = list(before["ratings"]), before["overall"]
+            else:
+                previous, previous_overall = baseline, stored["baseline_overall"]
+        else:
+            shown, shown_overall = current, overall
+            previous, previous_overall = baseline, stored["baseline_overall"]
+        season = [a - b for a, b in zip(current, baseline)]
+        change = [a - b for a, b in zip(shown, previous)]
+        rows.append({"slot": slot, "identity": True, "season": season,
+                     "last_week": change if weeks_ago == 1 else [0] * RATING_COUNT,
                      "season_overall": overall - stored["baseline_overall"],
-                     "last_overall": stored["last_overall"] if stored["flags"] & FLAG_LAST else 0,
-                     "baseline": list(stored["baseline"]), "baseline_overall": stored["baseline_overall"]})
+                     "last_overall": (shown_overall - previous_overall) if weeks_ago == 1 else 0,
+                     "baseline": baseline, "baseline_overall": stored["baseline_overall"],
+                     "previous": previous, "previous_overall": previous_overall,
+                     "change": change, "change_overall": shown_overall - previous_overall,
+                     "shown": shown, "shown_overall": shown_overall, "weeks_ago": weeks_ago})
     return rows
 
 
-__all__ = ["FLAG_BASELINE", "FLAG_IDENTITY", "FLAG_LAST", "FLAG_PREVIOUS", "HEADER_BASELINE",
-           "HEADER_LAST", "MAGIC", "OWNER", "ProgressionError", "RATING_COUNT", "RATING_OFFSET",
-           "RECORD_FILE_OFFSET", "RECORD_RUNTIME_DELTA", "RECORD_SIZE", "ROW_MAP", "SAVE_SIZE",
-           "SCHEMA", "SCREEN_SCHEMA", "SLOT_SIZE", "TEAM_SLOTS", "VERSION", "advance_week", "baseline",
-           "decode_header", "empty_record", "encode_record", "is_present", "read_record", "screen_rows",
-           "write_record"]
+def append_footer(payload: bytes, footer: bytes) -> tuple[bytes, dict[str, object]]:
+    """Copy-only external helper: append a footer to a native save (the game writes its own)."""
+    _require(footer_start(payload) is None, "the save already has a Player Progress footer")
+    _require(len(footer) == FOOTER_SIZE, "wrong footer size")
+    native = len(payload)
+    team = int(read_footer(footer)["header"]["team"]) if read_footer(footer)["present"] else 0
+    result = bytes(payload) + bytes(footer)
+    _require(footer_start(result) is not None, "footer does not read back")
+    return result, {"owner": OWNER, "schema": SCHEMA, "footer_offset": native, "footer_size": FOOTER_SIZE,
+                    "native_bytes_preserved": native, "team": team,
+                    "file_growth": len(result) - len(payload)}
+
+
+def strip_footer(payload: bytes) -> tuple[bytes, bytes | None]:
+    at = footer_start(payload)
+    if at is None:
+        return bytes(payload), None
+    return bytes(payload[:at]), bytes(payload[at:])
+
+
+__all__ = ["FLAG_BASELINE", "FLAG_IDENTITY", "FOOTER_HEADER_SIZE", "FOOTER_MAGIC", "FOOTER_SIZE",
+           "FOOTER_VERSION", "HEADER_BASELINE", "HEADER_HISTORY", "HISTORY_WEEKS", "MAX_OVERALL",
+           "MYCAREER_FOOTER_SIZE", "NATIVE_SAVE_SIZES", "OWNER", "ProgressionError", "RATING_COUNT",
+           "RATING_OFFSET", "RECORD_HEADER_SIZE", "RECORD_MAGIC", "RECORD_SIZE", "ROW_MAP",
+           "SAVE_SIZES", "PPG_SAVE_SIZES", "PPG_CAREER_SAVE_SIZES", "SCHEMA", "SCREEN_SCHEMA", "SLOT_SIZE", "SNAPSHOT_SIZE", "TEAM_SLOTS", "VERSION",
+           "advance_week", "append_footer", "baseline", "empty_footer", "encode_record", "footer_start",
+           "read_footer", "read_record", "screen_rows", "snapshot_index", "strip_footer"]
