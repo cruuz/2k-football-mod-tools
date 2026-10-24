@@ -213,6 +213,8 @@ def _recognize(payload):
         companion_edits.extend(career.sites(code["va"], data["va"]))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
+        from . import nfl2k5_module_loader as module_loader
+        raw = bytearray(module_loader.canonical_context(payload, va, bytes(raw)))
         if va == 0x6E4E0 and raw[:5] != bytes.fromhex("5155578bf9"):
             from . import nfl2k5_music_playlist as playlist
             require(playlist.status(payload) == "applied", "foreign playlist event dispatcher")
