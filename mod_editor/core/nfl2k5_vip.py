@@ -512,6 +512,56 @@ def diversify_pools(pools, choices, overall=None, weights=diversity.DEFAULT_WEIG
                 spread_before=spread_before, spread_after=diversity.pool_metrics(rings))
 
 
+#: b778 ai7: the native 20-pool situation map. Pools 6-11 are 3rd/4th down with under 3 yards to go (distance
+#: bin 1; 6-8 normal, 9-11 urgent). The other sixteen pools cover 1st/2nd down and 3rd/4th long. A one-yard QB run
+#: is a legal call only in the short-yardage pools, so the coach ring builder must not place a QB Sneak / tush push
+#: in any other pool; the native pool draw is uniform over the ring and cannot tell 3rd-and-1 from 1st-and-1.
+SNEAK_POOLS = tuple(range(6, 12))
+
+
+def _is_sneak_choice(choice: Choice) -> bool:
+    name = (choice.play_name or "").casefold()
+    return "sneak" in name or "tush" in name
+
+
+def restrict_sneak_pools(pools, choices) -> list:
+    """Replace a QB Sneak / tush push in a non-short-yardage ring with a same-category call.
+
+    The ring's pass/run/shotgun counts stay exact (the replacement has the same category); the secondary features are
+    kept as close as the book allows. Returns the replacements for the receipt. This is a safety rule, not a fit.
+    """
+    changes = []
+    for pool in pools:
+        if pool["index"] in SNEAK_POOLS:
+            continue
+        ring = [Choice(**c) for c in pool["choices"]]
+        changed = False
+        for slot, current in enumerate(ring):
+            if not _is_sneak_choice(current):
+                continue
+            used = {(c.formation, c.play) for i, c in enumerate(ring) if i != slot}
+            options = [c for c in choices if c.category == current.category
+                       and (c.formation, c.play) not in used and not _is_sneak_choice(c)]
+            if not options:
+                continue
+            features = ("play_action", "screen", "deep_primary", "run_location", "run_lane")
+
+            def cost(c):
+                return (sum(getattr(c, f) != getattr(current, f) for f in features), c.flipped, c.formation, c.play)
+
+            best = min(options, key=cost)
+            ring[slot] = best
+            changes.append(dict(pool=pool["index"], was=current.play_name, now=best.play_name,
+                                formation=best.formation_name))
+            changed = True
+        if changed:
+            pool["choices"] = [vars(c) for c in ring]
+            pool["secondary_quantized"] = choice_metrics(ring)
+            pool["quantized_pass"] = sum(c.passed for c in ring) / 8
+            pool["quantized_shotgun"] = sum(c.shotgun for c in ring) / 8
+    return changes
+
+
 def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int, *,
                   varied: bool = True):
     """Return an experimental candidate and a byte-scope receipt, never write input."""
@@ -559,7 +609,10 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
     secondary_fit = fit_secondary_history(pool_receipts, choices, tendency.get("overall", {}))
     weights = varied if isinstance(varied, diversity.Weights) else diversity.DEFAULT_WEIGHTS
     variety = diversify_pools(pool_receipts, choices, tendency.get("overall", {}), weights) if varied else None
-    if secondary_fit or variety:
+    # b778 ai7: a ring in a non-short-yardage pool must not hold a one-yard QB run (the native pool draw cannot tell
+    # 3rd-and-1 from 1st-and-1). Same category, so the ring's joint and counts are unchanged.
+    sneak_filter = restrict_sneak_pools(pool_receipts, choices)
+    if secondary_fit or variety or sneak_filter:
         for pool in pool_receipts:
             start = CONTEXT + OFFENSE + pool["index"] * POOL_SIZE
             for index, choice in enumerate(pool["choices"], 1):
@@ -577,7 +630,7 @@ def build_offense(template: VipSave, resource: bytes, tendency: dict, name: str,
                    save_sha256=hashlib.sha256(result.payload).hexdigest(),
                    allowed_spans=[dict(offset=a, size=n) for a, n in spans], changed_bytes=len(changed),
                    pools=pool_receipts, attachment="manual Quick Game VIP Coaches; unpaired exact book only",
-                   secondary_fit=secondary_fit, variety=variety,
+                   secondary_fit=secondary_fit, variety=variety, sneak_pool_filter=sneak_filter,
                    portrait="vip_logo_a1", native_replay_verified=False,
                    audible_policy="Disabled: unmeasured template numerator cleared because Coach's Pick shares its denominator",
                    preserved_template_features=["defense", "no_huddle_and_timing", "fourth_down", "two_point", "onside", "Crib", "preferences", "statistics"],

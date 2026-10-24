@@ -278,6 +278,10 @@ _f("Gun Split Y Off", "21", "gun", [(6.5, -1.0), (-9, 0), (9, 0), (-2.5, -5.27),
 # --- 22 personnel: TE, X, TE2, FB, HB ----------------------------------------------------------------
 _f("Full House", "22", "uc", [(5, 0), (-17, 0), (2.0, -4.5), (-2.0, -4.5), (0, -7.0)], "short", (1, 2, 4), 2,
    "Madden 27 Full House: the H and the fullback side by side, tailback behind")
+_f("Full House Sneak", "22", "uc", [(5, 0), (-5, 0), (0, -6.5), (1.1, -4.6), (-1.1, -4.6)], "goal", (1, 5, 7), 2,
+   "b778 ai7: the tush-push stack (two backs and a tight end at 2.6 and 4.5 yd behind the QB, the Goal Line "
+   "Sneak geometry) in 22 personnel. The 22-personnel group is the one the native 1st/2nd-down target asks for "
+   "least, so the one-yard QB runs are a short-yardage call, not a 1st/2nd-down call")
 _f("Pistol Full House", "22", "pistol", [(5, 0), (-17, 0), (2.2, -4.0), (-2.2, -4.0), PISTOL_HB], "short", (1, 2, 4), 2,
    "Madden 27 (5 books): pistol with the H and the fullback beside the QB")
 _f("I-Form Wing", "22", "uc", [(5, 0), (-17, 0), (6.5, -1.2), (0, -4.5), (0, -7.0)], "short", (1, 2, 4), 2,
