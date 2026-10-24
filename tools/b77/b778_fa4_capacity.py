@@ -27,6 +27,7 @@ for entry in (ROOT, ROOT / "tools"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
+from mod_editor.core import nfl2k5_college_check as college_check  # noqa: E402
 from mod_editor.core import nfl2k5_roster_arena as arena  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_spare_capacity as capacity  # noqa: E402
@@ -72,10 +73,16 @@ def merge(args):
     fitted, floor_added, floor = floor_shortfall(base, plan, data, args.margin)
     require(fitted < final, f"this base already fits all {final} candidates")
     records = (final - fitted) + floor_added
+    if getattr(args, "records", 0):
+        require(args.records >= records, f"--records {args.records} is smaller than the {records} needed")
+        records = args.records
     grown, grow_receipt = grow(base, records)
     extended = fa3.extend_plan(plan, data, final, grown)
     directive = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": extended, "restore_import_floor": True}
     body, receipt = rr.apply_body(grown, directive, scheme="one_pool")
+    # b778 fa5 / fr1: apply_body is the test/plan writer; the disc writer (rr.apply) heals null colleges, and
+    # the proof body must carry the same fix or the Contracts / Free Agents panel bugchecks on the first one.
+    body, college_receipt = college_check.heal_null_references(body, source="capacity roster")
     doc = rr.RosterDocument(body, scheme="one_pool", reference_year=2026)
     vacancies = capacity.import_vacancies(body)
     require(len(doc.free_agents) == len(extended["free_agents"]), "free-agent count differs after the refresh")
@@ -96,7 +103,8 @@ def merge(args):
         "floor": capacity.IMPORT_FLOOR, "margin": vacancies - capacity.IMPORT_FLOOR,
         "base_sha256": hashlib.sha256(base).hexdigest(),
         "grown_body_sha256": hashlib.sha256(grown).hexdigest(),
-        "final_body_sha256": hashlib.sha256(body).hexdigest()}
+        "final_body_sha256": hashlib.sha256(body).hexdigest(),
+        "college_null_repair": college_receipt["changed"]}
     Path(args.out).write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(out["free_agent_capacity"], indent=1))
     return 0
@@ -111,6 +119,8 @@ def main(argv=None):
     m.add_argument("--out", required=True)
     m.add_argument("--data", default=str(fa3.DATA))
     m.add_argument("--margin", type=int, default=fa3.DEFAULT_MARGIN)
+    m.add_argument("--records", type=int, default=0,
+                   help="reserve at least this many appended capacity records (default: the exact fit)")
     args = parser.parse_args(argv)
     try:
         return merge(args)
