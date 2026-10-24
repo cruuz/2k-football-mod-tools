@@ -423,9 +423,6 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
     grown, _, previous = _validate(payload)
     wanted = _requests(requests)
     if is_scaleout(payload):
-        if wanted != previous and wanted != [LOGO_REQUEST]:
-            import json as _json
-            open("/tmp/space_differ.txt","w").write(_json.dumps({"previous": previous, "wanted": wanted}, default=str))
         _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _scale_allocations(previous)}
     if not grown and (scaleout or _needs_scaleout(wanted)):

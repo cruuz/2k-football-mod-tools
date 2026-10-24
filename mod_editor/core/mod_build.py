@@ -5047,7 +5047,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
             player_progress=plan.player_progress, contract_college_guard=plan.contract_college_guard,
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
-            module_loader=plan.module_loader,
+            module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
