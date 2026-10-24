@@ -17,75 +17,84 @@
  },
  "formations": [
   {
-   "formation": "Goal Line Sneak",
-   "index": null,
-   "family": "Goal Line",
-   "personnel": "23",
-   "group": "Jacks",
+   "formation": "Singleback Ace",
+   "index": 0,
+   "family": "Singleback",
+   "personnel": "12",
+   "group": "Ace",
    "align": "uc",
-   "tag": "goal",
+   "tag": "base",
    "menu": [
-    "Tush Push",
-    "QB Sneak",
-    "Flea Flicker"
+    "01 Trap",
+    "Z Quick Outs",
+    "Y Levels Slants",
+    "PA Comeback Seam",
+    "Slip Screen Wk",
+    "U Cross Dig",
+    "U Scat",
+    "Z Corner Post",
+    "Z Hitch Seam",
+    "Z Bench Outs",
+    "X Out Seam",
+    "Y Y Trail"
    ],
    "cpu_situation": [
-    4,
-    4,
-    5
-   ]
-  },
-  {
-   "formation": "Goal Line",
-   "index": null,
-   "family": "Goal Line",
-   "personnel": "23",
-   "group": "Jacks",
-   "align": "uc",
-   "tag": "goal",
-   "menu": [
-    "QB Sneak",
-    "Outside Zone Wk",
-    "U Slant Flat",
-    "PA Crossers",
-    "RB Iso Wk",
-    "U Quick Outs"
-   ],
-   "cpu_situation": [
-    4,
-    4,
+    0,
+    3,
     4
    ]
   },
   {
-   "formation": "Gun Wildcat",
-   "index": 14,
-   "family": "Wildcat",
-   "personnel": "11",
-   "group": "Kings",
-   "align": "gun",
+   "formation": "Singleback Ace Close",
+   "index": 1,
+   "family": "Singleback",
+   "personnel": "12",
+   "group": "Ace",
+   "align": "uc",
    "tag": "base",
    "menu": [
-    "RB Dive",
-    "Pin Pull Sweep",
-    "Quick Outs",
-    "Direct Snap Power",
-    "PA Slot Bench",
-    "Z Curl Combo",
-    "X Deep Hooks",
-    "Slot Choice",
-    "PA Verticals",
-    "Slot Deep Over",
-    "RB Counter",
-    "Outside Zone",
-    "Z Out Seam",
-    "Crack Toss Wk",
-    "Slot Fade"
+    "01 Trap",
+    "Z Hitch Seam",
+    "X Out Seam",
+    "Z Bench Outs",
+    "Z Corner Post",
+    "U Scat",
+    "PA Comeback Seam",
+    "Z Quick Outs",
+    "U Cross Dig",
+    "Y Y Trail",
+    "Y Levels Slants",
+    "PA X Bench"
    ],
    "cpu_situation": [
     3,
-    4,
+    1,
     1
+   ]
+  },
+  {
+   "formation": "Split Backs",
+   "index": 2,
+   "family": "Split Backs",
+   "personnel": "21",
+   "group": "Pro",
+   "align": "uc",
+   "tag": "base",
+   "menu": [
+    "Guard Iso",
+    "X Snag Deep Go",
+    "X Steep In Seam",
+    "PA Y Switch",
+    "Z Out Seam",
+    "X Whip Out Dig",
+    "PA X Sail",
+    "X Sail",
+    "Z Hook Corner"
+   ],
+   "cpu_situation": [
+    3,
+    3,
+    4
    ]
   },
   {
@@ -97,15 +106,15 @@
    "align": "uc",
    "tag": "empty",
    "menu": [
-    "Slot Stick",
-    "Y Stick Nod",
+    "HB Spacing",
+    "HB Sail",
     "QB Keep",
     "End Around",
-    "RB Cross Dig",
+    "Y Drive Return",
     "X Slip Screen"
    ],
    "cpu_situation": [
-    1,
+    0,
     0,
     0
    ]
@@ -119,21 +128,18 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "RB Stretch",
-    "Slip Screen Wk",
+    "HB Counter Wk",
+    "Outside Zone Wk",
+    "X Stick Out",
     "PIT Smash",
-    "Y Levels Seams",
-    "Z Quick Outs",
-    "X Stick",
+    "PA X Deep Post",
+    "Y Sail Out",
+    "Slot Scat",
     "PA Post Corner Shot",
-    "PA Z Bench",
-    "X Post Wheel",
-    "PIT Four Verticals",
-    "Deep Hooks",
-    "PA Y Deep Over",
-    "Cross Dig",
-    "Slot Drive Out",
-    "Deep Flood"
+    "Z Deep Post",
+    "Z Bench",
+    "Slot Dagger",
+    "X Comeback Seam"
    ],
    "cpu_situation": [
     1,
@@ -152,34 +158,34 @@
    "menu": [
     "PIT RB Screen",
     "PA Post Corner Shot",
-    "Inside Zone Wk",
+    "01 Trap",
     "PIT Quick Outs",
     "PIT Four Verticals",
     "PIT Smash",
-    "Quick Outs",
-    "X Seam Shot",
-    "Z Bench",
-    "Z Quick Outs",
-    "Z Curl Combo",
-    "Z Curl Flat",
-    "X Stick",
-    "Slot Deep Over",
-    "RB Toss",
-    "X Deep Hooks",
-    "PA Z Out Seam",
-    "Y Stick",
-    "Z Out Seam",
-    "Deep Hooks",
+    "Slot Stick",
+    "Z Post Go",
+    "Z Hitch Seam",
+    "Slot Drive",
+    "QB Draw",
     "Slot Choice",
-    "Out Seam",
-    "Slot Y Trail",
-    "Slot Drive Out",
-    "PA Curl Combo",
-    "Slot Fade",
-    "RB Texas",
-    "PA Y Deep Over",
-    "Y Levels Seams",
-    "RB Slants"
+    "Slot Curls",
+    "Z Deep Post",
+    "Power G",
+    "X Snag Post",
+    "Slot Dagger",
+    "PA Stick Nod",
+    "Crack Toss",
+    "Slot Scat",
+    "Z Bench",
+    "Z Comeback Seam",
+    "X Dagger",
+    "PA Slot Stick Nod",
+    "Slot Hitch Seam",
+    "PA Deep Over",
+    "X Comeback Seam",
+    "Y China",
+    "Y Whip",
+    "Steep In Seam"
    ],
    "cpu_situation": [
     4,
@@ -197,14 +203,14 @@
    "tag": "pass",
    "menu": [
     "Slot Stick",
-    "Slot Deep Over",
-    "Inside Zone Wk",
-    "Y Screen",
-    "PA Curl Combo",
-    "X Deep Hooks",
-    "RB Slants",
-    "Slot Fade",
-    "PIT Mesh Wheel"
+    "PA Slot Stick Nod",
+    "X Snag Post",
+    "X Dagger",
+    "PIT Four Verticals",
+    "PIT RB Screen",
+    "Y Scissors",
+    "Slot Hitch Seam",
+    "Slot Curls"
    ],
    "cpu_situation": [
     4,
@@ -221,36 +227,36 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "PIT Quick Outs",
-    "Z Bench",
-    "Inside Zone Wk",
-    "PA Z Bench",
-    "Max Stick Nod",
-    "Out Seam",
-    "Quick Outs",
     "X Slip Screen",
-    "Cluster Wheel",
-    "X Stick",
-    "Bubble Screen",
-    "PIT Smash",
-    "Y Stick",
-    "Max Post Wheel",
-    "Z Curl Flat",
-    "Z Curl Combo",
-    "PA Post Corner Shot",
-    "Slot Choice",
-    "RB Toss",
-    "Z Out Seam",
-    "Slot Stick",
+    "PA Deep Over",
+    "Power G",
+    "Slot Drive",
+    "Y Post Wheel",
+    "PIT Quick Outs",
     "Z Cluster Wheel",
-    "Deep Hooks",
-    "Y Levels Seams",
-    "PA Curl Combo",
-    "Slot Drive Out",
-    "Y Drive",
-    "PA Zig Flat",
-    "Slot Y Trail",
-    "Y Bang Hitch"
+    "X Stick Out",
+    "PIT Smash",
+    "Slot Stick",
+    "Z Snag",
+    "Z Hitch Seam",
+    "Z Bench",
+    "Z Post Go",
+    "QB Draw",
+    "01 Trap",
+    "Steep In Seam",
+    "PA Steep In Seam",
+    "Slot Choice",
+    "X Snag Post",
+    "Cluster Wheel",
+    "Slot Scat",
+    "Crack Toss",
+    "X Comeback Seam",
+    "Z Comeback Seam",
+    "PA Stick Nod",
+    "PA Post Corner Shot",
+    "Slot Dagger",
+    "PA X Deep Post",
+    "Y Flood"
    ],
    "cpu_situation": [
     4,
@@ -267,24 +273,21 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
-    "RB Draw Wk",
-    "Bubble Screen",
-    "X Seam Shot",
-    "PA Z Out Seam",
-    "Z Bench",
-    "Z Curl Flat",
-    "PA Curl Combo",
-    "Y Stick",
-    "Out Seam",
-    "RB Slants",
-    "Y Drive",
-    "Slot Y Trail",
-    "Y Bang Hitch",
-    "RB Texas",
-    "Max Stick Nod"
+    "HB Toss",
+    "HB Dive",
+    "Slot Hitch Seam",
+    "Y Scissors",
+    "Steep In Seam",
+    "Slot Curls",
+    "PA Deep Over",
+    "PA Slot Stick Nod",
+    "Y China",
+    "Z Comeback Seam",
+    "X Dagger",
+    "Y Flood"
    ],
    "cpu_situation": [
-    1,
+    3,
     4,
     1
    ]
@@ -298,17 +301,20 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "Counter GT",
-    "Guard Iso",
+    "X Snag Deep Go",
+    "Z Out Seam",
+    "X Sail",
     "Slip Screen Wk",
-    "Y Whip Return",
-    "Y China",
-    "Steep In Seam"
+    "X Whip Out Dig",
+    "PA X Go Shot",
+    "PA Steep In Seam",
+    "PA X Scissors",
+    "Z Hook Corner"
    ],
    "cpu_situation": [
-    2,
     3,
-    3
+    3,
+    4
    ]
   },
   {
@@ -320,13 +326,13 @@
    "align": "uc",
    "tag": "short",
    "menu": [
-    "01 Trap Wk",
-    "U Slot Fade",
+    "HB Iso Wk",
+    "U China Out",
     "PA Post Corner Shot"
    ],
    "cpu_situation": [
-    4,
-    4,
+    3,
+    3,
     4
    ]
   },
@@ -339,205 +345,187 @@
    "align": "uc",
    "tag": "short",
    "menu": [
-    "Outside Zone",
-    "RB Iso",
-    "X Slip Screen",
-    "RB Off Tackle",
-    "RB Toss Wk",
-    "QB Sneak"
+    "HB Dive Wk",
+    "HB Dive",
+    "Inside Zone"
    ],
    "cpu_situation": [
-    4,
-    4,
+    3,
+    3,
     4
    ]
   },
   {
-   "formation": "Wing T",
+   "formation": "Full House Sneak",
    "index": 12,
+   "family": "Full House",
+   "personnel": "22",
+   "group": "Jokers",
+   "align": "uc",
+   "tag": "goal",
+   "menu": [
+    "Tush Push",
+    "QB Sneak",
+    "HB Lead Draw"
+   ],
+   "cpu_situation": [
+    4,
+    5,
+    7
+   ]
+  },
+  {
+   "formation": "Wing T",
+   "index": 13,
    "family": "Wing T",
    "personnel": "21",
    "group": "Pro",
    "align": "uc",
    "tag": "short",
    "menu": [
-    "RB Toss",
-    "RB Lead Draw",
-    "X Whip",
-    "PA Z Fade Curl",
-    "Y Levels",
-    "X Snag",
-    "Y Whip Return",
-    "Y Screen",
-    "Slip Screen Wk"
+    "X Whip Out Dig",
+    "PA X Sail",
+    "PA X Go Shot",
+    "PA Z Dagger",
+    "X Steep In Seam",
+    "X Snag Deep Go"
    ],
    "cpu_situation": [
-    4,
-    4,
+    3,
+    3,
     4
    ]
   },
   {
    "formation": "Gun Empty Trey",
-   "index": 13,
+   "index": 14,
    "family": "Empty",
    "personnel": "11",
    "group": "Kings Long",
    "align": "gun",
    "tag": "empty",
    "menu": [
-    "X Choice Out",
-    "RB Flood",
+    "HB Scat Seams",
+    "X Bench",
     "Bubble Screen",
-    "RB Flood Out",
-    "Y Slot Fade",
-    "Z Quick Outs"
+    "HB Flood Return",
+    "Y Mills",
+    "Z Snag Spot Out"
    ],
    "cpu_situation": [
     4,
     4,
-    4
-   ]
-  },
-  {
-   "formation": "Singleback Ace",
-   "index": 2,
-   "family": "Singleback",
-   "personnel": "12",
-   "group": "Ace",
-   "align": "uc",
-   "tag": "base",
-   "menu": [
-    "Zone Toss",
-    "RB Sweep",
-    "Z Hitch Seam",
-    "X Curl Flat",
-    "U Curls Fade",
-    "X Stick",
-    "PA Post Wheel",
-    "RB Dive Wk",
-    "Inside Zone"
-   ],
-   "cpu_situation": [
-    3,
-    0,
     0
    ]
   },
   {
-   "formation": "Gun Spread",
+   "formation": "Goal Line Sneak",
    "index": 15,
+   "family": "Goal Line",
+   "personnel": "23",
+   "group": "Jacks",
+   "align": "uc",
+   "tag": "goal",
+   "menu": [
+    "HB Slam",
+    "Zone Toss",
+    "Y Quick Outs"
+   ],
+   "cpu_situation": [
+    4,
+    4,
+    5
+   ]
+  },
+  {
+   "formation": "Gun Spread",
+   "index": 16,
    "family": "Gun",
    "personnel": "10",
    "group": "Flush",
    "align": "gun",
    "tag": "spread",
    "menu": [
-    "Slot China",
-    "Slot Drive",
-    "Inside Zone",
-    "X Spot Out",
-    "Slip Screen",
-    "Slot Stick Out",
-    "QB Power",
-    "Steep In Seam",
-    "X Bang Hitch",
-    "01 Trap",
     "Slot Whip",
-    "Slot Fade"
+    "Steep In Seam",
+    "HB Draw",
+    "HB Bang Hitch",
+    "Z Fade Curl",
+    "Z Hook Corner",
+    "X Slip Screen",
+    "Whip",
+    "Slot Slot Fade",
+    "Slot Smash",
+    "Double Slants",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
-    4,
     2,
-    2
+    0,
+    0
    ]
   },
   {
    "formation": "Gun Wing Slot Offset",
-   "index": 16,
+   "index": 17,
    "family": "Gun",
    "personnel": "12",
    "group": "Ace",
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "X Snag Bench",
-    "Comeback Seam",
-    "RB Stick"
+    "Double Slants",
+    "Outside Zone",
+    "Inside Trap"
    ],
    "cpu_situation": [
-    0,
-    0,
+    2,
+    2,
     1
    ]
   },
   {
    "formation": "Gun Tight Y Off",
-   "index": 17,
+   "index": 18,
    "family": "Gun",
    "personnel": "11",
    "group": "Kings",
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Z Quick Outs",
-    "Y Bang Hitch",
-    "RB Counter",
-    "Out Seam",
-    "Outside Zone",
-    "PA Z Bench",
-    "PIT Quick Outs",
-    "QB Draw",
-    "Z Curl Combo",
-    "Quick Outs",
-    "RB Dive",
-    "X Post Wheel",
-    "Cluster Wheel",
-    "Slot Choice",
-    "Pin Pull Sweep",
-    "Max Post Wheel",
-    "Z Curl Flat",
-    "PA Post Corner Shot",
-    "Slot Fade",
-    "Direct Snap Power",
-    "Z Cluster Wheel",
-    "Y Stick",
-    "Crack Toss Wk",
-    "X Deep Hooks",
-    "Z Out Seam",
-    "Y Slot Fade",
-    "Max Stick Nod",
+    "Z Hitch Seam",
+    "Y Mills",
+    "01 Trap Wk",
+    "HB Toss Wk",
     "Slot Stick",
-    "RB Slants",
-    "Y Levels Seams"
+    "Cluster Wheel",
+    "X Dagger",
+    "Bubble Screen",
+    "PIT Quick Outs",
+    "PIT Smash",
+    "PA X Deep Post",
+    "Inside Zone",
+    "Slot Drive",
+    "Slot Choice",
+    "HB Draw",
+    "Y Post Wheel",
+    "Slot Hitch Seam",
+    "Slot Curls",
+    "PA Deep Over",
+    "HB Sweep",
+    "X Snag Post",
+    "Y Sail Out",
+    "Direct Snap Power",
+    "Steep In Seam",
+    "Z Cluster Wheel",
+    "X Stick Out",
+    "PA Slot Stick Nod",
+    "X Comeback Seam",
+    "PA Stick Nod",
+    "Y China"
    ],
    "cpu_situation": [
-    4,
-    4,
-    1
-   ]
-  },
-  {
-   "formation": "Pistol Bunch TE",
-   "index": 18,
-   "family": "Pistol",
-   "personnel": "11",
-   "group": "Pistol",
-   "align": "pistol",
-   "tag": "base",
-   "menu": [
-    "RB Draw Wk",
-    "RB Slants",
-    "X Deep Hooks",
-    "Slot Drive Out",
-    "Y Screen",
-    "PA Curl Combo",
-    "X Stick",
-    "X Post Wheel",
-    "PA Y Deep Over"
-   ],
-   "cpu_situation": [
-    2,
+    3,
     4,
     1
    ]
@@ -551,39 +539,39 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
-    "RB Draw Wk",
-    "RB Stretch",
-    "Slot Choice",
+    "Outside Zone Wk",
+    "HB Dive",
+    "Slot Scat",
     "Z Cluster Wheel",
-    "RB Texas",
-    "Slot Verticals",
-    "PA Y Deep Over",
+    "Slot Curls",
     "PIT Quick Outs",
-    "PIT RB Screen",
+    "PA Stick Nod",
+    "Z Deep Post",
     "PA Post Corner Shot",
+    "HB Toss",
+    "HB Counter Wk",
+    "PA Deep Over",
     "Cluster Wheel",
-    "X Deep Hooks",
-    "PA Z Out Seam",
-    "Z Curl Combo",
-    "Z Quick Outs",
-    "PIT Smash",
-    "PA Z Bench",
-    "Max Post Wheel",
+    "Slot Drive",
+    "X Stick Out",
     "Z Bench",
-    "Out Seam",
-    "Z Curl Flat",
-    "X Stick",
-    "PA Curl Combo",
-    "Y Bang Hitch",
-    "Deep Hooks",
-    "Slot Y Trail",
-    "PA Zig Flat",
-    "Y Stick",
-    "Slot Drive Out",
-    "Cross Dig"
+    "PA Slot Stick Nod",
+    "Y Scissors",
+    "Z Comeback Seam",
+    "Slot Hitch Seam",
+    "Steep In Seam",
+    "X Dagger",
+    "PA Steep In Seam",
+    "Y China",
+    "Y Flood",
+    "Y Drive Return",
+    "Y Sail Out",
+    "HB Texas",
+    "HB Double Move",
+    "Bubble Screen"
    ],
    "cpu_situation": [
-    0,
+    3,
     4,
     1
    ]
@@ -597,40 +585,40 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
-    "RB Stretch",
-    "RB Draw Wk",
-    "PIT Quick Outs",
-    "Slot Y Trail",
-    "Z Curl Combo",
-    "X Post Wheel",
-    "PA Z Out Seam",
-    "Z Quick Outs",
-    "PA Curl Combo",
-    "Z Cluster Wheel",
+    "HB Counter Wk",
+    "HB Toss",
+    "Y Screen",
+    "Y Flood",
     "Z Bench",
-    "PA Z Bench",
-    "Slip Screen Wk",
-    "Out Seam",
-    "X Stick",
-    "Deep Hooks",
-    "PA Zig Flat",
-    "Deep Flood",
-    "X Deep Hooks",
+    "PA Stick Nod",
+    "Z Snag",
+    "Slot Scat",
+    "PA Slot Stick Nod",
+    "Z Deep Post",
+    "Outside Zone Wk",
+    "HB Dive",
+    "Z Cluster Wheel",
+    "PIT Quick Outs",
+    "Slot Curls",
+    "Z Comeback Seam",
+    "PIT Smash",
+    "Y Mills",
+    "X Dagger",
+    "X Stick Out",
+    "X Comeback Seam",
+    "Slot Drive",
+    "Y China",
+    "Slot Dagger",
     "Cluster Wheel",
-    "Y Drive",
-    "Slot Choice",
-    "PA Slot Bench",
-    "Cross Dig",
-    "Y Bang Hitch",
-    "Y Levels Seams",
-    "Slot Drive Out",
-    "PA Y Deep Over",
-    "Y Slot Fade",
-    "Y Stick"
+    "Steep In Seam",
+    "Y Drive Return",
+    "Y Sail Out",
+    "HB Texas",
+    "HB Double Move"
    ],
    "cpu_situation": [
     0,
-    3,
+    4,
     1
    ]
   },
@@ -643,36 +631,36 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Quick Outs",
+    "Slot Choice",
     "Cluster Wheel",
-    "RB Toss",
-    "Cross Dig",
-    "PA Verticals",
-    "Z Quick Outs",
-    "Inside Zone Wk",
-    "Z Cluster Wheel",
-    "X Stick",
-    "Slot Verticals",
-    "Out Seam",
-    "PIT Smash",
-    "Slot Stick",
-    "Max Stick Nod",
-    "Bubble Screen",
+    "QB Draw",
+    "Z Deep Post",
+    "Z Hitch Seam",
     "Z Bench",
     "PA Post Corner Shot",
-    "Y Slot Fade",
-    "Z Curl Flat",
-    "Slip Screen Wk",
-    "Y Stick",
-    "X Deep Hooks",
-    "Z Out Seam",
-    "PA Z Bench",
-    "PA Z Out Seam",
-    "Slot Choice",
-    "Deep Hooks",
-    "RB Texas",
-    "Slot Fade",
-    "PA Slot Bench"
+    "PIT RB Screen",
+    "PIT Smash",
+    "Slot Stick",
+    "Crack Toss",
+    "X Snag Post",
+    "Z Comeback Seam",
+    "Y Scissors",
+    "Slot Scat",
+    "X Dagger",
+    "PA Deep Over",
+    "Power G",
+    "01 Trap",
+    "Z Cluster Wheel",
+    "X Stick Out",
+    "Slot Hitch Seam",
+    "Slot Drive",
+    "Slot Curls",
+    "PA Slot Stick Nod",
+    "Y Post Wheel",
+    "PA Stick Nod",
+    "Y Flood",
+    "PA Steep In Seam",
+    "HB Texas"
    ],
    "cpu_situation": [
     4,
@@ -689,39 +677,39 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Z Quick Outs",
-    "Y Drive",
-    "Inside Zone Wk",
-    "PA Zig Flat",
-    "Deep Hooks",
-    "Deep Flood",
-    "PIT Quick Outs",
-    "PIT RB Screen",
-    "PIT Smash",
-    "Quick Outs",
-    "Z Out Seam",
-    "Z Cluster Wheel",
-    "Y Slot Fade",
-    "Slot Deep Over",
+    "Slot Choice",
+    "HB Texas",
+    "Power G",
+    "Y Drive Return",
+    "01 Trap",
+    "Z Hitch Seam",
+    "PA Deep Over",
+    "Z Post Go",
+    "X Snag Post",
     "Cluster Wheel",
-    "Out Seam",
-    "PA Curl Combo",
-    "X Stick",
-    "Y Levels Seams",
-    "RB Toss",
-    "Slot Fade",
-    "Z Bench",
-    "PA Z Out Seam",
-    "PA Post Corner Shot",
-    "PA Z Bench",
-    "Y Stick",
-    "Slot Y Trail",
-    "Cross Dig",
+    "Slot Scat",
+    "X Stick Out",
+    "PIT Smash",
+    "Y Post Wheel",
+    "Crack Toss",
     "Slot Stick",
-    "RB Texas"
+    "Z Cluster Wheel",
+    "PA Post Corner Shot",
+    "PIT Quick Outs",
+    "Slot Dagger",
+    "QB Draw",
+    "Y Whip",
+    "Z Bench",
+    "Slot Drive",
+    "X Dagger",
+    "HB Double Move",
+    "PA Steep In Seam",
+    "PA Slot Stick Nod",
+    "X Comeback Seam",
+    "Y Sail Out"
    ],
    "cpu_situation": [
-    3,
+    4,
     4,
     1
    ]
@@ -735,39 +723,39 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Slot Fade",
+    "X Snag Post",
     "PIT Mesh Wheel",
-    "RB Toss",
-    "Z Curl Flat",
-    "X Slip Screen",
-    "PIT Quick Outs",
-    "PA Post Corner Shot",
-    "X Post Wheel",
-    "PIT Smash",
-    "Z Quick Outs",
-    "Z Out Seam",
-    "Inside Zone Wk",
-    "Quick Outs",
-    "Deep Flood",
-    "Z Cluster Wheel",
-    "PA Curl Combo",
-    "Slot Stick",
-    "Cluster Wheel",
-    "Out Seam",
-    "Z Bench",
-    "Y Slot Fade",
-    "Z Curl Combo",
-    "Cross Dig",
-    "PA Z Out Seam",
-    "Deep Hooks",
+    "Crack Toss",
+    "HB Double Move",
+    "X Comeback Seam",
     "Slot Choice",
-    "Y Bang Hitch",
-    "Y Drive",
-    "Slot Drive Out",
-    "RB Slants"
+    "PA Stick Nod",
+    "Bubble Screen",
+    "Slot Scat",
+    "X Dagger",
+    "Steep In Seam",
+    "01 Trap",
+    "PIT Quick Outs",
+    "Y Mills",
+    "Z Cluster Wheel",
+    "Z Hitch Seam",
+    "PA Post Corner Shot",
+    "QB Draw",
+    "Z Bench",
+    "Slot Stick",
+    "Power G",
+    "Cluster Wheel",
+    "Z Comeback Seam",
+    "X Stick Out",
+    "PA X Deep Post",
+    "Y Whip",
+    "PA Deep Over",
+    "Slot Dagger",
+    "PA Steep In Seam",
+    "Y Drive Return"
    ],
    "cpu_situation": [
-    3,
+    1,
     4,
     1
    ]
@@ -781,36 +769,36 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Y Slot Fade",
-    "Max Post Wheel",
-    "Crack Toss Wk",
-    "Quick Outs",
-    "PIT Smash",
-    "Z Out Seam",
-    "PA Z Out Seam",
-    "RB Counter",
-    "Z Curl Flat",
+    "Z Snag",
+    "Slot Dagger",
+    "HB Sweep",
+    "Z Post Go",
+    "PA Steep In Seam",
+    "Z Comeback Seam",
     "PIT Quick Outs",
-    "RB Dive",
-    "QB Draw",
-    "X Deep Hooks",
-    "Z Quick Outs",
-    "Direct Snap Power",
-    "Max Stick Nod",
-    "Z Cluster Wheel",
-    "PA Z Bench",
-    "Slot Stick",
-    "Outside Zone",
-    "Z Curl Combo",
-    "Slot Fade",
-    "Pin Pull Sweep",
-    "Cluster Wheel",
-    "PA Post Corner Shot",
+    "Inside Zone",
     "Slot Choice",
-    "Cross Dig",
-    "Slot Y Trail",
-    "Y Drive",
-    "Y Bang Hitch"
+    "X Comeback Seam",
+    "01 Trap Wk",
+    "Slot Hitch Seam",
+    "PIT Smash",
+    "HB Draw",
+    "Y Scissors",
+    "X Snag Post",
+    "Cluster Wheel",
+    "PA X Deep Post",
+    "Direct Snap Power",
+    "Z Hitch Seam",
+    "Slot Curls",
+    "HB Toss Wk",
+    "Z Cluster Wheel",
+    "Z Bench",
+    "PA Post Corner Shot",
+    "X Stick Out",
+    "Steep In Seam",
+    "PA Deep Over",
+    "Y Whip",
+    "Y Flood"
    ],
    "cpu_situation": [
     4,
@@ -827,9 +815,12 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "Y Spot Out",
-    "Z Fade Curl",
-    "X Snag"
+    "HB Counter",
+    "Slip Screen Wk",
+    "PA FB Dagger",
+    "Z Hitch Seam",
+    "PA X Sail",
+    "X Steep In Seam"
    ],
    "cpu_situation": [
     4,
@@ -846,36 +837,36 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Y Stick",
-    "Z Out Seam",
-    "QB Draw",
-    "X Stick",
-    "Cluster Wheel",
-    "PA Z Bench",
-    "RB Dive",
-    "RB Counter",
+    "Y China",
+    "Z Comeback Seam",
+    "HB Draw",
+    "Y Whip",
     "PIT Smash",
-    "PIT Quick Outs",
-    "Deep Flood",
-    "Direct Snap Power",
-    "Z Bench",
-    "Quick Outs",
-    "Pin Pull Sweep",
-    "Slot Deep Over",
-    "Z Curl Combo",
-    "PA Z Out Seam",
-    "Y Slot Fade",
-    "Crack Toss Wk",
+    "PA Slot Stick Nod",
+    "Z Post Go",
+    "HB Toss Wk",
     "Z Cluster Wheel",
+    "PIT Quick Outs",
+    "X Slip Screen",
+    "Direct Snap Power",
     "Slot Stick",
-    "Outside Zone",
-    "Z Curl Flat",
-    "Y Drive",
-    "Slot Fade",
-    "Y Levels Seams",
-    "Y Bang Hitch",
-    "PA Zig Flat",
-    "Slot Y Trail"
+    "Cluster Wheel",
+    "Inside Zone",
+    "Y Mills",
+    "Slot Scat",
+    "Slot Drive",
+    "PA Stick Nod",
+    "01 Trap Wk",
+    "Z Hitch Seam",
+    "Slot Curls",
+    "HB Sweep",
+    "Slot Choice",
+    "Slot Dagger",
+    "Slot Hitch Seam",
+    "PA X Deep Post",
+    "PA Post Corner Shot",
+    "Steep In Seam",
+    "X Comeback Seam"
    ],
    "cpu_situation": [
     4,
@@ -892,12 +883,9 @@
    "align": "uc",
    "tag": "short",
    "menu": [
-    "Inside Zone Split",
-    "FB Quick Outs",
+    "FB Slant Flat",
     "Jumbo Boot",
-    "Max FB Go Shot",
-    "PA Hook Corner",
-    "X Slip Screen"
+    "Max FB Go Shot"
    ],
    "cpu_situation": [
     1,
@@ -914,44 +902,38 @@
    "align": "uc",
    "tag": "goal",
    "menu": [
-    "RB Draw",
-    "RB Slam",
-    "China",
-    "PA U Out Seam",
-    "Y China",
-    "PA Hitch Seam"
+    "FB Iso",
+    "Lead Stretch",
+    "Y Stick Return",
+    "Y Whip Return",
+    "PA Y Stick",
+    "FB Screen"
    ],
    "cpu_situation": [
-    3,
+    4,
     4,
     4
    ]
   },
   {
-   "formation": "Singleback Ace Close",
-   "index": 0,
-   "family": "Singleback",
-   "personnel": "12",
-   "group": "Ace",
+   "formation": "Goal Line",
+   "index": null,
+   "family": "Goal Line",
+   "personnel": "23",
+   "group": "Jacks",
    "align": "uc",
-   "tag": "base",
+   "tag": "goal",
    "menu": [
-    "RB Dive Wk",
-    "Inside Zone",
-    "Z Snag Seams",
-    "X Stick",
-    "U Curls Fade",
-    "X Cross Dig",
-    "PA Post Wheel",
-    "Z Hitch Seam",
-    "RB Sweep",
-    "Inside Trap",
-    "X Curl Flat",
-    "Zone Toss"
+    "Pin Pull Sweep",
+    "U Slant Flat",
+    "PA Crossers",
+    "Flea Flicker",
+    "HB Stick",
+    "PA U Snag"
    ],
    "cpu_situation": [
-    3,
-    1,
+    4,
+    4,
     4
    ]
   },
@@ -964,70 +946,85 @@
    "align": "gun",
    "tag": "spread",
    "menu": [
-    "Slot Whip",
+    "Whip",
+    "Slot Smash",
+    "Inside Zone Wk",
+    "HB Slip Screen",
+    "Double Slants",
+    "Slot Slot Fade",
+    "QB Draw",
+    "Z Fade Curl",
+    "Z Hook Corner",
     "Steep In Seam",
-    "01 Trap",
-    "RB Stick",
-    "Slot Fade",
-    "X Bang Hitch",
-    "RB Scissors",
-    "Slot Stick Out",
-    "Inside Zone",
-    "QB Power",
-    "Slot China",
-    "Slip Screen"
+    "Slot Whip",
+    "HB Draw"
    ],
    "cpu_situation": [
-    0,
-    0,
-    0
+    3,
+    2,
+    2
    ]
   },
   {
    "formation": "Singleback Y Trips",
-   "index": 1,
+   "index": null,
    "family": "Singleback",
    "personnel": "12",
    "group": "Ace",
    "align": "uc",
    "tag": "base",
    "menu": [
-    "Inside Trap",
-    "Inside Zone",
+    "01 Trap",
+    "U Scat",
+    "U Cross Dig",
+    "Y Y Trail",
+    "Y Screen",
     "Z Hitch Seam",
-    "PA Post Wheel",
-    "X Cross Dig",
-    "U Curls Fade",
-    "X Stick",
-    "RB Dive Wk",
-    "Zone Toss"
+    "Z Corner Post",
+    "PA Comeback Seam",
+    "Z Bench Outs",
+    "Z Quick Outs",
+    "X Out Seam",
+    "Y Levels Slants"
    ],
    "cpu_situation": [
+    4,
     0,
-    2,
-    4
+    3
    ]
   },
   {
-   "formation": "Split Backs",
+   "formation": "Gun Wildcat",
    "index": null,
-   "family": "Split Backs",
-   "personnel": "21",
-   "group": "Pro",
-   "align": "uc",
+   "family": "Wildcat",
+   "personnel": "11",
+   "group": "Kings",
+   "align": "gun",
    "tag": "base",
    "menu": [
-    "RB Counter Wk",
-    "X Snag",
-    "Y Levels",
-    "Y Screen",
-    "X Whip",
-    "Steep In Seam"
+    "Inside Zone",
+    "HB Draw",
+    "Bubble Screen",
+    "Direct Snap Power",
+    "Z Snag",
+    "PIT Mesh Wheel",
+    "Slot Drive",
+    "X Snag Post",
+    "PA Steep In Seam",
+    "PA Stick Nod",
+    "Y Post Wheel",
+    "HB Sweep",
+    "HB Texas",
+    "HB Toss Wk",
+    "Z Hitch Seam",
+    "01 Trap Wk",
+    "Slot Choice",
+    "Y Whip"
    ],
    "cpu_situation": [
-    2,
-    2,
-    4
+    3,
+    4,
+    1
    ]
   }
  ],
@@ -1087,10 +1084,10 @@
     "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
-    "Pistol Y Off Trips",
+    "Gun Tight Y Off",
+    "Pistol Bunch",
     "Gun Wing Trio",
     "Gun Trey Open",
-    "Gun Doubles Tight",
     "Gun Normal Y Off Close",
     "Gun Tight Open"
    ]
@@ -1109,41 +1106,19 @@
    "screen": "back",
    "must": "team",
    "routes": [
-    "Comeback",
-    "Stem Block"
+    "Comeback"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Pistol Y Off Trips",
-    "Gun Trey Open"
+    "Gun Trips TE",
+    "Gun Wing Trio"
    ]
   },
   {
    "play": "p003",
    "play_index": 60,
-   "name": "QB Sneak",
-   "concept": "QB Sneak",
-   "family": "qb",
-   "header": "qb_sneak",
-   "play_type": "sneak",
-   "personnel": "23",
-   "home": "Goal Line Sneak",
-   "primary": null,
-   "screen": null,
-   "must": "sneak",
-   "routes": [],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Goal Line Sneak",
-    "Goal Line"
-   ]
-  },
-  {
-   "play": "p004",
-   "play_index": 61,
    "name": "PIT Mesh Wheel",
    "concept": "Mesh Wheel",
    "family": "dropback",
@@ -1163,13 +1138,13 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE",
-    "Gun Doubles Tight"
+    "Gun Doubles Tight",
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p005",
-   "play_index": 62,
+   "play": "p004",
+   "play_index": 61,
    "name": "PIT Four Verticals",
    "concept": "Four Verticals",
    "family": "dropback",
@@ -1187,20 +1162,20 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
-    "Gun Doubles"
+    "Gun Doubles",
+    "Gun Trips TE"
    ]
   },
   {
-   "play": "p006",
-   "play_index": 63,
+   "play": "p005",
+   "play_index": 62,
    "name": "Tush Push",
    "concept": "Tush Push",
    "family": "qb",
    "header": "qb_sneak",
    "play_type": "sneak",
-   "personnel": "23",
-   "home": "Goal Line Sneak",
+   "personnel": "22",
+   "home": "Full House Sneak",
    "primary": null,
    "screen": null,
    "must": "tush",
@@ -1208,7 +1183,27 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Goal Line Sneak"
+    "Full House Sneak"
+   ]
+  },
+  {
+   "play": "p006",
+   "play_index": 63,
+   "name": "QB Sneak",
+   "concept": "QB Sneak",
+   "family": "qb",
+   "header": "qb_sneak",
+   "play_type": "sneak",
+   "personnel": "22",
+   "home": "Full House Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "sneak",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Full House Sneak"
    ]
   },
   {
@@ -1259,26 +1254,6 @@
   {
    "play": "p009",
    "play_index": 66,
-   "name": "QB Sneak",
-   "concept": "QB Sneak",
-   "family": "qb",
-   "header": "qb_sneak",
-   "play_type": "sneak",
-   "personnel": "22",
-   "home": "Full House",
-   "primary": null,
-   "screen": null,
-   "must": "sneak",
-   "routes": [],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Full House"
-   ]
-  },
-  {
-   "play": "p010",
-   "play_index": 67,
    "name": "Z Cluster Wheel",
    "concept": "Z Cluster Wheel Deep Go",
    "family": "dropback",
@@ -1311,8 +1286,8 @@
    ]
   },
   {
-   "play": "p011",
-   "play_index": 68,
+   "play": "p010",
+   "play_index": 67,
    "name": "Cluster Wheel",
    "concept": "Z Cluster Wheel Post",
    "family": "dropback",
@@ -1345,8 +1320,8 @@
    ]
   },
   {
-   "play": "p012",
-   "play_index": 69,
+   "play": "p011",
+   "play_index": 68,
    "name": "PA Post Corner Shot",
    "concept": "PA Z Post Corner Shot Snag Comebacks",
    "family": "pa",
@@ -1370,6 +1345,40 @@
     "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
+    "Pistol Y Off Trips",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p012",
+   "play_index": 69,
+   "name": "PA Deep Over",
+   "concept": "PA Slot Deep Over Out and Up Comeback Go",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback Go",
+    "Out and Up",
+    "Over",
+    "Post",
+    "Stem Block"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Gun Wing Trio",
@@ -1381,7 +1390,67 @@
   {
    "play": "p013",
    "play_index": 70,
-   "name": "X Snag",
+   "name": "Z Post Go",
+   "concept": "Z Post Go Hook Corner Dagger",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Normal Y Off Close",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Go",
+    "Hook Corner",
+    "Quick Angle",
+    "Slant and Go"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Trey Open",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p014",
+   "play_index": 71,
+   "name": "Z Deep Post",
+   "concept": "Z Deep Post Seam Out Corner Curl",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Wing Trio",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Corner Curl",
+    "Flat",
+    "Post",
+    "Seam Out"
+   ],
+   "deep": true,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio"
+   ]
+  },
+  {
+   "play": "p015",
+   "play_index": 72,
+   "name": "X Snag Deep Go",
    "concept": "X Snag Deep Go",
    "family": "quick",
    "header": "quick",
@@ -1400,14 +1469,14 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "Wing T",
-    "Singleback FB Wing"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
-   "play": "p014",
-   "play_index": 71,
-   "name": "X Snag",
+   "play": "p016",
+   "play_index": 73,
+   "name": "X Snag Deep Go",
    "concept": "X Snag Deep Go",
    "family": "quick",
    "header": "quick",
@@ -1429,8 +1498,8 @@
    ]
   },
   {
-   "play": "p015",
-   "play_index": 72,
+   "play": "p017",
+   "play_index": 74,
    "name": "PA Post Corner Shot",
    "concept": "PA X Post Corner Shot Deep Go",
    "family": "pa",
@@ -1453,8 +1522,8 @@
    ]
   },
   {
-   "play": "p016",
-   "play_index": 73,
+   "play": "p018",
+   "play_index": 75,
    "name": "Max FB Go Shot",
    "concept": "Max FB Go Shot Post Dig",
    "family": "deep",
@@ -1478,313 +1547,12 @@
    ]
   },
   {
-   "play": "p017",
-   "play_index": 74,
-   "name": "X Deep Hooks",
-   "concept": "X Deep Hooks Corner Curl",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Bunch TE",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Back Cross",
-    "Corner Curl",
-    "Deep Hook",
-    "Steep In"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Trips TE",
-    "Gun Tight Y Off",
-    "Pistol Bunch TE",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Normal Y Off Close"
-   ]
-  },
-  {
-   "play": "p018",
-   "play_index": 75,
-   "name": "Y Stick",
-   "concept": "Y Stick Return Comebacks",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Tight Open",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Comeback",
-    "Return",
-    "Snag",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Tight Open"
-   ]
-  },
-  {
    "play": "p019",
    "play_index": 76,
-   "name": "Slot Stick",
-   "concept": "Slot Stick Return Post",
+   "name": "Z Hitch Seam",
+   "concept": "Z Hitch Seam Seam Out Hitches",
    "family": "quick",
    "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trips TE",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Post",
-    "Return",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Empty Trey",
-    "Gun Trips TE",
-    "Gun Bunch X Nasty",
-    "Gun Tight Y Off",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p020",
-   "play_index": 77,
-   "name": "Z Bench",
-   "concept": "Z Bench Steep In Stop and Go",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Bunch X Nasty",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Back Hook",
-    "Out",
-    "Steep In",
-    "Stop and Go"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p021",
-   "play_index": 78,
-   "name": "Slot Fade",
-   "concept": "Y Slot Fade Smash",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Doubles Tight",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Corner",
-    "Hitch",
-    "Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Trips TE",
-    "Gun Tight Y Off",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p022",
-   "play_index": 79,
-   "name": "X Stick",
-   "concept": "X Stick Return Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Tight Open",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Out",
-    "Return",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Bunch TE",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p023",
-   "play_index": 80,
-   "name": "Quick Outs",
-   "concept": "Z Quick Outs Curls",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Normal Y Off Close",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Curl",
-    "Flat",
-    "Out",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Tight Y Off",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p024",
-   "play_index": 81,
-   "name": "Z Curl Combo",
-   "concept": "Z Curl Combo Angle Cross Curl",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Bunch",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle Cross",
-    "Arrow",
-    "Curl",
-    "Flat"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p025",
-   "play_index": 82,
-   "name": "Deep Hooks",
-   "concept": "X Deep Hooks Steep Slant",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trey Open",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Back Hook",
-    "Deep Hook",
-    "Steep In",
-    "Steep Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "play": "p026",
-   "play_index": 83,
-   "name": "Out Seam",
-   "concept": "Z Out Seam Seam Out Slant Flat",
-   "family": "dropback",
-   "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Tight Y Off",
@@ -1793,115 +1561,12 @@
    "must": "",
    "routes": [
     "Arrow",
-    "Out",
-    "Seam Out",
-    "Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "play": "p027",
-   "play_index": 84,
-   "name": "Z Curl Flat",
-   "concept": "Z Curl Flat Slant Flat",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Doubles Tight",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Curl",
-    "Flat",
-    "Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Gun Wing Trio",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p028",
-   "play_index": 85,
-   "name": "PA Z Bench",
-   "concept": "PA Z Bench Corner Post Dig",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Gun Bunch X Nasty",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Corner Post",
-    "Dig",
-    "Out",
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Bunch X Nasty",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p029",
-   "play_index": 86,
-   "name": "Z Out Seam",
-   "concept": "Z Out Seam Seam Out Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Tight Open",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Corner",
     "Hitch",
-    "Out",
     "Seam Out"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
     "Gun Doubles",
     "Gun Bunch X Nasty",
     "Gun Tight Y Off",
@@ -1909,117 +1574,17 @@
     "Gun Trey Open",
     "Gun Doubles Tight",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p030",
-   "play_index": 87,
-   "name": "PA Curl Combo",
-   "concept": "PA X Curl Combo Spot Out Out",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Gun Trips TE",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Out",
-    "Spot Out",
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Trips TE",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Pistol Bunch TE",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Trey Open",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "play": "p031",
-   "play_index": 88,
-   "name": "PA Z Out Seam",
-   "concept": "PA Z Out Seam Angle Cross Out Drag",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Pistol Doubles",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle Cross",
-    "Dig",
-    "Out",
-    "Seam Out",
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Pistol Doubles",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p032",
-   "play_index": 89,
-   "name": "Z Quick Outs",
-   "concept": "Z Quick Outs Hitches",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Singleback Doubles",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Hitch",
-    "Out",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close"
-   ]
-  },
-  {
-   "play": "p033",
-   "play_index": 90,
-   "name": "Slot Choice",
-   "concept": "Slot Choice Return Sluggo",
-   "family": "quick",
-   "header": "quick",
+   "play": "p020",
+   "play_index": 77,
+   "name": "Slot Curls",
+   "concept": "Slot Curls Fade Stop",
+   "family": "dropback",
+   "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
    "home": "Pistol Y Off Trips",
@@ -2027,161 +1592,66 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Return",
-    "Slant and Go",
-    "Steep In",
-    "Whip"
+    "Back Cross",
+    "Curl",
+    "Fade Stop",
+    "Flat",
+    "Hook"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
     "Gun Doubles",
-    "Gun Bunch X Nasty",
+    "Gun Trips TE",
+    "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Pistol Bunch",
     "Gun Wing Trio",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close"
-   ]
-  },
-  {
-   "play": "p034",
-   "play_index": 91,
-   "name": "Slot Y Trail",
-   "concept": "Slot Y Trail Skinny Post Sluggo",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Bunch",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Dig",
-    "Over",
-    "Skinny Post",
-    "Slant and Go"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Pistol Y Off Trips",
-    "Pistol Bunch",
-    "Gun Trey Open",
     "Gun Normal Y Off Close",
     "Gun Tight Open"
    ]
   },
   {
-   "play": "p035",
-   "play_index": 92,
-   "name": "Y Slot Fade",
-   "concept": "Y Slot Fade Slant Flat",
+   "play": "p021",
+   "play_index": 78,
+   "name": "X Stick Out",
+   "concept": "X Stick Out Post Dig",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Gun Normal Y Off Close",
-   "primary": "Y",
+   "home": "Singleback Doubles",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
+    "Dig",
     "Out",
-    "Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Empty Trey",
-    "Gun Tight Y Off",
-    "Pistol Bunch",
-    "Gun Wing Trio",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p036",
-   "play_index": 93,
-   "name": "Y Bang Hitch",
-   "concept": "Y Bang Hitch Outs",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Tight Y Off",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Cross",
-    "Bang Post",
-    "Hitch",
-    "Out",
+    "Post",
     "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
+    "Singleback Doubles",
     "Gun Bunch X Nasty",
-    "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Pistol Bunch",
-    "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p037",
-   "play_index": 94,
-   "name": "Y Drive",
-   "concept": "Y Drive Skinny Post Hitch and Go",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trey Open",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Hook",
-    "Dig",
-    "Hitch and Go",
-    "Skinny Post"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Pistol Bunch",
+    "Gun Wing Trio",
     "Gun Trey Open",
     "Gun Doubles Tight",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Normal Y Off Close"
    ]
   },
   {
-   "play": "p038",
-   "play_index": 95,
-   "name": "Cross Dig",
-   "concept": "Slot Cross Dig Skinny Post Whip In",
-   "family": "dropback",
-   "header": "dropback",
+   "play": "p022",
+   "play_index": 79,
+   "name": "Slot Choice",
+   "concept": "Slot Choice Skinny Post Steep In",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Wing Trio",
@@ -2189,16 +1659,119 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Crossing Dig",
-    "Flat",
+    "Dig",
+    "Out",
     "Skinny Post",
-    "Whip In"
+    "Steep In",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p023",
+   "play_index": 80,
+   "name": "Slot Drive",
+   "concept": "Slot Drive Out and Up Stop and Go",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Out and Up",
+    "Stop and Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Tight Open",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p024",
+   "play_index": 81,
+   "name": "X Snag Post",
+   "concept": "X Snag Post",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Flag",
+    "Post",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trips TE",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p025",
+   "play_index": 82,
+   "name": "Z Bench",
+   "concept": "Z Bench Steep In Zig",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back In",
+    "Out",
+    "Steep In",
+    "Zig"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
     "Pistol Bunch",
     "Gun Wing Trio",
@@ -2208,54 +1781,92 @@
    ]
   },
   {
-   "play": "p039",
-   "play_index": 96,
-   "name": "Slot Drive Out",
-   "concept": "Slot Drive Out Post",
+   "play": "p026",
+   "play_index": 83,
+   "name": "Z Comeback Seam",
+   "concept": "Z Comeback Seam Spot Out Post Dig",
    "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Pistol Bunch TE",
+   "home": "Gun Tight Open",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back In",
+    "Comeback",
+    "Dig",
+    "Post",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p027",
+   "play_index": 84,
+   "name": "PA Slot Stick Nod",
+   "concept": "PA Slot Stick Nod Out and Up Skinny Post",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
    "primary": "Slot",
    "screen": null,
    "must": "",
    "routes": [
     "Arrow",
-    "Dig",
-    "Out",
-    "Post"
+    "Back Wheel",
+    "Hitch and Go",
+    "Out and Up",
+    "Skinny Post"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Doubles",
-    "Gun Bunch X Nasty",
-    "Pistol Bunch TE",
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Gun Tight Y Off",
     "Pistol Y Off Trips",
     "Pistol Bunch",
-    "Gun Doubles Tight"
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Tight Open"
    ]
   },
   {
-   "play": "p040",
-   "play_index": 97,
-   "name": "Y Levels Seams",
-   "concept": "Y Levels Seams",
+   "play": "p028",
+   "play_index": 85,
+   "name": "X Comeback Seam",
+   "concept": "X Comeback Seam Whip Corner Smash",
    "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Singleback Doubles",
-   "primary": "Y",
+   "home": "Gun Doubles Tight",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Dig",
-    "Go",
-    "Hitch"
+    "Back Hook",
+    "Comeback",
+    "Corner",
+    "Hitch",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
@@ -2266,44 +1877,408 @@
     "Gun Tight Y Off",
     "Pistol Bunch",
     "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
     "Gun Tight Open"
    ]
   },
   {
-   "play": "p041",
-   "play_index": 98,
-   "name": "Inside Zone Wk",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
+   "play": "p029",
+   "play_index": 86,
+   "name": "X Dagger",
+   "concept": "X Dagger Angle Cross Zig",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
    "personnel": "11",
-   "home": "Gun Bunch X Nasty",
-   "primary": null,
+   "home": "Gun Trips TE",
+   "primary": "X",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Angle Cross",
+    "Back Cross",
+    "Dig",
+    "Flat",
+    "Zig"
+   ],
    "deep": false,
-   "lane": 2,
+   "lane": null,
    "formations": [
     "Gun Doubles",
     "Gun Trips TE",
-    "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
     "Gun Wing Trio",
     "Gun Trey Open",
     "Gun Doubles Tight"
    ]
   },
   {
-   "play": "p042",
-   "play_index": 99,
-   "name": "RB Texas",
+   "play": "p030",
+   "play_index": 87,
+   "name": "Steep In Seam",
+   "concept": "Slot Steep In Seam Spot Out Stick",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Spot Out",
+    "Steep In",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p031",
+   "play_index": 88,
+   "name": "PA Stick Nod",
+   "concept": "PA Slot Stick Nod Out Fade Stop",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back Wheel",
+    "Fade Stop",
+    "Hitch and Go",
+    "Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio",
+    "Gun Doubles Tight",
+    "Gun Tight Open",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p032",
+   "play_index": 89,
+   "name": "Slot Scat",
+   "concept": "Slot Scat Deep Go",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Y Off Trips",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Bang",
+    "Go",
+    "Out",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p033",
+   "play_index": 90,
+   "name": "Slot Stick",
+   "concept": "Slot Stick Out and Up Sluggo",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Trips TE",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Out and Up",
+    "Slant and Go",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trips TE",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p034",
+   "play_index": 91,
+   "name": "Slot Dagger",
+   "concept": "Slot Dagger Spot Out Levels",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Normal Y Off Close",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Dig",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Pistol Bunch",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p035",
+   "play_index": 92,
+   "name": "Slot Hitch Seam",
+   "concept": "Slot Hitch Seam Spot Out Slants",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Hitch",
+    "Slant",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Gun Wing Trio",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p036",
+   "play_index": 93,
+   "name": "PA Steep In Seam",
+   "concept": "PA Slot Steep In Seam Seam Out Whip",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Gun Normal Y Off Close",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Seam Out",
+    "Steep In",
+    "Stem Block",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Y Off Trips",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p037",
+   "play_index": 94,
+   "name": "Y Flood",
+   "concept": "Y Flood Skinny Post Curl",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Pistol Bunch",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back In",
+    "Curl",
+    "Flat",
+    "Sail",
+    "Skinny Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Wing Trio",
+    "Gun Normal Y Off Close"
+   ]
+  },
+  {
+   "play": "p038",
+   "play_index": 95,
+   "name": "Y China",
+   "concept": "Y China Out and Up Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Tight Open",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Out",
+    "Out and Up",
+    "Stick",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Pistol Doubles",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p039",
+   "play_index": 96,
+   "name": "Y Whip",
+   "concept": "Y Whip Skinny Post Corner Smash",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Tight Open",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Corner",
+    "Hitch",
+    "Out",
+    "Skinny Post",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Trey Open",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p040",
+   "play_index": 97,
+   "name": "PA X Deep Post",
+   "concept": "PA X Deep Post Curls",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Flat",
+    "Out",
+    "Post",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Tight Y Off",
+    "Gun Doubles Tight",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p041",
+   "play_index": 98,
+   "name": "HB Texas",
    "concept": "Texas",
    "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Pistol Y Off Trips",
+   "home": "Gun Trey Open",
    "primary": "HB",
    "screen": null,
    "must": "",
@@ -2316,88 +2291,86 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Doubles",
-    "Pistol Doubles",
-    "Pistol Y Off Trips",
-    "Gun Wing Trio",
-    "Gun Trey Open"
-   ]
-  },
-  {
-   "play": "p043",
-   "play_index": 100,
-   "name": "PA Zig Flat",
-   "concept": "PA Slot Zig Flat Return Curl",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Gun Trey Open",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Wheel",
-    "Curl",
-    "Flat",
-    "Return",
-    "Zig"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Bunch X Nasty",
     "Pistol Y Off Trips",
     "Pistol Bunch",
+    "Gun Wing Trio",
     "Gun Trey Open",
-    "Gun Tight Open"
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p044",
-   "play_index": 101,
-   "name": "Slot Deep Over",
-   "concept": "Slot Deep Over Return Deep Go",
-   "family": "deep",
+   "play": "p042",
+   "play_index": 99,
+   "name": "Y Drive Return",
+   "concept": "Y Drive Return Hitch and Go",
+   "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Gun Trips TE",
-   "primary": "Slot",
+   "home": "Gun Trey Open",
+   "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Flag",
-    "Go",
-    "Over",
-    "Post",
+    "Dig",
+    "Hitch and Go",
     "Return"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
-    "Gun Doubles",
-    "Gun Trips TE",
+    "Empty Trey",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
     "Gun Trey Open",
-    "Gun Tight Open"
+    "Gun Doubles Tight"
    ]
   },
   {
-   "play": "p045",
-   "play_index": 102,
-   "name": "Max Post Wheel",
-   "concept": "Max Y Post Wheel Seams",
+   "play": "p043",
+   "play_index": 100,
+   "name": "Y Scissors",
+   "concept": "Y Scissors Levels",
    "family": "deep",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Gun Normal Y Off Close",
+   "home": "Pistol Doubles",
    "primary": "Y",
    "screen": null,
    "must": "",
    "routes": [
-    "Go",
+    "Arrow",
+    "Corner",
+    "Dig",
+    "Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Trips TE",
+    "Pistol Doubles",
+    "Pistol Y Off Trips",
+    "Gun Wing Trio",
+    "Gun Normal Y Off Close"
+   ]
+  },
+  {
+   "play": "p044",
+   "play_index": 101,
+   "name": "Y Post Wheel",
+   "concept": "Y Post Wheel Curl Hitch",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Bunch X Nasty",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Flag",
     "Hitch",
     "Post",
     "Wheel"
@@ -2407,169 +2380,21 @@
    "formations": [
     "Gun Bunch X Nasty",
     "Gun Tight Y Off",
-    "Pistol Y Off Trips",
-    "Gun Normal Y Off Close"
-   ]
-  },
-  {
-   "play": "p046",
-   "play_index": 103,
-   "name": "RB Slants",
-   "concept": "HB Slants Corner Curl",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Bunch TE",
-   "primary": "HB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Arrow",
-    "Corner Curl",
-    "Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Doubles",
-    "Gun Trips TE",
-    "Pistol Doubles",
-    "Gun Tight Y Off",
-    "Pistol Bunch TE",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "play": "p047",
-   "play_index": 104,
-   "name": "X Post Wheel",
-   "concept": "X Post Wheel Dig Steep In",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Bunch",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Dig",
-    "Flag",
-    "Post",
-    "Steep In",
-    "Wheel"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Tight Y Off",
-    "Pistol Bunch TE",
-    "Pistol Bunch",
-    "Gun Doubles Tight"
-   ]
-  },
-  {
-   "play": "p048",
-   "play_index": 105,
-   "name": "Deep Flood",
-   "concept": "Slot Deep Flood Deep Hook",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trey Open",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Wheel",
-    "Deep Hook",
-    "Flat",
-    "Post",
-    "Sail"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Pistol Bunch",
-    "Gun Trey Open",
-    "Gun Doubles Tight",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p049",
-   "play_index": 106,
-   "name": "PA Y Deep Over",
-   "concept": "PA Y Deep Over Out Dig",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Pistol Y Off Trips",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Dig",
-    "Out",
-    "Over",
-    "Post"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Gun Doubles",
-    "Pistol Bunch TE",
-    "Pistol Y Off Trips",
-    "Pistol Bunch"
-   ]
-  },
-  {
-   "play": "p050",
-   "play_index": 107,
-   "name": "Max Stick Nod",
-   "concept": "Max Slot Stick Nod Return Fade Stop",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Bunch X Nasty",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Fade Stop",
-    "Hitch and Go",
-    "Return"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Gun Tight Y Off",
     "Gun Wing Trio",
-    "Gun Normal Y Off Close"
+    "Gun Trey Open",
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p051",
-   "play_index": 108,
-   "name": "RB Toss",
-   "concept": "HB Toss",
+   "play": "p045",
+   "play_index": 102,
+   "name": "Power G",
+   "concept": "Power G",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
    "personnel": "11",
-   "home": "Gun Wing Trio",
+   "home": "Gun Trey Open",
    "primary": null,
    "screen": null,
    "must": "",
@@ -2585,8 +2410,140 @@
    ]
   },
   {
-   "play": "p052",
-   "play_index": 109,
+   "play": "p046",
+   "play_index": 103,
+   "name": "Y Sail Out",
+   "concept": "Y Sail Out Out Drag",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Singleback Doubles",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Out",
+    "Sail",
+    "Seam Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Doubles",
+    "Gun Tight Y Off",
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Trey Open"
+   ]
+  },
+  {
+   "play": "p047",
+   "play_index": 104,
+   "name": "Crack Toss",
+   "concept": "Crack Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Doubles Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p048",
+   "play_index": 105,
+   "name": "Y Mills",
+   "concept": "Y Mills Slant Flat",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Tight Y Off",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Post",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Empty Trey",
+    "Gun Tight Y Off",
+    "Pistol Bunch",
+    "Gun Doubles Tight",
+    "Gun Tight Open"
+   ]
+  },
+  {
+   "play": "p049",
+   "play_index": 106,
+   "name": "01 Trap",
+   "concept": "01 Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Gun Trey Open",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p050",
+   "play_index": 107,
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "11",
+   "home": "Gun Wing Trio",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Doubles",
+    "Gun Bunch X Nasty",
+    "Gun Wing Trio",
+    "Gun Trey Open",
+    "Gun Doubles Tight"
+   ]
+  },
+  {
+   "play": "p051",
+   "play_index": 108,
    "name": "Direct Snap Power",
    "concept": "Direct Snap Power",
    "family": "trick",
@@ -2601,22 +2558,22 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p053",
-   "play_index": 110,
-   "name": "RB Draw Wk",
-   "concept": "HB Draw",
+   "play": "p052",
+   "play_index": 109,
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
    "family": "run",
-   "header": "draw",
+   "header": "run",
    "play_type": "run",
    "personnel": "11",
-   "home": "Pistol Doubles",
+   "home": "Gun Wildcat",
    "primary": null,
    "screen": null,
    "must": "",
@@ -2624,17 +2581,17 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Pistol Doubles",
-    "Pistol Bunch TE",
-    "Pistol Y Off Trips",
-    "Pistol Bunch"
+    "Gun Tight Y Off",
+    "Gun Normal Y Off Close",
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
-   "play": "p054",
-   "play_index": 111,
-   "name": "RB Counter",
-   "concept": "HB Counter",
+   "play": "p053",
+   "play_index": 110,
+   "name": "01 Trap Wk",
+   "concept": "01 Trap",
    "family": "run",
    "header": "run",
    "play_type": "run",
@@ -2645,67 +2602,97 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 3,
+   "lane": 2,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
+   ]
+  },
+  {
+   "play": "p054",
+   "play_index": 111,
+   "name": "HB Double Move",
+   "concept": "HB Double Move Whip Whip",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Doubles Tight",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Curl",
+    "Flag",
+    "Out and Up",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Pistol Y Off Trips",
+    "Pistol Bunch",
+    "Gun Trey Open",
+    "Gun Doubles Tight"
    ]
   },
   {
    "play": "p055",
    "play_index": 112,
-   "name": "RB Dive",
-   "concept": "HB Dive",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
+   "name": "Bubble Screen",
+   "concept": "Bubble Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
    "personnel": "11",
    "home": "Gun Wildcat",
-   "primary": null,
-   "screen": null,
+   "primary": "Slot",
+   "screen": "wr:Bubble Screen",
    "must": "",
-   "routes": [],
+   "routes": [
+    "Flat"
+   ],
    "deep": false,
-   "lane": 2,
+   "lane": null,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Pistol Y Off Trips",
+    "Gun Doubles Tight",
+    "Gun Wildcat"
    ]
   },
   {
    "play": "p056",
    "play_index": 113,
-   "name": "Pin Pull Sweep",
-   "concept": "Pin Pull Sweep",
+   "name": "HB Toss Wk",
+   "concept": "HB Toss",
    "family": "run",
-   "header": "run",
+   "header": "run_toss",
    "play_type": "run",
    "personnel": "11",
-   "home": "Gun Wildcat",
+   "home": "Gun Tight Y Off",
    "primary": null,
    "screen": null,
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
    "play": "p057",
    "play_index": 114,
-   "name": "Crack Toss Wk",
-   "concept": "Crack Toss",
+   "name": "HB Sweep",
+   "concept": "HB Sweep",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
    "personnel": "11",
    "home": "Gun Normal Y Off Close",
@@ -2714,72 +2701,72 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
    "play": "p058",
    "play_index": 115,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
+   "name": "HB Draw",
+   "concept": "HB Draw",
    "family": "run",
-   "header": "run",
+   "header": "draw",
    "play_type": "run",
    "personnel": "11",
-   "home": "Gun Tight Y Off",
+   "home": "Gun Tight Open",
    "primary": null,
    "screen": null,
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 2,
    "formations": [
-    "Gun Wildcat",
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
-    "Gun Tight Open"
+    "Gun Tight Open",
+    "Gun Wildcat"
    ]
   },
   {
    "play": "p059",
    "play_index": 116,
-   "name": "PA Post Wheel",
-   "concept": "PA X Post Wheel Corner Post Steep Slant",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "12",
-   "home": "Singleback Y Trips",
-   "primary": "X",
+   "name": "Z Snag",
+   "concept": "Z Snag Crossing Dig Dagger",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Wildcat",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Back Wheel",
-    "Corner Post",
-    "Post",
-    "Steep Slant",
-    "Wheel"
+    "Arrow Corner",
+    "Crossing Dig",
+    "Dig",
+    "Snag"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
-    "Singleback Ace Close",
-    "Singleback Y Trips"
+    "Gun Bunch X Nasty",
+    "Pistol Bunch",
+    "Gun Normal Y Off Close",
+    "Gun Wildcat"
    ]
   },
   {
    "play": "p060",
    "play_index": 117,
-   "name": "Zone Toss",
-   "concept": "Zone Toss",
+   "name": "01 Trap",
+   "concept": "01 Trap",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
    "personnel": "12",
    "home": "Singleback Ace",
@@ -2788,7 +2775,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 2,
    "formations": [
     "Singleback Ace",
     "Singleback Ace Close",
@@ -2798,43 +2785,19 @@
   {
    "play": "p061",
    "play_index": 118,
-   "name": "Slip Screen Wk",
-   "concept": "HB Slip Screen Wk",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Singleback Doubles",
-   "primary": "HB",
-   "screen": "back",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Doubles",
-    "Pistol Bunch",
-    "Gun Wing Trio"
-   ]
-  },
-  {
-   "play": "p062",
-   "play_index": 119,
-   "name": "Z Hitch Seam",
-   "concept": "Z Hitch Seam Spot Out Smash",
+   "name": "U Scat",
+   "concept": "U Scat Deep Fade",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
    "personnel": "12",
-   "home": "Singleback Ace",
-   "primary": "Z",
+   "home": "Singleback Y Trips",
+   "primary": "U",
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Hitch",
+    "Angle",
+    "Bang",
     "Out",
     "Spot Out"
    ],
@@ -2847,51 +2810,73 @@
    ]
   },
   {
-   "play": "p063",
-   "play_index": 120,
-   "name": "X Stick",
-   "concept": "X Stick Out and Up Corner Smash",
+   "play": "p062",
+   "play_index": 119,
+   "name": "X Whip Out Dig",
+   "concept": "X Whip Out Dig",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
-   "personnel": "12",
-   "home": "Singleback Ace Close",
+   "personnel": "21",
+   "home": "Wing T",
    "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
     "Angle",
-    "Corner",
-    "Hitch",
-    "Out and Up",
-    "Stick"
+    "Dig",
+    "Out",
+    "Whip"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
-    "Singleback Ace Close",
-    "Singleback Y Trips"
+    "Split Backs",
+    "I-Form Pro",
+    "Wing T"
+   ]
+  },
+  {
+   "play": "p063",
+   "play_index": 120,
+   "name": "HB Toss",
+   "concept": "HB Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Doubles",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Pistol Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch"
    ]
   },
   {
    "play": "p064",
    "play_index": 121,
-   "name": "U Curls Fade",
-   "concept": "U Curls Fade",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Z Hitch Seam",
+   "concept": "Z Hitch Seam Angle Cross Outs",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "12",
-   "home": "Singleback Y Trips",
-   "primary": "U",
+   "home": "Singleback Ace Close",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
+    "Angle Cross",
     "Arrow",
-    "Curl",
-    "Flat",
-    "Hook"
+    "Hitch",
+    "Out",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
@@ -2904,19 +2889,25 @@
   {
    "play": "p065",
    "play_index": 122,
-   "name": "RB Dive Wk",
-   "concept": "HB Dive",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
+   "name": "X Out Seam",
+   "concept": "X Out Seam Seam Out Post Dig",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
    "personnel": "12",
    "home": "Singleback Ace Close",
-   "primary": null,
+   "primary": "X",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Back In",
+    "Dig",
+    "Out",
+    "Post",
+    "Seam Out"
+   ],
    "deep": false,
-   "lane": 2,
+   "lane": null,
    "formations": [
     "Singleback Ace",
     "Singleback Ace Close",
@@ -2926,95 +2917,51 @@
   {
    "play": "p066",
    "play_index": 123,
-   "name": "PA Slot Bench",
-   "concept": "PA Slot Bench Slants",
+   "name": "PA X Sail",
+   "concept": "PA X Sail Out and Up Deep Hook",
    "family": "pa",
    "header": "pa",
    "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Gun Wildcat",
-   "primary": "Slot",
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Out",
-    "Slant",
-    "Stem Block"
+    "Back Wheel",
+    "Deep Hook",
+    "Out and Up",
+    "Sail"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Wildcat",
-    "Pistol Bunch",
-    "Gun Wing Trio"
+    "Split Backs",
+    "Wing T",
+    "Singleback FB Wing"
    ]
   },
   {
    "play": "p067",
    "play_index": 124,
-   "name": "Bubble Screen",
-   "concept": "Bubble Screen",
-   "family": "screen",
-   "header": "quick_screen",
+   "name": "Z Quick Outs",
+   "concept": "Z Quick Outs Snag Comebacks",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Doubles",
-   "primary": "Slot",
-   "screen": "wr:Bubble Screen",
-   "must": "",
-   "routes": [
-    "Flat",
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Bunch X Nasty",
-    "Pistol Doubles",
-    "Gun Wing Trio"
-   ]
-  },
-  {
-   "play": "p068",
-   "play_index": 125,
-   "name": "QB Draw",
-   "concept": "QB Draw",
-   "family": "qb",
-   "header": "qb_draw",
-   "play_type": "keeper",
-   "personnel": "11",
-   "home": "Gun Tight Open",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Go"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Tight Y Off",
-    "Gun Normal Y Off Close",
-    "Gun Tight Open"
-   ]
-  },
-  {
-   "play": "p069",
-   "play_index": 126,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
    "personnel": "12",
-   "home": "Singleback Ace Close",
-   "primary": null,
+   "home": "Singleback Ace",
+   "primary": "Z",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Comeback",
+    "Out",
+    "Snag",
+    "Stick"
+   ],
    "deep": false,
-   "lane": 2,
+   "lane": null,
    "formations": [
     "Singleback Ace",
     "Singleback Ace Close",
@@ -3022,10 +2969,114 @@
    ]
   },
   {
+   "play": "p068",
+   "play_index": 125,
+   "name": "U Cross Dig",
+   "concept": "U Cross Dig Return Flag",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Y Trips",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Cross",
+    "Crossing Dig",
+    "Flag",
+    "Flat",
+    "Return"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p069",
+   "play_index": 126,
+   "name": "X Steep In Seam",
+   "concept": "X Steep In Seam Spot Out Hitch",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Split Backs",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Hitch",
+    "Spot Out",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Split Backs",
+    "Wing T",
+    "Singleback FB Wing"
+   ]
+  },
+  {
    "play": "p070",
    "play_index": 127,
-   "name": "RB Stretch",
-   "concept": "HB Stretch",
+   "name": "Y Y Trail",
+   "concept": "Y Y Trail Out and Up Deep Hook",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Y Trips",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Deep Hook",
+    "Dig",
+    "Out and Up",
+    "Over"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p071",
+   "play_index": 128,
+   "name": "Outside Zone Wk",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Y Off Trips",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "Singleback Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p072",
+   "play_index": 129,
+   "name": "HB Counter Wk",
+   "concept": "HB Counter",
    "family": "run",
    "header": "run",
    "play_type": "run",
@@ -3036,7 +3087,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 1,
    "formations": [
     "Singleback Doubles",
     "Pistol Y Off Trips",
@@ -3044,33 +3095,159 @@
    ]
   },
   {
-   "play": "p071",
-   "play_index": 128,
+   "play": "p073",
+   "play_index": 130,
+   "name": "Z Bench Outs",
+   "concept": "Z Bench Outs",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace Close",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Back Hook",
+    "Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p074",
+   "play_index": 131,
+   "name": "Y Levels Slants",
+   "concept": "Y Levels Slants",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p075",
+   "play_index": 132,
+   "name": "PA Comeback Seam",
+   "concept": "PA U Comeback Seam Angle Cross Stick",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle Cross",
+    "Back Wheel",
+    "Comeback",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p076",
+   "play_index": 133,
    "name": "X Slip Screen",
    "concept": "WR Slip Screen",
    "family": "screen",
    "header": "quick_screen",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Gun Doubles Tight",
+   "home": "Gun Bunch X Nasty",
    "primary": "X",
    "screen": "wr:WR Slip Screen",
    "must": "",
-   "routes": [
-    "Stem Block"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Empty Trey",
     "Gun Bunch X Nasty",
-    "Gun Doubles Tight"
+    "Gun Tight Open"
    ]
   },
   {
-   "play": "p072",
-   "play_index": 129,
-   "name": "Slot Whip",
+   "play": "p077",
+   "play_index": 134,
+   "name": "Z Corner Post",
+   "concept": "Z Corner Post Snag Comebacks",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace Close",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Corner Post",
+    "Dig",
+    "Snag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace",
+    "Singleback Ace Close",
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p078",
+   "play_index": 135,
+   "name": "HB Dive",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "11",
+   "home": "Pistol Y Off Trips",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Pistol Doubles",
+    "Pistol Y Off Trips",
+    "Pistol Bunch"
+   ]
+  },
+  {
+   "play": "p079",
+   "play_index": 136,
+   "name": "Whip",
    "concept": "Slot Whip Return Dagger",
    "family": "quick",
    "header": "quick",
@@ -3095,10 +3272,10 @@
    ]
   },
   {
-   "play": "p073",
-   "play_index": 130,
-   "name": "Slot China",
-   "concept": "Slot China Out Levels",
+   "play": "p080",
+   "play_index": 137,
+   "name": "Slot Whip",
+   "concept": "Slot Whip Skinny Post Smash",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
@@ -3109,8 +3286,9 @@
    "must": "",
    "routes": [
     "Arrow",
-    "Dig",
-    "Out",
+    "Corner",
+    "Hitch",
+    "Skinny Post",
     "Whip"
    ],
    "deep": false,
@@ -3121,215 +3299,65 @@
    ]
   },
   {
-   "play": "p074",
-   "play_index": 131,
-   "name": "01 Trap",
-   "concept": "01 Trap",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "10",
-   "home": "Gun Spread Tight",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p075",
-   "play_index": 132,
-   "name": "Inside Zone",
-   "concept": "Inside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p076",
-   "play_index": 133,
-   "name": "Slot Fade",
-   "concept": "Slot Slot Fade Hook Corner Dagger",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread Tight",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Dig",
-    "Hook Corner",
-    "Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p077",
-   "play_index": 134,
-   "name": "Slip Screen",
-   "concept": "HB Slip Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": "HB",
-   "screen": "back",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p078",
-   "play_index": 135,
-   "name": "Slot Drive",
-   "concept": "Drive",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Dig",
-    "Go"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread"
-   ]
-  },
-  {
-   "play": "p079",
-   "play_index": 136,
-   "name": "X Whip",
-   "concept": "X Whip Out and Up Whip In",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "Wing T",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Out and Up",
-    "Whip",
-    "Whip In"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Wing T",
-    "Split Backs"
-   ]
-  },
-  {
-   "play": "p080",
-   "play_index": 137,
-   "name": "Y Levels",
-   "concept": "Y Levels Whip In",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "Split Backs",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Dig",
-    "Whip In"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Wing T",
-    "Split Backs"
-   ]
-  },
-  {
    "play": "p081",
    "play_index": 138,
-   "name": "X Seam Shot",
-   "concept": "X Seam Shot Slant Flat",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Doubles",
-   "primary": "X",
+   "name": "HB Draw",
+   "concept": "HB Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Go",
-    "Hitch",
-    "Slant"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
-    "Gun Doubles",
-    "Pistol Doubles"
+    "Gun Spread",
+    "Gun Spread Tight"
    ]
   },
   {
    "play": "p082",
    "play_index": 139,
+   "name": "Inside Zone Wk",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "10",
+   "home": "Gun Spread Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Spread",
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p083",
+   "play_index": 140,
    "name": "Steep In Seam",
-   "concept": "Z Steep In Seam Spot Out Out Drag",
+   "concept": "X Steep In Seam Seam Out Dagger",
    "family": "dropback",
    "header": "dropback",
    "play_type": "pass",
    "personnel": "10",
-   "home": "Gun Spread Tight",
-   "primary": "Z",
+   "home": "Gun Spread",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
+    "Back Cross",
+    "Crossing Dig",
     "Dig",
     "Seam Out",
-    "Spot Out",
     "Steep In"
    ],
    "deep": false,
@@ -3340,141 +3368,12 @@
    ]
   },
   {
-   "play": "p083",
-   "play_index": 140,
-   "name": "X Cross Dig",
-   "concept": "X Cross Dig Out and Up Comeback Go",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Singleback Y Trips",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back In",
-    "Comeback Go",
-    "Crossing Dig",
-    "Flat",
-    "Out and Up"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Ace Close",
-    "Singleback Y Trips"
-   ]
-  },
-  {
    "play": "p084",
    "play_index": 141,
-   "name": "X Curl Flat",
-   "concept": "X Curl Flat Bench",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Singleback Ace",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Back Wheel",
-    "Curl",
-    "Flat",
-    "Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Ace",
-    "Singleback Ace Close"
-   ]
-  },
-  {
-   "play": "p085",
-   "play_index": 142,
-   "name": "PA Verticals",
-   "concept": "PA Slot Verticals Quick Out",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "11",
-   "home": "Gun Wing Trio",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Bender",
-    "Go",
-    "Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wildcat",
-    "Gun Wing Trio"
-   ]
-  },
-  {
-   "play": "p086",
-   "play_index": 143,
-   "name": "Slip Screen Wk",
-   "concept": "HB Slip Screen Wk",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "I-Form Pro",
-   "primary": "HB",
-   "screen": "back",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "I-Form Pro",
-    "Wing T"
-   ]
-  },
-  {
-   "play": "p087",
-   "play_index": 144,
-   "name": "Slot Verticals",
-   "concept": "Slot Verticals Fade Stop",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Pistol Y Off Trips",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Hook",
-    "Bender",
-    "Fade Stop",
-    "Go"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Pistol Y Off Trips",
-    "Gun Wing Trio"
-   ]
-  },
-  {
-   "play": "p088",
-   "play_index": 145,
-   "name": "X Bang Hitch",
-   "concept": "X Bang Hitch Curls",
-   "family": "dropback",
-   "header": "dropback",
+   "name": "Double Slants",
+   "concept": "X Double Slants Post Dig",
+   "family": "quick",
+   "header": "quick",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread Tight",
@@ -3482,11 +3381,115 @@
    "screen": null,
    "must": "",
    "routes": [
-    "Back Cross",
-    "Bang Post",
-    "Curl",
-    "Flat",
-    "Hitch"
+    "Dig",
+    "Out",
+    "Post",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread",
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p085",
+   "play_index": 142,
+   "name": "Z Fade Curl",
+   "concept": "Z Fade Curl Stick Comebacks",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Fade Curl",
+    "Release Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread",
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p086",
+   "play_index": 143,
+   "name": "Z Out Seam",
+   "concept": "Z Out Seam Spot Out Bang",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back In",
+    "Bang",
+    "Out",
+    "Spot Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Split Backs",
+    "I-Form Pro"
+   ]
+  },
+  {
+   "play": "p087",
+   "play_index": 144,
+   "name": "Slot Slot Fade",
+   "concept": "Slot Slot Fade Post Dig",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread Tight",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Dig",
+    "Out",
+    "Post"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread",
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p088",
+   "play_index": 145,
+   "name": "Slot Smash",
+   "concept": "Slot Smash Stick Comebacks",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread Tight",
+   "primary": "Slot",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back Wheel",
+    "Comeback",
+    "Corner",
+    "Hitch",
+    "Stick"
    ],
    "deep": false,
    "lane": null,
@@ -3498,155 +3501,20 @@
   {
    "play": "p089",
    "play_index": 146,
-   "name": "RB Sweep",
-   "concept": "HB Sweep",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "home": "Singleback Ace",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 4,
-   "formations": [
-    "Singleback Ace",
-    "Singleback Ace Close"
-   ]
-  },
-  {
-   "play": "p090",
-   "play_index": 147,
-   "name": "Inside Trap",
-   "concept": "Inside Trap",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "12",
-   "home": "Singleback Y Trips",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Singleback Ace Close",
-    "Singleback Y Trips"
-   ]
-  },
-  {
-   "play": "p091",
-   "play_index": 148,
-   "name": "Y Screen",
-   "concept": "TE Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
+   "name": "PA X Go Shot",
+   "concept": "PA X Go Shot Slant",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
    "personnel": "21",
-   "home": "Split Backs",
-   "primary": "Y",
-   "screen": "te",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Wing T",
-    "Split Backs"
-   ]
-  },
-  {
-   "play": "p092",
-   "play_index": 149,
-   "name": "QB Power",
-   "concept": "QB Power",
-   "family": "qb",
-   "header": "qb_draw",
-   "play_type": "keeper",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p093",
-   "play_index": 150,
-   "name": "X Slip Screen",
-   "concept": "WR Slip Screen",
-   "family": "screen",
-   "header": "quick_screen",
-   "play_type": "pass",
-   "personnel": "22",
-   "home": "Full House",
+   "home": "Wing T",
    "primary": "X",
-   "screen": "wr:WR Slip Screen",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Full House",
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "play": "p094",
-   "play_index": 151,
-   "name": "Steep In Seam",
-   "concept": "Z Steep In Seam Whip Stop and Go",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "Split Backs",
-   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Steep In",
-    "Stop and Go",
-    "Whip"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "I-Form Pro",
-    "Split Backs"
-   ]
-  },
-  {
-   "play": "p095",
-   "play_index": 152,
-   "name": "Y Whip Return",
-   "concept": "Y Whip Return Zig",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "I-Form Pro",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Return",
-    "Whip",
-    "Zig"
+    "Go",
+    "Hitch",
+    "Slant"
    ],
    "deep": false,
    "lane": null,
@@ -3656,31 +3524,111 @@
    ]
   },
   {
-   "play": "p096",
-   "play_index": 153,
+   "play": "p090",
+   "play_index": 147,
+   "name": "X Sail",
+   "concept": "X Sail Skinny Post Whip In",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Back In",
+    "Sail",
+    "Skinny Post",
+    "Whip In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Split Backs",
+    "I-Form Pro"
+   ]
+  },
+  {
+   "play": "p091",
+   "play_index": 148,
+   "name": "Z Hook Corner",
+   "concept": "Z Hook Corner Outs",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Flat",
+    "Go",
+    "Hook Corner",
+    "Out",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread",
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p092",
+   "play_index": 149,
+   "name": "Z Hook Corner",
+   "concept": "Z Hook Corner Corner",
+   "family": "deep",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Split Backs",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Corner",
+    "Flat",
+    "Hook Corner"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Split Backs",
+    "I-Form Pro"
+   ]
+  },
+  {
+   "play": "p093",
+   "play_index": 150,
    "name": "Flea Flicker",
    "concept": "Flea Flicker",
    "family": "trick",
    "header": "flea",
    "play_type": "flea",
    "personnel": "23",
-   "home": "Goal Line Sneak",
+   "home": "Goal Line",
    "primary": null,
    "screen": null,
    "must": "",
    "routes": [
     "Go",
+    "Post",
     "Post Corner"
    ],
    "deep": false,
    "lane": 2,
    "formations": [
-    "Goal Line Sneak"
+    "Goal Line"
    ]
   },
   {
-   "play": "p097",
-   "play_index": 154,
+   "play": "p094",
+   "play_index": 151,
    "name": "End Around",
    "concept": "End Around",
    "family": "trick",
@@ -3699,8 +3647,31 @@
    ]
   },
   {
-   "play": "p098",
-   "play_index": 155,
+   "play": "p095",
+   "play_index": 152,
+   "name": "Y Quick Outs",
+   "concept": "Quick Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Comeback",
+    "Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Goal Line Sneak"
+   ]
+  },
+  {
+   "play": "p096",
+   "play_index": 153,
    "name": "PA Crossers",
    "concept": "PA Crossers",
    "family": "pa",
@@ -3723,8 +3694,8 @@
    ]
   },
   {
-   "play": "p099",
-   "play_index": 156,
+   "play": "p097",
+   "play_index": 154,
    "name": "U Slant Flat",
    "concept": "Slant Flat",
    "family": "quick",
@@ -3746,30 +3717,30 @@
    ]
   },
   {
-   "play": "p100",
-   "play_index": 157,
-   "name": "Outside Zone",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "home": "Full House",
-   "primary": null,
-   "screen": null,
+   "play": "p098",
+   "play_index": 155,
+   "name": "HB Slip Screen",
+   "concept": "HB Slip Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread Tight",
+   "primary": "HB",
+   "screen": "back",
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": null,
    "formations": [
-    "Full House"
+    "Gun Spread Tight"
    ]
   },
   {
-   "play": "p101",
-   "play_index": 158,
-   "name": "China",
-   "concept": "Y China Out and Up Curl",
+   "play": "p099",
+   "play_index": 156,
+   "name": "Y Stick Return",
+   "concept": "Y Stick Return Whip In",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
@@ -3780,9 +3751,9 @@
    "must": "",
    "routes": [
     "Arrow",
-    "Curl",
-    "Out and Up",
-    "Whip"
+    "Return",
+    "Stick",
+    "Whip In"
    ],
    "deep": false,
    "lane": null,
@@ -3791,24 +3762,62 @@
    ]
   },
   {
+   "play": "p100",
+   "play_index": 157,
+   "name": "HB Counter",
+   "concept": "HB Counter",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Singleback FB Wing",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "Singleback FB Wing"
+   ]
+  },
+  {
+   "play": "p101",
+   "play_index": 158,
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "home": "Gun Wing Slot Offset",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Gun Wing Slot Offset"
+   ]
+  },
+  {
    "play": "p102",
    "play_index": 159,
-   "name": "X Spot Out",
-   "concept": "X Spot Out Crossing Dig Comebacks",
-   "family": "quick",
-   "header": "quick",
+   "name": "HB Bang Hitch",
+   "concept": "HB Bang Hitch Hitches",
+   "family": "dropback",
+   "header": "dropback",
    "play_type": "pass",
    "personnel": "10",
    "home": "Gun Spread",
-   "primary": "X",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
-    "Comeback",
-    "Crossing Dig",
-    "Hitch",
-    "Spot Out"
+    "Back In",
+    "Bang Post",
+    "Hitch"
    ],
    "deep": false,
    "lane": null,
@@ -3819,53 +3828,272 @@
   {
    "play": "p103",
    "play_index": 160,
-   "name": "RB Stick",
-   "concept": "HB Stick Skinny Post Post Dig",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread Tight",
-   "primary": "HB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Dig",
-    "Post",
-    "Skinny Post",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p104",
-   "play_index": 161,
-   "name": "RB Toss",
-   "concept": "HB Toss",
+   "name": "FB Iso",
+   "concept": "HB Iso",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
-   "personnel": "21",
-   "home": "Wing T",
+   "personnel": "23",
+   "home": "Strong Jumbo",
    "primary": null,
    "screen": null,
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 3,
    "formations": [
-    "Wing T"
+    "Strong Jumbo"
+   ]
+  },
+  {
+   "play": "p104",
+   "play_index": 161,
+   "name": "HB Slam",
+   "concept": "HB Slam",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 1,
+   "formations": [
+    "Goal Line Sneak"
    ]
   },
   {
    "play": "p105",
    "play_index": 162,
-   "name": "RB Flood",
+   "name": "HB Dive Wk",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Full House"
+   ]
+  },
+  {
+   "play": "p106",
+   "play_index": 163,
+   "name": "X Bench",
+   "concept": "X Bench Corner Post Hitches",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Corner Post",
+    "Hitch",
+    "Out"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "play": "p107",
+   "play_index": 164,
+   "name": "FB Slant Flat",
+   "concept": "FB Slant Flat Corner Smash",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "22",
+   "home": "Ace Jumbo",
+   "primary": "FB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Arrow",
+    "Corner",
+    "Hitch",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Ace Jumbo"
+   ]
+  },
+  {
+   "play": "p108",
+   "play_index": 165,
+   "name": "Zone Toss",
+   "concept": "Zone Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line Sneak",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 0,
+   "formations": [
+    "Goal Line Sneak"
+   ]
+  },
+  {
+   "play": "p109",
+   "play_index": 166,
+   "name": "Y Whip Return",
+   "concept": "Y Whip Return Stop and Go",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Strong Jumbo",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle",
+    "Return",
+    "Stop and Go",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Strong Jumbo"
+   ]
+  },
+  {
+   "play": "p110",
+   "play_index": 167,
+   "name": "Slip Screen Wk",
+   "concept": "HB Slip Screen Wk",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Singleback FB Wing",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [
+    "Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback FB Wing"
+   ]
+  },
+  {
+   "play": "p111",
+   "play_index": 168,
+   "name": "U China Out",
+   "concept": "U China Out Steep Slant",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "22",
+   "home": "I-Form Tight",
+   "primary": "U",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Out",
+    "Steep Slant",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Tight"
+   ]
+  },
+  {
+   "play": "p112",
+   "play_index": 169,
+   "name": "Guard Iso",
+   "concept": "Guard Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "21",
+   "home": "Split Backs",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 3,
+   "formations": [
+    "Split Backs"
+   ]
+  },
+  {
+   "play": "p113",
+   "play_index": 170,
+   "name": "HB Dive",
+   "concept": "HB Dive",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "22",
+   "home": "Full House",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Full House"
+   ]
+  },
+  {
+   "play": "p114",
+   "play_index": 171,
+   "name": "Double Slants",
+   "concept": "Y Double Slants Slant Flat",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Gun Wing Slot Offset",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Slant"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Wing Slot Offset"
+   ]
+  },
+  {
+   "play": "p115",
+   "play_index": 172,
+   "name": "HB Flood Return",
    "concept": "HB Flood Return Out Drag",
    "family": "dropback",
    "header": "dropback",
@@ -3889,294 +4117,39 @@
    ]
   },
   {
-   "play": "p106",
-   "play_index": 163,
-   "name": "U Slot Fade",
-   "concept": "U Slot Fade Bang",
+   "play": "p116",
+   "play_index": 173,
+   "name": "HB Stick",
+   "concept": "HB Stick Skinny Post Fade",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
-   "personnel": "22",
-   "home": "I-Form Tight",
-   "primary": "U",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Bang",
-    "Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "I-Form Tight"
-   ]
-  },
-  {
-   "play": "p107",
-   "play_index": 164,
-   "name": "X Snag Bench",
-   "concept": "X Snag Bench",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Gun Wing Slot Offset",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Arrow Corner",
-    "Out",
-    "Snag"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wing Slot Offset"
-   ]
-  },
-  {
-   "play": "p108",
-   "play_index": 165,
-   "name": "Z Fade Curl",
-   "concept": "Z Fade Curl Curls",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "Singleback FB Wing",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Curl",
-    "Fade Curl",
-    "Flat",
-    "Release Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback FB Wing"
-   ]
-  },
-  {
-   "play": "p109",
-   "play_index": 166,
-   "name": "FB Quick Outs",
-   "concept": "FB Quick Outs Bench",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "22",
-   "home": "Ace Jumbo",
-   "primary": "FB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Arrow",
-    "Out",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "play": "p110",
-   "play_index": 167,
-   "name": "Z Snag Seams",
-   "concept": "Z Snag Seams",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Singleback Ace Close",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle",
-    "Arrow Corner",
-    "Go",
-    "Hitch",
-    "Snag"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Singleback Ace Close"
-   ]
-  },
-  {
-   "play": "p111",
-   "play_index": 168,
-   "name": "RB Iso",
-   "concept": "HB Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "home": "Full House",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 3,
-   "formations": [
-    "Full House"
-   ]
-  },
-  {
-   "play": "p112",
-   "play_index": 169,
-   "name": "RB Draw",
-   "concept": "HB Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
    "personnel": "23",
-   "home": "Strong Jumbo",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Strong Jumbo"
-   ]
-  },
-  {
-   "play": "p113",
-   "play_index": 170,
-   "name": "PA U Out Seam",
-   "concept": "PA U Out Seam Angle Cross Return",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "23",
-   "home": "Strong Jumbo",
-   "primary": "U",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Angle Cross",
-    "Out",
-    "Return"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Strong Jumbo"
-   ]
-  },
-  {
-   "play": "p114",
-   "play_index": 171,
-   "name": "RB Flood Out",
-   "concept": "HB Flood Out Hitches",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Empty Trey",
+   "home": "Goal Line",
    "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
-    "Flat",
-    "Hitch",
-    "Out",
-    "Sail"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "play": "p115",
-   "play_index": 172,
-   "name": "Y Spot Out",
-   "concept": "Y Spot Out Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "Singleback FB Wing",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Hitch",
-    "Out",
-    "Spot Out",
+    "Angle",
+    "Skinny Post",
     "Stick"
    ],
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback FB Wing"
-   ]
-  },
-  {
-   "play": "p116",
-   "play_index": 173,
-   "name": "RB Off Tackle",
-   "concept": "HB Off Tackle",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "22",
-   "home": "Full House",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 3,
-   "formations": [
-    "Full House"
+    "Goal Line"
    ]
   },
   {
    "play": "p117",
    "play_index": 174,
-   "name": "Counter GT",
-   "concept": "Counter GT",
+   "name": "HB Lead Draw",
+   "concept": "HB Lead Draw",
    "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "home": "I-Form Pro",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 3,
-   "formations": [
-    "I-Form Pro"
-   ]
-  },
-  {
-   "play": "p118",
-   "play_index": 175,
-   "name": "01 Trap Wk",
-   "concept": "01 Trap",
-   "family": "run",
-   "header": "run",
+   "header": "draw",
    "play_type": "run",
    "personnel": "22",
-   "home": "I-Form Tight",
+   "home": "Full House Sneak",
    "primary": null,
    "screen": null,
    "must": "",
@@ -4184,67 +4157,86 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "I-Form Tight"
+    "Full House Sneak"
+   ]
+  },
+  {
+   "play": "p118",
+   "play_index": 175,
+   "name": "PA Y Stick",
+   "concept": "PA Y Stick Post Corner",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "23",
+   "home": "Strong Jumbo",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go",
+    "Post Corner",
+    "Stick"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Strong Jumbo"
    ]
   },
   {
    "play": "p119",
    "play_index": 176,
-   "name": "RB Stick",
-   "concept": "HB Stick Out and Up Seams",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Gun Wing Slot Offset",
-   "primary": "HB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Go",
-    "Hitch",
-    "Out and Up",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wing Slot Offset"
-   ]
-  },
-  {
-   "play": "p120",
-   "play_index": 177,
-   "name": "Z Quick Outs",
-   "concept": "Quick Outs",
+   "name": "HB Scat Seams",
+   "concept": "HB Scat Seams",
    "family": "quick",
    "header": "quick",
    "play_type": "pass",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": "HB",
    "screen": null,
    "must": "",
    "routes": [
+    "Bang",
     "Go",
+    "Hitch",
     "Out",
-    "Stick"
+    "Spot Out"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ],
-   "added_by": "b778 pb7"
+   ]
+  },
+  {
+   "play": "p120",
+   "play_index": 177,
+   "name": "Inside Trap",
+   "concept": "Inside Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "12",
+   "home": "Gun Wing Slot Offset",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 2,
+   "formations": [
+    "Gun Wing Slot Offset"
+   ]
   },
   {
    "play": "p121",
    "play_index": 178,
-   "name": "RB Toss Wk",
-   "concept": "HB Toss",
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
    "family": "run",
-   "header": "run_toss",
+   "header": "run",
    "play_type": "run",
    "personnel": "22",
    "home": "Full House",
@@ -4253,7 +4245,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 2,
    "formations": [
     "Full House"
    ]
@@ -4261,342 +4253,37 @@
   {
    "play": "p122",
    "play_index": 179,
-   "name": "RB Counter Wk",
-   "concept": "HB Counter",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "21",
-   "home": "Split Backs",
-   "primary": null,
+   "name": "HB Spacing",
+   "concept": "HB Spacing Hitches",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "HB",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Flat",
+    "Hitch",
+    "Stick"
+   ],
    "deep": false,
-   "lane": 1,
+   "lane": null,
    "formations": [
-    "Split Backs"
+    "Empty Trey"
    ]
   },
   {
    "play": "p123",
    "play_index": 180,
-   "name": "PA Z Fade Curl",
-   "concept": "PA Z Fade Curl Corner",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "21",
-   "home": "Wing T",
-   "primary": "Z",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Corner",
-    "Fade Curl",
-    "Release Out"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Wing T"
-   ]
-  },
-  {
-   "play": "p124",
-   "play_index": 181,
-   "name": "Y China",
-   "concept": "Y China Out and Up Over",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "23",
-   "home": "Strong Jumbo",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Out and Up",
-    "Over",
-    "Whip"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Strong Jumbo"
-   ]
-  },
-  {
-   "play": "p125",
-   "play_index": 182,
-   "name": "Y Stick Nod",
-   "concept": "Y Stick Nod Out Slant Flat",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Empty Trey",
-   "primary": "Y",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Hitch and Go",
-    "Out",
-    "Slant"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Empty Trey"
-   ]
-  },
-  {
-   "play": "p126",
-   "play_index": 183,
-   "name": "PA Hook Corner",
-   "concept": "PA FB Hook Corner Whip",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "22",
-   "home": "Ace Jumbo",
-   "primary": "FB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Back Wheel",
-    "Curl",
-    "Flat",
-    "Hook Corner",
-    "Whip"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "play": "p127",
-   "play_index": 184,
-   "name": "X Choice Out",
-   "concept": "X Choice Out Hitches",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Empty Trey",
-   "primary": "X",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Corner Post",
-    "Hitch",
-    "Out",
-    "Whip"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Empty Trey"
-   ]
-  },
-  {
-   "play": "p128",
-   "play_index": 185,
-   "name": "Y Screen",
-   "concept": "TE Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Gun Trips TE",
-   "primary": "Y",
-   "screen": "te",
-   "must": "",
-   "routes": [
-    "Stem Block"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Trips TE"
-   ]
-  },
-  {
-   "play": "p129",
-   "play_index": 189,
-   "name": "Outside Zone Wk",
-   "concept": "Outside Zone",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "home": "Goal Line",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 0,
-   "formations": [
-    "Goal Line"
-   ]
-  },
-  {
-   "play": "p130",
-   "play_index": 206,
-   "name": "Slot Stick Out",
-   "concept": "Slot Stick Out Slants",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread",
-   "primary": "Slot",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Out",
-    "Slant",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread",
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p131",
-   "play_index": 218,
-   "name": "Comeback Seam",
-   "concept": "U Comeback Seam Spot Out Comebacks",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "12",
-   "home": "Gun Wing Slot Offset",
-   "primary": "U",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Spot Out",
-    "Stick"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Wing Slot Offset"
-   ]
-  },
-  {
-   "play": "p132",
-   "play_index": 219,
-   "name": "RB Cross Dig",
-   "concept": "HB Cross Dig Out and Up Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "11",
-   "home": "Empty Trey",
-   "primary": "HB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Corner",
-    "Crossing Dig",
-    "Flat",
-    "Hitch",
-    "Out and Up"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Empty Trey"
-   ]
-  },
-  {
-   "play": "p133",
-   "play_index": 220,
-   "name": "RB Lead Draw",
-   "concept": "HB Lead Draw",
-   "family": "run",
-   "header": "draw",
-   "play_type": "run",
-   "personnel": "21",
-   "home": "Wing T",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Wing T"
-   ]
-  },
-  {
-   "play": "p134",
-   "play_index": 221,
-   "name": "Inside Zone Split",
-   "concept": "Inside Zone Split",
+   "name": "HB Iso Wk",
+   "concept": "HB Iso",
    "family": "run",
    "header": "run",
    "play_type": "run",
    "personnel": "22",
-   "home": "Ace Jumbo",
-   "primary": null,
-   "screen": null,
-   "must": "",
-   "routes": [],
-   "deep": false,
-   "lane": 2,
-   "formations": [
-    "Ace Jumbo"
-   ]
-  },
-  {
-   "play": "p135",
-   "play_index": 222,
-   "name": "RB Scissors",
-   "concept": "HB Scissors Seams",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
-   "personnel": "10",
-   "home": "Gun Spread Tight",
-   "primary": "HB",
-   "screen": null,
-   "must": "",
-   "routes": [
-    "Corner",
-    "Go",
-    "Hitch",
-    "Post"
-   ],
-   "deep": false,
-   "lane": null,
-   "formations": [
-    "Gun Spread Tight"
-   ]
-  },
-  {
-   "play": "p136",
-   "play_index": 223,
-   "name": "RB Slam",
-   "concept": "HB Slam",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "home": "Strong Jumbo",
+   "home": "I-Form Tight",
    "primary": null,
    "screen": null,
    "must": "",
@@ -4604,32 +4291,37 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Strong Jumbo"
+    "I-Form Tight"
    ]
   },
   {
-   "play": "p137",
-   "play_index": 224,
-   "name": "RB Iso Wk",
-   "concept": "HB Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
-   "personnel": "23",
-   "home": "Goal Line",
-   "primary": null,
+   "play": "p124",
+   "play_index": 181,
+   "name": "Z Hitch Seam",
+   "concept": "Z Hitch Seam Spot Out Outs",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "Singleback FB Wing",
+   "primary": "Z",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Hitch",
+    "Out",
+    "Spot Out",
+    "Stick"
+   ],
    "deep": false,
-   "lane": 1,
+   "lane": null,
    "formations": [
-    "Goal Line"
+    "Singleback FB Wing"
    ]
   },
   {
-   "play": "p138",
-   "play_index": null,
+   "play": "p125",
+   "play_index": 182,
    "name": "Bubble Screen",
    "concept": "Bubble Screen",
    "family": "screen",
@@ -4642,8 +4334,7 @@
    "must": "",
    "routes": [
     "Flat",
-    "Go",
-    "Stem Block"
+    "Go"
    ],
    "deep": false,
    "lane": null,
@@ -4652,65 +4343,283 @@
    ]
   },
   {
-   "play": "p139",
-   "play_index": null,
-   "name": "Guard Iso",
-   "concept": "Guard Iso",
+   "play": "p126",
+   "play_index": 183,
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
+   "personnel": "10",
+   "home": "Gun Spread Tight",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Go"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread Tight"
+   ]
+  },
+  {
+   "play": "p127",
+   "play_index": 184,
+   "name": "PA FB Dagger",
+   "concept": "PA FB Dagger Whip Slants",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "Singleback FB Wing",
+   "primary": "FB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Dig",
+    "Slant",
+    "Stem Block",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback FB Wing"
+   ]
+  },
+  {
+   "play": "p128",
+   "play_index": 185,
+   "name": "PA Z Dagger",
+   "concept": "PA Z Dagger Angle Cross Flag",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "Wing T",
+   "primary": "Z",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle Cross",
+    "Dig",
+    "Flag"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Wing T"
+   ]
+  },
+  {
+   "play": "p129",
+   "play_index": 189,
+   "name": "HB Sail",
+   "concept": "HB Sail Skinny Post Slant Flat",
+   "family": "dropback",
+   "header": "dropback",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Empty Trey",
+   "primary": "HB",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Arrow",
+    "Sail",
+    "Skinny Post",
+    "Slant",
+    "Whip"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Empty Trey"
+   ]
+  },
+  {
+   "play": "p130",
+   "play_index": 206,
+   "name": "PA Y Switch",
+   "concept": "PA Y Switch Comeback",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "Split Backs",
+   "primary": "Y",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Bender",
+    "Comeback"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Split Backs"
+   ]
+  },
+  {
+   "play": "p131",
+   "play_index": 218,
+   "name": "X Slip Screen",
+   "concept": "WR Slip Screen",
+   "family": "screen",
+   "header": "quick_screen",
+   "play_type": "pass",
+   "personnel": "10",
+   "home": "Gun Spread",
+   "primary": "X",
+   "screen": "wr:WR Slip Screen",
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Spread"
+   ]
+  },
+  {
+   "play": "p132",
+   "play_index": 219,
+   "name": "Lead Stretch",
+   "concept": "Lead Stretch",
    "family": "run",
    "header": "run",
    "play_type": "run",
-   "personnel": "21",
-   "home": "I-Form Pro",
+   "personnel": "23",
+   "home": "Strong Jumbo",
    "primary": null,
    "screen": null,
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 3,
+   "lane": 4,
+   "formations": [
+    "Strong Jumbo"
+   ]
+  },
+  {
+   "play": "p133",
+   "play_index": 220,
+   "name": "Slip Screen Wk",
+   "concept": "HB Slip Screen Wk",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
    "formations": [
     "I-Form Pro"
    ]
   },
   {
-   "play": "p140",
-   "play_index": null,
+   "play": "p134",
+   "play_index": 221,
+   "name": "Pin Pull Sweep",
+   "concept": "Pin Pull Sweep",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
+   "personnel": "23",
+   "home": "Goal Line",
+   "primary": null,
+   "screen": null,
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": 4,
+   "formations": [
+    "Goal Line"
+   ]
+  },
+  {
+   "play": "p135",
+   "play_index": 222,
+   "name": "Y Screen",
+   "concept": "TE Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Y Trips",
+   "primary": "Y",
+   "screen": "te",
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Y Trips"
+   ]
+  },
+  {
+   "play": "p136",
+   "play_index": 223,
    "name": "Y Screen",
    "concept": "TE Screen",
    "family": "screen",
    "header": "screen",
    "play_type": "pass",
    "personnel": "11",
-   "home": "Pistol Bunch TE",
+   "home": "Pistol Bunch",
    "primary": "Y",
    "screen": "te",
    "must": "",
-   "routes": [
-    "Stem Block"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
-    "Pistol Bunch TE"
+    "Pistol Bunch"
    ]
   },
   {
-   "play": "p141",
-   "play_index": null,
-   "name": "U Quick Outs",
-   "concept": "U Quick Outs Stop and Go",
-   "family": "quick",
-   "header": "quick",
+   "play": "p137",
+   "play_index": 224,
+   "name": "Slip Screen Wk",
+   "concept": "HB Slip Screen Wk",
+   "family": "screen",
+   "header": "screen",
    "play_type": "pass",
+   "personnel": "12",
+   "home": "Singleback Ace",
+   "primary": "HB",
+   "screen": "back",
+   "must": "",
+   "routes": [],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace"
+   ]
+  },
+  {
+   "play": "p138",
+   "play_index": null,
+   "name": "PA U Snag",
+   "concept": "PA U Snag Post Corner",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
    "personnel": "23",
    "home": "Goal Line",
    "primary": "U",
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
+    "Arrow Corner",
     "Out",
-    "Stick",
-    "Stop and Go"
+    "Post Corner",
+    "Snag"
    ],
    "deep": false,
    "lane": null,
@@ -4719,23 +4628,45 @@
    ]
   },
   {
-   "play": "p142",
+   "play": "p139",
    "play_index": null,
-   "name": "PA Hitch Seam",
-   "concept": "PA U Hitch Seam Whip In",
-   "family": "pa",
-   "header": "pa",
-   "play_type": "pa_pass",
-   "personnel": "23",
-   "home": "Strong Jumbo",
-   "primary": "U",
+   "name": "Z Snag Spot Out",
+   "concept": "Z Snag Spot Out Comebacks",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
+   "personnel": "11",
+   "home": "Gun Empty Trey",
+   "primary": "Z",
    "screen": null,
    "must": "",
    "routes": [
-    "Go",
-    "Hitch",
-    "Whip In"
+    "Arrow",
+    "Comeback",
+    "Flag",
+    "Snag",
+    "Spot Out"
    ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Gun Empty Trey"
+   ]
+  },
+  {
+   "play": "p140",
+   "play_index": null,
+   "name": "FB Screen",
+   "concept": "FB Screen",
+   "family": "screen",
+   "header": "screen",
+   "play_type": "pass",
+   "personnel": "23",
+   "home": "Strong Jumbo",
+   "primary": "FB",
+   "screen": "fullback",
+   "must": "",
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
@@ -4743,23 +4674,70 @@
    ]
   },
   {
-   "play": "p143",
+   "play": "p141",
    "play_index": null,
-   "name": "Y China",
-   "concept": "Y China Out and Up Skinny Post",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
-   "personnel": "21",
-   "home": "I-Form Pro",
-   "primary": "Y",
+   "name": "PA X Bench",
+   "concept": "PA X Bench Hitches",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "12",
+   "home": "Singleback Ace Close",
+   "primary": "X",
    "screen": null,
    "must": "",
    "routes": [
-    "Angle",
-    "Out and Up",
-    "Skinny Post",
-    "Whip"
+    "Arrow",
+    "Hitch",
+    "Out",
+    "Stem Block"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "Singleback Ace Close"
+   ]
+  },
+  {
+   "play": "p142",
+   "play_index": null,
+   "name": "PA Steep In Seam",
+   "concept": "PA X Steep In Seam Angle Cross Hitch and",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Angle Cross",
+    "Hitch and Go",
+    "Steep In"
+   ],
+   "deep": false,
+   "lane": null,
+   "formations": [
+    "I-Form Pro"
+   ]
+  },
+  {
+   "play": "p143",
+   "play_index": null,
+   "name": "PA X Scissors",
+   "concept": "PA X Scissors Corner",
+   "family": "pa",
+   "header": "pa",
+   "play_type": "pa_pass",
+   "personnel": "21",
+   "home": "I-Form Pro",
+   "primary": "X",
+   "screen": null,
+   "must": "",
+   "routes": [
+    "Corner",
+    "Post"
    ],
    "deep": false,
    "lane": null,
@@ -4768,7 +4746,7 @@
    ]
   }
  ],
- "shared_links": 341,
+ "shared_links": 339,
  "groups": {
   "23": {
    "index": 0,
@@ -4814,26 +4792,26 @@
  "missing_groups": [],
  "name_pool": {
   "budget": 3895,
-  "before": 5058,
-  "after": 3892,
+  "before": 5139,
+  "after": 3887,
   "defense_units": 1169
  },
  "cpu_fit": {
-  "objective_before": 401.2,
-  "objective_after": 116.0,
-  "shotgun_weight": 1.2,
+  "objective_before": 401.6,
+  "objective_after": 103.7,
+  "shotgun_weight": 1.05,
   "cells": {
    "1st&10 own25": {
     "personnel": {
      "11": 51,
-     "12": 40,
-     "21": 5,
-     "10": 4,
+     "12": 38,
+     "21": 6,
+     "10": 3,
      "heavy": 1
     },
-    "gun": 63,
-    "formations": 20,
-    "busiest": 17,
+    "gun": 62,
+    "formations": 19,
+    "busiest": 19,
     "target": {
      "personnel": {
       "11": 42,
@@ -4847,14 +4825,14 @@
    "1st&10 opp40": {
     "personnel": {
      "11": 51,
-     "12": 40,
-     "21": 5,
-     "10": 4,
+     "12": 38,
+     "21": 6,
+     "10": 3,
      "heavy": 1
     },
-    "gun": 63,
-    "formations": 20,
-    "busiest": 17,
+    "gun": 62,
+    "formations": 19,
+    "busiest": 19,
     "target": {
      "personnel": {
       "11": 42,
@@ -4867,14 +4845,14 @@
    },
    "2nd&2 own40": {
     "personnel": {
-     "12": 52,
+     "12": 48,
      "11": 30,
-     "heavy": 15,
-     "21": 3
+     "heavy": 20,
+     "21": 2
     },
-    "gun": 49,
-    "formations": 9,
-    "busiest": 23,
+    "gun": 50,
+    "formations": 11,
+    "busiest": 24,
     "target": {
      "personnel": {
       "11": 59,
@@ -4886,15 +4864,15 @@
    },
    "2nd&5 own35": {
     "personnel": {
-     "11": 54,
-     "12": 33,
-     "heavy": 8,
-     "21": 3,
-     "10": 2
+     "11": 58,
+     "12": 29,
+     "heavy": 10,
+     "10": 2,
+     "21": 1
     },
-    "gun": 63,
+    "gun": 66,
     "formations": 19,
-    "busiest": 15,
+    "busiest": 14,
     "target": {
      "personnel": {
       "11": 48,
@@ -4908,15 +4886,15 @@
    },
    "2nd&8 mid": {
     "personnel": {
-     "11": 55,
-     "12": 35,
-     "10": 5,
-     "21": 4,
-     "heavy": 2
+     "11": 58,
+     "12": 32,
+     "10": 4,
+     "21": 3,
+     "heavy": 3
     },
-    "gun": 66,
-    "formations": 23,
-    "busiest": 12,
+    "gun": 68,
+    "formations": 19,
+    "busiest": 14,
     "target": {
      "personnel": {
       "11": 50,
@@ -4930,14 +4908,15 @@
    },
    "2nd&12 own20": {
     "personnel": {
-     "11": 67,
-     "12": 24,
-     "10": 7,
-     "21": 2
+     "11": 70,
+     "12": 21,
+     "10": 6,
+     "21": 2,
+     "heavy": 1
     },
     "gun": 79,
-    "formations": 21,
-    "busiest": 9,
+    "formations": 19,
+    "busiest": 11,
     "target": {
      "personnel": {
       "11": 50,
@@ -4951,14 +4930,14 @@
    },
    "3rd&1 opp40": {
     "personnel": {
-     "12": 63,
-     "heavy": 34,
+     "12": 56,
+     "heavy": 42,
      "11": 1,
      "21": 1
     },
-    "gun": 30,
-    "formations": 5,
-    "busiest": 30,
+    "gun": 28,
+    "formations": 7,
+    "busiest": 27,
     "target": {
      "personnel": {
       "11": 45,
@@ -4970,13 +4949,13 @@
    },
    "3rd&2 own45": {
     "personnel": {
-     "12": 45,
-     "11": 43,
-     "heavy": 9,
-     "21": 3
+     "11": 44,
+     "12": 42,
+     "heavy": 12,
+     "21": 2
     },
-    "gun": 58,
-    "formations": 11,
+    "gun": 60,
+    "formations": 10,
     "busiest": 20,
     "target": {
      "personnel": {
@@ -4989,15 +4968,15 @@
    },
    "3rd&4 own45": {
     "personnel": {
-     "11": 65,
-     "12": 29,
-     "21": 5,
-     "10": 1,
-     "heavy": 1
+     "11": 67,
+     "12": 28,
+     "21": 4,
+     "heavy": 1,
+     "10": 1
     },
-    "gun": 67,
-    "formations": 18,
-    "busiest": 10,
+    "gun": 69,
+    "formations": 17,
+    "busiest": 11,
     "target": {
      "personnel": {
       "11": 56,
@@ -5008,12 +4987,12 @@
    },
    "3rd&6 mid": {
     "personnel": {
-     "11": 85,
-     "10": 15
+     "11": 88,
+     "10": 12
     },
     "gun": 98,
     "formations": 13,
-    "busiest": 20,
+    "busiest": 22,
     "target": {
      "personnel": {
       "11": 56,
@@ -5024,12 +5003,12 @@
    },
    "3rd&8 mid": {
     "personnel": {
-     "11": 80,
-     "10": 20
+     "11": 84,
+     "10": 16
     },
     "gun": 100,
     "formations": 5,
-    "busiest": 27,
+    "busiest": 28,
     "target": {
      "personnel": {
       "11": 81,
@@ -5040,12 +5019,12 @@
    },
    "3rd&12 own30": {
     "personnel": {
-     "11": 80,
-     "10": 20
+     "11": 84,
+     "10": 16
     },
     "gun": 100,
     "formations": 5,
-    "busiest": 27,
+    "busiest": 28,
     "target": {
      "personnel": {
       "11": 81,
@@ -5056,15 +5035,15 @@
    },
    "2nd&6 opp8": {
     "personnel": {
-     "11": 46,
-     "12": 44,
-     "10": 6,
-     "heavy": 3,
-     "21": 2
+     "11": 43,
+     "12": 41,
+     "heavy": 9,
+     "10": 4,
+     "21": 3
     },
     "gun": 60,
     "formations": 11,
-    "busiest": 21,
+    "busiest": 16,
     "target": {
      "personnel": {
       "11": 38,
@@ -5078,14 +5057,14 @@
    },
    "1st&G opp3": {
     "personnel": {
-     "12": 48,
-     "11": 45,
-     "heavy": 6,
+     "12": 45,
+     "11": 34,
+     "heavy": 20,
      "21": 1
     },
-    "gun": 57,
-    "formations": 9,
-    "busiest": 22,
+    "gun": 54,
+    "formations": 10,
+    "busiest": 21,
     "target": {
      "personnel": {
       "11": 38,
@@ -5099,5 +5078,40 @@
    }
   },
   "iterations": 1500
+ },
+ "hurry_b778": {
+  "quick": [],
+  "no_huddle": [
+   {
+    "entry": 0,
+    "role": "inside_run",
+    "formation": "Gun Tight Y Off",
+    "play": "RB Draw"
+   },
+   {
+    "entry": 1,
+    "role": "quick",
+    "formation": "Gun Doubles",
+    "play": "PIT Quick Outs"
+   },
+   {
+    "entry": 2,
+    "role": "sideline",
+    "formation": "Gun Doubles",
+    "play": "Z Comeback Seam"
+   },
+   {
+    "entry": 3,
+    "role": "screen",
+    "formation": "Gun Empty Trey",
+    "play": "Bubble Screen"
+   },
+   {
+    "entry": 4,
+    "role": "shot",
+    "formation": "Gun Doubles",
+    "play": "Z Post Go"
+   }
+  ]
  }
 }
