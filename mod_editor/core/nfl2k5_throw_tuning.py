@@ -158,6 +158,10 @@ from . import nfl2k5_draft_clock as draft_clock_patch  # noqa: F401  b778-dr1: l
 from . import nfl2k5_player_progress_screen as player_progress_patch  # noqa: F401  b778-pg2: late owner; imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_cb_tackles as sim_cb_tackles_patch  # noqa: F401  b778-cb1: late owner (cornerback tackle credit); imported so the cave manifest recorder observes it
 from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
+from . import nfl2k5_team_number_scale as team_number_scale_patch  # noqa: F401  b776-ns1: its late owner is reserved with the first space pass
+from . import nfl2k5_contract_college_guard as contract_college_guard_patch  # noqa: F401  b778-cr1: late owner
+from . import nfl2k5_module_loader as module_loader_patch  # noqa: F401  b778-xs1: late owner
+from . import nfl2k5_classic_teams as classic_teams_patch  # noqa: F401  b775-ct1: late owner
 from . import nfl2k5_lineman_rating as lineman_rating_patch
 from . import nfl2k5_display_list_stability as display_list_patch
 from . import nfl2k5_resource_load_guard as resource_load_guard_patch  # b76-dn
@@ -1487,7 +1491,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (formation_art_spacing_patch.REQUESTS if play_art_routes else ())
         + (force_out_patch.REQUESTS if modern_force_out else ())
         + (practice_injuries_patch.REQUESTS if practice_injuries else ())
-        + (ball_carrier_ai_patch.REQUESTS if cpu_ball_carriers else ())
+        + (ball_carrier_patch.REQUESTS if cpu_ball_carriers else ())
         + (star_retention_patch.REQUESTS if star_retention else ())
         + (star_career_patch.REQUESTS if star_career else ())
         + (draft_clock_patch.REQUESTS if franchise_draft_clock else ())
