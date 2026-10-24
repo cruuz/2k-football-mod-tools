@@ -338,8 +338,8 @@
     "book": "TEN",
     "input_sha256": "0f127773363350fc9ed631f66717043c44c65a681b2ddb187fa2a7fc3f18826e",
     "output_sha256": "8aea8480bf0d7fad735ec4b3619c923ae068bedddcb75f785653b25adacc113f",
-    "offense_pack_sha256": "ee780680e67a22da00bafa9f01002616eb9623fa4c8a1e46371a19773ac96c38",
-    "defense_pack_sha256": "b1877a88f007811463a2e731526d97c15aac2da261223cd737ab2ce90742d53a"
+    "offense_pack_sha256": "f89c61286145ea0f9827457bb1e47615e10820b8fb3cc354ef8ec2124a47c144",
+    "defense_pack_sha256": "4786d80a75360070ee2df320816bc9368f6f73d06a298af6b2bdbb07481e1350"
    }
   ],
   "342": [
