@@ -4964,7 +4964,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
         music_shuffle=plan.music_shuffle, practice_squad_screen=plan.practice_squad_screen,
         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
-        **tt._r62_space_options(r62), camera=plan.camera)
+        **tt._r62_space_options(r62), camera=plan.camera,
+        hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+        db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking,
+        qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
+        practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+        star_retention=plan.star_retention, star_career=plan.star_career,
+        franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
+        player_progress=plan.player_progress, contract_college_guard=plan.contract_college_guard,
+        sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
+        module_loader=plan.module_loader, classic_teams=plan.classic_teams)
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:

@@ -2271,6 +2271,15 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         receipt["boot_logo"] = logo_receipt
     else:
         receipt["boot_logo"] = {"status": boot_logo.status(patched)}
+    late_space = dict(hair_styles=hair_styles, cpu_qb_reads=cpu_qb_reads, db_ball_play=db_ball_play,
+                      play_art_routes=play_art_routes, team_number_scale=team_number_scale,
+                      run_blocking=run_blocking, qb_accuracy=qb_accuracy, modern_force_out=modern_force_out,
+                      practice_injuries=practice_injuries, cpu_ball_carriers=cpu_ball_carriers,
+                      star_retention=star_retention, star_career=star_career,
+                      franchise_draft_clock=franchise_draft_clock, weekly_progression=weekly_progression,
+                      player_progress=player_progress, contract_college_guard=contract_college_guard,
+                      sim_cb_tackles=sim_cb_tackles, modern_clock_led=modern_clock_led,
+                      module_loader=module_loader, classic_teams=classic_teams)
     # Final owners: choose the complete allocation set before the first growth.
     # Selecting reserve compatibility must also retire an installed legacy
     # screen, even when the old screen recipe key is off. Do not add a request
@@ -2294,7 +2303,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
          or (anniversary_kickoff and anniversary_kickoff_tables is not None) or bool(widescreen_menus) or bool(team_logo_swap) or bool(period_goalposts)
          or k128_memory or letter_grades or honors_page or roster_capacity,
          _xbe_space_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
-                            music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62), camera=camera, hair_styles=hair_styles, cpu_qb_reads=cpu_qb_reads, db_ball_play=db_ball_play, play_art_routes=play_art_routes, team_number_scale=team_number_scale, run_blocking=run_blocking, qb_accuracy=qb_accuracy, modern_force_out=modern_force_out, practice_injuries=practice_injuries, cpu_ball_carriers=cpu_ball_carriers, star_retention=star_retention, star_career=star_career, franchise_draft_clock=franchise_draft_clock, weekly_progression=weekly_progression, player_progress=player_progress, contract_college_guard=contract_college_guard, sim_cb_tackles=sim_cb_tackles, modern_clock_led=modern_clock_led, module_loader=module_loader, classic_teams=classic_teams),
+                            music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62), camera=camera, **late_space),
          "xbe_space_patch", "experimental executable space"),
         (franchise_autosave, franchise_autosave_patch, "franchise_autosave_patch", "Franchise Auto Save (experimental)"),
         (camera, camera_patch, "camera_patch", "camera"),
@@ -2865,7 +2874,7 @@ def write_image_copy(
     if scorebug_runtime:
         runtime_receipt = scorebug_reference.runtime_apply_in_place(target, with_kickoff=kickoff_relocated,
             extra_requests=_selected_space_requests(momentum=momentum, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning,
-                                                    music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen, abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine, **_r62_space_options(r62), camera=camera))
+                                                    music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen, abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine, **_r62_space_options(r62), camera=camera, **late_space))
         receipt["scorebug_runtime_patch"] = runtime_receipt
     if guardian_overlay:
         requests = _selected_space_requests(
@@ -2874,7 +2883,7 @@ def write_image_copy(
             coverage_slider=coverage_slider, scramble_tuning=scramble_tuning,
             music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen,
             abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine,
-            **_r62_space_options(r62), camera=camera)
+            **_r62_space_options(r62), camera=camera, **late_space)
         receipt["guardian_overlay_resources_patch"] = guardian_resources.apply_to_image(
             target, guardian_everyone_practice=guardian_everyone_practice, guardian_players=guardian_players,
             extra_requests=tuple(row for row in requests if row[0] != guardian_overlay_patch.OWNER))
@@ -2888,7 +2897,7 @@ def write_image_copy(
                 momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try,
                 zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_metadata=music_metadata,
                 music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen,
-                abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, camera=camera, **r62)
+                abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, camera=camera, **r62, **late_space)
             storage.write_image_xbe(fd, final)
         receipt.update({key: value for key, value in extra.items() if key != "scorebug_runtime_patch"})
         check = _open_binary(target, os.O_RDONLY)
