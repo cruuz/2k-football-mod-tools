@@ -108,7 +108,22 @@ def _jump(va, target, size):
     return b'\xe9' + struct.pack('<i', target - va - 5) + b'\x90' * (size - 5)
 
 
-def sites(va, capacity=False):
+def _my_career_present(payload):
+    """Whether the generic MyCareer owner is reserved in this build.
+
+    ``my_career_mode.status`` validates companion owners, one of which asks this owner's
+    ``project`` for the practice-squad status; calling it here would recurse. The reserved
+    allocation is the stable fact: with MyCareer present its updated runtime owns the two save
+    sites and this owner's capacity shims are optional (they are absent in a real build and
+    already restored in MyCareer's own validation copy). Without it, the shims are required."""
+    try:
+        from . import nfl2k5_my_career_mode as my_career
+        return any(a['owner'] == my_career.OWNER for a in space.layout(payload)['allocations'])
+    except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError):
+        return False
+
+
+def sites(va, capacity=False, my_career=False):
     from . import nfl2k5_practice_reserves as pr
     labels = {name: va + offset for name, offset in
               (assembly.CAPACITY_LABELS if capacity else assembly.LABELS).items()}
@@ -140,10 +155,21 @@ def sites(va, capacity=False):
          b'\x81\xff' + struct.pack('<I', arena_size + 0x40) + b'\x77\x33'),
         ('practice_projection', pr.STAGE_VA, pr.sites()[0][3], _jump(pr.STAGE_VA, labels['arena_stage'], pr.STAGE_SIZE)),
     ))
+    if capacity and not my_career:
+        # b778 fa6: the save-list admission compare and the franchise load's wrapper-size call.
+        # A capacity build that also installs the generic MyCareer owner owns these two sites in
+        # that owner's updated runtime (which accepts the capacity sizes itself); patch them here
+        # only when MyCareer is absent.
+        result.extend((
+            ('capacity_admission', 0x16ABCF, bytes.fromhex('3986ccc1bd00'),
+             _jump(0x16ABCF, labels['capacity_admission'], 6)),
+            ('capacity_load_size', 0x16E7E5, bytes.fromhex('e86616f5ff'),
+             _jump(0x16E7E5, labels['capacity_load_size'], 5)),
+        ))
     return tuple(result)
 
 
-def _check_guards(image, edits, payload=None):
+def _check_guards(image, edits, payload=None, my_career=False):
     for address, size, digest in GUARDS:
         raw = bytearray(image.read(address, size))
         for _name, va, before, after in edits:
@@ -158,6 +184,16 @@ def _check_guards(image, edits, payload=None):
                 and k128.roster_site_state(payload) == 'k128':
             at = k128.ROSTER_SITE_VA - address
             raw[at:at + len(k128.RETAIL_ROSTER_SITE)] = k128.RETAIL_ROSTER_SITE
+        # b778 fa6: the generic MyCareer owner edits 0x16ABB5 and 0x16E7E5 through its own complete
+        # runtime. A capacity build that carries it skips this owner's save shims, so normalize the
+        # companion's exact installed instructions before hashing the guarded span.
+        if payload is not None and my_career:
+            from . import nfl2k5_my_career_mode as mc
+            for va, before in ((0x16ABB5, bytes.fromhex('e856feffffeb13')),
+                               (0x16E7E5, bytes.fromhex('e86616f5ff'))):
+                if address <= va and va + len(before) <= address + size:
+                    at = va-address
+                    raw[at:at+len(before)] = before
         require(hashlib.sha256(raw).hexdigest() == digest, 'foreign arena load/save/relocation consumer')
 
 
@@ -165,8 +201,9 @@ def _owned_state(payload):
     layout = space.layout(payload)
     found = [a for a in layout['allocations'] if a['owner'] == OWNER]
     image = XbeImage(payload)
+    my_career = _my_career_present(payload)
     if not found:
-        _check_guards(image, sites(0), payload)
+        _check_guards(image, sites(0), payload, my_career)
         # Only our new hook sites are relevant before the base PS prerequisites
         # exist; their runtime caves remain the original owner's responsibility.
         for _name, address, before, _after in sites(0):
@@ -178,7 +215,7 @@ def _owned_state(payload):
     site = allocation(payload)
     blob = image.read(site['va'], CODE_SIZE)
     if blob == b'\xcc' * CODE_SIZE:
-        _check_guards(image, sites(site['va'], False), payload)
+        _check_guards(image, sites(site['va'], False), payload, my_career)
         edits = sites(site['va'])
         for name, address, before, _after in edits:
             if name not in BRIDGES and name != 'practice_projection':
@@ -196,9 +233,10 @@ def _owned_state(payload):
         except ValueError:
             continue
         if blob == candidate:
-            _check_guards(image, sites(site['va'], capacity), payload)
-            edits = sites(site['va'], capacity)
-            require(rdata.status(payload, edits) == 'applied', 'mixed arena runtime bridges/hooks')
+            all_edits = sites(site['va'], capacity, False)
+            status_edits = sites(site['va'], capacity, my_career)
+            _check_guards(image, all_edits, payload, my_career)
+            require(rdata.status(payload, status_edits) == 'applied', 'mixed arena runtime bridges/hooks')
             return 'applied', site, flags
     require(False, 'foreign arena runtime code/options')
 
@@ -212,7 +250,8 @@ def project(payload):
     if state == 'retail':
         return payload
     out = bytearray(payload)
-    for _, address, before, _after in sites(site['va'], bool(flags & CAPACITY_FLAG)):
+    capacity = bool(flags & CAPACITY_FLAG)
+    for _, address, before, _after in sites(site['va'], capacity, False):
         at = rdata.offset_of(payload, address)
         out[at:at + len(before)] = before
     for section in _sections(out):
@@ -253,6 +292,9 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
               'eligible_reserve_limit': 17 if reserves_16 else 12, 'code_bytes': len(assembly.CAPACITY_CODE if capacity else assembly.CODE),
               'code_capacity': CODE_SIZE, 'runtime_state_bytes': 0,
               'requires_paired_rost_resource': True, 'requires_save_migration': True}
+    my_career = _my_career_present(payload)
+    common['save_path_shims'] = bool(capacity and not my_career)
+    common['my_career_companion'] = bool(capacity and my_career)
     if state == 'applied':
         require(_owned_state(payload)[2] == flags, 'arena options differ; rebuild from original')
         return payload, {**common, 'already_applied': True, 'changed_bytes': 0}
@@ -269,9 +311,9 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
         # replaced Coach's Desk table) is kept as is; only a retail one is installed here
         if prerequisite.status(payload) == 'retail':
             payload, _ = prerequisite.apply(payload)
-    require(rdata.status(payload, sites(site['va'], capacity)) == 'retail', 'foreign arena prerequisites')
+    require(rdata.status(payload, sites(site['va'], capacity, my_career)) == 'retail', 'foreign arena prerequisites')
     result, code_receipt = space.install_code(payload, OWNER, code_for(site['va'], flags))
-    result, receipt = rdata.apply(result, sites(site['va'], capacity), OWNER)
+    result, receipt = rdata.apply(result, sites(site['va'], capacity, my_career), OWNER)
     require(status(result) == 'applied', 'arena growth postcondition failed')
     return result, {**common, **receipt, 'already_applied': False, 'code_install': code_receipt,
                     'before_sha256': hashlib.sha256(payload_before).hexdigest(),
@@ -279,4 +321,4 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
                     'file_growth': len(result) - len(payload_before),
                     'changed_bytes': sum(a != b for a, b in zip(payload_before, result)) + len(result) - len(payload_before),
                     'consumers': [{'name': name, 'address': hex(address)}
-                                  for name, address, _, _ in sites(site['va'], capacity)]}
+                                  for name, address, _, _ in sites(site['va'], capacity, my_career)]}
