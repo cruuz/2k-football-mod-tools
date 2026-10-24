@@ -562,5 +562,29 @@
   "read_only",
   288,
   16
+ ],
+ [
+  "nfl2k5_cpu_money_downs_late",
+  "code",
+  400,
+  16
+ ],
+ [
+  "nfl2k5_cpu_money_downs_late_state",
+  "data",
+  8,
+  4
+ ],
+ [
+  "nfl2k5_star_career",
+  "code",
+  2080,
+  16
+ ],
+ [
+  "nfl2k5_star_career",
+  "data",
+  4096,
+  16
  ]
 ]
