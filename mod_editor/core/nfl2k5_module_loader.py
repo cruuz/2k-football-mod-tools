@@ -177,12 +177,20 @@ def canonical_context(payload, va, raw):
     """Another owner's pinned-context view: this owner's exact push hook reads as the retail bytes it replaced (the
     MyCareer and Contracts editor guards hash 0x6E390..). Anything else at the site is left for them to refuse."""
     from . import nfl2k5_xbe_space as space
-    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER and r["kind"] == "code"]
+    candidates = [(index, at, before) for index, (_name, at, before) in enumerate((PUSH_HOOK, REPLACE_HOOK))
+                  if va <= at and at + len(before) <= va + len(raw)
+                  and bytes(raw[at - va:at - va + len(before)]) != before]
+    if not candidates:
+        return raw
+    try:
+        rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER and r["kind"] == "code"]
+    except (ValueError, KeyError, IndexError, TypeError, struct.error):
+        return raw
     if len(rows) != 1:
         return raw
     out = bytearray(raw)
-    for index, (_name, at, before) in enumerate((PUSH_HOOK, REPLACE_HOOK)):
-        if va <= at and at + len(before) <= va + len(raw) and bytes(raw[at - va:at - va + len(before)]) == sites(rows[0]["va"])[index][3]:
+    for index, at, before in candidates:
+        if bytes(raw[at - va:at - va + len(before)]) == sites(rows[0]["va"])[index][3]:
             out[at - va:at - va + len(before)] = before
     return bytes(out)
 

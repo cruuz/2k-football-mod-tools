@@ -910,7 +910,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1
         "mod_editor/core/nfl2k5_clock_led.py": "808ddfe45a09e0dac4594c0d3e88ac78f45975e84e27a2c130e54ff87110af6b",  # b778-sd4
-        "mod_editor/core/nfl2k5_module_loader.py": "c6d2af5185aa134eadc6beb70325991f05220c286ed9553847c3012ce15ea5a9",
+        "mod_editor/core/nfl2k5_module_loader.py": "8ed99bf2572f30a5affc2b82adc0171a62c14369156b888cefb1809e908b8c48",
         "mod_editor/core/nfl2k5_crib_trophy_room.py": "7be0b1c26f63345e352b4a7d2ab11af02bab222557cd0ac193a89778879fb04c",
         "mod_editor/core/nfl2k5_name_keyboard.py": "f1ffd4fa4d820cde1834c14d9ee6853f2f2c54598029b1e08807dce4a32ace04",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
