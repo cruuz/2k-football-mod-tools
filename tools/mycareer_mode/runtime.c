@@ -135,8 +135,12 @@ u32 FC inline_stage(const u8 *file,u32 size) {
     u32 base,growth,arena,pool,p,i,ref;
     const u8 *b,*r;
     S(2660)=0; S(2664)=0;
-    if(size!=720044 && size!=724140 && size!=720172 && size!=724268) return 0;
-    base=(size==720172 || size==724268)?size-128:size;
+    /* b778 fa6: a capacity (0xB0000) arena writes 847,020-byte saves (847,148 with the MyCareer
+     * footer). Admit both so a new capacity save reloads; the computed wrapper size follows the
+     * same 0x91040+growth formula and equals the build's BFE50 capacity answer. */
+    if(size!=720044 && size!=724140 && size!=720172 && size!=724268 &&
+       size!=847020 && size!=847148) return 0;
+    base=(size==720172 || size==724268 || size==847148)?size-128:size;
     growth=base-720044; arena=0x91000+growth;
     if(W(file,0x2e0)!=0x54534f52 || W(file,0x2e4)!=0x91020+growth ||
        W(file,0x30c)!=0x54534f52 || W(file,0x310)!=(growth!=0) ||
