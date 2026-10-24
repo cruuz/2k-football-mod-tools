@@ -129,10 +129,57 @@ class DataTests(unittest.TestCase):
         self.assertEqual(kit["sides"]["A"]["base"], "14A0")
         self.assertEqual(kit["sides"]["H"]["chunks"]["2"], "14A0")     # green pants at home
         self.assertEqual(kit["sides"]["A"]["chunks"]["2"], "14H0")     # white pants away
-        self.assertIn("30H0", [kit["sides"][s]["chunks"][c] for s in "HA" for c in ("11", "12")])
-        colours = {m["to"] for row in kit["sides"]["H"]["art"] if row["kind"] == "palette_map" for m in row["map"]}
-        self.assertIn("#10B984", colours)
-        self.assertIn("#101820", colours)
+        # b778 ss2: the helmets are the donor's own white shells (no Browns shell); every colour is the video's
+        self.assertNotIn("11", kit["sides"]["H"]["chunks"])
+        self.assertNotIn("12", kit["sides"]["A"]["chunks"])
+        colours = {m["to"] for s in "HA" for row in kit["sides"][s]["art"] if row["kind"] == "palette_map"
+                   for m in row["map"]}
+        self.assertIn("#009284", colours)           # the Information screen's primary colour swatch
+        self.assertNotIn("#10B984", colours)        # ss1's mint, not in the video
+        self.assertEqual(kit["sides"]["H"]["unif_colours"][0], "#009284")      # teal facemask
+        for s in "HA":
+            self.assertFalse([r for r in kit["sides"][s]["art"] if r["kind"] == "palette"],
+                             "the ss1 helmet-digit palette rows do not apply to the released-disc donors")
+
+    def test_the_seamen_kit_is_what_the_authoring_tool_writes(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("ss2_kit", ct.ROOT / "tools/b77/ss2_kit.py")
+        tool = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(tool)
+        self.assertEqual(tool.main(["--check"]), 0, "kits.json differs from tools/b77/ss2_kit.py output")
+
+    def test_the_seamen_helmets_carry_the_anchor_on_both_decal_islands(self):
+        kit = ct.authored_kits()["kits"][0]
+        for s in "HA":
+            for row in kit["sides"][s]["art"]:
+                if row["kind"] == "txtr" and row["texture"] in ("helmet00", "helmet02"):
+                    polys = [op for op in row["ops"] if op["op"] == "multipoly" and op["color"] == "#02A081"]
+                    self.assertEqual(len(polys), 2, "one anchor body per side of the shell")
+                    centres = sorted((sum(p[1] for p in op["polys"][0]) / len(op["polys"][0])) for op in polys)
+                    self.assertLess(centres[0], 128)      # upper island (the player's right side)
+                    self.assertGreater(centres[1], 128)   # lower island
+        words = ct.authored_kits()["kits"][0]["sides"]["H"]["unif_colours"]
+        from mod_editor.core import nfl2k5_classic_kit_art as art
+        self.assertEqual(art.unif_words(words), bytes((0x84, 0x92, 0x00, 255, 0x84, 0x92, 0x00, 255)))
+        self.assertEqual(ct.authored_kits()["kits"][0]["sides"]["H"]["atlas"]["ops"][0]["op"], "remap")
+
+    def test_the_seamen_logo_art_is_the_video_card(self):
+        from PIL import Image
+        import numpy as np
+        logo = np.asarray(Image.open(ct.DATA_DIR / "cards/logo.png").convert("RGBA"))
+        self.assertEqual(logo.shape, (256, 256, 4))
+        self.assertTrue((logo[..., 3] == 255).all())          # the card is opaque, as in the episodes
+        fill = np.all(np.abs(logo[..., :3].astype(int) - (2, 160, 129)) <= 6, axis=2).mean()
+        self.assertGreater(fill, 0.08)                         # the anchor's teal body
+        self.assertGreater(logo[..., 1].astype(int).mean(), logo[..., 0].astype(int).mean() + 40)
+        centre = np.asarray(Image.open(ct.DATA_DIR / "field/center_logo.png").convert("RGBA"))
+        self.assertEqual(centre[0, 0, 3], 0)                   # transparent turf around the midfield anchor
+        self.assertGreater(centre[..., 3].mean(), 40)
+        for name, size in (("cards/logo_s.png", 64), ("cards/mini_h.png", 64), ("cards/mini_a.png", 64),
+                           ("cards/helm_h.png", 256), ("cards/unif_a.png", 256), ("field/endzone_N.png", (768, 128))):
+            want = (size, size) if isinstance(size, int) else size
+            with Image.open(ct.DATA_DIR / name) as image:
+                self.assertEqual(image.size, want, name)
 
     def test_no_classic_team_duplicates_an_anniversary_team_season(self):
         moments = mm.Data.load()
