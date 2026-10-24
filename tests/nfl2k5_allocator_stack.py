@@ -255,9 +255,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         before = matches[0]
         key = (before["owner"], before["kind"], before.get("owner_offset", 0))
         if key not in current_rows:
+            if (before["owner"], before["kind"]) not in current:
+                # b778 int2: the release manifest carries owners from the full
+                # integration union; this bounded test union only exercises the
+                # core stack. Owners absent here have no row to project.
+                continue
             if before["owner"] == "nfl2k5_xbe_space_directory":
-                # b778 int2: the v4 pool's directory document page is allocator
-                # metadata; the v3 test union has no separate row for it.
+                # The v4 pool's directory document page is allocator metadata;
+                # the v3 test union has no separate row for it.
                 continue
             raise AssertionError(f"manifest owner row missing from the union: {key}")
         after = current_rows[key]
