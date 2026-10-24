@@ -18,9 +18,8 @@ from mod_editor.core import nfl2k5_sim_cb_tackles as cb  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
 
-XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
-                          "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
-V061 = Path("/home/noah/2k-worktrees/.b77-scratch/b778/rh1/xbe/v061.xbe")
+XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", str(ROOT / "extracted"))) / "ESPN NFL 2K5 (USA)/default.xbe"
+V061 = Path(os.environ.get("NFL2K5_V061_XBE", "/nonexistent"))
 PG1 = Path(__file__).resolve().parent.parent / "fixtures" / "b778_pg1_weekly_progression.py"
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 

@@ -46,7 +46,7 @@ class StaticTests(unittest.TestCase):
         except unittest.SkipTest:
             raise
         cls.released = None
-        released = Path("/home/noah/2k-worktrees/.b77-scratch/b778/pg2/released_default.xbe")
+        released = Path(os.environ.get("NFL2K5_RELEASED_XBE", "/nonexistent"))
         if released.is_file():
             cls.released = released.read_bytes()
 

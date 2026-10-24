@@ -25,10 +25,7 @@ from mod_editor.core.nfl2k5_crib_standalone_texture_writer import (  # noqa: E40
 LOGO = ROOT / "data/trophy_room_logo/logo.png"
 PROJECT = ROOT / "data/trophy_room_logo/project.json"
 SELECTOR = "crib_external_texture:7:logo"
-PRIVATE_ROOT = Path(
-    "/home/noah/.cache/2k5-mod-studio/"
-    "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
-)
+PRIVATE_ROOT = Path(os.environ.get("NFL2K5_STUDIO_PRIVATE_ROOT", "/nonexistent"))
 
 
 class TrophyRoomLogoTests(unittest.TestCase):

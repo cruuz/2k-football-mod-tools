@@ -22,10 +22,8 @@ from mod_editor.core import nfl2k5_star_career as patch  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 
-RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XBE",
-                             "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe"))
-DISC = Path(os.environ.get("NFL2K5_SOFTDRINK_DISC",
-                           "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso"))
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XBE", str(ROOT / "extracted" / "ESPN NFL 2K5 (USA)" / "default.xbe")))
+DISC = Path(os.environ.get("NFL2K5_SOFTDRINK_DISC") or os.environ.get("NFL2K5_V061_DISC") or "/nonexistent")
 try:
     import unicorn as uc
     from unicorn import x86_const as x86
