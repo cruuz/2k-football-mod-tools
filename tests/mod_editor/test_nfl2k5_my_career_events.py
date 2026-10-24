@@ -236,8 +236,10 @@ class HostBudgetTests(unittest.TestCase):
             # the progress note drawn on the native menu (runtime.c mode_draw) is gone.
             # b778 mc6: inline_stage compares the portrait half of record +4 (not the play-by-play cue) and
             # inline_decode lets resolve_team derive the saved stage (test_nfl2k5_my_career_mc6).
+            # b778 fa6: inline_stage admits the capacity 847,020/847,148-byte saves and stages the 128-byte
+            # footer at the capacity base, so a new capacity save reloads with MyCareer installed.
             'tools/mycareer_mode/runtime.c':
-                '7401d8c37390fd874d7038a44a543e5f8d5cd5b384f2913995d988919df803a6',
+                'e4b477f6a5eec42e86c8b76125b6f4aaf2989fe8eb299186044301e1146c6eaf',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

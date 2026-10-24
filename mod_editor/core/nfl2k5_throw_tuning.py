@@ -1605,8 +1605,9 @@ def k128_requires_128(guardian_overlay=False, reserves_16=False, created_teams_e
 
 
 class _roster_arena_adapter:
-    def __init__(self, reserves_16, created_teams_extra):
-        self.kwargs = dict(reserves_16=reserves_16, created_teams_extra=created_teams_extra)
+    def __init__(self, reserves_16, created_teams_extra, capacity=False):
+        self.kwargs = dict(reserves_16=reserves_16, created_teams_extra=created_teams_extra,
+                           capacity=capacity)
 
     status = staticmethod(roster_arena_patch.status)
 
@@ -2304,7 +2305,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (guardian_overlay, _guardian_overlay_adapter(guardian_everyone_practice), "guardian_overlay_patch", "experimental Guardian cap overlay"),
         (my_career, _my_career_adapter(my_career_setup), "my_career_patch", "MyCareer (experimental)"),
         (crib_reclaim, crib_reclaim_patch, "crib_reclaim_patch", "Crib movie cut (experimental)"),
-        (reserves_16 or created_teams_extra, _roster_arena_adapter(reserves_16, created_teams_extra), "roster_arena_growth", "experimental larger roster arena"),
+        (reserves_16 or created_teams_extra or roster_capacity, _roster_arena_adapter(reserves_16, created_teams_extra, roster_capacity), "roster_arena_growth", "experimental larger roster capacity arena"),
         (franchise_2026_rules, _franchise_2026_adapter(), "franchise_2026_rules_patch", "2026 franchise rules (unavailable)"),
         (senior_bowl, _senior_bowl_adapter(), "senior_bowl_patch", "Senior Bowl native event (unavailable)"),
         (zone_drop_cap, zone_drop_patch, "zone_drop_patch", "experimental initial corner deep-zone cap"),
