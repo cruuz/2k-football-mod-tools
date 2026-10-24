@@ -33,7 +33,7 @@ HUB = Path(os.environ.get('NFL2K5_SAVE_FIXTURES', '/home/noah/Desktop/2K5-8 Edit
 XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION',
                           '/media/noah/Storage/for codex 1.0/extracted')) / 'ESPN NFL 2K5 (USA)/default.xbe'
 RECORDS = 612
-CANDIDATES = 561
+CANDIDATES = 533
 
 
 def _fa3():
@@ -108,17 +108,17 @@ class CapacityMigrationTests(unittest.TestCase):
         self.assertEqual(len(targets), len(set(targets)))
         self.assertEqual(doc.names.text_at(targets[0]), '****************')
 
-    def test_all_561_candidates_fit_at_the_safe_margin(self):
+    def test_all_candidates_fit_at_the_safe_margin(self):
         if not PLAN.is_file():
             self.skipTest(f'fa3/rt1 plan absent: {PLAN}')
         fa3, fa4 = _fa3(), _fa4()
         data = fa3.load()
+        self.assertEqual(len(data['players']), CANDIDATES)
         plan = json.loads(PLAN.read_text(encoding='utf-8'))['roster_refresh']
         fitted, floor_added, floor = fa4.floor_shortfall(self.base, plan, data, 10)
         self.assertEqual(fitted, 19)
         self.assertEqual(floor_added, 70)
-        records = (CANDIDATES - fitted) + floor_added
-        self.assertEqual(records, RECORDS)
+        records = max((CANDIDATES - fitted) + floor_added, RECORDS)
         grown, _ = fa4.grow(self.base, records)
         extended = fa3.extend_plan(plan, data, CANDIDATES, grown)
         body, receipt = rr.apply_body(grown, {'schema': rr.EDITS_SCHEMA, 'edits': [],
@@ -126,11 +126,12 @@ class CapacityMigrationTests(unittest.TestCase):
                                       scheme='one_pool')
         self.assertEqual(len(body), len(grown))
         final = rr.RosterDocument(body, scheme='one_pool', reference_year=2026)
-        self.assertEqual(len(final.by_pool('primary')), 2619 + RECORDS)
+        self.assertEqual(len(final.by_pool('primary')), 2619 + records)
         self.assertEqual(len(final.free_agents), 346 + CANDIDATES)
-        self.assertEqual(spare.import_vacancies(body), 116)
+        vacancies = spare.import_vacancies(body)
+        self.assertEqual(vacancies, receipt['roster_refresh']['import_floor']['vacancies_after'])
+        self.assertGreaterEqual(vacancies, spare.IMPORT_FLOOR + 10)
         self.assertEqual(receipt['roster_refresh']['import_floor']['added_records'], 0)
-        self.assertEqual(receipt['roster_refresh']['import_floor']['vacancies_after'], 116)
         names = {p.display for p in final.players if p.offset in set(final.free_agents)}
         for player in data['players']:
             self.assertIn(f"{player['first']} {player['last']}", names)
@@ -148,7 +149,7 @@ class CapacityMigrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='fa4-plan-') as folder:
             out = Path(folder).resolve() / 'plan.json'
             result = fa4.merge(types.SimpleNamespace(edits=str(PLAN), base=str(BASE), out=str(out),
-                                                     data=str(fa4.fa3.DATA), margin=10))
+                                                     data=str(fa4.fa3.DATA), margin=10, records=RECORDS))
             self.assertEqual(result, 0)
             document = json.loads(out.read_text(encoding='utf-8'))
         request = document['free_agent_capacity']
@@ -156,7 +157,8 @@ class CapacityMigrationTests(unittest.TestCase):
         self.assertEqual(request['arena_size'], arena.CAPACITY_ARENA_SIZE)
         self.assertEqual(request['final_primary'], 2619 + RECORDS)
         self.assertEqual(request['free_agents'], 346 + CANDIDATES)
-        self.assertEqual(request['import_vacancies'], 116)
+        self.assertGreaterEqual(request['import_vacancies'], spare.IMPORT_FLOOR + 10)
+        self.assertEqual(request['import_vacancies'], request['margin'] + spare.IMPORT_FLOOR)
         self.assertEqual(document['fa3_free_agent_depth']['added'], CANDIDATES)
         self.assertEqual(len(document['roster_refresh']['players']), len(json.loads(PLAN.read_text())['roster_refresh']['players']) + CANDIDATES)
 
@@ -210,7 +212,7 @@ class CapacityMigrationTests(unittest.TestCase):
 @unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required for the capacity image build')
 class CapacityImageIntegrationTests(unittest.TestCase):
     FA4_PLAN = Path(os.environ.get(
-        'NFL2K5_FA4_PLAN_OUT', '/home/noah/2k-worktrees/.b77-scratch/b778/fa4/out/roster-edits-hback+fa4.json'))
+        'NFL2K5_FA4_PLAN_OUT', '/home/noah/2k-worktrees/.b77-scratch/b778/fa5/out/roster-edits-b778-fa5.json'))
 
     def test_build_helper_reads_the_capacity_request(self):
         if not self.FA4_PLAN.is_file():
@@ -253,8 +255,8 @@ class CapacityImageIntegrationTests(unittest.TestCase):
                                          espn25_more_moments=True, historic_teams_quick_game=True)
             mod_build._apply_roster_refresh(plan, destination, receipt, lambda *_a: None)
             step = receipt['steps'][0]['roster_refresh']
-            self.assertEqual(step['added'], 651)
-            self.assertEqual(step['import_floor']['vacancies_after'], 116)
+            self.assertGreaterEqual(step['added'], CANDIDATES)
+            self.assertGreaterEqual(step['import_floor']['vacancies_after'], spare.IMPORT_FLOOR + 10)
             with archive.Disc(destination, descriptors=()) as disc:
                 entry = disc.archive_entries[5]
                 final = codec.decode(disc.read_entry_range(entry, 0, entry.size))

@@ -1053,13 +1053,27 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
     ``strict`` (the free-agents command) refuses when none can be added for lack of room.
     """
     from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_roster_arena as arena
     from . import nfl2k5_roster_records as rr
+    original_payload = payload
     save, roster = franchise(payload)
     require(type(keep) is int and keep >= 0, "keep must be a non-negative record count")
     cohort = free_agent_cohort() if cohort is None else cohort
-    document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     disc = rr.RosterDocument(disc_body, scheme="one_pool", reference_year=BASE_YEAR)
+    capacity_request = arena.capacity_descriptor(disc_body, sr.decode(
+        disc_body, preamble=0, reference_year=BASE_YEAR).layout)
+    growth = None
+    if capacity_request and roster.layout.arena_size < arena.CAPACITY_ARENA_SIZE:
+        require(roster.overflow is None, "capacity migration does not compose with a 16-reserve save")
+        migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=capacity_request[0])
+        growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": arena.CAPACITY_ARENA_SIZE,
+                  "records": capacity_request[0], "file_growth": len(migrated) - len(payload),
+                  "migration": migration}
+        payload = migrated
+        save, roster = franchise(payload)
+    document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
+    base_payload = payload
 
     def key(player):
         return player.first, player.last, str(player.record.birth_date)
@@ -1107,14 +1121,14 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                         "disc_index": source.index, "years_pro": [before_years, record.values["years_pro"]],
                         "college": document.colleges[target.college_index] if target.college_index is not None else ""})
     document._reindex_membership()
-    result = document.to_body(normalise_commentary=False) if chosen else bytes(payload)
-    require(len(result) == len(payload), "save size changed")
+    result = document.to_body(normalise_commentary=False) if chosen else bytes(base_payload)
+    require(len(result) == len(base_payload), "save size changed after the arena migration")
     # Scope: the filled records, the player-name pool, the free-agent pointers and their count; nothing else.
     lo, hi = document.names.start, document.names.end
     fa_start = document.free_agent_list
     fa_end = fa_start + 4 * document.free_agent_capacity
     count_at = document.obj_base + rr.FREE_AGENT_COUNT_FIELD
-    for offset, (a, b) in enumerate(zip(payload, result)):
+    for offset, (a, b) in enumerate(zip(base_payload, result)):
         if a != b:
             require(lo <= offset < hi or fa_start <= offset < fa_end or count_at <= offset < count_at + 4
                     or any(s <= offset < e for s, e in spans), f"free-agent write escaped its scope at {offset:#x}")
@@ -1123,10 +1137,11 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
     require(all(key(source) in listed for _name, source in chosen), "a new free agent is missing after read-back")
     sr.decode(result, base_year=BASE_YEAR)
     after_vacant = len(_save_vacancies(check, result)) if chosen else len(vacant)
-    return result, {"operation": "free_agents", "before_sha256": sha(payload), "after_sha256": sha(result),
+    return result, {"operation": "free_agents", "before_sha256": sha(original_payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "franchise_year_field": year,
                     "vacant_records_before": len(vacant), "vacant_records_after": after_vacant, "kept_for_create": keep,
                     "free_agents_before": len(document.original_free_agents), "free_agents_after": len(check.free_agents),
                     "already_in_franchise": already, "not_on_disc": absent, "no_room": left,
                     "changes": changes, "outside_declared_fields_identical": True,
-                    "changed_bytes": sum(a != b for a, b in zip(payload, result))}
+                    "save_arena_growth": growth,
+                    "changed_bytes": sum(a != b for a, b in zip(base_payload, result))}
