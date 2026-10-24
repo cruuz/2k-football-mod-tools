@@ -395,10 +395,17 @@ class PatchWriteTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         # b778 int2: nfl2k5_progression rewrites its form routine together
-        # with two jump tables at 0x2BE419..0x2BE5B0. The observed-diff span
-        # inside those tables is data; disassembling it finds phantom writes.
-        tables = (0x2BE419, 0x2BE5B0)
-        ranges = [(a, b) for a, b in merged if not (tables[0] <= a + BASE and b + BASE <= tables[1])]
+        # with two jump tables starting at 0x2BE419. The tables are data, so
+        # stop the code scan there; disassembling table bytes finds phantom
+        # writes. A range entirely inside the tables is data and is skipped.
+        tables = 0x2BE419
+        ranges: list[tuple[int, int]] = []
+        for a, b in merged:
+            if a + BASE >= tables:
+                continue
+            if b + BASE > tables:
+                b = tables - BASE
+            ranges.append((a, b))
         return [(a - 16, b + 16) for a, b in ranges]
 
     def test_stadium_ids_are_owned_immutable_data(self) -> None:
