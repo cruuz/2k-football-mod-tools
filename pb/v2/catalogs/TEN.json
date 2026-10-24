@@ -1502,7 +1502,7 @@
   {
    "play": "p018",
    "play_index": 81,
-   "name": "HB Texas",
+   "name": "RB Texas",
    "concept": "Texas",
    "family": "dropback",
    "header": "dropback",
@@ -1745,7 +1745,7 @@
   {
    "play": "p025",
    "play_index": 88,
-   "name": "HB Spacing",
+   "name": "RB Spacing",
    "concept": "HB Spacing Post Corner",
    "family": "quick",
    "header": "quick",
@@ -1981,7 +1981,7 @@
   {
    "play": "p032",
    "play_index": 95,
-   "name": "HB Dagger",
+   "name": "RB Dagger",
    "concept": "HB Dagger Angle Cross Dagger",
    "family": "dropback",
    "header": "dropback",
@@ -2148,7 +2148,7 @@
   {
    "play": "p037",
    "play_index": 100,
-   "name": "HB Fade Curl",
+   "name": "RB Fade Curl",
    "concept": "HB Fade Curl Seams",
    "family": "dropback",
    "header": "dropback",
@@ -2272,7 +2272,7 @@
   {
    "play": "p041",
    "play_index": 104,
-   "name": "HB Counter Wk",
+   "name": "RB Counter Wk",
    "concept": "HB Counter",
    "family": "run",
    "header": "run",
@@ -2352,7 +2352,7 @@
   {
    "play": "p044",
    "play_index": 107,
-   "name": "HB Draw Wk",
+   "name": "RB Draw Wk",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -2405,7 +2405,7 @@
   {
    "play": "p046",
    "play_index": 109,
-   "name": "HB Toss",
+   "name": "RB Toss",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -2563,7 +2563,7 @@
   {
    "play": "p052",
    "play_index": 115,
-   "name": "HB Stretch",
+   "name": "RB Stretch",
    "concept": "HB Stretch",
    "family": "run",
    "header": "run",
@@ -2744,7 +2744,7 @@
   {
    "play": "p059",
    "play_index": 122,
-   "name": "HB Counter",
+   "name": "RB Counter",
    "concept": "HB Counter",
    "family": "run",
    "header": "run",
@@ -2787,7 +2787,7 @@
   {
    "play": "p061",
    "play_index": 124,
-   "name": "HB Draw",
+   "name": "RB Draw",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -2952,7 +2952,7 @@
   {
    "play": "p068",
    "play_index": 131,
-   "name": "HB Bang Hitch",
+   "name": "RB Bang Hitch",
    "concept": "HB Bang Hitch Seams",
    "family": "dropback",
    "header": "dropback",
@@ -3199,7 +3199,7 @@
   {
    "play": "p078",
    "play_index": 141,
-   "name": "HB Draw Wk",
+   "name": "RB Draw Wk",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -3534,7 +3534,7 @@
   {
    "play": "p092",
    "play_index": 155,
-   "name": "HB Counter",
+   "name": "RB Counter",
    "concept": "HB Counter",
    "family": "run",
    "header": "run",
@@ -3622,7 +3622,7 @@
   {
    "play": "p096",
    "play_index": 159,
-   "name": "HB Texas",
+   "name": "RB Texas",
    "concept": "Texas",
    "family": "dropback",
    "header": "dropback",
@@ -3774,7 +3774,7 @@
   {
    "play": "p103",
    "play_index": 166,
-   "name": "HB Slam",
+   "name": "RB Slam",
    "concept": "HB Slam",
    "family": "run",
    "header": "run",
@@ -3959,7 +3959,7 @@
   {
    "play": "p111",
    "play_index": 174,
-   "name": "HB Iso",
+   "name": "RB Iso",
    "concept": "HB Iso",
    "family": "run",
    "header": "run",
@@ -3999,7 +3999,7 @@
   {
    "play": "p113",
    "play_index": 176,
-   "name": "HB Draw",
+   "name": "RB Draw",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -4088,7 +4088,7 @@
   {
    "play": "p117",
    "play_index": 180,
-   "name": "HB Lead Draw",
+   "name": "RB Lead Draw",
    "concept": "HB Lead Draw",
    "family": "run",
    "header": "draw",
@@ -4108,7 +4108,7 @@
   {
    "play": "p118",
    "play_index": 181,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",
@@ -4128,7 +4128,7 @@
   {
    "play": "p119",
    "play_index": 182,
-   "name": "HB Slants",
+   "name": "RB Slants",
    "concept": "HB Slants Seam Out Comebacks",
    "family": "quick",
    "header": "quick",
@@ -4345,7 +4345,7 @@
   {
    "play": "p128",
    "play_index": 215,
-   "name": "HB Dive",
+   "name": "RB Dive",
    "concept": "HB Dive",
    "family": "run",
    "header": "run",
@@ -4427,7 +4427,7 @@
   {
    "play": "p132",
    "play_index": 219,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",

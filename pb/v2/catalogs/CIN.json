@@ -26,8 +26,8 @@
    "tag": "base",
    "menu": [
     "Inside Zone",
-    "HB Draw Wk",
-    "HB Slip Screen Wk",
+    "RB Draw Wk",
+    "RB Slip Screen Wk",
     "X Comeback Seam",
     "Z Dagger Whip Seams",
     "PA Y Mills Post Dig",
@@ -106,7 +106,7 @@
     "X Post Wheel",
     "QB Power",
     "Slot Stick Out Over",
-    "HB Slip Screen",
+    "RB Slip Screen",
     "CIN Comebacks",
     "X Curls Flag",
     "01 Trap Wk",
@@ -127,7 +127,7 @@
     "Slot Drive Return",
     "Y Stick Return",
     "Z Bench Steep In",
-    "HB Deep Post Whip",
+    "RB Deep Post Whip",
     "Slot Choice Out",
     "Z Snag Seams",
     "Slot Scat Deep Fade",
@@ -170,8 +170,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "HB Dive",
-    "HB Toss",
+    "RB Dive",
+    "RB Toss",
     "Z Snag Seams",
     "CIN Curl Flat",
     "Z Steep In Seam",
@@ -288,7 +288,7 @@
     "Crack Toss",
     "X Hitch Seam",
     "Y Bang Hitch Stick",
-    "HB Slip Screen Wk",
+    "RB Slip Screen Wk",
     "CIN Comebacks",
     "X Post Go",
     "Slot Stick Out",
@@ -298,8 +298,8 @@
     "X Curls Flag",
     "Slot Zig Flat Out",
     "X Mills",
-    "HB China Out and Up",
-    "HB Deep Post Whip"
+    "RB China Out and Up",
+    "RB Deep Post Whip"
    ],
    "cpu_situation": [
     1,
@@ -316,10 +316,10 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "HB Off Tackle Wk",
+    "RB Off Tackle Wk",
     "Y China",
     "Y Mills",
-    "HB Texas",
+    "RB Texas",
     "FB Screen",
     "Z Hook Corner"
    ],
@@ -358,9 +358,9 @@
    "tag": "short",
    "menu": [
     "Outside Zone",
-    "HB Counter",
+    "RB Counter",
     "FB Screen",
-    "HB Counter Wk",
+    "RB Counter Wk",
     "FB Iso",
     "QB Draw"
    ],
@@ -382,9 +382,9 @@
     "Tush Push",
     "QB Sneak",
     "Y Fade Out",
-    "HB Draw Wk",
+    "RB Draw Wk",
     "PA Boot Leak",
-    "HB Sweep"
+    "RB Sweep"
    ],
    "cpu_situation": [
     4,
@@ -406,7 +406,7 @@
     "Z Quick Outs",
     "PA Shot",
     "PA Z Out and Up",
-    "HB Texas",
+    "RB Texas",
     "PA Y Sail Return",
     "Y China",
     "Y Mills"
@@ -426,11 +426,11 @@
    "align": "gun",
    "tag": "empty",
    "menu": [
-    "HB Scat Seam Out",
+    "RB Scat Seam Out",
     "Z Dagger Seam Out",
-    "HB Spacing",
+    "RB Spacing",
     "Slot Choice",
-    "HB Scat Slants",
+    "RB Scat Slants",
     "X Bench Steep In"
    ],
    "cpu_situation": [
@@ -448,7 +448,7 @@
    "align": "uc",
    "tag": "goal",
    "menu": [
-    "HB Off Tackle",
+    "RB Off Tackle",
     "Outside Zone",
     "Y Quick Outs",
     "Y Pivot",
@@ -472,12 +472,12 @@
    "menu": [
     "Slot Double Slants",
     "Z Steep In Seam",
-    "HB Draw",
+    "RB Draw",
     "Slot Whip",
     "Slot Spot Out",
     "Z Curl Flat",
     "Slot Sail",
-    "HB Slip Screen",
+    "RB Slip Screen",
     "Inside Trap",
     "Steep In Seam",
     "X Hitch Seam",
@@ -546,7 +546,7 @@
    "menu": [
     "X China",
     "PA Y Verticals",
-    "HB Stretch"
+    "RB Stretch"
    ],
    "cpu_situation": [
     1,
@@ -563,16 +563,16 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
-    "HB Toss",
+    "RB Toss",
     "Crack Toss",
-    "HB Slip Screen",
+    "RB Slip Screen",
     "Z Hook Corner",
     "PA Slot Bang Hitch",
     "X Snag Steep Slant",
     "X Mills",
     "CIN Comebacks",
     "X Hitch Seam",
-    "HB Dive",
+    "RB Dive",
     "X Bench Steep In",
     "PA Z Corner Post",
     "PA Return Flood",
@@ -582,7 +582,7 @@
     "PA Z Out Seam",
     "Y Bang Hitch Stick",
     "Slot Drive Return",
-    "HB Deep Post Whip",
+    "RB Deep Post Whip",
     "Slot Stick Out",
     "Slot Zig Flat Out",
     "PA Slot Y Trail",
@@ -591,7 +591,7 @@
     "CIN Hank",
     "Slot Flood Return",
     "PA Slot Dagger",
-    "HB China Out and Up",
+    "RB China Out and Up",
     "Z Dagger Seam Out"
    ],
    "cpu_situation": [
@@ -609,9 +609,9 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "HB Slip Screen",
+    "RB Slip Screen",
     "X Levels Steep In",
-    "HB Draw",
+    "RB Draw",
     "U Levels Steep In",
     "PA X Deep Flood",
     "X Stick Out",
@@ -643,7 +643,7 @@
     "Y Slot Fade Slants",
     "X Post Go",
     "Lead Stretch",
-    "HB China Out and Up",
+    "RB China Out and Up",
     "PA Slot Dagger",
     "CIN Comebacks",
     "X Curl Combo",
@@ -785,7 +785,7 @@
     "X Slip Screen",
     "X Levels Steep In",
     "U Seam Shot",
-    "HB Stretch",
+    "RB Stretch",
     "X Comeback Seam",
     "Y Stick Skinny Post",
     "PA Y Mills Post Dig",
@@ -856,14 +856,14 @@
    "tag": "base",
    "menu": [
     "Crack Toss",
-    "HB Dive",
+    "RB Dive",
     "X Snag Steep Slant",
     "Z Dagger Seam Out",
     "Slot Zig Flat Out",
-    "HB Deep Post Whip",
+    "RB Deep Post Whip",
     "PA Return Flood",
     "X Hitch Seam",
-    "HB Toss",
+    "RB Toss",
     "Y Bubble Screen",
     "CIN Comebacks",
     "CIN Curl Flat",
@@ -884,7 +884,7 @@
     "Slot Sail",
     "PA Z Out Seam",
     "Slot Stick Out Over",
-    "HB China Out and Up"
+    "RB China Out and Up"
    ],
    "cpu_situation": [
     2,
@@ -938,7 +938,7 @@
     "X Curl Combo",
     "Slot Scat Fade Stop",
     "Counter GT",
-    "HB Deep Post Whip",
+    "RB Deep Post Whip",
     "Z Dagger Seam Out",
     "X Spacing Fade",
     "CIN Curl Flat",
@@ -971,7 +971,7 @@
    "menu": [
     "Inside Zone Wk",
     "Y Whip Return Dig",
-    "HB Whip Out and Up"
+    "RB Whip Out and Up"
    ],
    "cpu_situation": [
     3,
@@ -989,7 +989,7 @@
    "tag": "base",
    "menu": [
     "Inside Zone",
-    "HB Draw Wk",
+    "RB Draw Wk",
     "Y Stick Skinny Post",
     "U Y Trail",
     "U Drive Skinny Post",
@@ -1069,7 +1069,7 @@
     "PA Z Dagger",
     "X Fade Curl",
     "X Comeback Seam",
-    "HB Draw Wk",
+    "RB Draw Wk",
     "PA X Deep Flood",
     "U Y Trail",
     "X Levels Steep In",
@@ -2787,7 +2787,7 @@
   {
    "play": "p057",
    "play_index": 107,
-   "name": "HB Deep Post Whip",
+   "name": "RB Deep Post Whip",
    "concept": "HB Deep Post Whip Curl",
    "family": "deep",
    "header": "dropback",
@@ -2985,7 +2985,7 @@
   {
    "play": "p064",
    "play_index": 114,
-   "name": "HB China Out and Up",
+   "name": "RB China Out and Up",
    "concept": "HB China Out and Up Seams",
    "family": "quick",
    "header": "quick",
@@ -3240,7 +3240,7 @@
   {
    "play": "p074",
    "play_index": 124,
-   "name": "HB Toss",
+   "name": "RB Toss",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -3332,7 +3332,7 @@
   {
    "play": "p078",
    "play_index": 128,
-   "name": "HB Dive",
+   "name": "RB Dive",
    "concept": "HB Dive",
    "family": "run",
    "header": "run",
@@ -3435,7 +3435,7 @@
   {
    "play": "p082",
    "play_index": 132,
-   "name": "HB Draw Wk",
+   "name": "RB Draw Wk",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -3457,7 +3457,7 @@
   {
    "play": "p083",
    "play_index": 133,
-   "name": "HB Texas",
+   "name": "RB Texas",
    "concept": "Texas",
    "family": "dropback",
    "header": "dropback",
@@ -3482,7 +3482,7 @@
   {
    "play": "p084",
    "play_index": 134,
-   "name": "HB Stretch",
+   "name": "RB Stretch",
    "concept": "HB Stretch",
    "family": "run",
    "header": "run",
@@ -3767,7 +3767,7 @@
   {
    "play": "p096",
    "play_index": 146,
-   "name": "HB Draw",
+   "name": "RB Draw",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -3937,7 +3937,7 @@
   {
    "play": "p103",
    "play_index": 153,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",
@@ -4017,7 +4017,7 @@
   {
    "play": "p107",
    "play_index": 157,
-   "name": "HB Counter",
+   "name": "RB Counter",
    "concept": "HB Counter",
    "family": "run",
    "header": "run",
@@ -4062,7 +4062,7 @@
   {
    "play": "p109",
    "play_index": 159,
-   "name": "HB Off Tackle",
+   "name": "RB Off Tackle",
    "concept": "HB Off Tackle",
    "family": "run",
    "header": "run",
@@ -4108,7 +4108,7 @@
   {
    "play": "p111",
    "play_index": 161,
-   "name": "HB Slip Screen Wk",
+   "name": "RB Slip Screen Wk",
    "concept": "HB Slip Screen Wk",
    "family": "screen",
    "header": "screen",
@@ -4221,7 +4221,7 @@
   {
    "play": "p116",
    "play_index": 166,
-   "name": "HB Scat Seam Out",
+   "name": "RB Scat Seam Out",
    "concept": "HB Scat Seam Out Comebacks",
    "family": "quick",
    "header": "quick",
@@ -4247,7 +4247,7 @@
   {
    "play": "p117",
    "play_index": 167,
-   "name": "HB Draw Wk",
+   "name": "RB Draw Wk",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -4267,7 +4267,7 @@
   {
    "play": "p118",
    "play_index": 168,
-   "name": "HB Whip Out and Up",
+   "name": "RB Whip Out and Up",
    "concept": "HB Whip Out and Up Deep Go",
    "family": "quick",
    "header": "quick",
@@ -4316,7 +4316,7 @@
   {
    "play": "p120",
    "play_index": 170,
-   "name": "HB Spacing",
+   "name": "RB Spacing",
    "concept": "HB Spacing Seam Out Dagger",
    "family": "quick",
    "header": "quick",
@@ -4392,7 +4392,7 @@
   {
    "play": "p123",
    "play_index": 173,
-   "name": "HB Draw",
+   "name": "RB Draw",
    "concept": "HB Draw",
    "family": "run",
    "header": "draw",
@@ -4412,7 +4412,7 @@
   {
    "play": "p124",
    "play_index": 174,
-   "name": "HB Counter Wk",
+   "name": "RB Counter Wk",
    "concept": "HB Counter",
    "family": "run",
    "header": "run",
@@ -4503,7 +4503,7 @@
   {
    "play": "p128",
    "play_index": 178,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",
@@ -4676,7 +4676,7 @@
   {
    "play": "p136",
    "play_index": 212,
-   "name": "HB Slip Screen Wk",
+   "name": "RB Slip Screen Wk",
    "concept": "HB Slip Screen Wk",
    "family": "screen",
    "header": "screen",
@@ -4696,7 +4696,7 @@
   {
    "play": "p137",
    "play_index": 213,
-   "name": "HB Sweep",
+   "name": "RB Sweep",
    "concept": "HB Sweep",
    "family": "run",
    "header": "run",
@@ -4834,7 +4834,7 @@
   {
    "play": "p143",
    "play_index": 219,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",
@@ -4854,7 +4854,7 @@
   {
    "play": "p144",
    "play_index": 220,
-   "name": "HB Off Tackle Wk",
+   "name": "RB Off Tackle Wk",
    "concept": "HB Off Tackle",
    "family": "run",
    "header": "run",
@@ -4898,7 +4898,7 @@
   {
    "play": "p146",
    "play_index": 222,
-   "name": "HB Slip Screen",
+   "name": "RB Slip Screen",
    "concept": "HB Slip Screen",
    "family": "screen",
    "header": "screen",
@@ -4938,7 +4938,7 @@
   {
    "play": "p148",
    "play_index": 224,
-   "name": "HB Scat Slants",
+   "name": "RB Scat Slants",
    "concept": "HB Scat Slants",
    "family": "quick",
    "header": "quick",
