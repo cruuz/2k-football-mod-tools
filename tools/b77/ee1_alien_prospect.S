@@ -245,8 +245,11 @@ end:
 skel:                               # 0x93850 entry: ecx = player context, edx = mask, [esp+4] = low current
     cmp word ptr [ecx+6], ALIEN_ID  # photo id (the roster record, as in every ee1/ee2 lookup)
     jne 90f
-    mov esi, [esp+4]                # low_current, high_current at +0x640
-    pushad
+    pushad                          # save every register BEFORE esi is reused as the low-matrix base
+    mov esi, [esp+0x24]             # low_current (the entry arg at [esp+4]; pushad moved esp by 32)
+                                    # esi must be pushed first: the caller walks its entity list with esi and
+                                    # reads [esi+0x30] after this call (the old order clobbered it: access
+                                    # violation at 0x1D2D70 during the practice loader)
     # lower the upper body by SPINE_DROP (low 10..24 thorax..shoulderpads, high 27..59); the feet and hips stay
     movss xmm6, dword ptr [spine_drop]
     lea ebx, [esi+0x280]                    # low[10] thorax
