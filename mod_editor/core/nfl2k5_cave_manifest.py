@@ -525,7 +525,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # the Experimental preset now selects; the late-owner probe copy below observes both.
                                     run_blocking=False, qb_accuracy=False,
                                     # b778-fo1: modern sideline catches, the last late owner, observed on the same copy.
-                                    modern_force_out=False, cpu_ball_carriers=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, practice_injuries=False, module_loader=False, classic_teams=False,
+                                    modern_force_out=False, cpu_ball_carriers=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, practice_injuries=False, module_loader=False, classic_teams=False, star_career=False,
                                     # b778-fa1: CPU clubs keep their stars, the last late owner, observed on the same copy.
                                     star_retention=False),
                             progress=lambda message, *_: progress(message))
