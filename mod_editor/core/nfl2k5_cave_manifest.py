@@ -531,7 +531,17 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
-            extra, _ = tt._apply_all(owner_base, None, catch_slider=False, seven_on_seven=True)
+            extra, _ = tt._apply_all(owner_base, None, catch_slider=False, seven_on_seven=True,
+                hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+                db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+                team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking,
+                qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
+                practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+                star_retention=plan.star_retention, star_career=plan.star_career,
+                franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
+                player_progress=plan.player_progress, contract_college_guard=plan.contract_college_guard,
+                sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
+                module_loader=plan.module_loader)
             build._write_xbe_bytes(target, extra)
             progress("Applying dormant seven-on-seven playbook to disposable image")
             try:
