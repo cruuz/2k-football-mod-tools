@@ -253,7 +253,14 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         if len(matches) != 1:
             raise AssertionError("manifest contains an unrecognized grown owner span")
         before = matches[0]
-        after = current_rows[(before["owner"], before["kind"], before.get("owner_offset", 0))]
+        key = (before["owner"], before["kind"], before.get("owner_offset", 0))
+        if key not in current_rows:
+            if before["owner"] == "nfl2k5_xbe_space_directory":
+                # b778 int2: the v4 pool's directory document page is allocator
+                # metadata; the v3 test union has no separate row for it.
+                continue
+            raise AssertionError(f"manifest owner row missing from the union: {key}")
+        after = current_rows[key]
         if (before["size"], before["align"]) != (after["size"], after["align"]):
             raise AssertionError("manifest child size/alignment changed")
         delta = after["va"] - before["va"]
