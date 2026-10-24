@@ -245,7 +245,9 @@ def apply(payload):
         return payload, dict(common, status="already_applied", changed_bytes=0)
     require(space.is_scaleout(payload) and home.status(payload) == "applied", "install Career Home before the module loader")
     before = payload
-    payload, allocation_receipt = space.extend_scaleout(payload, REQUESTS)
+    allocation_receipt = {}
+    if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):
+        payload, allocation_receipt = space.extend_scaleout(payload, REQUESTS)
     code, data = allocation(payload)
     body, labels = code_for(code["va"], data["va"], header_va(payload), ranges(payload))
     payload, _ = space.install_code(payload, OWNER, body)

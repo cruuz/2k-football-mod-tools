@@ -1501,6 +1501,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (sim_cb_tackles_patch.REQUESTS if sim_cb_tackles else ())
         + (clock_led_patch.REQUESTS if modern_clock_led else ())
         + (classic_teams_patch.REQUESTS if classic_teams else ())
+        + (module_loader_patch.REQUESTS if module_loader else ())
         + (camera_patch.REQUESTS if camera else ())
         + (franchise_autosave_patch.REQUESTS if franchise_autosave else ())
         + (historic_quick_game_patch.REQUESTS if historic_teams_quick_game else ())
