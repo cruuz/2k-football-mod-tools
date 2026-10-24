@@ -79,7 +79,10 @@ def validate(data):
         require(fields["pbp_id"] == rr.number_commentary_id(fields["jersey"])
                 or fields["pbp_id"] in rr.recorded_surname_ids().values(),
                 f"{p['name']}: commentary must be a verified surname clip or the jersey number")
-        require(fields["face"] == (5 if fields["skin"] == 0 else 0), f"{p['name']}: face outside the neutral rule")
+        require(0 <= fields["skin"] <= 5, f"{p['name']}: skin tone outside the native generic range")
+        require(0 <= fields["face"] <= 6, f"{p['name']}: face outside the native generic variants")
+        require(0 <= fields["body"] <= 3, f"{p['name']}: body outside the native body types")
+        require(fields["dreads"] in (0, 1), f"{p['name']}: dreads must be 0 or 1")
     return data
 
 

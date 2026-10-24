@@ -21,6 +21,7 @@ for entry in (ROOT, ROOT / "tools"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
+from mod_editor.core import nfl2k5_roster_arena as arena  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_spare_capacity as capacity  # noqa: E402
 from mod_editor.core import nfl2k5_franchise_upgrade as up  # noqa: E402
@@ -38,7 +39,13 @@ KAEPERNICK = "00-0027974"
 # though nflverse players.csv does not yet mark them RET.
 RETIRED_OR_SIGNED = {"00-0034281", "00-0031936", "00-0036957", "00-0031852", "00-0035145", "00-0032383",
                      "00-0034436", "00-0029263", "00-0032053", "00-0036294", "00-0032971", "00-0034203",
-                     "00-0034791", "00-0034834", "00-0036151", "00-0036261"}
+                     "00-0034791", "00-0034834", "00-0036151", "00-0036261",
+                     # b778-fa5 2026-10-23 refresh: retired, under contract or signed elsewhere
+                     "00-0040586", "00-0036087", "00-0037015", "00-0031296", "00-0032128", "00-0035265",
+                     "00-0033536", "00-0033958", "00-0032242", "00-0030431", "00-0037516", "00-0033863",
+                     "00-0031428", "00-0031500", "00-0032134", "00-0035703", "00-0034777", "00-0035311",
+                     "00-0031800", "00-0038598", "00-0036397", "00-0033595", "00-0032203", "00-0033461",
+                     "00-0034514", "00-0038456", "00-0033292", "00-0033570"}
 
 
 def tiny_plan():
@@ -77,8 +84,11 @@ class DataTests(unittest.TestCase):
         self.assertGreaterEqual(len(verified), 26)
         self.assertEqual(len(verified) + len(tail), len(players))
         self.assertEqual([p["priority"] for p in verified], list(range(1, len(verified) + 1)))
-        self.assertTrue(all(p["appearance_reviewed"] is False for p in tail))
-        self.assertTrue(all(p["appearance_reviewed"] is not False for p in verified))
+        # b778-fa5: every tail player now carries a measured appearance, not the old neutral default.
+        self.assertTrue(all(p["appearance_reviewed"] is True for p in players))
+        self.assertTrue(all(p.get("appearance_method") for p in tail))
+        self.assertTrue(all(p.get("appearance_confidence") in ("measured", "missing_headshot") for p in tail))
+        self.assertGreater(len({(p["fields"]["skin"], p["fields"]["face"]) for p in tail}), 20)
 
     def test_a_retired_or_unsourced_player_is_refused(self):
         data = depth.load()
@@ -179,6 +189,18 @@ def released_with_depth(count):
     return doc.to_body(normalise_commentary=False)
 
 
+def capacity_disc_with_all_candidates():
+    """The Oct 13 main roster grown to 0xB0000 and carrying every candidate free agent."""
+    body = rr.load_image(OCT13_DISC).to_body()
+    plan = json.loads(REFRESH_PLAN.read_text(encoding="utf-8"))["roster_refresh"]
+    data = depth.load()
+    grown, _ = arena.migrate(body, reserves_16=False, capacity_records=612)
+    extended = depth.extend_plan(plan, data, len(data["players"]), grown)
+    final, _ = rr.apply_body(grown, {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": extended,
+                                     "restore_import_floor": True}, scheme="one_pool")
+    return final
+
+
 @unittest.skipUnless(RELEASED_DISC.is_file() and (NOAH_SAVE / "SAVEGAME.DAT").is_file(),
                      "released disc or the MyNFL3 copy absent")
 class FranchiseUpgradeTests(unittest.TestCase):
@@ -206,6 +228,24 @@ class FranchiseUpgradeTests(unittest.TestCase):
         self.assertEqual((out, step["changes"]), (payload, []))
         with self.assertRaises(up.UpgradeRefused):
             up.sync_free_agents(payload, self.disc, keep=10_000, strict=True)
+
+    def test_an_old_franchise_is_grown_to_the_capacity_arena_and_gains_every_candidate(self):
+        if not (OCT13_DISC.is_file() and REFRESH_PLAN.is_file()):
+            self.skipTest("Oct 13 disc or the dated refresh plan absent")
+        disc = capacity_disc_with_all_candidates()
+        payload = self.container.savegame
+        out, step = up.sync_free_agents(payload, disc)
+        self.assertIsNotNone(step["save_arena_growth"])
+        self.assertEqual(step["save_arena_growth"]["arena_size_after"], arena.CAPACITY_ARENA_SIZE)
+        self.assertGreater(len(out), len(payload))
+        self.assertEqual(len(out), 720044 + arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE)
+        self.assertEqual(len(step["changes"]), len(depth.load()["players"]))
+        self.assertEqual(step["changes"][0]["player"], "Colin Kaepernick")
+        self.assertEqual(step["changes"][-1]["player"], depth.load()["players"][-1]["name"])
+        up.validate_save(out)
+        again, second = up.sync_free_agents(out, disc)
+        self.assertEqual((again, second["changes"]), (out, []))
+        self.assertIsNone(second["save_arena_growth"])
 
     def test_free_agents_is_a_command_and_part_of_upgrade(self):
         self.assertIn("free-agents", service.COMMANDS)
