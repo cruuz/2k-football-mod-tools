@@ -480,6 +480,13 @@ def _pins_are_retail(payload: bytes) -> bool:
                 return False
             actual = actual[:2] + expected[2:7] + actual[7:]
         if va == SCREEN_PUSH_VA and actual != expected:
+            # b778-xs1: the on-demand module loader owns this exact push
+            # prologue as its screen gate; its canonical view is the retail
+            # bytes. Anything else is left to the MyCareer check below.
+            from . import nfl2k5_module_loader as module_loader
+            actual = module_loader.canonical_context(payload, va, actual)
+            if actual == expected:
+                continue
             # MyCareer owns only the ten-byte PUSH prologue. Validate its full
             # sealed installation and retain the complete native tail pin.
             from . import nfl2k5_my_career as career
