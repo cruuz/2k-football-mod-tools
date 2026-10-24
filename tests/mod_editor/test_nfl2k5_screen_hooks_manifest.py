@@ -64,7 +64,12 @@ def bounded_projection(retail, document=None):
         if row["owner"] == space.OWNER and row.get("basis") == "observed byte diff":
             # b778 int2: the v4 growable pool is one coarse observed byte-diff
             # row over the grown v3+pool span; it cannot be bounded per child.
-            inherited.append(row)
+            # The bounded projection image is smaller than the grown production
+            # image, so clip the inherited row to it.
+            limit = XbeImage(final).image_size
+            if start >= limit:
+                continue
+            inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
             continue
         regions = [r for r in layout["regions"] if start < r["va"]+r["size"] and r["va"] < end]
         if regions:
@@ -75,7 +80,10 @@ def bounded_projection(retail, document=None):
             if row["owner"] not in known or covered < end:
                 raise OracleError(f"unrecognized inherited grown reservation: {row}")
         else:
-            inherited.append(row)
+            limit = XbeImage(final).image_size
+            if start >= limit:
+                continue
+            inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
     unique = {(r["start"], r["end"], r["owner"], r["basis"]): r for r in inherited+observed}
     result = copy.deepcopy(parent)
     result.update(model="BOUNDED XBE PROJECTION: unchanged parent reservations plus observed screen hooks and allocator union; no new disc build",
