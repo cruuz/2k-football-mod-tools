@@ -1414,9 +1414,6 @@ def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, pro
     if module is None:
         raise RuntimeError("Franchise practice injuries needs nfl2k5_practice_injuries.")
     progress("Franchise: injured players sit out of practice", 0, 0)
-    from . import nfl2k5_xbe_space as _space
-    _owners = [r["owner"] for r in _space.layout(_xbe_bytes(target))["allocations"]]
-    print("DEBUG practice owners", "nfl2k5_practice_injuries" in _owners, len(_owners), flush=True)
     payload, injury_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
