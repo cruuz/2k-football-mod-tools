@@ -905,8 +905,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
         "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
-        "mod_editor/core/nfl2k5_player_progress_screen.py": "60b26ef2cdf43b09c5560363bf0e303eabfb3fc9655578cd6eca3f5e366c771d",  # b778-pg2
-        "mod_editor/core/nfl2k5_player_progression.py": "ee1a0c39a7a77b3147a65b0a36eb57268add205c1a24c65e50506ab7396e01f7",  # b778-pg2
+        "mod_editor/core/nfl2k5_player_progress_screen.py": "d7637eded52a4b90570913e1b0af0db5baa655c392af6f2ff4ba9ef33b76f609",  # b778-pg2
+        "mod_editor/core/nfl2k5_player_progression.py": "ca5e065ff34fda6262a610c2ecf7309b67d270bfaaf751e277a8c13a3c500fb9",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1
         "mod_editor/core/nfl2k5_clock_led.py": "808ddfe45a09e0dac4594c0d3e88ac78f45975e84e27a2c130e54ff87110af6b",  # b778-sd4

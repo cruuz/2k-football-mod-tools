@@ -7,10 +7,19 @@ and makes it useful all season:
 * **Visibility** (0x2C26A0): retail shows the Front Office row only in stages 1..4 (the offseason).
   The cave shows it in stages 1..4 and 7..9 (preseason, regular season, playoffs). The
   visibility-only variant installs this patch alone and never grows a save.
-* **Season baseline** (0x247B20 call sites 0x13EF03 and 0x248641): when the game enters the regular
-  season (stage 8), capture the user team's 65-player roster as the week-0 snapshot.
-* **Week advance** (0xC4E60, the game's week setter): after every week of the regular season and
-  playoffs, append the new live ratings to the slot's 17-week ring.
+* **Season baseline** (0x247B20 call sites 0x13EF03 and 0x248641, and an old save's load hook): when
+  the game enters the regular season (stage 8) or an old save without a footer is loaded, capture
+  the user team's roster as the week-0 baseline. The week setter only guarantees this baseline; it
+  never invents a weekly entry.
+* **Week end** (0x1353FC, the second club's stat merge inside the game-end handler 0x135310): after
+  the user team's played or simulated game, append the post-game ratings to the player's 17-week
+  ring. The week setter (0xC4E60) runs later, after the week's games, but it is too late for a first
+  capture: with no baseline yet it would store the completed week itself as the baseline and lose
+  that week's delta. Capturing at the game end and establishing the baseline at load/season entry
+  keeps the first completed week. Only the user's club game is captured.
+* **Stable slots**: a record slot is found by the player's identity (pbp id, position, jersey), not
+  by the roster list index. The depth chart reorders after games; an index would overwrite or lose
+  a player's history.
 * **Screen values** (0x365B20): the season view returns the stored baseline for ``Previously``, the
   live rating for ``Currently`` and their difference for ``Change``. A toggle cycles the historical
   weekly views: ``Previously`` is the previous stored week, ``Currently`` the selected stored week
@@ -94,6 +103,7 @@ SITE_VISIBILITY = (0x002C26A0, bytes.fromhex("568bf2c746"))
 SITE_STAGE_NEW_SEASON = (0x0013EF03, bytes.fromhex("e8188c1000"))
 SITE_STAGE_NEXT = (0x00248641, bytes.fromhex("e8daf4ffff"))
 SITE_WEEK = (0x000C4E60, bytes.fromhex("890db476e500c3"))
+SITE_GAME_END = (0x001353FC, bytes.fromhex("e8cff9ffff"))         # call 0x134dd0 (second club's stat merge)
 SITE_VALUE = (0x00365B20, bytes.fromhex("538b5c240c"))
 SITE_HEADER = (0x00365E34, bytes.fromhex("bad892eb00"))
 SITE_EVENT_POINTER = (0x000F4268, struct.pack("<I", 0x000F4221))
@@ -123,11 +133,14 @@ GUARDS = (
     ("stage_enter", 0x00247B20, 0x1A, "9c5d1882c1b1254cd4350626a07d48ee6b313812568e9c6479eb4dcf294bced6"),
     ("visibility", 0x002C26A0, 0x30, "d2fdc73119dcd27672d4c6931e48e8db73a44f016b5bb582f98617f159700bd6"),
     ("value_getter", 0x00365B20, 0x14B, "de28b89c34bd93cf45db19b5c0c85e67bb8fb2b209c84d43c0d191781bbb412d"),
+    ("value_helper", 0x00365B00, 0x20, "dad1bbfe0d3f155a9df8c341622a44c234916fab956417d50aedf95d0c765f90"),
+    ("value_table", 0x00AEFBFC, 0x1A0, "bde9a060b25ade38914a074c95b2081548f543a11374a1ed3823955c02e0cda5"),
     ("header_context", 0x00365E20, 0x40, "6dc7bfaa61f1a2be4c695787a43399bd999f0177c29a22ced3522b6e19c00c2e"),
     ("screen_descriptor", 0x00551800, 0x30, "f0523debaafd92b19ddc1483b39be14ac2219e7b9e8ff514daed9daee45ee166"),
     ("new_season", 0x0013EEF0, 0x20, "bce2d9b67db13d51774a43fe7763853d75bb0b4c2c50d42ec32661f226e078e9"),
     ("next_season", 0x00248628, 0x28, "0f8174c1515f9c934e742a3cc8e14cf872ff9f6a74d399681900641f7fc3d403"),
     ("week_advance", 0x000C5D14, 0x20, "eb8c8b928d15c51927b2be3d9d9be47d125ca6330ddf56f7814e814547e6ce79"),
+    ("game_end", 0x001353D0, 0x40, "43aeb9adc0db3244104a928fe684f2915a6c8f34478a62f78828976d92c5f9e6"),
     ("screen_event", 0x000F4268, 0x10, "13e838dff3bb9b334bfccb42574a81b2fb743ca8130dd23f54099eb3d411f08a"),
 )
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, AttributeError)
@@ -254,162 +267,212 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("83f808"); a.j8("74", "week_do")        # cmp eax,8 ; je
     a.b("83f809"); a.j8("75", "week_done")      # cmp eax,9 ; jne done
     a.label("week_do")
+    a.b("85db"); a.j8("74", "week_done")        # a real week (not the stage-enter reset to 0)
+    a.b("83fb11"); a.j8("77", "week_done")      # and not past 17
     a.b("8d5601")                               # lea edx,[esi+1]
     a.b("39d3"); a.j8("75", "week_done")        # cmp ebx,edx ; jne done
-    a.call(capture_week_va)
+    a.call(code_va + _HELPERS.get("capture_ensure", 0))
     a.label("week_done")
     a.b("61")                                   # popad
     a.b("c3")
 
     # ---- value getter -------------------------------------------------------------------------
+    # The game's own 0x365B00 value helper computes every visible attribute (some are sums or
+    # tables, not one byte), so the screen asks it for both sides of the comparison.  The stored
+    # side is staged into the live player's 28 ratings, read, and restored.
     a.label("value")
     a.b("53565755")                             # push ebx,esi,edi,ebp
-    a.b("83ec24")                               # sub esp,0x24
-    a.b("894c2404")                             # mov [esp+4],ecx (manager)
-    a.b("8b442438")                             # mov eax,[esp+0x38] mode
-    a.b("8944240c")                             # mov [esp+0x0c],eax
-    a.b("8b44243c")                             # mov eax,[esp+0x3c] row
-    a.b("89442408")                             # mov [esp+0x08],eax
-    a.b("8b4c2404"); a.call(FN_LIST)
+    a.b("83ec48")                               # sub esp,0x48
+    a.b("8b44245c")                             # mov eax,[esp+0x5c] mode
+    a.b("8944242c")                             # [esp+0x2c]=mode
+    a.b("8b442460")                             # mov eax,[esp+0x60] row
+    a.b("89442428")                             # [esp+0x28]=row
+    a.b("894c241c")                             # [esp+0x1c]=ecx (manager)
+    a.b("8b4c241c"); a.call(FN_LIST)
     a.b("85c0"); a.j32(JZ, "value_retail")
-    a.b("89442404")                             # mov [esp+4],eax (list record)
+    a.b("8944241c")                             # [esp+0x1c]=list record
     a.b("8bc8"); a.call(FN_LIST_INDEX)
-    a.b("8b4c2404")                             # mov ecx,[esp+4]
+    a.b("8b4c241c")                             # mov ecx,[esp+0x1c]
     a.b("3b81a4000000")                         # cmp eax,[ecx+0xa4]
     a.j32(JAE, "value_retail")
     a.b("8b5140")                               # mov edx,[ecx+0x40]
     a.b("8b0482")                               # mov eax,[edx+eax*4]
     a.b("85c0"); a.j32(JZ, "value_retail")
-    a.b("890424")                               # mov [esp],eax (player)
-    # record present?
-    a.b("c744242000000000")                     # [esp+0x20]=0 (record valid)
+    a.b("89442420")                             # [esp+0x20]=player
+    # record present?  The roster order is not stable across a week, so the slot is found by
+    # identity (pbp_id | position << 16 | jersey << 24), never by the current list index.
     a.b("bd" + _imm(record_va))                 # mov ebp,record
-    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j32(JNE, "value_team")
-    a.b("807d0401"); a.j32(JNE, "value_team")
-    a.b("f6450501"); a.j32(JZ, "value_team")    # header baseline flag
-    a.b("c744242001000000")                     # [esp+0x20]=1
-    # team pointer: header team index when the record exists
-    a.b("a1" + _imm(ROSTER_VA)); a.b("8b401c")  # mov eax,[roster]; mov eax,[eax+0x1c]
-    a.b("0fb64d08")                             # movzx ecx,byte [ebp+8]
-    a.b("69c9f4010000")                         # imul ecx,ecx,0x1f4
-    a.b("01c8")                                 # add eax,ecx
-    a.j32("e9", "value_have_team")
-    a.label("value_team")
-    a.call(FN_TEAM)
-    a.label("value_have_team")
-    a.b("85c0"); a.j32(JZ, "value_retail")
-    a.b("89c2")                                 # mov edx,eax (team)
-    a.b("8b3424")                               # mov esi,[esp] (player)
-    a.b("0fb68a1c010000")                       # movzx ecx,byte [edx+0x11c]
-    a.b("31db")                                 # xor ebx,ebx
-    a.label("value_scan")
-    a.b("39cb"); a.j32(JAE, "value_retail")     # cmp ebx,ecx
-    a.b("39349a"); a.j32(JE, "value_found")     # cmp [edx+ebx*4],esi
-    a.b("43"); a.j32("e9", "value_scan")        # inc ebx ; jmp
-    a.label("value_found")
-    a.b("837c242000"); a.j32(JE, "value_retail")   # no valid record
-    a.b("89d8"); a.b("69c0" + _imm(SLOT_SIZE))   # mov eax,ebx ; imul eax,eax,527
-    a.b("8d7c0520")                             # lea edi,[ebp+eax+0x20] (slot record)
-    a.b("89fb")                                 # mov ebx,edi (slot record)
-    # identity: pbp_id | position<<16 | jersey<<24
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j32(JNE, "value_retail")
+    a.b("807d0401"); a.j32(JNE, "value_retail")
+    a.b("f6450501"); a.j32(JZ, "value_retail")  # header baseline flag
+    a.b("8b742420")                             # mov esi,[esp+0x20] (player)
+    a.call(code_va + _HELPERS.get("identity", 0))
+    a.call(code_va + _HELPERS.get("slot_for_identity", 0))
+    a.b("85ff"); a.j32(JZ, "value_retail")
+    a.b("897c2440")                             # [esp+0x40]=slot
+    # selected column group
+    a.b("8b44241c"); a.b("8b4064")              # mov eax,[list+0x64]
+    a.b("89442424")                             # [esp+0x24]=group
+    # selected view: 0 = season, 1..count = stored week
+    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [toggle]
+    a.b("0fb64d0a")                             # movzx ecx,byte [record+10] count
+    a.b("39c8"); a.j32(JBE, "view_ok")          # cmp eax,ecx ; jbe
+    a.b("89c8")                                 # mov eax,ecx
+    a.label("view_ok")
+    a.b("89442430")                             # [esp+0x30]=view
+    # current/previous staging pointers
+    a.b("837c243000"); a.j32(JNE, "view_history")
+    a.b("c744243c00000000")                     # season current = live
+    a.b("8b442440"); a.b("83c006")              # season previous = slot baseline
+    a.b("89442444")
+    a.j32("e9", "sources_done")
+    a.label("view_history")
+    a.b("0fb64d0b")                             # movzx ecx,byte [record+11] head
+    a.b("2b4c2430")                             # sub ecx,[esp+0x30] (view)
+    a.b("7903")                                 # jns +3
+    a.b("83c111")                               # add ecx,HISTORY_WEEKS
+    a.b("894c2434")                             # [esp+0x34]=index
+    a.b("89c8")                                 # mov eax,ecx
+    a.b("6bc01d")                               # imul eax,eax,29
+    a.b("03442440")                             # add eax,[esp+0x40] (slot)
+    a.b("83c022")                               # add eax,0x22
+    a.b("8944243c")                             # [esp+0x3c]=current source
+    a.b("8b442430")                             # view
+    a.b("0fb64d0a")                             # count
+    a.b("39c8"); a.j32(JAE, "hist_base")        # view >= count -> baseline
+    a.b("8b4c2434")                             # ecx=index
+    a.b("49")                                   # dec ecx
+    a.b("7903")
+    a.b("83c111")
+    a.b("89c8"); a.b("6bc01d"); a.b("03442440"); a.b("83c022")
+    a.b("89442444")                             # previous source
+    a.j32("e9", "sources_done")
+    a.label("hist_base")
+    a.b("8b442440"); a.b("83c006")              # previous = slot baseline
+    a.b("89442444")
+    a.label("sources_done")
+    a.b("837c242800"); a.j32(JNE, "value_rating")
+    # ---- overall row (stored overall for previous/history, live overall for the season current)
+    a.b("837c243000"); a.j32(JNE, "hist_overall")
+    a.b("8b4c2420"); a.call(FN_OVERALL)         # mov ecx,player ; call overall
+    a.b("89442434")                             # current
+    a.b("8b442440"); a.b("0fb64805")            # movzx ecx,byte [slot+5]
+    a.b("894c2438")                             # previous
+    a.j32("e9", "view_choose")
+    a.label("hist_overall")
+    a.b("8b44243c"); a.b("0fb6481c")            # current = snapshot overall
+    a.b("894c2434")
+    a.b("8b442430")                             # view
+    a.b("0fb64d0a")                             # count
+    a.b("39c8"); a.j8("72", "hist_overall_snap")  # view < count -> previous snapshot
+    a.b("8b442440"); a.b("0fb64805")            # view == count -> baseline overall
+    a.b("894c2438")
+    a.j32("e9", "view_choose")
+    a.label("hist_overall_snap")
+    a.b("8b442444"); a.b("0fb6481c")            # previous = previous snapshot overall
+    a.b("894c2438")
+    a.j32("e9", "view_choose")
+    # ---- rating row: the game's own helper, with the stored ratings staged in
+    a.label("value_rating")
+    a.b("8b4c2420")                             # ecx=player
+    a.b("8b442424")                             # eax=group
+    a.b("8b542428")                             # edx=row
+    a.b("8b7c243c")                             # edi=current source
+    a.call(code_va + _HELPERS.get("calc_value", 0))
+    a.b("89442434")                             # current
+    a.b("8b4c2420"); a.b("8b442424"); a.b("8b542428")
+    a.b("8b7c2444")                             # edi=previous source
+    a.call(code_va + _HELPERS.get("calc_value", 0))
+    a.b("89442438")                             # previous
+    a.label("view_choose")
+    a.b("8b44242c")                             # mode
+    a.b("85c0"); a.j32(JZ, "mode_previous")
+    a.b("83f801"); a.j32(JE, "mode_current")
+    a.b("8b442434"); a.b("2b442438")            # change = current - previous
+    a.j32("e9", "mode_store")
+    a.label("mode_previous")
+    a.b("8b442438")
+    a.j32("e9", "mode_store")
+    a.label("mode_current")
+    a.b("8b442434")
+    a.label("mode_store")
+    a.b("83c448"); a.b("5d5f5e5b"); a.b("c20c00")
+    a.label("value_retail")
+    a.b("83c448"); a.b("5d5f5e5b")              # restore the caller frame
+    a.b("53"); a.b("8b5c240c")                  # replay the retail prologue
+    a.jmp_abs(0x00365B25)
+
+    # ---- identity helpers ---------------------------------------------------------------------
+    a.label("identity")                         # esi = player -> eax = pbp | position << 16 | jersey << 24
     a.b("0fb74604")                             # movzx eax,word [esi+4]
     a.b("0fb65635")                             # movzx edx,byte [esi+0x35]
     a.b("c1e210"); a.b("09d0")                  # shl edx,16 ; or eax,edx
     a.b("8b5620"); a.b("c1ea03"); a.b("83e27f"); a.b("c1e218"); a.b("09d0")
-    a.b("3907"); a.j32(JNE, "value_retail")
-    a.b("f6470402"); a.j32(JZ, "value_retail")  # slot baseline flag
-    # selected view: 0 = season, 1..count = stored week
-    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [toggle]
-    a.b("0fb64d0a")                             # movzx ecx,byte [ebp+10] count
-    a.b("39c8"); a.j32(JBE, "view_ok")          # cmp eax,ecx ; jbe
-    a.b("89c8")                                 # mov eax,ecx
-    a.label("view_ok")
-    a.b("89442410")                             # mov [esp+0x10],eax (view)
-    # field index or overall sentinel in [esp+0x14]
-    a.b("8b442408")                             # mov eax,[esp+8] row
-    a.b("85c0"); a.j32(JZ, "field_overall")
-    a.b("8b4c2404"); a.b("8b4964")              # mov ecx,[list+0x64] group base
-    a.b("6bc91a"); a.b("01c1")                  # imul ecx,ecx,26 ; add ecx,eax
-    a.b("0fb60c0d" + _imm(map_va))              # movzx ecx,byte [map+ecx]
-    a.b("83e936")                               # sub ecx,0x36
-    a.b("894c2414")                             # [esp+0x14]=field
-    a.j32("e9", "view_values")
-    a.label("field_overall")
-    a.b("c7442414ffffffff")                     # field = -1
-    a.label("view_values")
-    a.b("837c241000"); a.j32(JNE, "view_history")
-    # ---- season view: previous=baseline, current=live ----
-    a.b("837c240800"); a.j32(JNE, "season_rating")
-    a.b("8bce"); a.call(FN_OVERALL)             # mov ecx,esi ; call overall
-    a.b("89442418")                             # current
-    a.b("0fb64705"); a.b("8944241c")            # previous overall
-    a.j32("e9", "view_choose")
-    a.label("season_rating")
-    a.b("8b4c2414")                             # field
-    a.b("0fb6440e36"); a.b("89442418")          # current = player[0x36+field]
-    a.b("0fb6440f06"); a.b("8944241c")          # previous = slot baseline
-    a.j32("e9", "view_choose")
-    # ---- history view: previous/current = stored weeks ----
-    a.label("view_history")
-    a.b("0fb64d0b")                             # movzx ecx,byte [ebp+11] head
-    a.b("2b4c2410")                             # sub ecx,[esp+0x10] (T)
-    a.b("79" + "03")                            # jns +3 (skip the add)
-    a.b("83c1" + f"{HISTORY_WEEKS:02x}")        # add ecx,HISTORY_WEEKS
-    a.b("894c2420")                             # [esp+0x20]=index
-    a.b("6bc91d")                               # imul ecx,ecx,29
-    a.b("89df")                                 # mov edi,ebx (slot record)
-    a.b("8d7c0f22")                             # lea edi,[edi+ecx+0x22]
-    a.b("837c2414ff"); a.j32(JNE, "hist_rating_cur")
-    a.b("0fb6471c"); a.b("89442418")            # current overall
-    a.j32("e9", "hist_prev")
-    a.label("hist_rating_cur")
-    a.b("8b4c2414"); a.b("0fb60c0f"); a.b("894c2418")
-    a.label("hist_prev")
-    a.b("8b442410")                             # T
-    a.b("0fb64d0a")                             # count
-    a.b("39c8"); a.j32(JAE, "hist_baseline")    # T >= count -> baseline
-    a.b("8b4c2420"); a.b("49"); a.j8("79", "hist_prev_ok")
-    a.b("83c1" + f"{HISTORY_WEEKS:02x}")
-    a.label("hist_prev_ok")
-    a.b("6bc91d")
-    a.b("89df")                                 # mov edi,ebx (slot record)
-    a.b("8d7c0f22")
-    a.b("837c2414ff"); a.j32(JNE, "hist_rating_prev")
-    a.b("0fb6471c"); a.b("8944241c")
-    a.j32("e9", "view_choose")
-    a.label("hist_rating_prev")
-    a.b("8b4c2414"); a.b("0fb60c0f"); a.b("894c241c")
-    a.j32("e9", "view_choose")
-    a.label("hist_baseline")
-    a.b("89df")                                 # mov edi,ebx (slot record)
-    a.b("837c2414ff"); a.j32(JNE, "hist_rating_base")
-    a.b("0fb64705"); a.b("8944241c")            # baseline overall
-    a.j32("e9", "view_choose")
-    a.label("hist_rating_base")
-    a.b("8b4c2414"); a.b("0fb64c0f06"); a.b("894c241c")
-    a.label("view_choose")
-    a.b("8b44240c")                             # mode
-    a.b("85c0"); a.j32(JZ, "mode_previous")
-    a.b("83f801"); a.j32(JE, "mode_current")
-    a.b("8b442418"); a.b("2b44241c")            # change = current - previous
-    a.j32("e9", "mode_store")
-    a.label("mode_previous")
-    a.b("8b44241c")
-    a.j32("e9", "mode_store")
-    a.label("mode_current")
-    a.b("8b442418")
-    a.label("mode_store")
-    a.b("83c424"); a.b("5d5f5e5b"); a.b("c20c00")
-    a.label("value_retail")
-    a.b("83c424"); a.b("5d5f5e5b")              # restore the caller frame
-    a.b("53"); a.b("8b5c240c")                  # replay the retail prologue
-    a.jmp_abs(0x00365B25)
+    a.b("c3")
+
+    a.label("slot_for_identity")                # eax = identity, ebp = record -> edi = slot or 0
+    a.b("31c9")                                 # xor ecx,ecx
+    a.label("sfi_loop")
+    a.b("89ca"); a.b("69d2" + _imm(SLOT_SIZE))  # mov edx,ecx ; imul edx,edx,527
+    a.b("8d7c1520")                             # lea edi,[ebp+edx+0x20]
+    a.b("3907")                                 # cmp dword [edi],eax
+    a.j8("75", "sfi_next")
+    a.b("f6470401")                             # test byte [edi+4],1
+    a.j8("74", "sfi_next")
+    a.b("c3")
+    a.label("sfi_next")
+    a.b("41"); a.b("83f941"); a.j8("72", "sfi_loop")
+    a.b("31ff")                                 # xor edi,edi
+    a.b("c3")
+
+    a.label("free_slot")                        # ebp = record -> edi = empty slot or 0
+    a.b("31c9")
+    a.label("fs_loop")
+    a.b("89ca"); a.b("69d2" + _imm(SLOT_SIZE))
+    a.b("8d7c1520")
+    a.b("833f00")                               # cmp dword [edi],0
+    a.j8("74", "fs_done")
+    a.b("41"); a.b("83f941"); a.j8("72", "fs_loop")
+    a.b("31ff")
+    a.label("fs_done")
+    a.b("c3")
+
+    a.label("calc_value")                       # ecx=player, eax=group, edx=row, edi=source (0=live)
+    a.b("53565755")                             # push ebx,esi,edi,ebp
+    a.b("83ec20")                               # sub esp,0x20
+    a.b("89ce")                                 # mov esi,ecx (player)
+    a.b("89c3")                                 # mov ebx,eax (group)
+    a.b("89d5")                                 # mov ebp,edx (row)
+    a.b("31c9")
+    a.label("cv_save")
+    a.b("8a440e36"); a.b("88040c")              # save the live rating
+    a.b("41"); a.b("83f91c"); a.j8("72", "cv_save")
+    a.b("85ff"); a.j8("74", "cv_call")          # source 0 = live
+    a.b("31c9")
+    a.label("cv_copy")
+    a.b("8a040f"); a.b("88440e36")              # stage the stored rating
+    a.b("41"); a.b("83f91c"); a.j8("72", "cv_copy")
+    a.label("cv_call")
+    a.b("8bce"); a.b("8bc3")                    # ecx=player ; eax=group (ebx)
+    a.b("8bd5")                                 # edx=row
+    a.call(0x00365B00)                          # the retail per-attribute value helper
+    a.b("89c3")                                 # ebx=result
+    a.b("31c9")
+    a.label("cv_restore")
+    a.b("8a040c"); a.b("88440e36")              # restore the live rating
+    a.b("41"); a.b("83f91c"); a.j8("72", "cv_restore")
+    a.b("8bc3")                                 # mov eax,ebx
+    a.b("83c420"); a.b("5d5f5e5b"); a.b("c3")
 
     # ---- snapshot capture ---------------------------------------------------------------------
+    # mode 0: season/load baseline (clear and fill).  mode 1: a completed week's post-game ring
+    # entry.  mode 3: ensure a same-year baseline exists without disturbing it.
     a.label("capture_baseline")
     a.b("b800000000"); a.j32("e9", "capture_common")
     a.label("capture_week")
-    a.b("b801000000")
+    a.b("b801000000"); a.j32("e9", "capture_common")
+    a.label("capture_ensure")
+    a.b("b803000000")
     a.label("capture_common")
     a.b("60")                                   # pushad
     a.b("83ec40")                               # sub esp,0x40
@@ -419,14 +482,20 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("83f802"); a.j32(JNE, "cap_done")
     a.b("a1" + _imm(ROSTER_VA)); a.b("85c0"); a.j32(JZ, "cap_done")
     a.b("8b401c"); a.b("85c0"); a.j32(JZ, "cap_done")
-    a.b("8b442410"); a.b("85c0"); a.j32(JZ, "cap_baseline_team")
-    # weekly: only an existing same-year baseline continues
-    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j32(JNE, "cap_baseline_team")
-    a.b("807d0401"); a.j32(JNE, "cap_baseline_team")
-    a.b("0fb74506")                             # movzx eax,word [record+6]
-    a.b("0fb715" + _imm(YEAR_VA))               # movzx edx,word [year]
-    a.b("39d0"); a.j32(JNE, "cap_baseline_team")
-    a.b("f6450501"); a.j32(JZ, "cap_baseline_team")
+    # mode 3: a valid same-year baseline already exists -> done
+    a.b("837c241003"); a.j32(JNE, "cap_mode1")
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j32(JNE, "cap_mode1")
+    a.b("807d0401"); a.j32(JNE, "cap_mode1")
+    a.b("f6450501"); a.j32(JZ, "cap_mode1")
+    a.b("0fb74506"); a.b("0fb715" + _imm(YEAR_VA)); a.b("39d0"); a.j32(JNE, "cap_mode1")
+    a.j32("e9", "cap_done")
+    a.label("cap_mode1")
+    a.b("837c241001"); a.j32(JNE, "cap_baseline_team")   # modes 0/3 -> baseline
+    # weekly: only an existing same-year baseline continues; never invent one here
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j32(JNE, "cap_done")
+    a.b("807d0401"); a.j32(JNE, "cap_done")
+    a.b("0fb74506"); a.b("0fb715" + _imm(YEAR_VA)); a.b("39d0"); a.j32(JNE, "cap_done")
+    a.b("f6450501"); a.j32(JZ, "cap_done")
     # team from the header index (the controller team can change during simulation)
     a.b("a1" + _imm(ROSTER_VA)); a.b("8b401c")
     a.b("0fb64d08"); a.b("69c9f4010000"); a.b("01c8")
@@ -436,7 +505,19 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.call(FN_TEAM)
     a.b("85c0"); a.j32(JZ, "cap_done")
     a.b("890424")
-    # new baseline: footer header and record header
+    # roster readiness: a count and a first player
+    a.b("0fb6881c010000")                       # movzx ecx,byte [eax+0x11c]
+    a.b("85c9"); a.j32(JZ, "cap_done")
+    a.b("833800")                               # cmp dword [eax],0
+    a.j32(JZ, "cap_done")
+    # clear the record body, then the footer and record headers
+    a.b("89ef")                                 # mov edi,ebp
+    a.b("31c0")                                 # xor eax,eax
+    a.b("b9" + _imm(8568))                      # 34,272 bytes
+    a.b("fc"); a.b("f3ab")                      # cld ; rep stosd
+    a.b("b90f000000")                           # 15 bytes (record size is 34,287, not a dword multiple)
+    a.b("f3aa")                                 # rep stosb
+    a.b("bd" + _imm(record_va))                 # mov ebp,record
     a.b("c705" + _imm(footer_va) + _imm(FOOTER_MAGIC0))
     a.b("c705" + _imm(footer_va + 4) + _imm(FOOTER_MAGIC1))
     a.b("66c705" + _imm(footer_va + 8) + "0100")
@@ -460,19 +541,24 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("8b0424"); a.b("8b3498")                # mov eax,[esp] ; mov esi,[eax+ebx*4]
     a.b("85f6"); a.j32(JZ, "cap_next")
     a.b("8974240c")                             # [esp+0x0c]=player
-    a.b("89d8"); a.b("69c0" + _imm(SLOT_SIZE))  # mov eax,ebx ; imul eax,SLOT_SIZE
-    a.b("8d7c0520")                             # lea edi,[ebp+eax+0x20]
-    a.b("897c2418")                             # [esp+0x18]=slot
     a.b("8bce"); a.call(FN_OVERALL)
     a.b("8944241c")                             # [esp+0x1c]=overall
-    a.b("8b74240c")
-    a.b("0fb74604"); a.b("0fb65635"); a.b("c1e210"); a.b("09d0")
-    a.b("8b5620"); a.b("c1ea03"); a.b("83e27f"); a.b("c1e218"); a.b("09d0")
-    a.b("8b7c2418")
-    a.b("3907"); a.j32(JE, "cap_same")
-    # new/renumbered player: reset this slot to the live values
-    a.b("8907")
-    a.b("8b44241c"); a.b("884705")
+    a.b("8b74240c")                             # esi=player
+    a.call(code_va + _HELPERS.get("identity", 0))
+    a.b("89442420")                             # [esp+0x20]=identity
+    a.b("bd" + _imm(record_va))
+    a.call(code_va + _HELPERS.get("slot_for_identity", 0))
+    a.b("85ff"); a.j32(JNZ, "cap_found")
+    a.b("bd" + _imm(record_va))
+    a.call(code_va + _HELPERS.get("free_slot", 0))
+    a.b("85ff"); a.j32(JNZ, "cap_new_slot")
+    # no free slot: reuse the slot at the current roster index
+    a.b("89d8"); a.b("69c0" + _imm(SLOT_SIZE)); a.b("8d7c0520")
+    a.label("cap_new_slot")
+    # a new player (or a baseline capture): reset this slot to the live values
+    a.b("8b74240c")                             # esi=player
+    a.b("8b442420"); a.b("8907")                # identity
+    a.b("8b44241c"); a.b("884705")              # overall
     a.b("c6470403")                             # identity + baseline
     a.b("31c9")
     a.label("cap_reset_copy")
@@ -489,9 +575,10 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("8a4705"); a.b("88421c")                # snapshot overall = baseline overall
     a.b("41"); a.b("83f911"); a.j32(JB, "cap_reset_snap")
     a.j32("e9", "cap_next")
-    a.label("cap_same")
-    a.b("8b442410"); a.b("85c0"); a.j32(JZ, "cap_week_snapshot")
-    # weekly capture writes the ring at head
+    a.label("cap_found")
+    a.b("837c241001"); a.j32(JNE, "cap_new_slot")   # baseline/ensure resets even a known slot
+    # weekly capture writes the post-game values to the ring at head
+    a.b("bd" + _imm(record_va))
     a.b("0fb6450b")                             # head
     a.b("6bc01d")                               # *29
     a.b("8d540722")                             # lea edx,[edi+eax+0x22]
@@ -501,13 +588,12 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("41"); a.b("83f91c"); a.j32(JB, "cap_week_copy")
     a.b("8b44241c"); a.b("88421c")              # snapshot overall
     a.j32("e9", "cap_next")
-    a.label("cap_week_snapshot")
-    a.j32("e9", "cap_next")
     a.label("cap_next")
     a.b("43"); a.j32("e9", "cap_slot")
     a.label("cap_slots_done")
-    a.b("8b442410"); a.b("85c0"); a.j32(JZ, "cap_baseline_header")
-    # advance the ring and header
+    a.b("837c241001"); a.j32(JNE, "cap_baseline_header")
+    # advance the ring and header, labelled with the week just completed (post-game)
+    a.b("bd" + _imm(record_va))
     a.b("0fb6450b"); a.b("40"); a.b("83f811"); a.j8("72", "cap_head_ok")
     a.b("31c0")
     a.label("cap_head_ok")
@@ -517,9 +603,10 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.label("cap_count_ok2")
     a.b("88450a")
     a.b("804d0502")                             # history flag
-    a.b("a1" + _imm(WEEK_VA)); a.b("48"); a.b("884509")
+    a.b("a1" + _imm(WEEK_VA)); a.b("884509")    # last completed week = the simulated week
     a.j32("e9", "cap_team_index")
     a.label("cap_baseline_header")
+    a.b("bd" + _imm(record_va))
     a.b("c6450501"); a.b("c6450900")
     a.label("cap_team_index")
     a.b("8b0424")                               # team pointer
@@ -528,6 +615,39 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("884508")                               # team index
     a.label("cap_done")
     a.b("83c440"); a.b("61"); a.b("c3")
+
+    # ---- game end: run the second club's stat merge, then snapshot the user's completed week ----
+    a.label("game_end")
+    a.b("9c")                                   # pushfd
+    a.b("60")                                   # pushad
+    a.b("ff74242c")                             # push arg1 (edx) for the displaced merge
+    a.b("ff74242c")                             # push arg2 (1)
+    a.call(0x00134DD0)                          # retail per-player stat merge (ret 8)
+    a.b("8b5c2444")                             # mov ebx,[esp+0x44] (game struct)
+    a.b("85db"); a.j32(JZ, "ge_retail")
+    a.b("0fb64b01")                             # movzx ecx,byte [ebx+1] (club 1)
+    a.b("0fb65302")                             # movzx edx,byte [ebx+2] (club 2)
+    a.b("89ce")                                 # mov esi,ecx
+    a.b("89d5")                                 # mov ebp,edx
+    a.b("a1" + _imm(ROSTER_VA)); a.b("85c0"); a.j32(JZ, "ge_retail")
+    a.b("8b781c"); a.b("85ff"); a.j32(JZ, "ge_retail")
+    a.call(FN_TEAM)
+    a.b("85c0"); a.j32(JZ, "ge_retail")
+    a.b("29f8")                                 # sub eax,edi (team - array)
+    a.b("31d2")                                 # xor edx,edx
+    a.b("b9f4010000")                           # mov ecx,0x1f4
+    a.b("f7f1")                                 # div ecx -> eax = team index
+    a.b("39f0"); a.j8("74", "ge_stage")         # user is club 1
+    a.b("39e8"); a.j8("75", "ge_retail")        # not club 2
+    a.label("ge_stage")
+    a.call(FN_STAGE)
+    a.b("83f808"); a.j8("74", "ge_capture")
+    a.b("83f809"); a.j8("75", "ge_retail")
+    a.label("ge_capture")
+    a.call(capture_week_va)
+    a.label("ge_retail")
+    a.b("61"); a.b("9d")                        # popad ; popfd
+    a.b("c20800")                               # ret 8 (the original merge call's args)
 
     # ---- footer hooks -------------------------------------------------------------------------
     a.label("size_hook")
@@ -577,6 +697,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("31c0")
     a.b("b9" + _imm(FOOTER_SIZE // 4))
     a.b("fc"); a.b("f3ab")                      # rep stosd
+    a.call(capture_baseline_va)                 # an old save starts a fresh history here
     a.label("load_done")
     a.b("61"); a.b("9d"); a.b("c3")
 
@@ -617,7 +738,9 @@ def _finish(blob: bytes, variant: int, size_target: int, save_target: int, load_
     return blob.ljust(CODE_SIZE - TRAILER_SIZE, b"\xcc") + tail
 
 
+_HELPERS: dict[str, int] = {}
 _TEMPLATE, _LABELS = _assemble(0, 0, 0, 0, 0, 0, 0, 0, 0)
+_HELPERS.update({name: _LABELS[name] for name in ("identity", "slot_for_identity", "free_slot", "calc_value", "capture_ensure")})
 _MAP_OFFSET = len(_TEMPLATE)
 _TEXT_OFFSET = _MAP_OFFSET + len(MAP)
 _VISIBLE_TEMPLATE, _VISIBLE_LABELS = _assemble(0, 0, 0, 0, 0, 0, 0, 0, 0, visible_only=True)
@@ -677,6 +800,8 @@ def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
          b"\xe8" + _rel32(stage, SITE_STAGE_NEXT[0])),
         ("week_advance", SITE_WEEK[0], SITE_WEEK[1],
          b"\xe9" + _rel32(week, SITE_WEEK[0]) + b"\x90" * (len(SITE_WEEK[1]) - 5)),
+        ("game_end", SITE_GAME_END[0], SITE_GAME_END[1],
+         b"\xe8" + _rel32(code_va + lab["game_end"], SITE_GAME_END[0])),
         ("value_getter", SITE_VALUE[0], SITE_VALUE[1],
          b"\xe9" + _rel32(value, SITE_VALUE[0])),
         ("change_header", SITE_HEADER[0], SITE_HEADER[1],

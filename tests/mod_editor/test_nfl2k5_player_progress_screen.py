@@ -103,6 +103,9 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(sites["visibility"][1], bytes.fromhex("568bf2c746"))
         self.assertEqual(sites["week_advance"][0], 0xC4E60)
         self.assertEqual(len(sites["week_advance"][2]), 7)
+        self.assertEqual(sites["game_end"][0], 0x1353FC)
+        self.assertEqual(sites["game_end"][1], bytes.fromhex("e8cff9ffff"))
+        self.assertEqual(sites["game_end"][2][0], 0xE8)
         self.assertEqual(sites["value_getter"][0], 0x365B20)
         self.assertEqual(sites["event_pointer"][0], 0xF4268)
         footer = {label: (va, before, after)
@@ -145,7 +148,7 @@ class NativeTests(unittest.TestCase):
         for base, size in ((ROSTER, 0x100000), (CODE, 0x2000), (DATA, 0x10000), (FILE, 0x100000),
                            (META, 0xC00000), (TARGETS, 0x1000), (0xB72000, 0x1000),
                            (0xE57000, 0x1000), (0xC4000, 0x4000), (0xF3000, 0x2000),
-                           (0x170000, 0x2000), (0xE6000, 0x2000), (0x247000, 0x2000),
+                           (0x170000, 0x2000), (0xE6000, 0x2000), (0x247000, 0x2000), (0x133000, 0x2000),
                            (0x14F000, 0x2000), (0x365000, 0x2000), (STACK, 0x10000)):
             m.mem_map(base, size)
         m.mem_write(CODE, self.blob)
@@ -185,6 +188,8 @@ class NativeTests(unittest.TestCase):
         m.mem_write(0x247B20, b"\xc3")
         m.mem_write(0x14FCD0, b"\xf4")
         m.mem_write(0x365B25, b"\xb8\x34\x12\x00\x00\x5b\xc2\x0c\x00")
+        # the retail per-attribute helper: the tests use the speed row (row 5), which reads rating 0
+        m.mem_write(0x365B00, b"\x0f\xb6\x41\x36\xc3")
         m.mem_write(0xC5D26, b"\xf4")
         # displaced size/save/load targets: size returns the native front-office term
         ret_imm(TARGETS, 0x165B0)
@@ -317,13 +322,83 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.record_bytes(m)[:4], bytes(4))
         self.call(m, "stage_wrapper", ecx=8)
         self.assertEqual(self.record_bytes(m)[:4], record.RECORD_MAGIC)
+        # The week setter only guarantees a baseline; the weekly entry is the post-game capture.
         m.mem_write(0xE576B4, struct.pack("<I", 4))
         self.call(m, "week_setter", ecx=5)
         self.assertEqual(struct.unpack("<I", m.mem_read(0xE576B4, 4))[0], 5)
         raw = self.record_bytes(m)
         self.assertEqual(raw[:4], record.RECORD_MAGIC)
-        self.assertEqual(raw[9], 4)
+        self.assertEqual(raw[9], 0)
+        self.assertEqual(raw[10], 0)
+        # The stage-enter reset to week 0 never fabricates a week.
+        self.call(m, "week_setter", ecx=0)
+        self.assertEqual(self.record_bytes(m)[10], 0)
+        # The post-game capture writes the completed week at the ring head.
+        m.mem_write(0xE576B4, struct.pack("<I", 5))
+        self.call(m, "capture_week")
+        raw = self.record_bytes(m)
+        self.assertEqual(raw[9], 5)
         self.assertEqual(raw[10], 1)
+        self.assertEqual(raw[11], 1)
+
+    def game_call(self, m, clubs, week=6):
+        game = 0x02040000
+        m.mem_write(game, bytes([0, clubs[0], clubs[1]]))
+        sp = STACK + 0x8000
+        m.mem_write(sp, struct.pack("<I", SENTINEL))       # return address
+        m.mem_write(sp + 4, struct.pack("<I", 1))          # call-site arg 2
+        m.mem_write(sp + 8, struct.pack("<I", 0))          # call-site arg 1
+        m.mem_write(sp + 0x20, struct.pack("<I", game))    # game struct in the caller's frame
+        m.mem_write(0xE576B4, struct.pack("<I", week))
+        m.reg_write(x86.UC_X86_REG_ESP, sp)
+        m.reg_write(x86.UC_X86_REG_EAX, 0)
+        m.reg_write(x86.UC_X86_REG_ECX, 0)
+        m.reg_write(x86.UC_X86_REG_EDX, 0)
+        m.emu_start(CODE + self.labels["game_end"], SENTINEL, count=200000, timeout=5_000_000)
+
+    def test_game_end_captures_only_the_user_game(self):
+        m = self.machine()
+        m.mem_write(0x134DD0, b"\xc2\x08\x00")            # displaced stat merge: ret 8
+        self.call(m, "capture_baseline")
+        m.mem_write(P0 + 0x36, bytes([55]))
+        self.game_call(m, (0, 1))
+        raw = self.record_bytes(m)
+        self.assertEqual(raw[9], 6)
+        self.assertEqual(raw[10], 1)
+        self.assertEqual(raw[32 + 34], 55)                  # week snapshot of P0's slot
+        # a game that does not involve the user's club (team index 0) writes nothing
+        m.mem_write(P0 + 0x36, bytes([56]))
+        self.game_call(m, (2, 3), week=7)
+        raw = self.record_bytes(m)
+        self.assertEqual(raw[9], 6)
+        self.assertEqual(raw[10], 1)
+
+    def test_slots_follow_identity_when_the_roster_reorders(self):
+        m = self.machine()
+        self.call(m, "capture_baseline")
+        m.mem_write(P0 + 0x36, bytes([60]))
+        m.mem_write(0xE576B4, struct.pack("<I", 6))
+        self.call(m, "capture_week")
+        # the depth chart swaps the two players; the history stays on the player's own slot
+        m.mem_write(TEAM, struct.pack("<II", P1, P0))
+        m.mem_write(P0 + 0x36, bytes([65]))
+        m.mem_write(P1 + 0x36, bytes([44]))
+        m.mem_write(0xE576B4, struct.pack("<I", 7))
+        self.call(m, "capture_week")
+        raw = self.record_bytes(m)
+        slot0 = raw[record.RECORD_HEADER_SIZE:record.RECORD_HEADER_SIZE + record.SLOT_SIZE]
+        slot1 = raw[record.RECORD_HEADER_SIZE + record.SLOT_SIZE:
+                   record.RECORD_HEADER_SIZE + 2 * record.SLOT_SIZE]
+        self.assertEqual(struct.unpack_from("<H", slot0, 0)[0], 10)   # P0 keeps slot 0
+        self.assertEqual(struct.unpack_from("<H", slot1, 0)[0], 11)   # P1 keeps slot 1
+        self.assertEqual(slot0[34 + 29], 65)                         # P0 week 7 snapshot speed (rating 0)
+        self.assertEqual(slot1[34 + 29], 44)
+        # the screen finds P0 by identity, not by the new index
+        m.mem_write(LIST + 0xA4, struct.pack("<I", 2))
+        m.mem_write(ARRAY, struct.pack("<II", P1, P0))
+        m.mem_write(0x170510, b"\xb8\x01\x00\x00\x00\xc3")
+        self.toggle(m, 1)
+        self.assertEqual(self.value(m, 1, 5), 65)
 
     def test_size_hook_adds_one_footer(self):
         m = self.machine()
@@ -361,10 +436,19 @@ class NativeTests(unittest.TestCase):
         m.mem_write(META + 0xbdc1cc, struct.pack("<I", size))
         self.call(m, "load_hook", esi=FILE, ebp=META)
         self.assertEqual(bytes(m.mem_read(DATA + 16, record.FOOTER_SIZE)), footer)
-        # a file without the magic clears the RAM footer
+        # a file without the magic clears the RAM footer and starts a fresh baseline
         m.mem_write(FILE + size - record.FOOTER_SIZE, bytes(record.FOOTER_SIZE))
         self.call(m, "load_hook", esi=FILE, ebp=META)
-        self.assertEqual(bytes(m.mem_read(DATA + 16, record.FOOTER_SIZE)), bytes(record.FOOTER_SIZE))
+        fresh = bytes(m.mem_read(DATA + 16, record.FOOTER_SIZE))
+        self.assertEqual(fresh[:8], record.FOOTER_MAGIC)
+        self.assertEqual(fresh[32:36], record.RECORD_MAGIC)
+        self.assertEqual(fresh[32 + 4], 1)
+        self.assertEqual(fresh[32 + 5], record.HEADER_BASELINE)
+        self.assertEqual(struct.unpack_from("<H", fresh, 32 + 6)[0], 2027)
+        # it is a new baseline, not the loaded footer
+        self.assertNotEqual(fresh, footer)
+        self.assertEqual(fresh[32 + 32:32 + 32 + record.SLOT_SIZE][6:34],
+                         m.mem_read(P0 + 0x36, record.RATING_COUNT))
 
     def test_admission_accepts_every_native_and_footer_size(self):
         m = self.machine()

@@ -41,8 +41,11 @@ Each of the 65 roster slots (527 bytes, team pointer-list order):
 ``+0x22``        ``HISTORY_WEEKS`` snapshots, 29 bytes each: 28 ratings then the overall
 ===============  ===========================================================================
 
-A snapshot is written when the game's week setter moves the week forward by one. The ring keeps
-the most recent 17 weeks (a regular season). The screen's change row can show the season change
+A snapshot is written after the user team's game (the game-end call site 0x1353FC, after the
+second club's stat merge) for the week that was just played; the week setter at the end of the week only
+establishes the season baseline. Slots are keyed by player identity, so a depth-chart
+reorder does not move a player's history. The ring keeps the most recent 17 weeks (a regular
+season). The screen's change row can show the season change
 (week 0) or the change since any stored week, selected with the toggle; ``Previously`` shows the
 same week's ratings and ``Currently`` is the live rating.
 
