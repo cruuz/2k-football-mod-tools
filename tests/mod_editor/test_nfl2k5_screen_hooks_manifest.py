@@ -61,6 +61,11 @@ def bounded_projection(retail, document=None):
     inherited = []
     for row in parent["spans"]:
         start, end = int(row["start"], 0), int(row["end"], 0)
+        if row["owner"] == space.OWNER and row.get("basis") == "observed byte diff":
+            # b778 int2: the v4 growable pool is one coarse observed byte-diff
+            # row over the grown v3+pool span; it cannot be bounded per child.
+            inherited.append(row)
+            continue
         regions = [r for r in layout["regions"] if start < r["va"]+r["size"] and r["va"] < end]
         if regions:
             covered = start
