@@ -9,10 +9,10 @@
   "notes": "DESIGN: Rob Leonard (Graham / Ravens multiple); 2025 baseline LV. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "afb1a18646b2dc1e6cb6c3ded8b37f435ca64dadc1320a29b0483d93b25665ac",
+  "book_fingerprint": "ba9990eeb0d6085cf5a7501316ed92adea9d5666a72829c24aa797544f9e7ea1",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2329
+  "donor_node_count": 2302
  },
  "budget": {
   "formations": 50,

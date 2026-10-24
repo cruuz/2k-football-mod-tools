@@ -9,10 +9,10 @@
   "notes": "DESIGN: Jonathan Gannon (Zimmer / Gannon split coverage); 2025 baseline ARI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "b10e8c820547a8193d9635ed8eafebb3e5481c07416072b51044220a495d984c",
+  "book_fingerprint": "0c8402b1a6f39437163f25cb352ad50262e7c3ad0deb3d68d582069eb7c04dc8",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2304
+  "donor_node_count": 2332
  },
  "budget": {
   "formations": 50,

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Zak Kuhr (Vrabel / Bowen multiple); 2025 baseline NE. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "77589e33327f2c7d3eb50f19cec583e94b9d90d21f7d2a50a4e17a5bc898a1dd",
+  "book_fingerprint": "ebbc4f5d291ba3dbc6054c70c6ede070dcfbd3ee9b7c88493625eae546d6c66a",
   "donor_formation_count": 50,
   "donor_play_count": 250,
-  "donor_node_count": 2243
+  "donor_node_count": 2203
  },
  "budget": {
   "formations": 50,

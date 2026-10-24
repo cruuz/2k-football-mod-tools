@@ -9,10 +9,10 @@
   "notes": "DESIGN: Sean Duggan (Hafley four-down); 2025 baseline GB. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "062c9ef749c80e0fb1cc1bbf4f57c8c2ade1d4ee4921b4fc34d4176c9bc9cb31",
+  "book_fingerprint": "582cf64bb955def9f1a78d2bdac042c6ba484489d1a5d8c2a3e204ed1443ce7d",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2356
+  "donor_node_count": 2369
  },
  "budget": {
   "formations": 50,
