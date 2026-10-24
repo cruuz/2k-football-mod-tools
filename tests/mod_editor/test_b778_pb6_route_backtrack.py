@@ -51,13 +51,28 @@ class ShippedRouteBacktrackTests(unittest.TestCase):
             self.assertEqual(sanity.fix_pa_reversal(json.loads(json.dumps(doc))), [], team)
 
     def test_refill_refuses_a_pairing_that_turns_the_back_round(self):
-        """The two plays as shipped on 54a30bc7b, in the gun set that exposed them."""
+        """54a30bc7b's ARZ p102 ("PA Slot Cross Dig") in f05; b778 int2/ai7 regenerated the books,
+        so the fixture finds the same shape on a current shipped pass play in a gun set."""
         doc = dict(packs())["ARZ"]
-        play = next(p for p in doc["plays"] if p["id"] == "p102")
+        by_id = {f["id"]: f for f in doc["formations"]}
         stem6 = [[0, 0, 548.64, 15], [10, 0, 91.44, 15]]
-        bad = json.loads(json.dumps(play))
-        bad["assignments"][10] = [[1, [1, 3, 0, 0, 0, 0]], [23, [0, 0, 4]]] + [[18, v] for v in stem6]
-        gun = next(f for f in doc["formations"] if f["id"] == "f05")
+        found = None
+        for play in doc["plays"]:
+            if play.get("play_type") not in ("pass", "pa_pass") or not play["assignments"][10]:
+                continue
+            bad = json.loads(json.dumps(play))
+            bad["assignments"][10] = [[1, [1, 3, 0, 0, 0, 0]], [23, [0, 0, 4]]] + [[18, v] for v in stem6]
+            for fid, _ctx in rv.play_contexts(doc, play["id"]):
+                gun = by_id[fid]
+                if not gun["custom_name"].startswith("Gun"):
+                    continue
+                if sanity.reverses_in(gun, bad) and not sanity.reverses_in(gun, play):
+                    found = (play, gun, bad)
+                    break
+            if found:
+                break
+        self.assertIsNotNone(found, "no shipped gun play reproduces the pa-back stem")
+        play, gun, bad = found
         self.assertTrue(sanity.reverses_in(gun, bad))
         self.assertFalse(sanity.reverses_in(gun, play))
 
