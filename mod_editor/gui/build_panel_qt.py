@@ -1018,7 +1018,7 @@ class BuildPanel(QWidget):
                                          "2026 schedule, 17 games, 14-team playoffs; this does not update the player roster.",
                                          needs_image=True,
                                          details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
-                                                 "birth years.")
+                                                 "birth years. In-season trades stay open through the NFL Week 9 trade deadline.")
         self.team_names_2026_check = self._option(f, "team_names_2026", "2026 team names and colours (experimental)",
             "Use the 2026 team names on every screen of new disc rosters: Los Angeles Chargers (LAC), "
             "Las Vegas Raiders (LV), Los Angeles Rams (LAR), Arizona Cardinals (ARI) and Washington "

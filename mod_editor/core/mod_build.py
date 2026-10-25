@@ -1894,6 +1894,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
         "season_2026": (_core_module("nfl2k5_season_length") is not None
+                        and _core_module("nfl2k5_trade_deadline") is not None
                         and _tools_module("nfl2k5_franchise_schedule") is not None
                         and (ROOT / "data" / "nfl_2026_schedule.json").exists()),
         "position_pools": (_core_module("nfl2k5_position_pools") is not None
@@ -1995,7 +1996,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "weather_plan": "requires image",
         "espn25_plan": "requires image", "espn25_rosters": "requires image",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
-        "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
+        "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a",
+        "trade_deadline": report.get("trade_deadline", "unknown"), "kickoff_alignment": "n/a",
         "guardian_cap": report.get("guardian_cap", "n/a"),
         "screen_timing": "n/a", "modern_naming": "requires image", "team_names_2026": "n/a", "hires_pack": "requires image",
         **{key: report.get(key, "foreign") for key in (
@@ -2138,6 +2140,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                 out["season_2026"] = season.simple_status(_xbe_bytes(source))
             except Exception:  # noqa: BLE001
                 out["season_2026"] = "foreign"
+        deadline = _core_module("nfl2k5_trade_deadline")
+        if deadline is not None:
+            try:
+                out["trade_deadline"] = deadline.status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001
+                out["trade_deadline"] = "foreign"
         sbl = _tools_module("nfl2k5_scorebug_layout")
         if sbl is not None:
             try:
@@ -4829,6 +4837,23 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
+        # b778-tr1: retail hides the Front Office trade rows from displayed Week 7 and the
+        # Player Trade screen blocks from Week 8. Keep the native gate, wording and menu; move
+        # the boundary to the modern NFL deadline, displayed Week 9.
+        deadline = _core_module("nfl2k5_trade_deadline")
+        if deadline is None:
+            raise RuntimeError("the trade-deadline module is not available in this build")
+        deadline_state = deadline.status(xbe)
+        if deadline_state == "retail":
+            progress("Keeping in-season trades open through NFL Week 9", 0, 0)
+            xbe, deadline_receipt = deadline.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+        elif deadline_state == "applied":
+            deadline_receipt = {"already_applied": True}
+        else:
+            raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
+        season_receipt = {**season_receipt,
+                          "trade_deadline": {k: v for k, v in deadline_receipt.items() if k != "edits"}}
         # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:
         # a disc with the fourteen-team playoffs must never show the old six-seed picture
         picture = _core_module("nfl2k5_playoff_picture")
