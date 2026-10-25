@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 from nfl2k5_rules_assemble import generate  # noqa: E402
 
-OWNERS = ("nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy")  # b777: ol1, then qb3
+OWNERS = ("nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy",
+          "nfl2k5_pass_protection")  # b777: ol1, then qb3; b778-pr1: pass protection
 
 
 def template(owner: str) -> str:
