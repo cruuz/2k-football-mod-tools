@@ -13,11 +13,15 @@ uniform browser shows metadata-only monograms generated from catalog labels.
 
 from __future__ import annotations
 
-from mod_editor.gui.ux_text import plain_error, failure_body
+from mod_editor.gui.ux_text import (
+    STUDIO_THEMES, WrappedLabel, failure_body, light_shell_stylesheet, plain_error,
+    studio_palette,
+)
 from mod_editor.gui.polish_qt import polish_controls
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -31,7 +35,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import (
     QColor, QCloseEvent, QDesktopServices, QFont, QIcon, QImageReader,
-    QKeySequence, QPainter, QPixmap,
+    QKeySequence, QPainter, QPalette, QPixmap,
 )
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -1736,8 +1740,11 @@ class StudioMainWindow(QMainWindow):
         workspace_store: WorkspaceStateStore | None = None,
         offer_recovery: bool = False,
         eager_pages: bool = False,
+        theme: str = "dark",
     ) -> None:
         super().__init__()
+        self._theme = theme if theme in STUDIO_THEMES else "dark"
+        self.setPalette(studio_palette(self._theme))
         self.facade: StudioFacade = facade or BrowseOnlyFacade()
         self.product_catalog = product_catalog or build_nfl2k5_product_catalog(
             CapabilityRegistryLoader().load(
@@ -4874,18 +4881,18 @@ class StudioMainWindow(QMainWindow):
         layout.setSpacing(8)
         status_box = QVBoxLayout()
         status_box.setSpacing(4)
-        self.operation_status = QLabel(
+        # A plain QLabel clipped its one-line sentence at 1280x720 and the
+        # footer's two messages split the row in half. A wrapped label reserves
+        # the height of the whole sentence instead, and both messages share one
+        # stacked column so each gets the full footer width. The horizontal
+        # policy is Ignored so a long status line never becomes a hard minimum
+        # width for the window.
+        self.operation_status = WrappedLabel(
             getattr(self, "_pending_status", None)
             or "Open your game disc to start (top right), or browse what’s available."
         )
         self.operation_status.setObjectName("operationStatus")
         self.operation_status.setTextFormat(Qt.PlainText)
-        # A plain QLabel never elides, so its full sentence became a hard
-        # minimum width for the footer -- 509 px of it -- and the footer in turn
-        # set the window's minimum to 1601 px. That is wider than a 1366-wide
-        # laptop can show, which is why switching pages felt like the app no
-        # longer fitted its own window. Let it shrink and elide; the full text
-        # stays available as a tooltip.
         self.operation_status.setSizePolicy(
             QSizePolicy.Ignored, self.operation_status.sizePolicy().verticalPolicy()
         )
@@ -4960,7 +4967,7 @@ class StudioMainWindow(QMainWindow):
         # On ★ Build & Share the project controls hide (they are about staged
         # art/text/audio edits); this caption says where those went instead of
         # leaving an unexplained gap (X-08).
-        self.build_share_caption = QLabel(
+        self.build_share_caption = WrappedLabel(
             "This Build tab uses the changes selected here. Project edits use "
             "Make disc from project on the editing pages."
         )
@@ -4971,7 +4978,7 @@ class StudioMainWindow(QMainWindow):
         )
         self.build_share_caption.setMinimumWidth(0)
         self.build_share_caption.hide()
-        layout.addWidget(self.build_share_caption, 1)
+        status_box.addWidget(self.build_share_caption)
         layout.addWidget(self.edit_count)
         layout.addWidget(self.undo_button)
         layout.addWidget(self.revert_all_button)
@@ -9210,7 +9217,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_share_page = tabs
-        self._build_panel = BuildPanel(self.facade, available=self._available_build_options)
+        self._build_panel = BuildPanel(self.facade, available=self._available_build_options, theme=self._theme)
         self._refresh_build_includes()
         # The MyCareer picker follows the position-pools option (EDGE and LB only
         # when it is on); either panel may be built first.
@@ -9836,7 +9843,7 @@ class StudioMainWindow(QMainWindow):
             QPushButton#buildButton:disabled,
             QPushButton#launchButton:disabled {
                 background: #141d2a;
-                color: #647187;
+                color: #8b98ad;
                 border: 1px solid #232f41;
             }
             QLineEdit, QComboBox {
@@ -9856,7 +9863,7 @@ class StudioMainWindow(QMainWindow):
             }
             QLineEdit:disabled, QComboBox:disabled {
                 background: #121a27;
-                color: #66748a;
+                color: #8f9db2;
                 border-color: #222e40;
             }
             QComboBox QAbstractItemView {
@@ -9886,7 +9893,7 @@ class StudioMainWindow(QMainWindow):
                 border: 1px solid #426989;
             }
             QListWidget#assetList:disabled {
-                color: #68758a;
+                color: #8b98ad;
                 background: #111925;
                 border-color: #222e40;
             }
@@ -10020,6 +10027,12 @@ class StudioMainWindow(QMainWindow):
             }
             """
         )
+        if self._theme == "light":
+            self.setStyleSheet(self.styleSheet() + light_shell_stylesheet())
+            # Qt polishes a few lazily-created scrollbars (the sidebar list) with
+            # the old sheet when the window was built while hidden. Re-applying
+            # the same sheet once the event loop starts repolishes them.
+            QTimer.singleShot(0, lambda: self.setStyleSheet(self.styleSheet()))
 
 
 def launch_studio(
@@ -10028,8 +10041,12 @@ def launch_studio(
     product_catalog: ProductCatalog | None = None,
     uniform_catalog: Nfl2k5UniformCatalog | None = None,
     extended_visual_catalog: Nfl2k5ExtendedVisualCatalog | None = None,
+    theme: str | None = None,
 ) -> int:
     """Launch 2K5 Mod Studio and return Qt's process exit code."""
+
+    if theme is None:
+        theme = os.environ.get("NFL2K5_STUDIO_THEME", "dark")
 
     app = QApplication.instance()
     if app is None:
@@ -10058,6 +10075,7 @@ def launch_studio(
         extended_visual_catalog=extended_visual_catalog,
         workspace_store=WorkspaceStateStore(),
         offer_recovery=True,
+        theme=theme,
     )
     window.show()
     # Keep a Python reference when embedded in an existing QApplication.
