@@ -1979,6 +1979,16 @@ data/nfl2k5_rookie_faces/faces_07.png
 data/nfl2k5_rookie_faces/faces_07_pal.png
 data/nfl2k5_rookie_faces/faces_08.png
 data/nfl2k5_rookie_faces/faces_08_pal.png
+data/nfl2k5_rookie_faces/faces_09.png
+data/nfl2k5_rookie_faces/faces_09_pal.png
+data/nfl2k5_rookie_faces/faces_10.png
+data/nfl2k5_rookie_faces/faces_10_pal.png
+data/nfl2k5_rookie_faces/faces_11.png
+data/nfl2k5_rookie_faces/faces_11_pal.png
+data/nfl2k5_rookie_faces/faces_12.png
+data/nfl2k5_rookie_faces/faces_12_pal.png
+data/nfl2k5_rookie_faces/faces_13.png
+data/nfl2k5_rookie_faces/faces_13_pal.png
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
