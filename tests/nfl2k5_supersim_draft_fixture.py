@@ -106,6 +106,9 @@ class Machine:
         for section in im.sections:
             if section.raw_size:
                 self.uc.mem_write(section.start, im.read(section.start, section.raw_size))
+        # The Xbox loader maps the XBE headers at the image base too.  The draft AI's boot-logo cave
+        # lives there (0x10AF0..), so a read-only header copy keeps native calls faithful.
+        self.uc.mem_write(im.base, payload[:im.headers_size])
         self.uc.mem_protect(0x11000, 0x410000, u.UC_PROT_READ | u.UC_PROT_EXEC)
         self.uc.mem_map(self.ARENA, 0x200000, u.UC_PROT_READ | u.UC_PROT_WRITE)
         self.uc.mem_map(0x3000000, 0x10000, u.UC_PROT_READ | u.UC_PROT_WRITE)

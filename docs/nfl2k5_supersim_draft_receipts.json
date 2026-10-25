@@ -147,41 +147,41 @@
     }
   },
   "draft": {
-    "distinct_candidates": 32,
-    "draft_ai_sha256": "41293e4e24dec3a749bcaea3950110c76ae753dd16051054efdca14b11b4c1f1",
+    "distinct_candidates": 2,
+    "draft_ai_sha256": "09f5de944fb86373488fe0f8f9e900ec26c04a6fff97bdf681dad5bd84829b43",
     "fixed_club_candidate_by_seed": {
-      "1": 2146,
-      "10": 2258,
-      "11": 2312,
-      "12": 2262,
-      "13": 1982,
-      "14": 2261,
-      "15": 2142,
-      "16": 2201,
-      "17": 2062,
-      "18": 2165,
-      "19": 2297,
-      "2": 1961,
-      "20": 2250,
-      "21": 2121,
-      "22": 1986,
-      "23": 2114,
-      "24": 2252,
-      "25": 2259,
-      "26": 1946,
-      "27": 2267,
-      "28": 2069,
-      "29": 2254,
-      "3": 2216,
-      "30": 2089,
-      "31": 2030,
-      "32": 2264,
-      "4": 2296,
-      "5": 1958,
-      "6": 1997,
-      "7": 2080,
-      "8": 2268,
-      "9": 1945
+      "1": 2180,
+      "10": 2180,
+      "11": 2180,
+      "12": 2180,
+      "13": 2180,
+      "14": 2180,
+      "15": 2180,
+      "16": 2180,
+      "17": 2180,
+      "18": 2180,
+      "19": 2180,
+      "2": 2180,
+      "20": 2180,
+      "21": 1974,
+      "22": 2180,
+      "23": 2180,
+      "24": 2180,
+      "25": 2180,
+      "26": 2180,
+      "27": 2180,
+      "28": 2180,
+      "29": 1974,
+      "3": 2180,
+      "30": 2180,
+      "31": 2180,
+      "32": 2180,
+      "4": 2180,
+      "5": 2180,
+      "6": 2180,
+      "7": 2180,
+      "8": 2180,
+      "9": 2180
     },
     "leaves": [
       [
@@ -191,11 +191,11 @@
     ],
     "native_sign": {
       "club": 0,
-      "contract_word": "0x6000146",
+      "contract_word": "0x6000116",
       "count_after": 54,
       "count_before": 53,
       "flags": 6,
-      "ordinal": 2299
+      "ordinal": 2180
     }
   },
   "experimental": true,
@@ -223,8 +223,12 @@
   "full_drafts": [
     {
       "free_agent_count": 397,
-      "free_agent_occurrences": 1,
-      "landing": null,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 29,
+        "club_name": "Houston Texans",
+        "overall_pick": 126
+      },
       "leaves": [
         [
           1538448,
@@ -232,6 +236,92 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 8,
+          "QB": 3,
+          "T": 8,
+          "TE": 1,
+          "WR": 6
+        },
+        "1": {
+          "C": 1,
+          "CB": 7,
+          "DT": 1,
+          "FS": 1,
+          "G": 3,
+          "ILB": 2,
+          "OLB": 1,
+          "QB": 6,
+          "T": 2,
+          "TE": 3,
+          "WR": 5
+        },
+        "2": {
+          "C": 2,
+          "CB": 6,
+          "DT": 6,
+          "G": 4,
+          "HB": 2,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 2,
+          "SS": 1,
+          "T": 3,
+          "TE": 1,
+          "WR": 3
+        },
+        "3": {
+          "C": 1,
+          "CB": 3,
+          "DE": 1,
+          "DT": 4,
+          "FS": 1,
+          "G": 7,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 5,
+          "QB": 1,
+          "SS": 1,
+          "T": 1,
+          "TE": 3,
+          "WR": 2
+        },
+        "4": {
+          "C": 3,
+          "CB": 4,
+          "G": 6,
+          "HB": 1,
+          "ILB": 1,
+          "QB": 3,
+          "TE": 7,
+          "WR": 7
+        },
+        "5": {
+          "C": 8,
+          "CB": 2,
+          "DE": 2,
+          "DT": 1,
+          "FS": 3,
+          "G": 1,
+          "ILB": 6,
+          "SS": 1,
+          "T": 3,
+          "WR": 5
+        },
+        "6": {
+          "C": 6,
+          "FB": 1,
+          "FS": 1,
+          "G": 2,
+          "HB": 2,
+          "ILB": 1,
+          "OLB": 4,
+          "QB": 11,
+          "SS": 4
+        }
+      },
       "rounds_completed": 7,
       "seed": 1
     },
@@ -239,9 +329,9 @@
       "free_agent_count": 397,
       "free_agent_occurrences": 0,
       "landing": {
-        "club": 18,
-        "club_name": "Detroit Lions",
-        "overall_pick": 83
+        "club": 20,
+        "club_name": "Carolina Panthers",
+        "overall_pick": 117
       },
       "leaves": [
         [
@@ -250,13 +340,99 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 8,
+          "QB": 3,
+          "T": 8,
+          "WR": 7
+        },
+        "1": {
+          "C": 2,
+          "CB": 7,
+          "DT": 1,
+          "FS": 3,
+          "G": 3,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 5,
+          "SS": 1,
+          "TE": 3,
+          "WR": 5
+        },
+        "2": {
+          "C": 1,
+          "CB": 9,
+          "DT": 4,
+          "G": 5,
+          "HB": 2,
+          "ILB": 3,
+          "QB": 1,
+          "SS": 1,
+          "T": 5,
+          "WR": 1
+        },
+        "3": {
+          "C": 1,
+          "CB": 3,
+          "DE": 2,
+          "DT": 6,
+          "G": 4,
+          "HB": 1,
+          "OLB": 7,
+          "QB": 3,
+          "TE": 4,
+          "WR": 1
+        },
+        "4": {
+          "C": 3,
+          "CB": 1,
+          "G": 8,
+          "ILB": 1,
+          "QB": 2,
+          "T": 2,
+          "TE": 6,
+          "WR": 9
+        },
+        "5": {
+          "C": 6,
+          "CB": 3,
+          "DE": 1,
+          "DT": 1,
+          "FS": 1,
+          "G": 2,
+          "HB": 1,
+          "ILB": 6,
+          "SS": 4,
+          "T": 1,
+          "WR": 6
+        },
+        "6": {
+          "C": 6,
+          "CB": 1,
+          "DE": 1,
+          "G": 3,
+          "HB": 3,
+          "ILB": 1,
+          "OLB": 2,
+          "QB": 11,
+          "SS": 1,
+          "T": 2,
+          "TE": 1
+        }
+      },
       "rounds_completed": 7,
       "seed": 2
     },
     {
       "free_agent_count": 397,
-      "free_agent_occurrences": 1,
-      "landing": null,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 12,
+        "club_name": "Miami Dolphins",
+        "overall_pick": 109
+      },
       "leaves": [
         [
           1538448,
@@ -264,13 +440,100 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 5,
+          "DE": 9,
+          "QB": 3,
+          "T": 8,
+          "WR": 7
+        },
+        "1": {
+          "C": 2,
+          "CB": 6,
+          "DT": 1,
+          "FS": 2,
+          "G": 4,
+          "ILB": 2,
+          "QB": 5,
+          "T": 2,
+          "TE": 3,
+          "WR": 5
+        },
+        "2": {
+          "C": 2,
+          "CB": 11,
+          "DT": 4,
+          "G": 4,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 2,
+          "SS": 1,
+          "T": 1,
+          "WR": 4
+        },
+        "3": {
+          "DT": 5,
+          "G": 5,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 5,
+          "QB": 2,
+          "SS": 1,
+          "T": 3,
+          "TE": 7,
+          "WR": 2
+        },
+        "4": {
+          "C": 3,
+          "CB": 4,
+          "FS": 1,
+          "G": 7,
+          "HB": 1,
+          "QB": 1,
+          "T": 3,
+          "TE": 5,
+          "WR": 7
+        },
+        "5": {
+          "C": 6,
+          "CB": 3,
+          "DE": 2,
+          "FS": 2,
+          "G": 2,
+          "HB": 1,
+          "ILB": 8,
+          "SS": 1,
+          "T": 1,
+          "TE": 1,
+          "WR": 5
+        },
+        "6": {
+          "C": 4,
+          "CB": 1,
+          "DT": 1,
+          "FB": 1,
+          "G": 2,
+          "HB": 3,
+          "ILB": 1,
+          "OLB": 4,
+          "QB": 11,
+          "SS": 3,
+          "TE": 1
+        }
+      },
       "rounds_completed": 7,
       "seed": 3
     },
     {
       "free_agent_count": 397,
-      "free_agent_occurrences": 1,
-      "landing": null,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 14,
+        "club_name": "Atlanta Falcons",
+        "overall_pick": 143
+      },
       "leaves": [
         [
           1538448,
@@ -278,13 +541,102 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 7,
+          "DE": 9,
+          "QB": 1,
+          "T": 8,
+          "TE": 1,
+          "WR": 6
+        },
+        "1": {
+          "C": 3,
+          "CB": 3,
+          "DT": 1,
+          "FS": 1,
+          "G": 5,
+          "ILB": 3,
+          "QB": 8,
+          "SS": 1,
+          "T": 1,
+          "TE": 1,
+          "WR": 5
+        },
+        "2": {
+          "CB": 9,
+          "DE": 1,
+          "DT": 5,
+          "FS": 1,
+          "G": 6,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 1,
+          "T": 4,
+          "TE": 1,
+          "WR": 1
+        },
+        "3": {
+          "CB": 4,
+          "DE": 1,
+          "DT": 3,
+          "G": 3,
+          "HB": 2,
+          "OLB": 7,
+          "QB": 1,
+          "SS": 1,
+          "T": 1,
+          "TE": 7,
+          "WR": 2
+        },
+        "4": {
+          "C": 5,
+          "CB": 1,
+          "G": 7,
+          "ILB": 1,
+          "QB": 2,
+          "T": 1,
+          "TE": 3,
+          "WR": 12
+        },
+        "5": {
+          "C": 5,
+          "CB": 3,
+          "DE": 2,
+          "DT": 1,
+          "FS": 2,
+          "G": 2,
+          "HB": 1,
+          "ILB": 7,
+          "SS": 2,
+          "T": 3,
+          "WR": 4
+        },
+        "6": {
+          "C": 4,
+          "DT": 2,
+          "FB": 1,
+          "FS": 2,
+          "G": 2,
+          "HB": 3,
+          "OLB": 2,
+          "QB": 13,
+          "SS": 2,
+          "TE": 1
+        }
+      },
       "rounds_completed": 7,
       "seed": 4
     },
     {
       "free_agent_count": 397,
-      "free_agent_occurrences": 1,
-      "landing": null,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 28,
+        "club_name": "Pittsburgh Steelers",
+        "overall_pick": 93
+      },
       "leaves": [
         [
           1538448,
@@ -292,6 +644,86 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 9,
+          "QB": 3,
+          "T": 8,
+          "WR": 6
+        },
+        "1": {
+          "C": 3,
+          "CB": 6,
+          "DT": 1,
+          "FS": 2,
+          "G": 4,
+          "ILB": 3,
+          "QB": 5,
+          "T": 1,
+          "TE": 3,
+          "WR": 4
+        },
+        "2": {
+          "C": 2,
+          "CB": 7,
+          "DT": 6,
+          "G": 3,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 2,
+          "SS": 1,
+          "T": 5,
+          "TE": 2,
+          "WR": 2
+        },
+        "3": {
+          "CB": 5,
+          "DE": 1,
+          "DT": 2,
+          "G": 6,
+          "HB": 2,
+          "OLB": 5,
+          "QB": 3,
+          "SS": 1,
+          "TE": 4,
+          "WR": 3
+        },
+        "4": {
+          "C": 3,
+          "CB": 3,
+          "G": 6,
+          "HB": 1,
+          "QB": 1,
+          "T": 2,
+          "TE": 5,
+          "WR": 11
+        },
+        "5": {
+          "C": 5,
+          "CB": 1,
+          "DE": 2,
+          "DT": 1,
+          "FS": 3,
+          "G": 3,
+          "ILB": 8,
+          "SS": 3,
+          "T": 1,
+          "TE": 1,
+          "WR": 4
+        },
+        "6": {
+          "C": 6,
+          "DT": 1,
+          "G": 2,
+          "HB": 5,
+          "ILB": 1,
+          "OLB": 5,
+          "QB": 10,
+          "T": 1,
+          "TE": 1
+        }
+      },
       "rounds_completed": 7,
       "seed": 5
     },
@@ -299,9 +731,9 @@
       "free_agent_count": 397,
       "free_agent_occurrences": 0,
       "landing": {
-        "club": 11,
-        "club_name": "Dallas Cowboys",
-        "overall_pick": 108
+        "club": 25,
+        "club_name": "Washington Redskins",
+        "overall_pick": 90
       },
       "leaves": [
         [
@@ -310,13 +742,102 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 8,
+          "QB": 3,
+          "T": 8,
+          "WR": 7
+        },
+        "1": {
+          "C": 2,
+          "CB": 7,
+          "DT": 2,
+          "FS": 1,
+          "G": 5,
+          "QB": 7,
+          "T": 1,
+          "TE": 3,
+          "WR": 4
+        },
+        "2": {
+          "C": 2,
+          "CB": 4,
+          "DT": 5,
+          "FS": 1,
+          "G": 4,
+          "HB": 2,
+          "ILB": 3,
+          "OLB": 1,
+          "QB": 2,
+          "T": 2,
+          "TE": 2,
+          "WR": 4
+        },
+        "3": {
+          "C": 2,
+          "CB": 5,
+          "DE": 1,
+          "DT": 3,
+          "G": 2,
+          "HB": 1,
+          "OLB": 7,
+          "QB": 1,
+          "SS": 2,
+          "T": 3,
+          "TE": 5
+        },
+        "4": {
+          "C": 1,
+          "CB": 3,
+          "DT": 1,
+          "G": 9,
+          "HB": 2,
+          "ILB": 1,
+          "QB": 2,
+          "T": 3,
+          "TE": 2,
+          "WR": 8
+        },
+        "5": {
+          "C": 10,
+          "CB": 5,
+          "DE": 4,
+          "DT": 1,
+          "FS": 2,
+          "G": 1,
+          "ILB": 4,
+          "SS": 1,
+          "TE": 1,
+          "WR": 3
+        },
+        "6": {
+          "C": 4,
+          "DE": 1,
+          "DT": 1,
+          "FS": 2,
+          "G": 2,
+          "HB": 3,
+          "ILB": 1,
+          "OLB": 2,
+          "QB": 10,
+          "SS": 3,
+          "TE": 2,
+          "WR": 1
+        }
+      },
       "rounds_completed": 7,
       "seed": 6
     },
     {
       "free_agent_count": 397,
-      "free_agent_occurrences": 1,
-      "landing": null,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 27,
+        "club_name": "Seattle Seahawks",
+        "overall_pick": 92
+      },
       "leaves": [
         [
           1538448,
@@ -324,6 +845,87 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 9,
+          "QB": 3,
+          "T": 8,
+          "WR": 6
+        },
+        "1": {
+          "C": 2,
+          "CB": 6,
+          "DT": 3,
+          "FS": 2,
+          "G": 4,
+          "ILB": 2,
+          "QB": 5,
+          "TE": 3,
+          "WR": 5
+        },
+        "2": {
+          "C": 1,
+          "CB": 6,
+          "DT": 3,
+          "G": 4,
+          "HB": 3,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 3,
+          "SS": 2,
+          "T": 4,
+          "TE": 1,
+          "WR": 3
+        },
+        "3": {
+          "C": 2,
+          "CB": 5,
+          "DT": 4,
+          "G": 5,
+          "OLB": 6,
+          "QB": 1,
+          "T": 4,
+          "TE": 4,
+          "WR": 1
+        },
+        "4": {
+          "C": 2,
+          "CB": 3,
+          "DT": 1,
+          "FS": 1,
+          "G": 7,
+          "HB": 1,
+          "ILB": 2,
+          "QB": 1,
+          "TE": 4,
+          "WR": 10
+        },
+        "5": {
+          "C": 8,
+          "CB": 3,
+          "DE": 2,
+          "DT": 1,
+          "FS": 2,
+          "G": 2,
+          "ILB": 6,
+          "SS": 2,
+          "T": 1,
+          "TE": 1,
+          "WR": 4
+        },
+        "6": {
+          "C": 6,
+          "G": 2,
+          "HB": 2,
+          "ILB": 1,
+          "OLB": 3,
+          "QB": 11,
+          "SS": 3,
+          "T": 1,
+          "TE": 3
+        }
+      },
       "rounds_completed": 7,
       "seed": 7
     },
@@ -331,9 +933,9 @@
       "free_agent_count": 397,
       "free_agent_occurrences": 0,
       "landing": {
-        "club": 21,
-        "club_name": "New England Patriots",
-        "overall_pick": 214
+        "club": 29,
+        "club_name": "Houston Texans",
+        "overall_pick": 126
       },
       "leaves": [
         [
@@ -342,6 +944,87 @@
         ]
       ],
       "ordinal": 2008,
+      "positions_by_round": {
+        "0": {
+          "CB": 6,
+          "DE": 9,
+          "QB": 2,
+          "T": 8,
+          "WR": 7
+        },
+        "1": {
+          "C": 2,
+          "CB": 8,
+          "DT": 1,
+          "FS": 1,
+          "G": 4,
+          "ILB": 2,
+          "OLB": 1,
+          "QB": 7,
+          "T": 2,
+          "TE": 1,
+          "WR": 3
+        },
+        "2": {
+          "C": 2,
+          "CB": 5,
+          "DT": 5,
+          "G": 5,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 1,
+          "QB": 1,
+          "T": 3,
+          "TE": 3,
+          "WR": 5
+        },
+        "3": {
+          "C": 1,
+          "CB": 6,
+          "DE": 2,
+          "DT": 5,
+          "G": 2,
+          "HB": 1,
+          "ILB": 1,
+          "OLB": 7,
+          "QB": 1,
+          "SS": 1,
+          "TE": 4,
+          "WR": 1
+        },
+        "4": {
+          "C": 3,
+          "FS": 2,
+          "G": 9,
+          "OLB": 1,
+          "QB": 1,
+          "TE": 5,
+          "WR": 11
+        },
+        "5": {
+          "C": 8,
+          "CB": 3,
+          "DE": 2,
+          "DT": 1,
+          "G": 4,
+          "ILB": 4,
+          "SS": 3,
+          "T": 3,
+          "WR": 4
+        },
+        "6": {
+          "C": 2,
+          "DE": 1,
+          "FS": 2,
+          "G": 2,
+          "HB": 5,
+          "ILB": 1,
+          "OLB": 2,
+          "QB": 14,
+          "SS": 1,
+          "T": 2
+        }
+      },
       "rounds_completed": 7,
       "seed": 8
     }

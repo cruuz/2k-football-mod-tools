@@ -19,8 +19,12 @@ Two retail routines are replaced.
        pick      = the available prospect with the highest score
 
    Subtracting each position's own class average cancels the generator's per-position scale, VALUE is a
-   real-NFL first-round positional value (QB, T, DE, WR, CB high; RB, S, LB lower; K/P 0.3), need tilts
+   real-NFL first-round positional value (QB, T, DE, WR, CB high; RB, S, LB lower), need tilts
    the order the way front offices do, and the jitter keeps two teams from reading the board identically.
+   b778 dr2: K/P carry VALUE 1.0 but a separate policy keeps them out of display rounds 1-4 (except a
+   0.30-edge historic outlier), requires an empty specialist slot, and uses one late slot per round
+   (pick 31 for a kicker, pick 30 for a punter) so at most one K and one P can go in a round.  The
+   Rookie Report key keeps a fixed 0.30 scale for K/P, so they stay out of that top-25 list.
 
 2. Free-agent wishes (the earlier "draft AI" cave, which in fact targets free agency).  The offseason
    day tick ``FUN_00324600`` runs the 100-slot bidding pool at 0xE3C600 during the retirement,
@@ -34,6 +38,8 @@ Two retail routines are replaced.
 
    The projected-"round" routine ``FUN_00322690`` is the free-agent contract tier by years pro and is
    left retail (an earlier revision hooked it; that cave ranked players against the whole player pool).
+   b778 dr2 raises the K/P VALUE to 1.0 (see the draft policy); the wish score therefore values a club's
+   missing kicker/punter like a starter, while a club that already has one still scores no edge there.
 
 3. The Rookie Report / prospect ranking key (Noah, 9/3 night: "It often has fullbacks as the top
    prospect ... fullbacks, kickers, and punters should never, ever, ever be a top 25 prospect").
@@ -43,7 +49,8 @@ Two retail routines are replaced.
    overall tables at 0xAC4948 used only by this key and by Mel's projected-pick text ``FUN_0031d900``)
    gives ``key = clamp(0.3 + 0.7 * (weighted attribute average - base) / scale, 0, 1)``.  Every
    position's best rookie therefore approaches 1.0 and a good FB or K class tops the list.  Data fix,
-   consistent with the draft pick's ``VALUE`` (FB 0.60, K/P 0.30): the ``scale`` of the FB, K and P
+   consistent with the draft pick's original positional value (FB 0.60, K/P 0.30; b778 dr2 keeps the
+   K/P 0.30 here while the draft pick itself values a needed late specialist at 1.0): the ``scale`` of the FB, K and P
    tables is divided by that value, which shrinks their keys toward 0.3 by exactly that factor
    (``0.3 + 0.7 * value * ...``); every other position keeps its retail table.  Emulated on two real
    380-player classes from the game's own generator: retail put a K at #5 and a FB at #24 (seed
@@ -81,8 +88,11 @@ FN_RAND = 0x00048BC0          # () -> eax
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "RB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 # Positional value, NFL 2015-2024 first-round shares folded into a multiplier around 1.0.  It scales
 # a prospect's edge over his own position's class average, so a running back has to be clearly
-# elite to out-rank a tackle or an edge with the same edge over their peers.
-VALUE = {"QB": 1.15, "K": 0.30, "P": 0.30, "WR": 1.08, "CB": 1.08, "FS": 0.95, "SS": 0.95, "RB": 0.92,
+# elite to out-rank a tackle or an edge with the same edge over their peers.  b778 dr2: K/P are 1.00
+# here so a club with an empty specialist slot can actually take one in rounds 5-7; the pick policy
+# keeps them out of the early rounds and caps them at one K and one P per round.  The Rookie Report
+# key keeps its own 0.30 scale (ROOKIE_KEY_SCALE), so kickers/punters do not climb that list.
+VALUE = {"QB": 1.15, "K": 1.00, "P": 1.00, "WR": 1.08, "CB": 1.08, "FS": 0.95, "SS": 0.95, "RB": 0.92,
          "FB": 0.60, "TE": 0.95, "OLB": 1.00, "ILB": 0.93, "C": 0.88, "G": 0.92, "T": 1.12, "DT": 1.00, "DE": 1.12}
 DEFICIT_BONUS = 12.0
 JITTER_POINTS = 20.0
@@ -106,6 +116,9 @@ FLAG_PROSPECT = 0x10          # player+8: unsigned draft prospect
 FLAG_DRAFTED = 0x20           # player+8: already taken in this draft
 NEED_STEP = 0.010             # per need rank, on the 0..1 overall scale: the neediest position is worth +0.17 before VALUE
 PICK_JITTER = 0.06            # random 0..0.06 added to every CPU evaluation (about 6 rating points)
+SPECIAL_FIRST_ROUND = 4       # 0-based: kickers and punters only from display round 5 (index 4) on
+SPECIAL_EDGE = 0.30           # a K/P this far above his own class mean is a historic outlier (rare exception)
+SPECIAL_ROUND_CAP = 1         # at most one K and one P per round in rounds 5-7
 PICK_CONST_OFF = 264            # the two floats sit in the last 8 bytes of the 275-byte function (aligned)
 PICK_TAIL_VA = BODY_VA + 5      # the scan half of the pick routine, after the jump into the wish cave
 RETAIL_PICK_FN = bytes.fromhex(
@@ -118,11 +131,13 @@ RETAIL_PICK_FN = bytes.fromhex(
 )
 
 # --- Rookie Report ranking key: the per-position scouting tables at .data 0xAE2A20 (17 pointers to
-# {float base, float scale, u32 count, entries*}); the FB / K / P ``scale`` words are divided by the
-# draft VALUE so their keys shrink by that factor.  Struct addresses read from the retail pointer table.
+# {float base, float scale, u32 count, entries*}); the FB / K / P ``scale`` words are divided by a fixed
+# value so their keys shrink by that factor.  K/P stay at 0.30 even though the b778 dr2 draft pick uses
+# 1.00 for a needed late specialist; the report must not rank kickers/punters near the top.  Struct
+# addresses read from the retail pointer table.
 ROOKIE_KEY_TABLES_VA = 0x00AE2A20
 ROOKIE_KEY_SCALE_OFF = 4
-ROOKIE_KEY_SCALE = {"FB": VALUE["FB"], "K": VALUE["K"], "P": VALUE["P"]}
+ROOKIE_KEY_SCALE = {"FB": VALUE["FB"], "K": 0.30, "P": 0.30}
 ROOKIE_KEY_SITES = (
     # (position, struct VA, retail scale bits)
     ("K", 0x00AE1D80, 0x3F333333),      # 0.70
@@ -238,32 +253,24 @@ def body_patch() -> bytes:
     return jump + tail + b"\xcc" * (BODY_SIZE - len(jump) - len(tail))
 
 
-def pick_fn_bytes() -> tuple[bytes, bytes]:
-    """Replacement for FUN_0031e0f0: ecx = team, edx = CPU flag -> eax = player.  Returns the head
-    (275 bytes, assembled in place of the retail routine, its two tunable floats in the last 8 bytes)
-    and the tail (hosted in the dead bytes of the old free-agency passes at PICK_TAIL_VA).
+SPECIAL_HEAD_OFFSET = 0x80
+SPECIAL_HEAD_VA = PICK_FN_VA + SPECIAL_HEAD_OFFSET
 
-        need[17] = FUN_0031dea0(team, round, pick)            (retail need order, rank 0 = neediest)
-        mean[pos] = average overall of the undrafted-or-drafted prospects at pos (the class)
-        score(p)  = ((overall(p) - mean[pos]) + (17 - needrank(pos)) * NEED_STEP) * VALUE[pos]
-                  + (rand() & 255) / 256 * PICK_JITTER          (CPU only)
-        pick      = the available prospect (flag 0x10 set, 0x20 clear) with the highest score,
-                    else the retail fallback (first roster player).
-    Frame: sum[17] at [esp], count[17] at [esp+0x44], need[17] at [esp+0x88], scratch [esp+0xcc],
-    best score [esp+0xd0], best player [esp+0xd4].
-    """
+
+def _prefix_bytes() -> bytes:
+    """Prologue, retail need order and the class sums, padded to SPECIAL_HEAD_OFFSET."""
 
     a = _Asm(PICK_FN_VA)
     imm = lambda va: struct.pack("<I", va).hex()  # noqa: E731
     a.b("53565755")                                    # push ebx; push esi; push edi; push ebp
-    a.b("81ecd8000000")                                # sub esp,0xd8
+    a.b("81ecfc000000")                                # sub esp,0xfc
     a.b("8be9")                                        # mov ebp,ecx        ; team
     a.b("8bfa")                                        # mov edi,edx        ; CPU flag
     a.b("31c031c9")                                    # xor eax,eax ; xor ecx,ecx
     a.label("zero")
     a.b("89048c")                                      # mov [esp+ecx*4],eax
     a.b("41")                                          # inc ecx
-    a.b("83f936")                                      # cmp ecx,0x36       ; 54 dwords: sums, counts, need, best
+    a.b("83f93b")                                      # cmp ecx,0x3b       ; 59 dwords: sums, counts, policy
     a.j8("7c", "zero")                                 # jl zero
     a.b("8d842488000000")                              # lea eax,[esp+0x88]
     a.b("50")                                          # push eax           ; &need
@@ -274,12 +281,14 @@ def pick_fn_bytes() -> tuple[bytes, bytes]:
     a.b("8b35" + imm(POOL_PTR))                        # mov esi,[POOL_PTR]
     a.b("8b1e")                                        # mov ebx,[esi]      ; count
     a.b("8b7604")                                      # mov esi,[esi+4]    ; base
-    a.label("sum_loop")
     a.b("85db")                                        # test ebx,ebx
     a.j8("7e", "sum_done")                             # jle sum_done
+    a.label("sum_loop")
     a.b("f6460810")                                    # test byte [esi+8],0x10   ; prospect?
     a.j8("74", "sum_next")                             # jz sum_next
-    a.b("8bceba01000000")                              # mov ecx,esi ; mov edx,1
+    a.b("8bce")                                        # mov ecx,esi
+    a.b("6a01")                                        # push 1
+    a.b("5a")                                          # pop edx             ; edx=1
     a.call(FN_RATING)                                  # st0 = overall
     a.b("0fb64635")                                    # movzx eax, byte [esi+0x35]
     a.b("d80484")                                      # fadd dword [esp+eax*4]
@@ -288,16 +297,58 @@ def pick_fn_bytes() -> tuple[bytes, bytes]:
     a.label("sum_next")
     a.b("83c654")                                      # add esi,0x54
     a.b("4b")                                          # dec ebx
-    a.j8("eb", "sum_loop")                             # jmp sum_loop
+    a.j8("7f", "sum_loop")                             # jg sum_loop
     a.label("sum_done")
-    a.jmp_abs(PICK_TAIL_VA)                            # continue in the dead bytes of the old passes
-    head = a.assemble()
-    _require(len(head) <= PICK_CONST_OFF, f"draft pick head is {len(head)} bytes, over {PICK_CONST_OFF}")
-    consts = struct.pack("<2f", NEED_STEP, PICK_JITTER / 256.0)
-    head = head + b"\xcc" * (PICK_CONST_OFF - len(head)) + consts
-    head = head + b"\xcc" * (PICK_FN_SIZE - len(head))
+    a.jmp_abs(SPECIAL_HEAD_VA)                         # the specialist policy at +0x80
+    code = a.assemble()
+    _require(len(code) <= SPECIAL_HEAD_OFFSET, f"draft pick prefix is {len(code)} bytes, over {SPECIAL_HEAD_OFFSET}")
+    return code + b"\xcc" * (SPECIAL_HEAD_OFFSET - len(code))
+
+
+def _special_bytes() -> bytes:
+    """The b778 dr2 specialist policy, at SPECIAL_HEAD_VA.
+
+    Early rounds: a needed K/P is allowed only when its edge over the class mean is at least
+    SPECIAL_EDGE (the tail checks the edge).  Rounds 5-7: one late slot per round, pick 31 for
+    a kicker and pick 30 for a punter, and only when the club has none.  No private state.
+    """
+
+    a = _Asm(SPECIAL_HEAD_VA)
+    imm = lambda va: struct.pack("<I", va).hex()  # noqa: E731
+    a.b("c78424f4000000" + struct.pack("<f", SPECIAL_EDGE).hex())  # early outlier edge
+    a.b("be01000000")                                  # mov esi,1          ; K
+    a.label("elig_loop")
+    a.b("8bcd")                                        # mov ecx,ebp        ; team
+    a.b("8bd6")                                        # mov edx,esi        ; position
+    a.call(FN_COUNT_AT_POS)                            # eax = roster count
+    a.b("85c0")                                        # test eax,eax
+    a.j8("75", "elig_next")                            # already has one: not needed
+    a.b("a1" + imm(DRAFT_ROUND_VA))                    # mov eax,[current round]
+    a.b("83f804")                                      # cmp eax,4
+    a.j8("7c", "elig_early")
+    a.b("ba20000000")                                  # mov edx,32
+    a.b("29f2")                                        # sub edx,esi        ; K -> 31, P -> 30
+    a.b("3b15" + imm(DRAFT_PICK_VA))                   # cmp edx,[current pick]
+    a.j8("75", "elig_next")                            # only the last specialist slot
+    a.b("b801000000")                                  # mov eax,1          ; normal bit
+    a.j8("eb", "elig_store")
+    a.label("elig_early")
+    a.b("b802000000")                                  # mov eax,2          ; early: edge-only outlier
+    a.label("elig_store")
+    a.b("8984b4d4000000")                              # mov [esp+esi*4+0xd4],eax ; K at 0xd8, P at 0xdc
+    a.label("elig_next")
+    a.b("46")                                          # inc esi
+    a.b("83fe02")                                      # cmp esi,2
+    a.j8("7e", "elig_loop")
+    a.jmp_abs(PICK_TAIL_VA)                            # the scored scan in the old free-agency passes
+    return a.assemble()
+
+
+def _scan_bytes() -> bytes:
+    """The scored scan, at PICK_TAIL_VA; the b778 dr2 policy check sits before the score."""
 
     a = _Asm(PICK_TAIL_VA)
+    imm = lambda va: struct.pack("<I", va).hex()  # noqa: E731
     a.b("c78424d0000000000000cf")                      # mov dword [esp+0xd0],-2147483648.0 ; best score
     a.b("8b35" + imm(POOL_PTR))                        # mov esi,[POOL_PTR]
     a.b("8b1e")                                        # mov ebx,[esi]
@@ -322,6 +373,24 @@ def pick_fn_bytes() -> tuple[bytes, bytes]:
     a.b("db8424cc000000")                              # fild dword [esp+0xcc]
     a.b("d83c84")                                      # fdivr dword [esp+eax*4]    ; st0 = mean, st1 = overall
     a.b("dee9")                                        # fsubp st1,st0              ; overall - mean
+    a.b("83f801")                                      # cmp eax,1                  ; K/P candidate?
+    a.j8("74", "special")
+    a.b("83f802")                                      # cmp eax,2
+    a.j8("75", "normal_score")
+    a.label("special")
+    a.b("89c2")                                        # mov edx,eax                ; position
+    a.b("8b8494d4000000")                              # mov eax,[esp+edx*4+0xd4]  ; K/P policy flags
+    a.b("a801")                                        # test al,1                  ; allowed normally
+    a.j8("75", "normal_score")
+    a.b("a802")                                        # test al,2                  ; historic outlier?
+    a.j32("0f84", "scan_drop")                         # neither: skip this candidate
+    a.b("d9c0")                                        # fld st0                    ; edge
+    a.b("d89c24f4000000")                              # fcomp dword [esp+0xf4]     ; edge >= SPECIAL_EDGE
+    a.b("dfe0")                                        # fnstsw ax
+    a.b("f6c441")                                      # test ah,0x41
+    a.j32("0f85", "scan_drop")
+    a.b("89d0")                                        # mov eax,edx                ; restore position
+    a.label("normal_score")
     a.b("31c9")                                        # xor ecx,ecx
     a.label("rank_loop")
     a.b("39848c88000000")                              # cmp [esp+ecx*4+0x88],eax
@@ -362,15 +431,46 @@ def pick_fn_bytes() -> tuple[bytes, bytes]:
     a.j8("75", "fin")                                  # jnz fin
     a.b("8b4500")                                      # mov eax,[ebp]              ; retail fallback
     a.label("fin")
-    a.b("81c4d8000000")                                # add esp,0xd8
+    a.b("81c4fc000000")                                # add esp,0xfc
     a.b("5d5f5e5b")                                    # pop ebp; pop edi; pop esi; pop ebx
     a.b("c3")                                          # ret
-    tail = a.assemble()
+    return a.assemble()
+
+
+def pick_fn_bytes() -> tuple[bytes, bytes]:
+    """Replacement for FUN_0031e0f0: ecx = team, edx = CPU flag -> eax = player.
+
+    Head: prologue, retail need order and class sums, then the specialist policy.  Tail: the
+    scored scan in the dead bytes of the old free-agency passes.
+
+        need[17] = FUN_0031dea0(team, round, pick)            (retail need order, rank 0 = neediest)
+        mean[pos] = average overall of the undrafted prospects at pos (the class)
+        score(p)  = ((overall(p) - mean[pos]) + (17 - needrank(pos)) * NEED_STEP) * VALUE[pos]
+                  + (rand() & 255) / 256 * PICK_JITTER          (CPU only)
+        pick      = the available prospect (flag 0x10 set, 0x20 clear) with the highest score,
+                    else the retail fallback (first roster player).
+
+    Specialists (b778 dr2): a kicker or punter is eligible only when the club has none at the
+    position and the draft is in display round 5 or later, and only in that round's late slot
+    (pick 31 for K, pick 30 for P).  This caps the whole league at one K and one P per round with
+    no private state.  Before round 5 the only exception is a historic outlier (0.30 overall above
+    his own class mean), checked against the class mean in the tail.
+    Frame: sum[17] at [esp], count[17] at [esp+0x44], need[17] at [esp+0x88], scratch [esp+0xcc],
+    best score [esp+0xd0], best player [esp+0xd4], K/P policy flags [esp+0xd8], outlier edge
+    [esp+0xf4].
+    """
+
+    head = _prefix_bytes() + _special_bytes()
+    _require(len(head) <= PICK_CONST_OFF, f"draft pick head is {len(head)} bytes, over {PICK_CONST_OFF}")
+    consts = struct.pack("<2f", NEED_STEP, PICK_JITTER / 256.0)
+    head = head + b"\xcc" * (PICK_CONST_OFF - len(head)) + consts
+    head = head + b"\xcc" * (PICK_FN_SIZE - len(head))
+    tail = _scan_bytes()
     _require(5 + len(tail) <= BODY_SIZE, f"draft pick tail is {len(tail)} bytes, over {BODY_SIZE - 5}")
     return head, tail
 
 
-def cave_bytes() -> bytes:
+def _wish_cave_bytes() -> bytes:
     """The scored selection, assembled for CAVE_VA in the boot-logo bitmap."""
 
     a = _Asm(CAVE_VA)
@@ -484,6 +584,13 @@ def cave_bytes() -> bytes:
     _require(CAVE_VA + len(code) <= LOGO_END_VA, f"cave is {len(code)} bytes, overruns the boot-logo bitmap")
     return code
 
+
+
+
+def cave_bytes() -> bytes:
+    """The free-agency wish selection (the pick routine's class sums live in its head now)."""
+
+    return _wish_cave_bytes()
 
 def _header_size(payload: bytes) -> int:
     return struct.unpack_from("<I", payload, 0x108)[0]

@@ -676,7 +676,12 @@ class DraftAiTests(unittest.TestCase):
         self.assertEqual(len(draft.POSITIONS), 17)
         self.assertEqual(draft.POSITIONS[0], "QB")
         self.assertEqual(draft.POSITIONS[16], "DE")
-        self.assertLess(draft.VALUE["K"], draft.VALUE["RB"])
+        # b778 dr2: the draft pick values a needed late specialist like a starter; the K/P
+        # restriction lives in the pick policy (late slot plus a 0.30-edge early outlier), and
+        # the Rookie Report keeps its own 0.30 scale so kickers/punters do not climb that list.
+        self.assertEqual(draft.VALUE["K"], draft.VALUE["P"])
+        self.assertLess(draft.ROOKIE_KEY_SCALE["K"], draft.VALUE["K"])
+        self.assertGreaterEqual(draft.SPECIAL_EDGE, 0.30)
         self.assertGreater(draft.VALUE["T"], draft.VALUE["G"])
 
     def test_foreign_bytes_are_refused(self) -> None:
