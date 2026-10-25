@@ -11,6 +11,7 @@ when the private extraction is present.
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
 import sys
 import unittest
@@ -32,7 +33,7 @@ HEADER_SIZE = 0xCC4
 TEXT_VA, TEXT_RAW, TEXT_SIZE = 0x11000, 0x1000, 0x3F0000
 DATA_VA, DATA_RAW, DATA_SIZE = 0x4E3AE0, 0x431000, 0x70000
 SECTIONS = {0: (TEXT_VA, TEXT_RAW, TEXT_SIZE), 12: (DATA_VA, DATA_RAW, DATA_SIZE)}
-RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
+RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
 
 
 def _raw_offset(va: int) -> int:
@@ -172,7 +173,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertNotIn("\u2014", text)
 
 
-@unittest.skipUnless(RETAIL_XBE.exists(), "retail extraction is not present")
+@unittest.skipUnless(RETAIL_XBE.is_file(), "retail extraction is not present")
 class RetailXbeTests(unittest.TestCase):
     def test_retail_bytes_apply_and_verify(self) -> None:
         retail = RETAIL_XBE.read_bytes()

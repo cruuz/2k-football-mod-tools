@@ -25,8 +25,8 @@ from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_roster_refresh as refresh  # noqa: E402
 import test_nfl2k5_roster_records as fixture  # noqa: E402
 
-SCRATCH = Path(os.environ.get("NFL2K5_B778_SCRATCH", "/home/noah/2k-worktrees/.b77-scratch/b778"))
-DISCS = Path(os.environ.get("NFL2K5_DISC_FOLDER", "/media/noah/Storage/2K5 Discs"))
+SCRATCH = Path(os.environ.get("NFL2K5_B778_SCRATCH", ""))
+DISCS = Path(os.environ.get("NFL2K5_DISC_FOLDER", ""))
 OCT13_DISC = DISCS / "SOFTDRINK 2K28 v0.6.1 fixes (2026-10-13).xiso.iso"
 REFRESH_PLAN = SCRATCH / "rt1/out/roster-edits-b778-rt1.json"
 GOULD = "00-0039816"
