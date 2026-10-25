@@ -45,7 +45,10 @@ from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
-from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
+from mod_editor.gui.ux_text import (
+    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, build_panel_stylesheet,
+    plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
+)
 
 
 def _resolved_build_file(path, what: str) -> Path:
@@ -364,9 +367,11 @@ class BuildPanel(QWidget):
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
     book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
 
-    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None) -> None:
+    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None,
+                 theme: str = "dark") -> None:
         super().__init__(parent)
         self._facade = facade
+        self._theme = theme if theme in STUDIO_THEMES else "dark"
         self.operation_guard = None
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
@@ -423,7 +428,7 @@ class BuildPanel(QWidget):
         title = QLabel("Build")
         title.setObjectName("throwTitle")
         root.addWidget(title)
-        intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
+        intro = WrappedLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
                        "This build includes the selected Build options and every edit listed below from the open project, "
                        "including staged model, art, text and audio edits. Equipment keeps the game's existing compressed "
                        "allocation; larger equipment art is not available. Review each import's chosen size and colour-loss report. " + XEMU_LINE + " "
@@ -454,7 +459,7 @@ class BuildPanel(QWidget):
         self.project_includes_list.setMaximumHeight(200)
         self.project_includes_list.setPlaceholderText("No project edits. Selected Build options are listed below.")
         root.addWidget(self.project_includes_list)
-        self.project_includes_note = QLabel(
+        self.project_includes_note = WrappedLabel(
             "Newest changes in this session first. Older project files do not record original edit times. "
             "The project edit index identifies the edit if a build refuses it.")
         self.project_includes_note.setWordWrap(True)
@@ -471,31 +476,18 @@ class BuildPanel(QWidget):
         self.source_button.clicked.connect(self._choose_source)
         src.addWidget(self.source_button)
         root.addLayout(src)
-        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read what it already carries.")
+        self.source_status = WrappedLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read what it already carries.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
 
         # One click to start from a known-good set, then customise below.
         # The checklist IS the product: make every toggle read at a glance (big indicator, accent when ticked).
-        self.setStyleSheet(
-            "QGroupBox { font-weight: 600; margin-top: 14px; }"
-            "QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }"
-            "QCheckBox { padding: 4px 2px; spacing: 10px; }"
-            "QCheckBox::indicator { width: 20px; height: 20px; border: 2px solid #8a94a6; border-radius: 4px; background: #1b1f27; }"
-            "QCheckBox::indicator:unchecked:hover { border-color: #c9d1de; }"
-            "QCheckBox::indicator:checked { background: #2ecc71; border-color: #2ecc71; "
-            "image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-16.png); }"
-            "QCheckBox::indicator:disabled { border-color: #4a5060; background: #22262e; }"
-            "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
-            "QCheckBox:disabled { color: #6b7385; }"
-            "QCheckBox::indicator:focus { border-color: #6ee7c7; }"
-            "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }"
-            "QPushButton#presetButton { padding: 8px 14px; font-weight: 600; }")
+        self.setStyleSheet(build_panel_stylesheet(self._theme))
         presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
         preset_grid = QGridLayout()
-        preset_grid.setHorizontalSpacing(14)
+        preset_grid.setHorizontalSpacing(6)
         self.preset_basic_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_basic"]))
         self.preset_advanced_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_advanced"]))
         self.preset_experimental_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_experimental"]))
@@ -508,7 +500,7 @@ class BuildPanel(QWidget):
             button.setAccessibleName(f"{PRESET_LABELS[name]} preset")
             button.setAccessibleDescription(PRESET_CAPTIONS[name])
             button.clicked.connect(lambda _c=False, key=name: self.apply_preset(key))
-            caption = QLabel(PRESET_CAPTIONS[name])
+            caption = WrappedLabel(PRESET_CAPTIONS[name])
             caption.setObjectName("throwMuted")
             caption.setWordWrap(True)
             caption.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -517,11 +509,11 @@ class BuildPanel(QWidget):
             preset_grid.addWidget(caption, 1, column)
             preset_grid.setColumnStretch(column, 1)
         pr.addLayout(preset_grid)
-        self.preset_note = QLabel(PRESET_NOTE)
+        self.preset_note = WrappedLabel(PRESET_NOTE)
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
         pr.addWidget(self.preset_note)
-        self.preset_scope_note = QLabel(PRESET_SCOPE_NOTE)
+        self.preset_scope_note = WrappedLabel(PRESET_SCOPE_NOTE)
         self.preset_scope_note.setObjectName("throwMuted")
         self.preset_scope_note.setWordWrap(True)
         self.preset_scope_note.setAccessibleName("What the presets do not include")
@@ -544,11 +536,11 @@ class BuildPanel(QWidget):
         self.target_field.textEdited.connect(lambda _t: self._user_target())
         self.target_field.textChanged.connect(lambda _t: self._refresh())
         mk.addLayout(out)
-        self.summary_label = QLabel("Selected: nothing yet.")
+        self.summary_label = WrappedLabel("Selected: nothing yet.")
         self.summary_label.setObjectName("throwMuted")
         self.summary_label.setWordWrap(True)
         mk.addWidget(self.summary_label)
-        self.synced_note = QLabel("")
+        self.synced_note = WrappedLabel("")
         self.synced_note.setObjectName("throwMuted")
         self.synced_note.setWordWrap(True)
         self.synced_note.setAccessibleName("Cloud-synced folder warning")
@@ -571,14 +563,14 @@ class BuildPanel(QWidget):
         self.copy_summary_button.setEnabled(False)
         self.copy_summary_button.clicked.connect(self._copy_build_summary)
         actions.addWidget(self.copy_summary_button)
-        self.blocker_label = QLabel("")
+        self.blocker_label = WrappedLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
         self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
         actions.addWidget(self.blocker_label, 1)
         mk.addLayout(actions)
         prog = QHBoxLayout()
-        self.progress_label = QLabel("")
+        self.progress_label = WrappedLabel("")
         self.progress_label.setObjectName("throwMuted")
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 0)
@@ -586,7 +578,7 @@ class BuildPanel(QWidget):
         prog.addWidget(self.progress_label, 1)
         prog.addWidget(self.progress_bar)
         mk.addLayout(prog)
-        self.status_label = QLabel("")
+        self.status_label = WrappedLabel("")
         self.status_label.setWordWrap(True)
         self.status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         mk.addWidget(self.status_label)
@@ -605,7 +597,7 @@ class BuildPanel(QWidget):
         options = QGroupBox("Choose changes")
         ol = QVBoxLayout(options)
         ol.setSpacing(10)
-        self.options_hint = QLabel("A preset ticks a known-good set; untick anything here, or tick more. "
+        self.options_hint = WrappedLabel("A preset ticks a known-good set; untick anything here, or tick more. "
                                    "Badges say when a change needs the full disc, is already on the disc, or is not yet tested in-game.")
         self.options_hint.setObjectName("throwMuted")
         self.options_hint.setWordWrap(True)
@@ -679,7 +671,7 @@ class BuildPanel(QWidget):
         self.momentum_contact_check = self._option(g, "momentum_contact", "Running start in contact (experimental)",
             "Experimental / Unwitnessed. Requires player momentum.",
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        self.momentum_contact_note = QLabel("A sustained running start can give the ball carrier a small extra boost through contact.")
+        self.momentum_contact_note = WrappedLabel("A sustained running start can give the ball carrier a small extra boost through contact.")
         self.momentum_contact_note.setWordWrap(True)
         self.momentum_contact_note.hide()
         self.momentum_check.toggled.connect(self._momentum_toggled)
@@ -1139,7 +1131,7 @@ class BuildPanel(QWidget):
         edits_row.addWidget(self.roster_edits_button)
         self.edits_row.hide()
         r.addWidget(self.edits_row)
-        self.roster_edits_status = QLabel("")
+        self.roster_edits_status = WrappedLabel("")
         self.roster_edits_status.setObjectName("throwMuted")
         self.roster_edits_status.setWordWrap(True)
         self.roster_edits_status.hide()
@@ -1165,7 +1157,7 @@ class BuildPanel(QWidget):
         espn25_row.addWidget(self.espn25_plan_button)
         self.espn25_row.hide()
         r.addWidget(self.espn25_row)
-        self.espn25_plan_status = QLabel("")
+        self.espn25_plan_status = WrappedLabel("")
         self.espn25_plan_status.setObjectName("throwMuted")
         self.espn25_plan_status.setWordWrap(True)
         self.espn25_plan_status.hide()
@@ -1197,7 +1189,7 @@ class BuildPanel(QWidget):
         self.weather_editor_button = QPushButton("Weather editor…")
         self.weather_editor_button.clicked.connect(self._open_weather_editor)
         r.addWidget(self.weather_editor_button)
-        self.weather_status = QLabel("")
+        self.weather_status = WrappedLabel("")
         self.weather_status.setWordWrap(True)
         r.addWidget(self.weather_status)
         self.weather_plan_field.textChanged.connect(self._refresh)
@@ -1356,7 +1348,7 @@ class BuildPanel(QWidget):
         self.official_marks_import_button.clicked.connect(self._choose_official_marks_file)
         pack_row.addWidget(self.official_marks_import_button)
         r.addLayout(pack_row)
-        self.official_marks_status = QLabel()
+        self.official_marks_status = WrappedLabel()
         self.official_marks_status.setWordWrap(True)
         self.official_marks_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.official_marks_status)
@@ -1380,7 +1372,7 @@ class BuildPanel(QWidget):
         self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
         super_bowl_row.addWidget(self.super_bowl_user_art_create)
         r.addLayout(super_bowl_row)
-        self.super_bowl_user_art_status = QLabel()
+        self.super_bowl_user_art_status = WrappedLabel()
         self.super_bowl_user_art_status.setWordWrap(True)
         self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.super_bowl_user_art_status)
@@ -1437,7 +1429,7 @@ class BuildPanel(QWidget):
                     "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
                     "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
         )
-        self.star_players_label = QLabel("")
+        self.star_players_label = WrappedLabel("")
         self.star_players_label.setObjectName("throwMuted")
         self.star_players_label.setWordWrap(True)
         self.star_players_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -1475,7 +1467,7 @@ class BuildPanel(QWidget):
         self.hires_target_combo.currentIndexChanged.connect(self._refresh)
         hires_row.addWidget(self.hires_target_combo)
         pl.addLayout(hires_row)
-        self.hires_receipt_label = QLabel("")
+        self.hires_receipt_label = WrappedLabel("")
         self.hires_receipt_label.setWordWrap(True)
         pl.addWidget(self.hires_receipt_label)
         self._hires_family_checks = {}
@@ -1489,7 +1481,7 @@ class BuildPanel(QWidget):
             check.setChecked(True)
             check.toggled.connect(self._refresh)
             self._hires_family_checks[family] = check
-        self.hires_budget_label = QLabel("Memory fit is unproved. Enable Hi-res and choose artwork to check its modeled budget.")
+        self.hires_budget_label = WrappedLabel("Memory fit is unproved. Enable Hi-res and choose artwork to check its modeled budget.")
         self.hires_budget_label.setWordWrap(True)
         pl.addWidget(self.hires_budget_label)
         self.guardian_cap_check = self._option(
@@ -1543,7 +1535,7 @@ class BuildPanel(QWidget):
         self.music_preview_button = QPushButton("Preview music library size")
         self.music_preview_button.clicked.connect(self._preview_music_library)
         pl.addWidget(self.music_preview_button)
-        self.music_preview_label = QLabel("Choose a recipe to preview output and temporary space.")
+        self.music_preview_label = WrappedLabel("Choose a recipe to preview output and temporary space.")
         self.music_preview_label.setWordWrap(True)
         pl.addWidget(self.music_preview_label)
         self.camera_check = self._option(pl, "camera", "Standard, Far and Broadcast cameras (experimental)",
@@ -1614,7 +1606,7 @@ class BuildPanel(QWidget):
         self.commentary_remove_button.clicked.connect(self._remove_commentary_line)
         crow.addWidget(self.commentary_remove_button)
         cb.addLayout(crow)
-        self.commentary_label = QLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
+        self.commentary_label = WrappedLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
                                        "Presentation ▸ Commentary previews the fit; this list is a direct input to the build.")
         self.commentary_label.setObjectName("throwMuted")
         self.commentary_label.setWordWrap(True)
@@ -1642,7 +1634,7 @@ class BuildPanel(QWidget):
         self.book_set_status.setAccessibleName("Modern and classic book count")
         book_row.addWidget(self.book_set_status, 1)
         pb.addLayout(book_row)
-        self.book_set_note = QLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
+        self.book_set_note = WrappedLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
         self.book_set_note.setObjectName("throwMuted")
         self.book_set_note.setWordWrap(True)
         pb.addWidget(self.book_set_note)
@@ -1676,7 +1668,7 @@ class BuildPanel(QWidget):
         prow.addWidget(self.option_pack_button)
         prow.addStretch(1)
         pb.addLayout(prow)
-        packs_note = QLabel("Installed in order into the copy's team books; full disc required. "
+        packs_note = WrappedLabel("Installed in order into the copy's team books; full disc required. "
                             "Playbooks & Plays ▸ Install Playbook Pack… previews what a pack replaces.")
         packs_note.setObjectName("throwMuted")
         packs_note.setWordWrap(True)
@@ -1763,7 +1755,7 @@ class BuildPanel(QWidget):
         head.addWidget(badge_label)
         head.addStretch(1)
         rl.addLayout(head)
-        helper_label = QLabel(helper)
+        helper_label = WrappedLabel(helper)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)
         helper_label.setIndent(30)
@@ -3249,8 +3241,11 @@ class BuildPanel(QWidget):
         else:
             self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
         for key, reason in r62_ui.UNAVAILABLE.items():
-            getattr(self, key + "_check").setEnabled(False)
-            getattr(self, key + "_check").setToolTip(reason)
+            box = getattr(self, key + "_check")
+            box.setEnabled(False)
+            box.setToolTip(reason)
+            box.setAccessibleDescription(reason)
+            self._set_badge(key, "Not available in this release")
         self.guardian_everyone_practice_check.setEnabled(self.guardian_overlay_check.isEnabled() and self.guardian_overlay_check.isChecked())
         if self.guardian_overlay_check.isChecked():
             self.guardian_cap_check.setChecked(False)
