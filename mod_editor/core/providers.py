@@ -1110,7 +1110,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_menu_helmet_w2026.json": "ee8b9dcc3903f3c63fd4ae3bf0ab1f50e5aa7f7d26240c8d02ff10aa2c0ed590",
         "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
         "data/nfl2k5_indicator_names/metrics.json": "2bebe47d2fb50e36a5c3a736d95677c06c780addf88463c2b5b266111af4a129",
-        "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
+        "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "a404aaeae4b15b3a550cf8ef9e005f13dcb9d0a4460eb650e66d4985e4097cd6",
         "mod_editor/data/nfl2k5_refresh_appearance_2026.v1.json": "867624f428dad0d32eba16b6e05d4d2f104266c5fe37c3c0d9ab43ce7797e204",
         "data/nfl2k5_ratings_forty_sources.json": "39cc65634bfafab8b37817129be309e85f73f35ef7eb5f1f0b2472e5632d5817",
         "data/nfl2k5_espn25_more_teams/teams.json": "0484cc4ea617f4d250571ac3551f820368a15456c444326203d31c98eebd8cd3",

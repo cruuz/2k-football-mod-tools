@@ -3922,9 +3922,9 @@ def number_commentary_id(jersey: int) -> int:
 
 
 def commentary_surname(last: str) -> str:
-    """Exact spelling, ignoring case and a separate generational suffix only."""
+    """Exact spelling, ignoring case and a separate generational suffix only (Jr., Sr., II, III, IV, V)."""
     import re
-    return re.sub(r"\s+(?:jr\.?|sr\.?|ii|iii|iv)$", "", last.strip(), flags=re.IGNORECASE).casefold()
+    return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE).casefold()
 
 
 def recorded_surname_ids() -> dict[str, int]:
