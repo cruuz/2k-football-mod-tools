@@ -733,6 +733,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_sim_cb_tackles",  # b778-cb1: after the Contracts guard
                "nfl2k5_clock_led",  # b778-sd4: after the cornerback tackle owner
                "nfl2k5_cpu_third_down",  # b778-ai8: third-down run preference, after the clock LED
+               "nfl2k5_return_coverage",  # b778-kr1: return coverage pursuit angles, moved before the module loader (int3)
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the

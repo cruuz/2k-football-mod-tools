@@ -51,8 +51,8 @@ class StaticTests(unittest.TestCase):
 
     def test_presets_options_and_late_owner_order(self):
         # b778-int2: fa1's star retention and xs1's module loader follow this owner; the loader stays last.
-        self.assertEqual(space.LATE_OWNERS[-12:], (bc.OWNER, "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_module_loader"))
-        self.assertEqual(space.LATE_OWNERS[-14], "nfl2k5_force_out")  # b778-int2: pi1, ai5, fa1 and xs1 follow
+        self.assertEqual(space.LATE_OWNERS[-13:], (bc.OWNER, "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_module_loader", "nfl2k5_return_coverage"))
+        self.assertEqual(space.LATE_OWNERS[-15], "nfl2k5_force_out")  # b778-int2: pi1, ai5, fa1 and xs1 follow
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).cpu_ball_carriers, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["cpu_ball_carriers"], name in ("softdrink_advanced", "softdrink_experimental"), name)

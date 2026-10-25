@@ -904,6 +904,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_star_retention.py": "cdfaf54656a83c66f6bae0e3f9212eb510c6312b27d02cc3f05b73c953ea22b6",  # b778-fa1
         "mod_editor/core/nfl2k5_practice_injuries.py": "b6d4cddd5431ce5f4df436052312c31b3eb9c24d0eb8487581eb08184a3f2626",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "9d340302650510dede5db01f8a2cbae31807394f57ff9ef38db3998f7660ed7e",  # b778-ai5
+        "mod_editor/core/nfl2k5_return_coverage.py": "3be0439c2f122ea0c7a5b53f50b89b0b31c8455ce13baa9ce8728ba9d2470db0",  # b778-kr1
         "mod_editor/core/nfl2k5_star_career.py": "a1cf7e142a1448a872d0ef5d92eb330bebff25d942663aaee44d1f51276dac5d",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
