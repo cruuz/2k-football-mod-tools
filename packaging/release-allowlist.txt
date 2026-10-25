@@ -559,6 +559,7 @@ mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_equipment_import.py
 mod_editor/core/nfl2k5_equipment_import_intent.py
+mod_editor/core/nfl2k5_equipment_fit.py
 mod_editor/core/nfl2k5_equipment_lz.py
 mod_editor/core/nfl2k5_hud_layout.py
 mod_editor/core/nfl2k5_kick_rules.py
@@ -3734,3 +3735,5 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py
+# b778 eq1: created players take their position's class-generator gear, not the zero (kicker) mask
+tests/mod_editor/test_b778_eq1_equipment_fit.py

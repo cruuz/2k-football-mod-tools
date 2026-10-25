@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT/'tests/mod_editor'), str(ROOT/'tools')]
 from mod_editor.core import nfl2k5_roster_records as rr, nfl2k5_roster_refresh as refresh
 import test_nfl2k5_roster_records as fixture
+from test_b778_eq1_equipment_fit import GEAR, with_templates
 
 
 def sample():
@@ -186,10 +187,18 @@ class RefreshTests(unittest.TestCase):
                              contract_length=1,contract_remaining=1,contract_value=23,
                              depth_rank=7,depth_side=7)
         plan['teams'][0]['active'].append(2464)
+        raw=with_templates(bytes(raw), rr.POSITIONS.index('WR'))
         out,receipt=refresh.apply_body(bytes(raw),plan)
         p=rr.RosterDocument(out,reference_year=2026).by_pool('primary')[2464]
         self.assertEqual(p.display,'New Arrival');self.assertEqual(p.record.get('history_pointer'),0)
         self.assertEqual(p.record.get('unknown_53_high'),0);self.assertEqual(receipt['added'],1)
+        # b778-eq1: the created receiver takes the WR template's gear, not the zero (kicker) mask;
+        # skin/face/portrait still belong to the appearance pipeline and stay as the row left them.
+        gear=GEAR[2464 % len(GEAR)]
+        for name,value in gear.items():
+            self.assertEqual(p.record.get(name),value,name)
+        self.assertEqual(p.record.get('skin'),0);self.assertEqual(p.record.get('face'),0)
+        self.assertEqual(p.record.get('photo_id'),7100)
         self.assertEqual(refresh.apply_body(out,plan)[0],out)
         with self.assertRaisesRegex(ValueError,'identity mismatch'):
             refresh.apply_body(self.body,plan)

@@ -4,6 +4,8 @@ No record/table growth. The 380 native draft records and every team pointer
 stay intact. New identities consume the explicitly audited trailing create-
 player slots; unsupported rosters or occupied slots refuse transactionally.
 The supplied ratings are r1-ratings-v2.4 estimates, not official 2K ratings.
+b778-eq1: a new record's gear is the position's class-generator template gear
+(nfl2k5_equipment_fit); the measured skin/face in the plan is left alone.
 """
 from __future__ import annotations
 
@@ -36,6 +38,36 @@ def is_pack_input(edits):
     return (meta.get("date") == "2026-09-29" and meta.get("selected") == 236
             and meta.get("source") == "roster_2026.csv"
             and len(edits.get("free_agent_pool", ())) == 239)
+
+
+def _create_new_player(document, player, row, college_check):
+    """Write one dated free agent from zero; the measured appearance arrives, the gear is positional."""
+
+    from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_equipment_fit as equipment_fit
+    # Only the existing name pointers are kept until the pool allocator releases them. Never borrow a
+    # real player's face, history, abilities, injury, contract or unknown packed fields.
+    names = {k: player.record.values[k] for k in ("first_name_pointer", "last_name_pointer")}
+    player.record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE), scheme="one_pool", reference_year=2026)
+    player.record.values.update(names)
+    supplied = {**row["fields"], **row["ratings"], **row["appearance"]}
+    for field, value in supplied.items():
+        rr._require(field not in rr.POINTER_FIELDS, "Free-agent plan contains a raw pointer.")
+        player.record.set(field, value)
+    player.record.set("player_type", rr.FLAG_NFL_PLAYER)
+    # b778-eq1: the dated row carries identity, ratings and measured skin/face, not gear; take the
+    # position's own template gear so a new receiver does not read as a kicker.
+    equipment_fit.fill_created_player(document, player, supplied=supplied)
+    player.record.set("jersey", row["jersey"])
+    # c1 normalizes pbp_id after all additions; this correct native number
+    # fallback also makes the standalone writer safe without c1.
+    player.record.set("pbp_id", 9000 + row["commentary_number"])
+    document.set_name(player, "first", row["first"])
+    document.set_name(player, "last", row["last"])
+    # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
+    # reads it without a null check); unknown or blank names take the table's "None".
+    document.set_college(player, college_check.resolve_index(document.colleges, row.get("college")))
+    document.free_agents.append(player.offset)
 
 
 def apply_body(body, data=None):
@@ -119,26 +151,7 @@ def apply_body(body, data=None):
             # written after creation; it does not reset a player's identity.
             for field, value in row["appearance"].items(): p.record.set(field, value)
             continue
-        # New record from zero, with only its existing name pointers kept until
-        # the pool allocator releases them. Never borrow a real player's face,
-        # history, abilities, injury, contract or unknown packed fields.
-        names = {k: p.record.values[k] for k in ("first_name_pointer", "last_name_pointer")}
-        p.record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE), scheme="one_pool", reference_year=2026)
-        p.record.values.update(names)
-        for field, value in {**row["fields"], **row["ratings"], **row["appearance"]}.items():
-            rr._require(field not in rr.POINTER_FIELDS, "Free-agent plan contains a raw pointer.")
-            p.record.set(field, value)
-        p.record.set("player_type", rr.FLAG_NFL_PLAYER)
-        p.record.set("jersey", row["jersey"])
-        # c1 normalizes pbp_id after all additions; this correct native number
-        # fallback also makes the standalone writer safe without c1.
-        p.record.set("pbp_id", 9000 + row["commentary_number"])
-        doc.set_name(p, "first", row["first"])
-        doc.set_name(p, "last", row["last"])
-        # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
-        # reads it without a null check); unknown or blank names take the table's "None".
-        doc.set_college(p, college_check.resolve_index(doc.colleges, row.get("college")))
-        doc.free_agents.append(p.offset)
+        _create_new_player(doc, p, row, college_check)
     doc._reindex_membership()
     # This writer owns appearance, new records and FA membership. Preserve
     # existing pbp words until the final commentary pass, including on replay.
