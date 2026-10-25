@@ -117,6 +117,7 @@ from . import nfl2k5_music_policy as music_policy_patch
 from . import nfl2k5_music_metadata as music_metadata_patch
 from . import nfl2k5_music_storage as music_storage
 from . import nfl2k5_playoff_picture as playoff_picture_patch
+from . import nfl2k5_trade_deadline as trade_deadline_patch  # b778-tr1: in-place Week 9 trade deadline (2026 season step)
 
 
 def _kick_power_status(payload: bytes) -> str:
