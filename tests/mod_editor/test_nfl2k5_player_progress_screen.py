@@ -60,6 +60,22 @@ class StaticTests(unittest.TestCase):
         bad = repin_edit(self.retail, 0x16AA10, b"\xcc")
         self.assertEqual(screen.status(bad), "foreign")
 
+    def test_a_recognized_franchise_autosave_hook_is_not_a_foreign_save_routine(self):
+        """b778-bd2: Auto Save installs its load hook over 0x16E540 before this owner.
+
+        The no-allocation recognition used to demand the retail prologue there, so a
+        Modern retail build passed every preflight and then refused after ~10 minutes.
+        """
+        if not hasattr(space, "POOL_VA"):
+            self.skipTest("the growable pool (b778-xs1) is not merged on this branch")
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        with_autosave, receipt = autosave.apply(self.retail)
+        self.assertEqual(receipt["status"], "applied")
+        self.assertEqual(screen.status(with_autosave), "retail")
+        applied, installed = screen.apply(with_autosave, visible_only=True)
+        self.assertEqual(installed["status"], "applied")
+        self.assertEqual(screen.status(applied), "visible")
+
     def test_full_apply_round_trip_when_the_pool_is_available(self):
         if not hasattr(space, "POOL_VA"):
             self.skipTest("the growable pool (b778-xs1) is not merged on this branch")

@@ -81,7 +81,7 @@ from mod_editor.core.texture_master import (
 )
 from mod_editor.gui import branding
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
-from mod_editor.core import mod_build
+from mod_editor.core import mod_build, platform_compat
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.core.capabilities import CapabilityRegistryLoader
@@ -9511,12 +9511,26 @@ class StudioMainWindow(QMainWindow):
                 self._playbooks_panel.refresh()
 
     def _on_build_tab_built(self, receipt: object) -> None:
-        """A Build & Share copy is the latest build: Launch Latest Build starts it."""
+        """A Build & Share copy is the latest build: Launch Latest Build starts it.
+
+        Only a copy that actually differs from its source may become the latest build
+        (b778-bd2). An unchanged copy is the retail game the user already has, and
+        pointing Play latest at it made a finished build look like "no mods"; the build
+        now refuses that case, and this guard keeps an older caller from re-introducing it.
+        """
 
         target = ""
         if isinstance(receipt, dict):
             target = str(receipt.get("target") or "")
         if not target:
+            return
+        outcome = receipt.get("outcome") if isinstance(receipt, dict) else None
+        if isinstance(outcome, dict) and outcome.get("status") == "unchanged":
+            self._set_status("No changes were written; this copy is unchanged, so Play latest disc still starts the previous disc.")
+            return
+        source = str(receipt.get("source") or "") if isinstance(receipt, dict) else ""
+        if source and platform_compat.paths_alias(source, target):
+            self._set_status("That copy is the open source disc, not a new build; Play latest disc was not changed.")
             return
         try:
             self.facade.register_external_build(Path(target))
