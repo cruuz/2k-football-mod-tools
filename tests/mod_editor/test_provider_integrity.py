@@ -375,7 +375,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_menu_helmet_w2026.json": "ee8b9dcc3903f3c63fd4ae3bf0ab1f50e5aa7f7d26240c8d02ff10aa2c0ed590",
                 "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
                 "data/nfl2k5_indicator_names/metrics.json": "2bebe47d2fb50e36a5c3a736d95677c06c780addf88463c2b5b266111af4a129",
-                "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "19295f276283ee613e74f1095337ee0d8fa61d9c758c916772b80e7f38c73beb",
+                "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "a404aaeae4b15b3a550cf8ef9e005f13dcb9d0a4460eb650e66d4985e4097cd6",
                 "data/espn25_previews_2026.json": "8ae83e55f9ad9cc5a9fa1f5ed0efe4c0802522b7332c5ef3e3b594ca472e287c",
                 "data/nfl2k5_moment_venues.json": "960f1f61f5395ce65117b32840f38f28dcb31fbbc1e793eda9dc39c7853b5fb0",
                 "data/nfl2k5_moment_goalposts.json": "256d15573650a24a24b83953d627d0bede614aff6587c16c3eb060ad48329acf",  # b77-v1b

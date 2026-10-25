@@ -67,14 +67,16 @@ def apply_body(body, data=None):
         key = (row.get("pool", "primary"), row["index"])
         rr._require(key in by and key not in indices, "Duplicate or absent free-agent slot.")
         indices.add(key)
-        identity = (row["first"], row["last"])
+        # b778 sx1: a generational suffix is a display spelling, not a different person. The roster edits may now
+        # carry "Beckham Jr." where this dated plan says "Beckham"; compare the surname the commentary matches.
+        identity = (row["first"], rr.commentary_surname(row["last"]))
         rr._require(identity not in seen_names, "Duplicate free-agent identity.")
         seen_names.add(identity)
         p = by[key]
         rr._require(not p.teams and key not in doc.reserve_owner,
                     f"{p.display}: free-agent slot has a team/reserve owner.")
         if row in old:
-            rr._require((p.first, p.last) == identity and
+            rr._require((p.first, rr.commentary_surname(p.last)) == identity and
                         (p.offset in doc.free_agents or key in removed_keys),
                         f"Existing free-agent identity changed at {key}.")
             rr._require(set(row["appearance"]) == APPEARANCE_FIELDS,
@@ -82,10 +84,16 @@ def apply_body(body, data=None):
         else:
             rr._require(p.pool == "primary" and FIRST_TRAILING_SLOT <= p.index <= LAST_TRAILING_SLOT,
                         "New free agent would consume a draft or historic slot.")
-            same = (p.first, p.last) == identity and p.offset in doc.free_agents
+            same = (p.first, rr.commentary_surname(p.last)) == identity and p.offset in doc.free_agents
             vacant = (p.record.get("player_type") == 1 and p.group == "pool"
                       and p.first == "****************" and p.last == "****************")
-            rr._require(same or vacant, f"Trailing slot {p.index} is occupied; no player was replaced.")
+            # b778 sx1: the roster edits may already have written this new free agent's suffixed name into the
+            # trailing create slot, before this dated plan runs. It is still the same vacant slot.
+            named_slot = (p.pool == "primary" and FIRST_TRAILING_SLOT <= p.index <= LAST_TRAILING_SLOT
+                          and p.record.get("player_type") == 1 and p.group == "pool"
+                          and (p.first, rr.commentary_surname(p.last)) == identity)
+            rr._require(same or vacant or named_slot,
+                        f"Trailing slot {p.index} is occupied; no player was replaced.")
             rr._require(row["status"] == "unsigned_not_retired" and row.get("sources"),
                         "New free-agent identity needs unsigned/nonretirement evidence.")
             rr._require(0 <= row["jersey"] <= 99 and row["commentary_number"] == row["jersey"],

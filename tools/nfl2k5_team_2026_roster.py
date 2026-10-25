@@ -21,14 +21,16 @@ beside the written values, for the Jev row check) and ``receipt.json``.
 from __future__ import annotations
 
 import argparse
+import copy
 import csv
 import datetime as dt
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 import unicodedata
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -194,29 +196,53 @@ def ordered_document(document: dict, placeholder: str, name_order: list[int]) ->
     return out
 
 
+SUFFIX_NAMES = {"jr": "Jr.", "sr": "Sr.", "ii": "II", "iii": "III", "iv": "IV", "v": "V"}
+_SUFFIX = re.compile(r",?\s+(jr|sr|ii|iii|iv|v)\.?$", re.IGNORECASE)
+
+
+def split_suffix(text: str) -> tuple[str, str]:
+    """``text`` without a trailing generational suffix and the suffix in its display spelling (``Jr.``, ``II``,
+    ``III``, ``IV``, ``V``). ``Montorie Foster Jr`` and ``Marvin Harrison Jr.`` both give ``Jr.``."""
+    value = str(text).strip()
+    match = _SUFFIX.search(value)
+    if match is None:
+        return value, ""
+    return value[: match.start()].strip(), SUFFIX_NAMES[match.group(1).casefold()]
+
+
 def source_names(r: dict) -> tuple[str, str]:
     """First and last name from an nflverse roster row. When last_name is only the start of the surname that
     full_name carries after the first name (last_name "Joseph", full_name "Sebastian Joseph-Day"), the whole
-    surname is used; a generational suffix (Jr., Sr., II..V) is not added."""
-    import re
+    surname is used. A generational suffix stays part of the surname ("Harrison Jr."): the game's menus draw the
+    period and its jersey nameplate compositor skips it, so "HARRISON JR" is what the back shows (the real
+    nameplate). The first name may differ from full_name's ("Josh" for first_name Joshua)."""
     first, last, full = r["first_name"].strip(), r["last_name"].strip(), r["full_name"].strip()
-    if full.casefold().startswith(first.casefold() + " "):
-        # generational suffixes stay off (the name atlas has no period glyph): "Beckham Jr." stays "Beckham"
-        rest = re.sub(r",?\s+(jr|sr|ii|iii|iv|v)\.?$", "", full[len(first):].strip(), flags=re.IGNORECASE).strip()
-        if rest.casefold() != last.casefold() and rest.casefold().startswith(last.casefold()):
-            last = rest
+    core, suffix = split_suffix(full)
+    rest = ""
+    if core.casefold().startswith(first.casefold() + " "):
+        rest = core[len(first) + 1:].strip()
+    else:
+        # The listed first name can be a short form ("Josh" vs "Joshua"); anchor the surname on last_name.
+        at = core.casefold().rfind(last.casefold())
+        if at >= 0:
+            rest = core[at:].strip()
+    if rest and (rest.casefold() == last.casefold()
+                 or rest.casefold().startswith(last.casefold() + "-")):
+        last = rest
+    if suffix:
+        last = f"{last} {suffix}"
     return first, last
 
 
 def display_names(r: dict) -> tuple[str, str]:
-    """The names a player goes by: the surname from source_names, and the first name as full_name has it (the name
-    he is listed by, "Josh" for last_name Conerly, full_name "Josh Conerly Jr.", first_name "Joshua"), with a
-    generational suffix dropped before the match."""
-    import re
+    """The names a player goes by: the surname from source_names (with its generational suffix), and the first name
+    as full_name has it (the name he is listed by, "Josh" for last_name Conerly, full_name "Josh Conerly Jr.",
+    first_name "Joshua")."""
     first, last = source_names(r)
-    full = re.sub(r",?\s+(jr|sr|ii|iii|iv|v)\.?$", "", r["full_name"].strip(), flags=re.IGNORECASE).strip()
-    if full.casefold().endswith(" " + last.casefold()) and len(full) > len(last) + 1:
-        first = full[: -len(last)].strip()
+    base_last, _ = split_suffix(last)
+    core, _ = split_suffix(r["full_name"].strip())
+    if core.casefold().endswith(" " + base_last.casefold()) and len(core) > len(base_last) + 1:
+        first = core[: -len(base_last)].strip()
     return first, last
 
 
@@ -237,17 +263,280 @@ def written_names(assigned: dict) -> tuple[dict, list[str]]:
 
 def fit_name(text: str) -> tuple[str, bool]:
     """A name the game can hold: its buffers take 15 characters and its jersey name atlas draws A-Z, a-z,
-    apostrophe, hyphen and space. Accents fold to ASCII; an over-long hyphenated surname keeps its first part (the
-    broadcast short form: Van Pran-Granger -> Van Pran); any other over-long name is cut at 15. Returns the name and
-    whether it was shortened."""
+    apostrophe, hyphen and space (the menus draw the period too; the nameplate skips it). Accents fold to ASCII.
+    A generational suffix is never the part that is dropped: an over-long hyphenated base keeps its first part (the
+    broadcast short form: Van Pran-Granger -> Van Pran), and any other over-long base is cut before the suffix.
+    Returns the name and whether it was shortened."""
     value = " ".join(unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii").split())
     value = "".join(c for c in value if c.isalnum() or c in " '-.")
-    short = value
-    if len(short) > 15 and "-" in short:
-        short = short.split("-", 1)[0].strip()
-    if len(short) > 15:
-        short = short[:15].rstrip()
+    base, suffix = split_suffix(value)
+    if not suffix:
+        short = value
+        if len(short) > 15 and "-" in short:
+            short = short.split("-", 1)[0].strip()
+        if len(short) > 15:
+            short = short[:15].rstrip()
+        return rr.validate_name(short), short != value
+    room = 15 - len(suffix) - 1
+    if len(base) > room:
+        if "-" in base:
+            base = base.split("-", 1)[0].strip()
+        if len(base) > room:
+            base = base[:room].rstrip()
+    short = f"{base} {suffix}".strip()
     return rr.validate_name(short), short != value
+
+
+SUFFIX_DATA_SCHEMA = "nfl2k5.player_suffixes_2026/v1"
+
+
+def load_suffix_players(path) -> list[dict]:
+    """The player list for ``suffix``: one row per real player whose official name carries a generational suffix."""
+    document = json.loads(Path(path).read_text(encoding="utf-8"))
+    if str(document.get("schema")) != SUFFIX_DATA_SCHEMA:
+        raise SystemExit(f"{path}: expected schema {SUFFIX_DATA_SCHEMA}")
+    rows = document.get("players")
+    if not isinstance(rows, list) or not rows:
+        raise SystemExit(f"{path}: no players")
+    seen = set()
+    for row in rows:
+        first, last, suffix = str(row.get("first", "")).strip(), str(row.get("last", "")).strip(), \
+            str(row.get("suffix", "")).strip()
+        if not first or not last or suffix not in SUFFIX_NAMES.values():
+            raise SystemExit(f"{path}: bad player row {row!r}")
+        key = norm(f"{first} {last}")
+        if key in seen:
+            raise SystemExit(f"{path}: duplicate player {first} {last}")
+        seen.add(key)
+        row["first"], row["last"], row["suffix"] = first, last, suffix
+        row["name"] = f"{first} {last} {suffix}"
+    return rows
+
+
+def _same(first, last, want_first, want_last) -> bool:
+    return norm(str(first)) == norm(str(want_first)) and norm(split_suffix(str(last))[0]) == norm(want_last)
+
+
+def _display_name(document, pool: str, index: int, base_last: str) -> str:
+    """The game name a replayed document leaves for one record, from its edits and the refresh (pure JSON)."""
+    name = base_last
+    for entry in document.get("edits") or []:
+        if (str(entry.get("pool", "primary")), int(entry.get("index", -1))) != (pool, index):
+            continue
+        names = entry.get("names") or {}
+        if "last" in names:
+            name = str(names["last"])
+    for row in (document.get("roster_refresh") or {}).get("players") or []:
+        if int(row.get("index", -1)) == index and row.get("new") is True:
+            name = str(row.get("last", name))
+    return name
+
+
+def apply_suffixes(document: dict, players: list[dict]) -> tuple[dict, dict]:
+    """Add the generational suffix to every listed player's game name and to every later identity check.
+
+    The roster-edits replay applies ``edits`` in list order, then the free-agent pool, special teams, career history
+    and finally the dated ``roster_refresh``. A player's name may come from a final ``names`` entry, or (new
+    players) from the refresh row; players whose name the document never writes need a release and final pair added
+    to the name-pass block, so their old string is freed before the longer suffixed one is placed. Every later check
+    (college, free-agent pool, specialist, history, refresh row and identity guard) has to expect the suffixed name,
+    while ``moves`` runs before the edits and keeps the source name. Returns (new document, receipt).
+    """
+    out = copy.deepcopy(document)
+    edits = out.get("edits")
+    if not isinstance(edits, list):
+        raise SystemExit("the roster-edits document has no edits list")
+    refresh = out.get("roster_refresh") or {}
+    refresh_rows = refresh.get("players") or []
+    guards = refresh.get("identity_guards") or []
+    by_source: dict[str, list[dict]] = {}
+    for row in refresh_rows:
+        by_source.setdefault(norm(str(row.get("source_name", ""))), []).append(row)
+    guards_by_name: dict[str, list[list]] = {}
+    for guard in guards:
+        guards_by_name.setdefault(norm(f"{guard[1]} {guard[2]}"), []).append(guard)
+    edits_by_key: dict[tuple[str, int], list[int]] = {}
+    for position, entry in enumerate(edits):
+        edits_by_key.setdefault((str(entry.get("pool", "primary")), int(entry.get("index", -1))), []).append(position)
+    # The league name-pass block is a run of releases (empty fields) followed by finals (fields set). A name set
+    # after the finals is too late: the pool has already fragmented, so those players also need an early pair.
+    release_end = 0
+    while release_end < len(edits) and "names" in edits[release_end] and not edits[release_end].get("fields"):
+        release_end += 1
+    finals_end = release_end
+    while finals_end < len(edits) and "names" in edits[finals_end]:
+        finals_end += 1
+
+    targets = []
+    for player in players:
+        first, last, suffix = player["first"], player["last"], player["suffix"]
+        display_last = f"{last} {suffix}"
+        base_name = f"{first} {last}"
+        candidates: list[tuple[str, str, int, dict | None]] = []
+        for row in by_source.get(norm(player["name"]), []):
+            candidates.append(("refresh", str(row.get("pool", "primary")), int(row["index"]), row))
+        if not candidates:
+            # Some real suffixes are not in the roster source's full_name (Beanie Bishop, Cedrick Wilson, Thayer
+            # Munford); the dated refresh's identity guard still names the record.
+            for guard in guards_by_name.get(norm(base_name), []):
+                candidates.append(("guard", "primary", int(guard[0]), None))
+        if not candidates:
+            for key, positions in edits_by_key.items():
+                for position in positions:
+                    names = edits[position].get("names") or {}
+                    if _same(names.get("first"), names.get("last"), first, last):
+                        candidates.append(("edit", key[0], key[1], None))
+        unique = {(pool, index): (kind, row) for kind, pool, index, row in candidates}
+        if len(unique) != 1:
+            raise SystemExit(f"{player['name']}: {len(unique)} roster records match ({sorted(unique)})")
+        (pool, index), (_kind, row) = next(iter(unique.items()))
+        if row is None:
+            row = next((r for r in refresh_rows if int(r.get("index", -1)) == index), None)
+        setter = None
+        for position in edits_by_key.get((pool, index), []):
+            names = edits[position].get("names") or {}
+            if _same(names.get("first"), names.get("last"), first, last) or \
+                    _same(names.get("first"), names.get("last"), first, display_last):
+                setter = position
+        guard = next((g for g in guards_by_name.get(norm(base_name), []) if int(g[0]) == index), None)
+        late = setter is not None and setter >= finals_end
+        targets.append({"name": player["name"], "pool": pool, "index": index, "first": first, "last": last,
+                        "suffix": suffix, "display_last": display_last, "setter": setter, "added": False,
+                        "refresh_row": row, "guard": guard, "late": late,
+                        "needs_pair": (setter is None or late) and not (row is not None and row.get("new") is True)})
+
+    # New name strings go into the name-pass block, right after the releases: those entries have just freed the old
+    # team names, so a suffixed name gets a large block before the finals fragment the pool. A release + final pair
+    # frees this record's old string first.
+    placeholders = Counter(str((edits[i].get("names") or {}).get("first", "")) for i in range(release_end))
+    placeholders.pop("", None)
+    placeholder = placeholders.most_common(1)[0][0] if placeholders else "Bly"
+    additions = sorted((t for t in targets if t["needs_pair"]),
+                       key=lambda t: (-rr.encoded_size(t["display_last"]), t["pool"], t["index"]))
+    for offset, target in enumerate(additions):
+        release = {"pool": target["pool"], "index": target["index"], "first": target["first"],
+                   "last": target["last"], "fields": {},
+                   "names": {"first": placeholder, "last": placeholder}}
+        edits.insert(release_end + offset, release)
+    for offset, target in enumerate(additions):
+        final = {"pool": target["pool"], "index": target["index"], "first": placeholder, "last": placeholder,
+                 "fields": {}, "names": {"first": target["first"], "last": target["display_last"]}}
+        position = release_end + len(additions) + offset
+        edits.insert(position, final)
+        target["setter"] = position
+        target["added"] = True
+    edits_by_key = {}
+    for position, entry in enumerate(edits):
+        edits_by_key.setdefault((str(entry.get("pool", "primary")), int(entry.get("index", -1))), []).append(position)
+    for target in targets:
+        if target["added"]:
+            continue
+        for position in edits_by_key.get((target["pool"], target["index"]), []):
+            names = edits[position].get("names") or {}
+            if _same(names.get("first"), names.get("last"), target["first"], target["last"]) or \
+                    _same(names.get("first"), names.get("last"), target["first"], target["display_last"]):
+                target["setter"] = position
+
+    for target in targets:
+        if target["setter"] is not None and not target["added"]:
+            names = edits[target["setter"]].setdefault("names", {})
+            if not _same(names.get("first"), names.get("last"), target["first"], target["display_last"]):
+                names["last"] = target["display_last"]
+        row = target["refresh_row"]
+        if row is not None:
+            row["last"] = target["display_last"]
+        guard = target["guard"]
+        if guard is not None:
+            guard[2] = target["display_last"]
+
+    # Longest names first: the release block has just freed one large region, and best-fit allocation then keeps
+    # the short names in its fragments (the league merge uses the same order). Only the finals move; every release
+    # still runs before every final. Sorting uses the suffixed names, so it happens after the updates above.
+    finals_start = release_end + len(additions)
+    finals_end = finals_start
+    while finals_end < len(edits) and "names" in edits[finals_end]:
+        finals_end += 1
+    finals = edits[finals_start:finals_end]
+    finals.sort(key=lambda entry: -max(rr.encoded_size(str((entry.get("names") or {}).get("first", ""))),
+                                       rr.encoded_size(str((entry.get("names") or {}).get("last", "")))))
+    edits[finals_start:finals_end] = finals
+    for target in targets:
+        if not target["late"]:
+            continue
+        for position in range(finals_end, len(edits)):
+            entry = edits[position]
+            if (str(entry.get("pool", "primary")), int(entry.get("index", -1))) != (target["pool"], target["index"]):
+                continue
+            names = entry.get("names") or {}
+            if not (_same(names.get("first"), names.get("last"), target["first"], target["last"]) or
+                    _same(names.get("first"), names.get("last"), target["first"], target["display_last"])):
+                continue
+            if entry.get("fields"):
+                entry.pop("names", None)
+            entry["last"] = target["display_last"]
+    edits_by_key = {}
+    for position, entry in enumerate(edits):
+        edits_by_key.setdefault((str(entry.get("pool", "primary")), int(entry.get("index", -1))), []).append(position)
+    for target in targets:
+        for position in edits_by_key.get((target["pool"], target["index"]), []):
+            names = edits[position].get("names") or {}
+            if _same(names.get("first"), names.get("last"), target["first"], target["display_last"]):
+                target["setter"] = position
+
+    changed_refs = 0
+    for target in targets:
+        # Layer entries that replay after the final name entry must expect the suffix.
+        for position in edits_by_key.get((target["pool"], target["index"]), []):
+            if target["setter"] is None or position <= target["setter"]:
+                continue
+            entry = edits[position]
+            if entry.get("names"):
+                continue
+            if _same(entry.get("first"), entry.get("last"), target["first"], target["last"]):
+                entry["last"] = target["display_last"]
+                changed_refs += 1
+        for update in out.get("college_updates") or []:
+            if (str(update.get("pool", "primary")), int(update.get("index", -1))) == (target["pool"], target["index"]):
+                if _same(update.get("first"), update.get("last"), target["first"], target["last"]):
+                    update["last"] = target["display_last"]
+                    changed_refs += 1
+        for identity in out.get("free_agent_pool") or []:
+            if (str(identity.get("pool", "primary")), int(identity.get("index", -1))) == (target["pool"], target["index"]):
+                if _same(identity.get("first"), identity.get("last"), target["first"], target["last"]):
+                    identity["last"] = target["display_last"]
+                    changed_refs += 1
+        for team in out.get("special_teams") or []:
+            for identity in (team.get("roles") or {}).values():
+                if identity is None:
+                    continue
+                if (str(identity.get("pool", "primary")), int(identity.get("index", -1))) == \
+                        (target["pool"], target["index"]):
+                    if _same(identity.get("first"), identity.get("last"), target["first"], target["last"]):
+                        identity["last"] = target["display_last"]
+                        changed_refs += 1
+        for row in (out.get("franchise_history") or {}).get("players") or []:
+            if (str(row.get("pool", "primary")), int(row.get("index", -1))) == (target["pool"], target["index"]):
+                if _same(row.get("first"), row.get("last"), target["first"], target["last"]):
+                    row["last"] = target["display_last"]
+                    changed_refs += 1
+        for row in (out.get("roster_refresh") or {}).get("contract_initializations") or []:
+            if int(row.get("index", -1)) == target["index"] and norm(str(row.get("name", ""))) == norm(
+                    f"{target['first']} {target['last']}"):
+                row["name"] = target["name"]
+
+    # The pure replay must leave every listed player with the suffix, and every name must fit the game's buffer.
+    for target in targets:
+        final = _display_name(out, target["pool"], target["index"], target["last"])
+        if split_suffix(final)[1] != target["suffix"]:
+            raise SystemExit(f"{target['name']}: replayed name is {final!r}")
+        rr.validate_name(final)
+    receipt = {"players": len(targets), "name_pairs_added": sum(1 for t in targets if t["added"]),
+               "name_edits_changed": sum(1 for t in targets if t["setter"] is not None and not t["added"]),
+               "refresh_rows": sum(1 for t in targets if t["refresh_row"] is not None),
+               "references_updated": changed_refs,
+               "names": [{"name": t["name"], "pool": t["pool"], "index": t["index"], "added_edit": t["added"]}
+                         for t in targets]}
+    return out, receipt
 
 
 def speed_source_counts(rows: list[dict]) -> dict:
@@ -705,6 +994,20 @@ def merge(args) -> int:
     return 0
 
 
+def suffix(args) -> int:
+    """Add the generational suffixes back to a league roster-edits document (see apply_suffixes)."""
+    players = load_suffix_players(args.players)
+    document = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    out, receipt = apply_suffixes(document, players)
+    receipt = {**receipt, "schema": SCHEMA + "#suffix", "input": str(Path(args.input).resolve()),
+               "players_data": str(Path(args.players).resolve())}
+    Path(args.out).write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8", newline="\n")
+    Path(args.out).with_suffix(".receipt.json").write_text(json.dumps(receipt, indent=1) + "\n",
+                                                          encoding="utf-8", newline="\n")
+    print(json.dumps({k: v for k, v in receipt.items() if k != "names"}, indent=1))
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="command", required=True)
@@ -722,8 +1025,12 @@ def main(argv=None) -> int:
     m.add_argument("--team", action="append", required=True, help="a team's roster_edits.json (repeatable)")
     m.add_argument("--top-n", type=int, default=10)
     m.add_argument("--out", required=True)
+    s = sub.add_parser("suffix", help="add generational suffixes back to a league roster-edits document")
+    s.add_argument("--input", required=True, help="league roster-edits JSON (for example rt1+fa3)")
+    s.add_argument("--players", default=str(ROOT / "data/nfl2k5_player_suffixes_2026.json"))
+    s.add_argument("--out", required=True)
     args = ap.parse_args(argv)
-    return build(args) if args.command == "build" else merge(args)
+    return build(args) if args.command == "build" else suffix(args) if args.command == "suffix" else merge(args)
 
 
 if __name__ == "__main__":
