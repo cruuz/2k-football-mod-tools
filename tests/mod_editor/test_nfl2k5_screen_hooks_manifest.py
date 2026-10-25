@@ -77,7 +77,17 @@ def bounded_projection(retail, document=None):
             for region in sorted(regions, key=lambda r: r["va"]):
                 if region["va"] <= covered:
                     covered = max(covered, region["va"]+region["size"])
-            if row["owner"] not in known or covered < end:
+            if row["owner"] not in known:
+                # b778 int3: owners the bounded screen-hook union does not carry
+                # (star_career and other late owners) are clipped to this smaller
+                # projection or dropped, like the allocator-stack test does; an owner
+                # that is present with a different span still refuses below.
+                limit = XbeImage(final).image_size
+                if start >= limit:
+                    continue
+                inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
+                continue
+            if covered < end:
                 raise OracleError(f"unrecognized inherited grown reservation: {row}")
         else:
             limit = XbeImage(final).image_size
