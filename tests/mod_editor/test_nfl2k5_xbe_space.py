@@ -285,8 +285,12 @@ class RetailTests(unittest.TestCase):
         # The current manifest reserves the complete owner union, including
         # moment venues. The historical nine-request layout cannot prove that
         # ownership; the legacy kickoff/retired-cave checks below stay intact.
-        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests
+        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests, manifest_for_allocated_union
         combined, _ = space.apply(self.retail, all_requests)
+        # b778 int3: project the full release manifest onto this bounded union,
+        # as the cave-reference and camera tests already do; owners the union does
+        # not carry are dropped, a carried owner with changed size/alignment refuses.
+        manifest = manifest_for_allocated_union(manifest, self.retail, combined)
         evidence = space.allocation_evidence(self.retail, manifest, allocated=combined)
         # The full union uses v3 loader mappings. Keep the legacy zero-reference
         # gate and pin every raw candidate in the larger mappings; those
