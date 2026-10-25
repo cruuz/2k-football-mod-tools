@@ -45,8 +45,8 @@ class StaticTests(unittest.TestCase):
             ("pursuit_aim", 0x2E9148, bytes.fromhex("e8637fd3ff"), bytes.fromhex("e883342001"))])
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-2:], ("nfl2k5_module_loader", "nfl2k5_return_coverage"))
-        self.assertEqual(space.LATE_OWNERS[-1], "nfl2k5_return_coverage")
+        self.assertEqual(space.LATE_OWNERS[-2:], ("nfl2k5_return_coverage", "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-1], "nfl2k5_module_loader")
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).return_coverage, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["return_coverage"], name in ("softdrink_advanced", "softdrink_experimental"), name)
