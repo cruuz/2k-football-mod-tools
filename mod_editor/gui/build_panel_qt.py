@@ -279,6 +279,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT),  # b778-dr1
                  ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT),  # b778-pg1
                  ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
+                 ("player_progress_visible", _player_progress.VISIBLE_CAPTION,
+                  _player_progress.VISIBLE_HELP_TEXT),  # b778-pg3
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4

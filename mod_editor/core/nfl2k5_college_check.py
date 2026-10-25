@@ -275,7 +275,7 @@ def _point_at(data: bytes, report: Scan, findings, college: College) -> tuple[by
             codec.decode(fixed, preamble=report.layout.preamble)
             # The inline footer repeats MyPlayer's college identity. It must
             # remain valid without changing any footer/checksum byte.
-            if len(fixed) in career.SIZES and report.layout.preamble == 0x300:
+            if len(fixed) in career.CONTAINER_SIZES and report.layout.preamble == 0x300:
                 career.read(fixed)
         except (codec.SaveRostError, career.CareerSaveError) as exc:
             raise CollegeCheckError(f'candidate fails unchanged roster/identity validation: {exc}') from exc

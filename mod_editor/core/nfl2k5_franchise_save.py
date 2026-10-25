@@ -347,14 +347,21 @@ class FranchiseSave:
             raise FranchiseSaveError(str(exc)) from exc
         data = bytes(payload)
         from . import nfl2k5_my_career_save as career
+        from . import nfl2k5_player_progression as progress
         self.career_offset = None
-        native_size = len(data)
-        if len(data) in career.SIZES:
+        self.ppg_offset = progress.footer_start(data)
+        native_view = data[:self.ppg_offset] if self.ppg_offset is not None else data
+        native_size = len(native_view)
+        if len(native_view) in career.SIZES:
             try:
-                native_size = career.native_size(data)
+                native_size = career.native_size(native_view)
                 self.career_offset = native_size
             except ValueError as exc:
                 raise FranchiseSaveError(str(exc)) from exc
+        elif len(native_view) in career.BASE_SIZES:
+            pass
+        elif self.ppg_offset is not None:
+            raise FranchiseSaveError("unsupported franchise container length before the Player Progress footer")
         from . import nfl2k5_roster_arena as arena
         capacity_growth = arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
         _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000,

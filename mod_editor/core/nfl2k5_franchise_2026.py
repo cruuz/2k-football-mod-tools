@@ -129,7 +129,7 @@ def save_ownership_assessment(payload):
     from . import nfl2k5_roster_arena as arena
     from .nfl2k5_save_rost import decode
     from .nfl2k5_franchise_save import FranchiseSave
-    _require(isinstance(payload, (bytes, bytearray)) and len(payload) in career.BASE_SIZES + career.SIZES,
+    _require(isinstance(payload, (bytes, bytearray)) and len(payload) in career.CONTAINER_SIZES,
              "unsupported franchise container length")
     native = career.native_size(payload)
     save = FranchiseSave(payload)
