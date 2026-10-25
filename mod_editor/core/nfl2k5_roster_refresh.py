@@ -3,6 +3,11 @@
 This is an opt-in roster-edits directive, never a replacement for arbitrary
 rosters or existing franchise saves. New players require unused create slots.
 The primary index remains the identity of every existing player.
+
+b778-eq1: a created player's gear comes from the same position's class-generator
+templates (nfl2k5_equipment_fit), so a dated receiver does not stay in the zero
+Face Mask 1 that retail kickers and punters wear.  Existing players' gear is
+never read or written.
 """
 from __future__ import annotations
 
@@ -55,6 +60,7 @@ def _repair_create_buffers(doc):
 def apply_body(body, plan):
     from . import nfl2k5_roster_records as rr
     from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_equipment_fit as equipment_fit
     from . import nfl2k5_practice_squad as ps
 
     rr._require(plan.get("schema") == SCHEMA, "Unknown roster refresh schema")
@@ -142,6 +148,9 @@ def apply_body(body, plan):
             for k, v in row["fields"].items():
                 p.record.set(k, v)
             p.record.set("player_type", rr.FLAG_NFL_PLAYER)
+            # b778-eq1: a created record keeps the nflverse row's identity/ratings only; its gear comes
+            # from the position's own class-generator templates (a WR is not left in Face Mask 1).
+            equipment_fit.fill_created_player(doc, p, supplied=row["fields"])
             doc.set_name(p, "first", row["first"])
             doc.set_name(p, "last", row["last"])
             # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
