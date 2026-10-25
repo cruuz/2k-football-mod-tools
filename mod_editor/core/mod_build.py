@@ -5261,7 +5261,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         **tt._r62_space_options(r62), camera=plan.camera,
         hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
         db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
-        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection,
+        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
         qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
         practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
         star_retention=plan.star_retention, star_career=plan.star_career,
@@ -5308,7 +5308,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
-            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page):
+            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
+            or plan.return_coverage or plan.pass_protection):
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -5334,7 +5335,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
             db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
-            team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection,
+            team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
             qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
             practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
             star_retention=plan.star_retention, star_career=plan.star_career,
