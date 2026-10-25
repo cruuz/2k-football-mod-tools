@@ -129,10 +129,10 @@ class AutomaticCoachDeferral(unittest.TestCase):
         assert ai.upgrade(cls.payloads["v061"])[0] == current      # the native repair reproduces a fresh install
         cls.code, cls.data = c, d
 
-    def choose(self, variant, *, down, quarter, seconds):
+    def choose(self, variant, *, down, quarter, seconds, distance=3):
         m = Machine(self.payloads[variant])
         m.supply_fg_range(50)
-        m.configure(down=down, quarter=quarter, seconds=seconds, score_margin=3, own_yard=45, distance=3,
+        m.configure(down=down, quarter=quarter, seconds=seconds, score_margin=3, own_yard=45, distance=distance,
                     home=True, quarter_seconds=300)
         team, context, book = m.HOME, m.SOURCE + 0x1E000, m.SOURCE + 0x1C000
         m.u32(0xE5FF80, 6)                       # franchise
@@ -162,10 +162,21 @@ class AutomaticCoachDeferral(unittest.TestCase):
             self.assertTrue(self.choose("v061", down=down, quarter=quarter, seconds=seconds)[0], (down, quarter, seconds))
 
     def test_ordinary_snaps_keep_the_coach_profile(self):
-        for down, quarter, seconds in ((1, 1, 600), (3, 2, 400), (2, 3, 100), (2, 4, 600)):
+        for down, distance, quarter, seconds in ((1, 10, 1, 600), (3, 2, 2, 400), (2, 5, 3, 100), (2, 5, 4, 600)):
             for variant in ("b778", "v061"):
-                self.assertTrue(self.choose(variant, down=down, quarter=quarter, seconds=seconds)[0],
-                                (variant, down, quarter, seconds))
+                self.assertTrue(self.choose(variant, down=down, distance=distance, quarter=quarter,
+                                            seconds=seconds)[0], (variant, down, distance, quarter, seconds))
+
+    def test_third_and_short_keeps_the_profile_third_and_three_plus_goes_native(self):
+        """b778 ai8: third and 1-2 stays in the short-yardage rings (where the QB sneaks live); third and 3+
+        goes to the native selector, which now lowers its run weight on third and 7+ (nfl2k5_cpu_third_down)."""
+        for distance in (1, 2):
+            for variant in ("b778", "v061"):
+                self.assertTrue(self.choose(variant, down=3, distance=distance, quarter=1, seconds=600)[0],
+                                (variant, distance))
+        for distance in (3, 4, 7, 10, 20):
+            self.assertFalse(self.choose("b778", down=3, distance=distance, quarter=1, seconds=600)[0], distance)
+            self.assertTrue(self.choose("v061", down=3, distance=distance, quarter=1, seconds=600)[0], distance)
 
     def test_live_game_direction_magnitude_reaches_the_modern2_table(self):
         """The live game keeps the end-line z (+/-5486.4 cm, 60 yards) in the direction slot that native 209CA0

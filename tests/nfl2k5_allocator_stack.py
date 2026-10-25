@@ -53,6 +53,7 @@ from mod_editor.core import nfl2k5_letter_grades as letter_grades  # b77-f4
 from mod_editor.core import nfl2k5_period_goalposts as period  # b77-v1b
 from mod_editor.core import nfl2k5_moment_coaches as moment_coaches
 from mod_editor.core import nfl2k5_coach_ai as coach_ai
+from mod_editor.core import nfl2k5_cpu_third_down as third_down
 from mod_editor.core import nfl2k5_honors as honors  # b77-f5
 
 
@@ -91,6 +92,7 @@ REQUESTS += letter_grades.REQUESTS  # b77-f4
 REQUESTS += period.REQUESTS  # b77-v1b
 REQUESTS += honors.REQUESTS  # b77-f5
 REQUESTS += coach_ai.REQUESTS  # vp2: installed after VIP-aware Modern 2 in its composition suite
+REQUESTS += third_down.REQUESTS  # b778-ai8: third-down run preference late owner
 from mod_editor.core import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
 from mod_editor.core import nfl2k5_team_ratings as team_ratings
 REQUESTS += moment_coaches.REQUESTS + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS
@@ -145,7 +147,7 @@ def owner_calls(*, read_option_diagnostic=False):
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
               (read_option, dict(diagnostic=read_option_diagnostic)), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (edit_player, {}),
+              (my_career, {}), (crib_reclaim, {}), (autosave, {}), (coverage_trail, {}), (seven, {}), (deep_zone, {}), (playbook_pair, {}), (weekly_prep, {}), (money_downs, {}), (third_down, {}), (edit_player, {}),
               (screen_hooks, {}), (AcceleratedClockOn, {}), (helmet_finish, {}), (weather_haze, {}),
               (coin_defer, {}), (decided_clock, {}), (cpu_scrambles, {}),
               (arena_growth, dict(created_teams_extra=2)), (historic_quick_game, {}), (more_moments.Probe, {}), (k128, dict(roster_heap=True)), (letter_grades, {}), (period, {}), (honors, {}))

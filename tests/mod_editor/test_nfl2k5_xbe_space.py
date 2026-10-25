@@ -292,11 +292,11 @@ class RetailTests(unittest.TestCase):
         # gate and pin every raw candidate in the larger mappings; those
         # encodings are retained as unknown, never declared free retail code.
         self.assertEqual(evidence["legacy_encoded_references"], [])
-        self.assertEqual(len(evidence["encoded_references"]), 1081)
+        self.assertEqual(len(evidence["encoded_references"]), 1128)  # b778-ai8: + the third-down owner page
         import json
         self.assertEqual(hashlib.sha256(json.dumps(evidence["encoded_references"],
             separators=(',', ':')).encode()).hexdigest(),
-            "131306f5cc97d41e687f49322daf9ee36cf492e21ff7ee8dcf56872157e70cee")
+            "cab22ff3bf283ad487fafd116e98869f160197e405c86fdc9ac08fa730915b6e")
         self.assertEqual(evidence["reference_policy"],
             "v3 adds loader mappings, never overwrites a retail cave; all raw encoding candidates retained; legacy pages retain zero-encoding gate")
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)

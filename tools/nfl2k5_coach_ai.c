@@ -46,6 +46,22 @@ static int automatic(u8 *team) {
 }
 void FAST coach_presentation(u8 *team) { U(team,0x38)=!automatic(team); }
 
+#ifdef B778
+/* b778 ai8: third and 3+ belongs to the native selector. The playback pools only know down, distance and tempo
+ * as coarse bins and put 3rd and 3+ in the same pool as 1st/2nd and long; the late-leading pool's observed pass
+ * target is 33 percent and the shipped rings call runs 40.6 percent of the time. The native selector carries the
+ * real down/distance and the third-down run preference owner lowers its run weight on 3rd and 7+. Third and 1-2
+ * stays here, where the short-yardage rings hold the QB sneaks. */
+static int third_native(void) {
+    u8 *s=PTR(0xe602ec,0);
+    float a, b, d;
+    if (!s || U(s,4)!=3) return 0;
+    a=*(float *)(s+0x28); b=*(float *)(s+0x18);
+    d=a>b?a-b:b-a;
+    return d>=274.32f;                 /* 3 * 91.44 cm */
+}
+#endif
+
 /* Called at the ordinary CPU selection boundary. The native publication
  * tail still commits the category/formation/play. No menu is driven and no
  * recorded timing is consumed by presentation. Native fallback can reenter
@@ -66,7 +82,8 @@ u32 FAST coach_choose(u8 *team, u32 *out) {
      * urgency. The playback pools know none of these. */
 #ifdef B778
     if (offense && (U(PTR(0xe602ec,0),4)==4 || late_native()
-                    || (U(0xe602c4,0)==2 && half_bits_native()<=0x42f00000u))) return 0;
+                    || (U(0xe602c4,0)==2 && half_bits_native()<=0x42f00000u)
+                    || third_native())) return 0;
 #endif
     state.selecting=1;
     flag=U(team,0x38);

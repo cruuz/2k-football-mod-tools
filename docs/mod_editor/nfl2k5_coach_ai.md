@@ -82,6 +82,15 @@ only for a user VIP (team `+0x38` virtual-controller flag set); an automatic
 profile clears that flag, so Modern 2 decides. The beta-77.1 kernel is kept as
 an exact recognizer and `nfl2k5_coach_ai.upgrade` replaces it in place.
 
+Third downs (b778 ai8). The 20 native pools know only down, distance as three coarse bins and tempo. Third and
+3+ lands in the same pool as first/second and long; the late-leading pool's observed pass target is 33 percent and
+the shipped rings called runs 40.6 percent of the time on third and long. The automatic offense therefore also
+hands third and 3+ to the native caller. Third and 1-2 stays in the short-yardage rings, where the QB sneaks live.
+The separate `nfl2k5_cpu_third_down` late owner lowers the native selector's run weight to 0.05 on third and 7+
+(third and 20+ in the fourth quarter, inside five minutes, with the offense leading keeps the retail weight), so
+the native caller passes past the sticks. Both changes are installed by the existing `coach_ai` / Modern 2
+selections; there is no new Studio toggle.
+
 The owner reserves 5,120 RX bytes and 128 RW bytes. It allocates at most two
 8,608-byte playback contexts through the native heap. Neither uses a resident
 USR slot or changes a save format. Published owned pointers are cleared before

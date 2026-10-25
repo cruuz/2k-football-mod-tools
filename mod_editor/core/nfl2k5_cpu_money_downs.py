@@ -388,6 +388,7 @@ def _neighbors(payload):
     from . import nfl2k5_anniversary_kickoff as anniversary
     from . import nfl2k5_playbook_pair as pair
     from . import nfl2k5_coach_ai as coach_ai
+    from . import nfl2k5_cpu_third_down as third_down
     neighbors = []
     va, entry = dict(anniversary.READER_SITES)["reader_diagram"], anniversary.READER_ENTRY
     image = XbeImage(payload)
@@ -404,6 +405,9 @@ def _neighbors(payload):
     # Automatic tendencies enter the ordinary CPU publication tail. Accept
     # that selector-boundary hook only when the entire owner is recognized.
     neighbors.extend((va, before) for _, va, before, _ in coach_ai.normalized_sites(payload))
+    # b778-ai8: the third-down run weight hook sits in the same play selector (0x2096A0); normalize its five bytes
+    # before hashing the function this owner guards.
+    neighbors.extend((va, before) for _, va, before, _ in third_down.normalized_sites(payload))
     return tuple(neighbors)
 
 
