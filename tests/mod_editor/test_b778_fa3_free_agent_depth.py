@@ -85,9 +85,23 @@ class DataTests(unittest.TestCase):
         self.assertEqual(len(verified) + len(tail), len(players))
         self.assertEqual([p["priority"] for p in verified], list(range(1, len(verified) + 1)))
         # b778-fa5: every tail player now carries a measured appearance, not the old neutral default.
+        # b778-fa7: every tail headshot was reviewed by eye; the raw ITA stays in appearance_measure and a low
+        # confidence row carries its reason. The 26 hand-verified entries keep their authored appearance untouched.
         self.assertTrue(all(p["appearance_reviewed"] is True for p in players))
         self.assertTrue(all(p.get("appearance_method") for p in tail))
-        self.assertTrue(all(p.get("appearance_confidence") in ("measured", "missing_headshot") for p in tail))
+        self.assertTrue(all(p.get("appearance_confidence") in ("measured", "reviewed", "low", "missing_headshot")
+                            for p in tail))
+        for p in tail:
+            with self.subTest(player=p["name"]):
+                review = p["appearance_review"]
+                self.assertEqual(review["reviewed_skin"], p["fields"]["skin"])
+                self.assertEqual(review["reviewed_dreads"], p["fields"]["dreads"])
+                self.assertIn(p["appearance_measure"]["ita_skin"], range(6))
+                if p["appearance_confidence"] == "low":
+                    self.assertTrue(review.get("reason"))
+        hand = [p for p in players if p["status_confidence"] in ("high", "medium")]
+        self.assertEqual(len(hand), 26)
+        self.assertTrue(all("appearance_review" not in p and p.get("appearance_confidence") is None for p in hand))
         self.assertGreater(len({(p["fields"]["skin"], p["fields"]["face"]) for p in tail}), 20)
 
     def test_a_retired_or_unsourced_player_is_refused(self):
