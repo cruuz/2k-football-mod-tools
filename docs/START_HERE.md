@@ -14,17 +14,41 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
    `.xiso`). A disc someone else already modded will be refused, and so will a rebuilt ("repacked") image when you apply a patch.
    If the Studio says so, start again from a clean dump.
 2. **2K5 Mod Studio**, the free editor. Download it from the
-   [Studio releases](https://github.com/cruuz/2k-football-mod-tools/releases) (use the newest one).
-   - Windows: run the installer, then open 2K5 Mod Studio.
+   [Studio releases](https://github.com/cruuz/2k-football-mod-tools/releases) (use the newest one). On the release page open
+   **Assets** and download the release file. Do **not** use the green **Code > Download ZIP** button: that downloads the source
+   code, not the ready-to-run Studio.
+   - Windows: run `2K5-Mod-Studio-*-Setup.exe`, then open 2K5 Mod Studio from the Start Menu. The Setup includes Python, so you
+     do not install anything else.
    - macOS: extract the archive and double-click `2K5-Mod-Studio.command` (the first time, right-click it and choose Open).
      macOS has no bundled disc extractor, so point the Studio at an already-extracted game folder if it asks.
    - Linux and Steam Deck (Desktop Mode): extract the archive, run `./2K5-Mod-Studio.sh --setup` once, then `./2K5-Mod-Studio.sh`.
+
+   If you already downloaded the source ZIP, see [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
+
 3. **The SOFTDRINK 2K28 patch**: one file ending in `.2k5patch`, from the
    [pack releases](https://github.com/cruuz/softdrink-2k28/releases). Keep it exactly as downloaded. Do not unzip it.
    The `.sha256` file next to it only checks the download; the Studio does not need it.
 4. **xemu**, the original Xbox emulator, from [xemu.app](https://xemu.app). xemu needs its own BIOS files, which neither this project
    nor the Studio supplies. See [xemu's required-files guide](https://xemu.app/docs/required-files/).
 5. **Free disk space** for the new disc image. The finished SOFTDRINK disc is roughly 6 GB, so keep at least 8 GB free.
+
+### If you downloaded the source ZIP
+
+The green **Code > Download ZIP** button on the repository page downloads the source code. You can still use it, but the first
+run has to install the Studio packages:
+
+1. Extract the ZIP. A folder inside a folder with the same name is fine; the launcher works from wherever `2K5-Mod-Studio.bat`
+   sits.
+2. Install 64-bit Python 3.12 from [python.org](https://www.python.org/downloads/windows/) and tick **Add python.exe to PATH**
+   during setup. Skip this if `py -3.12 --version` already works.
+3. Double-click `2K5-Mod-Studio.bat`. The first run creates a private `.venv` beside the launcher and installs the pinned
+   packages (about 110 MB to download, about 400 MB on disk). It also downloads the reviewed data files the Studio needs
+   from the same release (about 65 MB). Later runs start immediately. To repair the private runtime, run
+   `2K5-Mod-Studio.bat --setup`.
+
+No administrator rights are needed. If the launcher says Python was not found, install it from the address it prints and run
+the same file again. If the package install fails, check the internet connection and run the same file again; it is safe to
+repeat.
 
 ## 2. Install SOFTDRINK 2K28 (one-click path)
 
