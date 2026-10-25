@@ -325,5 +325,6 @@ mod_editor/apf_studio/community_patches_qt.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+packaging/windows/studio_bootstrap.py
 
 packaging/check_packaged_runtime.py
