@@ -195,8 +195,37 @@ class NativeRouteTests(unittest.TestCase):
         # native FA cleanup. The full eight-seed command records the other six.
         actual = probe.full_draft_proof(self.payload, seeds=(1, 2))
         self.assertEqual(json.loads(json.dumps(actual)), recorded[:2])
-        self.assertEqual(actual[0]["free_agent_occurrences"], 1)
-        self.assertIsNotNone(actual[1]["landing"])
+        for row in actual:
+            # The cleanup must put an undrafted player in the FA pool exactly once and
+            # never duplicate a drafted one; which seed lands is the AI's choice.
+            self.assertEqual(row["free_agent_occurrences"], 0 if row["landing"] else 1)
+            self.assertIsNotNone(row["landing"])
+        for row in actual:
+            by_round = row["positions_by_round"]
+            for round_number in ("0", "1", "2", "3"):
+                self.assertEqual(by_round.get(round_number, {}).get("K", 0), 0)
+                self.assertEqual(by_round.get(round_number, {}).get("P", 0), 0)
+            for round_number in ("4", "5", "6"):
+                self.assertLessEqual(by_round.get(round_number, {}).get("K", 0), 1)
+                self.assertLessEqual(by_round.get(round_number, {}).get("P", 0), 1)
+
+    def test_installed_specialist_policy_keeps_kickers_late_when_needed(self):
+        # Every club loses its K and P: the old AI never filled those holes; the
+        # installed policy must fill them in display rounds 5-7, at most one each
+        # per round, and leave display rounds 1-4 empty.
+        result = probe.specialist_policy_proof(self.payload, seed=1)
+        self.assertEqual(result["rounds_completed"], 7)
+        by_round = result["positions_by_round"]
+        for round_number in ("0", "1", "2", "3"):
+            self.assertEqual(by_round.get(round_number, {}).get("K", 0), 0)
+            self.assertEqual(by_round.get(round_number, {}).get("P", 0), 0)
+        for round_number in ("4", "5", "6"):
+            self.assertLessEqual(by_round.get(round_number, {}).get("K", 0), 1)
+            self.assertLessEqual(by_round.get(round_number, {}).get("P", 0), 1)
+        kickers = sum(by_round.get(r, {}).get("K", 0) for r in ("4", "5", "6"))
+        punters = sum(by_round.get(r, {}).get("P", 0) for r in ("4", "5", "6"))
+        self.assertGreaterEqual(kickers, 1)
+        self.assertGreaterEqual(punters, 1)
 
 
 if __name__ == "__main__":
