@@ -587,6 +587,13 @@ class BuildPlan:
     # record. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
     # Experimental).
     sim_cb_tackles: bool = False
+    # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
+    # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
+    # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
+    # simulated game lands on NFL totals at every Sim. Quarter Length. Played games, the overtime sim clock and the
+    # CB tackle / weekly progression owners are untouched. On in the Advanced and Experimental presets (the
+    # SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail pace.
+    sim_stats: bool = False
     # b778-sd4: modern clock digits: the stadium loader's generated 6x7 bulb font for the play clock, game clock and
     # scores is rewritten in place as a solid warm-white LED matrix. A late executable owner (nfl2k5_clock_led) hooks
     # the end of the clock-font lookup loop at 0x9999A. Every stadium and weather variant uses the same atlas.
@@ -661,7 +668,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -878,6 +885,13 @@ for _preset in PRESETS.values():
     _preset["sim_cb_tackles"] = False
 PRESETS["softdrink_advanced"]["sim_cb_tackles"] = True
 PRESETS["softdrink_experimental"]["sim_cb_tackles"] = True
+del _preset
+# b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
+# presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
+for _preset in PRESETS.values():
+    _preset["sim_stats"] = False
+PRESETS["softdrink_advanced"]["sim_stats"] = True
+PRESETS["softdrink_experimental"]["sim_stats"] = True
 del _preset
 # b778-sd4: modern LED clock digits are a presentation fix like the modern goalposts and the 2026 boards, so on in the
 # Advanced and Experimental presets; Basic keeps the retail bulbs.
@@ -1647,6 +1661,36 @@ def _apply_sim_cb_tackles(plan: "BuildPlan", target: Path, receipt: dict, progre
         raise RuntimeError("Cornerback tackle credit: the output does not read back as applied")
     receipt["steps"].append({"step": "sim_cb_tackles", **{k: v for k, v in cb_receipt.items() if k != "reservations"}})
     receipt["result"]["sim_cb_tackles"] = "applied"
+def _sim_stats_preflight(source: Path, progress) -> None:
+    """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
+    module = _core_module("nfl2k5_sim_stats")
+    if module is None:
+        raise ValueError("The franchise sim pace fix is not available in this installation.")
+    progress("Checking the franchise simulator for the NFL pace fix", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The franchise sim pace fix cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The franchise simulator in this source is not retail or the NFL pace fix. Turn it off or "
+                         "rebuild from a supported USA source.")
+def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-sim1: normalise the simulated game's clock pace (in place, no allocator request)."""
+    if not plan.sim_stats:
+        return
+    module = _core_module("nfl2k5_sim_stats")
+    if module is None:
+        raise RuntimeError("The franchise sim pace fix needs nfl2k5_sim_stats.")
+    progress("Stats: franchise simulated-game pace", 0, 0)
+    payload, sim_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The franchise sim pace fix: the output does not read back as applied")
+    receipt["steps"].append({"step": "sim_stats", **{k: v for k, v in sim_receipt.items()
+                                                    if k not in ("reservations", "edits")},
+                             "edits": sim_receipt.get("edits", [])})
+    receipt["result"]["sim_stats"] = "applied"
 def _clock_led_preflight(source: Path, progress) -> None:
     """b778-sd4: refuse a source whose stadium-loader clock-font loop is foreign, before any write."""
     module = _core_module("nfl2k5_clock_led")
@@ -1817,6 +1861,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("music_shuffle", "nfl2k5_music_playlist"), ("practice_squad_screen", "nfl2k5_practice_squad_screen"),
                                ("abilities", "nfl2k5_abilities_runtime"), ("qb_spy", "nfl2k5_qb_spy_runtime"),
                                ("calendar_engine", "nfl2k5_calendar_engine"))},
+        "sim_stats": _core_module("nfl2k5_sim_stats") is not None,  # b778-sim1; in place, no allocator
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
         "trim_intro_videos": _core_module("nfl2k5_intro_videos") is not None,
@@ -2046,6 +2091,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
+    sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
+    out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
     out["modern_clock_led"] = clock_led.status(_xbe_bytes(source)) if clock_led is not None else "unavailable"
     if report.get("container") == "xiso":
@@ -3726,6 +3773,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
+    if type(plan.sim_stats) is not bool:  # b778-sim1
+        raise ValueError("The franchise sim pace fix must be Off or On.")
     if type(plan.modern_clock_led) is not bool:  # b778-sd4
         raise ValueError("Modern clock digits must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
@@ -4481,6 +4530,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _weekly_progression_preflight(source, progress)
     if plan.player_progress or plan.player_progress_visible:  # b778-pg2/pg3: like qb3, before any write
         _player_progress_preflight(source, progress)
+    if plan.sim_stats:  # b778-sim1: like qb3, before any write
+        _sim_stats_preflight(source, progress)
     if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
         _clock_led_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
@@ -6083,6 +6134,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_contract_college_guard(plan, target, receipt, progress)  # b778-cr1: after the other late owners
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
+    # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
+    _apply_sim_stats(plan, target, receipt, progress)
     # b778-sd4: the LED clock, after the cornerback tackle owner (LATE_OWNERS order)
     _apply_clock_led(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
@@ -6163,6 +6216,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
+    if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
+        raise ValueError("the franchise sim pace fix did not survive the final passes")
     if plan.modern_clock_led and _core_module("nfl2k5_clock_led").status(_xbe_bytes(target)) != "applied":  # b778-sd4
         raise ValueError("modern clock digits did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
