@@ -627,7 +627,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
-        "mod_editor/core/nfl2k5_build_settings.py": "8e7471f7632d837658d7e78754ab86947a02525f0301f405231f9e79f2d34648",
+        "mod_editor/core/nfl2k5_build_settings.py": "8a407a416f616684f5634f2ea6045f3d56dc1e2e418422c4c3c99e6bc9e9ad4f",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -912,6 +912,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_player_progression.py": "ca5e065ff34fda6262a610c2ecf7309b67d270bfaaf751e277a8c13a3c500fb9",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1
+        "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_clock_led.py": "808ddfe45a09e0dac4594c0d3e88ac78f45975e84e27a2c130e54ff87110af6b",  # b778-sd4
         "mod_editor/core/nfl2k5_module_loader.py": "8ed99bf2572f30a5affc2b82adc0171a62c14369156b888cefb1809e908b8c48",
         "mod_editor/core/nfl2k5_crib_trophy_room.py": "7be0b1c26f63345e352b4a7d2ab11af02bab222557cd0ac193a89778879fb04c",

@@ -2042,6 +2042,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
+        "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
