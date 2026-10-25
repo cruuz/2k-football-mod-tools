@@ -673,7 +673,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                           + draft_clock.REQUESTS
                                           + weekly_progression.REQUESTS + player_progress.REQUESTS
                                           + contract_guard.REQUESTS + sim_cb_tackles.REQUESTS + clock_led.REQUESTS
-                                          + pass_protection.REQUESTS, scaleout=True)
+                                          + return_coverage.REQUESTS + pass_protection.REQUESTS, scaleout=True)
             cpu_ai_probe, _ = cpu_qb_reads.apply(cpu_ai_probe, zone_windows=True, recheck=True)
             cpu_ai_probe, _ = db_ball_play.apply(cpu_ai_probe)
             cpu_ai_probe, _ = play_art.apply(cpu_ai_probe)
@@ -688,6 +688,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = contract_guard.apply(cpu_ai_probe)  # b778-cr1: its hook (0x6E11F) and owned code
             cpu_ai_probe, _ = sim_cb_tackles.apply(cpu_ai_probe)  # b778-cb1: its hook (0x1334C3) and owned code
             cpu_ai_probe, _ = clock_led.apply(cpu_ai_probe)  # b778-sd4: its hook (0x9999A) and owned code
+            cpu_ai_probe, _ = return_coverage.apply(cpu_ai_probe)  # b778-kr1: its bearing-call hook and owned code, before pass protection
             cpu_ai_probe, _ = pass_protection.apply(cpu_ai_probe)  # b778-pr1: its pass-delay hook and owned code, before the module loader
             cpu_ai_probe, _ = sportscenter_lineup.apply(cpu_ai_probe)  # b778-sc2: its identity lookup
             cpu_ai_probe, _ = ball_carriers.apply(cpu_ai_probe)  # b778-ai5: its hooks (0x2E29E6, 0x2E340E) and owned code
