@@ -528,7 +528,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     play_art_routes=False,
                                     # b777 ship7: run blocking (ol1) and QB accuracy (qb3/qb4) are late allocator owners
                                     # the Experimental preset now selects; the late-owner probe copy below observes both.
-                                    run_blocking=False, pass_protection=False, qb_accuracy=False,
+                                    run_blocking=False, pass_protection=False, return_coverage=False, qb_accuracy=False,
                                     # b778-fo1: modern sideline catches, the last late owner, observed on the same copy.
                                     modern_force_out=False, cpu_ball_carriers=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, player_progress_visible=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, practice_injuries=False, module_loader=False, classic_teams=False, star_career=False,
                                     # b778-fa1: CPU clubs keep their stars, the last late owner, observed on the same copy.
