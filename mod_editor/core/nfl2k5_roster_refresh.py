@@ -8,6 +8,11 @@ b778-eq1: a created player's gear comes from the same position's class-generator
 templates (nfl2k5_equipment_fit), so a dated receiver does not stay in the zero
 Face Mask 1 that retail kickers and punters wear.  Existing players' gear is
 never read or written.
+
+b778-ap1: a created player's skin, generic face, body and checked dreads bit
+come from the measured headshot table (nfl2k5_created_appearance), so the 2026
+players are not all the Lightest default.  A row that carries its own nonzero
+skin/face/dreads is authored and wins; hair style and photo id are never touched.
 """
 from __future__ import annotations
 
@@ -60,8 +65,13 @@ def _repair_create_buffers(doc):
 def apply_body(body, plan):
     from . import nfl2k5_roster_records as rr
     from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_created_appearance as created_appearance
     from . import nfl2k5_equipment_fit as equipment_fit
     from . import nfl2k5_practice_squad as ps
+
+    appearance_data = created_appearance.load_data()
+    appearance_created = []
+    appearance_written = {}
 
     rr._require(plan.get("schema") == SCHEMA, "Unknown roster refresh schema")
     datetime.date.fromisoformat(plan["as_of"])
@@ -148,6 +158,12 @@ def apply_body(body, plan):
             for k, v in row["fields"].items():
                 p.record.set(k, v)
             p.record.set("player_type", rr.FLAG_NFL_PLAYER)
+            # b778-ap1: the row's identity/ratings arrive without an appearance; use the measured headshot
+            # table (skin/face/BMI body/checked dreads).  A row with its own nonzero skin/face/dreads wins.
+            written = created_appearance.apply(p, row["fields"], row["gsis_id"], appearance_data)
+            if written:
+                appearance_written[row["gsis_id"]] = written
+            appearance_created.append(row["gsis_id"])
             # b778-eq1: a created record keeps the nflverse row's identity/ratings only; its gear comes
             # from the position's own class-generator templates (a WR is not left in Face Mask 1).
             equipment_fit.fill_created_player(doc, p, supplied=row["fields"])
@@ -203,6 +219,8 @@ def apply_body(body, plan):
     return result, {"as_of": plan["as_of"], "added": added, "teams": 32,
                     "create_buffers_repaired": create_buffers_repaired,
                     "initialized_contracts": initialized_contracts,
+                    "appearance": created_appearance.receipt(appearance_created, appearance_written,
+                                                             appearance_data),
                     "active": sum(len(t["active"]) for t in teams),
                     "reserves": sum(len(t["reserves"]) for t in teams),
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),

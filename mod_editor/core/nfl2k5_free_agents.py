@@ -40,10 +40,11 @@ def is_pack_input(edits):
             and len(edits.get("free_agent_pool", ())) == 239)
 
 
-def _create_new_player(document, player, row, college_check):
+def _create_new_player(document, player, row, college_check, appearance_data=None):
     """Write one dated free agent from zero; the measured appearance arrives, the gear is positional."""
 
     from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_created_appearance as created_appearance
     from . import nfl2k5_equipment_fit as equipment_fit
     # Only the existing name pointers are kept until the pool allocator releases them. Never borrow a
     # real player's face, history, abilities, injury, contract or unknown packed fields.
@@ -55,6 +56,10 @@ def _create_new_player(document, player, row, college_check):
         rr._require(field not in rr.POINTER_FIELDS, "Free-agent plan contains a raw pointer.")
         player.record.set(field, value)
     player.record.set("player_type", rr.FLAG_NFL_PLAYER)
+    # b778-ap1: an all-zero appearance takes the measured headshot table when the identity has one;
+    # a row that names nonzero skin/face/dreads is authored and wins.
+    if appearance_data is not None:
+        created_appearance.apply(player, supplied, row.get("gsis_id"), appearance_data)
     # b778-eq1: the dated row carries identity, ratings and measured skin/face, not gear; take the
     # position's own template gear so a new receiver does not read as a kicker.
     equipment_fit.fill_created_player(document, player, supplied=supplied)
@@ -74,7 +79,9 @@ def apply_body(body, data=None):
     """Return new bytes and a scope receipt; never mutate the caller's data."""
     from . import nfl2k5_roster_records as rr
     from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_created_appearance as created_appearance
     data = load_data() if data is None else data
+    appearance_data = created_appearance.load_data()
     rr._require(data.get("schema") == SCHEMA and data.get("as_of") == "2026-10-05",
                 "Unsupported free-agent plan.")
     doc = rr.RosterDocument(bytes(body), scheme="one_pool", reference_year=2026)
@@ -151,7 +158,7 @@ def apply_body(body, data=None):
             # written after creation; it does not reset a player's identity.
             for field, value in row["appearance"].items(): p.record.set(field, value)
             continue
-        _create_new_player(doc, p, row, college_check)
+        _create_new_player(doc, p, row, college_check, appearance_data)
     doc._reindex_membership()
     # This writer owns appearance, new records and FA membership. Preserve
     # existing pbp words until the final commentary pass, including on replay.

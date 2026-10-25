@@ -1,0 +1,3381 @@
+{
+ "schema": "nfl2k5.created_appearance.v1",
+ "as_of": "2026-10-25",
+ "source": "nflverse players.csv headshot URLs (nfl.com), fetched 2026-10-25; 90 dated-refresh 2026 players",
+ "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+ "tone_scale": [
+  "0 Lightest",
+  "1 Light",
+  "2 Light Medium",
+  "3 Dark Medium",
+  "4 Dark",
+  "5 Darkest"
+ ],
+ "ita_thresholds": {
+  "55": 0,
+  "44": 1,
+  "33": 2,
+  "22": 3,
+  "8": 4,
+  "below 8": 5
+ },
+ "body_rule": "BMI = 703*weight/height^2: <24 Skinny, <28 Normal, <33 Large, else Extra Large",
+ "face_rule": "four native generic face shapes per build, chosen by sha256(gsis_id)[1] % 4 (fa5)",
+ "dreads_rule": "bit only for the checked hanging-locs/braids headshots; hair_style stays hs1-owned",
+ "players": {
+  "00-0029592": {
+   "name": "Kevin Zeitler",
+   "refresh_index": 2464,
+   "skin": 0,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 67.6,
+    "L": 80.4,
+    "a": 20.0,
+    "b": 12.5,
+    "box": [
+     248,
+     110,
+     141,
+     193
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 38.3,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nfb14plexvixmjo0p5ye",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0031236": {
+   "name": "Brandin Cooks",
+   "refresh_index": 2465,
+   "skin": 4,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -16.7,
+    "L": 44.9,
+    "a": 15.5,
+    "b": 17.0,
+    "box": [
+     256,
+     116,
+     132,
+     191
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 26.3,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/krz3gv9jjs92arlctvqf",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -16.7 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0031360": {
+   "name": "Kyle Van Noy",
+   "refresh_index": 2466,
+   "skin": 1,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 53.2,
+    "L": 73.4,
+    "a": 13.0,
+    "b": 17.5,
+    "box": [
+     250,
+     115,
+     138,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 31.9,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kxj2hipcguahh4l60vaa",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +53.2 is 1.8 from a tone threshold; tone 1 confirmed by eye"
+  },
+  "00-0032234": {
+   "name": "Laken Tomlinson",
+   "refresh_index": 2467,
+   "skin": 5,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -5.8,
+    "L": 47.8,
+    "a": 17.0,
+    "b": 21.2,
+    "box": [
+     250,
+     125,
+     136,
+     172
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 39.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/thhrfc9q38r0m1qvfctv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0032394": {
+   "name": "Nick Vannett",
+   "refresh_index": 2468,
+   "skin": 0,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 41.8,
+    "L": 64.3,
+    "a": 21.0,
+    "b": 16.0,
+    "box": [
+     244,
+     105,
+     146,
+     199
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 29.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/srrlkx2mydsb8gfco6fp",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0033046": {
+   "name": "Jihad Ward",
+   "refresh_index": 2469,
+   "skin": 5,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 7.9,
+    "L": 53.1,
+    "a": 17.5,
+    "b": 22.5,
+    "box": [
+     249,
+     115,
+     145,
+     190
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 34.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/btmkbywpoicg8fcgvfhc",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +7.9 is 0.1 from a tone threshold; tone 5 confirmed by eye"
+  },
+  "00-0033375": {
+   "name": "Tim Patrick",
+   "refresh_index": 2470,
+   "skin": 4,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 21.4,
+    "L": 58.4,
+    "a": 18.0,
+    "b": 21.5,
+    "box": [
+     253,
+     118,
+     135,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 25.1,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hzzzzdwgxmowculsr6q2",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +21.4 is 0.6 from a tone threshold; tone 4 confirmed by eye"
+  },
+  "00-0033393": {
+   "name": "Kenny Moore",
+   "refresh_index": 2471,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 25.3,
+    "L": 59.2,
+    "a": 17.0,
+    "b": 19.5,
+    "box": [
+     248,
+     114,
+     140,
+     183
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 28.1,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mhemrhoiongplhqvrhdt",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +25.3 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0033439": {
+   "name": "Pharaoh Brown",
+   "refresh_index": 2472,
+   "skin": 4,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 24.7,
+    "L": 59.2,
+    "a": 20.5,
+    "b": 20.0,
+    "box": [
+     252,
+     109,
+     136,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 29.2,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hfgg6gr7aiyzmdzh4iww",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +24.7 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0033589": {
+   "name": "David Moore",
+   "refresh_index": 2473,
+   "skin": 5,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -28.6,
+    "L": 40.2,
+    "a": 18.0,
+    "b": 18.0,
+    "box": [
+     254,
+     125,
+     134,
+     167
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 29.8,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iyawzolvibsds35fwapv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0033699": {
+   "name": "Austin Ekeler",
+   "refresh_index": 2474,
+   "skin": 2,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 33.6,
+    "L": 67.3,
+    "a": 15.0,
+    "b": 26.0,
+    "box": [
+     251,
+     115,
+     141,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 28.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sldndpn2zwt4uhkj2zks",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +33.6 is 0.6 from a tone threshold; tone 2 confirmed by eye"
+  },
+  "00-0033854": {
+   "name": "Dare Ogunbowale",
+   "refresh_index": 2475,
+   "skin": 4,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -17.4,
+    "L": 44.2,
+    "a": 18.0,
+    "b": 18.5,
+    "box": [
+     253,
+     115,
+     131,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 28.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bsm0k0jkytuiej2riudv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -17.4 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0033947": {
+   "name": "Deatrich Wise",
+   "refresh_index": 2476,
+   "skin": 4,
+   "face": 5,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 31.5,
+    "L": 66.7,
+    "a": 24.0,
+    "b": 27.2,
+    "box": [
+     253,
+     118,
+     134,
+     182
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 33.2,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kmshfa3dfehklgdh1lrk",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +31.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0034272": {
+   "name": "Marquez Valdes",
+   "refresh_index": 2477,
+   "skin": 4,
+   "face": 1,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -6.5,
+    "L": 47.6,
+    "a": 19.5,
+    "b": 20.5,
+    "box": [
+     254,
+     122,
+     134,
+     172
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 25.2,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xkdli55uvkkffiq6fwnu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -6.5 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0034355": {
+   "name": "M.J. Stewart",
+   "refresh_index": 2478,
+   "skin": 4,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 27.5,
+    "L": 59.5,
+    "a": 18.0,
+    "b": 18.2,
+    "box": [
+     256,
+     121,
+     128,
+     173
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 28.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ks5w5s7jghanmslipbfs",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +27.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0034417": {
+   "name": "Matt Pryor",
+   "refresh_index": 2479,
+   "skin": 1,
+   "face": 2,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 47.2,
+    "L": 74.3,
+    "a": 18.0,
+    "b": 22.5,
+    "box": [
+     250,
+     115,
+     141,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 37.4,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vtt6isfbfk59jtxbma2l",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0034613": {
+   "name": "Tanner Hudson",
+   "refresh_index": 2480,
+   "skin": 0,
+   "face": 2,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 55.4,
+    "L": 79.0,
+    "a": 23.0,
+    "b": 20.0,
+    "box": [
+     248,
+     114,
+     145,
+     183
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 28.3,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pyl2bpjw0vy4idcseama",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +55.4 is 0.4 from a tone threshold; tone 0 confirmed by eye"
+  },
+  "00-0034794": {
+   "name": "Jason Sanders",
+   "refresh_index": 2481,
+   "skin": 0,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 56.5,
+    "L": 70.4,
+    "a": 12.5,
+    "b": 13.5,
+    "box": [
+     248,
+     105,
+     140,
+     196
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 25.9,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t8xrcrcuttghirqbc1bu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +56.5 is 1.5 from a tone threshold; tone 0 confirmed by eye"
+  },
+  "00-0035239": {
+   "name": "Sean Murphy-Bunting",
+   "refresh_index": 2482,
+   "skin": 2,
+   "face": 1,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 43.1,
+    "L": 72.9,
+    "a": 17.5,
+    "b": 24.5,
+    "box": [
+     253,
+     113,
+     132,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 26.4,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gzvlxusjbfstklwec0ti",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +43.1 is 0.9 from a tone threshold; tone 2 confirmed by eye"
+  },
+  "00-0035363": {
+   "name": "Joe Giles-Harris",
+   "refresh_index": 2483,
+   "skin": 4,
+   "face": 2,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 23.9,
+    "L": 62.0,
+    "a": 24.5,
+    "b": 27.0,
+    "box": [
+     252,
+     116,
+     139,
+     193
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 30.0,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y9vh7yn88tehcffsx90f",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +23.9 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0035500": {
+   "name": "Greg Dortch",
+   "refresh_index": 2484,
+   "skin": 4,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -4.8,
+    "L": 48.0,
+    "a": 24.0,
+    "b": 23.5,
+    "box": [
+     249,
+     108,
+     140,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.1,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tuevxl0xuipjd8qetkcj",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -4.8 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0035594": {
+   "name": "Travis Homer",
+   "refresh_index": 2485,
+   "skin": 5,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 54.9,
+    "L": 75.6,
+    "a": 12.0,
+    "b": 18.0,
+    "box": [
+     259,
+     106,
+     129,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 30.3,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dyyclvfaagspov2ydf3i",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +54.9 reads tone 1; visual review of the nfl.com headshot gives tone 5"
+  },
+  "00-0035602": {
+   "name": "Alex Bachman",
+   "refresh_index": 2486,
+   "skin": 1,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 54.3,
+    "L": 72.9,
+    "a": 23.0,
+    "b": 16.5,
+    "box": [
+     249,
+     113,
+     141,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 25.8,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/j9bmq2rllcvxiccmrqrt",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +54.3 is 0.7 from a tone threshold; tone 1 confirmed by eye"
+  },
+  "00-0035891": {
+   "name": "Cody White",
+   "refresh_index": 2487,
+   "skin": 1,
+   "face": 6,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 40.4,
+    "L": 75.1,
+    "a": 25.0,
+    "b": 29.5,
+    "box": [
+     251,
+     116,
+     138,
+     180
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 26.9,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mdyb0bh56hbtql2frebv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +40.4 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  "00-0036157": {
+   "name": "Kristian Welch",
+   "refresh_index": 2488,
+   "skin": 1,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 48.9,
+    "L": 72.9,
+    "a": 24.2,
+    "b": 20.0,
+    "box": [
+     248,
+     110,
+     146,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 29.9,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iqibbhzklifflirfqvoq",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0036237": {
+   "name": "Larrell Murchison",
+   "refresh_index": 2489,
+   "skin": 4,
+   "face": 2,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 27.5,
+    "L": 62.6,
+    "a": 19.5,
+    "b": 24.2,
+    "box": [
+     252,
+     108,
+     140,
+     192
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 38.1,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/selpjbonlchfv4krusrd",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +27.5 reads tone 3; visual review of the nfl.com headshot gives tone 4",
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0036267": {
+   "name": "Jedrick Wills",
+   "refresh_index": 2490,
+   "skin": 5,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 62.1,
+    "L": 78.3,
+    "a": 18.0,
+    "b": 15.0,
+    "box": [
+     232,
+     113,
+     144,
+     194
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 38.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/axddfviuqswyydbdmz7i",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +62.1 reads tone 0; visual review of the nfl.com headshot gives tone 5"
+  },
+  "00-0036280": {
+   "name": "Malik Harrison",
+   "refresh_index": 2491,
+   "skin": 4,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 44.1,
+    "L": 65.5,
+    "a": 18.5,
+    "b": 16.0,
+    "box": [
+     234,
+     114,
+     140,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 30.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/op0rmd51r9tzneqpe9ui",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +44.1 reads tone 1; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0036307": {
+   "name": "Kindle Vildor",
+   "refresh_index": 2492,
+   "skin": 4,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 5.8,
+    "L": 52.5,
+    "a": 19.0,
+    "b": 25.0,
+    "box": [
+     253,
+     118,
+     135,
+     175
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 26.5,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bfvlflg3zop9wvavzuzc",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +5.8 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0036356": {
+   "name": "Isaiah Simmons",
+   "refresh_index": 2493,
+   "skin": 4,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 9.5,
+    "L": 54.1,
+    "a": 22.0,
+    "b": 24.5,
+    "box": [
+     252,
+     123,
+     130,
+     173
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 28.2,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mf9tbatcc933o8rzfuy5",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +9.5 is 1.5 from a tone threshold; tone 4 confirmed by eye"
+  },
+  "00-0036361": {
+   "name": "Trevon Diggs",
+   "refresh_index": 2494,
+   "skin": 5,
+   "face": 1,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -33.5,
+    "L": 40.4,
+    "a": 12.5,
+    "b": 14.5,
+    "box": [
+     252,
+     118,
+     140,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 26.8,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wqdaaegbcj9zidrawxme",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0036395": {
+   "name": "K'Von Wallace",
+   "refresh_index": 2495,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -13.1,
+    "L": 45.1,
+    "a": 20.0,
+    "b": 21.0,
+    "box": [
+     252,
+     119,
+     133,
+     180
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 29.0,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qelcfyuyyds2y5zebqdr",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -13.1 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0036695": {
+   "name": "Naquan Jones",
+   "refresh_index": 2496,
+   "skin": 5,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 9.3,
+    "L": 52.9,
+    "a": 21.0,
+    "b": 18.0,
+    "box": [
+     253,
+     140,
+     131,
+     182
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 39.2,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u8cuu5te8ip7tqrvs88w",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +9.3 reads tone 4; visual review of the nfl.com headshot gives tone 5"
+  },
+  "00-0036716": {
+   "name": "Amen Ogbongbemiga",
+   "refresh_index": 2497,
+   "skin": 4,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 18.8,
+    "L": 58.5,
+    "a": 22.5,
+    "b": 25.0,
+    "box": [
+     251,
+     117,
+     136,
+     183
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 31.3,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/liyabetbezsk9lvuuphd",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0036727": {
+   "name": "Adam Prentice",
+   "refresh_index": 2498,
+   "skin": 0,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 60.5,
+    "L": 82.7,
+    "a": 18.5,
+    "b": 18.5,
+    "box": [
+     250,
+     109,
+     142,
+     202
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 33.2,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xuvyqidnso9ga1dfefoy",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0036788": {
+   "name": "Jack Heflin",
+   "refresh_index": 2499,
+   "skin": 1,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 35.9,
+    "L": 61.6,
+    "a": 19.0,
+    "b": 16.0,
+    "box": [
+     250,
+     111,
+     144,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 38.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ikwmifqytqpn3leyguze",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +35.9 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  "00-0036924": {
+   "name": "Michael Carter",
+   "refresh_index": 2500,
+   "skin": 5,
+   "face": 2,
+   "body": 2,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -19.4,
+    "L": 41.6,
+    "a": 19.0,
+    "b": 24.0,
+    "box": [
+     253,
+     117,
+     132,
+     177
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 30.4,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/j9ockcyi5etuz8gfv73h",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true,
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0036943": {
+   "name": "Mitchell Fraboni",
+   "refresh_index": 2501,
+   "skin": 0,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 40.3,
+    "L": 68.2,
+    "a": 24.5,
+    "b": 21.5,
+    "box": [
+     254,
+     120,
+     136,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 28.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/csvbeqtitr9ixpgdt0fu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +40.3 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0036993": {
+   "name": "Ifeatu Melifonwu",
+   "refresh_index": 2502,
+   "skin": 5,
+   "face": 3,
+   "body": 1,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 3.4,
+    "L": 51.0,
+    "a": 17.5,
+    "b": 16.5,
+    "box": [
+     260,
+     113,
+     125,
+     185
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 26.6,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ftt7jc1nr0hmf1xmzyh2",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0037051": {
+   "name": "Elijah Garcia",
+   "refresh_index": 2503,
+   "skin": 2,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 21.6,
+    "L": 62.0,
+    "a": 28.5,
+    "b": 30.2,
+    "box": [
+     251,
+     122,
+     139,
+     174
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 35.8,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mdhtfrrfmfeop2secu2c",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +21.6 reads tone 4; visual review of the nfl.com headshot gives tone 2"
+  },
+  "00-0037156": {
+   "name": "Irvin Charles",
+   "refresh_index": 2504,
+   "skin": 4,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -14.7,
+    "L": 44.9,
+    "a": 16.5,
+    "b": 19.5,
+    "box": [
+     253,
+     126,
+     129,
+     165
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 26.7,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/smmnxshufwm9yn8z1rap",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -14.7 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0037205": {
+   "name": "Brenden Schooler",
+   "refresh_index": 2505,
+   "skin": 0,
+   "face": 6,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 62.7,
+    "L": 78.0,
+    "a": 16.8,
+    "b": 14.5,
+    "box": [
+     248,
+     106,
+     144,
+     196
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 27.7,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ckwxtyudugyyscexho7u",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0037243": {
+   "name": "Tyler Smith",
+   "refresh_index": 2506,
+   "skin": 5,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -24.3,
+    "L": 41.0,
+    "a": 18.8,
+    "b": 20.0,
+    "box": [
+     251,
+     117,
+     137,
+     173
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 38.9,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gdosyozck6qewvzmpag2",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0037258": {
+   "name": "Dameon Pierce",
+   "refresh_index": 2507,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -7.0,
+    "L": 47.4,
+    "a": 21.5,
+    "b": 21.5,
+    "box": [
+     255,
+     129,
+     131,
+     161
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 30.8,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oai3defivyfyofxxh4ux",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -7.0 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0037277": {
+   "name": "Teagan Quitoriano",
+   "refresh_index": 2508,
+   "skin": 0,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 64.8,
+    "L": 79.8,
+    "a": 16.0,
+    "b": 14.0,
+    "box": [
+     250,
+     113,
+     139,
+     171
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 29.9,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/adwepaexueevxdcqjhyf",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0037323": {
+   "name": "Rodney Thomas",
+   "refresh_index": 2509,
+   "skin": 3,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 42.4,
+    "L": 76.0,
+    "a": 14.5,
+    "b": 28.5,
+    "box": [
+     247,
+     113,
+     143,
+     193
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 25.9,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/txfypbjmidovk81oxte5",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +42.4 reads tone 2; visual review of the nfl.com headshot gives tone 3"
+  },
+  "00-0037493": {
+   "name": "Mike Brown",
+   "refresh_index": 2510,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 8.9,
+    "L": 54.2,
+    "a": 20.0,
+    "b": 27.0,
+    "box": [
+     251,
+     113,
+     138,
+     186
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 28.8,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qnxgcmvjzap7boqulnvm",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +8.9 is 0.9 from a tone threshold; tone 4 confirmed by eye"
+  },
+  "00-0038098": {
+   "name": "Pierre Strong",
+   "refresh_index": 2511,
+   "skin": 5,
+   "face": 2,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -13.0,
+    "L": 44.1,
+    "a": 22.0,
+    "b": 25.5,
+    "box": [
+     246,
+     107,
+     143,
+     190
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 28.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/aa0nufst85vutgor1fqv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0038194": {
+   "name": "Kohl Levao",
+   "refresh_index": 2512,
+   "skin": 2,
+   "face": 2,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 28.4,
+    "L": 60.3,
+    "a": 16.5,
+    "b": 19.0,
+    "box": [
+     251,
+     118,
+     130,
+     179
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 40.4,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ufsy8ma1rrxxhujzmeix",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +28.4 reads tone 3; visual review of the nfl.com headshot gives tone 2"
+  },
+  "00-0038390": {
+   "name": "Noah Sewell",
+   "refresh_index": 2513,
+   "skin": 3,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 57.7,
+    "L": 78.4,
+    "a": 14.0,
+    "b": 18.0,
+    "box": [
+     248,
+     123,
+     144,
+     180
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 32.5,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sw5wea1zlc1drxoisej0",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +57.7 reads tone 0; visual review of the nfl.com headshot gives tone 3"
+  },
+  "00-0038395": {
+   "name": "Terell Smith",
+   "refresh_index": 2514,
+   "skin": 5,
+   "face": 2,
+   "body": 2,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 6.9,
+    "L": 51.8,
+    "a": 16.0,
+    "b": 14.5,
+    "box": [
+     256,
+     125,
+     133,
+     174
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 28.1,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m1xomyyei7e4iouxhlj9",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +6.9 is 1.1 from a tone threshold; tone 5 confirmed by eye"
+  },
+  "00-0038513": {
+   "name": "Cam Jones",
+   "refresh_index": 2515,
+   "skin": 4,
+   "face": 2,
+   "body": 2,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 10.9,
+    "L": 54.9,
+    "a": 24.5,
+    "b": 25.5,
+    "box": [
+     253,
+     111,
+     136,
+     179
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 29.3,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jwrgy9biwoeqssscqysr",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +10.9 is 2.9 from a tone threshold; tone 4 confirmed by eye",
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0038576": {
+   "name": "Charlie Jones",
+   "refresh_index": 2516,
+   "skin": 0,
+   "face": 1,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 58.8,
+    "L": 76.5,
+    "a": 24.5,
+    "b": 16.0,
+    "box": [
+     248,
+     108,
+     147,
+     195
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 25.5,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gwqpjp7x9swytqvrdihi",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0038587": {
+   "name": "Jammie Robinson",
+   "refresh_index": 2517,
+   "skin": 5,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -40.9,
+    "L": 33.1,
+    "a": 18.0,
+    "b": 19.5,
+    "box": [
+     249,
+     121,
+     134,
+     174
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.2,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gdrw83ybkzdjloi6p5b0",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0038614": {
+   "name": "Scott Matlock",
+   "refresh_index": 2518,
+   "skin": 0,
+   "face": 2,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 74.3,
+    "L": 76.7,
+    "a": 20.0,
+    "b": 7.5,
+    "box": [
+     250,
+     111,
+     141,
+     193
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 36.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/biif35k2hwpqmhlxn0sa",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0038620": {
+   "name": "Erick Hallett",
+   "refresh_index": 2519,
+   "skin": 5,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -13.7,
+    "L": 44.5,
+    "a": 18.5,
+    "b": 22.5,
+    "box": [
+     254,
+     122,
+     132,
+     172
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.9,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pinep24gdaa4uzt2zn3q",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0038663": {
+   "name": "Starling Thomas",
+   "refresh_index": 2520,
+   "skin": 5,
+   "face": 1,
+   "body": 1,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -51.8,
+    "L": 34.1,
+    "a": 20.0,
+    "b": 12.5,
+    "box": [
+     253,
+     115,
+     130,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.8,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wep63sxqoqc3yyyo8hds",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true,
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0038823": {
+   "name": "Kaevon Merriweather",
+   "refresh_index": 2521,
+   "skin": 4,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 21.6,
+    "L": 61.9,
+    "a": 22.0,
+    "b": 30.0,
+    "box": [
+     254,
+     118,
+     135,
+     177
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 28.1,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/f0eu5qpulyo3hzh4524f",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +21.6 is 0.4 from a tone threshold; tone 4 confirmed by eye"
+  },
+  "00-0038839": {
+   "name": "Mitchell Tinsley",
+   "refresh_index": 2522,
+   "skin": 4,
+   "face": 4,
+   "body": 1,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 5.9,
+    "L": 52.9,
+    "a": 24.0,
+    "b": 28.5,
+    "box": [
+     253,
+     121,
+     130,
+     174
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.0,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t4h8qtzndtvf6is6naew",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +5.9 reads tone 5; visual review of the nfl.com headshot gives tone 4",
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0038890": {
+   "name": "Shaka Heyward",
+   "refresh_index": 2523,
+   "skin": 4,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 24.5,
+    "L": 59.8,
+    "a": 24.0,
+    "b": 21.5,
+    "box": [
+     256,
+     124,
+     133,
+     172
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 29.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ygoj2vwazi6dsg2bnwpt",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +24.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0039325": {
+   "name": "Carson Steele",
+   "refresh_index": 2524,
+   "skin": 1,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 41.8,
+    "L": 70.6,
+    "a": 23.0,
+    "b": 23.0,
+    "box": [
+     252,
+     110,
+     140,
+     186
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 30.5,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q6dciqten6frfdm1takb",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  "00-0039388": {
+   "name": "Jaylan Ford",
+   "refresh_index": 2525,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 23.3,
+    "L": 61.0,
+    "a": 17.5,
+    "b": 25.5,
+    "box": [
+     253,
+     120,
+     138,
+     178
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 30.8,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/opp2bx0oqgzh4cnim9zy",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +23.3 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0039419": {
+   "name": "Michael Jurgens",
+   "refresh_index": 2526,
+   "skin": 0,
+   "face": 2,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 40.2,
+    "L": 66.1,
+    "a": 25.0,
+    "b": 19.0,
+    "box": [
+     248,
+     107,
+     143,
+     192
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 37.9,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bcdaajtitkgcajriox6z",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +40.2 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0039447": {
+   "name": "Nate Lynn",
+   "refresh_index": 2527,
+   "skin": 4,
+   "face": 1,
+   "body": 2,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 44.7,
+    "L": 72.3,
+    "a": 20.5,
+    "b": 22.5,
+    "box": [
+     253,
+     112,
+     137,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 31.9,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/knnvuw8oxhlads0vfpep",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +44.7 reads tone 1; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0039816": {
+   "name": "Anthony Gould",
+   "refresh_index": 2528,
+   "skin": 3,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 49.5,
+    "L": 74.6,
+    "a": 16.5,
+    "b": 21.0,
+    "box": [
+     249,
+     115,
+     142,
+     179
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 26.1,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ewbv5owedaf1ixcfaidy",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +49.5 reads tone 1; visual review of the nfl.com headshot gives tone 3"
+  },
+  "00-0040043": {
+   "name": "Justin Barron",
+   "refresh_index": 2529,
+   "skin": 1,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 44.4,
+    "L": 65.7,
+    "a": 15.5,
+    "b": 16.0,
+    "box": [
+     250,
+     117,
+     140,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 28.6,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lnrgjwbxfkbfgsgtsgta",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +44.4 is 0.4 from a tone threshold; tone 1 confirmed by eye"
+  },
+  "00-0040077": {
+   "name": "Robert Longerbeam",
+   "refresh_index": 2530,
+   "skin": 4,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -34.9,
+    "L": 38.8,
+    "a": 15.5,
+    "b": 16.0,
+    "box": [
+     252,
+     112,
+     142,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 24.8,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/trntqnyxey3vjzredean",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA -34.9 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0040079": {
+   "name": "Garrett Dellinger",
+   "refresh_index": 2531,
+   "skin": 0,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 41.8,
+    "L": 72.4,
+    "a": 21.0,
+    "b": 25.0,
+    "box": [
+     251,
+     114,
+     141,
+     186
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 39.1,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/spkkyywtld1buffzxfe3",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0040127": {
+   "name": "Kenneth Grant",
+   "refresh_index": 2532,
+   "skin": 5,
+   "face": 2,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -10.8,
+    "L": 45.9,
+    "a": 20.0,
+    "b": 21.5,
+    "box": [
+     253,
+     109,
+     125,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 40.7,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eos1zpxpiszme8p60lkc",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040209": {
+   "name": "Jalen Mcleod",
+   "refresh_index": 2533,
+   "skin": 5,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -2.8,
+    "L": 49.0,
+    "a": 18.5,
+    "b": 20.2,
+    "box": [
+     252,
+     117,
+     131,
+     176
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 31.1,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kwm2mbjg8rmeeurzlrrr",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040212": {
+   "name": "Branson Taylor",
+   "refresh_index": 2534,
+   "skin": 0,
+   "face": 6,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 68.9,
+    "L": 73.3,
+    "a": 21.0,
+    "b": 9.0,
+    "box": [
+     250,
+     116,
+     141,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 38.1,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/whkbfekfv5pcrjbw2fz2",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040311": {
+   "name": "Theo Wease",
+   "refresh_index": 2535,
+   "skin": 5,
+   "face": 3,
+   "body": 1,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 3.0,
+    "L": 50.9,
+    "a": 21.0,
+    "b": 17.0,
+    "box": [
+     250,
+     105,
+     137,
+     202
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 27.0,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ywtuq1sielt0scr220fi",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true,
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0040341": {
+   "name": "Doneiko Slaughter",
+   "refresh_index": 2536,
+   "skin": 4,
+   "face": 3,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 4.3,
+    "L": 51.2,
+    "a": 18.5,
+    "b": 15.5,
+    "box": [
+     250,
+     111,
+     142,
+     184
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 25.8,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z2wtosdw9ioeckp4sfo4",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +4.3 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  "00-0040374": {
+   "name": "Seth McLaughlin",
+   "refresh_index": 2537,
+   "skin": 0,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 71.9,
+    "L": 82.2,
+    "a": 18.0,
+    "b": 10.5,
+    "box": [
+     248,
+     103,
+     147,
+     195
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 37.1,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yiahyzi741suhypixaiu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040411": {
+   "name": "Alijah Huzzie",
+   "refresh_index": 2538,
+   "skin": 3,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 30.0,
+    "L": 66.5,
+    "a": 23.0,
+    "b": 28.5,
+    "box": [
+     252,
+     116,
+     139,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 3,
+    "bmi": 28.0,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wee2nlgzymxntkpaeyak",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040422": {
+   "name": "Jake Majors",
+   "refresh_index": 2539,
+   "skin": 0,
+   "face": 5,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 45.5,
+    "L": 69.3,
+    "a": 25.0,
+    "b": 19.0,
+    "box": [
+     248,
+     115,
+     143,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 38.2,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xtrvv63ccghpiwxwmsdh",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +45.5 reads tone 1; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0040464": {
+   "name": "DJ Uiagalelei",
+   "refresh_index": 2540,
+   "skin": 2,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 42.1,
+    "L": 70.8,
+    "a": 20.5,
+    "b": 23.0,
+    "box": [
+     248,
+     118,
+     141,
+     183
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 30.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uxkbvrw5eu41udzsesnu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +42.1 is 1.9 from a tone threshold; tone 2 confirmed by eye"
+  },
+  "00-0040494": {
+   "name": "Max Brosmer",
+   "refresh_index": 2541,
+   "skin": 1,
+   "face": 6,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 54.2,
+    "L": 77.1,
+    "a": 20.5,
+    "b": 19.5,
+    "box": [
+     248,
+     113,
+     142,
+     188
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 28.0,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zipyso37qpwgbsjkvnnr",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +54.2 is 0.8 from a tone threshold; tone 1 confirmed by eye"
+  },
+  "00-0040501": {
+   "name": "Austin Keys",
+   "refresh_index": 2542,
+   "skin": 4,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 13.9,
+    "L": 55.2,
+    "a": 19.0,
+    "b": 21.0,
+    "box": [
+     251,
+     119,
+     136,
+     180
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 31.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cs4nlk2pdnx0bbesyghu",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040509": {
+   "name": "Ben Yurosek",
+   "refresh_index": 2543,
+   "skin": 0,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 40.9,
+    "L": 64.3,
+    "a": 25.0,
+    "b": 16.5,
+    "box": [
+     246,
+     110,
+     144,
+     192
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 30.5,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/v03auprkmgp733ks9un4",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +40.9 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  "00-0040541": {
+   "name": "Torricelli Simpkins",
+   "refresh_index": 2544,
+   "skin": 5,
+   "face": 2,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -8.3,
+    "L": 47.2,
+    "a": 15.5,
+    "b": 19.5,
+    "box": [
+     251,
+     122,
+     136,
+     169
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 37.0,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xhof0hsbncovhmhhvifd",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040560": {
+   "name": "Sebastian Valdez",
+   "refresh_index": 2545,
+   "skin": 2,
+   "face": 2,
+   "body": 3,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 38.1,
+    "L": 67.3,
+    "a": 13.0,
+    "b": 22.0,
+    "box": [
+     253,
+     127,
+     135,
+     167
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 37.6,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cnb82o0pkp0k2ng5mrrp",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040660": {
+   "name": "Mykel Williams",
+   "refresh_index": 2546,
+   "skin": 5,
+   "face": 6,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -10.9,
+    "L": 44.3,
+    "a": 25.5,
+    "b": 29.5,
+    "box": [
+     252,
+     113,
+     136,
+     179
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 31.4,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jas5em3i7xswbtoqr6qz",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0040741": {
+   "name": "Shemar Turner",
+   "refresh_index": 2547,
+   "skin": 4,
+   "face": 2,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 9.4,
+    "L": 53.7,
+    "a": 22.5,
+    "b": 22.5,
+    "box": [
+     254,
+     122,
+     135,
+     178
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 36.2,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gj6rxglwrkzwgvvq0z1q",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "ITA +9.4 is 1.4 from a tone threshold; tone 4 confirmed by eye",
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  },
+  "00-0040923": {
+   "name": "Maximus Pulley",
+   "refresh_index": 2548,
+   "skin": 4,
+   "face": 1,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 15.4,
+    "L": 57.8,
+    "a": 22.0,
+    "b": 28.5,
+    "box": [
+     252,
+     113,
+     138,
+     180
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 4,
+    "bmi": 27.9,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/o3d6yyimonbtgnszaq0z",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0041089": {
+   "name": "Lorenzo Styles",
+   "refresh_index": 2549,
+   "skin": 3,
+   "face": 4,
+   "body": 1,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 58.2,
+    "L": 71.0,
+    "a": 16.0,
+    "b": 13.0,
+    "box": [
+     251,
+     119,
+     143,
+     187
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 0,
+    "bmi": 25.6,
+    "body": 1,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zlsfss0kuhsnrzxlbmpw",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "low",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +58.2 reads tone 0; visual review of the nfl.com headshot gives tone 3"
+  },
+  "00-0041178": {
+   "name": "Robert Henry",
+   "refresh_index": 2550,
+   "skin": 3,
+   "face": 1,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 43.1,
+    "L": 65.9,
+    "a": 17.0,
+    "b": 17.0,
+    "box": [
+     250,
+     110,
+     145,
+     186
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 2,
+    "bmi": 28.9,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/aehybugrdkpwoegwc10v",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "reviewed",
+   "appearance_reviewed": true,
+   "review_reason": "fa5 ITA +43.1 reads tone 2; visual review of the nfl.com headshot gives tone 3"
+  },
+  "00-0041267": {
+   "name": "Malik McClain",
+   "refresh_index": 2551,
+   "skin": 5,
+   "face": 3,
+   "body": 0,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -52.2,
+    "L": 34.5,
+    "a": 12.8,
+    "b": 12.0,
+    "box": [
+     253,
+     120,
+     138,
+     181
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 23.1,
+    "body": 0,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/w3chwupogzrrpl6sihcc",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0041415": {
+   "name": "Dean Connors",
+   "refresh_index": 2552,
+   "skin": 1,
+   "face": 5,
+   "body": 2,
+   "dreads": 0,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": 49.0,
+    "L": 70.1,
+    "a": 21.0,
+    "b": 17.5,
+    "box": [
+     249,
+     108,
+     141,
+     192
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 1,
+    "bmi": 28.7,
+    "body": 2,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fgsgqkdsnliwujjtvvw3",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true
+  },
+  "00-0041440": {
+   "name": "Kayden McDonald",
+   "refresh_index": 2553,
+   "skin": 5,
+   "face": 5,
+   "body": 3,
+   "dreads": 1,
+   "method": "nflverse players.csv headshot (nfl.com), YuNet face box, cheek/forehead/nose ITA; tone visually reviewed against the headshot (the 2026 photo set is high-key, so the fa5 ITA tone is kept as the raw measure and the reviewed tone ships); body from height/weight BMI; face from the native generic set of that tone; dreads only from the checked hanging-locs list",
+   "measure": {
+    "ita": -30.5,
+    "L": 38.2,
+    "a": 19.0,
+    "b": 20.0,
+    "box": [
+     251,
+     117,
+     134,
+     173
+    ],
+    "size": [
+     640,
+     461
+    ],
+    "ita_skin": 5,
+    "bmi": 40.7,
+    "body": 3,
+    "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fcasjvzrnyvd9bperaqv",
+    "detector": "yunet-2023mar"
+   },
+   "confidence": "measured",
+   "appearance_reviewed": true,
+   "review_note": "coordinator 10/25: hanging locs visible in the headshot, dreads 1"
+  }
+ },
+ "review": [
+  {
+   "name": "Brandin Cooks",
+   "gsis_id": "00-0031236",
+   "index": 2465,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -16.7 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Kyle Van Noy",
+   "gsis_id": "00-0031360",
+   "index": 2466,
+   "confidence": "low",
+   "reason": "ITA +53.2 is 1.8 from a tone threshold; tone 1 confirmed by eye"
+  },
+  {
+   "name": "Nick Vannett",
+   "gsis_id": "00-0032394",
+   "index": 2468,
+   "confidence": "low",
+   "reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "Jihad Ward",
+   "gsis_id": "00-0033046",
+   "index": 2469,
+   "confidence": "low",
+   "reason": "ITA +7.9 is 0.1 from a tone threshold; tone 5 confirmed by eye"
+  },
+  {
+   "name": "Tim Patrick",
+   "gsis_id": "00-0033375",
+   "index": 2470,
+   "confidence": "low",
+   "reason": "ITA +21.4 is 0.6 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "Kenny Moore",
+   "gsis_id": "00-0033393",
+   "index": 2471,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +25.3 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Pharaoh Brown",
+   "gsis_id": "00-0033439",
+   "index": 2472,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +24.7 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Austin Ekeler",
+   "gsis_id": "00-0033699",
+   "index": 2474,
+   "confidence": "low",
+   "reason": "ITA +33.6 is 0.6 from a tone threshold; tone 2 confirmed by eye"
+  },
+  {
+   "name": "Dare Ogunbowale",
+   "gsis_id": "00-0033854",
+   "index": 2475,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -17.4 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Deatrich Wise",
+   "gsis_id": "00-0033947",
+   "index": 2476,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +31.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Marquez Valdes",
+   "gsis_id": "00-0034272",
+   "index": 2477,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -6.5 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "M.J. Stewart",
+   "gsis_id": "00-0034355",
+   "index": 2478,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +27.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Tanner Hudson",
+   "gsis_id": "00-0034613",
+   "index": 2480,
+   "confidence": "low",
+   "reason": "ITA +55.4 is 0.4 from a tone threshold; tone 0 confirmed by eye"
+  },
+  {
+   "name": "Jason Sanders",
+   "gsis_id": "00-0034794",
+   "index": 2481,
+   "confidence": "low",
+   "reason": "ITA +56.5 is 1.5 from a tone threshold; tone 0 confirmed by eye"
+  },
+  {
+   "name": "Sean Murphy-Bunting",
+   "gsis_id": "00-0035239",
+   "index": 2482,
+   "confidence": "low",
+   "reason": "ITA +43.1 is 0.9 from a tone threshold; tone 2 confirmed by eye"
+  },
+  {
+   "name": "Joe Giles-Harris",
+   "gsis_id": "00-0035363",
+   "index": 2483,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +23.9 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Greg Dortch",
+   "gsis_id": "00-0035500",
+   "index": 2484,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -4.8 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Travis Homer",
+   "gsis_id": "00-0035594",
+   "index": 2485,
+   "confidence": "low",
+   "reason": "fa5 ITA +54.9 reads tone 1; visual review of the nfl.com headshot gives tone 5"
+  },
+  {
+   "name": "Alex Bachman",
+   "gsis_id": "00-0035602",
+   "index": 2486,
+   "confidence": "low",
+   "reason": "ITA +54.3 is 0.7 from a tone threshold; tone 1 confirmed by eye"
+  },
+  {
+   "name": "Cody White",
+   "gsis_id": "00-0035891",
+   "index": 2487,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +40.4 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  {
+   "name": "Larrell Murchison",
+   "gsis_id": "00-0036237",
+   "index": 2489,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +27.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Jedrick Wills",
+   "gsis_id": "00-0036267",
+   "index": 2490,
+   "confidence": "low",
+   "reason": "fa5 ITA +62.1 reads tone 0; visual review of the nfl.com headshot gives tone 5"
+  },
+  {
+   "name": "Malik Harrison",
+   "gsis_id": "00-0036280",
+   "index": 2491,
+   "confidence": "low",
+   "reason": "fa5 ITA +44.1 reads tone 1; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Kindle Vildor",
+   "gsis_id": "00-0036307",
+   "index": 2492,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +5.8 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Isaiah Simmons",
+   "gsis_id": "00-0036356",
+   "index": 2493,
+   "confidence": "low",
+   "reason": "ITA +9.5 is 1.5 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "K'Von Wallace",
+   "gsis_id": "00-0036395",
+   "index": 2495,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -13.1 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Naquan Jones",
+   "gsis_id": "00-0036695",
+   "index": 2496,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +9.3 reads tone 4; visual review of the nfl.com headshot gives tone 5"
+  },
+  {
+   "name": "Jack Heflin",
+   "gsis_id": "00-0036788",
+   "index": 2499,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +35.9 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  {
+   "name": "Mitchell Fraboni",
+   "gsis_id": "00-0036943",
+   "index": 2501,
+   "confidence": "low",
+   "reason": "fa5 ITA +40.3 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "Elijah Garcia",
+   "gsis_id": "00-0037051",
+   "index": 2503,
+   "confidence": "low",
+   "reason": "fa5 ITA +21.6 reads tone 4; visual review of the nfl.com headshot gives tone 2"
+  },
+  {
+   "name": "Irvin Charles",
+   "gsis_id": "00-0037156",
+   "index": 2504,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -14.7 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Dameon Pierce",
+   "gsis_id": "00-0037258",
+   "index": 2507,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -7.0 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Rodney Thomas",
+   "gsis_id": "00-0037323",
+   "index": 2509,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +42.4 reads tone 2; visual review of the nfl.com headshot gives tone 3"
+  },
+  {
+   "name": "Mike Brown",
+   "gsis_id": "00-0037493",
+   "index": 2510,
+   "confidence": "low",
+   "reason": "ITA +8.9 is 0.9 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "Kohl Levao",
+   "gsis_id": "00-0038194",
+   "index": 2512,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +28.4 reads tone 3; visual review of the nfl.com headshot gives tone 2"
+  },
+  {
+   "name": "Noah Sewell",
+   "gsis_id": "00-0038390",
+   "index": 2513,
+   "confidence": "low",
+   "reason": "fa5 ITA +57.7 reads tone 0; visual review of the nfl.com headshot gives tone 3"
+  },
+  {
+   "name": "Terell Smith",
+   "gsis_id": "00-0038395",
+   "index": 2514,
+   "confidence": "low",
+   "reason": "ITA +6.9 is 1.1 from a tone threshold; tone 5 confirmed by eye"
+  },
+  {
+   "name": "Cam Jones",
+   "gsis_id": "00-0038513",
+   "index": 2515,
+   "confidence": "low",
+   "reason": "ITA +10.9 is 2.9 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "Kaevon Merriweather",
+   "gsis_id": "00-0038823",
+   "index": 2521,
+   "confidence": "low",
+   "reason": "ITA +21.6 is 0.4 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "Mitchell Tinsley",
+   "gsis_id": "00-0038839",
+   "index": 2522,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +5.9 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Shaka Heyward",
+   "gsis_id": "00-0038890",
+   "index": 2523,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +24.5 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Carson Steele",
+   "gsis_id": "00-0039325",
+   "index": 2524,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 1"
+  },
+  {
+   "name": "Jaylan Ford",
+   "gsis_id": "00-0039388",
+   "index": 2525,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +23.3 reads tone 3; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Michael Jurgens",
+   "gsis_id": "00-0039419",
+   "index": 2526,
+   "confidence": "low",
+   "reason": "fa5 ITA +40.2 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "Nate Lynn",
+   "gsis_id": "00-0039447",
+   "index": 2527,
+   "confidence": "low",
+   "reason": "fa5 ITA +44.7 reads tone 1; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Anthony Gould",
+   "gsis_id": "00-0039816",
+   "index": 2528,
+   "confidence": "low",
+   "reason": "fa5 ITA +49.5 reads tone 1; visual review of the nfl.com headshot gives tone 3"
+  },
+  {
+   "name": "Justin Barron",
+   "gsis_id": "00-0040043",
+   "index": 2529,
+   "confidence": "low",
+   "reason": "ITA +44.4 is 0.4 from a tone threshold; tone 1 confirmed by eye"
+  },
+  {
+   "name": "Robert Longerbeam",
+   "gsis_id": "00-0040077",
+   "index": 2530,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA -34.9 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Garrett Dellinger",
+   "gsis_id": "00-0040079",
+   "index": 2531,
+   "confidence": "low",
+   "reason": "fa5 ITA +41.8 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "Doneiko Slaughter",
+   "gsis_id": "00-0040341",
+   "index": 2536,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +4.3 reads tone 5; visual review of the nfl.com headshot gives tone 4"
+  },
+  {
+   "name": "Jake Majors",
+   "gsis_id": "00-0040422",
+   "index": 2539,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +45.5 reads tone 1; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "DJ Uiagalelei",
+   "gsis_id": "00-0040464",
+   "index": 2540,
+   "confidence": "low",
+   "reason": "ITA +42.1 is 1.9 from a tone threshold; tone 2 confirmed by eye"
+  },
+  {
+   "name": "Max Brosmer",
+   "gsis_id": "00-0040494",
+   "index": 2541,
+   "confidence": "low",
+   "reason": "ITA +54.2 is 0.8 from a tone threshold; tone 1 confirmed by eye"
+  },
+  {
+   "name": "Ben Yurosek",
+   "gsis_id": "00-0040509",
+   "index": 2543,
+   "confidence": "low",
+   "reason": "fa5 ITA +40.9 reads tone 2; visual review of the nfl.com headshot gives tone 0"
+  },
+  {
+   "name": "Shemar Turner",
+   "gsis_id": "00-0040741",
+   "index": 2547,
+   "confidence": "low",
+   "reason": "ITA +9.4 is 1.4 from a tone threshold; tone 4 confirmed by eye"
+  },
+  {
+   "name": "Lorenzo Styles",
+   "gsis_id": "00-0041089",
+   "index": 2549,
+   "confidence": "low",
+   "reason": "fa5 ITA +58.2 reads tone 0; visual review of the nfl.com headshot gives tone 3"
+  },
+  {
+   "name": "Robert Henry",
+   "gsis_id": "00-0041178",
+   "index": 2550,
+   "confidence": "reviewed",
+   "reason": "fa5 ITA +43.1 reads tone 2; visual review of the nfl.com headshot gives tone 3"
+  }
+ ],
+ "counts": {
+  "players": 90,
+  "measured": 33,
+  "reviewed": 27,
+  "low": 30,
+  "dreads": 15,
+  "visual_corrections": 40
+ }
+}
