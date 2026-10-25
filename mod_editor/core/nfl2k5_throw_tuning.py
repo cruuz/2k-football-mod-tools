@@ -95,6 +95,7 @@ from . import nfl2k5_decided_clock as decided_clock_patch
 from . import nfl2k5_cpu_scrambles as cpu_scrambles_patch
 from . import nfl2k5_weekly_prep as weekly_prep_patch
 from . import nfl2k5_coach_ai as coach_ai_patch
+from . import nfl2k5_cpu_third_down as third_down_patch
 from . import nfl2k5_playbook_pair as playbook_pair_patch
 from . import nfl2k5_deep_zone as deep_zone_patch
 from . import nfl2k5_modern_naming as modern_naming_patch
@@ -1472,6 +1473,7 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (franchise_edit_player_patch.REQUESTS if franchise_edit_player else ())
         + (cpu_money_downs_patch.REQUESTS if cpu_money_downs != "retail" or coach_ai else ())
         + (cpu_money_downs_patch.LATE_REQUESTS if cpu_money_downs == "modern2" else ())
+        + (third_down_patch.REQUESTS if cpu_money_downs != "retail" or coach_ai else ())
         + (accelerated_clock_patch.REQUESTS if accelerated_clock else ())
         + (coin_defer_patch.REQUESTS if coin_defer else ())
         + (decided_clock_patch.REQUESTS if decided_clock else ())
@@ -2349,6 +2351,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (honors_page, honors_patch, "honors_patch", honors_patch.BUILD_CAPTION),
         (weekly_prep, _weekly_prep_adapter(weekly_prep_cpu, weekly_prep_remember), "weekly_prep_patch", "Weekly preparation (experimental, unwitnessed)"),
         (coach_ai, coach_ai_patch, "coach_ai_patch", coach_ai_patch.BUILD_CAPTION),
+        (cpu_money_downs != "retail" or coach_ai, third_down_patch, "cpu_third_down_patch", third_down_patch.BUILD_CAPTION),
         (playbook_pair, playbook_pair_patch, "playbook_pair_patch", "Separate offensive and defensive playbooks (experimental)"),
         (deep_zone_facing or deep_zone_bail, _deep_zone_adapter(deep_zone_facing, deep_zone_bail), "deep_zone_patch", "deep-zone corner tiers (experimental)"),
         (guardian_overlay, _guardian_overlay_adapter(guardian_everyone_practice), "guardian_overlay_patch", "experimental Guardian cap overlay"),

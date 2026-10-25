@@ -73,6 +73,7 @@ OWNERS = (
     ("scorebug_runtime", stack.runtime),
     ("static_scorebar_v3", stack.StaticScorebar),
     ("cpu_money_downs", stack.money_downs),
+    ("cpu_third_down", stack.third_down),
     ("franchise_edit_player", stack.edit_player),
     ("the1wam_lineman_rating", LinemanRating),
 )

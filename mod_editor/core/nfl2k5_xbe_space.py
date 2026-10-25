@@ -732,6 +732,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_contract_college_guard",  # b778-cr1: after the Player Progress screen
                "nfl2k5_sim_cb_tackles",  # b778-cb1: after the Contracts guard
                "nfl2k5_clock_led",  # b778-sd4: after the cornerback tackle owner
+               "nfl2k5_cpu_third_down",  # b778-ai8: third-down run preference, after the clock LED
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
@@ -786,6 +787,7 @@ def dormant_union():
     from . import nfl2k5_letter_grades as letter_grades  # b77-f4
     from . import nfl2k5_period_goalposts as period  # b77-v1b
     from . import nfl2k5_coach_ai as coach_ai
+    from . import nfl2k5_cpu_third_down as third_down  # b778-ai8: third-down run preference
     from . import nfl2k5_moment_coaches as moment_coaches
     from . import nfl2k5_moment_context as moment_context  # b775 mo2
     from . import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
@@ -815,6 +817,7 @@ def dormant_union():
             + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS
             + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS
             + star_career.REQUESTS  # b778-st2
+            + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS)  # b775-ct1 after b775-mo2
 
 
