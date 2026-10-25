@@ -606,7 +606,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_abilities_runtime_code.py": "efb55d5e000379eea7ab1e48f5810256a18d0534125de20f9884c723aa4f554b",
         "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
         "mod_editor/core/nfl2k5_accelerated_clock.py": "079ce771155f78b33591000e3f622671dd947a5357e14df165f245331c3bbdb1",
-        "mod_editor/core/nfl2k5_accelerated_clock_code.py": "4ff06a448a9777ad24389f490169fa2de981f7e865aabf74e8d5f9b79857c317",
+        "mod_editor/core/nfl2k5_accelerated_clock_code.py": "fc301bece04715466d2ee6d23b7b401bb146261f40b00f113a49a669297ed956",
         "mod_editor/core/nfl2k5_animation.py": "2ae98a97fb78b06050a5bfc9ab8a838b30ea36d7a9514132893debe4441b44b6",
         "mod_editor/core/nfl2k5_animation_bones.py": "b82275d45fd4f0b34aaa4613e0ea266724f14270c9069650b5aded3a3f929eb8",
         "mod_editor/core/nfl2k5_animation_import.py": "a1bf3c0b4c15835c946e0373fb2185dbaf748bae0d508a0698f6f4db92d5c50f",
