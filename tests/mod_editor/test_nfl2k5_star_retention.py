@@ -39,8 +39,9 @@ class StaticTests(unittest.TestCase):
                                                 bytes.fromhex("e864ca2201"))])
 
     def test_presets_options_and_late_owner_order(self):
-        # b778-int2: xs1's module loader must stay last; fa1's star retention is immediately before it.
-        self.assertEqual(space.LATE_OWNERS[-2:], (sr.OWNER, "nfl2k5_module_loader"))
+        # b778-int2: fa1's star retention stays before every later b778 owner; the module loader and return coverage are last.
+        self.assertEqual(space.LATE_OWNERS[-12], sr.OWNER)
+        self.assertEqual(space.LATE_OWNERS[-2:], ("nfl2k5_module_loader", "nfl2k5_return_coverage"))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).star_retention, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["star_retention"], name in ("softdrink_advanced", "softdrink_experimental"), name)

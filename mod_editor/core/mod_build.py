@@ -532,6 +532,12 @@ class BuildPlan:
     # 0x2E29E6 and the slide decision at 0x2E340E; human carriers and late-half clock urgency keep retail. EXPERIMENTAL:
     # on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
     cpu_ball_carriers: bool = False
+    # b778-kr1: kick and punt return coverage takes pursuit angles. The far chase task 0x2E8F20 steers at the
+    # carrier's current position; a late executable owner (nfl2k5_return_coverage) replaces only that bearing call
+    # (0x2E9148) with a bounded intercept point, gated on the game's play kind [0xE602BC] in {1 safety kick, 2 kickoff,
+    # 6 punt} so scrimmage and field-goal pursuit is byte-for-byte retail. CPU defenders only; human defenders
+    # keep the retail aim. On in the Advanced and Experimental presets (the SOFTDRINK recipe builds from Experimental).
+    return_coverage: bool = False
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
     # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
@@ -841,6 +847,11 @@ for _preset in PRESETS.values():
     _preset["cpu_ball_carriers"] = False
 PRESETS["softdrink_advanced"]["cpu_ball_carriers"] = True
 PRESETS["softdrink_experimental"]["cpu_ball_carriers"] = True
+# b778-kr1: return coverage pursuit angles (gameplay AI, like ball carriers).
+for _preset in PRESETS.values():
+    _preset["return_coverage"] = False
+PRESETS["softdrink_advanced"]["return_coverage"] = True
+PRESETS["softdrink_experimental"]["return_coverage"] = True
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1203,6 +1214,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress or p.player_progress_visible),  # b778-pg2/pg3
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
+    ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1235,6 +1247,21 @@ def _ball_carrier_preflight(source: Path, progress) -> None:
         raise ValueError(f"CPU ball carriers cannot read default.xbe: {exc}") from exc
     if module.status(payload) == "foreign":
         raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _return_coverage_preflight(source: Path, progress) -> None:
+    """b778-kr1: refuse a source whose return-coverage AI code is foreign, before any write."""
+    module = _core_module("nfl2k5_return_coverage")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Return coverage pursuit angles is not available in this installation.")
+    progress("Checking the pursuit AI for return coverage", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Return coverage cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The pursuit AI code in this source is not retail or return coverage. Turn it off "
                          "or build from your unmodified retail dump.")
 
 
@@ -1448,6 +1475,24 @@ def _apply_ball_carriers(plan: "BuildPlan", target: Path, receipt: dict, progres
         raise RuntimeError("CPU ball carriers: the output does not read back as applied")
     receipt["steps"].append({"step": "cpu_ball_carriers", **{k: v for k, v in carrier_receipt.items() if k != "reservations"}})
     receipt["result"]["cpu_ball_carriers"] = "applied"
+
+
+def _apply_return_coverage(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-kr1: return coverage pursuit angles, the last late allocator owner."""
+    if not plan.return_coverage:
+        return
+    module = _core_module("nfl2k5_return_coverage")
+    if module is None:
+        raise RuntimeError("Return coverage pursuit angles needs nfl2k5_return_coverage.")
+    progress("Return coverage: pursuit angles", 0, 0)
+    payload, coverage_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Return coverage: the output does not read back as applied")
+    receipt["steps"].append({"step": "return_coverage",
+                             **{k: v for k, v in coverage_receipt.items() if k != "reservations"}})
+    receipt["result"]["return_coverage"] = "applied"
 
 
 
@@ -1797,6 +1842,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
+                               ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
@@ -2033,6 +2079,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                                 else "unavailable")
     ball_carriers = _core_module("nfl2k5_ball_carrier_ai")  # b778-ai5
     out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
+    return_coverage = _core_module("nfl2k5_return_coverage")  # b778-kr1
+    out["return_coverage"] = return_coverage.status(_xbe_bytes(source)) if return_coverage is not None else "unavailable"
     sportscenter = _core_module("nfl2k5_sportscenter_lineup")
     out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
     draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
@@ -3714,6 +3762,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Franchise practice injuries must be Off or On.")
     if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
         raise ValueError("CPU ball carriers must be Off or On.")
+    if type(plan.return_coverage) is not bool:  # b778-kr1
+        raise ValueError("Return coverage pursuit angles must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -4473,6 +4523,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _practice_injuries_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
+    if plan.return_coverage:  # b778-kr1: before any write
+        _return_coverage_preflight(source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -6090,6 +6142,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_inbox_standings(plan, target, receipt, progress)
     # b778-xs1: the on-demand Career Home gate, after every other late allocator owner (it is last in LATE_OWNERS)
     _apply_module_loader(plan, target, receipt, progress)
+    # b778-kr1: return coverage, after the module loader (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_return_coverage(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6137,6 +6191,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Crib Trophy Room cut did not survive the final passes")
     if plan.module_loader and _core_module("nfl2k5_module_loader").status(_xbe_bytes(target)) != "applied":  # b778-xs1
         raise ValueError("the on-demand Career Home gate did not survive the final passes")
+    if plan.return_coverage and _core_module("nfl2k5_return_coverage").status(_xbe_bytes(target)) != "applied":  # b778-kr1
+        raise ValueError("return coverage pursuit angles did not survive the final passes")
     if plan.inbox_standings and _core_module("nfl2k5_inbox_standings").status(_xbe_bytes(target)) != "applied":
         raise ValueError("inbox standings did not survive the final passes")
     if plan.star_retention and _core_module("nfl2k5_star_retention").status(_xbe_bytes(target)) != "applied":  # b778-fa1

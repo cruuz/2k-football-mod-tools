@@ -66,6 +66,7 @@ FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run thro
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
 FEATURE_KEYS += ("practice_injuries",)  # b778-pi1: franchise practice keeps injuries, late executable owner
 FEATURE_KEYS += ("cpu_ball_carriers",)  # b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks
+FEATURE_KEYS += ("return_coverage",)  # b778-kr1: return coverage pursuit angles, late owner
 FEATURE_KEYS += ("modern_force_out",)  # b778-fo1: modern sideline catches (no force-out from 2008), late executable owner
 FEATURE_KEYS += ("crib_trophy_room",)  # b778-xs1: the Crib keeps only the Trophy Room side (shop cut), in place
 FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module loader prototype), late executable owner, off
