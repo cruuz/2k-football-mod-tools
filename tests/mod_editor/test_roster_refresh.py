@@ -180,25 +180,31 @@ class RefreshTests(unittest.TestCase):
         plan=copy.deepcopy(self.plan)
         plan['identity_guards']=[g for g in plan['identity_guards'] if g[0]!=2464]
         row=plan['players'][2464]
-        row.update(first='New',last='Arrival',birth_date='2000-01-01',new=True)
+        row.update(first='Anthony',last='Gould',birth_date='2001-04-06',new=True,gsis_id='00-0039816')
         row['fields']={k:50 for k in rr.RATING_BYTE_ORDER}
-        row['fields'].update(position=3,jersey=18,height=72,weight=200,birth_year=2000,
-                             birth_month=1,birth_day=1,years_pro=1,photo_id=7100,
+        row['fields'].update(position=3,jersey=18,height=72,weight=200,birth_year=2001,
+                             birth_month=4,birth_day=6,years_pro=1,photo_id=7100,
                              contract_length=1,contract_remaining=1,contract_value=23,
                              depth_rank=7,depth_side=7)
         plan['teams'][0]['active'].append(2464)
         raw=with_templates(bytes(raw), rr.POSITIONS.index('WR'))
         out,receipt=refresh.apply_body(bytes(raw),plan)
         p=rr.RosterDocument(out,reference_year=2026).by_pool('primary')[2464]
-        self.assertEqual(p.display,'New Arrival');self.assertEqual(p.record.get('history_pointer'),0)
+        self.assertEqual(p.display,'Anthony Gould');self.assertEqual(p.record.get('history_pointer'),0)
         self.assertEqual(p.record.get('unknown_53_high'),0);self.assertEqual(receipt['added'],1)
-        # b778-eq1: the created receiver takes the WR template's gear, not the zero (kicker) mask;
-        # skin/face/portrait still belong to the appearance pipeline and stay as the row left them.
+        # b778-eq1: the created receiver takes the WR template's gear, not the zero (kicker) mask.
         gear=GEAR[2464 % len(GEAR)]
         for name,value in gear.items():
             self.assertEqual(p.record.get(name),value,name)
-        self.assertEqual(p.record.get('skin'),0);self.assertEqual(p.record.get('face'),0)
+        # b778-ap1: the created player's skin/face/body/dreads come from the measured 2026 headshot
+        # table; the no-photo portrait stays the row's own.
+        self.assertEqual(p.record.get('skin'),3)
+        self.assertEqual(p.record.get('face'),3)
+        self.assertEqual(p.record.get('body'),1)
+        self.assertEqual(p.record.get('dreads'),0)
         self.assertEqual(p.record.get('photo_id'),7100)
+        self.assertEqual(receipt['appearance']['filled'],1)
+        self.assertIn('Anthony Gould',receipt['appearance']['low_confidence'])
         self.assertEqual(refresh.apply_body(out,plan)[0],out)
         with self.assertRaisesRegex(ValueError,'identity mismatch'):
             refresh.apply_body(self.body,plan)

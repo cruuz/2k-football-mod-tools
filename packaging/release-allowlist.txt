@@ -3652,6 +3652,8 @@ mod_editor/core/nfl2k5_moment_context.py
 data/nfl2k5_moment_stats.json
 docs/mod_editor/nfl2k5_moment_coaches.md
 mod_editor/core/nfl2k5_roster_refresh.py
+mod_editor/core/nfl2k5_created_appearance.py
+mod_editor/data/nfl2k5_refresh_appearance_2026.v1.json
 
 tools/b77/ro1_repair.py
 docs/mod_editor/roster_refresh.md
@@ -3748,3 +3750,5 @@ tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py
 # b778 eq1: created players take their position's class-generator gear, not the zero (kicker) mask
 tests/mod_editor/test_b778_eq1_equipment_fit.py
+# b778 ap1: created 2026 players take a measured headshot appearance, not the lightest default
+tests/mod_editor/test_b778_ap1_appearance.py

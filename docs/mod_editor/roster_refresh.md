@@ -38,6 +38,15 @@ locks; alumni teams alias the same player records and cannot have independent
 rank locks. A player missing from a dated chart needs an explicit authoring
 fallback. A generic portrait must be identified as such, never as a likeness.
 
+A created identity's appearance comes from the measured table
+`data/nfl2k5_refresh_appearance_2026.v1.json` (`nfl2k5_created_appearance`): skin,
+native generic face, BMI body and a checked dreads bit keyed by gsis id. A row that
+carries its own nonzero skin/face/dreads, or a real portrait below the 7100 no-photo
+range, is authored and wins; hair style and photo id are never written. The table
+records each player's method, headshot measurement and confidence, and lists the
+low-confidence faces for review. The earlier dated free-agent data already carries
+a reviewed appearance; the same all-zero guard covers any future created row.
+
 ## Offline repair
 
 `tools/b77/ro1_repair.py --disc INPUT --plan refresh.json --receipt receipt.json
