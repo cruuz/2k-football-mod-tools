@@ -485,7 +485,7 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(len(set(loaded)), 150)
         seasons = [self._key(name)[0] for name in loaded]
         self.assertEqual(seasons, sorted(seasons), "Team Select must run oldest to newest")
-        self.assertEqual((seasons[0], seasons[-2]), (1953, 2025))
+        self.assertEqual((seasons[0], seasons[-1]), (1953, 2025))
         # the whole order is the documented key: season, franchise asset code, storage index
         expected = sorted(range(150), key=lambda i: (*self._key(storage[i]), i))
         self.assertEqual(loaded, [storage[i] for i in expected])
@@ -657,8 +657,8 @@ class HonoursTests(unittest.TestCase):
                     self.assertTrue(line.startswith("led the NFL in"), line)
                     self.assertEqual(h["source"], f"nflverse_stats_{team['season']}")
                     continue
-                last = hb.fold(p["name"]).split()[-2] if not p["name"].endswith((" Jr.", " III", " II")) else \
-                    hb.fold(p["name"]).split()[-3]
+                last = hb.fold(p["name"]).split()[-1] if not p["name"].endswith((" Jr.", " III", " II")) else \
+                    hb.fold(p["name"]).split()[-2]
                 self.assertIn(last.rstrip(".").lower(), hb.plain(line).lower(), (p["name"], line))
                 if h["honour"] in ("AP1", "AP2", "PB"):
                     self.assertIn(hb.FULL_NAMES[team["selector"]].lower(), line.lower(), line)

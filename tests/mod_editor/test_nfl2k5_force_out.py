@@ -166,10 +166,10 @@ class DecisionTests(unittest.TestCase):
         m.hook_add(uc.UC_HOOK_CODE, lambda u, address, size, _: (seen.append(address),
                    u.emu_stop() if address in (self.CATCH, self.FEET) else None))
         m.emu_start(0x157995, 0, count=200)
-        self.assertIn(seen[-2], (self.CATCH, self.FEET))
+        self.assertIn(seen[-1], (self.CATCH, self.FEET))
         self.assertEqual(m.reg_read(x86.UC_X86_REG_ESI), self.HOLDER)
         self.assertEqual(m.reg_read(x86.UC_X86_REG_EDI), 3)
-        return "catch" if seen[-2] == self.CATCH else "two_feet"
+        return "catch" if seen[-1] == self.CATCH else "two_feet"
 
     def test_retail_credits_the_force_out_catch(self):
         self.assertEqual(self.run_decision(self.retail), "catch")              # the reported ruling

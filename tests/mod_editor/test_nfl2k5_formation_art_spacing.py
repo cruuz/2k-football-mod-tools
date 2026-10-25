@@ -64,7 +64,7 @@ class Wiring(unittest.TestCase):
         self.assertEqual(fa.REQUESTS, ((fa.OWNER, "code", 1024, 16),))
         self.assertEqual(fa.ABSMASK_OFFSET % 16, 0)
         self.assertEqual(code[fa.ABSMASK_OFFSET:fa.ABSMASK_OFFSET + 16], bytes.fromhex("ffffff7f") * 4)
-        self.assertEqual(fa.CODE[-9:], struct.pack("<II", 0x17FE60, 0x180120))   # called through their entry points
+        self.assertEqual(fa.CODE[-8:], struct.pack("<II", 0x17FE60, 0x180120))   # called through their entry points
         self.assertEqual(set(code[len(fa.CODE):]), {0xCC})
 
 

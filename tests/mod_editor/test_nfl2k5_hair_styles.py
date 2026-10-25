@@ -294,8 +294,8 @@ def map_xbe(mu, data: bytes) -> None:
         sections.append((va, raw, min(rsize, vsize)))
     runs = []
     for page in sorted(pages):
-        if runs and runs[-2][1] == page:
-            runs[-2][1] = page + 1
+        if runs and runs[-1][1] == page:
+            runs[-1][1] = page + 1
         else:
             runs.append([page, page + 1])
     for lo, hi in runs:

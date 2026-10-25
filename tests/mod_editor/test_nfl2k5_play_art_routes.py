@@ -131,7 +131,7 @@ class Native(unittest.TestCase):
         for slot, (_desc, nodes) in enumerate(result["chains"]):
             if not nodes:
                 continue
-            last = codec.Node.from_bytes(nodes[-2])
+            last = codec.Node.from_bytes(nodes[-1])
             if last.op != 0x12 or int(last.operands[0]) > 6 or last.operands[2] <= 304.8:
                 continue
             quads = [p for p in result["prims"] if p["slot"] == slot and p["node"] == len(nodes) - 1
