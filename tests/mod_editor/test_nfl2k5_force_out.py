@@ -54,7 +54,7 @@ class StaticTests(unittest.TestCase):
         self.assertTrue(all(seasons[r] >= 2008 for r in set(seasons) - set(OLD_RULE_ROWS)))
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-16:], (fo.OWNER, "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_module_loader"))  # b778-xs1: the module loader is last
+        self.assertEqual(space.LATE_OWNERS[-17:], (fo.OWNER, "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_module_loader"))  # b778-xs1: the module loader is last
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).modern_force_out, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["modern_force_out"], name in ("softdrink_advanced", "softdrink_experimental"), name)
@@ -166,10 +166,10 @@ class DecisionTests(unittest.TestCase):
         m.hook_add(uc.UC_HOOK_CODE, lambda u, address, size, _: (seen.append(address),
                    u.emu_stop() if address in (self.CATCH, self.FEET) else None))
         m.emu_start(0x157995, 0, count=200)
-        self.assertIn(seen[-1], (self.CATCH, self.FEET))
+        self.assertIn(seen[-2], (self.CATCH, self.FEET))
         self.assertEqual(m.reg_read(x86.UC_X86_REG_ESI), self.HOLDER)
         self.assertEqual(m.reg_read(x86.UC_X86_REG_EDI), 3)
-        return "catch" if seen[-1] == self.CATCH else "two_feet"
+        return "catch" if seen[-2] == self.CATCH else "two_feet"
 
     def test_retail_credits_the_force_out_catch(self):
         self.assertEqual(self.run_decision(self.retail), "catch")              # the reported ruling

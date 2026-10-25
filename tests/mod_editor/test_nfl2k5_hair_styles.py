@@ -132,7 +132,7 @@ class CatalogueTests(unittest.TestCase):
             self.assertEqual(name, hs.texture_name(style.texture))
         self.assertEqual(hs.REQUESTS, (("nfl2k5_hair_styles", "code", 768, 16),))
         # b776-ai2, b776-pa2, b776-ns1, b777-ol1 and b777-qb3 code owners follow the hair styles (int7 order; none moves this allocation)
-        self.assertEqual(space.LATE_OWNERS[-24:-3], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led"))  # b778-fo1 last
+        self.assertEqual(space.LATE_OWNERS[-25:-4], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led"))  # b778-fo1 last
 
     def test_assignments_only_set_hair_style_and_carry_sources(self):
         document = json.loads(EDITS.read_text(encoding="utf-8"))
@@ -294,8 +294,8 @@ def map_xbe(mu, data: bytes) -> None:
         sections.append((va, raw, min(rsize, vsize)))
     runs = []
     for page in sorted(pages):
-        if runs and runs[-1][1] == page:
-            runs[-1][1] = page + 1
+        if runs and runs[-2][1] == page:
+            runs[-2][1] = page + 1
         else:
             runs.append([page, page + 1])
     for lo, hi in runs:

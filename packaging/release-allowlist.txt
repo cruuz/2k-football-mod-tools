@@ -3678,6 +3678,10 @@ mod_editor/core/nfl2k5_play_art_routes.py
 tests/mod_editor/test_nfl2k5_play_art_routes.py
 mod_editor/core/nfl2k5_run_blocking.py
 mod_editor/core/nfl2k5_run_blocking_code.py
+mod_editor/core/nfl2k5_pass_protection.py
+mod_editor/core/nfl2k5_pass_protection_code.py
+tests/mod_editor/test_nfl2k5_pass_protection.py
+tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py

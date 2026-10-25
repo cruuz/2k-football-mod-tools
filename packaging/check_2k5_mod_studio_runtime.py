@@ -2025,6 +2025,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_db_ball_play_code",               # b776-ai2
         "mod_editor.core.nfl2k5_run_blocking",                    # b777-ol1
         "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
+        "mod_editor.core.nfl2k5_pass_protection",                 # b778-pr1
+        "mod_editor.core.nfl2k5_pass_protection_code",            # b778-pr1
         "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_formation_art_spacing",           # b777-tp1

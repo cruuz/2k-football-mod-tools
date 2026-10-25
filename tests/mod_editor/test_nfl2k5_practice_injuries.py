@@ -42,7 +42,7 @@ class StaticTests(unittest.TestCase):
 
     def test_presets_options_and_late_owner_order(self):
         # b778-int2: fa1's star retention and xs1's module loader follow this owner; the loader stays last.
-        self.assertEqual(space.LATE_OWNERS[-15:], (pi.OWNER, "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-16:], (pi.OWNER, "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_module_loader"))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).practice_injuries, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["practice_injuries"], preset["franchise_practice"], name)
@@ -152,11 +152,11 @@ class DecisionTests(unittest.TestCase):
         m.hook_add(uc.UC_HOOK_CODE, lambda u, address, size, _: (seen.append(address),
                    u.emu_stop() if address in (self.HEAL, self.RETURN) else None))
         m.emu_start(0x61540, 0, count=100)
-        self.assertIn(seen[-1], (self.HEAL, self.RETURN))
+        self.assertIn(seen[-2], (self.HEAL, self.RETURN))
         self.assertEqual(m.reg_read(x86.UC_X86_REG_ESI), self.COPY)
         self.assertEqual(m.reg_read(x86.UC_X86_REG_EBX), 0xEFFFFFFF)
         self.assertEqual(m.reg_read(x86.UC_X86_REG_EDI), 7)
-        if seen[-1] == self.HEAL:
+        if seen[-2] == self.HEAL:
             self.assertEqual(m.reg_read(x86.UC_X86_REG_ECX), self.COPY)
             return "heal"
         return "keep"

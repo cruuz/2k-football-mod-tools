@@ -39,7 +39,7 @@ class Wiring(unittest.TestCase):
         self.assertTrue(mod_build.PRESETS["softdrink_advanced"]["play_art_routes"])
         self.assertTrue(mod_build.PRESETS["softdrink_experimental"]["play_art_routes"])
         self.assertTrue(mod_build.BuildPlan("a", "b", play_art_routes=True).wants_xbe_patch())
-        self.assertEqual(space.LATE_OWNERS[-21:-3], (pa.OWNER, "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led"))  # int2: ns1 follows; int7: b777-ol1, then b777-qb3 last
+        self.assertEqual(space.LATE_OWNERS[-22:-4], (pa.OWNER, "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led"))  # int2: ns1 follows; int7: b777-ol1, then b777-qb3 last
         self.assertIn("play_art_routes", mod_build.availability())
 
     def test_owned_code_layout(self):
@@ -131,7 +131,7 @@ class Native(unittest.TestCase):
         for slot, (_desc, nodes) in enumerate(result["chains"]):
             if not nodes:
                 continue
-            last = codec.Node.from_bytes(nodes[-1])
+            last = codec.Node.from_bytes(nodes[-2])
             if last.op != 0x12 or int(last.operands[0]) > 6 or last.operands[2] <= 304.8:
                 continue
             quads = [p for p in result["prims"] if p["slot"] == slot and p["node"] == len(nodes) - 1
