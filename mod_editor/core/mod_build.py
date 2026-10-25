@@ -2048,6 +2048,19 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
     clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
     out["modern_clock_led"] = clock_led.status(_xbe_bytes(source)) if clock_led is not None else "unavailable"
+    # b778-bd2: these three are in the Modern preset but were missing from this report, so the
+    # Build page disabled them and silently left them out of every UI build of that preset.
+    crib_trophy = _core_module("nfl2k5_crib_trophy_room")
+    out["crib_trophy_room"] = (crib_trophy.status(_xbe_bytes(source))
+                               if crib_trophy is not None else "unavailable")
+    star_career = _core_module("nfl2k5_star_career")
+    out["star_career"] = star_career.status(_xbe_bytes(source)) if star_career is not None else "unavailable"
+    module_loader = _core_module("nfl2k5_module_loader")
+    out["module_loader"] = (module_loader.status(_xbe_bytes(source))
+                            if module_loader is not None else "unavailable")
+    # The award history is a roster-pool write with no executable site to read back; its
+    # own writer skips honors already present, so a disc image can always take it.
+    out["honors_history"] = "retail" if report.get("container") == "xiso" else "n/a"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -2868,6 +2881,66 @@ def require_build_source(source: Path | str) -> Path:
 
 #: The prefix of the private folder ``build`` makes beside the chosen output.
 STAGE_PREFIX = ".studio-build-"
+#: Working room a disc-image build needs beyond the copy itself (b778-bd2).
+STAGE_SPACE_MARGIN = 512 * 1024 * 1024
+
+
+def output_space_problem(source: Path | str, target: Path | str) -> str:
+    """Why this disc copy cannot be written safely, in one actionable sentence, or "".
+
+    The build stages a complete copy in the output folder before publishing it. A full drive
+    therefore fails after the copy has already run for a long time, and Windows reports only
+    the platform's raw "not enough space" sentence. Checking the same figure the build needs
+    first turns that into an instruction before any work starts (b778-bd2, tinpanalley's
+    build that ran over an hour and failed). Only disc images are measured: an executable
+    copy is tiny.
+    """
+
+    if not tt.is_disc_image(source):
+        return ""
+    try:
+        source_size = Path(source).stat().st_size
+    except OSError:
+        return ""  # require_build_source names a vanished source in its own words
+    folder = platform_compat.io_path(target).parent
+    required = source_size + STAGE_SPACE_MARGIN
+    try:
+        free = platform_compat.available_bytes(folder)
+    except OSError as exc:
+        return (f"The output folder cannot be checked for free space: {folder} ({exc}). "
+                "Choose another folder, then make the disc again. Nothing was written.")
+    if free >= required:
+        return ""
+    shortfall = required - free
+    return (f"The output folder does not have enough free space for the build: {folder} has "
+            f"{free / 1024**3:.2f} GiB free; writing the disc copy needs at least "
+            f"{required / 1024**3:.2f} GiB (the {source_size / 1024**3:.2f} GiB source plus "
+            f"{STAGE_SPACE_MARGIN // 1024**2} MiB of working room). Free another "
+            f"{shortfall / 1024**3:.2f} GiB or choose another folder. Nothing was written.")
+
+
+def local_output_problem(target: Path | str) -> str:
+    """Why writing beside ``target`` is unsafe on this computer, or "".
+
+    OneDrive uploads and scans every byte written to a synced folder. A 6 GB disc copy
+    there can crawl for over an hour and then fail when the sync client holds one of the
+    build's files, so the Build tab and the core build both refuse it up front with the
+    folder and a plain replacement (b778-bd2; the texture-project builder has refused the
+    same folder since beta 74).
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return ""
+    from .nfl2k5_build_service import _cloud_synced_root
+    folder = platform_compat.io_path(target).parent
+    found = _cloud_synced_root(folder)
+    if found is None:
+        return ""
+    root, how = found
+    return (f"The disc copy would be written inside OneDrive ({how}, {root}): {folder}. "
+            "OneDrive uploads and scans the whole 6 GB disc while it is written, which can make a "
+            "build crawl or fail. Choose a plain folder such as C:\\2K5 (Choose…), then make the disc "
+            "again. Nothing was written.")
 
 
 def _private_stage_role(path: Path) -> str | None:
@@ -2939,8 +3012,16 @@ def _private_stage_refusal(exc: OSError, stage: Path | None, step: str) -> Value
     return None
 
 
-def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
-    """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None,
+          require_change: bool = False) -> dict[str, Any]:
+    """Apply the plan to a copy; archive rebuilds publish only a complete result.
+
+    ``require_change`` is the Build & Share contract (b778-bd2): a disc whose selected
+    changes are all already installed, or were all skipped, must not be published as a
+    successful "retail copy". The page raises a clear refusal instead, so Play latest
+    can never start the unchanged source by accident. Other callers keep the historical
+    verified-copy behaviour.
+    """
     from .build_io import StageProgress
     progress = StageProgress(progress)
     stage: Path | None = None
@@ -2953,6 +3034,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
         if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
+        # b778-bd2: refuse a folder the long build cannot finish in, before it starts.
+        problem = local_output_problem(target)
+        if problem:
+            raise ValueError(problem)
+        problem = output_space_problem(source, target)
+        if problem:
+            raise ValueError(problem)
         plan, coach_ai_skip = _coach_ai_decision(plan, progress)
         preflight_board_source(plan, progress)
         r62 = _validated_r62_plan_options(plan)
@@ -3022,6 +3110,15 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     _digest(directory / target.name))
             else:
                 receipt["outcome"] = measure(source, directory / target.name)
+            if require_change and receipt["outcome"].get("status") == "unchanged":
+                # b778-bd2: the step writers ran but every selected change was already on
+                # the source (or kept as it was). Publishing this would hand the user a
+                # disc indistinguishable from what they started with; say why instead.
+                raise ValueError(
+                    "Nothing was written: every selected change is already installed on this disc or was "
+                    "left as it is, so the finished copy would be identical to the source. Choose your "
+                    "unmodified retail disc as the source, or select different changes, then make the disc "
+                    "again. Nothing was written to your chosen output.")
             # The public digest describes the final compact image, including when
             # an earlier resource pass recorded its own intermediate digest.
             if "disc_compaction" in receipt:
@@ -3166,7 +3263,7 @@ def preflight_project_options(plan, document):
                          "stadium edits and build the boards from an unmodified retail image.")
 
 
-def build_with_project(plan, service, cache, session, progress=None):
+def build_with_project(plan, service, cache, session, progress=None, *, require_change=False):
     """One private project copy, then gameplay, then one final publication."""
     from .nfl2k5_model_project import plan_rows, validate_build_plan
     preflight = getattr(service, "preflight_project", None)
@@ -3175,7 +3272,7 @@ def build_with_project(plan, service, cache, session, progress=None):
         document = preflight(session)
         preflight_project_options(plan, document)
         if not document["edits"]:
-            return build(plan, progress)
+            return build(plan, progress, require_change=require_change)
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
@@ -3183,7 +3280,7 @@ def build_with_project(plan, service, cache, session, progress=None):
         report(event.message, event.completed, event.total)
     project_progress.cancelled = getattr(progress, 'cancelled', None)
     receipt = build(plan, progress, _project_builder=lambda output: service.build(
-        cache, session, output, project_progress))
+        cache, session, output, project_progress), require_change=require_change)
     if models:
         receipt["project_models"] = models
     return receipt

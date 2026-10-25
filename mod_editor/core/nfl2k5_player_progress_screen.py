@@ -851,8 +851,34 @@ def _trailer_at(image: XbeImage, code_va: int) -> tuple[int, int, int, int, bool
     return variant, size_target, save_target, load_target, bool(native_admission)
 
 
+#: Companion owners install their hook over the prologue of a shared save routine.
+#: A recognized companion is not "foreign" (b778-bd2: a Modern retail build applied
+#: franchise Auto Save before this owner and the late apply refused after ~10 min).
+_SAVE_PROLOGUE_COMPANIONS = (
+    (0x0016E540, "nfl2k5_franchise_autosave"),
+    (0x0016E540, "nfl2k5_my_career_mode"),
+)
+
+
 def _save_prerequisites_ok(image: XbeImage) -> bool:
-    return all(image.read(va, len(expected)) == expected for va, expected in FOOTER_ENTRY_BYTES)
+    for va, expected in FOOTER_ENTRY_BYTES:
+        raw = image.read(va, len(expected))
+        if raw == expected:
+            continue
+        if raw[:1] != b"\xe9":
+            return False
+        for site, module_name in _SAVE_PROLOGUE_COMPANIONS:
+            if va != site:
+                continue
+            try:
+                module = __import__("mod_editor.core." + module_name, fromlist=["status"])
+                if module.status(image.data) == "applied":
+                    break
+            except (ImportError, ValueError, TypeError, KeyError, IndexError):
+                continue
+        else:
+            return False
+    return True
 
 
 def _guards_ok(image: XbeImage, checked_sites) -> bool:

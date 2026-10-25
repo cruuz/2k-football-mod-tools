@@ -376,6 +376,7 @@ class BuildPanel(QWidget):
 
         self._state: dict[str, object] | None = None
         self._preset_applying = False         # fx1: apply_preset holds the child-ticks-parent cascade
+        self._keep_selection_on_state = False # recovering a vanished build copy keeps the user's ticks
         self._available = mod_build.availability() if available is None else available
         # Named previews use the same shipped moment resources and the venue
         # owner already imported by throw tuning. Keep this UI binding here so
@@ -1859,7 +1860,13 @@ class BuildPanel(QWidget):
         self._state_before_build = None
         if not self._still_there(origin) or not isinstance(state, dict):
             return
-        self.apply_state(state)
+        # Going back to the disc this chain started from is not a new choice by
+        # the user: keep the changes they had already ticked for the next build.
+        self._keep_selection_on_state = True
+        try:
+            self.apply_state(state)
+        finally:
+            self._keep_selection_on_state = False
         self._target_generated = True
         self.target_field.setText("")
         self.suggest_target()
@@ -1921,8 +1928,24 @@ class BuildPanel(QWidget):
                 "Open the disc you want to build from (top right), then build again.")
 
     def apply_state(self, state: dict[str, object]) -> None:
-        """Populate from mod_build.inspect output (also used by tests)."""
+        """Populate from mod_build.inspect output (also used by tests).
 
+        The header hands this page a disc before its inspection finishes. A user who
+        ticks changes while that read runs (a 6 GB surface image is not instant) must not
+        lose them when the result arrives: the same disc keeps a ticked selection, while
+        a newly opened disc starts clean. A change the finished read says is already
+        installed is left off and named, never silently dropped (b778-bd2).
+        """
+
+        boxes = self._boxes()
+        toggles = set(self._toggle_boxes())
+        checked_before = {key: box.isChecked() for key, box in boxes.items() if box in toggles}
+        previous_path = str((self._state or {}).get("path") or "")
+        incoming_path = str(state.get("path") or "")
+        same_disc = (bool(previous_path) and bool(incoming_path)
+                     and platform_compat.paths_alias(previous_path, incoming_path))
+        keep_selection = ((self._reading and (self._state is None or same_disc))
+                          or self._keep_selection_on_state)
         softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
@@ -1932,6 +1955,14 @@ class BuildPanel(QWidget):
         self._state = state
         # Source inspection starts a new selection; installed choices are
         # projected from this disc, then saved project choices can be restored.
+        # Every feature toggle is cleared here explicitly: throw used not to be
+        # reset, so opening another disc silently carried the previous one's
+        # throw option (and its plan) into the new build (b778-bd2).
+        for box in self._toggle_boxes():
+            box.setChecked(False)
+        # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
+        self.realistic_check.setChecked(True)
+        self.arc_by_distance_check.setChecked(False)
         self.cpu_scrambles_level.blockSignals(True)
         self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
             "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
@@ -2466,6 +2497,22 @@ class BuildPanel(QWidget):
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
+        dropped = []
+        if keep_selection:
+            for key, was_checked in checked_before.items():
+                if not was_checked:
+                    continue
+                box = boxes.get(key)
+                if box is None:
+                    continue
+                if box.isEnabled():
+                    box.setChecked(True)
+                elif str((self._state or {}).get(key)) in ("applied", "applied (custom)", "on"):
+                    # The change is already on this disc; the page's own projection shows it.
+                    pass
+                else:
+                    box.setChecked(False)
+                    dropped.append(key)
         self.suggest_target()
         self._official_marks_pack_changed()
         self._refresh()
@@ -2474,6 +2521,15 @@ class BuildPanel(QWidget):
             self.apply_preset_if_fresh(pending)
         if softdrink_choices is not None:
             self.restore_project_build_settings(softdrink_choices)
+        if keep_selection and dropped:
+            names = ", ".join(f"{self._short_label(key)} ({self._skip_reason(key)})" for key in dropped[:6])
+            if len(dropped) > 6:
+                names += f" and {len(dropped) - 6} more"
+            note = (f"{len(dropped)} selected change{'s' if len(dropped) != 1 else ''} could not be kept on this "
+                    f"disc: {names}. {'They are' if len(dropped) != 1 else 'It is'} off, so review the selection "
+                    "before Make my disc.")
+            existing = self.preset_note.text().strip()
+            self.preset_note.setText((existing + " " if existing else "") + note)
 
     def apply_preset_if_fresh(self, name: str) -> bool:
         """Tick a preset only when nothing is ticked yet; customised choices stay (BS-15)."""
@@ -3096,6 +3152,16 @@ class BuildPanel(QWidget):
             return "Choose where to save the disc."
         if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
+        # b778-bd2: an empty selection used to finish "successfully" with a copy of the
+        # source, and Play latest then started that retail image. Refuse before any work.
+        if (self._state or {}).get("container") == "xiso" and not self.has_work():
+            return ("Nothing is selected, so this would only copy your disc unchanged. Choose a preset or tick at "
+                    "least one change, then Make my disc. The Basic, Modern and Experimental presets add gameplay, "
+                    "franchise and presentation changes; for the SOFTDRINK 2K28 rosters, uniforms and stadium art, "
+                    "use Share > Install SOFTDRINK 2K28.")
+        problem = mod_build.local_output_problem(target)
+        if problem:
+            return problem
         return ""
 
     def _flatter_flight_toggled(self, on):
@@ -4360,7 +4426,7 @@ class BuildPanel(QWidget):
             from mod_editor.core import modpack_sources
             receipt = modpack_sources.build_project(plan, softdrink_project, progress)
         elif not include_session:
-            receipt = mod_build.build(plan, progress)
+            receipt = mod_build.build(plan, progress, require_change=True)
         else:
             source = _resolved_build_file(plan.source, "The file to build from")
             facade = self._facade
@@ -4368,7 +4434,8 @@ class BuildPanel(QWidget):
                 cache, session = facade._cache, facade._session
                 if source != _resolved_build_file(facade.source_path, "The open project's game disc"):
                     raise ValueError("Choose the open project's source disc to include its staged edits")
-            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress)
+            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress,
+                                                       require_change=True)
         # Some resource passes follow the receipt's earlier inspection. Keep
         # the existing final source-state refresh, on this worker rather than
         # in the completion dialog's GUI callback. A courtesy refresh failure

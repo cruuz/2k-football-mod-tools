@@ -595,7 +595,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "0e3abab760668556cd6410b73cb31bac13e9cab940dc2c5e204d4792c357b3dc",
+        "mod_editor/core/mod_build.py": "476f6b05ccd342413418c0b50ae61bffc168b36666d0c8a8341c09f89b4ab118",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
         "mod_editor/core/modpack_files.py": "98ea2e4df1bd860aeb34b038998329d37cdc042d08dcfc140ce2e59f2e00cfc2",
@@ -906,7 +906,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
         "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
-        "mod_editor/core/nfl2k5_player_progress_screen.py": "d7637eded52a4b90570913e1b0af0db5baa655c392af6f2ff4ba9ef33b76f609",  # b778-pg2
+        "mod_editor/core/nfl2k5_player_progress_screen.py": "2b23b850c1a138717d419486bc8ed9084c498968117c0c5709e3801920465d5a",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "ca5e065ff34fda6262a610c2ecf7309b67d270bfaaf751e277a8c13a3c500fb9",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1
