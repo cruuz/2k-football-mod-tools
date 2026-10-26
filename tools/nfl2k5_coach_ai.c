@@ -197,7 +197,7 @@ static void expand(u8 *out, const u8 *tag, u8 *coach) {
 /* Return 1 only for an eligible CPU binding. Original F6E60 then performs
  * playback initialization and book matching; no selector or RNG is replaced.
  * Diagnostic reason: 1 human, 2 mode/special, 3 team/coach, 4 book/profile,
- * 5 heap failure, 6 explicit VIP, 7 automatic. */
+ * 5 heap failure, 6 explicit VIP, 7 automatic, 8 mid-game fresh context left native. */
 u32 FAST coach_prepare(u8 *team, u32 side, u8 *label) {
     u8 *book,*tag,*front,*coach,*root;
     u8 **slot=(u8 **)(0xba04b0+side*4);
@@ -253,6 +253,16 @@ u32 FAST coach_prepare(u8 *team, u32 side, u8 *label) {
  * Do not consume the old human flags. The commit hook runs after both native
  * ownership updates and only after a reset, not on every lineup refresh. */
 void coach_defer_rebind(void) { state.pending_rebind=1; }
+#ifdef B778
+/* A VIP context bound during a live game has no native playcall cursor yet:
+ * the pre-snap offense tick builds +0xE2C, and 17D330/17D5F0/17D670
+ * dereference it as soon as +0x38 says playback. Arming that state from a
+ * mid-game controller change bugchecks 0x1E (null reads at 0xc and 0x38). */
+static int live_game(void) {
+    u32 ps=U(0xe602b8,0);
+    return U(0xe53804,0)!=0 || (ps>=0xc && ps<=0xe);   /* 0xe53804: play count; 0xe53800 is the drive number */
+}
+#endif
 void coach_rebind(void) {
     u32 side;
     if (!state.pending_rebind) return;
@@ -264,6 +274,20 @@ void coach_rebind(void) {
         /* Never take a VIP now being learned by a human on the other side. */
         if (p && !(U(p,0x38)==1 && PTR(0xba04b0,(side^1)*4)==p)) U(0xba04b0,side*4)=(u32)p;
         setup_native(team,side,PTR(0xe5fe78,side*4));
+#ifdef B778
+        /* The fresh context has no playcall cursor; leave it on the ordinary
+         * CPU caller instead of exposing the null dereference above. */
+        {
+            u8 *q=PTR(0xba04b0,side*4);
+            if (q && U(q,0xE2C)==0 && live_game()) {
+                U(0xba04b0,side*4)=0;
+                U(q,0x38)=0;
+                U(team,0x38)=0;
+                state.active[side]=0;
+                state.reason[side]=8;
+            }
+        }
+#endif
     }
 }
 void coach_cleanup(void) {

@@ -3766,3 +3766,5 @@ tests/mod_editor/test_nfl2k5_progression_careers.py
 tests/mod_editor/test_b778_eq1_equipment_fit.py
 # b778 ap1: created 2026 players take a measured headshot appearance, not the lightest default
 tests/mod_editor/test_b778_ap1_appearance.py
+# b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
+tests/mod_editor/test_b778_cs1_choose_side.py
