@@ -5739,7 +5739,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         xbe, xbe_receipt = sleeves.apply(_xbe_bytes(target))
         _write_xbe_bytes(target, xbe)
         sleeves.verify(_xbe_bytes(target))
-        sleeve_receipt = sleeves.apply_to_image(target)
+        keep = ()
+        if plan.espn25_more_moments:
+            # b778 bd3: the historic team styles pin their spares to the retail style-0 art; the Eagles' spare is the
+            # retail era-9 package, which this pass would otherwise rewrite (the build's last read-back refused it).
+            keep = _core_module("nfl2k5_historic_styles").retail_spare_selectors(
+                target, require_step_source(source if _retail_source is None else _retail_source, "Historic team styles"))
+        sleeve_receipt = sleeves.apply_to_image(target, keep=keep)
         receipt["steps"].append({"step": "team_sleeves", "xbe": xbe_receipt, **sleeve_receipt})
         receipt["result"]["team_sleeves"] = "applied"
         if sleeve_receipt.get("skipped"):

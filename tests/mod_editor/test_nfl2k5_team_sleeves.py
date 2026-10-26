@@ -243,6 +243,50 @@ class ApplyToImageTests(unittest.TestCase):
         self.assertTrue(all(item["state"] == "applied" for item in receipt["packages"]))
         self.assertFalse(receipt["runtime_witnessed"])
 
+    def test_kept_packages_are_left_as_they_are(self):
+        # b778 bd3: the historic team styles pin their spare kits to the retail style-0 art; the Eagles' spare is the
+        # retail era-9 package 21H9/21A9, which the build now passes as kept.
+        from unittest.mock import patch
+        from mod_editor.core import nfl2k5_bump_texture_writer as bump
+        writes = []
+
+        class Recording:
+            def __init__(self, path):
+                self.inner = bump._Image._open_xiso(path, writable=False)
+
+            def __getattr__(self, name):
+                return getattr(self.inner, name)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                self.inner.close()
+                return False
+
+            def write_segments(self, segments, data):
+                writes.append(tuple(segments))
+                self._last = (tuple(segments), data)
+
+            def read_segments(self, segments):
+                last = getattr(self, "_last", None)
+                return last[1] if last and last[0] == tuple(segments) else self.inner.read_segments(segments)
+
+        original = sleeves._package_selectors
+        chosen = ("00H0", "21H9", "21A9")
+
+        def selected(by_id):
+            full = original(by_id)
+            return {name: full[name] for name in chosen}
+
+        with patch.object(bump._Image, "open", classmethod(lambda cls, path, *, writable: Recording(path))), \
+                patch.object(sleeves, "_package_selectors", selected):
+            receipt = sleeves.apply_to_image(RELEASE_DISC, keep=("21H9", "21A9"))
+        self.assertEqual(sorted(receipt["kept"]), ["21A9", "21H9"])
+        self.assertEqual([item["selector"] for item in receipt["packages"]], ["00H0"])
+        self.assertEqual(receipt["written_spans"], 1)
+        self.assertEqual(len(writes), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -627,6 +627,28 @@ def _expected(target, source, plan):
     return members, kits
 
 
+def retail_spare_selectors(path, source):
+    """Uniform package selectors ("21H9") whose spare-style kit file on the copy holds exactly the retail style-0 art
+    this option copies there. b778 bd3: later uniform passes must leave these bytes alone; the Eagles' spare is the
+    retail era-9 slot, which the team-coloured sleeves would otherwise rewrite (the image status pins it)."""
+    from . import nfl2k5_music_archive as archive
+    out = []
+    with archive.Disc(Path(path), descriptors=()) as disc, Source(source) as src:
+        target = Target(disc)
+        styles = franchise_styles(src.get(identity=ROSTER_OUTER_ID))
+        taken = taken_styles(src, styles)
+        for code in sorted(styles):
+            try:
+                spare = spare_style(code, styles, taken)
+            except HistoricStylesError:
+                continue
+            for side in "ha":
+                name, retail = f"{code}{side}{spare}.iff", f"{code}{side}0.iff"
+                if target.has(name) and src.has(retail) and target.get(name) == src.get(retail):
+                    out.append(f"{code}{side.upper()}{spare}")
+    return tuple(out)
+
+
 def image_status(path, source):
     """'applied' (every spare in place with retail bytes and no historic or moment team left on style 0), 'retail'
     (style-0 users and none of the spares), else 'foreign'. source: the retail disc image or extracted folder.

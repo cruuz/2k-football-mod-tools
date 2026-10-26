@@ -458,8 +458,13 @@ def compile_package(raw: bytes, chunks, rows: tuple[EquipmentTarget, ...], *,
     }
 
 
-def apply_to_image(path, *, strict: bool = False, catalog_path=None) -> dict:
-    """Studio uniform finish pass: only fixed long-sleeve TSET spans are written."""
+def apply_to_image(path, *, strict: bool = False, catalog_path=None, keep=()) -> dict:
+    """Studio uniform finish pass: only fixed long-sleeve TSET spans are written.
+
+    ``keep``: package selectors another owner pins byte for byte (b778 bd3: the historic team styles' spare that
+    reuses a retail slot, the Eagles' era 9, holds the retail style-0 art); they are left as they are and listed
+    under ``kept``."""
+    keep = frozenset(keep)
     from pathlib import Path
 
     try:
@@ -469,7 +474,7 @@ def apply_to_image(path, *, strict: bool = False, catalog_path=None) -> dict:
         if strict:
             raise
         return {"state": "other_image", "written_spans": 0, "written_bytes": 0,
-                "changed_bytes": 0, "packages": [], "skipped": []}
+                "changed_bytes": 0, "packages": [], "skipped": [], "kept": []}
     by_id, groups = load_targets() if catalog_path is None else load_targets(catalog_path)
     selectors = _package_selectors(by_id)
     with bump._Image.open(Path(path), writable=True) as image:
@@ -479,7 +484,11 @@ def apply_to_image(path, *, strict: bool = False, catalog_path=None) -> dict:
             by_name.setdefault(bump.logical_name_for(entry.name_id), []).append(entry)
         plans = []
         skipped = []
+        kept = []
         for selector, outer in sorted(selectors.items(), key=lambda item: item[1]):
+            if selector in keep:
+                kept.append(selector)
+                continue
             entries = by_name.get(selector + ".IFF", [])
             if len(entries) != 1:
                 skipped.append({"selector": selector, "reason": "package absent or duplicated"})
@@ -511,5 +520,5 @@ def apply_to_image(path, *, strict: bool = False, catalog_path=None) -> dict:
         changed = sum(item.get("changed_bytes", 0) for item in packages)
         return {"state": "applied" if written else "already_applied",
                 "written_spans": written, "written_bytes": written_bytes,
-                "changed_bytes": changed, "packages": packages, "skipped": skipped,
+                "changed_bytes": changed, "packages": packages, "skipped": skipped, "kept": kept,
                 "runtime_witnessed": False}
