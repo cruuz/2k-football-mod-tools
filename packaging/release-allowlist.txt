@@ -1353,6 +1353,7 @@ data/nfl2k5_modern_coaches/ARI/head.png
 data/nfl2k5_modern_coaches/ARI/jacket.png
 data/nfl2k5_modern_coaches/ARI/logo.png
 data/nfl2k5_modern_coaches/ARI/shirt.png
+data/nfl2k5_modern_coaches/ATL/geometry.json
 data/nfl2k5_modern_coaches/ATL/headset.png
 data/nfl2k5_modern_coaches/ATL/head.png
 data/nfl2k5_modern_coaches/ATL/jacket.png
@@ -1402,6 +1403,7 @@ data/nfl2k5_modern_coaches/DEN/head.png
 data/nfl2k5_modern_coaches/DEN/jacket.png
 data/nfl2k5_modern_coaches/DEN/logo.png
 data/nfl2k5_modern_coaches/DEN/shirt.png
+data/nfl2k5_modern_coaches/DET/geometry.json
 data/nfl2k5_modern_coaches/DET/headset.png
 data/nfl2k5_modern_coaches/DET/head.png
 data/nfl2k5_modern_coaches/DET/jacket.png
@@ -1464,6 +1466,7 @@ data/nfl2k5_modern_coaches/MIN/geometry.json
 data/nfl2k5_modern_coaches/MIN/jacket.png
 data/nfl2k5_modern_coaches/MIN/logo.png
 data/nfl2k5_modern_coaches/MIN/shirt.png
+data/nfl2k5_modern_coaches/NE/geometry.json
 data/nfl2k5_modern_coaches/NE/headset.png
 data/nfl2k5_modern_coaches/NE/head.png
 data/nfl2k5_modern_coaches/NE/jacket.png

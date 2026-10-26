@@ -243,8 +243,8 @@
     },
     "data/nfl2k5_modern_coaches/ATL/head.png": {
       "height": 128,
-      "sha256": "889d90c7198c5700d9be6fdac02032f7e35f3957dfb4b82c3868ec6232c5c069",
-      "size": 54121,
+      "sha256": "beb0019cc492c18808657bb806c803b1cb7e329b5d700ea2f8c19ec8e4fbdc97",
+      "size": 53783,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/ATL/headset.png": {
@@ -285,8 +285,8 @@
     },
     "data/nfl2k5_modern_coaches/BAL/head.png": {
       "height": 128,
-      "sha256": "23cf1a0ea421b22eda68c3c08370261eaa5ccef48483c4bccd506855b74228fa",
-      "size": 54846,
+      "sha256": "be0cfd688c47b1e3f2c44075ce4434ac5b7f19d6bab37911347d7d3930c34c2f",
+      "size": 42292,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/BAL/headset.png": {
@@ -621,8 +621,8 @@
     },
     "data/nfl2k5_modern_coaches/DET/head.png": {
       "height": 128,
-      "sha256": "6b82196193722b96806d91dd41dbaac5ea1e95ee98b45f7fb2fe62963e222967",
-      "size": 51280,
+      "sha256": "6c08fdb8b2e2e2c9ae05c2eeacfad14ddabb2800bfffbff8ab7ad72b6a6beb20",
+      "size": 52287,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DET/headset.png": {
@@ -921,8 +921,8 @@
     },
     "data/nfl2k5_modern_coaches/LAR/head.png": {
       "height": 128,
-      "sha256": "2c4f1d4fe1399ff329e36a8f32a9d5ea8c056d1a46e318763abd82cf0fc6d8c5",
-      "size": 42857,
+      "sha256": "60ac654401e1a3da246a4058d505b60daed6a7aebb4818750a9e156de15f459c",
+      "size": 48487,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LAR/headset.png": {
@@ -1089,8 +1089,8 @@
     },
     "data/nfl2k5_modern_coaches/NE/head.png": {
       "height": 128,
-      "sha256": "f01d80595851f857841a5cdf4e5be45c32cc2616c321703ee29cca913f845dce",
-      "size": 55261,
+      "sha256": "016993dadd3dc5374bfa2a41eeddadc0e75e6624c7adf6ae65c6ccb0d0e8d5b7",
+      "size": 51507,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NE/headset.png": {
@@ -1467,8 +1467,8 @@
     },
     "data/nfl2k5_modern_coaches/TEN/head.png": {
       "height": 128,
-      "sha256": "cef4a840e0133abf4d616e56b0b674bfa74d30a41115ff883844047286d62293",
-      "size": 38199,
+      "sha256": "a13c86b651cdca8fe0afd8a9456a26fbf61b8e553bccdec85a05c4b140bd6500",
+      "size": 38164,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/TEN/headset.png": {
@@ -1509,8 +1509,8 @@
     },
     "data/nfl2k5_modern_coaches/WAS/head.png": {
       "height": 128,
-      "sha256": "29d444a3b34eaaa6b909e0ceb0e927a882791e272a2edb9cbe1e599626a157b7",
-      "size": 36260,
+      "sha256": "21d8c32ff87412c3c201b4cf5a2ba3664151836c613a70e539e8a27cec471e50",
+      "size": 39834,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/WAS/headset.png": {
