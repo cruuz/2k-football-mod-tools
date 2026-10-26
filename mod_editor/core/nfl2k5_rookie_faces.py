@@ -69,12 +69,13 @@ from __future__ import annotations
 import collections
 import hashlib
 import json
-import math
 import os
 import struct
 import zlib
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
+
+from . import exact_math as math
 
 ROOT = Path(__file__).resolve().parents[2]
 OWNER = "nfl2k5_rookie_faces"
