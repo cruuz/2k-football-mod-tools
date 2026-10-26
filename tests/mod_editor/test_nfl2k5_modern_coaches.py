@@ -390,8 +390,11 @@ class RetailCompile(unittest.TestCase):
         self.assertLess(top_before - top_after, 1.2)
         moved = [i for i, (a, b) in enumerate(zip(heads["before"], heads["after"]))
                  if max(abs(a[k] - b[k]) for k in range(3)) > 1e-3]
-        # the face (in front of the ears, below the brows) does not move: only the scalp and the back of the head
-        self.assertTrue(moved and all(heads["before"][i][1] > 42.0 or heads["before"][i][2] < 8.0 for i in moved))
+        # the bald edit stays off the face (in front of the ears, below the brows): only the scalp and the back of the
+        # head move by more than the face scan (b778 cf3 scans Quinn's face: cf1_face_scan, at most 0.8 cm)
+        self.assertTrue(moved and all(heads["before"][i][1] > 42.0 or heads["before"][i][2] < 8.0
+                                      or max(abs(heads["before"][i][k] - heads["after"][i][k]) for k in range(3)) <= 0.81
+                                      for i in moved))
         rec2, decoded2 = mc._mm()._scene(other, tx.parse_chunks(other)[0])
         with self.assertRaises(mc.ModernCoachesError):
             mc.apply_geometry(bytearray(decoded2), rec2, doc)
@@ -460,7 +463,8 @@ class RetailCompile(unittest.TestCase):
         self.assertEqual({v for k, v in parts.items() if not k.startswith("retired:")}, {"retail"})
         self.assertEqual({v for k, v in parts.items() if k.startswith("retired:")}, {"kept"})
         # c33 and c36 were never dressed before cm2 (no earlier art); every other model was
-        self.assertEqual({row["archive"] for row in pins["teams"] if not row["superseded_sha256"]}, {"c33.iff", "c36.iff"})
+        # (a later face scan of CIN or IND gives those two rows cm2's digest as their superseded entry)
+        self.assertLessEqual({row["archive"] for row in pins["teams"] if not row["superseded_sha256"]}, {"c33.iff", "c36.iff"})
 
     def test_the_dark_skin_models_are_the_retail_models_with_dark_arms(self):
         """DARK_SKIN_MODELS against the user's own disc: the arms texture of every retail coach model."""
@@ -529,9 +533,11 @@ class ReleasedDisc(unittest.TestCase):
             mc.plan_image(V061)                               # earlier art needs the user's retail image
         plan, rows = mc.plan_image(V061, retail=RETAIL)
         written = sorted(f"{r['kind']}:{r['team']}" for r in rows if r.get("written"))
-        self.assertEqual(written, sorted(["coach:TB", "coach:PIT", "coach:CLE", "coach:CIN", "coach:IND", "coach:JAX",
-                                          "body_id:TB", "body_id:PIT", "body_id:CLE", "body_id:CIN", "body_id:IND",
-                                          "retired:c06.iff", "retired:c11.iff"]))
+        scanned = {p.stem for p in (ROOT / "tools" / "b77" / "cf1_recipes").glob("*.json")}   # b778 cf1 and its follow-ups
+        coaches = {"TB", "PIT", "CLE", "CIN", "IND", "JAX"} | scanned
+        self.assertEqual(written, sorted([f"coach:{t}" for t in coaches]
+                                         + ["body_id:TB", "body_id:PIT", "body_id:CLE", "body_id:CIN", "body_id:IND",
+                                            "retired:c06.iff", "retired:c11.iff"]))
         bodies = {r["team"]: (r["body_before"], r["body_after"]) for r in rows if r["kind"] == "body_id" and r.get("written")}
         self.assertEqual(bodies, {"TB": (27, 0), "PIT": (26, 27), "CLE": (0, 26), "CIN": (6, 36), "IND": (11, 33)})
         self.assertEqual(len(plan), len(written))
