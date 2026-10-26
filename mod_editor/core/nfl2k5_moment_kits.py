@@ -423,8 +423,13 @@ def expected(doc, inputs):
     return packages, members, files, bytes(situ)
 
 
-def state_of(doc, inputs, target):
-    """'retail' (nothing installed, every selection as before), 'applied', else 'foreign'."""
+def state_of(doc, inputs, target, *, pinned_packages=None):
+    """'retail' (nothing installed, every selection as before), 'applied', else 'foreign'.
+
+    ``pinned_packages`` ({name: sha256}, the shipped document's pins): a new package also reads as installed when it
+    is byte for byte its pinned composition. b778 bd3: the team-coloured sleeves (sl1) run after this stage and
+    rewrite the long-sleeve palettes of the DONOR kits, so composing again from the copy's donors no longer gives
+    the bytes this stage wrote, while the installed kits are exactly the pinned ones."""
     from . import nfl2k5_historic_styles as hs
     fields = _situ_fields(inputs["situ"])
     kits_now = {(s["row"], s["side"]): fields[(s["row"], s["side"])][0] for s in doc["selections"]}
@@ -442,7 +447,8 @@ def state_of(doc, inputs, target):
     if situ != inputs["situ"] or any(files[n] != inputs["files"][n] for n in files):
         return "foreign"
     for name, data in packages.items():
-        if target.get(name) != data:
+        have = target.get(name)
+        if have != data and not (pinned_packages and name in pinned_packages and sha(have) == pinned_packages[name]):
             return "foreign"
     for aggregate, wanted in members.items():
         record, cdf = inputs["members"][aggregate]
@@ -455,13 +461,19 @@ def state_of(doc, inputs, target):
 def image_status(path, doc=None):
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
-    doc = doc or document()
+    pinned = None
+    if doc is None:
+        doc = document()
+        try:
+            pinned = pins()["packages"]
+        except (OSError, ValueError, KeyError):
+            pinned = None
     try:
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
             if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
-            return state_of(doc, read_inputs(target, doc), target)
+            return state_of(doc, read_inputs(target, doc), target, pinned_packages=pinned)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
