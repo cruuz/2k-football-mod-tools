@@ -5798,7 +5798,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_color:
         modern = _core_module("nfl2k5_modern_color")
         progress("Modern colour and lighting: stadium bundles", 0, 0)
-        bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings, source_receipt=modern.read_image_receipt(source))
+        # b778 bd3 (from bf1): the classic teams paint the Seamen field on the unused s48 venue's nine bundles
+        # before this step (classic_field). The grade leaves exactly those bundles ungraded; its receipt pins them
+        # at their current, read-back classic bytes and records the narrower scope, so the 2026 venue art and every
+        # later colour-aware writer still recognize them.
+        excluded = ()
+        if plan.classic_teams and plan.historic_teams_quick_game and is_image:
+            from . import nfl2k5_classic_field as classic_field
+            classic_retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
+            if classic_field.status(target, classic_retail) != "applied":
+                raise ValueError("the classic teams' field is not in place before the colour grade")
+            excluded = classic_field.BUNDLES
+        bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings,
+                                               source_receipt=modern.read_image_receipt(source), exclude=excluded)
         receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
         receipt["result"]["modern_color"] = bundle_receipt["state"]
         receipt["result"]["modern_color_settings"] = bundle_receipt["settings"]

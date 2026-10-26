@@ -1213,7 +1213,15 @@ def _receipt_bundle_state(archive, pin, receipt):
 _AUTO_RECEIPT = object()
 
 
-def image_status(source, *, receipt=_AUTO_RECEIPT):
+def _colour_bundles(pins, exclude):
+    """The grade's bundle pins minus the ones another authored owner replaces (b778 bf1)."""
+    exclude = frozenset(exclude or ())
+    names = {p["name"] for p in pins["bundles"]}
+    require(exclude <= names, f"Unknown colour bundle exclusion: {sorted(exclude - names)}")
+    return [p for p in pins["bundles"] if p["name"] not in exclude]
+
+
+def image_status(source, *, receipt=_AUTO_RECEIPT, exclude=None):
     """Recognize custom bytes only with their own settings and per-bundle receipt."""
     pins = _pins()
     receipt = read_image_receipt(source) if receipt is _AUTO_RECEIPT else receipt
@@ -1221,20 +1229,34 @@ def image_status(source, *, receipt=_AUTO_RECEIPT):
         require(type(receipt) is dict and receipt.get("schema") == RECEIPT_SCHEMA and type(receipt.get("settings")) is dict
                 and receipt.get("settings_sha256") == settings_id(receipt["settings"]),
                 "Colour & lighting receipt uses a different recipe or settings. Choose the original retail source.")
+        scope = receipt.get("excluded_bundles", [])
+        require(type(scope) is list and all(type(name) is str for name in scope),
+                "Colour & lighting receipt exclusions are invalid")
+        if exclude is not None:
+            require(sorted(set(exclude)) == sorted(set(scope)),
+                    "Colour & lighting receipt was built for a different bundle scope")
+        exclude = scope
+    selected = _colour_bundles(pins, exclude)
+    if receipt is not None:
+        # A receipt pins every bundle: the graded ones and the excluded ones at
+        # their current bytes (the classic field, before the venue writer).
         require(type(receipt.get("bundle_pins")) is dict and set(receipt["bundle_pins"]) == {p["name"] for p in pins["bundles"]},
-                "Colour & lighting receipt does not cover every bundle")
+                "Colour & lighting receipt does not cover every graded bundle")
+        checked = pins["bundles"]
+    else:
+        checked = selected
     with _outer_image()(source) as archive:
         states = {(_receipt_bundle_state(archive, pin, receipt) if receipt is not None else _bundle_state(archive, pin))
-                  for pin in pins["bundles"]}
+                  for pin in checked}
     if len(states) == 1:
         return states.pop()
     return "foreign" if "foreign" in states else "mixed"
 
 
-def check_image_request(source, settings=None, *, receipt=_AUTO_RECEIPT):
+def check_image_request(source, settings=None, *, receipt=_AUTO_RECEIPT, exclude=None):
     """Check before copying a build. Regrading always starts at pinned retail bytes."""
     receipt = read_image_receipt(source) if receipt is _AUTO_RECEIPT else receipt
-    state = image_status(source, receipt=receipt)
+    state = image_status(source, receipt=receipt, exclude=exclude)
     if receipt is not None:
         require(state in ("applied", "applied (custom)"), "The colour & lighting receipt does not match this disc. Choose the original retail source.")
         require(settings_id(settings) == receipt["settings_sha256"],
@@ -1382,20 +1404,26 @@ def _refit_fields(spans, *, progress, workers=None, settings=None):
     return results
 
 
-def apply_to_image(target, *, progress=None, workers=None, settings=None, source_receipt=_AUTO_RECEIPT):
-    """Build-only: disposable output, fixed spans, reparsed read-back and sidecar receipt."""
+def apply_to_image(target, *, progress=None, workers=None, settings=None, source_receipt=_AUTO_RECEIPT, exclude=()):
+    """Build-only: disposable output, fixed spans, reparsed read-back and sidecar receipt.
+
+    ``exclude`` names bundles another authored owner replaces (the classic teams'
+    s48 field); they are left untouched and recorded in the receipt's scope."""
     settings = normalize_settings(settings)
     pins = _pins()
+    selected = _colour_bundles(pins, exclude)
     say = progress or (lambda message, done, total: None)
     previous = read_image_receipt(target) if source_receipt is _AUTO_RECEIPT else source_receipt
-    state = check_image_request(target, settings, receipt=previous)
+    state = check_image_request(target, settings, receipt=previous, exclude=exclude)
     if previous is not None:
-        replay = dict(previous, already_applied=len(pins["bundles"]), rewritten=0)
+        replay = dict(previous, already_applied=len(selected), rewritten=0)
         _save_image_receipt(target, replay)
         return replay
     todo, done, sources = [], [], {}
+    selected_names = {p["name"] for p in selected}
+    excluded_rows = {}
     with _outer_image()(target) as archive:
-        for pin in pins["bundles"]:
+        for pin in selected:
             entry = archive.entries[pin["outer"]]
             data = archive.read(entry.virtual_offset, entry.size)
             if sha(data) == pin["retail_sha256"]:
@@ -1405,6 +1433,14 @@ def apply_to_image(target, *, progress=None, workers=None, settings=None, source
                 require(not is_custom(settings) and sha(data) == pin["applied_sha256"],
                         f"{pin['name']}: bundle differs from its whole-bundle pin")
                 done.append(pin)
+        for pin in pins["bundles"]:
+            if pin["name"] in selected_names:
+                continue
+            entry = archive.entries[pin["outer"]]
+            data = archive.read(entry.virtual_offset, entry.size)
+            excluded_rows[pin["name"]] = dict(pin, applied_sha256=sha(data), sites=[
+                dict(site, applied=sha(data[site["offset"]:site["offset"] + site["size"]]))
+                for site in pin["sites"]])
     spans = {}
     for pin in todo:
         for kind, at, size in bundle_plan(sources[pin["name"]]):
@@ -1415,8 +1451,10 @@ def apply_to_image(target, *, progress=None, workers=None, settings=None, source
     receipt = dict(schema=RECEIPT_SCHEMA, settings=settings, settings_sha256=settings_id(settings),
                    state="applied (custom)" if is_custom(settings) else "applied",
                    label=LABEL, runtime_witnessed=False, bundles=len(pins["bundles"]), already_applied=len(done),
+                   excluded_bundles=sorted(excluded_rows),
                    rewritten=0, distinct_field_refits=len(field_cache),
                    cached_field_refits=(getattr(_refit_fields, "last_hits", 0) if spans else 0), edits={}, bundle_pins={})
+    receipt["bundle_pins"].update(excluded_rows)
     for pin in done:
         receipt["bundle_pins"][pin["name"]] = deepcopy(pin)
     # All refits above finish before opening the output for writes. Unfit spans
