@@ -2038,6 +2038,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
         "mod_editor.core.nfl2k5_return_coverage",                  # b778-kr1
+        "mod_editor.core.nfl2k5_cpu_third_down",                   # b778-ai8
         "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
         "mod_editor.core.nfl2k5_sportscenter_lineup",             # b778-sc2, in-place
         "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
