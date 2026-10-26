@@ -1,0 +1,10 @@
+{
+ "who": "Brian Schottenheimer",
+ "notes": "fair, ruddy skin; short dark-brown hair (under the Cowboys cap of c07 it shows at the sides and back); a short salt-and-pepper beard over the cheeks, chin and upper lip that must read grey on a light face; blue-grey eyes; a smile with teeth in the official headshot (mouth closed here)",
+ "eyes": [112, 132, 150],
+ "mouth": "close",
+ "hair_colour": [58, 44, 36],
+ "hair": {"front": 46.5, "recede": 1.2, "side": 43.5, "back": 34.5, "sideburn": 38.6, "edge": 0.3},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [118, 110, 102], "density": 0.75, "light": 0.5, "light_colour": [196, 190, 182]},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [110, 102, 96], "density": 0.55, "light": 0.45, "light_colour": [190, 184, 178]}]
+}
