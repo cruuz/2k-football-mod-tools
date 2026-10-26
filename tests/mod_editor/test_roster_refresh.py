@@ -90,6 +90,23 @@ class RefreshTests(unittest.TestCase):
         plan=copy.deepcopy(self.plan);plan['identity_guards'][100][3]='1970-01-01'
         with self.assertRaisesRegex(ValueError,'guard failed'):refresh.apply_body(self.body,plan)
 
+    def test_a_generational_suffix_is_the_same_guarded_player(self):
+        # b778 bd3: sx1 keeps "Jr." on real players' names (the free-agent data names Cedrick Wilson Jr.) while the
+        # dated refresh guard written before that says "Wilson"; the release build refused at that guard. The
+        # synthetic name pool has no room for a longer surname, so the suffix is on the guard side here; the
+        # comparison is symmetric.
+        for spelling in ('Last Jr.', 'Last Jr', 'Last III', 'Last Sr.', 'Last V'):
+            plan = copy.deepcopy(self.plan)
+            plan['identity_guards'][100][2] = spelling
+            plan['players'][100]['last'] = spelling
+            out, _receipt = refresh.apply_body(self.body, plan)
+            self.assertEqual(rr.RosterDocument(out, scheme='one_pool', reference_year=2026).players[100].last, 'Last')
+        for wrong in ('Lasts', 'last', 'Last Jr. Jr.', 'Las'):
+            plan = copy.deepcopy(self.plan)
+            plan['identity_guards'][100][2] = wrong
+            with self.assertRaisesRegex(ValueError, 'guard failed', msg=wrong):
+                refresh.apply_body(self.body, plan)
+
     def test_existing_appearance_and_history_edits_refused(self):
         for field in ['photo_id','speed','history_pointer','unknown_53_high']:
             plan=copy.deepcopy(self.plan);plan['players'][0]['fields'][field]=0

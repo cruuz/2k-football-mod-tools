@@ -62,6 +62,20 @@ def _repair_create_buffers(doc):
     return repaired
 
 
+def _without_suffix(last):
+    """The surname without a separate generational suffix (Jr., Sr., II, III, IV, V); every other character exact.
+
+    b778 sx1 keeps the suffix on real players' names ("Cedrick Wilson Jr.") and treats it as a display spelling of
+    the same person (nfl2k5_free_agents compares surnames this way); a refresh dated before that change still names
+    the same player without it."""
+    import re
+    return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE)
+
+
+def _same_person(player, first, last, birth):
+    return (player.first, _without_suffix(player.last), str(player.record.birth_date)) == (first, _without_suffix(last), birth)
+
+
 def apply_body(body, plan):
     from . import nfl2k5_roster_records as rr
     from . import nfl2k5_college_check as college_check
@@ -92,16 +106,14 @@ def apply_body(body, plan):
     rr._require(len({g[0] for g in guards}) == len(guards), "Duplicate identity guard")
     for index, first, last, birth in guards:
         p = by.get(index)
-        rr._require(p is not None and (p.first, p.last, str(p.record.birth_date)) ==
-                    (first, last, birth), f"Pack identity guard failed at {index}")
+        rr._require(p is not None and _same_person(p, first, last, birth), f"Pack identity guard failed at {index}")
     rows = plan["players"]
     rr._require(len({r["index"] for r in rows}) == len(rows), "Duplicate refresh identity")
     rr._require(len({r["gsis_id"] for r in rows}) == len(rows), "Duplicate source identity")
     for row in rows:
         p = by.get(row["index"])
         rr._require(p is not None and p.group != "draft_class", "Refresh touches absent/draft record")
-        same = (p.first, p.last, str(p.record.birth_date)) == (
-            row["first"], row["last"], row["birth_date"])
+        same = _same_person(p, row["first"], row["last"], row["birth_date"])
         vacant = (p.index >= 2464 and p.group == "pool" and
                   p.first == p.last == "****************" and p.record.get("player_type") == 1)
         rr._require(same or (row.get("new") is True and vacant),
