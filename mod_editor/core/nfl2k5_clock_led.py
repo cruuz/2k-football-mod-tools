@@ -153,16 +153,19 @@ def code_for(code_va):
     a.b("81e2ffffff00")                          # RGB
     a.b("85d2")
     a.j8("74", "black")
-    a.b("0fb6ca")                                # ecx = B
+    # b778 bd3: the brightness sum lives in esi. It used ecx, the 256-entry loop counter, so every bright
+    # entry restarted the count at B+G+R-1 and the loop ran up to ~765 dwords past each 1,024-byte palette,
+    # writing black and warm white over the stadium loader's heap (every game load bugchecked, 0x1E/C0000005).
+    a.b("0fb6f2")                                # esi = B
     a.b("89c3")
     a.b("c1eb08")
     a.b("0fb6db")
-    a.b("01d9")                                  # + G
+    a.b("01de")                                  # + G
     a.b("89c3")
     a.b("c1eb10")
     a.b("0fb6db")
-    a.b("01d9")                                  # + R
-    a.b("83f93c")                                # > 60
+    a.b("01de")                                  # + R
+    a.b("83fe3c")                                # > 60
     a.j8("76", "black")
     a.b("c707e8f8ffff")                          # warm white
     a.j8("eb", "entrynext")

@@ -176,6 +176,33 @@ class CaveTests(unittest.TestCase):
                                          else b"\x00\x00\x00\xff")
             self.assertEqual(got, bytes(want), i)
 
+    def test_each_palette_pass_stays_inside_its_1024_bytes(self):
+        """b778 bd3: the palette pass used its loop counter for the brightness sum and wrote far past each palette.
+        Palettes here sit 0x1000 apart with a sentinel after each; nothing outside the 1,024 bytes may change."""
+        code = cl.code_for(self.CODE)
+        machine = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
+        machine.mem_map(0x100000, 0x20000)
+        machine.mem_map(0xB66000, 0x3000)
+        machine.mem_map(self.CODE, 0x1000)
+        machine.mem_map(self.ATLAS, 0x10000)
+        machine.mem_map(self.PALS, 0x10000)
+        machine.mem_map(0x99000, 0x1000)
+        machine.mem_write(self.CODE, code)
+        machine.mem_write(self.PALS, b"\x5c" * 0x10000)
+        for i, pal in enumerate(palettes()):
+            machine.mem_write(self.PALS + i * 0x1000, pal)
+            obj = self.OBJECTS + i * 0x20
+            machine.mem_write(obj, struct.pack("<IIIIIIII", 0, self.ATLAS, self.PALS + i * 0x1000,
+                                               0x07750B29, 0, 0x80000000, 0x1FFFF, 0))
+            machine.mem_write(self.ARRAY + i * 4, struct.pack("<I", obj))
+        machine.mem_write(self.RESUME, b"\xf4")
+        machine.reg_write(x86.UC_X86_REG_ESP, self.STACK)
+        machine.emu_start(self.CODE, self.RESUME, count=4_000_000)
+        self.assertEqual(machine.reg_read(x86.UC_X86_REG_EIP), self.RESUME)
+        for i in range(10):
+            tail = bytes(machine.mem_read(self.PALS + i * 0x1000 + 1024, 0x1000 - 1024))
+            self.assertEqual(tail, b"\x5c" * len(tail), f"palette {i} pass wrote past its end")
+
     def test_zero_first_pointer_is_a_no_op(self):
         machine = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
         machine.mem_map(0x100000, 0x20000)
