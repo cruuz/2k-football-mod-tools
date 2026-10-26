@@ -3780,3 +3780,4 @@ tests/mod_editor/test_b778_eq1_equipment_fit.py
 tests/mod_editor/test_b778_ap1_appearance.py
 # b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
 tests/mod_editor/test_b778_cs1_choose_side.py
+tests/mod_editor/test_b778_bd3_build_blockers.py
