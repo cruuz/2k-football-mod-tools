@@ -1,0 +1,10 @@
+{
+ "who": "Jesse Minter",
+ "notes": "fair skin; short dark-brown hair, full at the sides; a short dark beard greying at the chin; brown eyes; a broad smile with teeth in the official headshot (mouth closed here); c02 with c03's lean body (cm1); the side hairline is lowered over the ear and the sideburn strip left off (c02's hair reaches the top of the ear)",
+ "eyes": [92, 66, 48],
+ "mouth": "close",
+ "hair_colour": [42, 32, 28],
+ "hair": {"front": 46.8, "recede": 0.8, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [56, 46, 40], "density": 0.75, "light": 0.3, "light_colour": [150, 142, 134]},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [60, 48, 42], "density": 0.65, "light": 0.15, "light_colour": [140, 132, 124]}]
+}

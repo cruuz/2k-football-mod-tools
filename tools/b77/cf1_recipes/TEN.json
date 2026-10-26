@@ -1,0 +1,9 @@
+{
+ "who": "Robert Saleh",
+ "notes": "olive skin; a shaved head; a light dark stubble on the jaw and upper lip; brown eyes; a closed-mouth smile in the official headshot; c15 with c03's lean body (cm1)",
+ "eyes": [80, 56, 40],
+ "mouth": "close",
+ "hair_colour": [60, 50, 44],
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "colour": [70, 62, 58], "density": 0.35, "light": 0.2, "light_colour": [170, 164, 158]}],
+ "skin": [186, 122, 92]
+}

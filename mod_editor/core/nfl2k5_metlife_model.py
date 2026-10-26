@@ -247,6 +247,153 @@ def crowd_u(quarter, bottom, top, person=CROWD_PERSON_M):
     return quarter + CROWD_MARGIN + span, quarter + CROWD_MARGIN
 
 
+def _strip_triangles(strip):
+    """The triangles (i, j, k) of one triangle strip, degenerate ones left out."""
+    out = []
+    for k in range(len(strip) - 2):
+        a, b, c = strip[k], strip[k + 1], strip[k + 2]
+        if a != b and b != c and a != c:
+            out.append((a, b, c) if k % 2 == 0 else (b, a, c))
+    return out
+
+
+def _cross(a, b):
+    """Elementwise cross product of (..., 3) arrays (plain IEEE products, the same on every platform)."""
+    return np.stack([a[..., 1] * b[..., 2] - a[..., 2] * b[..., 1], a[..., 2] * b[..., 0] - a[..., 0] * b[..., 2],
+                     a[..., 0] * b[..., 1] - a[..., 1] * b[..., 0]], -1)
+
+
+def _dot(a, b):
+    return a[..., 0] * b[..., 0] + a[..., 1] * b[..., 1] + a[..., 2] * b[..., 2]
+
+
+def _interval(T, d, L, eps):
+    """Per pair, the [lo, hi] a triangle covers on the line L where it crosses the other plane (d: its vertices' signed
+    distances to that plane); NaN where it does not reach the plane."""
+    p = _dot(T, L[:, None, :])
+    lo = np.full(len(T), np.inf)
+    hi = np.full(len(T), -np.inf)
+    for i in range(3):
+        on = np.abs(d[:, i]) <= eps
+        lo = np.where(on, np.minimum(lo, p[:, i]), lo)
+        hi = np.where(on, np.maximum(hi, p[:, i]), hi)
+        j = (i + 1) % 3
+        cross = ((d[:, i] > eps) & (d[:, j] < -eps)) | ((d[:, i] < -eps) & (d[:, j] > eps))
+        den = np.where(cross, d[:, i] - d[:, j], 1.0)
+        t = p[:, i] + (p[:, j] - p[:, i]) * (d[:, i] / den)
+        lo = np.where(cross, np.minimum(lo, t), lo)
+        hi = np.where(cross, np.maximum(hi, t), hi)
+    return lo, hi
+
+
+def triangle_cuts(A, B, eps=1e-6):
+    """Per pair of triangles (A[k], B[k]) (arrays (n, 3, 3) in metres) the length of the segment where they cross (0 where
+    they do not, and for parallel or coplanar pairs)."""
+    nA = _cross(A[:, 1] - A[:, 0], A[:, 2] - A[:, 0])
+    nB = _cross(B[:, 1] - B[:, 0], B[:, 2] - B[:, 0])
+    nA = nA / np.maximum(np.sqrt(_dot(nA, nA)), 1e-12)[:, None]
+    nB = nB / np.maximum(np.sqrt(_dot(nB, nB)), 1e-12)[:, None]
+    dA = _dot(A - B[:, None, 0], nB[:, None, :])
+    dB = _dot(B - A[:, None, 0], nA[:, None, :])
+    L = _cross(nA, nB)
+    ln = np.sqrt(_dot(L, L))
+    ok = (ln > 1e-6) & ~((dA > eps).all(1) | (dA < -eps).all(1)) & ~((dB > eps).all(1) | (dB < -eps).all(1))
+    L = L / np.maximum(ln, 1e-12)[:, None]
+    a0, a1 = _interval(A, dA, L, eps)
+    b0, b1 = _interval(B, dB, L, eps)
+    seg = np.minimum(a1, b1) - np.maximum(a0, b0)
+    return np.where(ok & np.isfinite(seg), np.maximum(seg, 0.0), 0.0)
+
+
+#: b778 sd2: the crowd-reaction cutaway. The executable (0x817b0, its anchor routine 0x803c0) stands one of the close-up
+#: crowd cutscenes (outers 2532 to 2615 and on: ``crowda`` .. ``crowdn``, the superfans) on the stadium scene's marker
+#: linked ``nosebleed``: the marker's position (+0x10) and its yaw (+0x24, a 32-bit angle, 65536 to the turn) place the
+#: cutscene's own frame, whose fans stand on y = 0 (some on risers up to 3 m) from 11 m behind to 4.4 m in front of it
+#: and 11 m either side, with its cameras in front (+z, toward the field). Retail stands it in free air in front of an
+#: upper deck; the models had put it on an upper-deck row, so the fans stood inside the seats (Noah's 2026-10-21 stream
+#: at Lucas Oil Stadium), and four kept the retail yaw of another side. The models now give a point where every fan
+#: of the 180 retail crowd cutscenes stands clear (the sd2 report and test_b778_crowd_cutaway) and this yaw, which
+#: turns the cutscene to face the field from the +x stands (retail's 0xFFFFC001 on that side).
+CUTAWAY_YAW = -16383
+
+
+def place_cutaway(record, anchor, yaw=CUTAWAY_YAW):
+    """Write the ``nosebleed`` marker record's position (``anchor`` in metres) and yaw."""
+    struct.pack_into("<3f", record, 0x10, *(float(v) * 100 for v in anchor))
+    struct.pack_into("<i", record, 0x24, int(yaw))
+
+
+#: b778 sd2: a crowd billboard segment crossing other geometry for longer than this is taken out
+CROWD_CUT_MIN = 0.05
+
+
+def clear_crowd(meshes, crowd="crowd", spare=lambda name: False, min_cut=CROWD_CUT_MIN):
+    """b778 sd2: take out every crowd billboard strip (one band between two aisles: one section's row of fans) that
+    cuts through the stadium's other geometry (a board, a ledge, a facade, the seats), and the vertices only it used.
+
+    ``meshes`` is a model's {name: Mesh}; ``spare(material)`` names materials a billboard may cross. Billboards never
+    clip each other out. Returns [(mesh name, strip's first point)] of the strips taken out."""
+    tris = []
+    for mesh in meshes.values():
+        if not mesh.P:
+            continue
+        P = np.asarray(mesh.P, float)
+        for mat, strips in mesh.groups.items():
+            if mat == crowd or spare(mat):
+                continue
+            for st in strips:
+                t = _strip_triangles(st)
+                if t:
+                    tris.append(P[np.array(t)])
+    if not tris:
+        return []
+    S = np.concatenate(tris)
+    s_lo, s_hi = S.min(1), S.max(1)
+    gone = []
+    for name in sorted(meshes):
+        mesh = meshes[name]
+        strips = mesh.groups.get(crowd)
+        if not strips:
+            continue
+        P = np.asarray(mesh.P, float)
+        keep = []
+        for st in strips:
+            t = _strip_triangles(st)
+            if not t:
+                keep.append(st)
+                continue
+            A = P[np.array(t)]
+            lo, hi = A.min((0, 1)) - 0.01, A.max((0, 1)) + 0.01
+            near = np.nonzero((s_hi >= lo).all(1) & (s_lo <= hi).all(1))[0]
+            hit = False
+            if len(near):
+                a_lo, a_hi = A.min(1), A.max(1)
+                ia, ib = np.nonzero((a_hi[:, None, :] >= s_lo[near][None, :, :]).all(2)
+                                    & (a_lo[:, None, :] <= s_hi[near][None, :, :]).all(2))
+                if len(ia):
+                    hit = bool((triangle_cuts(A[ia], S[near][ib]) > min_cut).any())
+            if hit:
+                gone.append((name, tuple(round(float(v), 2) for v in P[st[0]])))
+            else:
+                keep.append(st)
+        if len(keep) != len(strips):
+            mesh.groups[crowd] = keep
+            compact_mesh(mesh)
+    return gone
+
+
+def compact_mesh(mesh):
+    """Drop the vertices no strip of ``mesh`` uses (order of the rest kept)."""
+    used = sorted({i for strips in mesh.groups.values() for st in strips for i in st})
+    remap = {old: new for new, old in enumerate(used)}
+    mesh.P = [mesh.P[i] for i in used]
+    mesh.UV = [mesh.UV[i] for i in used]
+    mesh.N = [mesh.N[i] for i in used]
+    if getattr(mesh, "C", None):
+        mesh.C = [mesh.C[i] for i in used]
+    mesh.groups = {mat: [[remap[i] for i in st] for st in strips] for mat, strips in mesh.groups.items()}
+
+
 def crowd_band_v(bot, top, v0, aspect=CROWD_ASPECT, person=CROWD_PERSON_M):
     """V at each column of one band: ``v0`` at the first, then each step along the bottom line at the mean of its two
     columns' row densities (metres per V unit = ``aspect`` x the column's person strip height / ``CROWD_STRIP``)."""
@@ -290,6 +437,12 @@ def blend(w, a, b):
 # ------------------------------------------------------------------------------------------------ the model
 
 class MetLife:
+    def _clear_crowd(self):
+        """b778 sd2: the last build step of every model: no crowd billboard strip cuts through other geometry
+        (:func:`clear_crowd`); what it took out is kept in ``crowd_cleared``."""
+        self.crowd_cleared = clear_crowd(self.meshes)
+        return self.crowd_cleared
+
     def __init__(self, params=None, venue="s18"):
         p = json.loads(json.dumps(PARAMS))
         for k, v in (params or {}).items():
@@ -402,6 +555,7 @@ class MetLife:
         self._gates()
         self._split_by_angle("ml_ring", 8)
         self._environment()
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
     def _environment(self):

@@ -1,0 +1,9 @@
+{
+ "who": "Nick Sirianni",
+ "notes": "light olive skin; short dark-brown hair (under the Eagles cap of c18 it shows at the sides and back); a dark stubble beard over the cheeks, chin and upper lip; green-hazel eyes; a smile with teeth in the official headshot (mouth closed here)",
+ "eyes": [104, 116, 96],
+ "mouth": "close",
+ "hair_colour": [50, 38, 30],
+ "hair": {"front": 46.6, "recede": 1.0, "side": 43.5, "back": 34.5, "sideburn": 38.6, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "colour": [58, 46, 40], "density": 0.55}]
+}

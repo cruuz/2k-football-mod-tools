@@ -33,6 +33,16 @@ palette slots of the added submesh (geometry ``palette``: slot, entry and the bl
 differs is refused). The geometry is fitted offline against the jersey, nameplate and numbers in game poses
 (``tools/nfl2k5_hair_styles_generate.py --poses``). The other five meshes, every texture and the cave are unchanged.
 
+b778 hr4 (Noah 10/22, Jaylen Warren PIT #30 on the v0.6.1 disc: "guys who have dreads should never be bald"): every
+style hangs from under the helmet's back rim, so with the helmet off the top of the head is whatever the player's skull
+texture paints, and some 2026 faces paint bare skin there. hi_head now carries two hair tops (geometry ``tops``): locks
+lying back over the whole scalp from the hairline to a gathering point at the back of the head, inside both Riddell
+shells, riding the head. "locs" (the rope textures' opaque columns) is drawn by long_locs and short_twists as a second
+push-buffer batch after their own (styles 2, 3, 11); "dreads" (the retail dread's opaque top band) is appended to the
+retail HAIR_dreads submesh's own words, whose word count grows by it (style 1, and style 0 with the Dreads bit). The
+retail dreads cards, every other style, the textures, the cave and lo_body (no skull: distant players always wear the
+helmet) are unchanged; the material and submesh counts are unchanged, so the per-player instance cost is too.
+
 Composition: Modern helmets writes the same two scenes in place, before this step; its classifier strips the hair
 growth first (``strip_scene``), so the two commute. The Guardian overlay pins absolute spans of outer 3 and is refused
 together with hair styles (both grow the player models).
@@ -64,8 +74,9 @@ EVIDENCE = "EXPERIMENTAL / UNWITNESSED"
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Adds seven hair models (long locs, short twists, long flowing hair, afro puff, braids, "
     "bun, mullet) and their textures to the player models, next to the retail dreads, and the code that shows the one "
-    "a player's 'Hair style' roster field asks for. Retail dreads and every Dreads bit stay as they are; players with "
-    "hair style 0 look exactly like retail. Needs a disc image.")
+    "a player's 'Hair style' roster field asks for. Dreads and locs styles also get hair lying back over the top of the "
+    "head, so a player with dreads is never bald with his helmet off. Every Dreads bit stays as it is. Needs a disc "
+    "image.")
 
 OUTER = 3
 HI, LO = "o3c115", "o3c113"
@@ -116,6 +127,12 @@ RETAIL = {HI: dict(materials=60, submeshes=65, vertices=11727, streams=2),
 PALETTE = {HI: {"head": (14, 2), "neck": (22, 1), "thorax": (21, 0)},
            LO: {"head": (23, 12), "neck": (22, 11), "thorax": (24, 10)}}
 INSERT_ALIGN = 128
+#: b778 hr4 (Noah 10/22: "guys who have dreads should never be bald"): hair tops lying back over the whole scalp in
+#: hi_head (lo_body has no skull: distant players always wear the helmet). "locs" is drawn by long_locs (styles 2, 11)
+#: and short_twists (3), "dreads" by the retail HAIR_dreads (style 1, and style 0 with the Dreads bit)
+TOP_KEYS = ("locs", "dreads")
+TOP_OF_MESH = {"long_locs": "locs", "short_twists": "locs"}
+DREADS_TOP = "dreads"
 
 
 class HairStylesError(ValueError):
@@ -200,6 +217,69 @@ def _part(document: Mapping[str, Any], key: str, mesh: str) -> tuple[bytes, list
     records = base64.b64decode(item["records"])
     raw = base64.b64decode(item["strip"])
     return records, list(struct.unpack(f"<{len(raw) // 2}H", raw))
+
+
+def _b64_field(value: str | Sequence[str]) -> bytes:
+    """A base64 geometry field: one string, or (b778 3d1) a list of lines joined in order. The release check refuses
+    any run of more than 4,096 characters without whitespace, so the generator splits the long hair-top records."""
+    require(isinstance(value, str) or (isinstance(value, list) and value and all(isinstance(v, str) for v in value)),
+            "a geometry field is not base64 text")
+    return base64.b64decode(value if isinstance(value, str) else "".join(value), validate=True)
+
+
+def _top(document: Mapping[str, Any], key: str, name: str) -> tuple[bytes, list[int]] | None:
+    """b778 hr4: a hair top of the scene (geometry ``scenes[key]["tops"][name]``), or None (lo_body has none)."""
+    item = (document["scenes"][key].get("tops") or {}).get(name)
+    if item is None:
+        return None
+    records = _b64_field(item["records"])
+    raw = _b64_field(item["strip"])
+    return records, list(struct.unpack(f"<{len(raw) // 2}H", raw))
+
+
+def _added(document: Mapping[str, Any], key: str, first: int, record_size: int) -> dict[str, Any]:
+    """Every vertex and push word the growth adds, in order: the K parts' vertices, then the tops' vertices (b778
+    hr4); each part's words are its own strip followed by its top's strip (a second BEGIN/END batch), and the retail
+    dreads get the dreads top's batch appended to their own words. One source for grow_scene and strip_scene."""
+    from .nfl2k5_modern_helmets import encode_strip
+    blobs: list[bytes] = []
+    parts, tops = [], {}
+    at = first
+    for mesh in MESHES:
+        records, strip = _part(document, key, mesh)
+        require(len(records) % record_size == 0 and records, f"{key}/{mesh}: vertex records are not whole")
+        count = len(records) // record_size
+        require(strip and max(strip) < count, f"{key}/{mesh}: strip index out of range")
+        parts.append(dict(mesh=mesh, first_vertex=at, vertices=count, strip=strip))
+        blobs.append(records)
+        at += count
+    for name in TOP_KEYS:
+        top = _top(document, key, name)
+        if top is None:
+            continue
+        records, strip = top
+        require(len(records) % record_size == 0 and records, f"{key}/top {name}: vertex records are not whole")
+        count = len(records) // record_size
+        require(len(strip) >= 3 and max(strip) < count, f"{key}/top {name}: strip index out of range")
+        tops[name] = dict(first_vertex=at, vertices=count, strip=strip)
+        blobs.append(records)
+        at += count
+    require(at < 0xFFFF, f"{key}: too many vertices")
+    for part in parts:
+        words = encode_strip([part["first_vertex"] + i for i in part["strip"]])
+        top = tops.get(TOP_OF_MESH.get(part["mesh"], ""))
+        if top is not None:
+            words += encode_strip([top["first_vertex"] + i for i in top["strip"]])
+        part["mesh_words"] = words
+    dreads = tops.get(DREADS_TOP)
+    dreads_words = encode_strip([dreads["first_vertex"] + i for i in dreads["strip"]]) if dreads else []
+    return dict(parts=parts, tops=tops, records=b"".join(blobs), added=at - first, dreads_words=dreads_words)
+
+
+def _dreads_row(lay: "Layout") -> dict[str, Any]:
+    rows = [r for r in lay.submesh_rows if r["name"] == "HAIR_dreads"]
+    require(len(rows) == 1 and rows[0]["command"] is not None, f"{lay.key}: HAIR_dreads is not one submesh")
+    return rows[0]
 
 
 # ------------------------------------------------------------------------------------------------ scene layout
@@ -381,29 +461,26 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     record_size = sum(s for _o, s in lay.streams)
     mat_t, sub_raw = _template(lay, decoded)
     sub_t = _remap(key, sub_raw)
-    # vertices and push words
+    # vertices and push words (the parts, then the hair tops: b778 hr4)
+    plan_added = _added(document, key, lay.vertex_count, record_size)
+    records = plan_added["records"]
     per_stream = [bytearray() for _ in lay.streams]
+    for v in range(len(records) // record_size):
+        at = v * record_size
+        for s, (_o, stride) in enumerate(lay.streams):
+            per_stream[s] += records[at:at + stride]
+            at += stride
     words: list[int] = []
     part_rows = []
-    first = lay.vertex_count
-    for mesh in MESHES:
-        records, strip = _part(document, key, mesh)
-        require(len(records) % record_size == 0 and records, f"{key}/{mesh}: vertex records are not whole")
-        count = len(records) // record_size
-        require(strip and max(strip) < count, f"{key}/{mesh}: strip index out of range")
-        for v in range(count):
-            at = v * record_size
-            for s, (_o, stride) in enumerate(lay.streams):
-                per_stream[s] += records[at:at + stride]
-                at += stride
-        mesh_words = encode_strip([first + i for i in strip])
+    for part in plan_added["parts"]:
+        mesh = part["mesh"]
         submesh = _remap(key, sub_raw, _extra_palette(key, lay, decoded, expect["parts"][mesh]))
-        part_rows.append(dict(mesh=mesh, first_vertex=first, vertices=count, word_offset=len(words),
-                              words=len(mesh_words), strip=len(strip), submesh=submesh))
-        words += mesh_words
-        first += count
-    added = first - lay.vertex_count
-    require(first < 0xFFFF, f"{key}: too many vertices")
+        part_rows.append(dict(mesh=mesh, first_vertex=part["first_vertex"], vertices=part["vertices"],
+                              word_offset=len(words), words=len(part["mesh_words"]), strip=len(part["strip"]),
+                              submesh=submesh))
+        words += part["mesh_words"]
+    added = plan_added["added"]
+    dreads_words = plan_added["dreads_words"]
     # names (UTF-16, appended at the very end of the scene)
     name_blob = bytearray()
     name_at = []
@@ -416,6 +493,12 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     inserts.append((material_offset, b"M" * (0x80 * K)))          # placeholders, filled after the plan is known
     inserts.append((submesh_offset, b"S" * (0x80 * K)))
     inserts.append((lay.command_end, struct.pack(f"<{len(words)}I", *words).ljust(align(4 * len(words)), b"\0")))
+    dreads = _dreads_row(lay)
+    if dreads_words:
+        # b778 hr4: the dreads top's batch goes right after the retail dreads' own words (the title copies a submesh's
+        # words from +0x78 for the count at +0x7C), padded so everything after keeps its 128-byte phase
+        inserts.append((dreads["command"] + 4 * dreads["words"],
+                        struct.pack(f"<{len(dreads_words)}I", *dreads_words).ljust(align(4 * len(dreads_words)), b"\0")))
     for s, (offset, stride) in enumerate(lay.streams):
         end = offset + lay.vertex_count * stride
         inserts.append((end, bytes(per_stream[s]).ljust(align(len(per_stream[s])), b"\0")))
@@ -424,7 +507,9 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     plan = Plan(sorted(inserts, key=lambda t: t[0]))
     info = dict(material_offset=material_offset, submesh_offset=submesh_offset, command_end=lay.command_end,
                 name_at=name_at, parts=part_rows, added_vertices=added, words=len(words),
-                material_template=mat_t, submesh_template=sub_t)
+                material_template=mat_t, submesh_template=sub_t, dreads_record=dreads["record"],
+                dreads_words=len(dreads_words),
+                tops={name: {k: v for k, v in top.items() if k != "strip"} for name, top in plan_added["tops"].items()})
     return plan, info
 
 
@@ -470,6 +555,9 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
         struct.pack_into("<i", rec, 0x78, word_at - (at + 0x78) + 1)
         struct.pack_into("<HH", rec, 0x7C, part["words"], 0)
         out[at:at + 0x80] = rec
+    if info["dreads_words"]:            # b778 hr4: the retail dreads draw their top too
+        at = plan.shift(info["dreads_record"]) + 0x7C
+        struct.pack_into("<H", out, at, struct.unpack_from("<H", out, at)[0] + info["dreads_words"])
     # counts
     struct.pack_into("<I", out, plan.shift(lay.descriptor + 0x1C), lay.material_count + K)
     shape = plan.shift(lay.shape)
@@ -479,6 +567,7 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
     require(scene_state(key, grown) == "grown", f"{key}: the grown scene does not read back")
     receipt = {"key": key, "size_before": len(d), "size_after": len(grown), "growth": len(grown) - len(d),
                "added_vertices": info["added_vertices"], "push_words": info["words"],
+               "dreads_top_words": info["dreads_words"], "tops": info["tops"],
                "parts": [{k: v for k, v in p.items() if k != "submesh"} for p in info["parts"]],
                "inserts": [{"at": at, "bytes": len(data)} for at, data in plan.inserts]}
     return grown, receipt
@@ -494,25 +583,29 @@ def strip_scene(key: str, grown: bytes, document: Mapping[str, Any] | None = Non
     lay = layout(key, g)
     base = RETAIL[key]
     record_size = sum(s for _o, s in lay.streams)
-    added = 0
-    words = 0
-    from .nfl2k5_modern_helmets import encode_strip
-    first = base["vertices"]
-    for mesh in MESHES:
-        records, strip = _part(document, key, mesh)
-        count = len(records) // record_size
-        words += len(encode_strip([first + i for i in strip]))
-        first += count
-        added += count
+    plan_added = _added(document, key, base["vertices"], record_size)
+    added = plan_added["added"]
+    words = sum(len(p["mesh_words"]) for p in plan_added["parts"])
+    dreads_words = len(plan_added["dreads_words"])
     require(lay.vertex_count == base["vertices"] + added, f"{key}: the grown vertex count differs from the geometry")
     name_bytes = align(sum(2 * (len(material_name(m)) + 1) for m in MESHES))
     # the insert positions in the grown scene, then in the original
     old_rows = [r for r in lay.submesh_rows[:base["submeshes"]]]
+    dreads = _dreads_row(lay)
+    retail_dreads_words = dreads["words"] - dreads_words
+    require(retail_dreads_words > 0, f"{key}: the dreads submesh is shorter than its top")
+
+    def command_end(r: dict[str, Any]) -> int:
+        if r is dreads and dreads_words:
+            return r["command"] + 4 * retail_dreads_words + align(4 * dreads_words)
+        return r["command"] + 4 * r["words"]
     grown_inserts = [
         (lay.materials + 0x80 * base["materials"], 0x80 * K),
         (lay.submeshes + 0x80 * base["submeshes"], 0x80 * K),
-        (max(r["command"] + 4 * r["words"] for r in old_rows if r["command"] is not None), align(4 * words)),
+        (max(command_end(r) for r in old_rows if r["command"] is not None), align(4 * words)),
     ]
+    if dreads_words:                     # b778 hr4: the dreads top's words after the retail dreads' own
+        grown_inserts.append((dreads["command"] + 4 * retail_dreads_words, align(4 * dreads_words)))
     for offset, stride in lay.streams:
         grown_inserts.append((offset + base["vertices"] * stride, align(added * stride)))
     grown_inserts.append((len(g) - name_bytes, name_bytes))
@@ -537,6 +630,9 @@ def strip_scene(key: str, grown: bytes, document: Mapping[str, Any] | None = Non
     shape = _rel(out, descriptor + 0x30)
     struct.pack_into("<H", out, shape + 0x54, base["submeshes"])
     struct.pack_into("<H", out, shape + 0x4C, base["vertices"])
+    if dreads_words:
+        row = _dreads_row(layout(key, bytes(out)))
+        struct.pack_into("<H", out, row["record"] + 0x7C, retail_dreads_words)
     return bytes(out)
 
 

@@ -1,0 +1,10 @@
+{
+ "who": "Aaron Glenn",
+ "notes": "medium-dark brown skin; very short grey-black hair (under the Jets cap of c19 it shows at the sides and back); a white moustache and goatee with grey stubble on the cheeks; brown eyes; a closed-mouth smile in the official headshot",
+ "eyes": [74, 50, 36],
+ "mouth": "photo",
+ "hair_colour": [74, 70, 68],
+ "hair": {"front": 46.0, "recede": 1.0, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [206, 204, 200], "density": 0.8},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [150, 146, 142], "density": 0.2}]
+}

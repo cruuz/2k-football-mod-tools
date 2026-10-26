@@ -1,0 +1,9 @@
+{
+ "who": "Dan Quinn",
+ "notes": "fair skin; bald (cm1's bald head geometry); a short white moustache and goatee with white stubble on the cheeks; blue eyes; a closed-mouth smile in the official headshot; c29 with its glasses hidden",
+ "eyes": [110, 132, 152],
+ "mouth": "close",
+ "hair_colour": [200, 196, 190],
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [216, 211, 203], "density": 0.78},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [200, 196, 190], "density": 0.25}]
+}

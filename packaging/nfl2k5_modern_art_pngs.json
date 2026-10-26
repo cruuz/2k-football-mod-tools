@@ -1,5 +1,5 @@
 {
-  "classification": "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.",
+  "classification": "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.",
   "files": {
     "data/nfl2k5_alien_prospect/face_f.png": {
       "height": 256,
@@ -243,8 +243,8 @@
     },
     "data/nfl2k5_modern_coaches/ATL/head.png": {
       "height": 128,
-      "sha256": "889d90c7198c5700d9be6fdac02032f7e35f3957dfb4b82c3868ec6232c5c069",
-      "size": 54121,
+      "sha256": "beb0019cc492c18808657bb806c803b1cb7e329b5d700ea2f8c19ec8e4fbdc97",
+      "size": 53783,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/ATL/headset.png": {
@@ -285,8 +285,8 @@
     },
     "data/nfl2k5_modern_coaches/BAL/head.png": {
       "height": 128,
-      "sha256": "23cf1a0ea421b22eda68c3c08370261eaa5ccef48483c4bccd506855b74228fa",
-      "size": 54846,
+      "sha256": "be0cfd688c47b1e3f2c44075ce4434ac5b7f19d6bab37911347d7d3930c34c2f",
+      "size": 42292,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/BAL/headset.png": {
@@ -411,8 +411,8 @@
     },
     "data/nfl2k5_modern_coaches/CHI/head.png": {
       "height": 128,
-      "sha256": "5f0c40cbca7ac876631b35d7955eb4867b35a9b4b7f46f168158b628e17d9922",
-      "size": 52632,
+      "sha256": "94d366a6d43a0cc99cb2c4037e5608ab849db6e174502a4b98991cf564788107",
+      "size": 42318,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CHI/headset.png": {
@@ -537,8 +537,8 @@
     },
     "data/nfl2k5_modern_coaches/DAL/head.png": {
       "height": 128,
-      "sha256": "422546746f0d40c4ea0dad33e537215d75ffc0e86ad77e2fab23b5a2979777b6",
-      "size": 52741,
+      "sha256": "41980e551c81431a164cd002f021f6f169734833851b10a52e985a72951424d8",
+      "size": 46023,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DAL/headset.png": {
@@ -621,8 +621,8 @@
     },
     "data/nfl2k5_modern_coaches/DET/head.png": {
       "height": 128,
-      "sha256": "6b82196193722b96806d91dd41dbaac5ea1e95ee98b45f7fb2fe62963e222967",
-      "size": 51280,
+      "sha256": "6c08fdb8b2e2e2c9ae05c2eeacfad14ddabb2800bfffbff8ab7ad72b6a6beb20",
+      "size": 52287,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DET/headset.png": {
@@ -829,16 +829,10 @@
       "size": 22455,
       "width": 256
     },
-    "data/nfl2k5_modern_coaches/KC/head_mask.png": {
+    "data/nfl2k5_modern_coaches/KC/head.png": {
       "height": 128,
-      "sha256": "e12d4ebcda375d579e9226dab862fa11a866ddba6763630984c02320ce99c950",
-      "size": 4064,
-      "width": 256
-    },
-    "data/nfl2k5_modern_coaches/KC/head_overlay.png": {
-      "height": 128,
-      "sha256": "995ea2f2b43f7c6308664572f9de199f2a9ba12a975299bc7097f1b02dea0bb0",
-      "size": 1012,
+      "sha256": "9b49579305b819e79cb164878442410ddbbfecd4cbcd6282cd7cc062e49f08ee",
+      "size": 44558,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/KC/headset.png": {
@@ -879,8 +873,8 @@
     },
     "data/nfl2k5_modern_coaches/LAC/head.png": {
       "height": 128,
-      "sha256": "b6cc364c8cbb8f82d641e719aaad5c343142254701d6d06c5befc7345cf507dc",
-      "size": 51080,
+      "sha256": "93746b339ae2e31fc886f42a3fa62e0ec277a85315b83724dc182e6ae3396984",
+      "size": 41846,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LAC/headset.png": {
@@ -921,8 +915,8 @@
     },
     "data/nfl2k5_modern_coaches/LAR/head.png": {
       "height": 128,
-      "sha256": "2c4f1d4fe1399ff329e36a8f32a9d5ea8c056d1a46e318763abd82cf0fc6d8c5",
-      "size": 42857,
+      "sha256": "60ac654401e1a3da246a4058d505b60daed6a7aebb4818750a9e156de15f459c",
+      "size": 48487,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LAR/headset.png": {
@@ -1089,8 +1083,8 @@
     },
     "data/nfl2k5_modern_coaches/NE/head.png": {
       "height": 128,
-      "sha256": "f01d80595851f857841a5cdf4e5be45c32cc2616c321703ee29cca913f845dce",
-      "size": 55261,
+      "sha256": "016993dadd3dc5374bfa2a41eeddadc0e75e6624c7adf6ae65c6ccb0d0e8d5b7",
+      "size": 51507,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NE/headset.png": {
@@ -1173,8 +1167,8 @@
     },
     "data/nfl2k5_modern_coaches/NYG/head.png": {
       "height": 128,
-      "sha256": "61975d46c9193dc3c182061cdb3c1ffe566401e4c2fc81bcfc5aa1a8dd7bc10d",
-      "size": 47239,
+      "sha256": "c0e3e226afedecb1a1e3cc0b02f33e1ee83c06b5e15af05a00193b67449c8db3",
+      "size": 41928,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NYG/headset.png": {
@@ -1215,8 +1209,8 @@
     },
     "data/nfl2k5_modern_coaches/NYJ/head.png": {
       "height": 128,
-      "sha256": "e4adc427ebbda01b56c0eed2facc4bd425af35a251b006c846877b6e23726add",
-      "size": 55389,
+      "sha256": "79c1336fa47758396785fa352d675279901d02e4a3d9552d8e5171ae987dc975",
+      "size": 43396,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NYJ/headset.png": {
@@ -1257,8 +1251,8 @@
     },
     "data/nfl2k5_modern_coaches/PHI/head.png": {
       "height": 128,
-      "sha256": "6dc75057e290409cc2dd81297e82871d8c4992b6282442ed7eaa3690371dde33",
-      "size": 55945,
+      "sha256": "a1dc5ddbde6a49911541af1a67f94bd67c62c4109c6c2db5ed3b6e65793f3b61",
+      "size": 46342,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/PHI/headset.png": {
@@ -1467,8 +1461,8 @@
     },
     "data/nfl2k5_modern_coaches/TEN/head.png": {
       "height": 128,
-      "sha256": "cef4a840e0133abf4d616e56b0b674bfa74d30a41115ff883844047286d62293",
-      "size": 38199,
+      "sha256": "a13c86b651cdca8fe0afd8a9456a26fbf61b8e553bccdec85a05c4b140bd6500",
+      "size": 38164,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/TEN/headset.png": {
@@ -1509,8 +1503,8 @@
     },
     "data/nfl2k5_modern_coaches/WAS/head.png": {
       "height": 128,
-      "sha256": "29d444a3b34eaaa6b909e0ceb0e927a882791e272a2edb9cbe1e599626a157b7",
-      "size": 36260,
+      "sha256": "21d8c32ff87412c3c201b4cf5a2ba3664151836c613a70e539e8a27cec471e50",
+      "size": 39834,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/WAS/headset.png": {

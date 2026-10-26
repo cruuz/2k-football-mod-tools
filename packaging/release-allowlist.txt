@@ -1353,6 +1353,7 @@ data/nfl2k5_modern_coaches/ARI/head.png
 data/nfl2k5_modern_coaches/ARI/jacket.png
 data/nfl2k5_modern_coaches/ARI/logo.png
 data/nfl2k5_modern_coaches/ARI/shirt.png
+data/nfl2k5_modern_coaches/ATL/geometry.json
 data/nfl2k5_modern_coaches/ATL/headset.png
 data/nfl2k5_modern_coaches/ATL/head.png
 data/nfl2k5_modern_coaches/ATL/jacket.png
@@ -1377,6 +1378,7 @@ data/nfl2k5_modern_coaches/CAR/logo.png
 data/nfl2k5_modern_coaches/CAR/shirt.png
 data/nfl2k5_modern_coaches/CHI/headset.png
 data/nfl2k5_modern_coaches/CHI/head.png
+data/nfl2k5_modern_coaches/CHI/geometry.json
 data/nfl2k5_modern_coaches/CHI/jacket.png
 data/nfl2k5_modern_coaches/CHI/logo.png
 data/nfl2k5_modern_coaches/CHI/shirt.png
@@ -1394,6 +1396,7 @@ data/nfl2k5_modern_coaches/CLE/logo.png
 data/nfl2k5_modern_coaches/CLE/shirt.png
 data/nfl2k5_modern_coaches/DAL/headset.png
 data/nfl2k5_modern_coaches/DAL/head.png
+data/nfl2k5_modern_coaches/DAL/geometry.json
 data/nfl2k5_modern_coaches/DAL/jacket.png
 data/nfl2k5_modern_coaches/DAL/logo.png
 data/nfl2k5_modern_coaches/DAL/shirt.png
@@ -1402,6 +1405,7 @@ data/nfl2k5_modern_coaches/DEN/head.png
 data/nfl2k5_modern_coaches/DEN/jacket.png
 data/nfl2k5_modern_coaches/DEN/logo.png
 data/nfl2k5_modern_coaches/DEN/shirt.png
+data/nfl2k5_modern_coaches/DET/geometry.json
 data/nfl2k5_modern_coaches/DET/headset.png
 data/nfl2k5_modern_coaches/DET/head.png
 data/nfl2k5_modern_coaches/DET/jacket.png
@@ -1431,13 +1435,14 @@ data/nfl2k5_modern_coaches/JAX/jacket.png
 data/nfl2k5_modern_coaches/JAX/logo.png
 data/nfl2k5_modern_coaches/JAX/shirt.png
 data/nfl2k5_modern_coaches/KC/headset.png
-data/nfl2k5_modern_coaches/KC/head_mask.png
-data/nfl2k5_modern_coaches/KC/head_overlay.png
+data/nfl2k5_modern_coaches/KC/head.png
+data/nfl2k5_modern_coaches/KC/geometry.json
 data/nfl2k5_modern_coaches/KC/jacket.png
 data/nfl2k5_modern_coaches/KC/logo.png
 data/nfl2k5_modern_coaches/KC/shirt.png
 data/nfl2k5_modern_coaches/LAC/headset.png
 data/nfl2k5_modern_coaches/LAC/head.png
+data/nfl2k5_modern_coaches/LAC/geometry.json
 data/nfl2k5_modern_coaches/LAC/jacket.png
 data/nfl2k5_modern_coaches/LAC/logo.png
 data/nfl2k5_modern_coaches/LAC/shirt.png
@@ -1464,6 +1469,7 @@ data/nfl2k5_modern_coaches/MIN/geometry.json
 data/nfl2k5_modern_coaches/MIN/jacket.png
 data/nfl2k5_modern_coaches/MIN/logo.png
 data/nfl2k5_modern_coaches/MIN/shirt.png
+data/nfl2k5_modern_coaches/NE/geometry.json
 data/nfl2k5_modern_coaches/NE/headset.png
 data/nfl2k5_modern_coaches/NE/head.png
 data/nfl2k5_modern_coaches/NE/jacket.png
@@ -1476,16 +1482,19 @@ data/nfl2k5_modern_coaches/NO/logo.png
 data/nfl2k5_modern_coaches/NO/shirt.png
 data/nfl2k5_modern_coaches/NYG/headset.png
 data/nfl2k5_modern_coaches/NYG/head.png
+data/nfl2k5_modern_coaches/NYG/geometry.json
 data/nfl2k5_modern_coaches/NYG/jacket.png
 data/nfl2k5_modern_coaches/NYG/logo.png
 data/nfl2k5_modern_coaches/NYG/shirt.png
 data/nfl2k5_modern_coaches/NYJ/headset.png
 data/nfl2k5_modern_coaches/NYJ/head.png
+data/nfl2k5_modern_coaches/NYJ/geometry.json
 data/nfl2k5_modern_coaches/NYJ/jacket.png
 data/nfl2k5_modern_coaches/NYJ/logo.png
 data/nfl2k5_modern_coaches/NYJ/shirt.png
 data/nfl2k5_modern_coaches/PHI/headset.png
 data/nfl2k5_modern_coaches/PHI/head.png
+data/nfl2k5_modern_coaches/PHI/geometry.json
 data/nfl2k5_modern_coaches/PHI/jacket.png
 data/nfl2k5_modern_coaches/PHI/logo.png
 data/nfl2k5_modern_coaches/PHI/shirt.png
@@ -3722,6 +3731,9 @@ tests/mod_editor/test_2k5_helmet_locked_palette.py
 tests/mod_editor/test_2k5_native_safe_palette_ladder.py
 # b778 sd1: stadium squares (model portals) and the Raymond James fascia clocks
 tests/mod_editor/test_b778_stadium_squares.py
+# b778 sd2: the crowd cutaway in free air, crowd billboards clear of other geometry, AT&T deck rails
+tests/mod_editor/test_b778_crowd_cutaway.py
+tests/mod_editor/b778_crowd_cutaway_envelope.json
 data/nfl2k5_classic_teams/kits.json
 data/nfl2k5_classic_teams/seamen_2006.csv
 data/nfl2k5_classic_teams/face/pins.json
