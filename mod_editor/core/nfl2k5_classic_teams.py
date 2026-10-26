@@ -593,7 +593,11 @@ def apply_to_image(path, source, data=None):
                                     one_pool=pools.status(payload) == "applied")
     rows = rows_for(main, data)
     patched, xbe_receipt = apply_xbe(payload, rows)      # computed before any disc write
-    edits = {hs.ROSTER_OUTER_ID: holder, **field_edits}
+    # b778 bf1: rewrite_plan keys edits by outer index, not by name id.
+    from . import nfl2k5_music_archive as archive
+    with archive.Disc(Path(path), descriptors=()) as disc:
+        roster_outer = hs.Target(disc).outer(identity=hs.ROSTER_OUTER_ID)
+    edits = {roster_outer: holder, **field_edits}
     receipt = hs.rewrite_archive(path, edits, files + [(FILLER, bytes(2048))])
     seasons_bank.write_xbe(path, patched)
     try:

@@ -752,7 +752,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_menu_helmet_w2026.py": "0c6575ddaa3e5044b1233ac26d2f72ec19321992c51e918973ec19de24074b7e",
         "mod_editor/core/nfl2k5_historic_teams_quick_game.py": "84c0a2c338b58d7d73cb05a498d16af9d36dedf3fa91189e784f33bb0110cf41",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code.py": "ab8673f4c0ca38d1687e469b5df4be96f2558d580725e9accad1aa7862514fac",
-        "mod_editor/core/nfl2k5_classic_teams.py": "eae41823ee37e50bdb5a2ca444258f14e1e2d61cfbb72737967e262975978f4e",
+        "mod_editor/core/nfl2k5_classic_teams.py": "26e557a506f5d436e066c01fdc54495d393573b2f02368a87cc5687032ab1622",
         "mod_editor/core/nfl2k5_classic_art.py": "7f5682d76b185c090e85b436d87127565b95cc0c19fab3c1d416274ba67eb155",
         "mod_editor/core/nfl2k5_classic_kit_art.py": "8095764ce78cf7f08dbed5244cdccb4a2090a4edaca6508c7f67b7d1ce84ded7",
         "mod_editor/core/nfl2k5_classic_face.py": "cbc30a4e1325e5efd46586d737ca669e2a67083fe753c668d277f55892b0fd90",
