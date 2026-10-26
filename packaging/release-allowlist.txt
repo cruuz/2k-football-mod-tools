@@ -3759,6 +3759,7 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_b778_tr1_trade_deadline.py
+tests/mod_editor/test_b778_tr2_trade_guard.py
 tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py
 # b778 eq1: created players take their position's class-generator gear, not the zero (kicker) mask

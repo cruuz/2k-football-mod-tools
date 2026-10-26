@@ -121,15 +121,26 @@ u32 FC ps_limit(u8 *t) {
     return limit;
 }
 u32 FC ps_room(u8 *t) { return t && B(t,ACTIVE)<ps_limit(t); }
+/* b778-tr2: the native trade apply removes the outgoing player before each
+ * append, so a 53-man receiving roster may hold retail's temporary 54th slot.
+ * ps_trade_room has already proved the final counts fit and that no offered
+ * player owns a reserve slot; insert still enforces the physical 65 slots. */
+u32 FC trade_insert(u8 *t,u8 *p) { return insert(t,p,0); }
 u32 FC ps_trade_room(u32 *offer) {
     u8 *a=(u8 *)offer[2],*b=(u8 *)offer[8];
-    u32 i,na,nb,la,lb;
+    u32 i,na,nb,la,lb,lim;
     if(!a || !b || a==b) return 0;
     na=B(a,ACTIVE); nb=B(b,ACTIVE); la=ps_limit(a); lb=ps_limit(b);
+    lim=65-B(b,RSV_COUNT);
     for(i=0;i<3;i++) {
-        if(offer[3+i]) { if(!na || ++nb>lb || owner(index_of((u8 *)offer[3+i]))) return 0; --na; }
-        if(offer[9+i]) { if(!nb || ++na>la || owner(index_of((u8 *)offer[9+i]))) return 0; --nb; }
+        if(offer[3+i]) { if(!na || ++nb>lim || owner(index_of((u8 *)offer[3+i]))) return 0; --na; }
+        if(offer[9+i]) { if(++na>la || owner(index_of((u8 *)offer[9+i]))) return 0; --nb; }
     }
+    /* The native apply removes and appends one pair at a time in A-to-B order.
+     * B's transient peak only needs a free physical slot (lim); its final
+     * count must still fit the active limit lb. A's peak is its final count,
+     * already bounded by la. ps_limit(b) validated this reserve count. */
+    if(nb>lb) return 0;
     return 1;
 }
 u32 FC ps_demote(u8 *t,u8 *p) {
