@@ -62,6 +62,24 @@ class Tables(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * (18 + r)), (2200 + 720 + 10 * r, 10))
         self.assertTrue(rf.T_LASTBITS + (rf.POOL_COUNT + 3) // 4 <= rf.TABLE_DATA)
 
+    def test_sigmoid_table_is_the_exact_math_bytes(self):
+        self.assertEqual(list(self.table[rf.T_SIG:rf.T_SIG + 32]),
+                         [0, 0, 0, 0, 1, 1, 2, 4, 6, 10, 15, 24, 38, 57, 82, 112, 144, 174, 199, 218, 232, 241,
+                          246, 250, 252, 254, 255, 255, 255, 255, 255, 255])
+
+    def test_emitted_sigmoid_bytes_do_not_come_from_the_platform_libm(self):
+        original = math.exp
+
+        def foreign(x):
+            raise AssertionError("the emitted table consulted the platform libm")
+
+        math.exp = foreign
+        try:
+            table = rf.tables(self.firsts, self.lasts, toy_bank())
+        finally:
+            math.exp = original
+        self.assertEqual(table, self.table)
+
     def test_first_bands_rise(self):
         bands = struct.unpack_from("<32b", self.table, rf.T_FIRST)
         self.assertEqual(list(bands), sorted(bands), "the shipped first names are sorted by Black likelihood")
