@@ -610,9 +610,9 @@ class CaveReferenceTests(unittest.TestCase):
             self.assertTrue(proof["encoded_references"])  # raw candidates stay visible
         else:
             # b778 int3: with ai8/kr1/pr1 the growable v4 pool carries the same
-            # owner-hook calls into its new pages as v3, so the raw candidates are
-            # visible here too; the legacy-page gate below is still empty.
-            self.assertTrue(proof["encoded_references"])
+            # 1,128 owner-hook raw candidates into its new pages as v3; the
+            # legacy-page gate above is still empty.
+            self.assertEqual(len(proof["encoded_references"]), 1128)
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")
