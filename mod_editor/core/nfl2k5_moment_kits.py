@@ -485,7 +485,19 @@ def compile_edits(target, doc, inputs):
         edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
     appended = sorted(packages.items())
     if len(appended[-1][1]) % 2048:
-        appended.append((FILLER, bytes(2048)))
+        # b778 bf1: the Anniversary moments and the classic teams' authored
+        # kits are two installs of this same module, in that order. The first
+        # one's zero filler is already in the archive when the second appends,
+        # so the second needs a distinct filler name (the filler is packaging
+        # only, never a named package the document pins).
+        filler = FILLER
+        if target.has(filler):
+            stem, _, suffix = filler.rpartition(".")
+            number = 2
+            while target.has(f"{stem}_{number}.{suffix}"):
+                number += 1
+            filler = f"{stem}_{number}.{suffix}"
+        appended.append((filler, bytes(2048)))
     pinned = None
     try:
         pin = pins()
