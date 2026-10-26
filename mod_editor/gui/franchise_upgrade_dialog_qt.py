@@ -98,8 +98,8 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles and award history. "
-                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles and the free-agent pool. "
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles, "
+                      "award history and the free-agent pool. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)
