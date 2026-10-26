@@ -1,0 +1,10 @@
+{
+ "who": "Klint Kubiak",
+ "notes": "fair skin; short dark-brown hair; a light dark stubble; brown eyes; a closed-mouth half smile in the official headshot; lean, on c20; the painted hairline is lowered (front 45, side 40.5, back 33, no sideburn strip) so it meets the photo's hair at the temples; the painted stubble is light on the cheeks and neck (at 0.25 it printed a grey block beside the photo face, seen in game r6); the texture photo's hair is smoothed and its side shadows lifted privately",
+ "eyes": [86, 62, 44],
+ "mouth": "photo",
+ "hair_colour": [52, 40, 33],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin"], "colour": [70, 58, 50], "density": 0.2},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [96, 82, 74], "density": 0.08}]
+}

@@ -1,0 +1,9 @@
+{
+ "who": "Mike Macdonald",
+ "notes": "tanned, ruddy skin; short dark-brown hair; a light dark stubble; brown eyes; a broad smile in the official headshot (mouth closed here); c13 with its glasses hidden; the painted hairline is lowered (front 45, side 40.5, back 33, no sideburn strip) so it meets the photo's hair at the temples with no skin gap or floating strip; the texture photo's hair is smoothed privately; stubble on the moustache, mouth corners and chin only (the painted cheek stubble printed a grey block beside the photo face)",
+ "eyes": [80, 56, 40],
+ "mouth": "close",
+ "hair_colour": [46, 36, 30],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin"], "colour": [84, 70, 60], "density": 0.14}]
+}

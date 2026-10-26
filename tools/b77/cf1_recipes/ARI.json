@@ -1,0 +1,9 @@
+{
+ "who": "Mike LaFleur",
+ "notes": "fair skin; short dark-brown hair, spiked up at the front; a light dark stubble; hazel-green eyes; a broad smile in the official headshot (the mouth is closed here); lean, on c12; the photo's hair is taken off privately so the painted hair (front 45, side 40.5, back 33, no sideburn strip) gives the whole hairline: with the photo hair kept, a light streak printed through the right temple in game; stubble on the moustache, mouth corners and chin only (the painted cheek stubble printed a grey block beside the photo face)",
+ "eyes": [104, 112, 88],
+ "mouth": "close",
+ "hair_colour": [72, 54, 42],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin"], "colour": [84, 70, 60], "density": 0.14}]
+}
