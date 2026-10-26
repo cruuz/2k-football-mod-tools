@@ -21,9 +21,9 @@ for extra in (ROOT, ROOT / "tools", ROOT / "tools" / "b77"):
 
 import sd5_crowd_strips as strips  # noqa: E402
 
-RETAIL = Path(os.environ.get("B778_RETAIL_ISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-RELEASED = Path(os.environ.get(
-    "B778_RELEASED_ISO", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso"))
+# private images, never shipped: the retail disc and the released SOFTDRINK 2K28 v0.6.1 disc
+RETAIL = Path(os.environ.get("B778_RETAIL_ISO", "")) if os.environ.get("B778_RETAIL_ISO") else None
+RELEASED = Path(os.environ.get("B778_RELEASED_ISO", "")) if os.environ.get("B778_RELEASED_ISO") else None
 
 
 def p8(outer, name, png="art.png"):
@@ -82,7 +82,7 @@ class StripEdits(unittest.TestCase):
                 strips.main(["project", str(src), "--out", str(out)])
 
 
-@unittest.skipUnless(RETAIL.is_file() and RELEASED.is_file(),
+@unittest.skipUnless(RETAIL is not None and RETAIL.is_file() and RELEASED is not None and RELEASED.is_file(),
                      "needs the retail and v0.6.1 images (B778_RETAIL_ISO, B778_RELEASED_ISO)")
 class ReleasedDisc(unittest.TestCase):
     def test_the_released_disc_carries_the_five_clubs_repainted_strips(self):
