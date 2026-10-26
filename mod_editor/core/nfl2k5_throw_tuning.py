@@ -2305,7 +2305,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             retire_installed_practice_screen = screen_state == "applied"
     for flag, module, key, label in (
         (defensive_try, _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
-                                               music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, camera=camera, **_r62_space_options(r62)),
+                                               music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, camera=camera, **_r62_space_options(r62), **late_space),
          "defensive_try_patch", "experimental defensive try"),
         (xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning
          or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
