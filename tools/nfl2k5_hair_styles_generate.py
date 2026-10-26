@@ -25,6 +25,7 @@ DESIGN (sources: hs1 research, ESPN 2026 roster headshots per player; see .b77-s
 Usage::
 
     nfl2k5_hair_styles_generate.py --outer3 OUTER3.bin | --disc XISO  [--out data/nfl2k5_hair_styles]
+    nfl2k5_hair_styles_generate.py --tops --disc RETAIL.xiso           (b778 hr4: the hair tops only)
 """
 from __future__ import annotations
 
@@ -1438,6 +1439,221 @@ def records_for(mesh: Mesh, lod: str, scene: Scene, riding: "Riding | None" = No
     return bytes(out), strip, palette
 
 
+# ------------------------------------------------------------------------------------------------ b778 hr4: tops
+# Noah (10/22, Jaylen Warren PIT #30 on the v0.6.1 disc): "guys who have dreads should never be bald". Every dreads
+# style hangs from under the helmet's back rim, so with the helmet off the top of the head is whatever the player's
+# skull texture paints there, and many 2026 faces paint bare skin. A top is a layer of locks lying back over the
+# whole scalp (hairline -> crown -> gathered at the back), inside both Riddell shells, riding the head. One top
+# ("locs") is shared by long_locs and short_twists (their rope textures have the same four opaque columns); the other
+# ("dreads") is drawn by the retail HAIR_dreads material with the retail 'dread' texture (its opaque top band).
+#
+# Where the scalp carries hair is measured, not guessed: the generic heads' skull textures (n9001 ...) paint dark hair
+# exactly where a hairline is, so the mask is the share of those templates that are dark at each skull texel. The
+# mask is read from the user's own disc while authoring and never shipped; only the authored vertices are.
+
+TOP_CENTRE = np.array([0.0, 41.0, 9.5])
+TOP_TILT = 15.0                       # the gathering point sits 15 degrees above the back of the head
+TOP_TEMPLATES = (9001, 9002, 9004, 9005, 9006, 9101, 9104, 9106, 9107)   # generic heads with dark hair, light skin
+TOP_ROPE_COLUMNS = ((5.5, 11.5), (20.5, 27.5), (37.5, 43.5), (52.5, 58.5))  # opaque in locs_dark/light, twists_dark
+TOP_ROPE_V = 0.42                     # locs_light turns blond from v 0.45: the top keeps the dark roots
+TOP_DREAD_UV = ((6.5 / 64, 58.5 / 64), (3.5 / 64, 12.5 / 64))   # the retail dread's opaque top band
+TOP_PARAMS = dict(ribbons=24, spacing=3.5, widen=1.35, bulk=0.55, edge_bulk=0.15, layer=0.15, clear=0.45,
+                  shell_clear=0.5, tip=0.6, theta_step=2.0, dread_span=0.22)
+
+
+def hair_mask_from_disc(path) -> np.ndarray:
+    """(256, 256) share of the generic dark-haired heads whose skull texture is dark at each texel."""
+    sys.path.insert(0, str(ROOT / "tools"))
+    import nfl2k5_playbook_position_recode as recode
+    from mod_editor.core import nfl2k5_alien_prospect as ap
+    tx = models._tools_module("nfl_txtr")
+    dark = []
+    with recode.OuterImage(path) as archive:
+        for face in TOP_TEMPLATES:
+            entry = next((e for e in archive.entries if e.name_id == ap.name_id(f"pf{face:04d}.iff")), None)
+            if entry is None:
+                raise ValueError(f"the disc has no generic head pf{face:04d}.iff")
+            raw = archive.read(entry.virtual_offset, entry.size)
+            for c in tx.parse_chunks(raw, allow_trailing=True):
+                if c.kind != "TXTR":
+                    continue
+                span = raw[c.offset:c.offset + 32 + c.stored_size]
+                cc = tx.parse_chunks(span)[0]
+                d, _ = tx.decode_chunk(span, cc)
+                t = tx.parse_texture(d, cc)
+                if t.name == f"n{face:04d}":
+                    rgb = np.frombuffer(tx.texture_to_rgba(d, cc, t), np.uint8).reshape(t.height, t.width, 4)[..., :3]
+                    img = Image.fromarray(rgb, "RGB").resize((256, 256), Image.BILINEAR)
+                    dark.append(np.asarray(img, np.float64) @ np.array([0.3, 0.59, 0.11]) < 85)
+    if len(dark) != len(TOP_TEMPLATES):
+        raise ValueError("a generic head has no skull texture")
+    return np.mean(dark, axis=0)
+
+
+def _raycast(origin, dirs, tris):
+    e1 = tris[:, 1] - tris[:, 0]; e2 = tris[:, 2] - tris[:, 0]
+    p = np.cross(dirs[:, None, :], e2[None])
+    det = np.einsum('rmk,mk->rm', p, e1)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        inv = np.where(np.abs(det) < 1e-12, np.nan, 1.0 / det)
+    s = origin - tris[:, 0]
+    u = np.einsum('rmk,mk->rm', p, s) * inv
+    q = np.cross(s, e1)
+    v = np.einsum('rk,mk->rm', dirs, q) * inv
+    t = np.einsum('mk,mk->m', e2, q)[None] * inv
+    ok = (u >= -1e-6) & (v >= -1e-6) & (u + v <= 1 + 1e-6) & (t > 0)
+    return np.where(ok, t, np.inf), u, v
+
+
+class Scalp:
+    """Rays from TOP_CENTRE: the outermost skin (skull, face, neck), the hair mask there, the innermost shell."""
+
+    def __init__(self, head: Scene, mask: np.ndarray):
+        self.head, self.mask = head, mask
+        tris, kinds = [], []
+        for k, name in enumerate(("SKIN_skull", "SKIN_face", "SKIN_neck")):
+            t = head.tris([name]); tris.append(t); kinds += [k] * len(t)
+        self.skin_t = np.concatenate(tris); self.kind = np.array(kinds)
+        self.skin = head.pos[self.skin_t]
+        self.shell = head.pos[head.tris(['HI_HELMET_A', 'HI_HELMET_B', 'HI_HELMET_C'])]
+
+    def cast(self, dirs):
+        n = len(dirs)
+        skin = np.full(n, -np.inf); hair = np.zeros(n); shell = np.full(n, np.inf)
+        for a in range(0, n, 128):
+            d = dirs[a:a + 128]
+            t, u, v = _raycast(TOP_CENTRE, d, self.skin)
+            tt = np.where(np.isfinite(t), t, -np.inf)
+            j = np.argmax(tt, axis=1)
+            for r in range(len(d)):
+                m = j[r]; skin[a + r] = tt[r, m]
+                if not np.isfinite(tt[r, m]) or self.kind[m] != 0:
+                    continue
+                tri = self.skin_t[m]; uu, vv = u[r, m], v[r, m]
+                uv = (1 - uu - vv) * self.head.uv[tri[0]] + uu * self.head.uv[tri[1]] + vv * self.head.uv[tri[2]]
+                H, W = self.mask.shape
+                hair[a + r] = self.mask[int(np.clip(uv[1] * H, 0, H - 1)), int(np.clip(uv[0] * W, 0, W - 1))]
+            ts, _u, _v = _raycast(TOP_CENTRE, d, self.shell)
+            shell[a:a + 128] = ts.min(axis=1)
+        return skin, hair, shell
+
+
+def top_dirs(theta, phi):
+    """Meridians round an axis from the face (theta 0, tipped down) to the gathering point (theta 180, tipped up)."""
+    th, ph = np.radians(theta), np.radians(phi)
+    d = np.stack([np.sin(th) * np.sin(ph), np.sin(th) * np.cos(ph), np.cos(th)], -1)
+    a = math.radians(TOP_TILT)
+    R = np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+    return d @ R.T
+
+
+def build_top(scalp: Scalp, kind: str, p=TOP_PARAMS) -> Mesh:
+    """``kind`` 'locs' (rope columns) or 'dreads' (the retail dread's top band). A Mesh riding the head."""
+    n = p['ribbons']; dphi = 360.0 / n
+    thetas = np.arange(0, 180 + 1e-6, p['theta_step'])
+    ribbons = []
+    for k in range(n):
+        phi = -180 + dphi * (k + 0.5)
+        skin, hair, _shell = scalp.cast(top_dirs(thetas, np.full(len(thetas), phi)))
+        ok = (hair > 0.5) & np.isfinite(skin)
+        # every run of hair along the meridian is a lock (an ear splits the side meridians into temple and back)
+        i = 0
+        while i < len(ok):
+            if not ok[i]:
+                i += 1
+                continue
+            j = i
+            while j + 1 < len(ok) and ok[j + 1]:
+                j += 1
+            start, end = thetas[i], thetas[j]
+            if i > 0 and hair[i] != hair[i - 1]:        # the hairline, between two samples
+                start = thetas[i - 1] + (0.5 - hair[i - 1]) / (hair[i] - hair[i - 1]) * p['theta_step']
+            if j + 1 < len(ok) and hair[j] != hair[j + 1]:
+                end = thetas[j] + (hair[j] - 0.5) / (hair[j] - hair[j + 1]) * p['theta_step']
+            th = np.unique(np.clip(np.concatenate([[start], thetas[i:j + 1], [end]]), start, end))
+            i = j + 1
+            if len(th) < 2:
+                continue
+            sk, _h, _s = scalp.cast(top_dirs(th, np.full(len(th), phi)))
+            if not np.isfinite(sk).all():
+                continue
+            arc = np.concatenate([[0.0], np.cumsum(np.radians(np.diff(th)) * sk[:-1])])
+            if arc[-1] < 1.5:
+                continue
+            rows = max(3, int(round(arc[-1] / p['spacing'])) + 1)
+            want = np.linspace(0.0, arc[-1], rows)
+            ribbons.append((k, phi, np.interp(want, arc, th), want))
+    longest = max(r[3][-1] for r in ribbons)
+    m = Mesh()
+    half = 0.5 * p['widen'] * dphi
+    for k, phi, ths, arcs in ribbons:
+        lay = p['layer'] * (k % 2)
+        rows = []
+        for i, (t_, a_) in enumerate(zip(ths, arcs)):
+            hw = half * (p['tip'] if i == 0 else 1.0)
+            bulk = p['edge_bulk'] + (p['bulk'] - p['edge_bulk']) * min(a_ / 3.0, 1.0)
+            d = top_dirs(np.array([t_, t_]), np.array([phi - hw, phi + hw]))
+            sk, _h, sh = scalp.cast(d)
+            r = np.minimum(sk + p['clear'] + bulk + lay, sh - p['shell_clear'])
+            rows.append((TOP_CENTRE + d[0] * r[0], TOP_CENTRE + d[1] * r[1], a_))
+        l0, r0, _a = rows[0]; l1 = rows[1][0]
+        swap = np.cross(r0 - l0, l1 - l0) @ ((l0 + r0 + l1) / 3 - TOP_CENTRE) < 0
+        if kind == 'locs':
+            u0, u1 = (c / 64 for c in TOP_ROPE_COLUMNS[k % len(TOP_ROPE_COLUMNS)])
+        else:
+            (lo, hi), _v = TOP_DREAD_UV
+            u0 = lo + (hi - lo - p['dread_span']) * ((k * 7) % n) / (n - 1)
+            u1 = u0 + p['dread_span']
+        ids = []
+        for pl, pr, a_ in rows:
+            if kind == 'locs':
+                v = TOP_ROPE_V * a_ / longest
+            else:
+                (v0, v1) = TOP_DREAD_UV[1]
+                v = v0 + (v1 - v0) * a_ / max(arcs[-1], 1e-6)
+            nrm = (pl + pr) / 2 - TOP_CENTRE; nrm /= np.linalg.norm(nrm)
+            first, second = ((pr, u1), (pl, u0)) if swap else ((pl, u0), (pr, u1))
+            ids.append(m.add(first[0], nrm, (first[1], v), 'head'))
+            ids.append(m.add(second[0], nrm, (second[1], v), 'head'))
+        m.strip_append(ids)
+    return m
+
+
+def top_checks(scalp: Scalp, m: Mesh, steps=4) -> dict:
+    """Every sample of the top's triangles: cm above the outermost skin and cm inside the innermost shell."""
+    P = np.array(m.P); tris = m.tris(); B = _bary(steps)
+    S = np.einsum('sk,tkd->tsd', B, P[tris]).reshape(-1, 3)
+    rel = S - TOP_CENTRE; dist = np.linalg.norm(rel, axis=1); d = rel / dist[:, None]
+    skin, _h, shell = scalp.cast(d)
+    above = dist - skin; inside = shell - dist
+    return {"samples": int(len(S)), "min_above_skin_cm": round(float(above.min()), 3),
+            "min_inside_shell_cm": round(float(inside[np.isfinite(inside)].min()), 3),
+            "samples_without_shell": int((~np.isfinite(inside)).sum())}
+
+
+TOP_KEYS = ("locs", "dreads")
+
+
+def generate_tops(outer3: bytes, mask: np.ndarray, base: dict) -> dict:
+    """``base`` (the shipped geometry) with the hair tops of hi_head added; every part stays byte-identical."""
+    rig = Rig(outer3)
+    if hair.scene_state(rig.hi.key, rig.hi.d) != "retail":
+        raise ValueError("generate the tops from a retail-shaped outer 3 (no hair growth)")
+    scalp = Scalp(rig.hi, mask)
+    document = json.loads(json.dumps(base))
+    tops = {}
+    for kind in TOP_KEYS:
+        mesh = build_top(scalp, kind)
+        records, strip, palette = records_for(mesh, "hi", rig.hi)
+        if palette:
+            raise ValueError("a top rides only the head")
+        tops[kind] = {"records": base64.b64encode(records).decode("ascii"),
+                      "strip": base64.b64encode(struct.pack(f"<{len(strip)}H", *strip)).decode("ascii"),
+                      "vertices": len(mesh.P), "strip_length": len(strip), "checks": top_checks(scalp, mesh)}
+    document["scenes"][hair.HI]["tops"] = tops
+    return document
+
+
 V3_MESHES = ("long_flow", "short_twists")
 
 
@@ -1491,7 +1707,27 @@ def main(argv=None) -> int:
                         "geometry and the art is left alone")
     parser.add_argument("--poses", help="npz of game-pose world matrices (hi_body, lo_body, hi_names, lo_names) for "
                         "the v3 pose fit; see the module notes (b776 hr2)")
+    parser.add_argument("--tops", action="store_true", help="b778 hr4: (re)build only the hair tops of hi_head from "
+                        "the --disc (a retail disc: its outer 3 and generic heads); every mesh part is kept as shipped")
     args = parser.parse_args(argv)
+    if args.tops:
+        if not args.disc:
+            parser.error("--tops reads the generic heads from a disc: give --disc")
+        sys.path.insert(0, str(ROOT / "tools"))
+        import nfl2k5_playbook_position_recode as recode
+        with recode.OuterImage(args.disc) as archive:
+            entry = archive.entries[hair.OUTER]
+            outer3 = archive.read(entry.virtual_offset, entry.size)
+        base = hair.load_geometry()
+        base["scenes"][hair.HI].pop("tops", None)
+        document = generate_tops(outer3, hair_mask_from_disc(args.disc), base)
+        out = Path(args.out)
+        (out / "geometry.json").write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8",
+                                           newline="\n")
+        for kind, top in document["scenes"][hair.HI]["tops"].items():
+            print("top", kind, top["vertices"], "vertices", top["checks"])
+        print("GEOMETRY_OK", out)
+        return 0
     if args.outer3:
         outer3 = Path(args.outer3).read_bytes()
     else:
