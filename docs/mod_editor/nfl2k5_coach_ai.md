@@ -98,7 +98,12 @@ freeing. Controller takeover removes the automatic profile from the human
 side and rebinds CPU sides. The native VIP reset precedes the ownership update:
 the reset hook queues a rebind, and the second hook commits it only after both
 teams' human flags have been updated. Routine lineup refreshes do not rebind
-or reset profile history. The witnessed franchise save/load retains the
+or reset profile history. A live-game rebind also leaves a context without a
+native playcall cursor (VIP `+0xE2C`) on the ordinary CPU caller: the pre-snap
+offense tick builds that cursor, and arming a fresh context from a mid-game
+Choose Side lets `17D330`/`17D5F0`/`17D670` dereference null and bugcheck
+`0x1E`. That side keeps the automatic profile off until the next game-start
+setup. The witnessed franchise save/load retains the
 completed result and creates fresh owned contexts in the next game.
 
 ## Exact-book data
