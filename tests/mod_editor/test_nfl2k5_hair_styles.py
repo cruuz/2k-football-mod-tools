@@ -627,6 +627,17 @@ class RidingCatalogueTests(unittest.TestCase):
                 self.assertEqual(sha((item["records"] + "|" + item["strip"]).encode()), digest, (key, mesh))
                 self.assertNotIn("palette", item)
 
+    def test_the_geometry_passes_the_release_text_check(self):
+        """b778 3d1: the release check refuses any run of more than 4,096 characters without whitespace (a possible
+        embedded blob); hr4's hair-top records are split into lines and joined back by the module."""
+        text = hs.GEOMETRY_PATH.read_text(encoding="utf-8")
+        self.assertLessEqual(max(len(token) for token in text.split()), 4096)
+        tops = hs.load_geometry()["scenes"][hs.HI]["tops"]
+        self.assertTrue(any(isinstance(item["records"], list) for item in tops.values()))
+        for name in hs.TOP_KEYS:
+            records, strip = hs._top(hs.load_geometry(), hs.HI, name)
+            self.assertTrue(records and strip)
+
     def test_riding_palettes_are_well_formed(self):
         document = hs.load_geometry()
         self.assertTrue(all(document["scenes"][key]["parts"][mesh].get("palette") for key, mesh in

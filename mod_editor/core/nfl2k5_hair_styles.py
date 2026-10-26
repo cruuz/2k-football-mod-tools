@@ -219,13 +219,21 @@ def _part(document: Mapping[str, Any], key: str, mesh: str) -> tuple[bytes, list
     return records, list(struct.unpack(f"<{len(raw) // 2}H", raw))
 
 
+def _b64_field(value: str | Sequence[str]) -> bytes:
+    """A base64 geometry field: one string, or (b778 3d1) a list of lines joined in order. The release check refuses
+    any run of more than 4,096 characters without whitespace, so the generator splits the long hair-top records."""
+    require(isinstance(value, str) or (isinstance(value, list) and value and all(isinstance(v, str) for v in value)),
+            "a geometry field is not base64 text")
+    return base64.b64decode(value if isinstance(value, str) else "".join(value), validate=True)
+
+
 def _top(document: Mapping[str, Any], key: str, name: str) -> tuple[bytes, list[int]] | None:
     """b778 hr4: a hair top of the scene (geometry ``scenes[key]["tops"][name]``), or None (lo_body has none)."""
     item = (document["scenes"][key].get("tops") or {}).get(name)
     if item is None:
         return None
-    records = base64.b64decode(item["records"])
-    raw = base64.b64decode(item["strip"])
+    records = _b64_field(item["records"])
+    raw = _b64_field(item["strip"])
     return records, list(struct.unpack(f"<{len(raw) // 2}H", raw))
 
 

@@ -1647,11 +1647,18 @@ def generate_tops(outer3: bytes, mask: np.ndarray, base: dict) -> dict:
         records, strip, palette = records_for(mesh, "hi", rig.hi)
         if palette:
             raise ValueError("a top rides only the head")
-        tops[kind] = {"records": base64.b64encode(records).decode("ascii"),
+        tops[kind] = {"records": b64_lines(records),
                       "strip": base64.b64encode(struct.pack(f"<{len(strip)}H", *strip)).decode("ascii"),
                       "vertices": len(mesh.P), "strip_length": len(strip), "checks": top_checks(scalp, mesh)}
     document["scenes"][hair.HI]["tops"] = tops
     return document
+
+
+def b64_lines(data: bytes, width: int = 4000) -> str | list[str]:
+    """b778 3d1: base64 text, split into lines of ``width`` characters when longer (the release check refuses any run
+    of more than 4,096 characters without whitespace; the module joins the lines back, nfl2k5_hair_styles._b64_field)."""
+    text = base64.b64encode(data).decode("ascii")
+    return text if len(text) <= width else [text[i:i + width] for i in range(0, len(text), width)]
 
 
 V3_MESHES = ("long_flow", "short_twists")
