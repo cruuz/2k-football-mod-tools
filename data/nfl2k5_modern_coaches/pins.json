@@ -1253,14 +1253,15 @@
     "jacket": "236fa3b0dafd990039f783ba6f67e9c6de18f994ab19793a63b4e95cbf7790df",
     "logo": "13aaea477866ccbb063b5059714676f13c0cddab6dfe7599f7fec2abec23e68e",
     "headset": "b5d6dcbd559e3f960fdd251c628fc2bf3924995763e95c16c087b009267ed3f6",
-    "head": "e0caa0472e54303b0f60bcb7057c1873d98233fffb3e3422523f99457a32728e",
+    "head": "6c08fdb8b2e2e2c9ae05c2eeacfad14ddabb2800bfffbff8ab7ad72b6a6beb20",
     "sideline_dry": "9feca714a7b490848c16ed7e5750d2420484812c16586442485a42c9badb73dd",
     "sideline_rain": "bb2c3766208d3317621c1c3b6bc419360d76df5ebeb618c26485c18a0fa327aa"
    },
-   "geometry": "5c489ccad925fecaf1bdac5869729fb4f6ff9c8652f76ba3454db1c3f63d2237",
+   "geometry": "596d7ab71f4ea26eb1bcf541fd95beefbd88065915bda094af5ed6997a4dcd7d",
    "palette_max": 128,
-   "applied_sha256": "aeb0f603b0ab9081a05fddc42b42bd5af8c7faec0fed27ccadcb5c104dcbdac5",
+   "applied_sha256": "c726d00c1049dfac003d99340fb6d08072242ce10aad97fc8689afd6c98af59b",
    "superseded_sha256": [
+    "aeb0f603b0ab9081a05fddc42b42bd5af8c7faec0fed27ccadcb5c104dcbdac5",
     "964c5f178ef3b8b038200bc3da1d6f2c2f2e963367beca9236eae2dfe4ac18b7",
     "c8a54b81864ccb1047e007834856f1b6e2aedb50d5878abc365fb8369f919f10",
     "9e3200e5e48945a05e798b8173647e42b2f5ba5cbf740ba8edb0ddf188c43a6b",
@@ -1273,9 +1274,9 @@
     "stream_bytes": 219952,
     "stored_size": 219952,
     "padding_bytes": 0,
-    "scratch_needed": 69,
+    "scratch_needed": 63,
     "scratch_retail": 80,
-    "matches_expanded": 676
+    "matches_expanded": 654
    },
    "sideline": [
     {
