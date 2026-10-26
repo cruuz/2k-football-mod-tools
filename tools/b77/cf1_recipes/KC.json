@@ -1,0 +1,10 @@
+{
+ "who": "Andy Reid",
+ "notes": "fair, ruddy skin; white hair (under the Chiefs cap of c21, his own 2004 model, it shows at the sides and back); a full white walrus moustache; grey-blue eyes; glasses: c21 has no glasses geometry, so after the scan co2's authored glasses drawing (the head_overlay.png of the derived 2004 head, from co2_coach_faces.py reid: dark metal rectangular frames drawn as shapes) is alpha-composited over the scanned texture exactly as derive_head did (integer, (rgb*(255-a)+ov*a+127)//255); scanned from the official 2021 Chiefs headshot with the rimless glasses painted out and the moustache and hair recoloured to his 2026 white (private reference)",
+ "eyes": [104, 120, 132],
+ "mouth": "photo",
+ "hair_colour": [210, 206, 200],
+ "hair": {"front": 46.6, "recede": 1.2, "side": 43.5, "back": 34.5, "sideburn": 38.6, "edge": 0.3},
+ "facial": [{"parts": ["moustache"], "colour": [214, 210, 202], "density": 0.85}],
+ "glasses_overlay": "co2 KC head_overlay.png (composited after the scan; see notes)"
+}

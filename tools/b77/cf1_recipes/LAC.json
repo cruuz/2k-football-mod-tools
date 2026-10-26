@@ -1,0 +1,8 @@
+{
+ "who": "Jim Harbaugh",
+ "notes": "fair, ruddy skin; short salt-and-pepper hair (under the Chargers cap of c24 it shows at the sides and back); clean-shaven; brown eyes; clear-framed glasses (c24 keeps its own glasses on the body mesh, which follow the face move); a broad smile with teeth in the official headshot (mouth closed here); scanned from that headshot with the clear frames painted out and the lens haze evened (private reference), so no frame prints under the 3D glasses",
+ "eyes": [96, 70, 50],
+ "mouth": "close",
+ "hair_colour": [92, 88, 86],
+ "hair": {"front": 46.8, "recede": 1.0, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3}
+}
