@@ -36,6 +36,13 @@ BIG_DATA = ("nfl2k5_xs1_probe_data", "data", 6000, 16)
 BIG_RO = ("nfl2k5_xs1_probe_ro", "read_only", 3000, 16)
 MORE = ("nfl2k5_xs1_probe_more", "code", 9000, 16)
 
+# b778-int4/PB46: the complete union stopped being a v3 set when ai8's 192-byte
+# nfl2k5_cpu_third_down late owner filled the last v3 tail slot (it is placed in
+# the v4 pool).  The v3 half of this file must be built from a set that genuinely
+# fits v3, so it is the complete union without exactly that owner; the full union
+# is covered separately below and by test_nfl2k5_allocator_scaleout.
+V3_REQUESTS = tuple(r for r in REQUESTS if r[0] != "nfl2k5_cpu_third_down")
+
 
 def rows(layout):
     return {(a["owner"], a["kind"], a["va"], a["raw"], a["size"]) for a in layout["allocations"]
@@ -49,11 +56,11 @@ class PoolPlannerTests(unittest.TestCase):
         self.addCleanup(late.stop)
 
     def test_v3_sets_stay_v3_and_overflow_lands_whole_in_the_pool(self):
-        v3 = space.plan(REQUESTS)
+        v3 = space.plan(V3_REQUESTS)
         self.assertEqual(v3["version"], 3)
         self.assertEqual(v3["file_size"], space.SCALE3_FILE_SIZE)
         self.assertFalse([r for r in v3["regions"] if r["kind"] == "pool"])
-        v4 = space.plan(REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
+        v4 = space.plan(V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
         self.assertEqual(v4["version"], 4)
         old = [a for a in v3["allocations"]]
         for row in old:
@@ -78,9 +85,22 @@ class PoolPlannerTests(unittest.TestCase):
         for kind in ("code", "data", "read_only"):
             self.assertEqual(v4["capacity"][kind]["capacity_bytes"], v3["capacity"][kind]["capacity_bytes"])
 
+    def test_complete_union_is_v4_and_keeps_every_v3_address(self):
+        # PB46: the production union legitimately outgrew v3; prove the only
+        # difference is ai8's late third-down owner, which spills into the pool,
+        # and that every owner of the v3 fixture keeps its v3 allocation row.
+        v3 = space.plan(V3_REQUESTS)
+        full = space.plan(REQUESTS)
+        self.assertEqual((v3["version"], full["version"]), (3, 4))
+        self.assertLessEqual(rows(v3), rows(full))
+        pooled = [a["owner"] for a in full["allocations"]
+                  if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER]
+        self.assertEqual(pooled, ["nfl2k5_cpu_third_down"])
+        self.assertEqual(sum(1 for r in full["regions"] if r["kind"] == "pool"), 1)
+
     def test_late_owner_appended_after_the_pool_moves_nothing(self):
-        first = space.plan(REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
-        second = space.plan(REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO, MORE))
+        first = space.plan(V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
+        second = space.plan(V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO, MORE))
         for row in first["allocations"]:
             self.assertIn(row, second["allocations"])
         more = next(a for a in second["allocations"] if a["owner"] == MORE[0])
@@ -94,7 +114,7 @@ class PoolPlannerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "count"):
             space.plan([(f"owner_{i:03d}", "code", 1, 1) for i in range(space.MAX_REQUESTS)])
         with patch.object(space, "MAX_POOL_PAGES", 4), self.assertRaisesRegex(ValueError, "pool"):
-            space.plan(REQUESTS + (BIG_CODE,))
+            space.plan(V3_REQUESTS + (BIG_CODE,))
 
     def test_pool_document_capacity_is_bounded(self):
         with patch.object(space.zlib, "compress", return_value=b"x" * (space.PAGE - 12)):
@@ -133,17 +153,21 @@ class PoolSyntheticTests(unittest.TestCase):
             (space, "LATE_OWNERS", space.LATE_OWNERS + LATE),
         ):
             pins.enter_context(patch.object(module, name, value))
-        cls.v3, _ = space.apply(cls.retail, REQUESTS)
-        cls.v4, cls.receipt = space.apply(cls.retail, REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
+        cls.v3, _ = space.apply(cls.retail, V3_REQUESTS)
+        cls.v4, cls.receipt = space.apply(cls.retail, V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))
 
     def test_fresh_v4_image_validates_with_29_sections(self):
         self.assertEqual(space.status(self.v3), "applied")
         self.assertEqual(space.scale_version(self.v3), 3)
         self.assertEqual(len(self.v3), space.SCALE3_FILE_SIZE)
+        # 22 retail sections + the three scale runs' bases + the directory = 28.
+        self.assertEqual(len(XbeImage(self.v3).sections), 28)
         self.assertEqual(space.status(self.v4), "applied")
         self.assertEqual(space.scale_version(self.v4), 4)
         image = XbeImage(self.v4)
-        self.assertEqual(len(image.sections), space.SCALE_COUNT + 1)
+        # The v4 image adds exactly one pool section to the 28 v3 sections; a
+        # larger union changes how many owners spill into the pool, not the count.
+        self.assertEqual(len(image.sections), 29)
         pool = image.sections[-1]
         self.assertEqual((pool.start, pool.raw, pool.flags), (space.POOL_VA, space.POOL_RAW, 0x07))
         self.assertEqual(pool.raw + pool.raw_size, len(self.v4))
@@ -153,7 +177,7 @@ class PoolSyntheticTests(unittest.TestCase):
                    if self.v3[i:i + space.PAGE] != self.v4[i:i + space.PAGE]]
         self.assertEqual(differs, [0, space.SCALE_DIRECTORY])
         self.assertEqual(self.v4[space.POOL_RAW:space.POOL_RAW + 8], space.POOL_DOC_MAGIC)
-        self.assertEqual(space._scale_directory_requests(self.v4), space._requests(REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO)))
+        self.assertEqual(space._scale_directory_requests(self.v4), space._requests(V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO)))
 
     def test_extend_converts_v3_to_v4_and_grows_without_moving(self):
         before = space.layout(self.v3)
@@ -198,8 +222,8 @@ class PoolSyntheticTests(unittest.TestCase):
         v3_tag[space.DIRECTORY:space.DIRECTORY + 12] = space.SCALE_TAG
         self.assertEqual(space.status(bytes(v3_tag)), "foreign")
         with self.assertRaisesRegex(ValueError, "rebuild"):
-            space.apply(self.v4, REQUESTS + (BIG_CODE,))
-        self.assertEqual(space.apply(self.v4, REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))[0], self.v4)
+            space.apply(self.v4, V3_REQUESTS + (BIG_CODE,))
+        self.assertEqual(space.apply(self.v4, V3_REQUESTS + (BIG_CODE, BIG_DATA, BIG_RO))[0], self.v4)
 
     def test_music_moves_to_index_7_both_orders(self):
         data = b"synthetic music metadata"
