@@ -332,7 +332,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # reviewed as authored art: no photograph or photo crop and no retail-extracted pixels. It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "adf355125dc511022c2e8d5956a51245580ebfb9a77359b88bdee85955b55f1f"  # b778 cf5: seven scanned coach heads; b778 cf1: four scanned coach heads; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "3c68df81e185da2160050ccba878b54487949b38b7c143feb8ebcd392e7ff041"  # b778 cf5: seven scanned coach heads; b778 cf1: four scanned coach heads; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 
 def _scorebug_template_pngs(root: Path) -> dict:
