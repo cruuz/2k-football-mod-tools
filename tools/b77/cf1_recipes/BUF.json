@@ -1,0 +1,9 @@
+{
+ "who": "Joe Brady",
+ "notes": "fair, ruddy skin; short reddish-brown hair receding at the temples; a short ginger stubble beard; blue eyes; a broad smile in the official headshot (mouth closed here); lean, on c03; the painted hairline is lowered (front 45, side 40.8, back 33, no sideburn strip) and its colour matched to the photo's hair so the temples join; the texture photo's hair is smoothed privately",
+ "eyes": [104, 128, 150],
+ "mouth": "close",
+ "hair_colour": [128, 90, 66],
+ "hair": {"front": 45.0, "recede": 1.8, "side": 40.8, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "colour": [140, 96, 72], "density": 0.35}]
+}

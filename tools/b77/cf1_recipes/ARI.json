@@ -1,0 +1,9 @@
+{
+ "who": "Mike LaFleur",
+ "notes": "fair skin; short dark-brown hair, spiked up at the front; a light dark stubble; hazel-green eyes; a broad smile in the official headshot (the mouth is closed here); lean, on c12; the painted hairline is lowered (front 45, side 40.5, back 33, no sideburn strip) so it meets the photo's hair at the temples with no skin gap or floating strip; the texture photo's hair is smoothed privately",
+ "eyes": [104, 112, 88],
+ "mouth": "close",
+ "hair_colour": [72, 54, 42],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks"], "colour": [84, 70, 60], "density": 0.14}]
+}

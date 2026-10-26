@@ -1,0 +1,8 @@
+{
+ "who": "Kellen Moore",
+ "notes": "fair skin; short dark-brown hair; clean-shaven; blue eyes; a full, round face; a broad smile in the official headshot (mouth closed here); on c17; the painted hairline is lowered (front 45, side 40.5, back 33, no sideburn strip) so it meets the photo's hair at the temples with no skin gap or floating strip; the texture photo's hair is smoothed privately",
+ "eyes": [100, 128, 150],
+ "mouth": "close",
+ "hair_colour": [54, 42, 34],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3}
+}

@@ -1,0 +1,9 @@
+{
+ "who": "Klint Kubiak",
+ "notes": "fair skin; short dark-brown hair; a light dark stubble; brown eyes; a closed-mouth half smile in the official headshot; lean, on c20; the painted hairline is lowered (front 45, side 40.5, back 33, no sideburn strip) so it meets the photo's hair at the temples with no skin gap or floating strip; the texture photo's hair is smoothed privately",
+ "eyes": [86, 62, 44],
+ "mouth": "photo",
+ "hair_colour": [52, 40, 33],
+ "hair": {"front": 45.0, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "colour": [70, 58, 50], "density": 0.25}]
+}
