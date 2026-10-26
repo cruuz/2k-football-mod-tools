@@ -34,10 +34,12 @@ try:
 except ImportError:      # pragma: no cover
     World = None
 
-EXTRACT = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted"))
-XBE = EXTRACT / "ESPN NFL 2K5 (USA)/default.xbe"
-ISO = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-HAVE_NATIVE = World is not None and XBE.is_file() and ISO.is_file()
+_EXTRACT = os.environ.get("NFL2K5_RETAIL_EXTRACTION")
+EXTRACT = Path(_EXTRACT) if _EXTRACT else None
+XBE = EXTRACT / "ESPN NFL 2K5 (USA)/default.xbe" if EXTRACT else None
+_XISO = os.environ.get("NFL2K5_RETAIL_XISO")
+ISO = Path(_XISO) if _XISO else None
+HAVE_NATIVE = World is not None and XBE is not None and ISO is not None and XBE.is_file() and ISO.is_file()
 
 
 class Sampler(World):
