@@ -289,6 +289,27 @@ def _after_site(payload: bytes, name: str) -> bytes:
     return dict((site, after) for site, _va, after in sites(labels))[name]
 
 
+def canonical_context(payload: bytes, va: int, raw: bytes) -> bytes:
+    """Another owner's pinned-context view (b778 bd3): this owner's exact installed hooks inside [va, va+len(raw))
+    read as the retail bytes they replaced, and only while the whole owner reads applied. The MyCareer guards hash
+    the class loop 0x2BE923.. (class_finish and class_start sit in it, and class_start rewrites the legacy MyCareer
+    "generation" jump at 0x2BE946). Anything else is left for the caller to refuse."""
+    overlaps = [(name, at, before, size) for name, at, before, size in HOOKS
+                if at < va + len(raw) and va < at + size and bytes(raw[max(at, va) - va:min(at + size, va + len(raw)) - va])
+                != before[max(at, va) - at:min(at + size, va + len(raw)) - at]]
+    if not overlaps or status(payload) != "applied":
+        return raw
+    image = XbeImage(payload)
+    out = bytearray(raw)
+    for name, at, before, size in overlaps:
+        after = _after_site(payload, name)
+        if len(after) != size or image.read(at, size) != after:
+            return raw
+        lo, hi = max(at, va), min(at + size, va + len(raw))
+        out[lo - va:hi - va] = before[lo - at:hi - at]
+    return bytes(out)
+
+
 def status(payload: bytes) -> str:
     """retail | applied | foreign for a USA executable."""
     try:

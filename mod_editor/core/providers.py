@@ -731,7 +731,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_formation_play_writer.py": "746974969f0e1b64f5954c24c6fd3d22e9e647f295f58c4cec03d24a3c48bffd",
         "mod_editor/core/nfl2k5_franchise_2026.py": "f7a6a56853171cd36167f87a75e84035954afa7c27e2c616de9dd6b41fd09bc9",
         "mod_editor/core/nfl2k5_franchise_2026_code.py": "3aaa62bc4282a7605823b30d20936d388916d2f5c51a4a4774f85c0af67efcfa",
-        "mod_editor/core/nfl2k5_franchise_autosave.py": "4fee35981169c9c24e0fd5196a42ebb694f67fb89c6af5eb2c4ffa73c0d9d251",
+        "mod_editor/core/nfl2k5_franchise_autosave.py": "5790d80d6bd8b0633602bb38541a12dec4986b1bd4dbfd1352c2323e82e3ec83",
         "mod_editor/core/nfl2k5_franchise_autosave_code.py": "bf06126a790642048aae92d57d3815d445560bc012ed02df5917648bcceec183",
         "mod_editor/core/nfl2k5_franchise_edit_player.py": "32143cc2152e610a331518e77e5620dc40728cbb453004003af8a54db77cbc39",
         "mod_editor/core/nfl2k5_franchise_practice.py": "fc13c68f2045977d37daa015537bf7883578faf0ef6aaa22f96708eaa6617217",
@@ -809,11 +809,11 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_music_playlist_code.py": "565d8ad8b8e6435190dda20a137e7b8128c5716d72935ab30be5189efab48546",
         "mod_editor/core/nfl2k5_music_policy.py": "f1f21c182fa9f86844c6dcc0019f0463ef841799fd24a717131b4d762c8a99ec",
         "mod_editor/core/nfl2k5_music_storage.py": "a934b271e63c06da003936ddcca4175474e15b7a2ee00f7d09ddf0cb1daebbfc",
-        "mod_editor/core/nfl2k5_my_career.py": "5295d85842a9596df843fa5e69049b6478be531cc3091187b492197b3f40980a",
+        "mod_editor/core/nfl2k5_my_career.py": "ff0905d0ef6dcd21309fdb4d2c7b89287011dac4550424b1a21c57653a823295",
         "mod_editor/core/nfl2k5_my_career_advisory.py": "14aa17b6d3dc4aba6303de17eaa999c7599856110ee89ae14ccd522f0eaf00ba",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
-        "mod_editor/core/nfl2k5_my_career_mode.py": "8d184276e7d7b6c33f3b9e024e2d123cbb94d5190c9ada2e5255b97177ca3e74",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "30767783d1aff7436d3b0502809c7bc53586900f3dd4eeb8a17c6a14b5d43990",
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "447e3a15d2f3b03bf3e331ce8d38c7ca86b05074bc3e1c668bb302d30cb77f64",
         "mod_editor/core/nfl2k5_my_career_home.py": "a5d23d3a7cbd94c76d5f9d4fb983c6ab9698de47fdf9e657b086fc14f50255f3",
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",
@@ -907,12 +907,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_practice_injuries.py": "b6d4cddd5431ce5f4df436052312c31b3eb9c24d0eb8487581eb08184a3f2626",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "9d340302650510dede5db01f8a2cbae31807394f57ff9ef38db3998f7660ed7e",  # b778-ai5
         "mod_editor/core/nfl2k5_return_coverage.py": "3be0439c2f122ea0c7a5b53f50b89b0b31c8455ce13baa9ce8728ba9d2470db0",  # b778-kr1
-        "mod_editor/core/nfl2k5_star_career.py": "a1cf7e142a1448a872d0ef5d92eb330bebff25d942663aaee44d1f51276dac5d",  # b778-st2
+        "mod_editor/core/nfl2k5_star_career.py": "a495c8108fa24d790504df752a6ed0384ef2e7331dac5a4b859beeaaa2629858",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
         "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
-        "mod_editor/core/nfl2k5_player_progress_screen.py": "2b23b850c1a138717d419486bc8ed9084c498968117c0c5709e3801920465d5a",  # b778-pg2
+        "mod_editor/core/nfl2k5_player_progress_screen.py": "625a5f68fc455caa454bc7734233cdbb81e5eb201905b6cdcccadebec42ff8c7",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "ca5e065ff34fda6262a610c2ecf7309b67d270bfaaf751e277a8c13a3c500fb9",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1

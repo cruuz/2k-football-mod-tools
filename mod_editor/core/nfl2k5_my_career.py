@@ -568,8 +568,10 @@ def installed_setup(payload):
 
 def check_context(image):
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: its screen-push gate at 0x6E39A
+    from . import nfl2k5_star_career as star_career  # b778 bd3: its class-loop hooks inside 0x2BE923..
     for va, size, digest in GUARDS:
-        raw = bytearray(module_loader.canonical_context(bytes(image.data), va, image.read(va, size)))
+        raw = module_loader.canonical_context(bytes(image.data), va, image.read(va, size))
+        raw = bytearray(star_career.canonical_context(bytes(image.data), va, raw))
         for _, hook, before, _ in sites(0, 0):
             if va <= hook and hook + len(before) <= va + size:
                 raw[hook - va:hook - va + len(before)] = before

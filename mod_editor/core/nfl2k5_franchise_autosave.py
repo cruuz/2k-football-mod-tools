@@ -211,8 +211,11 @@ def _recognize(payload):
                 "foreign MyCareer completion/save companion")
         code, data = career.legacy.allocations(payload)
         companion_edits.extend(career.sites(code["va"], data["va"]))
+    # b778 bd3: beside the Player Progress screen, MyCareer's footer hooks read through MyCareer's own view of that
+    # exact composition (my_career_mode.player_progress_view); anything else stays foreign below.
+    guarded = XbeImage(career.player_progress_view(payload))
     for va, size, digest in GUARDS:
-        raw = bytearray(image.read(va, size))
+        raw = bytearray(guarded.read(va, size))
         from . import nfl2k5_module_loader as module_loader
         raw = bytearray(module_loader.canonical_context(payload, va, bytes(raw)))
         if va == 0x6E4E0 and raw[:5] != bytes.fromhex("5155578bf9"):

@@ -306,5 +306,114 @@ class ColourExclusionTests(unittest.TestCase):
         self.assertEqual(self.mc.image_status("disc", receipt=receipt, exclude=["s48dd.iff"]), "applied")
 
 
+class HistoricSpareKeepTests(unittest.TestCase):
+    """The build's last read-back refused the historic team styles after the team-coloured sleeves rewrote the
+    Eagles' spare (the retail era-9 package holding the retail style-0 art); the build now keeps it."""
+
+    RELEASED = Path("/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso")
+    RETAIL = Path("/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso")
+
+    def test_the_eagles_era_9_spare_is_named_for_the_sleeves_pass(self):
+        if not (self.RELEASED.is_file() and self.RETAIL.is_file()):
+            self.skipTest("private released and retail discs are absent")
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        self.assertEqual(hs.image_status(self.RELEASED, self.RETAIL), "applied")
+        kept = hs.retail_spare_selectors(self.RELEASED, self.RETAIL)
+        self.assertIn("21H9", kept)
+        self.assertIn("21A9", kept)
+        self.assertEqual(hs.retail_spare_selectors(self.RETAIL, self.RETAIL), ())
+
+    def test_the_build_passes_them_to_the_sleeves_pass(self):
+        source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        at = source.index("sleeves.apply_to_image(target, keep=keep)")
+        self.assertIn("retail_spare_selectors(", source[at - 800:at])
+
+
+class StarCareerWithMyCareerTests(unittest.TestCase):
+    """The release build's tail: after the star-career owner was installed, MyCareer (and with it Career Home,
+    Franchise Practice and Auto Save) read foreign, so the Player Progress screen refused its prerequisites. Its
+    class-loop hooks sit in a MyCareer guard (0x2BE923..) and over the legacy "generation" jump at 0x2BE946."""
+
+    def test_my_career_still_reads_applied_after_the_star_career_owner(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_my_career as career
+        from mod_editor.core import nfl2k5_star_career as star
+        payload, _ = mode.apply(_retail())
+        self.assertEqual(mode.status(payload), "applied")
+        both, receipt = star.apply(payload)
+        self.assertEqual(star.status(both), "applied")
+        self.assertNotEqual(both, payload)
+        self.assertEqual(mode.status(both), "applied")
+        self.assertEqual(career.status(both), "applied")
+        # only that owner's exact hook is accepted: a different jump there is still foreign
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
+        broken = repin_edit(both, 0x2BE946, b"\xcc")
+        self.assertEqual(mode.status(broken), "foreign")
+        self.assertEqual(XbeImage(both).read(0x2BE946, 5), b"\x90" * 5)
+
+
+class PlayerProgressWithEconomyTests(unittest.TestCase):
+    """The franchise economy (revision 3) hooks the stage getter call at 0x248628, inside the Player Progress
+    owner's next-season guard; the screen refused it as a foreign prerequisite."""
+
+    def test_player_progress_installs_beside_the_franchise_economy(self):
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        from mod_editor.core import nfl2k5_player_progress_screen as screen
+        with_economy, _ = economy.apply(_retail())
+        self.assertEqual(economy.status(with_economy), "applied")
+        self.assertEqual(screen.status(with_economy), "retail")
+        applied, receipt = screen.apply(with_economy)
+        self.assertEqual(receipt["status"], "applied")
+        self.assertEqual(screen.status(applied), "applied")
+        self.assertEqual(economy.status(applied), "applied")
+
+    def test_any_other_bytes_at_the_economy_site_are_still_foreign(self):
+        from mod_editor.core import nfl2k5_player_progress_screen as screen
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
+        retail = _retail()
+        self.assertEqual(screen.status(retail), "retail")
+        # the economy's call bytes without the economy installed
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        site = next(s for s in economy.sites() if s.va == economy.AFTER_STAGE)
+        self.assertEqual(screen.status(repin_edit(retail, site.va, site.patched)), "foreign")
+
+
+class PlayerProgressBesideMyCareerTests(unittest.TestCase):
+    """The release build's tail: the Player Progress screen chains its franchise footer hooks over MyCareer's
+    inline ones (and hooks native routines MyCareer's guards hash), after which MyCareer, Career Home and Auto Save
+    read foreign and the module loader refused ("the module loader needs Career Home")."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_franchise_autosave as autosave
+        from mod_editor.core import nfl2k5_player_progress_screen as screen
+        requests = tt._selected_space_requests(my_career=True, franchise_autosave=True, player_progress=True)
+        payload, _ = space.apply(_retail(), requests, scaleout=True)
+        payload, _ = mode.apply(payload)
+        cls.before, _ = autosave.apply(payload)
+        cls.after, cls.receipt = screen.apply(cls.before)
+
+    def test_every_owner_reads_applied_after_the_screen(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_my_career as career
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        from mod_editor.core import nfl2k5_player_progress_screen as screen
+        self.assertEqual(self.receipt["status"], "applied")
+        self.assertEqual(screen.status(self.after), "applied")
+        self.assertEqual(mode.status(self.after), "applied")
+        self.assertEqual(career.status(self.after), "applied")
+        self.assertEqual(autosave.status(self.after), "applied")
+        chained = screen.chained_footer_sites(self.after)
+        self.assertEqual(len(chained), 4)
+        self.assertEqual(sum(target is not None for _bytes, target in chained.values()), 3)
+
+    def test_a_changed_footer_hook_is_still_foreign(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mode
+        from mod_editor.core import nfl2k5_player_progress_screen as screen
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
+        broken = repin_edit(self.after, screen.SITE_SAVE_FRONT_OFFICE[0], b"\x90" * 5)
+        self.assertEqual(screen.chained_footer_sites(broken), {})
+        self.assertEqual(mode.status(broken), "foreign")
+
+
 if __name__ == "__main__":
     unittest.main()

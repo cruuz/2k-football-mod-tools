@@ -698,16 +698,79 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(hashlib.sha256(raw).hexdigest() == digest, f"foreign native career context at {va:#x}")
 
 
+def _star_career_view(payload, image, va, before):
+    """b778 bd3: the star-career owner's class_start hook (0x2BE940, 11 bytes) also rewrites the class loop's jump at
+    0x2BE946, which is the legacy MyCareer "generation" site the generic build leaves retail. Accept those bytes only
+    as that owner's exact installed hook, after its complete status reads applied."""
+    from . import nfl2k5_star_career as star
+    return star.canonical_context(payload, va, image.read(va, len(before))) == before
+
+
+def _player_progress_view(payload, edits):
+    """b778 bd3: the Player Progress screen (full) installs after MyCareer and chains its franchise footer hooks over
+    MyCareer's inline ones: the size, save and load-end calls go to its code, which calls the displaced MyCareer
+    handlers recorded in its trailer, and its admission check (which accepts the MyCareer footer size) replaces
+    MyCareer's. Show MyCareer's own bytes at those sites only for that owner's exact complete install whose recorded
+    targets are this install's handlers; anything else is left for the checks below to refuse."""
+    from . import nfl2k5_player_progress_screen as progress
+    chained = progress.chained_footer_sites(payload)
+    if not chained:
+        return payload
+    image = XbeImage(payload)
+    view = bytearray(payload)
+    # Its other hooks sit in native routines MyCareer's guards hash (the new-season stage call at 0x13EF03 among
+    # them); none is a MyCareer site. They read as the retail bytes they replaced.
+    own = [(va, len(after)) for _n, va, _b, after in edits]
+    for _label, va, before, after in progress.installed_main_sites(payload):
+        if any(va < at + size and at < va + len(after) for at, size in own):
+            return payload
+        off = image.offset(va, len(before))
+        view[off:off + len(before)] = before
+    for _name, va, _before, after in edits:
+        if va not in chained or image.read(va, len(after)) == after:
+            continue
+        installed, target = chained[va]
+        if len(installed) != len(after):
+            return payload
+        if target is not None and not (after[:1] == b"\xe8" and va + 5 + struct.unpack_from("<i", after, 1)[0] == target):
+            return payload
+        off = image.offset(va, len(after))
+        view[off:off + len(after)] = after
+    if bytes(view) == payload:
+        return payload
+    from .nfl2k5_bump_strength import _sections, section_digest
+    for section in _sections(view):        # the private view keeps its own section digests consistent
+        view[section.header_offset + 36:section.header_offset + 56] = section_digest(view, section)
+    return bytes(view)
+
+
+def player_progress_view(payload):
+    """The payload as MyCareer sees it beside the Player Progress screen (_player_progress_view), for owners whose
+    guards hash MyCareer's footer hooks (franchise Auto Save). Unchanged without that exact composition."""
+    try:
+        found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
+        if not found:
+            return payload
+        code, data = legacy.allocations(payload)
+        edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)))
+        return _player_progress_view(payload, edits)
+    except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
+        return payload
+
+
 def _recognize(payload):
     from . import nfl2k5_era_rules as era
     payload = era.underlying_view(payload)
     found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
     edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)))
+    installed = payload
+    payload = _player_progress_view(payload, edits)
     image = XbeImage(payload)
     own_sites = {va for _, va, _, _ in edits}
-    legacy.require(all(image.read(va, len(before)) == before for _, va, before, _ in legacy.sites(0, 0)
-                       if va not in own_sites), "legacy MyCareer hooks in generic build")
+    legacy.require(all(image.read(va, len(before)) == before or _star_career_view(installed, image, va, before)
+                       for _, va, before, _ in legacy.sites(0, 0) if va not in own_sites),
+                   "legacy MyCareer hooks in generic build")
     state = "retail"
     if found:
         extra = [a for a in space.layout(payload)["allocations"] if a["owner"] == EXTRA_OWNER]

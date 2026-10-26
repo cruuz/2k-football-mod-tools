@@ -251,7 +251,9 @@ class HostBudgetTests(unittest.TestCase):
                 # nl1: drafted-notice format in the M3 pool, Team Select side guard.
                 # ui1: Career Home Apartment descriptor words and the Upgrades back flag (Career Home variant only).
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
-                '8d184276e7d7b6c33f3b9e024e2d123cbb94d5190c9ada2e5255b97177ca3e74',
+                # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
+                # screen chained over the inline footer hooks (runtime code unchanged).
+                '30767783d1aff7436d3b0502809c7bc53586900f3dd4eeb8a17c6a14b5d43990',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

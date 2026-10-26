@@ -881,12 +881,35 @@ def _save_prerequisites_ok(image: XbeImage) -> bool:
     return True
 
 
+# b778 bd3: a site inside a guarded native routine that another owner hooks, (VA, retail bytes). The franchise
+# economy (revision 3, AFTER_STAGE) redirects the stage getter call at the head of the next-season routine, five
+# bytes before this owner's own stage_next_season site. It is accepted only as that owner's exact call into its own
+# installed code, with the franchise economy reading back applied; the retail bytes restore the guarded digest.
+CO_OWNER_SITES = ((0x00248628, bytes.fromhex("e873f4ffff")),)   # call 0x247AA0, the retail stage getter
+
+
+def _co_owner_restore(image: XbeImage, va: int, size: int, content: bytearray) -> None:
+    hooked = [(at, retail) for at, retail in CO_OWNER_SITES if va <= at and at + len(retail) <= va + size
+              and bytes(content[at - va:at - va + len(retail)]) != retail]
+    if not hooked:
+        return
+    from . import nfl2k5_franchise_economy as economy
+    if economy.status(bytes(image.data)) != "applied":
+        return
+    sites = {site.va: site for site in economy.sites()}
+    for at, retail in hooked:
+        site = sites.get(at)
+        if site is not None and bytes(content[at - va:at - va + len(retail)]) == site.patched:
+            content[at - va:at - va + len(retail)] = retail
+
+
 def _guards_ok(image: XbeImage, checked_sites) -> bool:
     for _name, va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _label, at, before, _after in checked_sites:
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
+        _co_owner_restore(image, va, size, content)
         if hashlib.sha256(content).hexdigest() != digest:
             return False
     return True
@@ -909,6 +932,51 @@ def _footer_prerequisite_ok(image: XbeImage, site) -> bool:
     if va == SITE_ADMISSION[0]:
         return raw[0] in (0xE8, 0xE9)
     return raw[0] == 0xE8
+
+
+def _exact_full_install(payload: bytes):
+    """(code_va, displaced targets) of this owner's complete full install without the native admission (its code
+    blob, trailer and every main and footer hook exactly as apply() writes them), else None (b778 bd3)."""
+    try:
+        found = allocation(payload)
+        if not found:
+            return None
+        image = XbeImage(payload)
+        code_va, data_va = found[0]["va"], found[1]["va"]
+        trailer = _trailer_at(image, code_va)
+        if trailer is None or trailer[0] != VARIANT_FULL or trailer[4]:
+            return None
+        targets = trailer[1:4]
+        if image.read(code_va, CODE_SIZE) != code_for(code_va, data_va, targets, use_native_admission=False):
+            return None
+        for _label, va, _before, after in _sites(code_va) + _footer_sites(code_va, include_admission=True):
+            if image.read(va, len(after)) != after:
+                return None
+        return code_va, targets
+    except _ERRORS:
+        return None
+
+
+def chained_footer_sites(payload: bytes) -> dict[int, tuple[bytes, int | None]]:
+    """b778 bd3: {VA: (this owner's installed bytes, displaced call target or None for the admission)} of the four
+    franchise footer sites, for this owner's exact complete full install (_exact_full_install). The size, save and
+    load hooks call the displaced targets recorded in the trailer (MyCareer's inline handlers when MyCareer was there
+    first); the admission replaces MyCareer's and accepts its footer size too. Empty otherwise, so a caller that owned
+    a displaced site (MyCareer) can accept these exact bytes and nothing else."""
+    found = _exact_full_install(payload)
+    if found is None:
+        return {}
+    code_va, targets = found
+    displaced = dict(zip(("total_size", "save_front_office", "load_end"), targets))
+    return {va: (after, displaced.get(label))
+            for label, va, _before, after in _footer_sites(code_va, include_admission=True)}
+
+
+def installed_main_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
+    """(label, VA, retail bytes, installed bytes) of this owner's main hooks, for its exact complete full install
+    (_exact_full_install); empty otherwise (b778 bd3, for MyCareer's view of a composed image)."""
+    found = _exact_full_install(payload)
+    return [] if found is None else _sites(found[0])
 
 
 def _displaced_targets(image: XbeImage) -> tuple[int, int, int]:
