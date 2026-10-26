@@ -70,7 +70,7 @@ cannot reach. Earlier playback evidence recorded Bear 46 becoming 4-3 Over.
 Automatic calls now use the ordinary publication tail, while explicit VIPs
 retain that menu behavior. Authored pools remain unchanged.
 
-Clock situations (b778, beta-78 / pack v0.6.2). The playback pools only know
+Clock situations (b778, beta-78 / pack v0.7). The playback pools only know
 down, distance and tempo; the native selector they bypass also carries the
 kneel-down (`206F10`), the Hail Mary (`206DD0`), the fourth-down caller and the
 clock urgency. The automatic offense therefore hands four kinds of snap to the

@@ -14,7 +14,7 @@ The VIP-aware revision delegates fourth-down, two-point and field-goal policy
 to retail while a matching CPU user VIP is in playback mode. The v0.6.1
 Modern 2 template remains recognizable and upgrades within the same allocation.
 
-b778 (beta-78 / pack v0.6.2) clock revision, still inside the same 2048 bytes: only a user VIP (the native
+b778 (beta-78 / pack v0.7) clock revision, still inside the same 2048 bytes: only a user VIP (the native
 virtual-controller flag, team +0x38) delegates; automatic 2026 coach profiles clear that flag, so their fourth downs,
 two-point tries and late-lead kicks use Modern 2. One 4-byte operand edit in the native timeout predicate 207050 lets a
 CPU offense call its timeouts in the last 15 seconds of the first half whenever the game's own time estimate says it

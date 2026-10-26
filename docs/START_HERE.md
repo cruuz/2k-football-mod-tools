@@ -14,7 +14,8 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
    `.xiso`). A disc someone else already modded will be refused, and so will a rebuilt ("repacked") image when you apply a patch.
    If the Studio says so, start again from a clean dump.
 2. **2K5 Mod Studio**, the free editor. Download it from the
-   [Studio releases](https://github.com/cruuz/2k-football-mod-tools/releases) (use the newest one). On the release page open
+   [Studio releases](https://github.com/cruuz/2k-football-mod-tools/releases) (use the newest one at the top of the list; it
+   may be marked Pre-release). On the release page open
    **Assets** and download the release file. Do **not** use the green **Code > Download ZIP** button: that downloads the source
    code, not the ready-to-run Studio.
    - Windows: run `2K5-Mod-Studio-*-Setup.exe`, then open 2K5 Mod Studio from the Start Menu. The Setup includes Python, so you
@@ -30,7 +31,8 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
    The `.sha256` file next to it only checks the download; the Studio does not need it.
 4. **xemu**, the original Xbox emulator, from [xemu.app](https://xemu.app). xemu needs its own BIOS files, which neither this project
    nor the Studio supplies. See [xemu's required-files guide](https://xemu.app/docs/required-files/).
-5. **Free disk space** for the new disc image. The finished SOFTDRINK disc is roughly 6 GB, so keep at least 8 GB free.
+5. **Free disk space** for the new disc image. The finished SOFTDRINK disc is roughly 6 GB, so keep at least 8 GB free on
+   the drive where the new image goes, plus room for the downloaded patch.
 
 ### If you downloaded the source ZIP
 
@@ -62,8 +64,8 @@ For every new SOFTDRINK version, start again from your original untouched image,
 
 ## 3. Point xemu at the disc
 
-1. In xemu, open the settings and set **System Memory** to **128 MiB**, then restart xemu. This matters: with the default 64 MiB
-   some stadiums can repeat the pregame show.
+1. In xemu, open the settings and set **System Memory** to **128 MiB**, then restart xemu. This is required for SOFTDRINK
+   2K28 v0.7: the disc uses the bigger roster built for the 128 MiB layout. Do not run this disc at 64 MiB.
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.
 4. Start the game. If it sits on the Xbox logo, restart xemu.
@@ -77,13 +79,18 @@ SOFTDRINK's 2026 players and depth charts live on the disc, but a game or save y
 1. In the game, load the **disc roster** before you do anything else.
 2. Start a **fresh franchise** (or a Quick Game, which uses the disc roster).
 
+The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration. In
+Franchise, the Front Office **Player Progress** row now shows weekly rating changes for your club; an older save starts a
+fresh history the first time it loads.
+
 If the game looks unchanged or shows 2004 rosters, check in this order: you loaded the new image and not the old one; you
 installed from the untouched image plus the `.2k5patch` file; you started a fresh franchise after loading the disc roster; xemu
 memory is 128 MiB.
 
 ## 5. Keep an existing franchise (Franchise, Upgrade)
 
-A franchise saved on an older build keeps its old coaches, years pro and (before this update) hair styles. To bring it up to date:
+A franchise saved on an older build keeps its old coaches, years pro, hair styles (if it was started before the disc had
+them), award history and free agent pool. To bring it up to date:
 
 1. Copy your franchise save somewhere safe first.
 2. In the Studio open **Rosters** (the star page in the sidebar), then **Open Xbox save...** and choose the save. An Action Replay
@@ -91,12 +98,18 @@ A franchise saved on an older build keeps its old coaches, years pro and (before
 3. A franchise save shows the **Franchise** page. Choose **Upgrade franchise save to the current build**. If it tells you to write your
    edits to a save copy and reload it first, do that.
 4. Click **Choose disc...** and pick your current SOFTDRINK disc.
-5. Click **Preview upgrade** and read it. It lists coach bodies and pictures, corrected years pro, playbook fields, hair styles
-   taken from the disc (styles you set yourself are kept) and restored team history. Your source save is not touched.
+5. Click **Preview upgrade** and read it. It lists coach bodies and pictures, corrected years pro, playbook fields, restored
+   team history, hair styles taken from the disc (styles you set yourself are kept), award history (Pro Bowls and other
+   honors), and the new free agents, which also moves the save to the bigger SOFTDRINK roster. Your source save is not
+   touched.
 6. Click **Write signed copy**. It writes a new save beside the original, with the name you chose. Load that copy where you keep
    your xemu saves, and keep the original as a backup.
 
 Your season progress, contracts and stats are kept. The upgrade only works on SOFTDRINK 2026 franchises. If it refuses, it says why.
+
+The upgrade does not change player ratings, colleges, announcer names, name suffixes or equipment. A franchise keeps its own
+roster copy, so those need a new franchise. Old saves still load without the upgrade; they just keep the old free agent pool.
+Saves made with the 16 reserves option (724,140 bytes) do not load on the bigger-roster disc, and the upgrade cannot move them.
 
 ## 6. Add or change your own roster
 
@@ -139,12 +152,16 @@ disc...** (marked experimental).
 - **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Modern, Experimental), read the list of changes,
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
 - **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
-  accelerated clock on with a 20 second minimum.
+  accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.
 - **Memory.** Always 128 MiB in xemu for SOFTDRINK.
 
 ## 8. If something goes wrong
 
-- Build failed: in **Build & Share** click **Copy Build summary** and paste it, with the first error line, when you ask for help.
+- Build failed: in **Build & Share** click **Copy Build summary** and paste it, with the first error line, when you ask for
+  help. The Studio also refuses some common first-run mistakes before it starts: **Make my disc** with nothing ticked (it
+  points you to **Install SOFTDRINK 2K28**), an output folder inside OneDrive on Windows (use a plain folder such as
+  `C:\2K5`), too little free space (keep at least the source size plus 512 MiB free; about 8 GB in practice), and a source
+  that is neither an untouched retail dump nor a SOFTDRINK disc (choose your clean, unmodified USA retail ISO).
 - Freeze or crash in the game: say what you were doing (mode, teams, stadium, play), your Studio version, the SOFTDRINK pack
   version, your xemu version and memory setting, and where it stopped. A screenshot or short clip helps most.
 - Check the [FAQ](mod_editor/2k5_mod_studio_faq.md) first; it covers installing, freezes and common questions.

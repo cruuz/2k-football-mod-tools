@@ -685,7 +685,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
         "mod_editor/core/nfl2k5_coverage_trail.py": "68b6548fc60cf8cbed4a912403b6323c44818eeba358cdc28fa8090642a3e969",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "746874dbef2fbf16355affd2b373840fb96e235fc0f2592c9c2858c826080e66",
-        "mod_editor/core/nfl2k5_cpu_money_downs.py": "16e562e53b40e1a455299fbb301c1138294c57d1011b3b762b0846696c00103a",
+        "mod_editor/core/nfl2k5_cpu_money_downs.py": "662b3f763825039562e857943cdcaada194eee833303f359a02bbdd1921017aa",
         "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "f9bfb3a36ce4d28b3d3543441808ba36824cb791d816eebec996364419478119",
         "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
         "mod_editor/core/nfl2k5_cpu_qb_reads.py": "5c15f83516a426bee45124579508ab87f44adbec9e2ab9e65ebb5ff0dd9d6341",
