@@ -3731,6 +3731,9 @@ tests/mod_editor/test_2k5_helmet_locked_palette.py
 tests/mod_editor/test_2k5_native_safe_palette_ladder.py
 # b778 sd1: stadium squares (model portals) and the Raymond James fascia clocks
 tests/mod_editor/test_b778_stadium_squares.py
+# b778 sd2: the crowd cutaway in free air, crowd billboards clear of other geometry, AT&T deck rails
+tests/mod_editor/test_b778_crowd_cutaway.py
+tests/mod_editor/b778_crowd_cutaway_envelope.json
 data/nfl2k5_classic_teams/kits.json
 data/nfl2k5_classic_teams/seamen_2006.csv
 data/nfl2k5_classic_teams/face/pins.json

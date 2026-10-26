@@ -429,7 +429,7 @@ class Lambeau(sm.SoFi):
                facing=up_toward_field)
         lower = [sec["lower"] for sec in secs]
         self._rows_surface(m, "gb_seat", loop, lower, 2)
-        self._crowd(m, loop, lower)
+        self._crowd(m, loop, lower, ceiling=self.soffit_ceiling(secs))
         self._portals(m, loop, secs, "lower", p["portals"]["lower_row"])
         self._band(m, "LIGHT_gb_concourse", loop, secs, "lower_back", 0.0, 1.0, u_per_m=1 / 8.0)
         m2 = self.mesh("gb_bowl_b")
@@ -747,6 +747,13 @@ class Lambeau(sm.SoFi):
             uv_out.append((lp.s / 20.0, (d_out - d_in) / 20.0))
         m.grid("gb_roof", [inner, outer], [uv_in, uv_out], facing=up)
 
+    #: b778 sd2: the crowd-reaction cutaway's point (the scene's ``nosebleed`` marker, written with its yaw by
+    #: ``mm.place_cutaway``): in free air over the front of the +x lower bowl, where every fan of the 180 retail crowd
+    #: cutscenes stands clear of the stands and every cutscene camera clear of the model (chosen by the sd2 search, 0.5 m
+    #: over the lowest clear point; held by test_b778_crowd_cutaway). It stood on an upper-deck row: the fans stood in
+    #: the seats (Noah's 2026-10-21 stream at Lucas Oil Stadium).
+    CUTAWAY = (50.0, 11.5, 0.00)
+
     def build(self):
         loop = self.loop
         secs = [self.section(lp) for lp in loop]
@@ -764,12 +771,11 @@ class Lambeau(sm.SoFi):
         self._end_board("north")
         self._side_boards()
         self._lights()
-        south = min(loop, key=lambda lp: math.pow(lp.nz - 1, 2) + math.pow(lp.x / 40.0, 2))
-        row = self.section(south)["upper"][4]
-        self.nosebleed = self.at(south, row[0] + 0.3, row[1] + 0.05)
+        self.nosebleed = self.CUTAWAY                 # b778 sd2: the crowd cutaway in free air (see CUTAWAY)
         self._facade()
         self._decks()
         self._exterior()
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
 
@@ -1095,7 +1101,7 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
         struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in p))
     for m in sc.markers:
         if m.name.startswith("nosebleed"):
-            struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in model.nosebleed))
+            mm.place_cutaway(m.record, model.nosebleed)         # b778 sd2: the crowd cutaway's point and yaw
     used = {sm_.material for s in sc.shapes for sm_ in s.submeshes}
     keep_m = [i for i, m in enumerate(sc.materials) if i in used or m.name in KEEP_MATERIALS_BY_CODE
               or m.name.startswith("digit_")]
