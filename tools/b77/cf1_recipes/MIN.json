@@ -1,0 +1,8 @@
+{
+ "who": "Kevin O'Connell",
+ "notes": "fair skin; light-brown hair, receded at the temples; clean-shaven; blue eyes; a broad smile with teeth in the official headshot (mouth closed here); c28 with c12's lean body (cm1)",
+ "eyes": [112, 138, 160],
+ "mouth": "close",
+ "hair_colour": [100, 80, 62],
+ "hair": {"front": 47.0, "recede": 1.4, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3}
+}
