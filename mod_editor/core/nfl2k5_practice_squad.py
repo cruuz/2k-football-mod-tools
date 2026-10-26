@@ -455,6 +455,11 @@ def sites() -> tuple[Site, ...]:
         _branch(0x323B30, 'pending_sign_guard', '51578bf86a01'),
         _branch(0x325B50, 'draft_sign_guard', '56578bfa8b54240c'),
         _branch(0x2BC670, 'trade_guard', '83ec088b44240c'),
+        # b778-tr2: the trade apply removes the outgoing player before each append, but the
+        # receiving club can be at the 53-man limit. ps_trade_room proves the final counts fit;
+        # these two appends may use the native temporary 54th slot that retail 2K5 expects.
+        _branch(0x2BC74B, 'trade_insert', 'e89077e0ff', call=True),
+        _branch(0x2BC79A, 'trade_insert', 'e84177e0ff', call=True),
         Site('remove_shift_start', 0xC3ABE, bytes.fromhex('9090'), bytes.fromhex('7d13')),
         Site('remove_shift_bound', 0xC3AC7, bytes.fromhex('4683fe407cf3') + b'\x90'*6,
              bytes.fromhex('0fb6901c010000463bf27ced')),
