@@ -72,7 +72,7 @@ class ModernArtReleaseTests(unittest.TestCase):
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 923)   # b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
+        self.assertEqual(len(document["files"]), 922)   # b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):

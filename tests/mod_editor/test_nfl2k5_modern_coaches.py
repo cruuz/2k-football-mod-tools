@@ -69,14 +69,15 @@ class PinsAndArt(unittest.TestCase):
             self.assertLessEqual(row["fit"]["scratch_needed"], row["fit"]["scratch_retail"])
             self.assertEqual(row["fit"]["stored_size"] + 0x20, row["span_size"])
 
-    def test_kansas_city_wears_the_2004_reid_model_with_a_derived_head(self):
-        """Noah 2026-10-12: use the existing Andy Reid model for the Chiefs' Andy Reid."""
+    def test_kansas_city_wears_the_2004_reid_model_with_a_scanned_head(self):
+        """Noah 2026-10-12: use the existing Andy Reid model for the Chiefs' Andy Reid; 10/22: "All 32 coaches should
+        have their face scanned": b778 cf4 scans the 2026 Reid onto that model (head.png; the derived 2004 head retired)."""
         kc = {r["team"]: r for r in mc.pins()["teams"]}["KC"]
         self.assertEqual((kc["archive"], kc["team_code"]), ("c21.iff", "13"))
-        self.assertEqual(kc["head_recipe"]["kind"], "retail_recolour")
-        self.assertNotIn("head", kc["art"])
-        self.assertFalse(mc.art_path("KC", "head").exists())
-        self.assertEqual(set(mc.HEAD_RECIPE_FILES) & set(kc["art"]), set(mc.HEAD_RECIPE_FILES))
+        self.assertNotIn("head_recipe", kc)
+        self.assertIn("head", kc["art"])
+        self.assertTrue(mc.art_path("KC", "head").exists())
+        self.assertFalse(set(mc.HEAD_RECIPE_FILES) & set(kc["art"]))
 
     def test_derive_head_is_integer_and_exact(self):
         import numpy as np
