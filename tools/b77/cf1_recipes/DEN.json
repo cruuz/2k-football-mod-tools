@@ -1,0 +1,9 @@
+{
+ "who": "Sean Payton",
+ "notes": "tanned skin; thick silver-grey hair; clean-shaven; blue eyes; a broad smile with deep lines in the official headshot (mouth closed here); on c08. The official headshot is hard side-lit, cool and grinning: privately its lit half is mirrored over the shadowed half, it is warmed, its folds and highlights evened, and its hair taken off so the painted silver hair (front 45.5, side 40.5, back 33) shows (with the photo hair kept the tool tinted the painted grey hair cyan); symmetry 1.0",
+ "eyes": [96, 124, 146],
+ "mouth": "close",
+ "hair_colour": [164, 156, 146],
+ "hair": {"front": 45.5, "recede": 0.3, "side": 40.5, "back": 33.0, "edge": 0.3},
+ "symmetry": 1.0
+}

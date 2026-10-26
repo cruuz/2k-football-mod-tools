@@ -1,0 +1,10 @@
+{
+ "who": "DeMeco Ryans",
+ "notes": "dark brown skin; a shaved head; a short black beard on the chin and jaw with a thin moustache; brown eyes; a broad smile in the official headshot (mouth closed here); lean and athletic, on c05; texture photo is the 2000 px version of the official headshot; skin set to the photo's scalp tone, a little less red than the measured ring",
+ "eyes": [64, 44, 32],
+ "mouth": "close",
+ "hair_colour": [40, 32, 30],
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin"], "colour": [36, 30, 28], "density": 0.55},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [44, 36, 34], "density": 0.3}],
+ "skin": [98, 64, 52]
+}

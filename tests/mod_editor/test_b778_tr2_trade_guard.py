@@ -21,8 +21,8 @@ if str(ROOT) not in sys.path:
 
 from mod_editor.core import nfl2k5_practice_squad as ps  # noqa: E402
 
-RETAIL = Path(os.environ.get(
-    "NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+# The retail extraction is private; point NFL2K5_RETAIL_EXTRACTION at it to run the patch tests.
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
 
 
 class ConstantsTests(unittest.TestCase):
