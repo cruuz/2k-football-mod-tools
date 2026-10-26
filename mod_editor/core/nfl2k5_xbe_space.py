@@ -521,8 +521,11 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     directory_tail = _directory_code_size(wanted) - _directory_code_size(current)
     stable = before
     if directory_tail:
-        old_directory = [r for r in before if r["owner"] == DIRECTORY_OWNER]
-        new_directory = [r for r in after if r["owner"] == DIRECTORY_OWNER]
+        # A v3 -> v4 conversion adds the pool's directory document page at POOL_VA. That page is new pool
+        # storage, not a reassignment of the directory page's tail, so the tail arithmetic covers only the
+        # directory page's own metadata rows (b778 bd3, from bf1).
+        old_directory = [r for r in before if r["owner"] == DIRECTORY_OWNER and r["va"] < POOL_VA]
+        new_directory = [r for r in after if r["owner"] == DIRECTORY_OWNER and r["va"] < POOL_VA]
         _require(directory_tail > 0
                  and sum(r["size"] for r in old_directory)-sum(r["size"] for r in new_directory) == directory_tail,
                  "foreign directory tail reassignment")
@@ -534,9 +537,23 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     # b778-xs1: a late owner that no v3 run holds is appended to the pool, growing it (and converting a v3 image to
     # v4) without moving any byte that is already placed.
     buf.extend(bytes(max(0, SCALE3_FILE_SIZE + _pool_size(wanted) - len(buf))))
+    # b778 bd3: a named directory slot is carved out of the allocator's own metadata page. Before the append that
+    # page held the sealed directory block, whose document can reach past the new slot's start (the v3 document
+    # grows with the request set; when it no longer fits above the slots, the append converts the image to v4 and
+    # the document moves to the pool page). Those bytes are the allocator's own metadata, never another owner's: a
+    # slot may only cover the old metadata rows, and any non-zero byte in it must lie inside the old document.
+    metadata = [r for r in before if r["owner"] == DIRECTORY_OWNER and r["va"] < POOL_VA]
+    document_end = SCALE_DIRECTORY + _directory_document_size(payload)
     for row in added:
         content = buf[row["raw"]:row["raw"] + row["size"]]
         pooled = row["va"] >= POOL_VA
+        if row["owner"] in DIRECTORY_CODE_OWNERS and not pooled:
+            _require(any(m["raw"] <= row["raw"] and row["raw"] + row["size"] <= m["raw"] + m["size"] for m in metadata),
+                     "the new owner's span is not the allocator's own metadata")
+            _require(not any(content[max(0, document_end - row["raw"]):]),
+                     "the new owner's span is not unreserved padding")
+            buf[row["raw"]:row["raw"] + row["size"]] = (b"\xcc" if row["kind"] == "code" else b"\0") * row["size"]
+            continue
         pad = b"\xcc" if row["kind"] == "code" and row["owner"] not in DIRECTORY_CODE_OWNERS and not pooled else b"\0"
         _require(content == pad * row["size"], "the new owner's span is not unreserved padding")
         if row["kind"] == "code" and (row["owner"] in DIRECTORY_CODE_OWNERS or pooled):
@@ -1281,6 +1298,16 @@ def _seal_scaleout(buf, requests):
         raw = region["raw"]
         at = META_START + index * 56
         buf[at:at + 56] = _scale_descriptor(index, region, _digest(buf[raw:raw + region["size"]]))
+
+
+def _directory_document_size(payload):
+    """Bytes the sealed directory block uses at the start of the directory page (v3: header, seals and the
+    compressed document; v4: header and seals, the document being in the pool)."""
+    block = payload[SCALE_DIRECTORY:SCALE_DIRECTORY + PAGE]
+    if block[:8] == POOL_BLOCK_MAGIC:
+        return 8 + 4 + 3 * 32
+    _require(block[:8] == b"XSDIR3\0\0", "foreign scale-out allocation directory")
+    return 76 + struct.unpack_from("<I", block, 8)[0]
 
 
 def _scale_directory_requests(payload):
