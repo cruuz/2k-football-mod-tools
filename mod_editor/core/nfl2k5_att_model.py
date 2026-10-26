@@ -303,6 +303,13 @@ class ATT(sm.SoFi):
         return cache[key]
 
     # -- build --------------------------------------------------------------------------------------------------
+    #: b778 sd2: the crowd-reaction cutaway's point (the scene's ``nosebleed`` marker, written with its yaw by
+    #: ``mm.place_cutaway``): in free air over the front of the +x lower bowl, where every fan of the 180 retail crowd
+    #: cutscenes stands clear of the stands and every cutscene camera clear of the model (chosen by the sd2 search, 0.5 m
+    #: over the lowest clear point; held by test_b778_crowd_cutaway). It stood on an upper-deck row: the fans stood in
+    #: the seats (Noah's 2026-10-21 stream at Lucas Oil Stadium).
+    CUTAWAY = (43.0, 8.0, 0.00)
+
     def build(self):
         loop = self.loop
         secs = [self.section(lp) for lp in loop]
@@ -320,11 +327,10 @@ class ATT(sm.SoFi):
         self._arches()
         self._lights()
         self._board()
-        west = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
-        row = self.section(west)["upper"][min(4, len(self.section(west)["upper"]) - 1)]
-        self.nosebleed = self.at(west, row[0] + 0.3, row[1] + 0.05)
+        self.nosebleed = self.CUTAWAY                 # b778 sd2: the crowd cutaway in free air (see CUTAWAY)
         self._facade()
         self._exterior()
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
     def mesh(self, name):
@@ -357,6 +363,9 @@ class ATT(sm.SoFi):
                 m.grid(mat, pts[i0:i1 + 1], uvs[i0:i1 + 1], facing=up_toward_field)
 
     # -- the bowl -----------------------------------------------------------------------------------------------
+    #: b778 sd2: the Party Pass decks' glass rails stand this far in front of each deck's edge (see ``_bowl``)
+    RAIL_AHEAD = 0.1
+
     def _bowl(self, loop, secs):
         p = self.p
         m = self.mesh("att_bowl_a")
@@ -369,7 +378,7 @@ class ATT(sm.SoFi):
                facing=up_toward_field)
         lower = [sec["lower"] for sec in secs]
         self._rows_surface(m, "att_seat", loop, lower, 2)
-        self._crowd(m, loop, lower)
+        self._crowd(m, loop, lower, ceiling=self.soffit_ceiling(secs))
         self._portals(m, loop, secs, "lower", p["portals"]["lower_row"])
         self._band(m, "LIGHT_att_concourse", loop, secs, "lower_back", 0.0, 1.0, u_per_m=1 / 8.0)
         # the club level and, at the ends, the Party Pass decks
@@ -397,12 +406,15 @@ class ATT(sm.SoFi):
                 self._rows_surface(m2, "att_seat", lp_r, pr_r, 2, deck=is_deck)
                 self._crowd(m2, lp_r, pr_r, standing=is_deck)
                 if is_deck:
-                    # each deck's glass railing along its front edge (the 2022 end-zone photo: glass rails, steel tops)
+                    # each deck's glass railing along its front edge (the 2022 end-zone photo: glass rails, steel tops).
+                    # b778 sd2: the rail stood in the plane of the deck's crowd billboards (both 0.15 m behind the edge),
+                    # and the fans flickered through the glass (a player's "glitchy fans" at AT&T Stadium, 10/22); it now
+                    # stands RAIL_AHEAD in front of the edge, at the top of the deck below
                     R_ = min(len(pr) for pr in pr_r)
                     Ls = [lp.s for lp in lp_r]
                     for k in range(1, R_):
-                        lo_ = [self.at(lp, pr[k][0] + 0.15, pr[k][1]) for lp, pr in zip(lp_r, pr_r)]
-                        hi_ = [self.at(lp, pr[k][0] + 0.15, pr[k][1] + 1.1) for lp, pr in zip(lp_r, pr_r)]
+                        lo_ = [self.at(lp, pr[k][0] - self.RAIL_AHEAD, pr[k][1]) for lp, pr in zip(lp_r, pr_r)]
+                        hi_ = [self.at(lp, pr[k][0] - self.RAIL_AHEAD, pr[k][1] + 1.1) for lp, pr in zip(lp_r, pr_r)]
                         m2.grid("att_rail", [lo_, hi_], [[(s_ / 6.0, 1.0) for s_ in Ls], [(s_ / 6.0, 0.0) for s_ in Ls]],
                                 facing=toward_field)
         self._band(m2, "LIGHT_att_glass", loop, secs, "band", 0.0, 1.0, u_per_m=1 / 8.0)
@@ -1030,7 +1042,7 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
         struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in p))
     for m in sc.markers:
         if m.name.startswith("nosebleed"):
-            struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in model.nosebleed))
+            mm.place_cutaway(m.record, model.nosebleed)         # b778 sd2: the crowd cutaway's point and yaw
     used = {sm_.material for s in sc.shapes for sm_ in s.submeshes}
     keep_m = [i for i, m in enumerate(sc.materials) if i in used or m.name in KEEP_MATERIALS_BY_CODE
               or m.name.startswith("digit_")]

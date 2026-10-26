@@ -298,9 +298,27 @@ class SoFi(mm.MetLife):
                     break
         return out
 
-    def _crowd(self, m, loop, profiles, *, standing=False):
+    @staticmethod
+    def soffit_ceiling(secs, key="soffit2"):
+        """Per loop point, the overhang over a tier's last rows as (depth where it starts, its height), or None: the
+        ``soffit2`` ledge under the next tier's fascia in the stacked models."""
+        out = []
+        for sec in secs:
+            item = sec.get(key)
+            out.append(None if item is None or abs(item[1] - item[0]) < 0.02 else (min(item[0], item[1]), item[2]))
+        return out
+
+    #: b778 sd2: a billboard under an overhang stops this far below it; one left shorter than CEILING_MIN_H is folded
+    #: flat (zero height) instead of showing a strip of legs
+    CEILING_GAP, CEILING_MIN_H = 0.08, 0.7
+
+    def _crowd(self, m, loop, profiles, *, standing=False, ceiling=None):
         """u5's crowd billboards, cut at every aisle: each band stops half an aisle short of it and starts again half an
-        aisle past it, measured along the band itself, so the seat texture's steps show between the sections."""
+        aisle past it, measured along the band itself, so the seat texture's steps show between the sections.
+
+        b778 sd2: ``ceiling`` (per loop point None or (depth, height), see :meth:`soffit_ceiling`) keeps every billboard
+        whose top reaches under an overhang below it (the top rows' fans stood through the next tier's ledge in every
+        stacked model)."""
         q = dict(self.p["crowd"])
         if standing:
             # A deck is a floor, not a tall pair of seating rows. Put a
@@ -309,17 +327,23 @@ class SoFi(mm.MetLife):
         half = q["aisle"] / 2.0
         R = max(len(pr) for pr in profiles) - 1
         cuts = self._aisle_cuts(loop)
+        ceiling = ceiling or [None] * len(loop)
         for b, k in enumerate(range(0, R, q["rows_per_band"])):
             quarter = [0.0, 0.5, 0.25, 0.75][b % 4]
             bot, top = [], []
-            for lp, pr in zip(loop, profiles):
+            for lp, pr, ceil in zip(loop, profiles, ceiling):
                 last = len(pr) - 1
                 d0, y0 = pr[min(k, last)]
                 d1, y1 = pr[min(k + q["rows_per_band"], last)]
                 # a profile without this band collapses the billboard to zero height at its last row
                 h = 0.0 if k >= last else (1.8 if standing else min((y1 - y0) + q["extra"], 2.8))
+                dt = d0 + 0.15 + q["lean"] * (d1 - d0)
+                if ceil is not None and h > 0.0 and dt >= ceil[0] - 0.3:
+                    h = min(h, ceil[1] - self.CEILING_GAP - (y0 + q["lift"]))
+                    if h < self.CEILING_MIN_H:
+                        h = 0.0
                 bot.append(self.at(lp, d0 + 0.15, y0 + q["lift"]))
-                top.append(self.at(lp, d0 + 0.15 + q["lean"] * (d1 - d0), y0 + q["lift"] + h))
+                top.append(self.at(lp, dt, y0 + q["lift"] + h))
             bot, top = np.array(bot), np.array(top)
             L = np.concatenate([[0.0], np.cumsum(math.np_norm(np.diff(bot, axis=0), axis=1))])
             # The upper rows and corners are longer than the field-wall line.
@@ -465,6 +489,13 @@ class SoFi(mm.MetLife):
         return out
 
     # -- build ---------------------------------------------------------------------------------------------
+    #: b778 sd2: the crowd-reaction cutaway's point (the scene's ``nosebleed`` marker, written with its yaw by
+    #: ``mm.place_cutaway``): in free air over the front of the +x lower bowl, where every fan of the 180 retail crowd
+    #: cutscenes stands clear of the stands and every cutscene camera clear of the model (chosen by the sd2 search, 0.5 m
+    #: over the lowest clear point; held by test_b778_crowd_cutaway). It stood on an upper-deck row: the fans stood in
+    #: the seats (Noah's 2026-10-21 stream at Lucas Oil Stadium).
+    CUTAWAY = (49.0, 12.0, 22.75)
+
     def build(self):
         loop = self.loop
         secs = [self.section(lp) for lp in loop]
@@ -481,15 +512,14 @@ class SoFi(mm.MetLife):
         self._screen()
         self._lights(loop, secs)
         self._end_signs(loop, secs)
-        west = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow((lp.z - 20.0) / 40.0, 2))
-        row = self.section(west)["up4"][4]
-        self.nosebleed = self.at(west, row[0] + 0.3, row[1] + 0.05)
+        self.nosebleed = self.CUTAWAY                 # b778 sd2: the crowd cutaway in free air (see CUTAWAY)
         self._exterior(loop, secs)
         self._surroundings()
         self._sky()
         self._signs()
         for name in ("sf_etfe_under", "sf_etfe_top", "sf_band"):
             self._split_by_angle(name, 6)
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
     # -- the bowl ------------------------------------------------------------------------------------------
@@ -1457,7 +1487,7 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
         struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in p))
     for m in sc.markers:
         if m.name.startswith("nosebleed"):
-            struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in model.nosebleed))
+            mm.place_cutaway(m.record, model.nosebleed)         # b778 sd2: the crowd cutaway's point and yaw
     # 6. drop the materials and textures nothing draws (keeping the ones the executable looks up by name)
     used = {sm.material for s in sc.shapes for sm in s.submeshes}
     keep_m = [i for i, m in enumerate(sc.materials) if i in used or m.name in KEEP_MATERIALS_BY_CODE
