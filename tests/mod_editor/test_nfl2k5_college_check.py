@@ -251,6 +251,17 @@ class RepairTests(unittest.TestCase):
             self.assertEqual(fixed, original)
             self.assertEqual(fixed[new_end:], payload[old.end:])
 
+    def test_a_ppg_only_franchise_has_no_mycareer_identity_to_check(self):
+        # b778 ci2: the Player Progress footer alone is not a MyCareer block;
+        # an ordinary franchise save must still repair without one.
+        from mod_editor.core import nfl2k5_player_progression as progress
+        payload, _ = progress.append_footer(synthetic_franchise(), progress.empty_footer())
+        bad, field = corrupt(payload, 'outside')
+        fixed, receipt = self.check.repair(bad)
+        self.assertEqual(fixed, payload)
+        self.assertEqual(receipt['changed'], 1)
+        self.assertIn(len(fixed), progress.PPG_SAVE_SIZES)
+
     def test_null_name_blank_and_nonordinal_metadata_are_preserved(self):
         data = bytearray(synthetic_body())
         doc = codec.decode(data)
