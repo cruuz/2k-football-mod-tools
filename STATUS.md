@@ -1,4 +1,8 @@
-# 2K5 Mod Studio: v1.0 RC112 Release Status
+# 2K5 Mod Studio: v1.0 RC113 Release Status
+
+## Beta 78 (RC113 / APF alpha.109, 2026-10-26)
+
+Beta 78 pairs RC113 with SOFTDRINK 2K28 v0.7. It adds 533 real free agents, 3,569 rookie faces, the gray alien prospect, NFL aging and star retention, weekly progression, the Player Progress screen, the Trophy Room, the 2006 Sarasota Seamen, scanned faces for all 32 head coaches, the draft clock, CPU clock and third-down fixes, kick and punt coverage, pass protection, and the Studio build and Windows launcher fixes. APF 2K8 adds Basileus Maximus' created plays and playbook windows plus his three Title Update 1.1 Xenia patches. The release disc was built from this branch. The automated headless emulator regression and hosted CI are the remaining checks; nobody played a full season before release. See the [2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md) and the [release page](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-78).
 
 ## Beta 77.1 (RC112 / APF alpha.108, 2026-10-20)
 

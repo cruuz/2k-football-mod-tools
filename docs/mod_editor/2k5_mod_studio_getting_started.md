@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC112: Getting Started (beta 77.1)
+# 2K5 Mod Studio v1.0 RC113: Getting Started (beta 78)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the

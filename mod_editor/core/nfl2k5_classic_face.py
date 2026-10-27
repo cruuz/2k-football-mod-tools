@@ -12,6 +12,8 @@ import hashlib
 import json
 import os
 
+from . import platform_compat
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/nfl2k5_classic_teams/face"
 PATCH = DATA / "patch.json"
@@ -75,7 +77,7 @@ def status(path):
             targets = _targets(fd, doc)
             states = set()
             for row, at, span in targets:
-                current = os.pread(fd, len(span), at)
+                current = platform_compat.pread(fd, len(span), at)
                 digest = _sha(current)
                 states.add("applied" if digest == row["replacement_sha256"]
                            else "retail" if digest == row["retail_sha256"] else "foreign")
@@ -95,7 +97,7 @@ def patch_image(path):
         targets = _targets(fd, doc)
         planned, already = [], 0
         for row, at, span in targets:
-            current = os.pread(fd, len(span), at)
+            current = platform_compat.pread(fd, len(span), at)
             digest = _sha(current)
             if digest == row["replacement_sha256"]:
                 already += 1
@@ -103,10 +105,10 @@ def patch_image(path):
             require(digest == row["retail_sha256"], f"{row['kind']} {row.get('family', '')}: the span is another job's")
             planned.append((row, at, span))
         for row, at, span in planned:
-            require(os.pwrite(fd, span, at) == len(span), "short face patch write")
+            require(platform_compat.pwrite(fd, span, at) == len(span), "short face patch write")
         os.fsync(fd)
         for row, at, span in planned:
-            require(_sha(os.pread(fd, len(span), at)) == row["replacement_sha256"], "face patch read-back")
+            require(_sha(platform_compat.pread(fd, len(span), at)) == row["replacement_sha256"], "face patch read-back")
     finally:
         os.close(fd)
     return dict(status="applied" if planned else "already_applied", changed_spans=len(planned), already=already)

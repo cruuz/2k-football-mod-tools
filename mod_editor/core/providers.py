@@ -755,7 +755,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_classic_teams.py": "26e557a506f5d436e066c01fdc54495d393573b2f02368a87cc5687032ab1622",
         "mod_editor/core/nfl2k5_classic_art.py": "7f5682d76b185c090e85b436d87127565b95cc0c19fab3c1d416274ba67eb155",
         "mod_editor/core/nfl2k5_classic_kit_art.py": "8095764ce78cf7f08dbed5244cdccb4a2090a4edaca6508c7f67b7d1ce84ded7",
-        "mod_editor/core/nfl2k5_classic_face.py": "cbc30a4e1325e5efd46586d737ca669e2a67083fe753c668d277f55892b0fd90",
+        "mod_editor/core/nfl2k5_classic_face.py": "3e220a1b888036bf9d53b90e9e318b1033a60b66a6b39e4eab3a8061d41548b9",
         "mod_editor/core/nfl2k5_classic_field.py": "7d179fd7afe40dd0283bcdf12fb7426a35880abbf7aaef894da5a4877dc6ad37",
         "mod_editor/core/nfl2k5_front_schemes.py": "a03ff7d5636feb259c3cb9dddd4ac2c00875748f14525fb9024a7634e4894e91",
         "mod_editor/core/nfl2k5_hires_budget.py": "e36cffa4aa56b51a9549126a0fa7c04998a2771f9b5d2f78fdd158a41ed51ba6",

@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio Changelog
 
-## Next release (unreleased)
+## 0.1.0-alpha.109: beta 78 (2026-10-26)
 
 Thanks to Basileus Maximus, who wrote these additions and shared them for the official Studio. His code is included with his permission under the Studio's MIT licence.
 
