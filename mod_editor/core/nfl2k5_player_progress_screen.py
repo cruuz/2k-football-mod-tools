@@ -288,6 +288,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("8b442460")                             # mov eax,[esp+0x60] row
     a.b("89442428")                             # [esp+0x28]=row
     a.b("894c241c")                             # [esp+0x1c]=ecx (manager)
+    a.b("894c2418")                             # [esp+0x18]=ecx, kept for the retail fallback (b778 pp1)
     a.b("8b4c241c"); a.call(FN_LIST)
     a.b("85c0"); a.j32(JZ, "value_retail")
     a.b("8944241c")                             # [esp+0x1c]=list record
@@ -398,6 +399,10 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.label("mode_store")
     a.b("83c448"); a.b("5d5f5e5b"); a.b("c20c00")
     a.label("value_retail")
+    # b778 pp1: the retail getter takes the screen manager in ECX (its first call, 0xF31B0, reads the list
+    # through it). [esp+0x1c] holds the list record by now and ECX whatever the last call left, so on a
+    # franchise with no record yet the fallback bugchecked at 0xF31B6 (Front Office > Player Progress froze).
+    a.b("8b4c2418")                             # mov ecx,[esp+0x18] (the manager)
     a.b("83c448"); a.b("5d5f5e5b")              # restore the caller frame
     a.b("53"); a.b("8b5c240c")                  # replay the retail prologue
     a.jmp_abs(0x00365B25)
